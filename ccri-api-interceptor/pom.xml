@@ -1,0 +1,222 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>CareConnectAPI</artifactId>
+  <groupId>uk.nhs.careconnectapi</groupId>
+  <version>2.5</version>
+  <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+  
+  
+  
+  <packaging>war</packaging>
+  
+  	<properties>
+   		<camel-version>2.18.4</camel-version>
+	    <cxf-version>3.0.4</cxf-version>
+	    <junit-version>4.11</junit-version>
+	    <log4j-version>1.2.17</log4j-version>
+	    
+	    <slf4j-version>1.7.5</slf4j-version>
+	    <xbean-version>3.18</xbean-version>
+	    <bundle-plugin-version>2.3.7</bundle-plugin-version>
+	    <jetty-plugin-version>8.1.16.v20140903</jetty-plugin-version>
+	    <scala-version>2.11.5</scala-version>
+	    <scala-plugin-version>3.1.6</scala-plugin-version>
+	    <!-- use utf-8 encoding -->
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	    
+	    <insight-log4j>1.2.0.Beta4</insight-log4j>
+    	<bundle.symbolicName>api</bundle.symbolicName>
+    	<bundle.namespace>uk.nhs.careconnectapi</bundle.namespace>
+    	<springframework-version>4.3.7.RELEASE</springframework-version>
+		<spring-security-version>4.2.3.RELEASE</spring-security-version>
+		
+		<hapi-fhir-version>2.5</hapi-fhir-version>
+  	</properties>
+
+	<build>
+	 	<finalName>${project.artifactId}</finalName>
+    	 <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    <plugins>
+    <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.5.0</version>
+        <extensions>true</extensions>
+        
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>*</Import-Package>
+            <Export-Package></Export-Package>
+            <Include-Resource>
+	  		{maven-resources}
+			</Include-Resource>
+            <Bundle-ClassPath>
+        		
+            </Bundle-ClassPath>
+            
+            <DynamicImport-Package>*</DynamicImport-Package> 
+          </instructions>
+        </configuration>
+      </plugin>
+    <plugin>
+  		<groupId>org.apache.camel</groupId>
+  		<artifactId>camel-maven-plugin</artifactId>
+  		<version>${camel-version}</version>
+  		<configuration>
+    		<applicationContextUri>META-INF/spring/*.xml</applicationContextUri>
+  		</configuration>
+	  </plugin>
+     
+      
+        <!-- Step 3. Copy Web Resources to target/classes but also to target/swagger-ui -->
+      
+     
+      
+    </plugins>
+  </build>
+	<dependencyManagement>
+	    <dependencies>
+	        <dependency>
+	            <groupId>org.springframework</groupId>
+	            <artifactId>spring-framework-bom</artifactId>
+	            <version>${springframework-version}</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+	        </dependency>
+	        <dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring-security-version}</version>
+				<type>pom</type>
+	            <scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+  <dependencies>
+  
+		
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel-version}</version>
+    </dependency>
+    <dependency>
+		<groupId>org.apache.camel</groupId>
+		<artifactId>camel-spring</artifactId>
+		<version>${camel-version}</version>
+	</dependency>
+		
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-security</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-servlet</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+	<dependency>
+		<groupId>org.apache.camel</groupId>
+		<artifactId>camel-http</artifactId>
+		<version>${camel-version}</version>
+    </dependency>
+    <dependency>
+		<groupId>org.apache.camel</groupId>
+		<artifactId>camel-http4</artifactId>
+		<version>${camel-version}</version>
+    </dependency>
+	
+		 <!-- swagger api -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-swagger-java</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+      		<groupId>org.apache.camel</groupId>
+      		<artifactId>camel-undertow</artifactId>
+      		<scope>runtime</scope>
+      		<version>${camel-version}</version>
+    	</dependency> 
+
+	    <!-- JSON support -->
+	    <dependency>
+		      <groupId>org.apache.camel</groupId>
+		      <artifactId>camel-jackson</artifactId>
+		      <version>${camel-version}</version>
+	    </dependency>
+
+	<dependency>
+			<groupId>io.fabric8.insight</groupId>
+			<artifactId>insight-log4j</artifactId>	
+			<version>${insight-log4j}</version>
+	</dependency>
+
+    <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-log4j12</artifactId>
+       <version>${slf4j-version}</version>
+     </dependency>
+		
+
+
+	
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>  
+   			<groupId>org.springframework</groupId>  
+   			<artifactId>spring-webmvc</artifactId>  
+     	</dependency>
+     	<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>  
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency> 
+       
+        <dependency>  
+   			<groupId>javax.servlet</groupId>  
+   			<artifactId>javax.servlet-api</artifactId>  
+   			<version>3.0.1</version>  
+   			<scope>provided</scope>  
+  		</dependency>
+  		
+  		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+<dependency>
+    <groupId>commons-net</groupId>
+    <artifactId>commons-net</artifactId>
+    <version>3.5</version>
+</dependency>
+  		 
+  </dependencies>
+
+  
+</project>
+
+
+
+
