@@ -1,0 +1,21 @@
+FROM tomcat:8.5.16-jre8
+
+RUN rm -rf /usr/local/tomcat/webapps/*;
+
+RUN  mkdir /usr/local/tomcat/webapps/ROOT;
+
+ADD index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
+ADD logging.properties /usr/local/tomcat/conf/logging.properties
+ADD server.xml /usr/local/tomcat/conf/server.xml
+# ADD hawtio.war /usr/local/tomcat/webapps/
+ADD target/careconnect-ri.war /usr/local/tomcat/webapps/
+
+# docker build -t ccris .
+
+# docker run --rm -it -p 80:80 --name ccris -e datasource.username=fhirjpa -e datasource.passwor=fhirjpa -e datasource.host=ccsql --link ccsql ccris
+# docker run --detach --name=ccris -p 80:80 -e datasource.username=fhirjpa -e datasource.passwor=fhirjpa -e datasource.host=ccsql --link ccsql ccris
+
+# docker logs ccris
+
+CMD ["catalina.sh", "run"]
+
