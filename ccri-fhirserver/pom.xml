@@ -32,7 +32,7 @@
 		<maven.test.skip>true</maven.test.skip>
 -->
 
-
+		<maven.test.skip>true</maven.test.skip>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit-version>4.12</junit-version>
