@@ -1,0 +1,445 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>ccri-fhirserver</artifactId>
+	<packaging>war</packaging>
+	<groupId>uk.nhs.careconnect.ris</groupId>
+	<version>${care-connect-version}</version>
+	<name>ccri-fhirserver</name>
+
+ 
+	<repositories>
+		<repository>
+			<id>oss-snapshots</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
+    <parent>
+        <groupId>uk.nhs.careconnect.ris</groupId>
+        <artifactId>ccri</artifactId>
+        <version>2.5.0</version>
+    </parent>
+
+	<properties>
+
+		<!-- For local tests remove this line.
+		Add back in for jenkins
+
+
+		<maven.test.skip>true</maven.test.skip>
+-->
+
+		<maven.test.skip>true</maven.test.skip>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit-version>4.12</junit-version>
+        <log4j-version>1.2.17</log4j-version>
+
+		<logback-version>1.1.3</logback-version>
+	
+
+		<slf4j-version>1.7.25</slf4j-version>
+		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
+
+
+
+        <jetty_version>9.4.5.v20170502</jetty_version>
+        <hibernate_version>5.2.9.Final</hibernate_version>
+        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
+        <!-- Update lucene version when you update hibernate-search version -->
+        <hibernate_search_version>5.7.0.Final</hibernate_search_version>
+        <lucene_version>5.5.4</lucene_version>
+        <maven_assembly_plugin_version>2.5.3</maven_assembly_plugin_version>
+        <maven_license_plugin_version>1.8</maven_license_plugin_version>
+        <maven_source_plugin_version>2.4</maven_source_plugin_version>
+        <phloc_schematron_version>2.7.1</phloc_schematron_version>
+        <phloc_commons_version>4.4.6</phloc_commons_version>
+        <spring_version>4.3.7.RELEASE</spring_version>
+        <thymeleaf-version>3.0.3.RELEASE</thymeleaf-version>
+        <xmlunit_version>1.6</xmlunit_version>
+
+        <hibernate_search_version>5.5.4.Final</hibernate_search_version>
+
+        <lucene_version>5.3.1</lucene_version>
+
+
+	</properties>
+	<dependencies>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-backward-codecs</artifactId>
+            <version>5.5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate_validator_version}</version>
+        </dependency>
+        <!-- JPA Server POM -->
+
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.6</version>
+        </dependency>
+
+		<!-- This dependency includes the core HAPI-FHIR classes -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-base</artifactId>
+			<version>${hapi-fhir-version}</version>
+		</dependency>
+
+		<!-- At least one "structures" JAR must also be included -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-dstu2</artifactId>
+			<version>${hapi-fhir-version}</version>
+		</dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+		<!-- This dependency includes the JPA server itself, which is packaged separately from the rest of HAPI FHIR -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-base</artifactId>
+			<version>${hapi-fhir-version}</version>
+		</dependency>
+
+		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<version>${hapi-fhir-version}</version>
+			<type>war</type>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<version>${hapi-fhir-version}</version>
+			<classifier>classes</classifier>
+			<scope>provided</scope>
+		</dependency>
+ 		
+		<!-- HAPI-FHIR uses Logback for logging support. The logback library is included automatically by Maven as a part of the hapi-fhir-base dependency, but you also need to include a logging library. Logback 
+			is used here, but log4j would also be fine. -->
+		<!--
+		  <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j-version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j-version}</version>
+		</dependency>
+
+-->
+		<!-- Needed for JEE/Servlet support -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well. Otherwise the following can be omitted. -->
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf</artifactId>
+			<version>${thymeleaf-version}</version>
+		</dependency>
+		<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf-spring4</artifactId>
+				<version>${thymeleaf-version}</version>
+		</dependency>
+
+		<!-- Used for CORS support -->
+		<dependency>
+			<groupId>org.ebaysf.web</groupId>
+			<artifactId>cors-filter</artifactId>
+			<version>${ebay_cors_filter_version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Spring Web is used to deploy the server to a web container. -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring_version}</version>
+		</dependency>
+
+		<!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.6</version>
+		</dependency>
+
+		<!-- This example uses Derby embedded database. If you are using another database such as Mysql or Oracle, you may omit the following dependencies and replace them with an appropriate database client
+               dependency for your database platform.
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>${derby_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbynet</artifactId>
+			<version>${derby_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbyclient</artifactId>
+			<version>${derby_version}</version>
+		</dependency>
+        -->
+        <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <scope>test</scope>
+            <version>${jetty_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-schematron</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>Saxon-HE</artifactId>
+                    <groupId>net.sf.saxon</groupId>
+                </exclusion>
+            </exclusions>
+            <version>${phloc_schematron_version}</version>
+        </dependency>
+
+
+		<dependency>
+			<groupId>uk.nhs.careconnect.ris</groupId>
+			<artifactId>cc-ris-dbcore</artifactId>
+			<version>${care-connect-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>uk.nhs.careconnect.ris</groupId>
+			<artifactId>cc-ris-database</artifactId>
+			<version>${care-connect-version}</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.20</version>
+		</dependency>
+
+
+
+
+
+	</dependencies>
+
+	<build>
+
+		<!-- Tells Maven to name the generated WAR file as hapi-fhir-jpaserver-example.war -->
+		<finalName>careconnect-ris</finalName>
+
+		<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn jetty:run" from the command line. -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-maven-plugin</artifactId>
+					<configuration>
+						<webApp>
+							<contextPath>/hapi-fhir-jpaserver-example</contextPath>
+							<allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+						</webApp>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20</version>
+				<configuration>
+				</configuration>
+			</plugin>
+			<!-- Tell Maven which Java source version you want to use -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Build-Time>${maven.build.timestamp}</Build-Time>
+						</manifestEntries>
+					</archive>
+					<overlays>
+						<overlay>
+							<groupId>ca.uhn.hapi.fhir</groupId>
+							<artifactId>hapi-fhir-testpage-overlay</artifactId>
+						</overlay>
+					</overlays>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+				</configuration>
+			</plugin>
+
+			
+
+			<!-- This is to run the integration tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray-kevinmayfield-careconnect</id>
+			<name>kevinmayfield-careconnect</name>
+			<url>https://api.bintray.com/maven/kevinmayfield/careconnect/cc-ris-fhirserver/;publish=1</url>
+		</repository>
+	</distributionManagement>
+
+</project>
