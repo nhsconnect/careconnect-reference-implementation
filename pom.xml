@@ -6,13 +6,12 @@
 
     <groupId>uk.nhs.careconnect.ris</groupId>
     <artifactId>ccri</artifactId>
-    <version>2.5.0</version>
+    <version>2.6.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
-    
     <properties>
-        <care-connect-version>2.5.0</care-connect-version>
+        <care-connect-version>2.6.0-SNAPSHOT</care-connect-version>
         <hapi-fhir-version>2.5</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
 

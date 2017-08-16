@@ -21,8 +21,8 @@
 
     <parent>
         <groupId>uk.nhs.careconnect.ris</groupId>
-        <artifactId>cc-ris</artifactId>
-        <version>2.5.0-SNAPSHOT</version>
+        <artifactId>ccri</artifactId>
+        <version>2.6.0-SNAPSHOT</version>
     </parent>
 
     <groupId>uk.nhs.careconnect.ris</groupId>
@@ -31,7 +31,7 @@
     <name>ccri-dbcore</name>
     <artifactId>ccri-dbcore</artifactId>
     <packaging>jar</packaging>
-    <version>${care-connect-version}</version>
+
 
     <properties>
 

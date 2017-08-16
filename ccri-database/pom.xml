@@ -20,9 +20,9 @@
 
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <groupId>uk.nhs.careconnect.ris</groupId>
+        <artifactId>ccri</artifactId>
+        <version>2.6.0-SNAPSHOT</version>
     </parent>
 
 
@@ -41,24 +41,27 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>1.5.2.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>1.5.2.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <version>1.5.2.RELEASE</version>
         </dependency>
 
 
         <dependency>
             <groupId>uk.nhs.careconnect.ris</groupId>
-            <artifactId>cc-ris-dbcore</artifactId>
-            <version>2.5.0-SNAPSHOT</version>
+            <artifactId>ccri-dbcore</artifactId>
+            <version>${care-connect-version}</version>
         </dependency>
 
         <dependency>

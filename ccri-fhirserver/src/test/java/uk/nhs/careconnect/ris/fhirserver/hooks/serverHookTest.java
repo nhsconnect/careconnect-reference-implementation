@@ -52,7 +52,7 @@ public class serverHookTest {
 
             ourLog.info("Project base path is: {}", path);
 
-            // temp ourPort = RandomServerPortProvider.findFreePort();
+            //ourPort = RandomServerPortProvider.findFreePort();
             ourServer = new Server(ourPort);
 
             WebAppContext webAppContext = new WebAppContext();
