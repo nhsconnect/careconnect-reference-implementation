@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.org.hl7.fhir</groupId>
+    <artifactId>cc-core</artifactId>
+    <version>2.5.0</version>
+    <packaging>jar</packaging>
+    <properties>
+        <hapi-fhir-version>2.5</hapi-fhir-version>
+    </properties>
+
+    <dependencies>
+
+
+    <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-base</artifactId>
+        <version>${hapi-fhir-version}</version>
+    </dependency>
+
+    <!-- At least one "structures" JAR must also be included -->
+
+    <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
+        <version>${hapi-fhir-version}</version>
+    </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu3</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+<!--
+        <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
+        <version>${hapi-fhir-version}</version>
+    </dependency>
+  -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/cc-core/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
+
+</project>
