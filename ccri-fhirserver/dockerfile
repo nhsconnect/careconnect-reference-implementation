@@ -10,10 +10,14 @@ ADD server.xml /usr/local/tomcat/conf/server.xml
 # ADD hawtio.war /usr/local/tomcat/webapps/
 ADD target/careconnect-ris.war /usr/local/tomcat/webapps/
 
-# docker build -t ccris .
 
-# docker run --rm -it -p 80:80 --name ccris -e datasource.username=fhirjpa -e datasource.passwor=fhirjpa -e datasource.host=ccsql --link ccsql ccris
-# docker run --detach --name=ccris -p 80:80 -e datasource.username=fhirjpa -e datasource.passwor=fhirjpa -e datasource.host=ccsql --link ccsql ccris
+# Use standard MySQL image from docker :::
+# Configure hostname to be ccsql
+# Environment variables: MYSQL_ROOT_PASSWORD=mypassword , MYSQL_DATABASE=careconnect, MYSQL_USER=fhirjpa, MYSQL_PASSWORD=fhirjpa
+
+# build this project :::
+# docker build -t ccris .
+# docker run --detach --name=ccris -p 80:80 -e datasource.username=fhirjpa -e datasource.password=fhirjpa -e datasource.host=ccsql -e datasource.port=3306 --link mysql ccris
 
 # docker logs ccris
 
