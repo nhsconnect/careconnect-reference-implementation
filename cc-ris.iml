@@ -4,6 +4,15 @@
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-api-interceptor/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-api-interceptor/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-database/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-database/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-dbcore/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-dbcore/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-fhirserver/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/ccri-fhirserver/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
