@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.patient;
+package uk.nhs.careconnect.ri.provider.patient;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.dstu2.composite.*;
@@ -20,9 +20,11 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.SystemURL;
+import uk.nhs.careconnect.ri.entity.patient.PatientSearch;
+import uk.nhs.careconnect.ri.entity.patient.PatientStore;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
-import uk.nhs.careconnect.ri.organization.OrganizationResourceProvider;
-import uk.nhs.careconnect.ri.practitioner.PractitionerResourceProvider;
+import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
+import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 

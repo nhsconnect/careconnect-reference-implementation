@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.medications;
+package uk.nhs.careconnect.ri.provider.medications;
 
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
@@ -8,7 +8,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.medication.administration.MedicationAdministrationSearch;
+import uk.nhs.careconnect.ri.entity.medication.administration.MedicationAdministrationSearch;
 import uk.nhs.careconnect.ri.model.medication.MedicationAdministrationDetail;
 
 import java.util.ArrayList;

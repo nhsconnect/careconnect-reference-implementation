@@ -16,7 +16,7 @@ public class serverHookTest {
 
     public final static int ourPort = 8887;
 
-    public final static org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(apiSteps.class);;
+   // public final static org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(apiSteps.class);;
 
 
 
@@ -42,15 +42,15 @@ public class serverHookTest {
             });
 
             System.out.println("Shut Down Hook Attached.");
-            ourLog.info("Lets Do this!");
+        //    ourLog.info("Lets Do this!");
 
             String path = apiSteps.class.getClassLoader().getResource("application.properties").getPath();
-            ourLog.info("Properties Path = " + path);
+     //       ourLog.info("Properties Path = " + path);
             path = new File(path).getParent();
             path = new File(path).getParent();
             path = new File(path).getParent();
 
-            ourLog.info("Project base path is: {}", path);
+     //       ourLog.info("Project base path is: {}", path);
 
             //ourPort = RandomServerPortProvider.findFreePort();
             ourServer = new Server(ourPort);

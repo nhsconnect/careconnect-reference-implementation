@@ -5,11 +5,11 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.location.LocationResourceProvider;
-import uk.nhs.careconnect.ri.medications.MedicationOrderResourceProvider;
-import uk.nhs.careconnect.ri.organization.OrganizationResourceProvider;
-import uk.nhs.careconnect.ri.patient.PatientResourceProvider;
-import uk.nhs.careconnect.ri.practitioner.PractitionerResourceProvider;
+import uk.nhs.careconnect.ri.provider.location.LocationResourceProvider;
+import uk.nhs.careconnect.ri.provider.medications.MedicationOrderResourceProvider;
+import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
+import uk.nhs.careconnect.ri.provider.patient.PatientResourceProvider;
+import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.medications;
+package uk.nhs.careconnect.ri.provider.medications;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
@@ -18,7 +18,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
-import uk.nhs.careconnect.ri.medication.orders.MedicationOrderSearch;
+import uk.nhs.careconnect.ri.entity.medication.orders.MedicationOrderSearch;
 import uk.nhs.careconnect.ri.model.medication.MedicationOrderDetails;
 
 import java.util.ArrayList;

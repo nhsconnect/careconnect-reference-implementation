@@ -1,9 +1,7 @@
 package uk.nhs.careconnectapi.securityConfig;
 
 
-import io.fabric8.insight.log.log4j.Log4jLogQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +21,7 @@ public class ResourceConfig  {
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
-	 private static final Logger log = LoggerFactory.getLogger(ResourceConfig.class);
+	// private static final Logger log = LoggerFactory.getLogger(ResourceConfig.class);
 
 	  @Autowired
 	  protected Environment env;
@@ -49,9 +47,8 @@ public class ResourceConfig  {
 		}
 		*/
 
-	   
+
 	  @Autowired
 	  Log4jLogQuery log4jLogQuery;
-
 
 }

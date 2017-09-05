@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.practitioner;
+package uk.nhs.careconnect.ri.provider.practitioner;
 
 import ca.uhn.fhir.model.dstu2.composite.*;
 import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSearch;
 import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:application.properties")
-@ComponentScan(basePackages = "uk.gov.hscic")
+@ComponentScan(basePackages = "uk.nhs.careconnect.ri")
 public class Config {
 
     @Value("${datasource.cleardown.cron:0 19 21 * * *}")

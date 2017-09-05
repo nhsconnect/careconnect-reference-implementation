@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.organization;
+package uk.nhs.careconnect.ri.provider.organization;
 
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
+import uk.nhs.careconnect.ri.entity.organization.OrganizationSearch;
 import uk.nhs.careconnect.ri.model.organization.OrganizationDetails;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;

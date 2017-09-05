@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.medications;
+package uk.nhs.careconnect.ri.provider.medications;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
@@ -13,6 +13,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
+import uk.nhs.careconnect.ri.entity.medications.MedicationEntity;
+import uk.nhs.careconnect.ri.entity.medications.MedicationRepository;
 
 @Component
 public class MedicationResourceProvider implements IResourceProvider {

@@ -18,7 +18,7 @@ public class CareConnectValidation implements IValidationSupport {
 
     private FhirContext myTermCtx = FhirContext.forDstu3();
 
-    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectValidation.class);
+   // private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectValidation.class);
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext theContext, ValueSet.ConceptSetComponent theInclude) {
         System.out.println("CareConnectValidator-expandValueSet "+theInclude.getSystem());
@@ -57,7 +57,7 @@ public class CareConnectValidation implements IValidationSupport {
             theUri = theUri.replace("fhir.hl7.org.uk", "fhir-test.hl7.org.uk");
 
             String resName = myCtx.getResourceDefinition(theClass).getName();
-            ourLog.info("Attempting to fetch {} at URL: {}", resName, theUri);
+         //   ourLog.info("Attempting to fetch {} at URL: {}", resName, theUri);
 
             myCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             IGenericClient client = myCtx.newRestfulGenericClient("https://fhir-test.hl7.org.uk");
@@ -66,9 +66,9 @@ public class CareConnectValidation implements IValidationSupport {
             try {
                 result = client.read(theClass, theUri);
             } catch (BaseServerResponseException e) {
-                ourLog.error("FAILURE: Received HTTP " + e.getStatusCode() + ": " + e.getMessage());
+         //       ourLog.error("FAILURE: Received HTTP " + e.getStatusCode() + ": " + e.getMessage());
             }
-            ourLog.info("Successfully loaded resource");
+        //    ourLog.info("Successfully loaded resource");
             return result;
 
         }
