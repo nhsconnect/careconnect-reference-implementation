@@ -30,6 +30,7 @@
         <module>ccri-dbcore</module>
         <module>ccri-database</module>
         <module>ccri-fhirserver</module>
+        <module>ccri-integrationtest</module>
     </modules>
 
     <distributionManagement>

@@ -13,15 +13,16 @@ import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.Bundle;
-import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
-import uk.nhs.careconnect.validation.dstu2.CareConnectValidation;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
+import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
+
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class resourceSearch {
 
-    String serverBase = "http://127.0.0.1/careconnect-ris/DSTU2/";
+    String serverBase = "http://127.0.0.1:8080/careconnect-ris/DSTU2/";
 
 
     Bundle resource;
