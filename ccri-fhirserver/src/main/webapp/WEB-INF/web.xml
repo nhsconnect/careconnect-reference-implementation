@@ -13,8 +13,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			uk.nhs.careconnect.ris.fhirserver.Config
-		</param-value>
+            uk.nhs.careconnect.ri.fhirserver.Config
+        </param-value>
 	</context-param>
 
 	<!-- Servlets -->
@@ -28,14 +28,14 @@
 		</init-param>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>uk.nhs.careconnect.ris.fhirserver.UIOverlayConfig</param-value>
+			<param-value>uk.nhs.careconnect.ri.fhirserver.UIOverlayConfig</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
 	<servlet>
 		<servlet-name>fhirServlet</servlet-name>
-		<servlet-class>uk.nhs.careconnect.ris.fhirserver.HAPIRestfulConfig</servlet-class>
+		<servlet-class>uk.nhs.careconnect.ri.fhirserver.HAPIRestfulConfig</servlet-class>
 		<init-param>
 			<param-name>ImplementationDescription</param-name>
 			<param-value>FHIR JPA Server</param-value>

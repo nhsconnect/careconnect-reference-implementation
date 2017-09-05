@@ -20,12 +20,10 @@
 
 
     <parent>
-        <groupId>uk.nhs.careconnect.ris</groupId>
+        <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri</artifactId>
-        <version>2.6.0-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>uk.nhs.careconnect.ris</groupId>
 
 
     <name>ccri-dbcore</name>
