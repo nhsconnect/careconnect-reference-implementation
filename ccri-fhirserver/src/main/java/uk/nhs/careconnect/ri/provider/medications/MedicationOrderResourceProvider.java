@@ -1,23 +1,17 @@
 package uk.nhs.careconnect.ri.provider.medications;
 
-import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
-import ca.uhn.fhir.model.dstu2.valueset.IssueSeverityEnum;
-import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.model.primitive.StringDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import org.hl7.fhir.instance.model.IdType;
+import org.hl7.fhir.instance.model.MedicationOrder;
+import org.hl7.fhir.instance.model.OperationOutcome;
+import org.hl7.fhir.instance.model.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.SystemURL;
 import uk.nhs.careconnect.ri.entity.medication.orders.MedicationOrderSearch;
 import uk.nhs.careconnect.ri.model.medication.MedicationOrderDetails;
 
@@ -51,12 +45,12 @@ public class MedicationOrderResourceProvider implements IResourceProvider {
     }
 
     @Read()
-    public MedicationOrder getMedicationOrderById(@IdParam IdDt medicationOrderId) {
+    public MedicationOrder getMedicationOrderById(@IdParam IdType medicationOrderId) {
         MedicationOrderDetails medicationOrderDetails = medicationOrderSearch.findMedicationOrderByID(medicationOrderId.getIdPartAsLong());
 
         if (medicationOrderDetails == null) {
             OperationOutcome operationalOutcome = new OperationOutcome();
-            operationalOutcome.addIssue().setSeverity(IssueSeverityEnum.ERROR).setDetails("No medicationOrder details found for ID: " + medicationOrderId.getIdPart());
+            // TODO operationalOutcome.addIssue().setSeverity(IssueSeverityEnum.ERROR).setDetails("No medicationOrder details found for ID: " + medicationOrderId.getIdPart());
             throw new InternalErrorException("No medicationOrder details found for ID: " + medicationOrderId.getIdPart(), operationalOutcome);
         }
 
@@ -69,43 +63,43 @@ public class MedicationOrderResourceProvider implements IResourceProvider {
         medicationOrder.setId(String.valueOf(medicationOrderDetails.getId()));
         medicationOrder.getMeta().setLastUpdated(medicationOrderDetails.getLastUpdated());
         medicationOrder.getMeta().setVersionId(String.valueOf(medicationOrderDetails.getLastUpdated().getTime()));
-        medicationOrder.setDateWritten(new DateTimeDt(medicationOrderDetails.getDateWritten()));
+        medicationOrder.setDateWritten(medicationOrderDetails.getDateWritten());
 
         switch (medicationOrderDetails.getOrderStatus().toLowerCase(Locale.UK)) {
             case "active":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.ACTIVE);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.ACTIVE);
                 break;
             case "completed":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.COMPLETED);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.COMPLETED);
                 break;
             case "draft":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.DRAFT);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.DRAFT);
                 break;
             case "entered_in_error":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.ENTERED_IN_ERROR);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.ENTEREDINERROR);
                 break;
             case "on_hold":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.ON_HOLD);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.ONHOLD);
                 break;
             case "stopped":
-                medicationOrder.setStatus(MedicationOrderStatusEnum.STOPPED);
+                medicationOrder.setStatus(MedicationOrder.MedicationOrderStatus.STOPPED);
                 break;
         }
 
         if (medicationOrderDetails.getPatientId() != null) {
-            medicationOrder.setPatient(new ResourceReferenceDt("Patient/"+medicationOrderDetails.getPatientId()));
+            medicationOrder.setPatient(new Reference("Patient/"+medicationOrderDetails.getPatientId()));
         } else {
-            medicationOrder.setPatient(new ResourceReferenceDt());
+            medicationOrder.setPatient(new Reference());
         }
 
-        medicationOrder.setPrescriber(new ResourceReferenceDt("Practitioner/"+medicationOrderDetails.getAutherId()));
-        medicationOrder.setMedication(new ResourceReferenceDt("Medication/"+medicationOrderDetails.getMedicationId()));
+        medicationOrder.setPrescriber(new Reference("Practitioner/"+medicationOrderDetails.getAutherId()));
+        medicationOrder.setMedication(new Reference("Medication/"+medicationOrderDetails.getMedicationId()));
         medicationOrder.addDosageInstruction().setText(medicationOrderDetails.getDosageText());
 
-        MedicationOrder.DispenseRequest dispenseRequest = new MedicationOrder.DispenseRequest();
-        dispenseRequest.addUndeclaredExtension(new ExtensionDt(false, SystemURL.SD_EXTENSION_MEDICATION_QUANTITY_TEXT, new StringDt(medicationOrderDetails.getDispenseQuantityText())));
-        dispenseRequest.addUndeclaredExtension(new ExtensionDt(true, SystemURL.SD_EXTENSION_PERSCRIPTION_REPEAT_REVIEW_DATE, new DateTimeDt(medicationOrderDetails.getDispenseReviewDate())));
-        dispenseRequest.setMedication(new ResourceReferenceDt("Medication/"+medicationOrderDetails.getDispenseMedicationId()));
+        MedicationOrder.MedicationOrderDispenseRequestComponent dispenseRequest = new MedicationOrder.MedicationOrderDispenseRequestComponent();
+      //  dispenseRequest.addUndeclaredExtension(new ExtensionDt(false, SystemURL.SD_EXTENSION_MEDICATION_QUANTITY_TEXT, new StringDt(medicationOrderDetails.getDispenseQuantityText())));
+      //  dispenseRequest.addUndeclaredExtension(new ExtensionDt(true, SystemURL.SD_EXTENSION_PERSCRIPTION_REPEAT_REVIEW_DATE, new DateTimeDt(medicationOrderDetails.getDispenseReviewDate())));
+        dispenseRequest.setMedication(new Reference("Medication/"+medicationOrderDetails.getDispenseMedicationId()));
         dispenseRequest.setNumberOfRepeatsAllowed(medicationOrderDetails.getDispenseRepeatsAllowed());
         medicationOrder.setDispenseRequest(dispenseRequest);
 

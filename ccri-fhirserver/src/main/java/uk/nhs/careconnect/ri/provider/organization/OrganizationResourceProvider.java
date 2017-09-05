@@ -1,12 +1,8 @@
 package uk.nhs.careconnect.ri.provider.organization;
 
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Parameters.Parameter;
 import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -17,6 +13,10 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.IdType;
+import org.hl7.fhir.instance.model.Identifier;
+import org.hl7.fhir.instance.model.Organization;
+import org.hl7.fhir.instance.model.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
@@ -44,7 +44,7 @@ public class OrganizationResourceProvider implements IResourceProvider {
     }
 
     @Read()
-    public Organization getOrganizationById(@IdParam IdDt organizationId) {
+    public Organization getOrganizationById(@IdParam IdType organizationId) {
 
         OrganizationDetails organizationDetails = organizationSearch.findOrganizationDetails(organizationId.getIdPart());
 
@@ -114,15 +114,15 @@ public class OrganizationResourceProvider implements IResourceProvider {
     	return after;
     }
     
-    private PeriodDt getTimePeriod(List<Parameter> parameters) {
-    	PeriodDt timePeriod = null;
+    private Period getTimePeriod(List<Parameter> parameters) {
+    	Period timePeriod = null;
     	
     	// first we need a param called timePeriod. If we don't have one then we cannot proceed   
     	// similarly if there's more than one then we cannot proceed.
         timePeriod = parameters.stream()
 		        	    .filter(parameter -> "timePeriod".equals(parameter.getName()))
 		                .map(Parameter::getValue)
-		                .map(PeriodDt.class::cast)
+		                .map(Period.class::cast)
 		        	    .reduce((a, b) -> {
 		        	    	throw OperationOutcomeFactory.buildOperationOutcomeException(
 		                            new InvalidRequestException("Multiple timePeriod parameters. Only one is permitted"),
@@ -133,13 +133,12 @@ public class OrganizationResourceProvider implements IResourceProvider {
         return timePeriod;   	
     }
     
-    private void validateTimePeriod(PeriodDt timePeriod) {
+    private void validateTimePeriod(Period timePeriod) {
         if(timePeriod != null) {
-        	DateTimeDt startElement = timePeriod.getStartElement();
-        	DateTimeDt endElement = timePeriod.getEndElement();
-        	
-        	String startString = startElement.getValueAsString();
-        	String endString = endElement.getValueAsString();
+
+        	// TODO rough conversion
+        	String startString = timePeriod.getStartElement().toString();
+        	String endString = timePeriod.getEndElement().toHumanDisplay();
         	
         	if(startString != null && endString != null) {
         		Date start = timePeriod.getStart();
@@ -177,12 +176,12 @@ public class OrganizationResourceProvider implements IResourceProvider {
 
         for (OrganizationDetails organizationDetail : organizationDetails) {
             if (map.containsKey(organizationDetail.getOrgCode())) {
-                map.get(organizationDetail.getOrgCode()).addIdentifier(new IdentifierDt(CareConnectSystem.ODSSiteCode, organizationDetail.getSiteCode()));
+                map.get(organizationDetail.getOrgCode()).addIdentifier(new Identifier().setSystem(CareConnectSystem.ODSSiteCode).setValue(organizationDetail.getSiteCode()));
             } else {
                 Organization organization = new Organization()
                         .setName(organizationDetail.getOrgName())
-                        .addIdentifier(new IdentifierDt(CareConnectSystem.ODSOrganisationCode, organizationDetail.getOrgCode()))
-                        .addIdentifier(new IdentifierDt(CareConnectSystem.ODSSiteCode, organizationDetail.getSiteCode()));
+                        .addIdentifier(new Identifier().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(organizationDetail.getOrgCode()))
+                        .addIdentifier(new Identifier().setSystem(CareConnectSystem.ODSSiteCode).setValue(organizationDetail.getSiteCode()));
 
                 organization.setId(String.valueOf(organizationDetail.getId()));
 

@@ -1,15 +1,11 @@
 package uk.nhs.careconnect.ri.provider.medications;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.resource.Medication;
-import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
-import ca.uhn.fhir.model.dstu2.valueset.IssueSeverityEnum;
-import ca.uhn.fhir.model.primitive.IdDt;
+
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
@@ -28,17 +24,17 @@ public class MedicationResourceProvider implements IResourceProvider {
     }
 
     @Read()
-    public Medication getMedicationById(@IdParam IdDt medicationId) {
+    public Medication getMedicationById(@IdParam IdType medicationId) {
         MedicationEntity medicationEntity = medicationRepository.findOne(medicationId.getIdPartAsLong());
 
         if (medicationEntity == null) {
             OperationOutcome operationalOutcome = new OperationOutcome();
-            operationalOutcome.addIssue().setSeverity(IssueSeverityEnum.ERROR).setDetails("No medication details found for ID: " + medicationId.getIdPart());
+           // TODO  operationalOutcome.addIssue().setSeverity(IssueSeverityEnum.ERROR).setDetails("No medication details found for ID: " + medicationId.getIdPart());
             throw new InternalErrorException("No medication details found for ID: " + medicationId.getIdPart(), operationalOutcome);
         }
 
-        CodingDt coding = new CodingDt(SystemURL.SNOMED, String.valueOf(medicationEntity.getId())).setDisplay(medicationEntity.getName());
-        CodeableConceptDt codableConcept = new CodeableConceptDt();
+        Coding coding = new Coding().setSystem(SystemURL.SNOMED).setCode(String.valueOf(medicationEntity.getId())).setDisplay(medicationEntity.getName());
+        CodeableConcept codableConcept = new CodeableConcept();
         codableConcept.addCoding(coding);
 
         Medication medication = new Medication().setCode(codableConcept);

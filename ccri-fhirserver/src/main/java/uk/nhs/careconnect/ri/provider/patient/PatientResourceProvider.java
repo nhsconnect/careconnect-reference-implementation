@@ -1,11 +1,6 @@
 package uk.nhs.careconnect.ri.provider.patient;
 
-import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.dstu2.composite.*;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.valueset.*;
-import ca.uhn.fhir.model.primitive.DateDt;
-import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -14,12 +9,11 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
-import uk.nhs.careconnect.ri.SystemURL;
 import uk.nhs.careconnect.ri.entity.patient.PatientSearch;
 import uk.nhs.careconnect.ri.entity.patient.PatientStore;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
@@ -60,7 +54,7 @@ public class PatientResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public Patient getPatientById(@IdParam IdDt internalId) {
+    public Patient getPatientById(@IdParam IdType internalId) {
         PatientDetails patientDetails = patientSearch.findPatientByInternalID(internalId.getIdPart());
 
         if (patientDetails == null) {
@@ -98,13 +92,15 @@ public class PatientResourceProvider implements IResourceProvider {
 
     private PatientDetails registerPatientResourceConverterToPatientDetail(Patient patientResource) {
         PatientDetails patientDetails = new PatientDetails();
-        HumanNameDt name = patientResource.getNameFirstRep();
-        patientDetails.setForename(name.getGivenAsSingleString());
-        patientDetails.setSurname(name.getFamilyAsSingleString());
+        HumanName name = patientResource.getName().get(0);
+        patientDetails.setForename(name.getGiven().toString());
+        patientDetails.setSurname(name.getFamily().toString());
         patientDetails.setDateOfBirth(patientResource.getBirthDate());
-        patientDetails.setGender(patientResource.getGender());
-        patientDetails.setNhsNumber(patientResource.getIdentifierFirstRep().getValue());
+        patientDetails.setGender(patientResource.getGender().toCode());
+        // TODO this won't work with next refactor
+        patientDetails.setNhsNumber(patientResource.getIdentifier().get(0).getValue());
 
+        /* TODO remove or replace when viable
         List<ExtensionDt> registrationPeriodExtensions = patientResource
                 .getUndeclaredExtensionsByUrl(SystemURL.SD_EXTENSION_REGISTRATION_PERIOD);
         ExtensionDt registrationPeriodExtension = registrationPeriodExtensions.get(0);
@@ -126,12 +122,14 @@ public class PatientResourceProvider implements IResourceProvider {
             throw new IllegalArgumentException(String.format(
                     "The given registration end (%c) is not valid. The registration end should be left blank to indicate an open-ended registration period.",
                     registrationStart));
-        }
 
+        }
+         */
+/* TODO KGM removed extensions for refactor
         List<ExtensionDt> registrationStatusExtensions = patientResource
                 .getUndeclaredExtensionsByUrl(SystemURL.SD_EXTENSION_REGISTRATION_STATUS);
         ExtensionDt registrationStatusExtension = registrationStatusExtensions.get(0);
-        CodeableConceptDt registrationStatusCode = (CodeableConceptDt) registrationStatusExtension.getValue();
+        CodeableConcept registrationStatusCode = (CodeableConcept) registrationStatusExtension.getValue();
         String registrationStatus = registrationStatusCode.getCodingFirstRep().getCode();
 
         if (ACTIVE_REGISTRATION_STATUS.equals(registrationStatus)) {
@@ -141,10 +139,11 @@ public class PatientResourceProvider implements IResourceProvider {
                     "The given registration status is not valid. Expected - A. Actual - %s", registrationStatus));
         }
 
+
         List<ExtensionDt> registrationTypeExtensions = patientResource
                 .getUndeclaredExtensionsByUrl(SystemURL.SD_EXTENSION_REGISTRATION_TYPE);
         ExtensionDt registrationTypeExtension = registrationTypeExtensions.get(0);
-        CodeableConceptDt registrationTypeCode = (CodeableConceptDt) registrationTypeExtension.getValue();
+        CodeableConcept registrationTypeCode = (CodeableConcept) registrationTypeExtension.getValue();
         String registrationType = registrationTypeCode.getCodingFirstRep().getCode();
 
         if (TEMPORARY_RESIDENT_REGISTRATION_TYPE.equals(registrationType)) {
@@ -153,44 +152,54 @@ public class PatientResourceProvider implements IResourceProvider {
             throw new IllegalArgumentException(String
                     .format("The given registration type is not valid. Expected - T. Actual - %s", registrationType));
         }
-
+        */
         return patientDetails;
     }
 
     // a cut-down Patient
     private Patient patientDetailsToRegisterPatientResourceConverter(PatientDetails patientDetails) {
         Patient patient = new Patient()
-                .addIdentifier(new IdentifierDt(CareConnectSystem.NHSNumber, patientDetails.getNhsNumber()))
-                .setBirthDate(new DateDt(patientDetails.getDateOfBirth()))
-                .setGender(AdministrativeGenderEnum.forCode(patientDetails.getGender().toLowerCase(Locale.UK)));
+                .addIdentifier(new Identifier().setSystem(CareConnectSystem.NHSNumber).setValue(patientDetails.getNhsNumber()))
+                .setBirthDate(patientDetails.getDateOfBirth());
+        try {
 
+                patient.setGender(Enumerations.AdministrativeGender.fromCode(patientDetails.getGender().toLowerCase(Locale.UK)));
+        } catch (Exception ex) {
+
+        }
         patient.setId(patientDetails.getId());
-        patient.addName().addFamily(patientDetails.getSurname()).addGiven(patientDetails.getForename()).setUse(NameUseEnum.USUAL);
+        patient.addName().addFamily(patientDetails.getSurname()).addGiven(patientDetails.getForename()).setUse(HumanName.NameUse.USUAL);
 
-        PeriodDt registrationPeriod = new PeriodDt()
-                .setStartWithSecondsPrecision(patientDetails.getRegistrationStartDateTime())
-                .setEndWithSecondsPrecision(patientDetails.getRegistrationEndDateTime());
-        patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_PERIOD, registrationPeriod);
+        Period registrationPeriod = new Period()
+                .setStart(patientDetails.getRegistrationStartDateTime())
+                .setEnd(patientDetails.getRegistrationEndDateTime());
+        /*
 
-        patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_STATUS, new CodeableConceptDt(
+        TODO KGM Removed
+
+        patient.addExtension(new Extension().setUrl(
+                SystemURL.SD_EXTENSION_REGISTRATION_PERIOD).setValue(registrationPeriod));
+
+        patient.addExtension(new Extension().setUrl(SystemURL.SD_EXTENSION_REGISTRATION_STATUS).setValue(new CodeableConcept(
                 SystemURL.VS_REGISTRATION_STATUS, patientDetails.getRegistrationStatus()));
 
-        patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_TYPE, new CodeableConceptDt(
+        patient.addExtension(new Extension().setUrl(SystemURL.SD_EXTENSION_REGISTRATION_TYPE, new CodeableConcept(
                 SystemURL.VS_REGISTRATION_TYPE, patientDetails.getRegistrationType()));
-
+        */
         return patient;
     }
 
     private Patient patientDetailsToPatientResourceConverter(PatientDetails patientDetails) {
         Patient patient = new Patient();
-        patient.addIdentifier(new IdentifierDt(CareConnectSystem.NHSNumber, patientDetails.getNhsNumber()));
+        patient.addIdentifier(new Identifier().setSystem(CareConnectSystem.NHSNumber).setValue(patientDetails.getNhsNumber()));
 
         Date lastUpdated = patientDetails.getLastUpdated();
 
         if (lastUpdated == null) {
             patient.setId(patientDetails.getId());
         } else {
-            patient.setId(new IdDt(patient.getResourceName(), patientDetails.getId(), String.valueOf(lastUpdated.getTime())));
+            patient.setId(patientDetails.getId());
+            // TODO , String.valueOf(lastUpdated.getTime() should be in meta?
             patient.getMeta()
                     .setLastUpdated(lastUpdated)
                     .setVersionId(String.valueOf(lastUpdated.getTime()));
@@ -201,53 +210,67 @@ public class PatientResourceProvider implements IResourceProvider {
                 .addFamily(patientDetails.getSurname())
                 .addGiven(patientDetails.getForename())
                 .addPrefix(patientDetails.getTitle())
-                .setUse(NameUseEnum.USUAL);
+                .setUse(HumanName.NameUse.USUAL);
 
-        patient.setBirthDate(new DateDt(patientDetails.getDateOfBirth()));
+        patient.setBirthDate(patientDetails.getDateOfBirth());
         patient.getMeta().addProfile(CareConnectProfile.Patient_1);
 
         String addressLines = patientDetails.getAddress();
 
         if (addressLines != null) {
             patient.addAddress()
-                    .setUse(AddressUseEnum.HOME)
-                    .setType(AddressTypeEnum.PHYSICAL)
+                    .setUse(Address.AddressUse.HOME)
+                    .setType(Address.AddressType.PHYSICAL)
                     .setText(addressLines);
         }
 
         Long gpId = patientDetails.getGpId();
 
         if (gpId != null) {
-            HumanNameDt practitionerName = practitionerResourceProvider.getPractitionerById(new IdDt(gpId)).getName();
+            HumanName practitionerName = practitionerResourceProvider.getPractitionerById(new IdType(gpId)).getName();
 
-            ResourceReferenceDt practitionerReference = new ResourceReferenceDt("Practitioner/" + gpId)
-                    .setDisplay(practitionerName.getPrefixFirstRep() + " " + practitionerName.getGivenFirstRep() + " " + practitionerName.getFamilyFirstRep());
+            Reference practitionerReference = new Reference("Practitioner/" + gpId)
+                    .setDisplay(practitionerName.getPrefix() + " " + practitionerName.getGiven() + " " + practitionerName.getFamily());
 
             patient.getCareProvider().add(practitionerReference);
         }
 
         String gender = patientDetails.getGender();
         if (gender != null) {
-            patient.setGender(AdministrativeGenderEnum.forCode(gender.toLowerCase(Locale.UK)));
+            // TODO BIG TIME
+            switch (patientDetails.getGender())
+            {
+                case "female" :
+                    patient.setGender(Enumerations.AdministrativeGender.FEMALE);
+                    break;
+                case "male" :
+                    patient.setGender(Enumerations.AdministrativeGender.MALE);
+                    break;
+                default:
+                    patient.setGender(Enumerations.AdministrativeGender.UNKNOWN);
+
+            }
+
         }
 
         String telephoneNumber = patientDetails.getTelephone();
         if (telephoneNumber != null) {
-            ContactPointDt telephone = new ContactPointDt()
-                    .setSystem(ContactPointSystemEnum.PHONE)
+            ContactPoint telephone = new ContactPoint()
+                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
                     .setValue(telephoneNumber)
-                    .setUse(ContactPointUseEnum.HOME);
+                    .setUse(ContactPoint.ContactPointUse.HOME);
 
-            patient.setTelecom(Collections.singletonList(telephone));
+            patient.addTelecom(telephone);
         }
-
+        // TODO
+        /*
         Date registrationStartDateTime = patientDetails.getRegistrationStartDateTime();
         if (registrationStartDateTime != null) {
-            PeriodDt registrationPeriod = new PeriodDt()
-                    .setStartWithSecondsPrecision(registrationStartDateTime)
-                    .setEndWithSecondsPrecision(patientDetails.getRegistrationEndDateTime());
+            Period registrationPeriod = new Period()
+                    .setStart(registrationStartDateTime)
+                    .setEnd(patientDetails.getRegistrationEndDateTime());
 
-            patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_PERIOD, registrationPeriod);
+           patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_PERIOD, registrationPeriod);
         }
 
         String registrationStatusValue = patientDetails.getRegistrationStatus();
@@ -261,7 +284,7 @@ public class PatientResourceProvider implements IResourceProvider {
             patient.addUndeclaredExtension(false, SystemURL.SD_EXTENSION_REGISTRATION_TYPE, new CodeableConceptDt(
                     SystemURL.VS_REGISTRATION_TYPE, registrationTypeValue));
         }
-
+        */
         return patient;
     }
 }

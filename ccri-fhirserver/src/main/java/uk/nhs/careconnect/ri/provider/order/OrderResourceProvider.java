@@ -1,25 +1,20 @@
 package uk.nhs.careconnect.ri.provider.order;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.Basic;
-import ca.uhn.fhir.model.dstu2.resource.Order;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
+
 import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.model.primitive.XhtmlDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.hl7.fhir.instance.model.CodeableConcept;
+import org.hl7.fhir.instance.model.Identifier;
+import org.hl7.fhir.instance.model.Order;
+import org.hl7.fhir.instance.model.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.SystemURL;
 import uk.nhs.careconnect.ri.entity.order.OrderStore;
 import uk.nhs.careconnect.ri.model.order.OrderDetail;
 
-import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -46,17 +41,19 @@ public class OrderResourceProvider implements IResourceProvider {
     }
 
     public OrderDetail orderResourceToOrderDetailConverter(Order order){
+
+        // TODO mock up
         OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setId(order.getId().getIdPartAsLong());
-        orderDetail.setIdentifier(order.getIdentifierFirstRep().getValue());
-        orderDetail.setDetail(order.getContained().getContainedResources().get(0).getText().getDivAsString());
+        orderDetail.setId(Long.valueOf(order.getId()).longValue());
+        orderDetail.setIdentifier(order.getIdentifier().get(0).getValue());
+       // orderDetail.setDetail(order.getContained().getContainedResources().get(0).getText().getDivAsString());
         orderDetail.setOrderDate(new Date());
-        orderDetail.setReasonCode(((CodeableConceptDt)order.getReason()).getCodingFirstRep().getCode());
-        orderDetail.setReasonDescription(((CodeableConceptDt)order.getReason()).getCodingFirstRep().getDisplay());
-        orderDetail.setReasonText(((CodeableConceptDt)order.getReason()).getText());
-        orderDetail.setSourceOrgId(order.getSource().getReference().getIdPartAsLong());
-        orderDetail.setSubjectPatientId(order.getSubject().getReference().getIdPartAsLong());
-        orderDetail.setTargetOrgId(order.getTarget().getReference().getIdPartAsLong());
+        orderDetail.setReasonCode(((CodeableConcept)order.getReason()).getCoding().get(0).getCode());
+        orderDetail.setReasonDescription(((CodeableConcept)order.getReason()).getCoding().get(0).getDisplay());
+        orderDetail.setReasonText(((CodeableConcept)order.getReason()).getText());
+        //orderDetail.setSourceOrgId(order.getSource().getReference().);
+        //orderDetail.setSubjectPatientId(order.getSubject().getReference().getIdPartAsLong());
+        //orderDetail.setTargetOrgId(order.getTarget().getReference().getIdPartAsLong());
         orderDetail.setRecieved(true);
         return orderDetail;
     }
@@ -64,8 +61,9 @@ public class OrderResourceProvider implements IResourceProvider {
     public Order orderDetailToOrderResourceConverter(OrderDetail orderDetail){
         Order order = new Order();
         order.setId(new IdDt(orderDetail.getId()));
-        order.setIdentifier(Collections.singletonList(new IdentifierDt("",orderDetail.getIdentifier())));
+        order.addIdentifier(new Identifier().setSystem("Not done TODO").setValue(orderDetail.getIdentifier()));
 
+        /* REMOVED KGM
         Basic basic = new Basic();
         basic.setCode(new CodeableConceptDt(SystemURL.HL7_BASIC_RESOURCE_TYPE, "OrderDetails"));
         basic.getText().setDiv(new XhtmlDt(orderDetail.getDetail()));
@@ -76,10 +74,10 @@ public class OrderResourceProvider implements IResourceProvider {
         coding.setDisplay(orderDetail.getReasonDescription());
         CodeableConceptDt codeConcept = new CodeableConceptDt().setCoding(Collections.singletonList(coding)).setText(orderDetail.getReasonText());
         order.setReason(codeConcept);
-
-        order.setSource(new ResourceReferenceDt("Organization/"+orderDetail.getSourceOrgId()));
-        order.setSubject(new ResourceReferenceDt("Patient/"+orderDetail.getSubjectPatientId()));
-        order.setTarget(new ResourceReferenceDt("Organization/"+orderDetail.getTargetOrgId()));
+        */
+        order.setSource(new Reference("Organization/"+orderDetail.getSourceOrgId()));
+        order.setSubject(new Reference("Patient/"+orderDetail.getSubjectPatientId()));
+        order.setTarget(new Reference("Organization/"+orderDetail.getTargetOrgId()));
         return order;
     }
 }

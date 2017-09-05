@@ -1,14 +1,10 @@
 package uk.nhs.careconnect.ri.provider.medications;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.Medication;
-import ca.uhn.fhir.model.dstu2.resource.MedicationDispense;
-import ca.uhn.fhir.model.dstu2.valueset.MedicationDispenseStatusEnum;
+
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
@@ -16,7 +12,6 @@ import uk.nhs.careconnect.ri.entity.medication.dispense.MedicationDispenseSearch
 import uk.nhs.careconnect.ri.model.medication.MedicationDispenseDetail;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,32 +41,32 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
 
                 switch (medicationDispenseDetail.getStatus().toLowerCase(Locale.UK)) {
                     case "completed":
-                        medicationDispense.setStatus(MedicationDispenseStatusEnum.COMPLETED);
+                        medicationDispense.setStatus(MedicationDispense.MedicationDispenseStatus.COMPLETED);
                         break;
                     case "entered_in_error":
-                        medicationDispense.setStatus(MedicationDispenseStatusEnum.ENTERED_IN_ERROR);
+                        medicationDispense.setStatus(MedicationDispense.MedicationDispenseStatus.ENTEREDINERROR);
                         break;
                     case "in_progress":
-                        medicationDispense.setStatus(MedicationDispenseStatusEnum.IN_PROGRESS);
+                        medicationDispense.setStatus(MedicationDispense.MedicationDispenseStatus.INPROGRESS);
                         break;
                     case "on_hold":
-                        medicationDispense.setStatus(MedicationDispenseStatusEnum.ON_HOLD);
+                        medicationDispense.setStatus(MedicationDispense.MedicationDispenseStatus.ONHOLD);
                         break;
                     case "stopped":
-                        medicationDispense.setStatus(MedicationDispenseStatusEnum.STOPPED);
+                        medicationDispense.setStatus(MedicationDispense.MedicationDispenseStatus.STOPPED);
                         break;
                 }
 
-                medicationDispense.setPatient(new ResourceReferenceDt("Patient/"+patientId));
-                medicationDispense.setAuthorizingPrescription(Collections.singletonList(new ResourceReferenceDt("MedicationOrder/"+medicationDispenseDetail.getMedicationOrderId())));
+                medicationDispense.setPatient(new Reference("Patient/"+patientId));
+                medicationDispense.addAuthorizingPrescription(new Reference("MedicationOrder/"+medicationDispenseDetail.getMedicationOrderId()));
 
                 Medication medication = new Medication();
-                CodingDt coding = new CodingDt();
+                Coding coding = new Coding();
                 coding.setSystem(SystemURL.SNOMED);
                 coding.setCode(String.valueOf(medicationDispenseDetail.getMedicationId()));
                 coding.setDisplay(medicationDispenseDetail.getMedicationName());
-                CodeableConceptDt codeableConcept = new CodeableConceptDt();
-                codeableConcept.setCoding(Collections.singletonList(coding));
+                CodeableConcept codeableConcept = new CodeableConcept();
+                codeableConcept.addCoding(coding);
                 medication.setCode(codeableConcept);
 
                 medicationDispense.addDosageInstruction().setText(medicationDispenseDetail.getDosageText());

@@ -1,11 +1,5 @@
 package uk.nhs.careconnect.ri.provider.practitioner;
 
-import ca.uhn.fhir.model.dstu2.composite.*;
-import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
-import ca.uhn.fhir.model.dstu2.valueset.IssueSeverityEnum;
-import ca.uhn.fhir.model.dstu2.valueset.NameUseEnum;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -14,6 +8,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
@@ -38,12 +33,12 @@ public class PractitionerResourceProvider  implements IResourceProvider {
     }
 
     @Read()
-    public Practitioner getPractitionerById(@IdParam IdDt practitionerId) {
+    public Practitioner getPractitionerById(@IdParam IdType practitionerId) {
         PractitionerDetails practitionerDetails = practitionerSearch.findPractitionerDetails(practitionerId.getIdPart());
 
         if (practitionerDetails == null) {
             OperationOutcome operationalOutcome = new OperationOutcome();
-            operationalOutcome.addIssue().setSeverity(IssueSeverityEnum.ERROR).setDetails("No practitioner details found for practitioner ID: " + practitionerId.getIdPart());
+         // TODO   operationalOutcome.addIssue().setSeverity(OperationOutcome.IssueSeverity.ERROR).setDetails("No practitioner details found for practitioner ID: " + practitionerId.getIdPart());
             throw new InternalErrorException("No practitioner details found for practitioner ID: " + practitionerId.getIdPart(), operationalOutcome);
         }
 
@@ -60,12 +55,12 @@ public class PractitionerResourceProvider  implements IResourceProvider {
 
     private Practitioner practitionerDetailsToPractitionerResourceConverter(PractitionerDetails practitionerDetails) {
         Practitioner practitioner = new Practitioner()
-                .addIdentifier(new IdentifierDt(CareConnectSystem.SDSUserId, practitionerDetails.getUserId()));
+                .addIdentifier(new Identifier().setSystem(CareConnectSystem.SDSUserId).setValue(practitionerDetails.getUserId()));
 
         practitionerDetails.getRoleIds()
                 .stream()
                 .distinct()
-                .map(roleId -> new IdentifierDt(CareConnectSystem.SDSJobRoleName, roleId))
+                .map(roleId -> new Identifier().setSystem(CareConnectSystem.SDSJobRoleName).setValue(roleId))
                 .forEach(practitioner::addIdentifier);
 
         practitioner.setId(new IdDt(practitionerDetails.getId()));
@@ -75,40 +70,40 @@ public class PractitionerResourceProvider  implements IResourceProvider {
                 .setVersionId(String.valueOf(practitionerDetails.getLastUpdated().getTime()))
                 .addProfile(CareConnectProfile.Practitioner_1);
 
-        HumanNameDt name = new HumanNameDt()
+        HumanName name = new HumanName()
                 .addFamily(practitionerDetails.getNameFamily())
                 .addGiven(practitionerDetails.getNameGiven())
                 .addPrefix(practitionerDetails.getNamePrefix())
-                .setUse(NameUseEnum.USUAL);
+                .setUse(HumanName.NameUse.USUAL);
 
         practitioner.setName(name);
 
         switch (practitionerDetails.getGender().toLowerCase(Locale.UK)) {
             case "male":
-                practitioner.setGender(AdministrativeGenderEnum.MALE);
+                practitioner.setGender(Enumerations.AdministrativeGender.MALE);
                 break;
 
             case "female":
-                practitioner.setGender(AdministrativeGenderEnum.FEMALE);
+                practitioner.setGender(Enumerations.AdministrativeGender.FEMALE);
                 break;
 
             case "other":
-                practitioner.setGender(AdministrativeGenderEnum.OTHER);
+                practitioner.setGender(Enumerations.AdministrativeGender.OTHER);
                 break;
 
             default:
-                practitioner.setGender(AdministrativeGenderEnum.UNKNOWN);
+                practitioner.setGender(Enumerations.AdministrativeGender.UNKNOWN);
                 break;
         }
 
-        CodingDt roleCoding = new CodingDt(SystemURL.VS_SDS_JOB_ROLE_NAME, practitionerDetails.getRoleCode())
+        Coding roleCoding = new Coding().setSystem(SystemURL.VS_SDS_JOB_ROLE_NAME).setCode(practitionerDetails.getRoleCode())
                 .setDisplay(practitionerDetails.getRoleDisplay());
 
         practitioner.addPractitionerRole()
-                .setRole(new CodeableConceptDt().addCoding(roleCoding))
-                .setManagingOrganization(new ResourceReferenceDt("Organization/"+practitionerDetails.getOrganizationId())); // Associated Organisation
+                .setRole(new CodeableConcept().addCoding(roleCoding))
+                .setManagingOrganization(new Reference("Organization/"+practitionerDetails.getOrganizationId())); // Associated Organisation
 
-        CodingDt comCoding = new CodingDt(SystemURL.VS_HUMAN_LANGUAGE, practitionerDetails.getComCode())
+        Coding comCoding = new Coding().setSystem(SystemURL.VS_HUMAN_LANGUAGE).setCode(practitionerDetails.getComCode())
                 .setDisplay(practitionerDetails.getComDisplay());
 
         practitioner.addCommunication().addCoding(comCoding);
