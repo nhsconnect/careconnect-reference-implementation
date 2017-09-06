@@ -20,26 +20,27 @@ public class LocationIdentifier  {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name= "LOCATION_IDENTIFIER_ID")
-	private Integer identifierId;
+	private Long identifierId;
 
 	@ManyToOne
 	@JoinColumn (name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_LOCATION_IDENTIFIER"))
 	private LocationEntity locationEntity;
 
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_LOCATION_IDENTIFIER"))
 	private SystemEntity systemEntity;
 
-    @Column(name = "value")
+    @Column(name = "Value")
     private String value;
 
 
-    @Column(name = "ORDER")
+    @Column(name = "ListOrder")
     private Integer order;
 
 
-    public Integer getIdentifierId() { return identifierId; }
-	public void setIdentifierId(Integer identifierId) { this.identifierId = identifierId; }
+    public Long getIdentifierId() { return identifierId; }
+	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
 	public LocationEntity getLocation() {
 	        return this.locationEntity;

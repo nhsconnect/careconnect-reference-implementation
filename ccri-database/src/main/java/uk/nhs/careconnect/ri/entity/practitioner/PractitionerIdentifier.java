@@ -25,14 +25,14 @@ public class PractitionerIdentifier {
 	@JoinColumn (name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_PRACTITIONER_IDENTIFIER"))
 	private PractitionerEntity practitionerEntity;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PRACTITIONER_IDENTIFIER"))
 	private SystemEntity systemEntity;
 
-    @Column(name = "value")
+    @Column(name = "Value")
     private String value;
 
-    @Column(name = "ORDER")
+    @Column(name = "ListOrder")
     private Integer order;
 
 

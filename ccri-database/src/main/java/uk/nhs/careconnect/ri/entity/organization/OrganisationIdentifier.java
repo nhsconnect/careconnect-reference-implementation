@@ -30,10 +30,10 @@ public class OrganisationIdentifier {
 	@JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_ORGANISATION_IDENTIFIER"))
 	private SystemEntity systemEntity;
 
-    @Column(name = "value")
+    @Column(name = "Value")
     private String value;
 
-    @Column(name = "ORDER")
+    @Column(name = "ListOrder")
     private Integer order;
 
 

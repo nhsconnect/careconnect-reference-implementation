@@ -19,7 +19,7 @@ public class PatientIdentifier {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name= "PATIENT_IDENTIFIER_ID")
-    private Integer identifierId;
+    private Long identifierId;
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
@@ -29,17 +29,17 @@ public class PatientIdentifier {
     @JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PATIENT_IDENTIFIER"))
     private SystemEntity system;
 
-    @Column(name = "value")
+    @Column(name = "Value")
     private String value;
 
-    @Column(name = "ORDER")
-    private Integer order;
+    @Column(name = "ListOrder")
+    private Long order;
 
     public void setValue(String value) { this.value = value; }
     public String getValue() { 	return this.value; }
 
-	public Integer getIdentifierId() { return identifierId; }
-	public void setIdentifierId(Integer identifierId) { this.identifierId = identifierId; }
+	public Long getIdentifierId() { return identifierId; }
+	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
 	public PatientEntity getPatient() {
 	        return this.patientEntity;

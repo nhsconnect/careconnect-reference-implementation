@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "Order")
+@Table(name = "OrderEntity")
 public class OrderEntity extends BaseResource {
 
     @Id

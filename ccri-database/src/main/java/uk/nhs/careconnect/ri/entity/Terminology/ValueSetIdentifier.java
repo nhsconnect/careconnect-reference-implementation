@@ -25,10 +25,10 @@ public class ValueSetIdentifier  {
 	@JoinColumn (name = "VALUESET_ID",foreignKey= @ForeignKey(name="FK_VALUESET_VALUESET_IDENTIFIER"))
 	private ValueSetEntity valueSetEntity;
 
-    @Column(name = "value")
+    @Column(name = "Value")
     private String value;
 
-    @Column(name = "ORDER")
+    @Column(name = "ListOrder")
     private Integer order;
 
 
