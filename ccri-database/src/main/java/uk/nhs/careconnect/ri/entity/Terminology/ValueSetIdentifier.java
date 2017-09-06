@@ -2,6 +2,8 @@ package uk.nhs.careconnect.ri.entity.Terminology;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 
+import javax.persistence.*;
+
 
 @Entity
 @Table(name="ValueSetIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_VALUESET_IDENTIFIER", columnNames={"VALUESET_IDENTIFIER_ID"}))

@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ri.entity.Terminology;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
