@@ -14,6 +14,7 @@ public class SystemEntity extends BaseResource {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SYSTEM_ID")
 	private Long myPid;
+
 	public Long getPID()
 	{
 		return this.myPid;
@@ -22,6 +23,7 @@ public class SystemEntity extends BaseResource {
 	
 	@Column(name="SYSTEM_URI", nullable=false)
 	private String codeSystemUri;
+
 	public String getCodeSystemUri() {
 		return codeSystemUri;
 	}
@@ -32,6 +34,7 @@ public class SystemEntity extends BaseResource {
 
 	@Column(name="name", nullable=true)
 	private String name;
+
 	public String getName() {
 		return name;
 	}

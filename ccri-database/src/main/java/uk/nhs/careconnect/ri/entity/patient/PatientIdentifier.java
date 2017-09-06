@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
-import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
 import javax.persistence.*;
@@ -8,25 +7,40 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="PatientIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PATIENT_IDENTIFIER", columnNames={"PATIENT_IDENTIFIER_ID"}))
-public class PatientIdentifier extends BaseIdentifier {
+public class PatientIdentifier {
 	
 	public PatientIdentifier() {
-		
 	}
-	
-	public PatientIdentifier(PatientEntity patientEntity) {
+    public PatientIdentifier(PatientEntity patientEntity) {
 		this.patientEntity = patientEntity;
 	}
+
+
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name= "PATIENT_IDENTIFIER_ID")
+    private Integer identifierId;
+
+    @ManyToOne
+    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
+    private PatientEntity patientEntity;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PATIENT_IDENTIFIER"))
+    private SystemEntity system;
+
+    @Column(name = "value")
+    private String value;
+
+    @Column(name = "ORDER")
+    private Integer order;
+
+    public void setValue(String value) { this.value = value; }
+    public String getValue() { 	return this.value; }
+
 	public Integer getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Integer identifierId) { this.identifierId = identifierId; }
-	private Integer identifierId;
-	
-	private PatientEntity patientEntity;
-    @ManyToOne
-	@JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
+
 	public PatientEntity getPatient() {
 	        return this.patientEntity;
 	}
@@ -34,9 +48,9 @@ public class PatientIdentifier extends BaseIdentifier {
 	        this.patientEntity = patientEntity;
 	}
 
-    private SystemEntity system;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PATIENT_IDENTIFIER"))
+
+
+
     public SystemEntity getSystem() {
         return this.system;
     }
