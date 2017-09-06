@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu:2.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ca/uhn/hapi/fhir/hapi-fhir-structures-dstu/2.5/hapi-fhir-structures-dstu-2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ca/uhn/hapi/fhir/hapi-fhir-structures-dstu/2.5/hapi-fhir-structures-dstu-2.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ca/uhn/hapi/fhir/hapi-fhir-structures-dstu/2.5/hapi-fhir-structures-dstu-2.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
