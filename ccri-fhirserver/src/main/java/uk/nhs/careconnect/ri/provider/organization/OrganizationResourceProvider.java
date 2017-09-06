@@ -65,10 +65,13 @@ public class OrganizationResourceProvider implements IResourceProvider {
             case CareConnectSystem.ODSOrganisationCode:
                 return convertOrganizaitonDetailsListToOrganizationList(organizationSearch.findOrganizationDetailsByOrgODSCode(tokenParam.getValue()));
 
+			/*
+			Sites are locations not organization KGM
             case CareConnectSystem.ODSSiteCode:
                 return convertOrganizaitonDetailsListToOrganizationList(organizationSearch.findOrganizationDetailsBySiteODSCode(tokenParam.getValue()));
-
+			*/
             default:
+            	// TODO it isn't an error to not search on ODS code
                 throw OperationOutcomeFactory.buildOperationOutcomeException(
                         new InvalidRequestException("Invalid system code"),
                         SystemCode.INVALID_PARAMETER, OperationOutcome.IssueType.INVALID);
