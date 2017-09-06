@@ -1,7 +1,5 @@
 package uk.nhs.careconnect.ri.entity;
 
-import javax.persistence.*;
-
 @MappedSuperclass
 public abstract class BaseIdentifier {
 
