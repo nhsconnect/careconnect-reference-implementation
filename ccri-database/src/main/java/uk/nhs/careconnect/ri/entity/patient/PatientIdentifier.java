@@ -27,21 +27,21 @@ public class PatientIdentifier extends BaseIdentifier {
 	private PatientEntity patientEntity;
     @ManyToOne
 	@JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
-	public PatientEntity getPatientEntity() {
+	public PatientEntity getPatient() {
 	        return this.patientEntity;
 	}
-	public void setPatientEntity(PatientEntity patientEntity) {
+	public void setPatient(PatientEntity patientEntity) {
 	        this.patientEntity = patientEntity;
 	}
 
-    private SystemEntity systemEntity;
+    private SystemEntity system;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PATIENT_IDENTIFIER"))
     public SystemEntity getSystem() {
-        return this.systemEntity;
+        return this.system;
     }
     public void setSystem(SystemEntity systemEntity) {
-        this.systemEntity = systemEntity;
+        this.system = systemEntity;
     }
 
 }

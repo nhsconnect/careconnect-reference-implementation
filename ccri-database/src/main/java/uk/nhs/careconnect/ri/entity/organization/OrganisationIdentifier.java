@@ -28,10 +28,10 @@ public class OrganisationIdentifier extends BaseIdentifier {
 
 	@ManyToOne
 	@JoinColumn (name = "ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ORGANISATION_IDENTIFIER"))
-	public OrganisationEntity getOrganisationEntity() {
+	public OrganisationEntity getOrganisation() {
 	        return this.organisationEntity;
 	}
-	public void setOrganisationEntity(OrganisationEntity organisationEntity) {
+	public void setOrganisation(OrganisationEntity organisationEntity) {
 	        this.organisationEntity = organisationEntity;
 	}
 

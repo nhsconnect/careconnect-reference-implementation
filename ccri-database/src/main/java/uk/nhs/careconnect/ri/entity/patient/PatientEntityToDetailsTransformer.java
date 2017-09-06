@@ -1,10 +1,11 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
+
 import org.apache.commons.collections4.CollectionUtils;
+
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 
 import java.util.Arrays;
@@ -18,10 +19,10 @@ public class PatientEntityToDetailsTransformer implements Transformer<PatientEnt
     public PatientDetails transform(final PatientEntity patientEntity) {
         final PatientDetails patient = new PatientDetails();
 
-        Collection<String> addressList = Arrays.asList(StringUtils.trimToNull(patientEntity.getAddress1()),
-                                                       StringUtils.trimToNull(patientEntity.getAddress2()),
-                                                       StringUtils.trimToNull(patientEntity.getAddress3()),
-                                                       StringUtils.trimToNull(patientEntity.getPostcode()));
+        Collection<String> addressList = Arrays.asList(StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress1()),
+                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress2()),
+                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress3()),
+                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getPostcode()));
 
         addressList = CollectionUtils.removeAll(addressList, Collections.singletonList(null));
 

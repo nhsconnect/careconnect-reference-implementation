@@ -3,10 +3,10 @@ package uk.nhs.careconnect.ri.entity.patient;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
 
 
 @Entity
@@ -37,23 +37,6 @@ public class PatientEntity extends BaseResource {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "address_1")
-    private String address1;
-
-    @Column(name = "address_2")
-    private String address2;
-
-    @Column(name = "address_3")
-    private String address3;
-
-    @Column(name = "address_4")
-    private String address4;
-
-    @Column(name = "address_5")
-    private String address5;
-
-    @Column(name = "postcode")
-    private String postcode;
 
     @Column(name = "phone")
     private String phone;
@@ -70,15 +53,7 @@ public class PatientEntity extends BaseResource {
 
     @Column(name = "pas_number")
     private String pasNumber;
-/*
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private DepartmentEntity department;
 
-    @ManyToOne
-    @JoinColumn(name = "gp_id")
-    private GPEntity gp;
-*/
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "lastUpdated")
     private Date lastUpdated;
@@ -132,54 +107,6 @@ public class PatientEntity extends BaseResource {
         this.lastName = lastName;
     }
 
-    public String getAddress1() {
-        return address1;
-    }
-
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
-
-    public String getAddress2() {
-        return address2;
-    }
-
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
-
-    public String getAddress3() {
-        return address3;
-    }
-
-    public void setAddress3(String address3) {
-        this.address3 = address3;
-    }
-
-    public String getAddress4() {
-        return address4;
-    }
-
-    public void setAddress4(String address4) {
-        this.address4 = address4;
-    }
-
-    public String getAddress5() {
-        return address5;
-    }
-
-    public void setAddress5(String address5) {
-        this.address5 = address5;
-    }
-
-    public String getPostcode() {
-        return postcode;
-    }
-
-    public void setPostcode(String postcode) {
-        this.postcode = postcode;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -220,23 +147,6 @@ public class PatientEntity extends BaseResource {
         this.pasNumber = pasNumber;
     }
 
-    /*
-   // public DepartmentEntity getDepartment() {
-        return department;
-    }
-
-  //  public void setDepartment(DepartmentEntity department) {
-        this.department = department;
-    }
-
-   // public GPEntity getGp() {
-        return gp;
-    }
-
-//    public void setGp(GPEntity gp) {
-        this.gp = gp;
-    }
-*/
     public Date getLastUpdated() {
         return lastUpdated;
     }
@@ -304,5 +214,22 @@ public class PatientEntity extends BaseResource {
     public List<PatientIdentifier> removeIdentifier(PatientIdentifier identifier){
         identifiers.remove(identifiers); return identifiers; }
 
+    // Patient Address
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
+    private List<PatientAddress> addresses;
+    public void setAddresseses(List<PatientAddress> addresses) {
+        this.addresses = addresses;
+    }
+    public List<PatientAddress> getAddresses( ) {
+        if (addresses == null) {
+            addresses = new ArrayList<PatientAddress>();
+        }
+        return this.addresses;
+    }
+    public List<PatientAddress> addAddress(PatientAddress pi) {
+        addresses.add(pi);
+        return addresses; }
 
+    public List<PatientAddress> removeAddress(PatientAddress address){
+        addresses.remove(address); return addresses; }
 }

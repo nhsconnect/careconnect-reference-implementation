@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.entity.patient;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 
 @Component
@@ -19,18 +20,19 @@ public class PatientDetailsToEntityTransformer implements Transformer<PatientDet
 
 			if (address != null) {
 				final String[] addressLines = StringUtils.split(address, ", ");
+				AddressEntity addressEntity = patientEntity.getAddresses().get(0).getAddress();
 
 				if (addressLines.length > 0) {
-					patientEntity.setAddress1(addressLines[0]);
+					addressEntity.setAddress1(addressLines[0]);
 
 					if (addressLines.length > 1) {
-						patientEntity.setAddress2(addressLines[1]);
+						addressEntity.setAddress2(addressLines[1]);
 
 						if (addressLines.length > 2) {
-							patientEntity.setAddress3(addressLines[2]);
+							addressEntity.setAddress3(addressLines[2]);
 
 							if (addressLines.length > 3) {
-								patientEntity.setPostcode(addressLines[3]);
+								addressEntity.setPostcode(addressLines[3]);
 							}
 						}
 					}

@@ -1,10 +1,11 @@
 package uk.nhs.careconnect.ri.entity.practitioner;
 
+import org.apache.commons.collections4.Transformer;
+import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.collections4.Transformer;
-import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 
 public class PractitionerEntityToObjectTransformer implements Transformer<PractitionerEntity, PractitionerDetails> {
 
@@ -29,7 +30,7 @@ public class PractitionerEntityToObjectTransformer implements Transformer<Practi
         practitioner.setRoleDisplay(practitionerEntity.getRoleDisplay());
         practitioner.setComCode(practitionerEntity.getComCode());
         practitioner.setComDisplay(practitionerEntity.getComDisplay());
-        practitioner.setLastUpdated(practitionerEntity.getLastUpdated());
+        practitioner.setLastUpdated(practitionerEntity.getResourceUpdated());
 
         return practitioner;
     }

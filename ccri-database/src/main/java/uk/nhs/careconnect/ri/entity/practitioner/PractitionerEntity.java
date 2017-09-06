@@ -2,15 +2,7 @@ package uk.nhs.careconnect.ri.entity.practitioner;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Practitioner")
@@ -20,16 +12,6 @@ public class PractitionerEntity extends BaseResource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="PRACTITIONER_ID")
     private Long id;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modifiedDate", nullable = true)
-    private Date updated;
-    public Date getUpdatedDate() { return updated; }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createdDate", nullable = true)
-    private Date createdDate;
-    public Date getCreatedDate() { return createdDate; }
 
     @Column(name = "userid")
     private String userId;
@@ -63,10 +45,6 @@ public class PractitionerEntity extends BaseResource {
 
     @Column(name = "com_display")
     private String comDisplay;
-
-    @Column(name = "lastUpdated")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastUpdated;
 
     public Long getId() {
         return id;
@@ -164,11 +142,4 @@ public class PractitionerEntity extends BaseResource {
         this.comDisplay = comDisplay;
     }
 
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
 }
