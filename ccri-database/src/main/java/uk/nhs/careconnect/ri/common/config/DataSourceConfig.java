@@ -43,7 +43,7 @@ public class DataSourceConfig {
     @Value("${datasource.password:fhirjpa}")
     private String password;
 
-    @Value("${datasource.showSql:false}")
+    @Value("${datasource.showSql:true}")
     private boolean showSql;
 
     //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
