@@ -1,13 +1,9 @@
 package uk.nhs.careconnect.ri.provider.patient;
 
-import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +18,7 @@ import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Component
@@ -53,6 +50,20 @@ public class PatientResourceProvider implements IResourceProvider {
         return Patient.class;
     }
 
+
+    @Create()
+    public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam Patient thePatient) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        return method;
+    }
+
     @Read
     public Patient getPatientById(@IdParam IdType internalId) {
         PatientDetails patientDetails = patientSearch.findPatientByInternalID(internalId.getIdPart());
@@ -60,7 +71,7 @@ public class PatientResourceProvider implements IResourceProvider {
         if (patientDetails == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No patient details found for patient ID: " + internalId.getIdPart()),
-                    SystemCode.PATIENT_NOT_FOUND, IssueTypeEnum.NOT_FOUND);
+                    SystemCode.PATIENT_NOT_FOUND, OperationOutcome.IssueType.NOTFOUND);
         }
 
         return patientDetailsToPatientResourceConverter(patientDetails);
@@ -68,12 +79,13 @@ public class PatientResourceProvider implements IResourceProvider {
 
     @Search
     public List<Patient> getPatientsByPatientId(@RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam tokenParam) {
+        /* Not required... is this valid anyway???
         if (!CareConnectSystem.NHSNumber.equals(tokenParam.getSystem())) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                 new InvalidRequestException("Invalid system code"),
                 SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);
         }
-
+        */
         Patient patient = getPatientByPatientId(tokenParam.getValue());
 
         return null == patient

@@ -7,9 +7,9 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.SystemURL;
 import uk.nhs.careconnect.ri.entity.medication.dispense.MedicationDispenseSearch;
 import uk.nhs.careconnect.ri.model.medication.MedicationDispenseDetail;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
 
                 Medication medication = new Medication();
                 Coding coding = new Coding();
-                coding.setSystem(SystemURL.SNOMED);
+                coding.setSystem(CareConnectSystem.SNOMEDCT);
                 coding.setCode(String.valueOf(medicationDispenseDetail.getMedicationId()));
                 coding.setDisplay(medicationDispenseDetail.getMedicationName());
                 CodeableConcept codeableConcept = new CodeableConcept();

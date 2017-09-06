@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.provider.organization;
 
 import ca.uhn.fhir.model.dstu2.resource.Parameters.Parameter;
-import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -13,10 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.IdType;
-import org.hl7.fhir.instance.model.Identifier;
-import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Period;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
@@ -51,7 +47,7 @@ public class OrganizationResourceProvider implements IResourceProvider {
         if (organizationDetails == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No organization details found for organization ID: " + organizationId.getIdPart()),
-                    SystemCode.ORGANISATION_NOT_FOUND, IssueTypeEnum.INVALID_CONTENT);
+                    SystemCode.ORGANISATION_NOT_FOUND, OperationOutcome.IssueType.INVALID);
         }
 
         return convertOrganizaitonDetailsListToOrganizationList(Collections.singletonList(organizationDetails)).get(0);
@@ -62,7 +58,7 @@ public class OrganizationResourceProvider implements IResourceProvider {
         if (StringUtils.isBlank(tokenParam.getSystem()) || StringUtils.isBlank(tokenParam.getValue())) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new InvalidRequestException("Missing identifier token"),
-                    SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);
+                    SystemCode.INVALID_PARAMETER, OperationOutcome.IssueType.INVALID);
         }
 
         switch (tokenParam.getSystem()) {
@@ -75,7 +71,7 @@ public class OrganizationResourceProvider implements IResourceProvider {
             default:
                 throw OperationOutcomeFactory.buildOperationOutcomeException(
                         new InvalidRequestException("Invalid system code"),
-                        SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);
+                        SystemCode.INVALID_PARAMETER, OperationOutcome.IssueType.INVALID);
         }
     }
 
@@ -126,7 +122,7 @@ public class OrganizationResourceProvider implements IResourceProvider {
 		        	    .reduce((a, b) -> {
 		        	    	throw OperationOutcomeFactory.buildOperationOutcomeException(
 		                            new InvalidRequestException("Multiple timePeriod parameters. Only one is permitted"),
-		                            SystemCode.BAD_REQUEST, IssueTypeEnum.INVALID_CONTENT);
+		                            SystemCode.BAD_REQUEST, OperationOutcome.IssueType.INVALID);
 		                })
 		                .get();   
 
@@ -149,25 +145,25 @@ public class OrganizationResourceProvider implements IResourceProvider {
         			if(period < 0l || period > 14l) {
         				throw OperationOutcomeFactory.buildOperationOutcomeException(
         						new UnprocessableEntityException("Invalid timePeriods, was " + period + " days between (max is 14)"),
-        						SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);	
+        						SystemCode.INVALID_PARAMETER, OperationOutcome.IssueType.INVALID);
         			}
         		}
         		else {
         			throw OperationOutcomeFactory.buildOperationOutcomeException(
         					new UnprocessableEntityException("Invalid timePeriod one or both of start and end date are not valid dates"),
-        					SystemCode.BAD_REQUEST, IssueTypeEnum.INVALID_CONTENT);
+        					SystemCode.BAD_REQUEST, OperationOutcome.IssueType.INVALID);
         		}    	
         	}
         	else {
     			throw OperationOutcomeFactory.buildOperationOutcomeException(
     					new InvalidRequestException("Invalid timePeriod one or both of start and end date were missing"),
-    					SystemCode.BAD_REQUEST, IssueTypeEnum.INVALID_CONTENT);
+    					SystemCode.BAD_REQUEST, OperationOutcome.IssueType.INVALID);
         	}
         }
         else {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new InvalidRequestException("Missing timePeriod parameter"),
-                    SystemCode.BAD_REQUEST, IssueTypeEnum.INVALID_CONTENT);
+                    SystemCode.BAD_REQUEST, OperationOutcome.IssueType.INVALID);
         }
     }
 

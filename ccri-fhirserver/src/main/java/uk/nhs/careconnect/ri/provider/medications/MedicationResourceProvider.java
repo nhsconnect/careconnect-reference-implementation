@@ -8,9 +8,9 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.SystemURL;
 import uk.nhs.careconnect.ri.entity.medications.MedicationEntity;
 import uk.nhs.careconnect.ri.entity.medications.MedicationRepository;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 @Component
 public class MedicationResourceProvider implements IResourceProvider {
@@ -33,7 +33,7 @@ public class MedicationResourceProvider implements IResourceProvider {
             throw new InternalErrorException("No medication details found for ID: " + medicationId.getIdPart(), operationalOutcome);
         }
 
-        Coding coding = new Coding().setSystem(SystemURL.SNOMED).setCode(String.valueOf(medicationEntity.getId())).setDisplay(medicationEntity.getName());
+        Coding coding = new Coding().setSystem(CareConnectSystem.SNOMEDCT).setCode(String.valueOf(medicationEntity.getId())).setDisplay(medicationEntity.getName());
         CodeableConcept codableConcept = new CodeableConcept();
         codableConcept.addCoding(coding);
 
