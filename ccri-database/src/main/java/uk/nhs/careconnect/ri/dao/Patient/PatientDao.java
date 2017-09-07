@@ -4,7 +4,8 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.IdType;
+
+import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class PatientDao {
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
+    @Autowired
+    private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
 
     public void save(PatientEntity patient)
     {
@@ -35,9 +39,12 @@ public class PatientDao {
     public Patient read(IdType theId) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
-        em.find(PatientEntity.class,Integer.parseInt(theId.getIdPart()));
+        PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Integer.parseInt(theId.getIdPart()));
 
-        return null;
+        return patientEntity == null
+                ? null
+                : patientEntityToFHIRPatientTransformer.transform(patientEntity);
+
     }
     public List<Patient> searchPatient (
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
@@ -58,6 +65,7 @@ public class PatientDao {
         Join<PatientEntity, PatientIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
         List<Predicate> predList = new LinkedList<Predicate>();
+        List<Patient> results = new ArrayList<Patient>();
 
         if (identifier !=null)
         {
@@ -80,7 +88,14 @@ public class PatientDao {
 
         qryResults = em.createQuery(criteria).getResultList();
 
-        return null;
+        for (PatientEntity patientEntity : qryResults)
+        {
+           // log.trace("HAPI Custom = "+doc.getId());
+            Patient patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+            results.add(patient);
+        }
+
+        return results;
     }
 
 

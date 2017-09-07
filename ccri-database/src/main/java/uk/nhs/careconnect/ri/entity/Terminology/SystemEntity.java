@@ -24,10 +24,10 @@ public class SystemEntity extends BaseResource {
 	@Column(name="SYSTEM_URI", nullable=false)
 	private String codeSystemUri;
 
-	public String getCodeSystemUri() {
+	public String getUri() {
 		return codeSystemUri;
 	}
-	public void setCodeSystemUri(String theCodeSystemUri) {
+	public void setUri(String theCodeSystemUri) {
 		codeSystemUri = theCodeSystemUri;
 	}
 
