@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.provider.patient;
+package uk.nhs.careconnect.ri.provider;
 
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -15,7 +15,6 @@ import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.dao.Patient.PatientDao;
 import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
-import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

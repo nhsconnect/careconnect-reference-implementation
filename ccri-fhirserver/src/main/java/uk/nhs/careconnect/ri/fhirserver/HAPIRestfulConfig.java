@@ -7,8 +7,8 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.provider.location.LocationResourceProvider;
 import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
-import uk.nhs.careconnect.ri.provider.patient.PatientResourceProvider;
-import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
+import uk.nhs.careconnect.ri.provider.PatientResourceProvider;
+import uk.nhs.careconnect.ri.provider.PractitionerResourceProvider;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
