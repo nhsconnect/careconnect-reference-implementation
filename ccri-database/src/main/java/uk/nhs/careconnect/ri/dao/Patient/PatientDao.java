@@ -71,9 +71,21 @@ public class PatientDao {
         {
             Predicate p = builder.equal(join.get("value"),identifier.getValue());
             predList.add(p);
-            // predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
+
+        if (familyName != null)
+        {
+            Predicate p = builder. equal(root.get("familyName"),familyName.getValue());
+            predList.add(p);
+        }
+        if (givenName != null)
+        {
+            Predicate p = builder.equal(root.get("givenName"),givenName.getValue());
+            predList.add(p);
+        }
+
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);

@@ -131,8 +131,19 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.6</version>
+            <version>5.1.44</version>
         </dependency>
+
+		<!-- Flyway for database migrations
+
+		This is used by hspc for openid
+
+		-->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>4.2.0</version>
+		</dependency>
 
 		<!-- This dependency includes the core HAPI-FHIR classes -->
 		<dependency>

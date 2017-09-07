@@ -1,58 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b80f69db-c7e7-4d44-91b9-296bcc2c40f6" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/common/config/DataSourceConfig.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/common/config/RefreshData.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/BaseIdentifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/BaseResource.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/CodeSystemEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ConceptEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ConceptParentChildLink.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/SystemEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetContent.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetIdentifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationEntityToLocationDetailsTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/administration/MedicationAdministrationEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/administration/MedicationAdministrationEntityToMedicationAdministrationDetailTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/administration/MedicationAdministrationRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/administration/MedicationAdministrationSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/dispense/MedicationDispenseEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/dispense/MedicationDispenseEntityToMedicationDispenseDetailTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/dispense/MedicationDispenseRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/dispense/MedicationDispenseSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/orders/MedicationOrderEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/orders/MedicationOrderEntityToMedicationOrderDetailsTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/orders/MedicationOrderRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/orders/MedicationOrderSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medications/MedicationEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medications/MedicationRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderDetailToOrderEntityTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderEntityToOrderDetailTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderStore.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganisationEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganisationIdentifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganizationEntityToObjectTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganizationRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganizationSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientDetailsToEntityTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntityToDetailsTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientSearch.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientStore.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntityToObjectTransformer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerSearch.java" afterPath="" />
+    <list default="true" id="b80f69db-c7e7-4d44-91b9-296bcc2c40f6" name="Default" comment="Refactoring database">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerDao.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerEntityToFHIRPractitionerTransformer.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_5_1_6.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cc-core/target/cc-core-3.0.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/cc-core/target/cc-core-3.0.0-SNAPSHOT.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-dbcore/target/ccri-dbcore-3.0.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/ccri-dbcore/target/ccri-dbcore-3.0.0-SNAPSHOT.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cc-core/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/cc-core/target/maven-archiver/pom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/ccri-database.iml" afterPath="$PROJECT_DIR$/ccri-database/ccri-database.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/pom.xml" afterPath="$PROJECT_DIR$/ccri-database/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDao.java" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDao.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientEntityToFHIRPatientTransformer.java" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientEntityToFHIRPatientTransformer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java" afterPath="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/ccri-database/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-database/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/ccri-database/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-dbcore/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/ccri-dbcore/target/maven-archiver/pom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-dbcore/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/ccri-dbcore/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-dbcore/target/surefire-reports/TEST-uk.nhs.careconnect.ri.util.NhsCodeValidatorTest.xml" afterPath="$PROJECT_DIR$/ccri-dbcore/target/surefire-reports/TEST-uk.nhs.careconnect.ri.util.NhsCodeValidatorTest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-dbcore/target/surefire-reports/uk.nhs.careconnect.ri.util.NhsCodeValidatorTest.txt" afterPath="$PROJECT_DIR$/ccri-dbcore/target/surefire-reports/uk.nhs.careconnect.ri.util.NhsCodeValidatorTest.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-fhirserver/ccri-fhirserver.iml" afterPath="$PROJECT_DIR$/ccri-fhirserver/ccri-fhirserver.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccri-fhirserver/pom.xml" afterPath="$PROJECT_DIR$/ccri-fhirserver/pom.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/ccri-dbcore/target/" />
     <ignored path="$PROJECT_DIR$/cc-core/target/" />
@@ -68,39 +39,167 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ErrorTreeViewConfiguration">
+    <option name="hideWarnings" value="true" />
+    <option name="HIDE_WARNINGS" value="true" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MedicationAdministrationDetail.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccri-dbcore/src/main/java/uk/nhs/careconnect/ri/model/medication/MedicationAdministrationDetail.java">
+      <file leaf-file-name="PatientEntity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+            <state relative-caret-position="462">
+              <caret line="195" column="54" lean-forward="true" selection-start-line="159" selection-start-column="3" selection-end-line="195" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccri-integrationtest/pom.xml">
+      <file leaf-file-name="PatientResourceProvider.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/PatientResourceProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="404">
+              <caret line="78" column="28" lean-forward="true" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PractitionerEntityToFHIRPractitionerTransformer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerEntityToFHIRPractitionerTransformer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="188">
+              <caret line="37" column="41" lean-forward="true" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PatientSearch.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientSearch.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="18" column="16" lean-forward="false" selection-start-line="17" selection-start-column="4" selection-end-line="18" selection-end-column="80" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PatientIdentifier.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="49" column="0" lean-forward="false" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ccri-database/pom.xml">
+      <file leaf-file-name="PatientAddress.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientAddress.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="348">
+              <caret line="35" column="0" lean-forward="false" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PractitionerEntity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="823">
+              <caret line="176" column="5" lean-forward="true" selection-start-line="176" selection-start-column="5" selection-end-line="176" selection-end-column="5" />
+              <folding>
+                <element signature="e#1121#1122#0" expanded="true" />
+                <element signature="e#1146#1147#0" expanded="true" />
+                <element signature="e#1180#1181#0" expanded="true" />
+                <element signature="e#1208#1209#0" expanded="true" />
+                <element signature="e#1241#1242#0" expanded="true" />
+                <element signature="e#1270#1271#0" expanded="true" />
+                <element signature="e#1314#1315#0" expanded="true" />
+                <element signature="e#1350#1351#0" expanded="true" />
+                <element signature="e#1384#1385#0" expanded="true" />
+                <element signature="e#1414#1415#0" expanded="true" />
+                <element signature="e#1460#1461#0" expanded="true" />
+                <element signature="e#1498#1499#0" expanded="true" />
+                <element signature="e#1535#1536#0" expanded="true" />
+                <element signature="e#1568#1569#0" expanded="true" />
+                <element signature="e#1620#1621#0" expanded="true" />
+                <element signature="e#1664#1665#0" expanded="true" />
+                <element signature="e#1700#1701#0" expanded="true" />
+                <element signature="e#1732#1733#0" expanded="true" />
+                <element signature="e#1782#1783#0" expanded="true" />
+                <element signature="e#1824#1825#0" expanded="true" />
+                <element signature="e#1861#1862#0" expanded="true" />
+                <element signature="e#1894#1895#0" expanded="true" />
+                <element signature="e#1946#1947#0" expanded="true" />
+                <element signature="e#1990#1991#0" expanded="true" />
+                <element signature="e#2023#2024#0" expanded="true" />
+                <element signature="e#2052#2053#0" expanded="true" />
+                <element signature="e#2096#2097#0" expanded="true" />
+                <element signature="e#2132#2133#0" expanded="true" />
+                <element signature="e#2171#2172#0" expanded="true" />
+                <element signature="e#2208#2209#0" expanded="true" />
+                <element signature="e#2266#2267#0" expanded="true" />
+                <element signature="e#2318#2319#0" expanded="true" />
+                <element signature="e#2353#2354#0" expanded="true" />
+                <element signature="e#2384#2385#0" expanded="true" />
+                <element signature="e#2432#2433#0" expanded="true" />
+                <element signature="e#2472#2473#0" expanded="true" />
+                <element signature="e#2510#2511#0" expanded="true" />
+                <element signature="e#2544#2545#0" expanded="true" />
+                <element signature="e#2598#2599#0" expanded="true" />
+                <element signature="e#2644#2645#0" expanded="true" />
+                <element signature="e#2678#2679#0" expanded="true" />
+                <element signature="e#2708#2709#0" expanded="true" />
+                <element signature="e#2754#2755#0" expanded="true" />
+                <element signature="e#2792#2793#0" expanded="true" />
+                <element signature="e#2829#2830#0" expanded="true" />
+                <element signature="e#2862#2863#0" expanded="true" />
+                <element signature="e#2914#2915#0" expanded="true" />
+                <element signature="e#2958#2959#0" expanded="true" />
+                <element signature="e#3209#3210#0" expanded="true" />
+                <element signature="e#3255#3256#0" expanded="true" />
+                <element signature="e#3999#4000#0" expanded="true" />
+                <element signature="e#4041#4042#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>mysq</find>
+      <find>PatientStore</find>
+      <find>PatientRepository</find>
+      <find>edr</find>
+      <find>atient</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>LocationEntity</replace>
+      <replace>PatientEntity</replace>
+      <replace>atient</replace>
+      <replace>ractitioner</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -108,6 +207,56 @@
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
       <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/BaseIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-database/pom.xml" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganisationIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderEntity.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/SystemURL.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/medications/MedicationResourceProvider.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/medications/MedicationDispenseResourceProvider.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/fhirserver/UIOverlayConfig.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/OperationOutcomeFactory.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/organization/OrganizationResourceProvider.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/pom.xml" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntityToDetailsTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PatientSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/OrganizationSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PractitionerSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/LocationSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/LocationEntityToLocationDetailsTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PractitionerEntityToObjectTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PatientRepository.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PractitionerRepository.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PatientEntityToDetailsTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/PatientDetailsToEntityTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/LocationRepository.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/OrganizationRepository.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Organisation/OrganizationSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Location/LocationSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientSearch.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDAO.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/common/config/DataSourceConfig.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/patient/PatientResourceProvider.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/SystemEntity.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDao.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientEntityToFHIRPatientTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerEntityToFHIRPractitionerTransformer.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java" />
+        <option value="$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerDao.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/PatientResourceProvider.java" />
+        <option value="$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/PractitionerResourceProvider.java" />
+      </list>
     </option>
   </component>
   <component name="MavenImportPreferences">
@@ -131,22 +280,33 @@
         </path>
         <path>
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
-          <item name="ccri-database" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="ccri" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Dependencies" type="f4be9f2a:MavenProjectsStructure$DependenciesNode" />
         </path>
         <path>
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
-          <item name="ccri-database" type="9519ce18:MavenProjectsStructure$ProjectNode" />
-          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+          <item name="ccri" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Dependencies" type="f4be9f2a:MavenProjectsStructure$DependenciesNode" />
+          <item name="uk.org.hl7.fhir:cc-core:3.0.0-SNAPSHOT" type="c0821a7e:MavenProjectsStructure$DependencyNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="ccri-fhirserver" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="ccri-fhirserver" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Dependencies" type="f4be9f2a:MavenProjectsStructure$DependenciesNode" />
         </path>
       </expand>
       <select />
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1887" />
-    <option name="y" value="38" />
-    <option name="width" value="1771" />
-    <option name="height" value="1012" />
+    <option name="x" value="-1686" />
+    <option name="y" value="78" />
+    <option name="width" value="1613" />
+    <option name="height" value="894" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -166,10 +326,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="Scratches" />
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -180,43 +337,25 @@
             <path>
               <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
               <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="cc-core" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
               <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="cc-core" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
               <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
-              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-dbcore" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
-              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-dbcore" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
-              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-dbcore" type="462c0819:PsiDirectoryNode" />
+              <item name="cc-core" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
               <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-dbcore" type="462c0819:PsiDirectoryNode" />
+              <item name="cc-core" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
@@ -224,22 +363,136 @@
             <path>
               <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
               <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
-              <item name="ccri-dbcore" type="462c0819:PsiDirectoryNode" />
+              <item name="cc-core" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
+              <item name="fhir" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ri" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ri" type="462c0819:PsiDirectoryNode" />
+              <item name="dao" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-database" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ri" type="462c0819:PsiDirectoryNode" />
+              <item name="entity" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ri" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ri" type="462c0819:PsiDirectoryNode" />
+              <item name="provider" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="careconnect-reference-implementation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="careconnect-reference-implementation" type="462c0819:PsiDirectoryNode" />
+              <item name="ccri-fhirserver" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="uk.nhs.careconnect.ri.dao.Practitioner" />
+      <recent name="uk.nhs.careconnect.ri.dao.Patient" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/ccri-database/src/main" />
     </key>
@@ -401,103 +654,674 @@
       <option name="project" value="LOCAL" />
       <updated>1504682831972</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Refactoring database">
+      <created>1504707089312</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1504707089312</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Refactoring database">
+      <created>1504709334384</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1504709334384</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Refactoring database">
+      <created>1504709353529</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1504709353529</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Refactoring database">
+      <created>1504720601541</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1504720601541</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Refactoring database">
+      <created>1504720783059</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1504720783059</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Move from spring data to Hibernate">
+      <created>1504791749368</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1504791749369</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Refactoring database">
+      <created>1504791762861</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1504791762861</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Move to Hibernate">
+      <created>1504795969834</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1504795969834</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Move to Hibernate">
+      <created>1504795991806</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1504795991806</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Hibernate refactor">
+      <created>1504798588119</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1504798588119</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1887" y="38" width="1771" height="1012" extended-state="0" />
+    <frame x="-1686" y="78" width="1613" height="894" extended-state="0" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32415518" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15662651" sideWeight="0.49739245" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13533835" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36641222" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14830971" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32931727" sideWeight="0.5026076" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="881" y="346" width="399" height="124" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15786123" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35794744" sideWeight="0.4928292" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.78347933" sideWeight="0.4937571" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32931727" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18970503" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22660726" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="BPMNPalette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24986026" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13533835" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36641222" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14830971" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18970503" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="BPMNPalette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13880856" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" x="-399" y="626" width="399" height="124" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18756816" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5379845" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18970503" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="BPMNPalette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Move from spring data to Hibernate" />
     <MESSAGE value="Refactoring database" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring database" />
+    <MESSAGE value="Move to Hibernate" />
+    <MESSAGE value="Hibernate refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Hibernate refactor" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ccri-dbcore/src/main/java/uk/nhs/careconnect/ri/model/medication/MedicationAdministrationDetail.java">
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetEntity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        <state relative-caret-position="105">
+          <caret line="13" column="13" lean-forward="false" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccri-integrationtest/pom.xml">
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/AddressEntity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="645">
+          <caret line="53" column="16" lean-forward="false" selection-start-line="53" selection-start-column="16" selection-end-line="53" selection-end-column="16" />
+          <folding>
+            <element signature="e#1118#1119#0" expanded="false" />
+            <element signature="e#1158#1159#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationAddress.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccri-database/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="465">
+          <caret line="81" column="27" lean-forward="false" selection-start-line="81" selection-start-column="27" selection-end-line="81" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccri-dbcore/src/main/java/uk/nhs/careconnect/ri/model/medication/MedicationAdministrationDetail.java">
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="867">
+          <caret line="86" column="5" lean-forward="false" selection-start-line="86" selection-start-column="5" selection-end-line="86" selection-end-column="5" />
+          <folding>
+            <element signature="e#1855#1856#0" expanded="false" />
+            <element signature="e#1884#1885#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/location/LocationIdentifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="33" column="21" lean-forward="false" selection-start-line="33" selection-start-column="21" selection-end-line="33" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1416#1417#0" expanded="true" />
+            <element signature="e#1456#1457#0" expanded="true" />
+            <element signature="e#1511#1512#0" expanded="true" />
+            <element signature="e#1559#1560#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/organization/OrganisationIdentifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="32" column="21" lean-forward="false" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetIdentifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="20" column="41" lean-forward="true" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerIdentifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="402">
+          <caret line="31" column="21" lean-forward="false" selection-start-line="31" selection-start-column="21" selection-end-line="31" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/order/OrderEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="8" column="26" lean-forward="false" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/SystemURL.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-151">
+          <caret line="9" column="3" lean-forward="false" selection-start-line="9" selection-start-column="3" selection-end-line="9" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/SystemHeader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/SystemParameter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/SystemCode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/fhirserver/Config.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="18" column="13" lean-forward="false" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/fhirserver/UIOverlayConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="49" column="54" lean-forward="false" selection-start-line="49" selection-start-column="54" selection-end-line="49" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/fhirserver/HAPIRestfulConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-140">
+          <caret line="4" column="21" lean-forward="false" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/medications/MedicationDispenseResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="599">
+          <caret line="66" column="59" lean-forward="false" selection-start-line="66" selection-start-column="59" selection-end-line="66" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/OperationOutcomeFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="11" column="165" lean-forward="false" selection-start-line="11" selection-start-column="165" selection-end-line="11" selection-end-column="165" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/organization/OrganizationResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="73" column="67" lean-forward="false" selection-start-line="73" selection-start-column="67" selection-end-line="73" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1526">
+          <caret line="129" column="21" lean-forward="true" selection-start-line="129" selection-start-column="21" selection-end-line="129" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDetailsToEntityTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="10" column="13" lean-forward="false" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Organisation/OrganizationRepository.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
-          <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <caret line="7" column="17" lean-forward="false" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccri-integrationtest/pom.xml">
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Organisation/OrganizationSearch.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="15">
+          <caret line="14" column="13" lean-forward="false" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/ValueSetIdentifier.java" />
-    <entry file="file://$PROJECT_DIR$/ccri-database/pom.xml">
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Location/LocationEntityToLocationDetailsTransformer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="-7">
+          <caret line="6" column="6" lean-forward="false" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/common/config/RefreshData.java" />
-    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/medication/administration/MedicationAdministrationEntity.java" />
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerEntityToObjectTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="10" column="13" lean-forward="false" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Location/LocationSearch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Location/LocationRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="7" column="17" lean-forward="false" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Organisation/OrganizationEntityToObjectTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="17" lean-forward="false" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerSearch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="17" column="24" lean-forward="true" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.0.12.Final/hibernate-core-5.0.12.Final.jar!/org/hibernate/Session.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="71" column="9" lean-forward="false" selection-start-line="71" selection-start-column="9" selection-end-line="71" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/medications/MedicationResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/common/config/DataSourceConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="840">
+          <caret line="73" column="0" lean-forward="false" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/location/LocationResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="27" column="13" lean-forward="false" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientEntityToDetailsTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="16" column="13" lean-forward="false" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding>
+            <marker date="1504783653000" expanded="true" signature="1407:2844" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cc-core/src/main/java/uk/org/hl7/fhir/core/dstu2/CareConnectSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="77" lean-forward="false" selection-start-line="6" selection-start-column="44" selection-end-line="6" selection-end-column="77" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/Terminology/SystemEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="32" column="0" lean-forward="true" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding>
+            <element signature="e#443#444#0" expanded="true" />
+            <element signature="e#467#468#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="12" column="1" lean-forward="false" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="80" column="28" lean-forward="false" selection-start-line="80" selection-start-column="28" selection-end-line="80" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2606#2615#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientSearch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="16" lean-forward="false" selection-start-line="17" selection-start-column="4" selection-end-line="18" selection-end-column="80" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerEntityToFHIRPractitionerTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="37" column="41" lean-forward="true" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="195" column="54" lean-forward="true" selection-start-line="159" selection-start-column="3" selection-end-line="195" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientIdentifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="49" column="0" lean-forward="false" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/patient/PatientAddress.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="35" column="0" lean-forward="false" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/entity/practitioner/PractitionerEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="823">
+          <caret line="176" column="5" lean-forward="true" selection-start-line="176" selection-start-column="5" selection-end-line="176" selection-end-column="5" />
+          <folding>
+            <element signature="e#1121#1122#0" expanded="true" />
+            <element signature="e#1146#1147#0" expanded="true" />
+            <element signature="e#1180#1181#0" expanded="true" />
+            <element signature="e#1208#1209#0" expanded="true" />
+            <element signature="e#1241#1242#0" expanded="true" />
+            <element signature="e#1270#1271#0" expanded="true" />
+            <element signature="e#1314#1315#0" expanded="true" />
+            <element signature="e#1350#1351#0" expanded="true" />
+            <element signature="e#1384#1385#0" expanded="true" />
+            <element signature="e#1414#1415#0" expanded="true" />
+            <element signature="e#1460#1461#0" expanded="true" />
+            <element signature="e#1498#1499#0" expanded="true" />
+            <element signature="e#1535#1536#0" expanded="true" />
+            <element signature="e#1568#1569#0" expanded="true" />
+            <element signature="e#1620#1621#0" expanded="true" />
+            <element signature="e#1664#1665#0" expanded="true" />
+            <element signature="e#1700#1701#0" expanded="true" />
+            <element signature="e#1732#1733#0" expanded="true" />
+            <element signature="e#1782#1783#0" expanded="true" />
+            <element signature="e#1824#1825#0" expanded="true" />
+            <element signature="e#1861#1862#0" expanded="true" />
+            <element signature="e#1894#1895#0" expanded="true" />
+            <element signature="e#1946#1947#0" expanded="true" />
+            <element signature="e#1990#1991#0" expanded="true" />
+            <element signature="e#2023#2024#0" expanded="true" />
+            <element signature="e#2052#2053#0" expanded="true" />
+            <element signature="e#2096#2097#0" expanded="true" />
+            <element signature="e#2132#2133#0" expanded="true" />
+            <element signature="e#2171#2172#0" expanded="true" />
+            <element signature="e#2208#2209#0" expanded="true" />
+            <element signature="e#2266#2267#0" expanded="true" />
+            <element signature="e#2318#2319#0" expanded="true" />
+            <element signature="e#2353#2354#0" expanded="true" />
+            <element signature="e#2384#2385#0" expanded="true" />
+            <element signature="e#2432#2433#0" expanded="true" />
+            <element signature="e#2472#2473#0" expanded="true" />
+            <element signature="e#2510#2511#0" expanded="true" />
+            <element signature="e#2544#2545#0" expanded="true" />
+            <element signature="e#2598#2599#0" expanded="true" />
+            <element signature="e#2644#2645#0" expanded="true" />
+            <element signature="e#2678#2679#0" expanded="true" />
+            <element signature="e#2708#2709#0" expanded="true" />
+            <element signature="e#2754#2755#0" expanded="true" />
+            <element signature="e#2792#2793#0" expanded="true" />
+            <element signature="e#2829#2830#0" expanded="true" />
+            <element signature="e#2862#2863#0" expanded="true" />
+            <element signature="e#2914#2915#0" expanded="true" />
+            <element signature="e#2958#2959#0" expanded="true" />
+            <element signature="e#3209#3210#0" expanded="true" />
+            <element signature="e#3255#3256#0" expanded="true" />
+            <element signature="e#3999#4000#0" expanded="true" />
+            <element signature="e#4041#4042#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/PractitionerResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="422">
+          <caret line="49" column="2" lean-forward="true" selection-start-line="49" selection-start-column="2" selection-end-line="49" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Patient/PatientEntityToFHIRPatientTransformer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="16" lean-forward="false" selection-start-line="33" selection-start-column="16" selection-end-line="33" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-database/src/main/java/uk/nhs/careconnect/ri/dao/Practitioner/PractitionerDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-109">
+          <caret line="46" column="83" lean-forward="false" selection-start-line="46" selection-start-column="83" selection-end-line="46" selection-end-column="83" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2247#2258#0" expanded="true" />
+            <element signature="e#2312#2326#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccri-fhirserver/src/main/java/uk/nhs/careconnect/ri/provider/PatientResourceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="404">
+          <caret line="78" column="28" lean-forward="true" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
   <component name="masterDetails">
     <states>

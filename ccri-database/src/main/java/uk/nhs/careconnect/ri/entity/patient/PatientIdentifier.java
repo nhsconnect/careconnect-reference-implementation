@@ -49,8 +49,6 @@ public class PatientIdentifier {
 	}
 
 
-
-
     public SystemEntity getSystem() {
         return this.system;
     }

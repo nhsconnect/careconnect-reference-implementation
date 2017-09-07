@@ -1,6 +1,5 @@
 uk/nhs/careconnect/ri/model/medication/MedicationOrderDetails.class
 uk/nhs/careconnect/ri/model/location/LocationDetails.class
-uk/nhs/careconnect/ri/model/practitioner/PractitionerDetails.class
 uk/nhs/careconnect/ri/model/appointment/SlotDetail.class
 uk/nhs/careconnect/ri/model/patient/PatientDetails.class
 uk/nhs/careconnect/ri/model/medication/MedicationDispenseDetail.class

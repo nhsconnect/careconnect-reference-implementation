@@ -3,6 +3,8 @@ package uk.nhs.careconnect.ri.entity.practitioner;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Practitioner")
@@ -19,14 +21,14 @@ public class PractitionerEntity extends BaseResource {
     @Column(name = "role_ids")
     private String roleIds;
 
-    @Column(name = "name_family")
-    private String nameFamily;
+    @Column(name = "family_name")
+    private String familyName;
 
-    @Column(name = "name_given")
-    private String nameGiven;
+    @Column(name = "given_name")
+    private String givenName;
 
-    @Column(name = "name_prefix")
-    private String namePrefix;
+    @Column(name = "prefix_name")
+    private String prefixName;
 
     @Column(name = "gender")
     private String gender;
@@ -70,28 +72,28 @@ public class PractitionerEntity extends BaseResource {
         this.roleIds = roleIds;
     }
 
-    public String getNameFamily() {
-        return nameFamily;
+    public String getFamilyName() {
+        return familyName;
     }
 
-    public void setNameFamily(String nameFamily) {
-        this.nameFamily = nameFamily;
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
     }
 
-    public String getNameGiven() {
-        return nameGiven;
+    public String getGivenName() {
+        return givenName;
     }
 
-    public void setNameGiven(String nameGiven) {
-        this.nameGiven = nameGiven;
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
     }
 
-    public String getNamePrefix() {
-        return namePrefix;
+    public String getPrefixName() {
+        return prefixName;
     }
 
-    public void setNamePrefix(String namePrefix) {
-        this.namePrefix = namePrefix;
+    public void setPrefixName(String namePrefix) {
+        this.prefixName = prefixName;
     }
 
     public String getGender() {
@@ -141,5 +143,43 @@ public class PractitionerEntity extends BaseResource {
     public void setComDisplay(String comDisplay) {
         this.comDisplay = comDisplay;
     }
+
+    // Practitioner IDENTIFIERS
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerIdentifier.class)
+    private List<PractitionerIdentifier> identifiers;
+    public void setIdentifiers(List<PractitionerIdentifier> identifiers) {
+        this.identifiers = identifiers;
+    }
+    public List<PractitionerIdentifier> getIdentifiers( ) {
+        if (identifiers == null) {
+            identifiers = new ArrayList<PractitionerIdentifier>();
+        }
+        return this.identifiers;
+    }
+    public List<PractitionerIdentifier> addIdentifier(PractitionerIdentifier pi) {
+        identifiers.add(pi);
+        return identifiers; }
+
+    public List<PractitionerIdentifier> removeIdentifier(PractitionerIdentifier identifier){
+        identifiers.remove(identifiers); return identifiers; }
+
+    // Practitioner Address
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerAddress.class)
+    private List<PractitionerAddress> addresses;
+    public void setAddresseses(List<PractitionerAddress> addresses) {
+        this.addresses = addresses;
+    }
+    public List<PractitionerAddress> getAddresses( ) {
+        if (addresses == null) {
+            addresses = new ArrayList<PractitionerAddress>();
+        }
+        return this.addresses;
+    }
+    public List<PractitionerAddress> addAddress(PractitionerAddress pi) {
+        addresses.add(pi);
+        return addresses; }
+
+    public List<PractitionerAddress> removeAddress(PractitionerAddress address){
+        addresses.remove(address); return addresses; }
 
 }

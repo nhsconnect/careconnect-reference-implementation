@@ -28,14 +28,14 @@ public class PatientEntity extends BaseResource {
     private Date createdDate;
     public Date getCreatedDate() { return createdDate; }
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "prefix_name")
+    private String prefixName;
 
-    @Column(name = "first_name")
-    private String firstName;
+    @Column(name = "give_name")
+    private String givenName;
 
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "famil_yname")
+    private String familyName;
 
 
     @Column(name = "phone")
@@ -48,11 +48,6 @@ public class PatientEntity extends BaseResource {
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "nhs_number")
-    private String nhsNumber;
-
-    @Column(name = "pas_number")
-    private String pasNumber;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "lastUpdated")
@@ -66,11 +61,6 @@ public class PatientEntity extends BaseResource {
     @Column(name = "registration_end")
     private Date registrationEndDateTime;
 
-    @Column(name = "registration_status")
-    private String registrationStatus;
-
-    @Column(name = "registration_type")
-    private String registrationType;
 
     @Column(name = "sensitive_flag")
     private boolean sensitive;
@@ -83,28 +73,28 @@ public class PatientEntity extends BaseResource {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getPrefixName() {
+        return prefixName;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPrefixName(String prefixName) {
+        this.prefixName = prefixName;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getGivenName() {
+        return givenName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getFamilyName() {
+        return familyName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
     }
 
     public String getPhone() {
@@ -131,21 +121,6 @@ public class PatientEntity extends BaseResource {
         this.gender = gender;
     }
 
-    public String getNhsNumber() {
-        return nhsNumber;
-    }
-
-    public void setNhsNumber(String nhsNumber) {
-        this.nhsNumber = nhsNumber;
-    }
-
-    public String getPasNumber() {
-        return pasNumber;
-    }
-
-    public void setPasNumber(String pasNumber) {
-        this.pasNumber = pasNumber;
-    }
 
     public Date getLastUpdated() {
         return lastUpdated;
@@ -163,13 +138,7 @@ public class PatientEntity extends BaseResource {
 		return registrationEndDateTime;
 	}
 
-	public String getRegistrationStatus() {
-		return registrationStatus;
-	}
 
-	public String getRegistrationType() {
-		return registrationType;
-	}
 
 	public void setRegistrationStartDateTime(Date registrationStartDateTime) {
 		this.registrationStartDateTime = registrationStartDateTime;
@@ -179,13 +148,6 @@ public class PatientEntity extends BaseResource {
 		this.registrationEndDateTime = registrationEndDateTime;
 	}
 
-	public void setRegistrationStatus(String registrationStatus) {
-		this.registrationStatus = registrationStatus;
-	}
-
-	public void setRegistrationType(String registrationType) {
-		this.registrationType = registrationType;
-	}
 
     public boolean isSensitive() {
         return sensitive;
