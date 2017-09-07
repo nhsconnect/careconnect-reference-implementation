@@ -12,7 +12,7 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.SystemURL;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSearch;
+import uk.nhs.careconnect.ri.dao.Practitioner.PractitionerSearch;
 import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;

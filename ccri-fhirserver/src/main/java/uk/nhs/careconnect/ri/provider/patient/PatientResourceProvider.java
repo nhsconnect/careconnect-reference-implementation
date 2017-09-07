@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.provider.patient;
 
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -10,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
-import uk.nhs.careconnect.ri.entity.patient.PatientSearch;
-import uk.nhs.careconnect.ri.entity.patient.PatientStore;
+import uk.nhs.careconnect.ri.dao.Patient.PatientDao;
+import uk.nhs.careconnect.ri.dao.Patient.PatientSearch;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
 import uk.nhs.careconnect.ri.provider.practitioner.PractitionerResourceProvider;
@@ -39,7 +40,10 @@ public class PatientResourceProvider implements IResourceProvider {
     private OrganizationResourceProvider organizationResourceProvider;
 
     @Autowired
-    private PatientStore patientStore;
+    private PatientDao patientDao;
+
+   // @Autowired
+ //   private PatientStore patientStore;
 
     @Autowired
     private PatientSearch patientSearch;
@@ -78,19 +82,26 @@ public class PatientResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Patient> getPatientsByPatientId(@RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam tokenParam) {
-        /* Not required... is this valid anyway???
-        if (!CareConnectSystem.NHSNumber.equals(tokenParam.getSystem())) {
-            throw OperationOutcomeFactory.buildOperationOutcomeException(
-                new InvalidRequestException("Invalid system code"),
-                SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);
-        }
-        */
-        Patient patient = getPatientByPatientId(tokenParam.getValue());
+    public List<Patient> searchPatient(
+                                       // @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+                                        @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
+                                        @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
+                                        @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
+                                        @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+                                        @OptionalParam(name= Patient.SP_NAME) StringParam name
+                                       ) {
+
+        Patient patient = getPatientByPatientId(identifier.getValue());
+
+        //patientDao.searchPatient(birthDate, familyName, gender, givenName, identifier, name);
+        patientDao.searchPatient(null, familyName, gender,givenName, identifier, name);
 
         return null == patient
                 ? Collections.emptyList()
                 : Collections.singletonList(patient);
+
+
+
     }
 
     private Patient getPatientByPatientId(String patientId) {
@@ -185,19 +196,7 @@ public class PatientResourceProvider implements IResourceProvider {
         Period registrationPeriod = new Period()
                 .setStart(patientDetails.getRegistrationStartDateTime())
                 .setEnd(patientDetails.getRegistrationEndDateTime());
-        /*
 
-        TODO KGM Removed
-
-        patient.addExtension(new Extension().setUrl(
-                SystemURL.SD_EXTENSION_REGISTRATION_PERIOD).setValue(registrationPeriod));
-
-        patient.addExtension(new Extension().setUrl(SystemURL.SD_EXTENSION_REGISTRATION_STATUS).setValue(new CodeableConcept(
-                SystemURL.VS_REGISTRATION_STATUS, patientDetails.getRegistrationStatus()));
-
-        patient.addExtension(new Extension().setUrl(SystemURL.SD_EXTENSION_REGISTRATION_TYPE, new CodeableConcept(
-                SystemURL.VS_REGISTRATION_TYPE, patientDetails.getRegistrationType()));
-        */
         return patient;
     }
 
