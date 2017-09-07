@@ -1,6 +1,7 @@
-package uk.nhs.careconnect.ri.entity.practitioner;
+package uk.nhs.careconnect.ri.dao.Practitioner;
 
 import org.apache.commons.collections4.Transformer;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 
 import java.util.Arrays;

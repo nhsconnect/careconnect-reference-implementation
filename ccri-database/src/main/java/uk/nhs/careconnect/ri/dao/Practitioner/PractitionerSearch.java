@@ -1,13 +1,17 @@
-package uk.nhs.careconnect.ri.entity.practitioner;
+package uk.nhs.careconnect.ri.dao.Practitioner;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import uk.nhs.careconnect.ri.model.practitioner.PractitionerDetails;
 
 @Service
 public class PractitionerSearch {
+
+
     private final PractitionerEntityToObjectTransformer transformer = new PractitionerEntityToObjectTransformer();
 
     @Autowired

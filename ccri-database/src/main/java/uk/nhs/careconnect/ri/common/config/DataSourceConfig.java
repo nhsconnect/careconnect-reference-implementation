@@ -72,6 +72,7 @@ public class DataSourceConfig {
         return new HibernateExceptionTranslator();
     }
 
+
     @Bean
     public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
         final Database database = Database.valueOf(vendor.toUpperCase());

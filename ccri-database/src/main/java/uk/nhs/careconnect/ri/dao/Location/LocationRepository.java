@@ -1,7 +1,9 @@
-package uk.nhs.careconnect.ri.entity.location;
+package uk.nhs.careconnect.ri.dao.Location;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
     List<LocationEntity> findBySiteOdsCode(String siteOdsCode);

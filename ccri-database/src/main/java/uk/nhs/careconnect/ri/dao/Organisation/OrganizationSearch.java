@@ -1,13 +1,15 @@
-package uk.nhs.careconnect.ri.entity.organization;
+package uk.nhs.careconnect.ri.dao.Organisation;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.model.organization.OrganizationDetails;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationSearch {

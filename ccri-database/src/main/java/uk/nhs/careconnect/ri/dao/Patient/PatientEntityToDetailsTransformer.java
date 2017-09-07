@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.entity.patient;
+package uk.nhs.careconnect.ri.dao.Patient;
 
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 
 import java.util.Arrays;
@@ -19,14 +20,20 @@ public class PatientEntityToDetailsTransformer implements Transformer<PatientEnt
     public PatientDetails transform(final PatientEntity patientEntity) {
         final PatientDetails patient = new PatientDetails();
 
-        Collection<String> addressList = Arrays.asList(StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress1()),
-                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress2()),
-                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress3()),
-                                                       StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getPostcode()));
+        if (patientEntity.getAddresses().size()>0) {
 
-        addressList = CollectionUtils.removeAll(addressList, Collections.singletonList(null));
 
-        final String address = StringUtils.join(addressList, ", ");
+            Collection<String> addressList = Arrays.asList(StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress1()),
+                    StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress2()),
+                    StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getAddress3()),
+                    StringUtils.trimToNull(patientEntity.getAddresses().get(0).getAddress().getPostcode()));
+
+            addressList = CollectionUtils.removeAll(addressList, Collections.singletonList(null));
+
+            final String address = StringUtils.join(addressList, ", ");
+            patient.setAddress(address);
+        }
+
         final String name = patientEntity.getFirstName() + " " + patientEntity.getLastName();
         final String patientId = patientEntity.getNhsNumber();
 
@@ -39,7 +46,7 @@ public class PatientEntityToDetailsTransformer implements Transformer<PatientEnt
         patient.setDateOfBirth(patientEntity.getDateOfBirth());
         patient.setNhsNumber(patientId);
         patient.setPasNumber(patientEntity.getPasNumber());
-        patient.setAddress(address);
+
         patient.setTelephone(patientEntity.getPhone());
         patient.setPasNumber(patientEntity.getPasNumber());
         patient.setLastUpdated(patientEntity.getLastUpdated());

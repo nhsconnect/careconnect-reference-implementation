@@ -1,9 +1,10 @@
-package uk.nhs.careconnect.ri.entity.patient;
+package uk.nhs.careconnect.ri.dao.Patient;
 
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 
 @Component

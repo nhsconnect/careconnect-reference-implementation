@@ -1,6 +1,7 @@
-package uk.nhs.careconnect.ri.entity.location;
+package uk.nhs.careconnect.ri.dao.Location;
 
 import org.apache.commons.collections4.Transformer;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.model.location.LocationDetails;
 
 class LocationEntityToLocationDetailsTransformer implements Transformer<LocationEntity, LocationDetails> {

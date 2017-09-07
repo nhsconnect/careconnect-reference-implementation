@@ -1,10 +1,9 @@
 
-package uk.nhs.careconnect.ri.entity.patient;
+package uk.nhs.careconnect.ri.dao.Patient;
 
-import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 public interface PatientRepository extends JpaRepository<PatientEntity, Long>, QueryDslPredicateExecutor<PatientEntity> {
     PatientEntity findByNhsNumber(String nhsNumber);

@@ -1,9 +1,10 @@
 
-package uk.nhs.careconnect.ri.entity.patient;
+package uk.nhs.careconnect.ri.dao.Patient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.model.patient.PatientDetails;
 
 

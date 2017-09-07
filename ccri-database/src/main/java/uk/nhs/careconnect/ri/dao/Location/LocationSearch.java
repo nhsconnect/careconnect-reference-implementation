@@ -1,10 +1,12 @@
-package uk.nhs.careconnect.ri.entity.location;
+package uk.nhs.careconnect.ri.dao.Location;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.model.location.LocationDetails;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import uk.nhs.careconnect.ri.model.location.LocationDetails;
 
 @Service
 public class LocationSearch {
