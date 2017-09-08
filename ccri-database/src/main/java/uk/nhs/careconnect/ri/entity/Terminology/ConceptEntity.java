@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.annotations.Immutable;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -40,10 +39,11 @@ public class ConceptEntity extends BaseResource {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
-	private CodeSystemEntity codeSystem;
-	public CodeSystemEntity getTermCodeSystem() {
-		return this.codeSystem;
+	private CodeSystemEntity codeSystemEntity;
+	public CodeSystemEntity getCodeSystem() {
+		return this.codeSystemEntity;
 	}
+
 	
 	//@formatter:off
 	@Column(name="DISPLAY", length=MAX_DESC_LENGTH, nullable=true)
@@ -137,7 +137,7 @@ public class ConceptEntity extends BaseResource {
 		ConceptEntity obj = (ConceptEntity) theObj;
 
 		EqualsBuilder b = new EqualsBuilder();
-		b.append(codeSystem, obj.codeSystem);
+		b.append(codeSystemEntity, obj.codeSystemEntity);
 		b.append(code, obj.code);
 		return b.isEquals();
 	}
@@ -171,7 +171,7 @@ public class ConceptEntity extends BaseResource {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder b = new HashCodeBuilder();
-		b.append(codeSystem);
+		b.append(codeSystemEntity);
 		b.append(code);
 		return b.toHashCode();
 	}
@@ -200,7 +200,7 @@ public class ConceptEntity extends BaseResource {
 
 
 	public void setCodeSystem(CodeSystemEntity theCodeSystem) {
-		codeSystem = theCodeSystem;
+		this.codeSystemEntity = theCodeSystem;
 	}
 
 

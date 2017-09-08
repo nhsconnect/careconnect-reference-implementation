@@ -4,8 +4,12 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.ValueSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
 
 import javax.persistence.EntityManager;
@@ -30,19 +34,29 @@ public class ValueSetDao {
     @Autowired
     private ValueSetEntityToFHIRValueSetTransformer valuesetEntityToFHIRValuesetTransformer;
 
+    private static final Logger log = LoggerFactory.getLogger(ValueSetDao.class);
+
+
     public void save(ValueSetEntity valueset)
     {
         EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(valueset);
     }
 
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
+
     public ValueSet create(ValueSet valueSet) {
         ValueSetEntity valueSetEntity = null;
         EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
 
-        if (valueSet.hasId())
-        {
-            valueSetEntity = (ValueSetEntity) em.find(ValueSetEntity.class,valueSet.getId());
+        if (valueSet.hasId()) {
+    // Only look up if the id is numeric else need to do a search
+            if (isNumeric(valueSet.getId())) {
+                valueSetEntity = (ValueSetEntity) em.find(ValueSetEntity.class, valueSet.getId());
+            }
             // if null try a search on strId
             if (valueSetEntity == null)
             {
@@ -69,9 +83,67 @@ public class ValueSetDao {
                 }
             }
         }
+
         if (valueSetEntity == null)
         {
             valueSetEntity = new ValueSetEntity();
+        }
+
+        if (valueSet.hasCodeSystem())
+        {
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+
+            CodeSystemEntity codeSystemEntity = null;
+
+            CriteriaQuery<CodeSystemEntity> criteria = builder.createQuery(CodeSystemEntity.class);
+            Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
+            List<Predicate> predList = new LinkedList<Predicate>();
+            log.info("Looking for CodeSystem = " + valueSet.getCodeSystem().getSystem());
+            Predicate p = builder.equal(root.<String>get("codeSystemUri"),valueSet.getCodeSystem().getSystem());
+            predList.add(p);
+            Predicate[] predArray = new Predicate[predList.size()];
+            predList.toArray(predArray);
+            if (predList.size()>0)
+            {
+                log.info("Found CodeSystem");
+                criteria.select(root).where(predArray);
+                List<CodeSystemEntity> qryResults = em.createQuery(criteria).getResultList();
+
+                for (CodeSystemEntity cme : qryResults) {
+                    codeSystemEntity = cme;
+                    break;
+                }
+            }
+            if (codeSystemEntity == null) {
+                log.info("Not found adding CodeSystem = "+valueSet.getCodeSystem().getSystem());
+                codeSystemEntity = new CodeSystemEntity();
+                codeSystemEntity.setCodeSystemUri(valueSet.getCodeSystem().getSystem());
+                em.persist(codeSystemEntity);
+            }
+
+            // This inspects codes already present and if not found it adds the code... CRUDE at present
+            for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
+                Boolean found = false;
+                for (ConceptEntity codeSystemConcept : codeSystemEntity.getContents()) {
+                    if (codeSystemConcept.getCode().equals(concept.getCode())) {
+                        found = true;
+                    }
+
+                }
+                if (!found) {
+                    log.info("Add new code = " + concept.getCode());
+                    ConceptEntity newConcept = new ConceptEntity();
+                    newConcept.setCodeSystem(codeSystemEntity);
+                    newConcept.setCode(concept.getCode());
+                    newConcept.setDisplay(concept.getDisplay());
+
+                    em.persist(newConcept);
+                }
+            }
+
+
+            valueSetEntity.setCodeSystem(codeSystemEntity);
+
         }
 
         if (valueSet.hasId())
@@ -95,9 +167,16 @@ public class ValueSetDao {
             valueSetEntity.setDescription(valueSet.getDescription());
         }
 
-        //log.info("Call em.persist ValueSetEntity");
+        log.info("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
 
+
+        em.getTransaction().commit();
+
+        log.info("Called PERSIST id="+valueSetEntity.getId().toString());
+        valueSet.setId(valueSetEntity.getId().toString());
+
+        em.close();
         return valueSet;
     }
 

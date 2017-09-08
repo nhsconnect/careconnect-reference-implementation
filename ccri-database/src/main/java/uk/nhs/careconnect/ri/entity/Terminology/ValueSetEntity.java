@@ -17,9 +17,9 @@ public class ValueSetEntity extends BaseResource {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="VALUESET_ID")
-	private Integer id;	
+	private Integer id;
 	public void setId(Integer id) { this.id = id; }
-	//public Integer getId() { return id; }
+	public Integer getId() { return id; }
 	
 	@Column(name="VALUESET_STRID")
 	private String strId;	
@@ -108,9 +108,12 @@ public class ValueSetEntity extends BaseResource {
 		
 		@ManyToOne()
 		@JoinColumn(name = "CODESYSTEM_PID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_VALUESET_PID_CS_PID"))
-		private CodeSystemEntity myCodeSystemVersion;
-		public CodeSystemEntity getTermCodeSystemVersion() {
-			return this.myCodeSystemVersion;
+		private CodeSystemEntity myCodeSystem;
+		public CodeSystemEntity getCodeSystem() {
+			return this.myCodeSystem;
+		}
+		public void setCodeSystem(CodeSystemEntity codeSystem) {
+			this.myCodeSystem = codeSystem;
 		}
 		
 		@Column(name = "CODESYSTEM_URL")

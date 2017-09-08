@@ -1,11 +1,10 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
-import org.hibernate.annotations.Immutable;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Table(name="CodeSystem", uniqueConstraints= {
 		@UniqueConstraint(name="IDX_CS_CODESYSTEM", columnNames= {"CODE_SYSTEM_URI"})
@@ -33,7 +32,7 @@ public class CodeSystemEntity extends BaseResource {
 	}
 
 
-	@Column(name="name", nullable=false)
+	@Column(name="name", nullable=true)
 	private String name;
 	public String getName() {
 		return name;
@@ -41,4 +40,24 @@ public class CodeSystemEntity extends BaseResource {
 	public void setName(String theName) {
 		name = theName;
 	}
+
+	// ValueSet CONTENT
+	@OneToMany(mappedBy="codeSystemEntity", targetEntity=ConceptEntity.class)
+	private List<ConceptEntity> conceptEntities;
+
+
+	public void setConceptEntities(List<ConceptEntity> conceptEntities) {
+		this.conceptEntities = conceptEntities;
+	}
+	public List<ConceptEntity> getContents( ) {
+		if (conceptEntities == null) {
+			this.conceptEntities = new ArrayList<ConceptEntity>();
+		}
+		return this.conceptEntities;
+	}
+	public List<ConceptEntity> addContent(ConceptEntity pi) {
+		conceptEntities.add(pi);
+		return conceptEntities; }
+	public List<ConceptEntity> removeContent(ConceptEntity content){
+		conceptEntities.remove(content); return conceptEntities; }
 }
