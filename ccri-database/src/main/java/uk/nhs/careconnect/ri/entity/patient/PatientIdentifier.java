@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
-
+import javax.persistence.*;
 
 @Entity
 @Table(name="PatientIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PATIENT_IDENTIFIER", columnNames={"PATIENT_IDENTIFIER_ID"}))
