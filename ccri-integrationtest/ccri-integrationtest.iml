@@ -34,7 +34,7 @@
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" name="Maven: net.sf.saxon:Saxon-HE:9.6.0-4" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu2:2.5" level="project" />
-    <orderEntry type="module" module-name="cc-core" />
+    <orderEntry type="module" module-name="careconnect-core" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:2.5" level="project" />
   </component>
 </module>
