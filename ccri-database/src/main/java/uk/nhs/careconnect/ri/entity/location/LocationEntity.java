@@ -3,7 +3,8 @@ package uk.nhs.careconnect.ri.entity.location;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Location")
@@ -14,33 +15,9 @@ public class LocationEntity extends BaseResource {
     @Column(name="LOCATION_ID")
 	private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modifiedDate", nullable = true)
-    private Date updated;
-    public Date getUpdatedDate() { return updated; }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createdDate", nullable = true)
-    private Date createdDate;
-    public Date getCreatedDate() { return createdDate; }
     
     @Column(name = "name")
 	private String name;
-	
-    @Column(name = "org_ods_code")
-    private String orgOdsCode;
-	
-    @Column(name = "org_ods_code_name")
-    private String orgOdsCodeName;
-    
-    @Column(name = "site_ods_code")
-    private String siteOdsCode;
-	
-    @Column(name = "site_ods_code_name")
-    private String siteOdsCodeName;
-    
-    @Column(name = "lastUpdated")
-    private Date lastUpdated;
 
 	public Long getId() {
 		return id;
@@ -58,43 +35,60 @@ public class LocationEntity extends BaseResource {
 		this.name = name;
 	}
 
-    public String getOrgOdsCode() {
-        return orgOdsCode;
-    }
-
-    public void setOrgOdsCode(String orgOdsCode) {
-        this.orgOdsCode = orgOdsCode;
-    }
-
-    public String getOrgOdsCodeName() {
-        return orgOdsCodeName;
-    }
-
-    public void setOrgOdsCodeName(String orgOdsCodeName) {
-        this.orgOdsCodeName = orgOdsCodeName;
-    }
-
-	public String getSiteOdsCode() {
-		return siteOdsCode;
+	// Location IDENTIFIERS
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
+	private List<LocationIdentifier> identifiers;
+	public void setIdentifiers(List<LocationIdentifier> identifiers) {
+		this.identifiers = identifiers;
 	}
-
-	public void setSiteOdsCode(String siteOdsCode) {
-		this.siteOdsCode = siteOdsCode;
+	public List<LocationIdentifier> getIdentifiers( ) {
+		if (identifiers == null) {
+			identifiers = new ArrayList<LocationIdentifier>();
+		}
+		return this.identifiers;
 	}
+	public List<LocationIdentifier> addIdentifier(LocationIdentifier pi) {
+		identifiers.add(pi);
+		return identifiers; }
 
-	public String getSiteOdsCodeName() {
-		return siteOdsCodeName;
+	public List<LocationIdentifier> removeIdentifier(LocationIdentifier identifier){
+		identifiers.remove(identifiers); return identifiers; }
+
+	// Location Address
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationAddress.class)
+	private List<LocationAddress> addresses;
+	public void setAddresseses(List<LocationAddress> addresses) {
+		this.addresses = addresses;
 	}
-
-	public void setSiteOdsCodeName(String siteOdsCodeName) {
-		this.siteOdsCodeName = siteOdsCodeName;
+	public List<LocationAddress> getAddresses( ) {
+		if (addresses == null) {
+			addresses = new ArrayList<LocationAddress>();
+		}
+		return this.addresses;
 	}
+	public List<LocationAddress> addAddress(LocationAddress pi) {
+		addresses.add(pi);
+		return addresses; }
 
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
+	public List<LocationAddress> removeAddress(LocationAddress address){
+		addresses.remove(address); return addresses; }
 
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
+	// Location Telecom
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationTelecom.class)
+	private List<LocationTelecom> telecoms;
+	public void setTelecoms(List<LocationTelecom> telecoms) {
+		this.telecoms = telecoms;
+	}
+	public List<LocationTelecom> getTelecoms( ) {
+		if (telecoms == null) {
+			telecoms = new ArrayList<LocationTelecom>();
+		}
+		return this.telecoms;
+	}
+	public List<LocationTelecom> addTelecom(LocationTelecom pi) {
+		telecoms.add(pi);
+		return telecoms; }
+
+	public List<LocationTelecom> removeTelecom(LocationTelecom telecom){
+		addresses.remove(telecom); return telecoms; }
 }

@@ -18,14 +18,17 @@ public abstract class BaseResource {
 	@Column(name = "RES_UPDATED",insertable=false, updatable=false)
 	@UpdateTimestamp
 	private Date resUpdated;
-	public Date getResourceUpdated() {
+	public Date getUpdated() {
 		return this.resUpdated;
 	}
+    public void setUpdated(Date resUpdated) {
+        this.resUpdated=resUpdated;
+    }
 	
 	@Column(name = "RES_CREATED", nullable = true)
 	@CreationTimestamp
 	private Date resCreated;
-	public Date getResourceCreated() {
+	public Date getCreated() {
 		return this.resCreated;
 	}
 	

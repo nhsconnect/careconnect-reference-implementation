@@ -31,7 +31,7 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
         patient.addName()
                 .addFamily(patientEntity.getFamilyName())
                 .addGiven(patientEntity.getGivenName())
-                .addPrefix(patientEntity.getPrefixName());
+                .addPrefix(patientEntity.getPrefix());
 
         if (patientEntity.getDateOfBirth() != null)
         {

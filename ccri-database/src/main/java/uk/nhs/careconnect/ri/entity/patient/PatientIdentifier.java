@@ -1,13 +1,11 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
-import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
-
-import javax.persistence.*;
+import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 
 
 @Entity
 @Table(name="PatientIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PATIENT_IDENTIFIER", columnNames={"PATIENT_IDENTIFIER_ID"}))
-public class PatientIdentifier {
+public class PatientIdentifier extends BaseIdentifier {
 	
 	public PatientIdentifier() {
 	}
@@ -25,18 +23,6 @@ public class PatientIdentifier {
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
     private PatientEntity patientEntity;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_PATIENT_IDENTIFIER"))
-    private SystemEntity system;
-
-    @Column(name = "Value")
-    private String value;
-
-    @Column(name = "ListOrder")
-    private Long order;
-
-    public void setValue(String value) { this.value = value; }
-    public String getValue() { 	return this.value; }
 
 	public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
@@ -49,11 +35,6 @@ public class PatientIdentifier {
 	}
 
 
-    public SystemEntity getSystem() {
-        return this.system;
-    }
-    public void setSystem(SystemEntity systemEntity) {
-        this.system = systemEntity;
-    }
+
 
 }

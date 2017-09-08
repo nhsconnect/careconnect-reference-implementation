@@ -31,7 +31,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
         practitioner.getName()
                 .addFamily(practitionerEntity.getFamilyName())
                 .addGiven(practitionerEntity.getGivenName())
-                .addPrefix(practitionerEntity.getPrefixName());
+                .addPrefix(practitionerEntity.getPrefix());
                 
 
 

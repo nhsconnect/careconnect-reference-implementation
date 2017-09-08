@@ -27,8 +27,8 @@ public class PractitionerEntity extends BaseResource {
     @Column(name = "given_name")
     private String givenName;
 
-    @Column(name = "prefix_name")
-    private String prefixName;
+    @Column(name = "prefix")
+    private String prefix;
 
     @Column(name = "gender")
     private String gender;
@@ -88,12 +88,12 @@ public class PractitionerEntity extends BaseResource {
         this.givenName = givenName;
     }
 
-    public String getPrefixName() {
-        return prefixName;
+    public String getPrefix() {
+        return prefix;
     }
 
-    public void setPrefixName(String namePrefix) {
-        this.prefixName = prefixName;
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getGender() {

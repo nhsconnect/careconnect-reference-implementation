@@ -1,13 +1,13 @@
 package uk.nhs.careconnect.ri.entity.location;
 
-import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 
 import javax.persistence.*;
 
 
 @Entity
 @Table(name="LocationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_LOCATION_IDENTIFIER", columnNames={"LOCATION_IDENTIFIER_ID"}))
-public class LocationIdentifier  {
+public class LocationIdentifier extends BaseIdentifier {
 
 	public LocationIdentifier() {
 
@@ -27,18 +27,6 @@ public class LocationIdentifier  {
 	private LocationEntity locationEntity;
 
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SYSTEM_ID",foreignKey= @ForeignKey(name="FK_SYSTEM_LOCATION_IDENTIFIER"))
-	private SystemEntity systemEntity;
-
-    @Column(name = "Value")
-    private String value;
-
-
-    @Column(name = "ListOrder")
-    private Integer order;
-
-
     public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
@@ -49,13 +37,7 @@ public class LocationIdentifier  {
 	        this.locationEntity = locationEntity;
 	}
 
-    public SystemEntity getSystem() {
-        return this.systemEntity;
-    }
-    public void setSystem(SystemEntity systemEntity) {
-        this.systemEntity = systemEntity;
-    }
 
-    public void setValue(String value) { this.value = value; }
-    public String getValue() { 	return this.value; }
+
+
 }

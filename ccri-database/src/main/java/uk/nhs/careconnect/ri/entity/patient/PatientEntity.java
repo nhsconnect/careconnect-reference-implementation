@@ -28,8 +28,8 @@ public class PatientEntity extends BaseResource {
     private Date createdDate;
     public Date getCreatedDate() { return createdDate; }
 
-    @Column(name = "prefix_name")
-    private String prefixName;
+    @Column(name = "prefix")
+    private String prefix;
 
     @Column(name = "give_name")
     private String givenName;
@@ -73,12 +73,12 @@ public class PatientEntity extends BaseResource {
         this.id = id;
     }
 
-    public String getPrefixName() {
-        return prefixName;
+    public String getPrefix() {
+        return prefix;
     }
 
-    public void setPrefixName(String prefixName) {
-        this.prefixName = prefixName;
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getGivenName() {
