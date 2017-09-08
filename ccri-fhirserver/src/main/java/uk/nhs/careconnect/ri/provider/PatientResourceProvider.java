@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.dao.Patient.PatientDao;
-import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

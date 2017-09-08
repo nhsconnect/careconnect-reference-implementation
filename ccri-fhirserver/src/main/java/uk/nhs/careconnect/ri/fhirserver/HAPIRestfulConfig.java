@@ -5,8 +5,8 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.provider.location.LocationResourceProvider;
-import uk.nhs.careconnect.ri.provider.organization.OrganizationResourceProvider;
+import uk.nhs.careconnect.ri.provider.LocationResourceProvider;
+import uk.nhs.careconnect.ri.provider.OrganizationResourceProvider;
 import uk.nhs.careconnect.ri.provider.PatientResourceProvider;
 import uk.nhs.careconnect.ri.provider.PractitionerResourceProvider;
 
