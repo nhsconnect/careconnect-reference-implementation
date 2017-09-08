@@ -2,6 +2,7 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
@@ -54,6 +55,38 @@ public class PatientEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="PRACTICE_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ORGANISATION"))
     private OrganisationEntity practice;
+
+    @ManyToOne
+    @JoinColumn(name="ethnic")
+    private ConceptEntity ethnicCode;
+
+    @ManyToOne
+    @JoinColumn(name="marital")
+    private ConceptEntity maritalCode;
+
+    @ManyToOne
+    @JoinColumn(name="NHSverification")
+    private ConceptEntity NHSVerificationCode;
+
+    public ConceptEntity getEthnicCode() {
+        return this.ethnicCode;
+    }
+    public ConceptEntity getMaritalCode() {
+        return this.maritalCode;
+    }
+    public ConceptEntity getNHSVerificationCode() {
+        return this.NHSVerificationCode;
+    }
+    public void setEthnicCode (ConceptEntity code) {
+        this.ethnicCode = code;
+    }
+    public void setMaritalCode(ConceptEntity code) {
+        this.maritalCode = code;
+    }
+    public void setNHSVerificationCode(ConceptEntity code) {
+        this.NHSVerificationCode = code;
+    }
+
 
     /*
     @Column(name = "sensitive_flag")

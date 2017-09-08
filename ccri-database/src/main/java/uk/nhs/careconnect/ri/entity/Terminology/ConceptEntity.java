@@ -43,7 +43,9 @@ public class ConceptEntity extends BaseResource {
 	public CodeSystemEntity getCodeSystem() {
 		return this.codeSystemEntity;
 	}
-
+    public String getSystem() {
+        return this.codeSystemEntity.getCodeSystemUri();
+    }
 	
 	//@formatter:off
 	@Column(name="DISPLAY", length=MAX_DESC_LENGTH, nullable=true)

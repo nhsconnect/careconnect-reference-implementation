@@ -6,7 +6,9 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.org.hl7.fhir.core.dstu2.CareConnectExtension;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 
 @Component
@@ -21,9 +23,24 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         for(int f=0;f<patientEntity.getIdentifiers().size();f++)
         {
-            patient.addIdentifier()
+            Identifier identifier = patient.addIdentifier()
                     .setSystem(patientEntity.getIdentifiers().get(f).getSystem().getUri())
                     .setValue(patientEntity.getIdentifiers().get(f).getValue());
+           // NHS Verification Status
+            if ( (patientEntity.getIdentifiers().get(f).getSystem().getUri().equals(CareConnectSystem.NHSNumber))
+                    && (patientEntity.getNHSVerificationCode() != null)) {
+                CodeableConcept verificationStatusCode = new CodeableConcept();
+                verificationStatusCode
+                        .addCoding()
+                        .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
+                        .setDisplay(patientEntity.getNHSVerificationCode().getDisplay())
+                        .setCode(patientEntity.getNHSVerificationCode().getCode());
+                Extension verificationStatus = new Extension()
+                        .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
+                        .setValue(verificationStatusCode);
+                identifier.addExtension(verificationStatus);
+            }
+
         }
 
 
@@ -95,6 +112,30 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
                     .setReference("Practitioner/"+patientEntity.getGP().getId());
 
         }
+
+        if (patientEntity.getEthnicCode() !=null) {
+            CodeableConcept ethnicCode = new CodeableConcept();
+            ethnicCode
+                    .addCoding()
+                    .setSystem(patientEntity.getEthnicCode().getSystem())
+                    .setDisplay(patientEntity.getEthnicCode().getDisplay())
+                    .setCode(patientEntity.getEthnicCode().getCode());
+            Extension ethnicExtension = new Extension()
+                    .setUrl(CareConnectExtension.UrlEthnicCategory)
+                    .setValue(ethnicCode);
+            patient.addExtension(ethnicExtension);
+        }
+
+        if (patientEntity.getMaritalCode() != null) {
+
+            CodeableConcept marital = new CodeableConcept();
+            marital.addCoding()
+                    .setSystem(patientEntity.getMaritalCode().getSystem())
+                    .setCode(patientEntity.getMaritalCode().getCode())
+                    .setDisplay(patientEntity.getMaritalCode().getDisplay());
+            patient.setMaritalStatus(marital);
+        }
+
 
         if (patientEntity.getPractice()!=null) {
             patient.setManagingOrganization(new Reference("Organization/"+patientEntity.getPractice().getId()));
