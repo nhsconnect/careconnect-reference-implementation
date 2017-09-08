@@ -504,8 +504,8 @@
     </hop>
     <hop>
       <from>Insert  Patients</from>
-      <to>Insert  Patients Address</to>
-      <enabled>N</enabled>
+      <to>Insert  Locations</to>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Insert Systems</from>
@@ -529,45 +529,24 @@
     <single_statement>N</single_statement>
     <replace_variables>N</replace_variables>
     <quoteString>N</quoteString>
-    <sql>
+    <sql>INSERT IGNORE INTO `careconnect`.`Patient`
+(`PATIENT_ID`,`family_name`,`gender`,`given_name`,`prefix`,`sensitive_flag`)
+VALUES
+(1,'Kanfeld','FEMALE','Bernie','Miss', false);
 
 INSERT IGNORE INTO `careconnect`.`PatientIdentifier`
-(`PATIENT_IDENTIFIER_ID`,
-`Value`,
-`PATIENT_ID`,
-`SYSTEM_ID`)
+(`PATIENT_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PATIENT_ID`)
+VALUES (1,'9876543210', 1, 1),
+ (2,'ABC8650149', 1001, 1);
+
+
+INSERT IGNORE INTO `careconnect`.`PatientTelecom`
+(`PATIENT_TELECOM_ID`,`value`,`identifierUse`,`SYSTEM_ID`,`PATIENT_ID`)
+VALUES (1,'0115 9737320','work', 6, 1);
+ 
+ INSERT IGNORE INTO `careconnect`.`PatientAddress` (`PATIENT_ADDRESS_ID`,`ADDRESS_ID`,`PATIENT_ID`)
 VALUES
-(12,'9000000122',12,1);
-
-INSERT IGNORE INTO `careconnect`.`PatientIdentifier`
-(`PATIENT_IDENTIFIER_ID`,
-`Value`,
-`PATIENT_ID`,
-`SYSTEM_ID`)
-VALUES
-(13,'A00000621',12,1001);
-
-
-LOCK TABLES careconnect.Patient WRITE;
-
-INSERT IGNORE INTO careconnect.Patient
-  (PATIENT_ID,title,first_name,last_name,phone,date_of_birth,gender,nhs_number,pas_number,RES_UPDATED,sensitive_flag)
-VALUES
-  (1,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000017,000001,'2016-07-25 12:00:00',FALSE),
-  (2,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9476719931,000002,'2016-07-25 12:00:00',FALSE),
-  (3,'MR','Julian','PHELAN','02123636563','1992-07-02','Male',9476719974,000003,'2016-07-25 12:00:00',FALSE),
-  (4,'MRS','Dolly','BANTON','0121454552','1955-09-18','Female',9476719958,000004,'2016-07-25 12:00:00',FALSE),
-  (5,'MISS','Ruby','MACKIN','013256541523','1953-01-01','Female',9476719966,000005,'2016-07-25 12:00:00',FALSE),
-  (6,'MISS','Ruby','MACKIN','013256541523','1953-01-01','Female',9000000068,000006,'2016-07-25 12:00:00',FALSE),
-  (7,'MISS','Ruby','MACKIN','013256541523','1953-01-01','Female',9000000076,000007,'2016-07-25 12:00:00',FALSE),
-  (8,'MISS','Ruby','MACKIN','013256541523','1953-01-01','Female',9000000084,000008,'2016-07-25 12:00:00',FALSE),
-  (9,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000092,000009,'2016-07-25 12:00:00',TRUE),
-  (10,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000106,000010,'2016-07-25 12:00:00',TRUE),
-  (11,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000114,000011,'2016-07-25 12:00:00',FALSE),
-  (12,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000122,000012,'2016-07-25 12:00:00',FALSE),
-  (13,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000130,000013,'2016-07-25 12:00:00',FALSE),
-  (15,'MRS','Minnie','DAWES','01454587554','1952-05-31','Female',9000000157,000015,'2016-07-25 12:00:00',TRUE);
-UNLOCK TABLES;</sql>
+(1,5,1);</sql>
     <set_params>N</set_params>
     <insert_field />
     <update_field />
@@ -583,8 +562,8 @@ UNLOCK TABLES;</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>560</xloc>
-      <yloc>272</yloc>
+      <xloc>544</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -604,15 +583,31 @@ UNLOCK TABLES;</sql>
     <single_statement>N</single_statement>
     <replace_variables>N</replace_variables>
     <quoteString>N</quoteString>
-    <sql>INSERT IGNORE INTO careconnect.Practitioner
-  (PRACTITIONER_ID,userid,role_ids,name_family,name_given,name_prefix,gender,organization_id,role_code,role_display,com_code,com_display,RES_UPDATED)
+    <sql>INSERT IGNORE INTO `careconnect`.`Practitioner`
+(`PRACTITIONER_ID`,`family_name`,`gender`,`given_name`,`prefix`)
 VALUES
-  (1,'G13579135','','Gilbert','Nichole','Miss','FEMALE',2,'R0050','Consultant','en','English','2016-07-25 12:00:00'),
-  (2,'G22345655','PT1122|PT1234','Slater','Kibo','Mr','MALE',1,'R0050','Consultant','en','English','2016-07-25 12:00:00'),
-  (3,'G11111116','PT1234','Parsons','Melissa','Mrs','FEMALE',2,'R0042','paediatrician','de','German','2016-07-25 12:00:00'),
-  (4,'G22222226','PT3333','Parsons','Melissa','Mrs','FEMALE',2,'R0042','paediatrician','de','German','2016-07-25 12:00:00'),
-  (5,'G22222226','PT2222|PT4444','Parsons','Melissa','Mrs','FEMALE',2,'R0042','paediatrician','de','German','2016-07-25 12:00:00');
-</sql>
+(1,'Bhatia','MALE','AA','Dr.'),
+(2,'Swamp','FEMALE','Karen','Dr.'),
+(3,'Amber','FEMALE','Ripley','Dr.');
+
+INSERT IGNORE INTO `careconnect`.`PractitionerIdentifier`
+(`PRACTITIONER_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PRACTITIONER_ID`)
+VALUES (1,'G8133438', 5, 1),
+ (2,'G8650149', 5, 2),
+(3, 'PT1357',5,3);
+
+
+INSERT IGNORE INTO `careconnect`.`PractitionerTelecom`
+(`PRACTITIONER_TELECOM_ID`,`value`,`identifierUse`,`SYSTEM_ID`,`PRACTITIONER_ID`)
+VALUES (1,'0115 9737320','work', 6, 1),
+ (2,'0115 9737320','work', 6, 2),
+(3,'0115 9876543','work', 6, 3);
+ 
+ INSERT IGNORE INTO `careconnect`.`PractitionerAddress` (`PRACTITIONER_ADDRESS_ID`,`ADDRESS_ID`,`PRACTITIONER_ID`)
+VALUES
+(1,2,1),
+(2,2,2),
+(3,4,3);</sql>
     <set_params>N</set_params>
     <insert_field />
     <update_field />
@@ -628,8 +623,8 @@ VALUES
       </output>
     </remotesteps>
     <GUI>
-      <xloc>320</xloc>
-      <yloc>272</yloc>
+      <xloc>400</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -664,6 +659,13 @@ INSERT IGNORE INTO `careconnect`.`OrganisationTelecom`
 (`ORGANISATION_TELECOM_ID`,`value`,`identifierUse`,`SYSTEM_ID`,`ORGANISATION_ID`)
 VALUES (1,'0115 9737320','work', 6, 1),
  (2,'01332 340131','work', 6, 2);
+
+
+
+INSERT IGNORE INTO `careconnect`.`OrganisationAddress` (`ORGANISATION_ADDRESS_ID`,`ADDRESS_ID`,`ORGANISATION_ID`)
+VALUES
+(1,2,1),
+(2,3,2);
 </sql>
     <set_params>N</set_params>
     <insert_field />
@@ -686,7 +688,7 @@ VALUES (1,'0115 9737320','work', 6, 1),
     </GUI>
   </step>
   <step>
-    <name>Insert  Patients Address</name>
+    <name>Insert  Locations</name>
     <type>ExecSQL</type>
     <description />
     <distribute>Y</distribute>
@@ -701,32 +703,7 @@ VALUES (1,'0115 9737320','work', 6, 1),
     <single_statement>N</single_statement>
     <replace_variables>N</replace_variables>
     <quoteString>N</quoteString>
-    <sql>INSERT IGNORE INTO `careconnect`.`Address`
-(`ADDRESS_ID`,
-`address_1`,
-`address_2`,
-`address_3`,
-`address_4`,
-`address_5`,
-`postcode`)
-VALUES
-(12,
-'56 Ada Glassby Court',
-'Cross Gates',
-'Leeds',
-'West Riding',
-'',
-'LS15 8FR');
-
-
-INSERT IGNORE INTO `careconnect`.`PatientAddress`
-(`PATIENT_ADDRESS_ID`,
-`ADDRESS_ID`,
-`PATIENT_ID`)
-VALUES
-(12,
-12,
-12);</sql>
+    <sql />
     <set_params>N</set_params>
     <insert_field />
     <update_field />
@@ -742,8 +719,8 @@ VALUES
       </output>
     </remotesteps>
     <GUI>
-      <xloc>560</xloc>
-      <yloc>160</yloc>
+      <xloc>672</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -776,7 +753,18 @@ VALUES (1,'https://fhir.nhs.uk/Id/nhs-number','NHS Number')
 , (10,'url','Url')
 , (11,'sms','sms')
 , (12,'other','Other')
-, (1001,'https://fhir.leedsth.nhs.uk/Id/pas-number','Leeds Teaching Hospitals');</sql>
+, (1001,'https://fhir.leedsth.nhs.uk/Id/pas-number','Leeds Teaching Hospitals');
+
+
+
+INSERT IGNORE INTO `careconnect`.`Address`
+(`ADDRESS_ID`,`address_1`,`address_2`,`address_3`,`address_4`,`address_5`,`postcode`)
+VALUES
+(1,'56 Ada Glassby Court','Cross Gates','Leeds','West Riding','','LS15 8FR'),
+(2,'Regent Street','Long Eaton','Nottingham','Derbyshire','','NG10 1QQ'),
+(3,'Uttoxeter Road','','Derby','','','DE22 3NE'),
+(4,'Kirkgate','','Derby','','','DE7 1QQ'),
+(5,'Field Jardin','Long Eaton','Nottingham','Derbyshire','','NG10 1ZZ');</sql>
     <set_params>N</set_params>
     <insert_field />
     <update_field />
@@ -792,8 +780,8 @@ VALUES (1,'https://fhir.nhs.uk/Id/nhs-number','NHS Number')
       </output>
     </remotesteps>
     <GUI>
-      <xloc>132</xloc>
-      <yloc>255</yloc>
+      <xloc>160</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
