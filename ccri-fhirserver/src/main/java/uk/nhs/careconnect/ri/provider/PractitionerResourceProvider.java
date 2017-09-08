@@ -30,7 +30,8 @@ public class PractitionerResourceProvider  implements IResourceProvider {
     }
 
     @Read
-    public Practitioner getPractitionerById(@IdParam IdType internalId) {
+    public Practitioner getPractitioner
+            (@IdParam IdType internalId) {
         Practitioner practitioner = practitionerDao.read(internalId);
 
         if ( practitioner == null) {

@@ -5,10 +5,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.provider.LocationResourceProvider;
-import uk.nhs.careconnect.ri.provider.OrganizationResourceProvider;
-import uk.nhs.careconnect.ri.provider.PatientResourceProvider;
-import uk.nhs.careconnect.ri.provider.PractitionerResourceProvider;
+import uk.nhs.careconnect.ri.provider.*;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
@@ -46,16 +43,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 				myAppCtx.getBean(PatientResourceProvider.class),
 				myAppCtx.getBean(OrganizationResourceProvider.class),
 				myAppCtx.getBean(PractitionerResourceProvider.class),
-				myAppCtx.getBean(LocationResourceProvider.class)
-			//	myAppCtx.getBean(MedicationResourceProvider.class),
-			//	myAppCtx.getBean(MedicationOrderResourceProvider.class),
-			//	myAppCtx.getBean(MedicationDispenseResourceProvider.class),
-			//	myAppCtx.getBean(MedicationAdministrationResourceProvider.class),
+				myAppCtx.getBean(LocationResourceProvider.class),
+				myAppCtx.getBean(ValueSetResourceProvider.class)
 
-			//	myAppCtx.getBean(AppointmentResourceProvider.class),
-			//	myAppCtx.getBean(ScheduleResourceProvider.class),
-			//	myAppCtx.getBean(SlotResourceProvider.class),
-			//	myAppCtx.getBean(OrderResourceProvider.class),
 
 		));
 

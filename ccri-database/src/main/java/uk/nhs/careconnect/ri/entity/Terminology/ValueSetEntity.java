@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
-
-import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.instance.model.Enumerations;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -52,10 +51,10 @@ public class ValueSetEntity extends BaseResource {
 		public String getName()  {  return this.name;  }
 		
 		@Column(name = "status")
-		private Enumerations.PublicationStatus status;
-		public void setStatus(Enumerations.PublicationStatus status)
+		private Enumerations.ConformanceResourceStatus status;
+		public void setStatus(Enumerations.ConformanceResourceStatus status)
 		{  this.status = status; }
-		public Enumerations.PublicationStatus getStatus()  {  return this.status;  }
+		public Enumerations.ConformanceResourceStatus getStatus()  {  return this.status;  }
 		
 		@Column(name = "url")
 		private String url;

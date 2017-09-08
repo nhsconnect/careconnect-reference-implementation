@@ -1,13 +1,13 @@
-package uk.nhs.careconnect.ri.dao.Practitioner;
+package uk.nhs.careconnect.ri.dao.Organisation;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.IdType;
-import org.hl7.fhir.instance.model.Practitioner;
+import org.hl7.fhir.instance.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerIdentifier;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,50 +19,49 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class PractitionerDao {
+public class OrganisationDao {
 
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
+    private OrganisationEntityToFHIROrganizationTransformer organizationEntityToFHIROrganizationTransformer;
 
-    public void save(PractitionerEntity practitioner)
+    public void save(OrganisationEntity organization)
     {
         EntityManager em = entityManagerFactory.createEntityManager();
-        em.persist(practitioner);
+        em.persist(organization);
     }
 
-    public Practitioner read(IdType theId) {
+    public Organization read(IdType theId) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
-        PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Integer.parseInt(theId.getIdPart()));
+        OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class,Integer.parseInt(theId.getIdPart()));
 
-        return practitionerEntity == null
+        return organizationEntity == null
                 ? null
-                : practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
+                : organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
 
     }
-    public List<Practitioner> searchPractitioner (
-            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier
+    public List<Organization> searchOrganization (
+            @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier
     )
     {
         EntityManager em = entityManagerFactory.createEntityManager();
-        List<PractitionerEntity> qryResults = null;
+        List<OrganisationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
-        CriteriaQuery<PractitionerEntity> criteria = builder.createQuery(PractitionerEntity.class);
-        Root<PractitionerEntity> root = criteria.from(PractitionerEntity.class);
+        CriteriaQuery<OrganisationEntity> criteria = builder.createQuery(OrganisationEntity.class);
+        Root<OrganisationEntity> root = criteria.from(OrganisationEntity.class);
 
 
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<Practitioner> results = new ArrayList<Practitioner>();
+        List<Organization> results = new ArrayList<Organization>();
 
         if (identifier !=null)
         {
-
-            Join<PractitionerEntity, PractitionerIdentifier> join = root.join("identifiers", JoinType.LEFT);
+            Join<OrganisationEntity, OrganisationIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
             Predicate p = builder.equal(join.get("value"),identifier.getValue());
             predList.add(p);
@@ -85,11 +84,11 @@ public class PractitionerDao {
 
         qryResults = em.createQuery(criteria).getResultList();
 
-        for (PractitionerEntity practitionerEntity : qryResults)
+        for (OrganisationEntity organizationEntity : qryResults)
         {
            // log.trace("HAPI Custom = "+doc.getId());
-            Practitioner practitioner = practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
-            results.add(practitioner);
+            Organization organization = organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
+            results.add(organization);
         }
 
         return results;

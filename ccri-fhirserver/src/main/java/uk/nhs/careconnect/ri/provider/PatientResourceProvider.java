@@ -57,6 +57,8 @@ public class PatientResourceProvider implements IResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
+
+
         return method;
     }
 

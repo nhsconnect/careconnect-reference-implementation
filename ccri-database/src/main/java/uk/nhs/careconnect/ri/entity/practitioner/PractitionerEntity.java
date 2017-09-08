@@ -182,4 +182,22 @@ public class PractitionerEntity extends BaseResource {
     public List<PractitionerAddress> removeAddress(PractitionerAddress address){
         addresses.remove(address); return addresses; }
 
+    // Practitioner Telecom
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerTelecom.class)
+    private List<PractitionerTelecom> telecoms;
+    public void setTelecoms(List<PractitionerTelecom> telecoms) {
+        this.telecoms = telecoms;
+    }
+    public List<PractitionerTelecom> getTelecoms( ) {
+        if (telecoms == null) {
+            telecoms = new ArrayList<PractitionerTelecom>();
+        }
+        return this.telecoms;
+    }
+    public List<PractitionerTelecom> addTelecom(PractitionerTelecom pi) {
+        telecoms.add(pi);
+        return telecoms; }
+
+    public List<PractitionerTelecom> removeTelecom(PractitionerTelecom telecom){
+        addresses.remove(telecom); return telecoms; }
 }

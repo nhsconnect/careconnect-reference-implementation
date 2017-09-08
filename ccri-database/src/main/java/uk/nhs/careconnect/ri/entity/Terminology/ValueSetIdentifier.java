@@ -1,11 +1,13 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
+import uk.nhs.careconnect.ri.entity.BaseIdentifier;
+
 import javax.persistence.*;
 
 
 @Entity
 @Table(name="ValueSetIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_VALUESET_IDENTIFIER", columnNames={"VALUESET_IDENTIFIER_ID"}))
-public class ValueSetIdentifier  {
+public class ValueSetIdentifier extends BaseIdentifier {
 	
 	public ValueSetIdentifier() {
 		
@@ -25,11 +27,6 @@ public class ValueSetIdentifier  {
 	@JoinColumn (name = "VALUESET_ID",foreignKey= @ForeignKey(name="FK_VALUESET_VALUESET_IDENTIFIER"))
 	private ValueSetEntity valueSetEntity;
 
-    @Column(name = "Value")
-    private String value;
-
-    @Column(name = "ListOrder")
-    private Integer order;
 
 
 	public Integer getIdentifierId() { return identifierId; }
@@ -42,6 +39,5 @@ public class ValueSetIdentifier  {
 	        this.valueSetEntity = valueSetEntity;
 	}
 
-    public void setValue(String value) { this.value = value; }
-    public String getValue() { 	return this.value; }
+
 }

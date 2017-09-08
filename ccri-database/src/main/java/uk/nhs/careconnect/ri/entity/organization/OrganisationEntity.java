@@ -54,4 +54,42 @@ public class OrganisationEntity extends BaseResource {
 
     public List<OrganisationIdentifier> removeIdentifier(OrganisationIdentifier identifier){
         identifiers.remove(identifiers); return identifiers; }
+
+    // Organisation Address
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationAddress.class)
+    private List<OrganisationAddress> addresses;
+    public void setAddresseses(List<OrganisationAddress> addresses) {
+        this.addresses = addresses;
+    }
+    public List<OrganisationAddress> getAddresses( ) {
+        if (addresses == null) {
+            addresses = new ArrayList<OrganisationAddress>();
+        }
+        return this.addresses;
+    }
+    public List<OrganisationAddress> addAddress(OrganisationAddress pi) {
+        addresses.add(pi);
+        return addresses; }
+
+    public List<OrganisationAddress> removeAddress(OrganisationAddress address){
+        addresses.remove(address); return addresses; }
+
+    // Organisation Telecom
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
+    private List<OrganisationTelecom> telecoms;
+    public void setTelecoms(List<OrganisationTelecom> telecoms) {
+        this.telecoms = telecoms;
+    }
+    public List<OrganisationTelecom> getTelecoms( ) {
+        if (telecoms == null) {
+            telecoms = new ArrayList<OrganisationTelecom>();
+        }
+        return this.telecoms;
+    }
+    public List<OrganisationTelecom> addTelecom(OrganisationTelecom pi) {
+        telecoms.add(pi);
+        return telecoms; }
+
+    public List<OrganisationTelecom> removeTelecom(OrganisationTelecom telecom){
+        addresses.remove(telecom); return telecoms; }
 }

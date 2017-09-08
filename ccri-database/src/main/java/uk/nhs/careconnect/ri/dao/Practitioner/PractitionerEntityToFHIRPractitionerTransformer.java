@@ -32,7 +32,14 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
                 .addFamily(practitionerEntity.getFamilyName())
                 .addGiven(practitionerEntity.getGivenName())
                 .addPrefix(practitionerEntity.getPrefix());
-                
+
+        for(int f=0;f<practitionerEntity.getTelecoms().size();f++)
+        {
+            practitioner.addIdentifier()
+                    .setSystem(practitionerEntity.getTelecoms().get(f).getSystem().getUri())
+                    .setValue(practitionerEntity.getTelecoms().get(f).getValue())
+                    .setUse(practitionerEntity.getTelecoms().get(f).getUse());
+        }
 
 
         for(int f=0;f<practitionerEntity.getAddresses().size();f++)
