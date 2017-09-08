@@ -18,28 +18,16 @@ public class PatientEntity extends BaseResource {
     @Column(name="PATIENT_ID")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modifiedDate", nullable = true)
-    private Date updated;
-    public Date getUpdatedDate() { return updated; }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createdDate", nullable = true)
-    private Date createdDate;
-    public Date getCreatedDate() { return createdDate; }
-
     @Column(name = "prefix")
     private String prefix;
 
-    @Column(name = "give_name")
+    @Column(name = "given_name")
     private String givenName;
 
-    @Column(name = "famil_yname")
+    @Column(name = "family_name")
     private String familyName;
 
 
-    @Column(name = "phone")
-    private String phone;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
@@ -50,10 +38,6 @@ public class PatientEntity extends BaseResource {
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdated")
-    private Date lastUpdated;
-
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "registration_start")
     private Date registrationStartDateTime;
 
@@ -61,10 +45,10 @@ public class PatientEntity extends BaseResource {
     @Column(name = "registration_end")
     private Date registrationEndDateTime;
 
-
+    /*
     @Column(name = "sensitive_flag")
     private boolean sensitive;
-
+*/
     public Long getId() {
         return id;
     }
@@ -97,13 +81,7 @@ public class PatientEntity extends BaseResource {
         this.familyName = familyName;
     }
 
-    public String getPhone() {
-        return phone;
-    }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public Date getDateOfBirth() {
         return dateOfBirth;
@@ -121,14 +99,6 @@ public class PatientEntity extends BaseResource {
         this.gender = gender;
     }
 
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
 
 	public Date getRegistrationStartDateTime() {
 		return registrationStartDateTime;
@@ -148,7 +118,7 @@ public class PatientEntity extends BaseResource {
 		this.registrationEndDateTime = registrationEndDateTime;
 	}
 
-
+/*
     public boolean isSensitive() {
         return sensitive;
     }
@@ -156,7 +126,7 @@ public class PatientEntity extends BaseResource {
     public void setSensitive(boolean sensitive) {
         this.sensitive = sensitive;
     }
-
+*/
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
     private List<PatientIdentifier> identifiers;

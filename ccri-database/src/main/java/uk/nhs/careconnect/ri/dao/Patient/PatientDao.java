@@ -39,7 +39,7 @@ public class PatientDao {
     public Patient read(IdType theId) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
-        PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Integer.parseInt(theId.getIdPart()));
+        PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
         return patientEntity == null
                 ? null
@@ -62,13 +62,15 @@ public class PatientDao {
 
         CriteriaQuery<PatientEntity> criteria = builder.createQuery(PatientEntity.class);
         Root<PatientEntity> root = criteria.from(PatientEntity.class);
-        Join<PatientEntity, PatientIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
 
         List<Predicate> predList = new LinkedList<Predicate>();
         List<Patient> results = new ArrayList<Patient>();
 
         if (identifier !=null)
         {
+            Join<PatientEntity, PatientIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
             Predicate p = builder.equal(join.get("value"),identifier.getValue());
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
@@ -77,7 +79,7 @@ public class PatientDao {
 
         if (familyName != null)
         {
-            Predicate p = builder. equal(root.get("familyName"),familyName.getValue());
+            Predicate p = builder.equal(root.get("familyName"),familyName.getValue());
             predList.add(p);
         }
         if (givenName != null)
