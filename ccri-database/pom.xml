@@ -64,6 +64,12 @@
         </dependency>
 
         <dependency>
+            <groupId>uk.org.hl7.fhir</groupId>
+            <artifactId>cc-core</artifactId>
+            <version>${care-connect-version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-apt</artifactId>
             <version>4.1.0</version>

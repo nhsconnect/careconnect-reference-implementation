@@ -530,9 +530,9 @@
     <replace_variables>N</replace_variables>
     <quoteString>N</quoteString>
     <sql>INSERT IGNORE INTO `careconnect`.`Patient`
-(`PATIENT_ID`,`family_name`,`gender`,`given_name`,`prefix`,`sensitive_flag`)
+(`PATIENT_ID`,`family_name`,`gender`,`given_name`,`prefix`, `GP_ID`, `PRACTICE_ID`)
 VALUES
-(1,'Kanfeld','FEMALE','Bernie','Miss', false);
+(1,'Kanfeld','FEMALE','Bernie','Miss',1,1);
 
 INSERT IGNORE INTO `careconnect`.`PatientIdentifier`
 (`PATIENT_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PATIENT_ID`)

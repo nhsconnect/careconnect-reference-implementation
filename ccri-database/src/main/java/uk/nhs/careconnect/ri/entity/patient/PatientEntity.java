@@ -2,6 +2,8 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -44,6 +46,14 @@ public class PatientEntity extends BaseResource {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "registration_end")
     private Date registrationEndDateTime;
+
+    @ManyToOne
+    @JoinColumn (name = "GP_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PRACTITIONER"))
+    private PractitionerEntity gp;
+
+    @ManyToOne
+    @JoinColumn(name="PRACTICE_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ORGANISATION"))
+    private OrganisationEntity practice;
 
     /*
     @Column(name = "sensitive_flag")
@@ -164,4 +174,16 @@ public class PatientEntity extends BaseResource {
 
     public List<PatientAddress> removeAddress(PatientAddress address){
         addresses.remove(address); return addresses; }
+
+    public OrganisationEntity getPractice() {
+        return practice;
+    }
+    public void setPractice(OrganisationEntity org) {
+        this.practice = org;
+    }
+
+    public PractitionerEntity getGP() {
+        return gp;
+    }
+    public void setGp(PractitionerEntity gp) { this.gp = gp; }
 }

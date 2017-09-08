@@ -2,12 +2,12 @@ package uk.nhs.careconnect.ri.dao.Patient;
 
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.Enumerations;
-import org.hl7.fhir.instance.model.Patient;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
+
 
 @Component
 public class PatientEntityToFHIRPatientTransformer implements Transformer<PatientEntity, Patient> {
@@ -16,7 +16,8 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
     public Patient transform(final PatientEntity patientEntity) {
         final Patient patient = new Patient();
 
-        
+        patient.setMeta(new Meta().addProfile(CareConnectProfile.Patient_1));
+
 
         for(int f=0;f<patientEntity.getIdentifiers().size();f++)
         {
@@ -43,6 +44,8 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             AddressEntity adressEnt = patientEntity.getAddresses().get(f).getAddress();
 
             Address adr= new Address();
+
+            adr.setUse(Address.AddressUse.HOME);
             if (adressEnt.getAddress1()!="")
             {
                 adr.addLine(adressEnt.getAddress1());
@@ -65,6 +68,9 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             }
             patient.addAddress(adr);
         }
+
+        patient.setActive(true);
+
         if (patientEntity.getGender() !=null)
         {
             switch (patientEntity.getGender())
@@ -83,6 +89,18 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
                     break;
             }
         }
+        if (patientEntity.getGP() != null) {
+            patient.addCareProvider()
+                    .setDisplay(patientEntity.getGP().getPrefix()+" "+patientEntity.getGP().getGivenName()+" "+patientEntity.getGP().getFamilyName())
+                    .setReference("Practitioner/"+patientEntity.getGP().getId());
+
+        }
+
+        if (patientEntity.getPractice()!=null) {
+            patient.setManagingOrganization(new Reference("Organization/"+patientEntity.getPractice().getId()));
+            patient.getManagingOrganization().setDisplay(patientEntity.getPractice().getName());
+        }
+
         return patient;
 
     }
