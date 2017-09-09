@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         format = { "pretty", "html:target/cucumber" }
         , snippets= SnippetType.CAMELCASE
-        , features = "classpath:cucumber/basicApiTest.feature"
+        , features = "classpath:cucumber/JPAPatientTest.feature"
 )
 
 public class basicApiTest {

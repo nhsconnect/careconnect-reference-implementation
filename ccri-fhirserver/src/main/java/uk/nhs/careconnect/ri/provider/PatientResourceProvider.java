@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
-import uk.nhs.careconnect.ri.dao.Patient.PatientDao;
+import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class PatientResourceProvider implements IResourceProvider {
     private OrganizationResourceProvider organizationResourceProvider;
 
     @Autowired
-    private PatientDao patientDao;
+    private PatientRepository patientDao;
 
 
     @Override

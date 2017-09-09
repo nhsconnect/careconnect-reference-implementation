@@ -9,7 +9,7 @@ import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetDao;
+import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +18,7 @@ public class ValueSetResourceProvider implements IResourceProvider {
 
 
     @Autowired
-    private ValueSetDao valueSetDao;
+    private ValueSetRepository valueSetDao;
 
     @Override
     public Class<ValueSet> getResourceType() {

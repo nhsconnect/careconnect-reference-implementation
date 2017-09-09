@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
-import uk.nhs.careconnect.ri.dao.Organisation.OrganisationDao;
+import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class OrganizationResourceProvider implements IResourceProvider {
 
     @Autowired
-    private OrganisationDao organisationDao;
+    private OrganisationRepository organisationDao;
 
     @Override
     public Class<Organization> getResourceType() {

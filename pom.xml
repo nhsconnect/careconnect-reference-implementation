@@ -28,10 +28,10 @@
 
     <modules>
         <module>cc-core</module>
-        <module>ccri-dbcore</module>
+      <!-- Hangover from GPConnect <module>ccri-dbcore</module> -->
         <module>ccri-database</module>
         <module>ccri-fhirserver</module>
-        <module>ccri-integrationtest</module>
+     <!-- TODO Removed is a mock test  <module>ccri-integrationtest</module> -->
     </modules>
 
     <distributionManagement>

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.SystemCode;
-import uk.nhs.careconnect.ri.dao.Location.LocationDao;
+import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class LocationResourceProvider implements IResourceProvider {
 
 
     @Autowired
-    private LocationDao locationDao;
+    private LocationRepository locationDao;
 
     @Override
     public Class<? extends IBaseResource> getResourceType() {

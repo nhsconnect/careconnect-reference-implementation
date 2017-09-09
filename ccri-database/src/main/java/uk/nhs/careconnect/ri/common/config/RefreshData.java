@@ -1,11 +1,9 @@
 package uk.nhs.careconnect.ri.common.config;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import uk.nhs.careconnect.ri.entity.order.OrderStore;
 
 @Service
 public class RefreshData {
@@ -17,22 +15,22 @@ public class RefreshData {
     @Value("${datasource.refresh.slots.filename}")
     private String slotsFilename;
 
-    @Autowired
-    private OrderStore orderStore;
+   // @Autowired
+   // private OrderStore orderStore;
 
 
 
     // Overnight cleardown of test data
     @Scheduled(cron = "${datasource.cleardown.cron}")
     public void scheduledResetOfData() {
-        clearTasks();
+       // clearTasks();
        // resetAppointments();
     }
 
-    private void clearTasks() {
+/*  private void clearTasks() {
         orderStore.clearOrders();
     }
-
+*/
 
 /*
     private SlotDetail createSlot(Long typeCode, String typeDisplay, long scheduleReference, String freeBusy, Date startDate, Date endDate, Date lastUpdated) {
