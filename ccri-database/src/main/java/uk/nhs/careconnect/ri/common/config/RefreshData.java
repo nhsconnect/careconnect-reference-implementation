@@ -21,7 +21,7 @@ public class RefreshData {
 
 
     // Overnight cleardown of test data
-    @Scheduled(cron = "${datasource.cleardown.cron}")
+    @Scheduled(cron = "${datasource.cleardown.cron:0 19 21 * * *}")
     public void scheduledResetOfData() {
        // clearTasks();
        // resetAppointments();

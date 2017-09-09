@@ -15,6 +15,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Properties;
 
 @Configuration
 @EnableScheduling
@@ -24,27 +25,29 @@ import javax.persistence.EntityManagerFactory;
                        basePackages = "uk.nhs.careconnect.ri")
 public class DataSourceConfig {
 
-    @Value("${datasource.vendor:mysql}")
+    @Value("${datasource.vendor:derby}")
     private String vendor;
 
-    @Value("${datasource.host:127.0.0.1}")
+    @Value("${datasource.host:directory}")
     private String host;
 
-    @Value("${datasource.port:3306}")
-    private String port;
+    @Value("${datasource.path:target/jpaserver_derby_files;create=true}")
+    private String path;
 
-    @Value("${datasource.schema:careconnect}")
-    private String schema;
-
-    @Value("${datasource.username:fhirjpa}")
+    @Value("${datasource.username:}")
     private String username;
 
-    @Value("${datasource.password:fhirjpa}")
+    @Value("${datasource.password:}")
     private String password;
 
-    @Value("${datasource.showSql:true}")
+    @Value("${datasource.showSql:false}")
     private boolean showSql;
 
+    @Value("${datasource.showDdl:false}")
+    private boolean showDdl;
+
+    @Value("${datasource.dialect:org.hibernate.dialect.DerbyTenSevenDialect}")
+    private String dialect;
 
     @Value("${datasource.driver:org.apache.derby.jdbc.EmbeddedDriver}")
     private String driverName;
@@ -57,14 +60,14 @@ public class DataSourceConfig {
         final DataSource dataSource = new DataSource();
         System.out.println("In Data Source");
         dataSource.setDriverClassName(driverName);
-        dataSource.setUrl("jdbc:" + vendor + "://" + host + ":" + port + "/" + schema);
+        dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
     //    log.info(dataSource.getUrl());
         System.out.println(dataSource.getUrl());
         dataSource.setUsername(username);
         dataSource.setPassword(password);
 
         dataSource.setValidationQuery("select 1 as dbcp_connection_test");
-        dataSource.setTestOnBorrow(true);
+        //dataSource.setTestOnBorrow(true);
 
 
         return dataSource;
@@ -82,16 +85,35 @@ public class DataSourceConfig {
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setShowSql(showSql);
-        vendorAdapter.setGenerateDdl(true);
+        vendorAdapter.setGenerateDdl(showDdl);
         vendorAdapter.setDatabase(database);
+
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("uk.nhs.careconnect.ri.entity");
         factory.setDataSource(dataSource);
+        factory.setJpaProperties(jpaProperties());
         factory.afterPropertiesSet();
 
         return factory.getObject();
+    }
+    private Properties jpaProperties() {
+        Properties extraProperties = new Properties();
+        extraProperties.put("hibernate.dialect", dialect);
+        extraProperties.put("hibernate.format_sql", "true");
+        extraProperties.put("hibernate.show_sql", showSql);
+        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+        extraProperties.put("hibernate.jdbc.batch_size", "20");
+        extraProperties.put("hibernate.cache.use_query_cache", "false");
+        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
+        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+//		extraProperties.put("hibernate.search.default.worker.execution", "async");
+        return extraProperties;
     }
 
     @Bean
