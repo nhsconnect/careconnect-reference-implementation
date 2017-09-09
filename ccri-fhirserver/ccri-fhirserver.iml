@@ -163,6 +163,9 @@
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" name="Maven: com.mysema.commons:mysema-commons-lang:0.2.4" level="project" />
     <orderEntry type="library" name="Maven: com.infradna.tool:bridge-method-annotation:1.13" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derby:10.13.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbynet:10.13.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyclient:10.13.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven.plugins:maven-surefire-plugin:2.20" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-plugin-api:2.2.1" level="project" />
@@ -203,6 +206,6 @@
     <orderEntry type="library" name="Maven: org.apache.maven.surefire:surefire-logger-api:2.20" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-toolchain:2.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven.plugin-tools:maven-plugin-annotations:3.3" level="project" />
-    <orderEntry type="module" module-name="careconnect-core" />
+    <orderEntry type="module" module-name="cc-core" />
   </component>
 </module>

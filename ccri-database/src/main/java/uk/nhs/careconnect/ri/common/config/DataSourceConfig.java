@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.common.config;
 
-import com.mysql.jdbc.Driver;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +45,10 @@ public class DataSourceConfig {
     @Value("${datasource.showSql:true}")
     private boolean showSql;
 
+
+    @Value("${datasource.driver:org.apache.derby.jdbc.EmbeddedDriver}")
+    private String driverName;
+
     //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
 
 
@@ -53,7 +56,7 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         final DataSource dataSource = new DataSource();
         System.out.println("In Data Source");
-        dataSource.setDriverClassName(Driver.class.getName());
+        dataSource.setDriverClassName(driverName);
         dataSource.setUrl("jdbc:" + vendor + "://" + host + ":" + port + "/" + schema);
     //    log.info(dataSource.getUrl());
         System.out.println(dataSource.getUrl());
