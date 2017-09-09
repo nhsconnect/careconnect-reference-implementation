@@ -10,7 +10,7 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerIdentifier;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -21,20 +21,17 @@ import java.util.List;
 @Transactional
 public class RIPractitionerRepository implements PractitionerRepository {
 
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
-
+    @PersistenceContext
+    EntityManager em;
     @Autowired
     private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
 
     public void save(PractitionerEntity practitioner)
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(practitioner);
     }
 
     public Practitioner read(IdType theId) {
-        EntityManager em = entityManagerFactory.createEntityManager();
 
         PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Integer.parseInt(theId.getIdPart()));
 
@@ -47,7 +44,6 @@ public class RIPractitionerRepository implements PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier
     )
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         List<PractitionerEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

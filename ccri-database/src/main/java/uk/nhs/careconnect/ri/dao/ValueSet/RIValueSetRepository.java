@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -27,9 +27,8 @@ import java.util.List;
 @Transactional
 public class RIValueSetRepository implements ValueSetRepository {
 
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
-
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     private ValueSetEntityToFHIRValueSetTransformer valuesetEntityToFHIRValuesetTransformer;
@@ -39,7 +38,6 @@ public class RIValueSetRepository implements ValueSetRepository {
 
     public void save(ValueSetEntity valueset)
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(valueset);
     }
 
@@ -49,7 +47,6 @@ public class RIValueSetRepository implements ValueSetRepository {
 
     public ValueSet create(ValueSet valueSet) {
         ValueSetEntity valueSetEntity = null;
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
 
         if (valueSet.hasId()) {
@@ -182,7 +179,6 @@ public class RIValueSetRepository implements ValueSetRepository {
 
 
     public ValueSet read(IdType theId) {
-        EntityManager em = entityManagerFactory.createEntityManager();
 
         ValueSetEntity valuesetEntity = (ValueSetEntity) em.find(ValueSetEntity.class,Integer.parseInt(theId.getIdPart()));
 
@@ -195,7 +191,6 @@ public class RIValueSetRepository implements ValueSetRepository {
             @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
     )
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         List<ValueSetEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

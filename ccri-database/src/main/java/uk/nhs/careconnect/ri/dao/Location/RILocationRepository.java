@@ -10,7 +10,7 @@ import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationIdentifier;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -21,20 +21,18 @@ import java.util.List;
 @Transactional
 public class RILocationRepository implements LocationRepository {
 
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     private LocationEntityToFHIRLocationTransformer locationEntityToFHIRLocationTransformer;
 
     public void save(LocationEntity location)
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(location);
     }
 
     public Location read(IdType theId) {
-        EntityManager em = entityManagerFactory.createEntityManager();
 
         LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class,Long.parseLong(theId.getIdPart()));
 
@@ -48,8 +46,7 @@ public class RILocationRepository implements LocationRepository {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier
     )
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
-        List<LocationEntity> qryResults = null;
+         List<LocationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 

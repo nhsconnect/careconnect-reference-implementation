@@ -1,20 +1,31 @@
-package uk.nhs.careconnect.rijpatest;
+package uk.nhs.careconnect.ri.jpatest;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
 
+@ContextConfiguration("file:/test/resources/cucumber.xml")
 public class PatientStepsDef {
+
+    @Autowired
+    PatientRepository patientDAO;
+
     @Given("^I add a Patient with NHS Number (\\d+)$")
     public void i_add_a_Patient_with_NHS_Number(int arg1) throws Throwable {
+       // patientDAO.read(new IdType().setValue("1"));
+
         // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        //throw new PendingException();
     }
 
     @Then("^the result should be a valid FHIR Bundle$")
     public void the_result_should_be_a_valid_FHIR_Bundle() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+      //  patientDAO.read(new IdType().setValue("1"));
+        //throw new PendingException();
     }
 
     @Then("^the results should be valid CareConnect Profiles$")

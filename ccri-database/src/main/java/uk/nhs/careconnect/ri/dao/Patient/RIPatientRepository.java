@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -23,20 +23,21 @@ import java.util.List;
 @Transactional
 public class RIPatientRepository implements PatientRepository {
 
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
 
+    @Transactional
+    @Override
     public void save(PatientEntity patient)
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(patient);
     }
 
     public Patient read(IdType theId) {
-        EntityManager em = entityManagerFactory.createEntityManager();
 
         PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
@@ -54,7 +55,6 @@ public class RIPatientRepository implements PatientRepository {
             @OptionalParam(name= Patient.SP_NAME) StringParam name
     )
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         List<PatientEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

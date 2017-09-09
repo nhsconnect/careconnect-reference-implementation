@@ -10,7 +10,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -21,20 +21,18 @@ import java.util.List;
 @Transactional
 public class RIOrganisationRepository implements OrganisationRepository {
 
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     private OrganisationEntityToFHIROrganizationTransformer organizationEntityToFHIROrganizationTransformer;
 
     public void save(OrganisationEntity organization)
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         em.persist(organization);
     }
 
     public Organization read(IdType theId) {
-        EntityManager em = entityManagerFactory.createEntityManager();
 
         OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class,Long.parseLong(theId.getIdPart()));
 
@@ -47,7 +45,6 @@ public class RIOrganisationRepository implements OrganisationRepository {
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier
     )
     {
-        EntityManager em = entityManagerFactory.createEntityManager();
         List<OrganisationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
