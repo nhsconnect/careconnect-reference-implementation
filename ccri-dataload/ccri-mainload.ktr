@@ -656,7 +656,7 @@ VALUES (1,'C81010', 3, 1),
  (2,'RTG', 3, 2);
 
 INSERT IGNORE INTO `careconnect`.`OrganisationTelecom`
-(`ORGANISATION_TELECOM_ID`,`value`,`identifierUse`,`SYSTEM_ID`,`ORGANISATION_ID`)
+(`ORGANISATION_TELECOM_ID`,`value`,`telecomUse`,`SYSTEM_ID`,`ORGANISATION_ID`)
 VALUES (1,'0115 9737320','work', 6, 1),
  (2,'01332 340131','work', 6, 2);
 

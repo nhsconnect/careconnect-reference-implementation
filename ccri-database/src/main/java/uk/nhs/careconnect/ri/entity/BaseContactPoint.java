@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.entity;
 
-import org.hl7.fhir.instance.model.Identifier;
+import org.hl7.fhir.instance.model.ContactPoint;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
 import javax.persistence.*;
@@ -18,7 +18,7 @@ public class BaseContactPoint {
     private String value;
 
 	@Enumerated(EnumType.STRING)
-    Identifier.IdentifierUse identifierUse;
+    ContactPoint.ContactPointUse telecomUse;
 
     public SystemEntity getSystem() {
         return this.systemEntity;
@@ -30,6 +30,6 @@ public class BaseContactPoint {
     public void setValue(String value) { this.value = value; }
     public String getValue() { 	return this.value; }
 
-	public void setUse(Identifier.IdentifierUse use) { this.identifierUse = use; }
-	public Identifier.IdentifierUse getUse() { 	return this.identifierUse; }
+	public void setTelecomUse(ContactPoint.ContactPointUse use) { this.telecomUse = use; }
+	public ContactPoint.ContactPointUse getTelecomUse() { 	return this.telecomUse; }
 }

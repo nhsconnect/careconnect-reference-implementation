@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao.Location;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
+import org.hl7.fhir.instance.model.ContactPoint;
 import org.hl7.fhir.instance.model.Location;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
@@ -30,10 +31,10 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
 
         for(int f=0;f<locationEntity.getTelecoms().size();f++)
         {
-            location.addIdentifier()
-                    .setSystem(locationEntity.getTelecoms().get(f).getSystem().getUri())
+            location.addTelecom()
+                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
                     .setValue(locationEntity.getTelecoms().get(f).getValue())
-                    .setUse(locationEntity.getTelecoms().get(f).getUse());
+                    .setUse(locationEntity.getTelecoms().get(f).getTelecomUse());
         }
 
 

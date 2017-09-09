@@ -5,19 +5,19 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import org.hl7.fhir.instance.model.IdType;
-import org.hl7.fhir.instance.model.Practitioner;
+import org.hl7.fhir.instance.model.Location;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.nhs.careconnect.ri.dao.Practitioner.PractitionerRepository;
+import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 
 
-public class PractitionerStepsDef {
+public class LocationStepsDef {
 
     @Autowired
-    PractitionerRepository practitionerDao;
+    LocationRepository locationDao;
 
-    Practitioner practitioner;
-    @Given("^I have these Practitioners on the RI:$")
-    public void i_have_these_Practitioners_on_the_RI(DataTable arg1) throws Throwable {
+    Location location;
+    @Given("^I have these Locations on the RI:$")
+    public void i_have_these_Locations_on_the_RI(DataTable arg1) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         // For automatic transformation, change DataTable to one of
         // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
@@ -25,9 +25,9 @@ public class PractitionerStepsDef {
         throw new PendingException();
     }
 
-    @When("^I search for Practitioner <SDSCode>$")
+    @When("^I search for Location <SDSCode>$")
     public void i_search_for_SDSCode() throws Throwable {
-        practitioner = practitionerDao.read(new IdType().setValue("1"));
+        location = locationDao.read(new IdType().setValue("1"));
     }
 
 }

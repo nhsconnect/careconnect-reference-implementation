@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.Organisation;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
+import org.hl7.fhir.instance.model.ContactPoint;
 import org.hl7.fhir.instance.model.Organization;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
@@ -33,10 +34,11 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
 
         for(int f=0;f<organisationEntity.getTelecoms().size();f++)
         {
-            organisation.addIdentifier()
-                    .setSystem(organisationEntity.getTelecoms().get(f).getSystem().getUri())
+            organisation.addContact()
+                    .addTelecom()
+                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
                     .setValue(organisationEntity.getTelecoms().get(f).getValue())
-                    .setUse(organisationEntity.getTelecoms().get(f).getUse());
+                    .setUse(organisationEntity.getTelecoms().get(f).getTelecomUse());
         }
 
 
