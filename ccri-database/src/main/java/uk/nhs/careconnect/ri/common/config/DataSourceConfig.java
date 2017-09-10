@@ -4,6 +4,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -20,6 +21,7 @@ import java.util.Properties;
 @Configuration
 @EnableScheduling
 @EnableTransactionManagement
+@PropertySource("classpath:application.properties")
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory",
                        transactionManagerRef = "transactionManager",
                        basePackages = "uk.nhs.careconnect.ri")
