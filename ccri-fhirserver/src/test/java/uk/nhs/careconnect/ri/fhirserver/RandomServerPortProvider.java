@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.fhirserver.hooks;
+package uk.nhs.careconnect.ri.fhirserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
