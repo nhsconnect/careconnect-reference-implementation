@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Sep 09 18:26:17 BST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-015e-67ad-7ec5-000009ef3ac8 
+on database directory /Development/NHSD/careconnect-reference-implementation/ccri-database/target/jpaserver_derby_files with class loader sun.misc.Launcher$AppClassLoader@6e0be858 
+Loaded from file:/Users/kevinmayfield/.m2/repository/org/apache/derby/derby/10.13.1.1/derby-10.13.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-b13
+user.dir=/Development/NHSD/careconnect-reference-implementation/ccri-database
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.12.6
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

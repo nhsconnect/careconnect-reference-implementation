@@ -1,0 +1,9 @@
+/*
+-- Query: SELECT * FROM careconnect.CodeSystem
+LIMIT 0, 1000
+
+-- Date: 2017-09-08 18:16
+*/
+INSERT INTO `CodeSystem` (`CODESYSTEM_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`CODE_SYSTEM_URI`,`name`) VALUES (1,NULL,'2017-09-08 15:57:20',NULL,NULL,'https://fhir-test.hl7.org.uk/CareConnect-NHSNumberVerificationStatus-1',NULL);
+INSERT INTO `CodeSystem` (`CODESYSTEM_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`CODE_SYSTEM_URI`,`name`) VALUES (2,NULL,'2017-09-08 16:29:47',NULL,NULL,'https://fhir.hl7.org.uk/CareConnect-EthnicCategory-1',NULL);
+INSERT INTO `CodeSystem` (`CODESYSTEM_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`CODE_SYSTEM_URI`,`name`) VALUES (3,NULL,'2017-09-08 18:03:36',NULL,NULL,'http://hl7.org/fhir/v3/MaritalStatus',NULL);
