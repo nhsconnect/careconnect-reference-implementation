@@ -45,9 +45,11 @@ public class RIValueSetRepository implements ValueSetRepository {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
+    @Transactional
+    @Override
     public ValueSet create(ValueSet valueSet) {
         ValueSetEntity valueSetEntity = null;
-        em.getTransaction().begin();
+
 
         if (valueSet.hasId()) {
     // Only look up if the id is numeric else need to do a search
@@ -168,12 +170,9 @@ public class RIValueSetRepository implements ValueSetRepository {
         em.persist(valueSetEntity);
 
 
-        em.getTransaction().commit();
-
         log.info("Called PERSIST id="+valueSetEntity.getId().toString());
         valueSet.setId(valueSetEntity.getId().toString());
 
-        em.close();
         return valueSet;
     }
 

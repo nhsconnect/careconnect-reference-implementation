@@ -5,7 +5,6 @@ import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,16 +25,6 @@ public class ValueSetEntity extends BaseResource {
 	public void setStrId(String strId) { this.strId = strId; }
 	public String getStrId() { return strId; }
 
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "modifiedDate", nullable = true)
-	private Date updated;
-	public Date getUpdatedDate() { return updated; }
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "createdDate", nullable = true)
-	private Date createdDate;
-	public Date getCreatedDate() { return createdDate; }
 	
 		
 		@Column(name = "title")
