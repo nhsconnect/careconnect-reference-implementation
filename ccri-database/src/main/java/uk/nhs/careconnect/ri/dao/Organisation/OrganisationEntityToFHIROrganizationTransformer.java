@@ -4,10 +4,12 @@ package uk.nhs.careconnect.ri.dao.Organisation;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
 import org.hl7.fhir.instance.model.ContactPoint;
+import org.hl7.fhir.instance.model.Meta;
 import org.hl7.fhir.instance.model.Organization;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 
 @Component
 public class OrganisationEntityToFHIROrganizationTransformer implements Transformer<OrganisationEntity, Organization> {
@@ -16,7 +18,17 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
     public Organization transform(final OrganisationEntity organisationEntity) {
         final Organization organisation = new Organization();
 
-        
+        Meta meta = new Meta().addProfile(CareConnectProfile.Organization_1);
+
+        if (organisationEntity.getUpdated() != null) {
+            meta.setLastUpdated(organisationEntity.getUpdated());
+        }
+        else {
+            if (organisationEntity.getCreated() != null) {
+                meta.setLastUpdated(organisationEntity.getCreated());
+            }
+        }
+        organisation.setMeta(meta);
 
         for(int f=0;f<organisationEntity.getIdentifiers().size();f++)
         {
@@ -66,6 +78,18 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
             if (adressEnt.getPostcode() !=null)
             {
                 adr.setPostalCode(adressEnt.getPostcode());
+            }
+            if (adressEnt.getCity() != null) {
+                adr.setCity(adressEnt.getCity());
+            }
+            if (adressEnt.getCounty() != null) {
+                adr.setDistrict(adressEnt.getCounty());
+            }
+            if (organisationEntity.getAddresses().get(f).getAddressType() != null) {
+                adr.setType(organisationEntity.getAddresses().get(f).getAddressType());
+            }
+            if (organisationEntity.getAddresses().get(f).getAddressUse() != null) {
+                adr.setUse(organisationEntity.getAddresses().get(f).getAddressUse());
             }
             organisation.addAddress(adr);
         }

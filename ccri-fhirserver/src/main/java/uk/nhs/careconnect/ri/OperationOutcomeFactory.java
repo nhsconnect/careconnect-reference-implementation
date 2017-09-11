@@ -9,10 +9,10 @@ public class OperationOutcomeFactory {
 
     private OperationOutcomeFactory() { }
 
-    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, String code, OperationOutcome.IssueType issueType) {
+    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, OperationOutcome.IssueSeverity code, OperationOutcome.IssueType issueType) {
         CodeableConcept codeableConcept = new CodeableConcept()
                 .setText(exception.getMessage());
-        codeableConcept.addCoding().setDisplay(code);
+
 
         OperationOutcome operationOutcome = new OperationOutcome();
 

@@ -28,6 +28,12 @@ public class AddressEntity extends BaseResource {
     @Column(name = "address_5")
     private String address5;
 
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "county")
+    private String county;
+
     @Column(name = "postcode")
     private String postcode;
 
@@ -78,4 +84,10 @@ public class AddressEntity extends BaseResource {
     public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
+
+    public String getCity() { return this.city;}
+    public void setCity(String city) { this.city = city; }
+
+    public String getCounty() { return this.county; }
+    public void setCounty(String county) { this.county = county; }
 }

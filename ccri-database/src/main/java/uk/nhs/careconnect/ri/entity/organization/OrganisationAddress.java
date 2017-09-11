@@ -2,12 +2,13 @@ package uk.nhs.careconnect.ri.entity.organization;
 
 
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "OrganisationAddress")
-public class OrganisationAddress {
+public class OrganisationAddress extends BaseAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +22,8 @@ public class OrganisationAddress {
     @ManyToOne
     @JoinColumn(name = "ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ORGANISATION_ADDRESS"))
     private OrganisationEntity organisationEntity;
+
+
 
     public Long getPID()
     {

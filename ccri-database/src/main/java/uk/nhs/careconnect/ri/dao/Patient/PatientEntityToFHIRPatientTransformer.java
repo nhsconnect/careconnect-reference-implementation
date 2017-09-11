@@ -95,6 +95,18 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             {
                 adr.setPostalCode(adressEnt.getPostcode());
             }
+            if (adressEnt.getCity() != null) {
+                adr.setCity(adressEnt.getCity());
+            }
+            if (adressEnt.getCounty() != null) {
+                adr.setDistrict(adressEnt.getCounty());
+            }
+            if (patientEntity.getAddresses().get(f).getAddressType() != null) {
+                adr.setType(patientEntity.getAddresses().get(f).getAddressType());
+            }
+            if (patientEntity.getAddresses().get(f).getAddressUse() != null) {
+                adr.setUse(patientEntity.getAddresses().get(f).getAddressUse());
+            }
             patient.addAddress(adr);
         }
 

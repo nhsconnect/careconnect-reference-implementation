@@ -4,9 +4,11 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
 import org.hl7.fhir.instance.model.ContactPoint;
 import org.hl7.fhir.instance.model.Location;
+import org.hl7.fhir.instance.model.Meta;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 
 @Component
 public class LocationEntityToFHIRLocationTransformer implements Transformer<LocationEntity, Location> {
@@ -15,7 +17,17 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
     public Location transform(final LocationEntity locationEntity) {
         final Location location = new Location();
 
+        Meta meta = new Meta().addProfile(CareConnectProfile.Organization_1);
 
+        if (locationEntity.getUpdated() != null) {
+            meta.setLastUpdated(locationEntity.getUpdated());
+        }
+        else {
+            if (locationEntity.getCreated() != null) {
+                meta.setLastUpdated(locationEntity.getCreated());
+            }
+        }
+        location.setMeta(meta);
 
         for(int f=0;f<locationEntity.getIdentifiers().size();f++)
         {
@@ -65,6 +77,18 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
             if (adressEnt.getPostcode() !=null)
             {
                 adr.setPostalCode(adressEnt.getPostcode());
+            }
+            if (adressEnt.getCity() != null) {
+                adr.setCity(adressEnt.getCity());
+            }
+            if (adressEnt.getCounty() != null) {
+                adr.setDistrict(adressEnt.getCounty());
+            }
+            if (locationEntity.getAddresses().get(f).getAddressType() != null) {
+                adr.setType(locationEntity.getAddresses().get(f).getAddressType());
+            }
+            if (locationEntity.getAddresses().get(f).getAddressUse() != null) {
+                adr.setUse(locationEntity.getAddresses().get(f).getAddressUse());
             }
             location.setAddress(adr);
         }

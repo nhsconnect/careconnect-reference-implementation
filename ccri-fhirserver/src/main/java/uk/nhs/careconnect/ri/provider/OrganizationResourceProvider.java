@@ -13,7 +13,6 @@ import org.hl7.fhir.instance.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
 
 import java.util.List;
@@ -36,8 +35,8 @@ public class OrganizationResourceProvider implements IResourceProvider {
 
         if ( organisation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
-                    new ResourceNotFoundException("No patient details found for patient ID: " + organisationId.getIdPart()),
-                    SystemCode.PRACTITIONER_NOT_FOUND, OperationOutcome.IssueType.NOTFOUND);
+                    new ResourceNotFoundException("No Organization/" + organisationId.getIdPart()),
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
         }
         return organisation;
     }

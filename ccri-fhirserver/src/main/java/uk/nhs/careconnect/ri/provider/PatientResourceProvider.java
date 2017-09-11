@@ -12,7 +12,6 @@ import org.hl7.fhir.instance.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +68,7 @@ public class PatientResourceProvider implements IResourceProvider {
         if (patient == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No patient details found for patient ID: " + internalId.getIdPart()),
-                    SystemCode.PATIENT_NOT_FOUND, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
         }
 
         return patient;

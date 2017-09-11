@@ -15,7 +15,6 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.SystemCode;
 import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 
 import java.util.List;
@@ -45,8 +44,8 @@ public class LocationResourceProvider implements IResourceProvider {
 
         if ( location == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
-                    new ResourceNotFoundException("No patient details found for patient ID: " + locationId.getIdPart()),
-                    SystemCode.PRACTITIONER_NOT_FOUND, OperationOutcome.IssueType.NOTFOUND);
+                    new ResourceNotFoundException("No Location/ " + locationId.getIdPart()),
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
         }
 
         return location;

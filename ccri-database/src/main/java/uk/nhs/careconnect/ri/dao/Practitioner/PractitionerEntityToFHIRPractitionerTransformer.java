@@ -4,10 +4,12 @@ package uk.nhs.careconnect.ri.dao.Practitioner;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
 import org.hl7.fhir.instance.model.Enumerations;
+import org.hl7.fhir.instance.model.Meta;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 
 @Component
 public class PractitionerEntityToFHIRPractitionerTransformer implements Transformer<PractitionerEntity, Practitioner> {
@@ -16,7 +18,17 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
     public Practitioner transform(final PractitionerEntity practitionerEntity) {
         final Practitioner practitioner = new Practitioner();
 
-        
+        Meta meta = new Meta().addProfile(CareConnectProfile.Practitioner_1);
+
+        if (practitionerEntity.getUpdated() != null) {
+            meta.setLastUpdated(practitionerEntity.getUpdated());
+        }
+        else {
+            if (practitionerEntity.getCreated() != null) {
+                meta.setLastUpdated(practitionerEntity.getCreated());
+            }
+        }
+        practitioner.setMeta(meta);
 
         for(int f=0;f<practitionerEntity.getIdentifiers().size();f++)
         {
@@ -66,6 +78,18 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
             if (adressEnt.getPostcode() !=null)
             {
                 adr.setPostalCode(adressEnt.getPostcode());
+            }
+            if (adressEnt.getCity() != null) {
+                adr.setCity(adressEnt.getCity());
+            }
+            if (adressEnt.getCounty() != null) {
+                adr.setDistrict(adressEnt.getCounty());
+            }
+            if (practitionerEntity.getAddresses().get(f).getAddressType() != null) {
+                adr.setType(practitionerEntity.getAddresses().get(f).getAddressType());
+            }
+            if (practitionerEntity.getAddresses().get(f).getAddressUse() != null) {
+                adr.setUse(practitionerEntity.getAddresses().get(f).getAddressUse());
             }
             practitioner.addAddress(adr);
         }

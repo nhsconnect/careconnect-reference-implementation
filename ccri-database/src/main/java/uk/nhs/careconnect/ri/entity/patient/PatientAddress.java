@@ -1,14 +1,14 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 
-import org.hl7.fhir.instance.model.Address;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PatientAddress")
-public class PatientAddress {
+public class PatientAddress extends BaseAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +22,6 @@ public class PatientAddress {
     @ManyToOne
     @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_ADDRESS"))
     private PatientEntity patientEntity;
-
-    @Enumerated(EnumType.ORDINAL)
-    Address.AddressUse addressUse;
 
     public Long getId()
     {
@@ -44,10 +41,4 @@ public class PatientAddress {
     }
     public void setAddress(AddressEntity addressEntity) { this.address = addressEntity; }
 
-    public Address.AddressUse getAddressUse() {
-        return addressUse;
-    }
-    public void setAddressUse(Address.AddressUse addressUse) {
-        this.addressUse = addressUse;
-    }
 }
