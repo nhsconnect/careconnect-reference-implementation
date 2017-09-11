@@ -1,6 +1,7 @@
 
 package uk.nhs.careconnect.ri.entity.patient;
 
+import org.hl7.fhir.instance.model.HumanName;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -30,7 +31,8 @@ public class PatientEntity extends BaseResource {
     @Column(name = "family_name")
     private String familyName;
 
-
+    @Enumerated(EnumType.ORDINAL)
+    private HumanName.NameUse nameUse;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
@@ -68,6 +70,16 @@ public class PatientEntity extends BaseResource {
     @JoinColumn(name="NHSverification")
     private ConceptEntity NHSVerificationCode;
 
+    @Column(name="active")
+    private Boolean active;
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+    public Boolean getActiveRecord() {
+        return this.active;
+    }
+
     public ConceptEntity getEthnicCode() {
         return this.ethnicCode;
     }
@@ -88,10 +100,14 @@ public class PatientEntity extends BaseResource {
     }
 
 
-    /*
-    @Column(name = "sensitive_flag")
-    private boolean sensitive;
-*/
+    public HumanName.NameUse getNameUse() {
+        return this.nameUse;
+    }
+
+    public void setNameUse(HumanName.NameUse nameUse) {
+        this.nameUse = nameUse;
+    }
+
     public Long getId() {
         return id;
     }
@@ -161,15 +177,6 @@ public class PatientEntity extends BaseResource {
 		this.registrationEndDateTime = registrationEndDateTime;
 	}
 
-/*
-    public boolean isSensitive() {
-        return sensitive;
-    }
-
-    public void setSensitive(boolean sensitive) {
-        this.sensitive = sensitive;
-    }
-*/
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
     private List<PatientIdentifier> identifiers = new ArrayList<>();
@@ -220,4 +227,26 @@ public class PatientEntity extends BaseResource {
         return gp;
     }
     public void setGp(PractitionerEntity gp) { this.gp = gp; }
+
+
+    // Patient Telecom
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
+    private List<PatientTelecom> telecoms;
+    public void setTelecoms(List<PatientTelecom> telecoms) {
+        this.telecoms = telecoms;
+    }
+    public List<PatientTelecom> getTelecoms( ) {
+        if (telecoms == null) {
+            telecoms = new ArrayList<PatientTelecom>();
+        }
+        return this.telecoms;
+    }
+    public List<PatientTelecom> addTelecom(PatientTelecom pi) {
+        telecoms.add(pi);
+        return telecoms; }
+
+    public List<PatientTelecom> removeTelecom(PatientTelecom telecom){
+        addresses.remove(telecom); return telecoms; }
+
+
 }

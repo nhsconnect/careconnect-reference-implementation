@@ -21,7 +21,7 @@ public class BaseIdentifier {
     @Column(name = "listOrder")
     private Integer order;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     org.hl7.fhir.instance.model.Identifier.IdentifierUse identifierUse;
 
 

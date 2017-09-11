@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.dao.Practitioner;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.ContactPoint;
 import org.hl7.fhir.instance.model.Enumerations;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
         for(int f=0;f<practitionerEntity.getTelecoms().size();f++)
         {
             practitioner.addTelecom()
-                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
+                    .setSystem(practitionerEntity.getTelecoms().get(f).getSystem())
                     .setValue(practitionerEntity.getTelecoms().get(f).getValue())
                     .setUse(practitionerEntity.getTelecoms().get(f).getTelecomUse());
         }

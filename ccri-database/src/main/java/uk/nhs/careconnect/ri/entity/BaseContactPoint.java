@@ -1,30 +1,31 @@
 package uk.nhs.careconnect.ri.entity;
 
 import org.hl7.fhir.instance.model.ContactPoint;
-import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.MappedSuperclass;
 
 
 @MappedSuperclass
 public class BaseContactPoint {
 
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SYSTEM_ID")
-	private SystemEntity systemEntity;
-
     @Column(name = "value")
     private String value;
 
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.ORDINAL)
     ContactPoint.ContactPointUse telecomUse;
 
-    public SystemEntity getSystem() {
-        return this.systemEntity;
+    @Enumerated(EnumType.ORDINAL)
+    ContactPoint.ContactPointSystem system;
+
+
+    public ContactPoint.ContactPointSystem getSystem() {
+        return this.system;
     }
-    public void setSystem(SystemEntity systemEntity) {
-        this.systemEntity = systemEntity;
+    public void setSystem(ContactPoint.ContactPointSystem systemEntity) {
+        this.system = systemEntity;
     }
 
     public void setValue(String value) { this.value = value; }

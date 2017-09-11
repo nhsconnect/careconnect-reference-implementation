@@ -87,6 +87,13 @@
             <version>4.2.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
+            <version>${hapi-fhir-version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- TESTING -->
 

@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 
+import org.hl7.fhir.instance.model.Address;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 
 import javax.persistence.*;
@@ -22,7 +23,10 @@ public class PatientAddress {
     @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_ADDRESS"))
     private PatientEntity patientEntity;
 
-    public Long getPID()
+    @Enumerated(EnumType.ORDINAL)
+    Address.AddressUse addressUse;
+
+    public Long getId()
     {
         return this.myId;
     }
@@ -40,6 +44,10 @@ public class PatientAddress {
     }
     public void setAddress(AddressEntity addressEntity) { this.address = addressEntity; }
 
-
-
+    public Address.AddressUse getAddressUse() {
+        return addressUse;
+    }
+    public void setAddressUse(Address.AddressUse addressUse) {
+        this.addressUse = addressUse;
+    }
 }

@@ -78,6 +78,7 @@ public class RIPatientRepository implements PatientRepository {
 
         if (familyName != null)
         {
+
             Predicate p = builder.equal(root.get("familyName"),familyName.getValue());
             predList.add(p);
         }
@@ -87,6 +88,19 @@ public class RIPatientRepository implements PatientRepository {
             predList.add(p);
         }
 
+        if (gender != null)
+        {
+            Predicate p = builder.equal(root.get("gender"),gender.getValue());
+            predList.add(p);
+        }
+
+        if (name != null)
+        {
+            Predicate pgiven = builder.like(root.get("givenName"),"%"+name.getValue()+"%");
+            Predicate pfamily = builder.like(root.get("familyName"),"%"+name.getValue()+"%");
+            Predicate p = builder.or(pfamily,pgiven);
+            predList.add(p);
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
@@ -100,10 +114,8 @@ public class RIPatientRepository implements PatientRepository {
         }
 
         qryResults = em.createQuery(criteria).getResultList();
-
         for (PatientEntity patientEntity : qryResults)
         {
-           // log.trace("HAPI Custom = "+doc.getId());
             Patient patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
             results.add(patient);
         }

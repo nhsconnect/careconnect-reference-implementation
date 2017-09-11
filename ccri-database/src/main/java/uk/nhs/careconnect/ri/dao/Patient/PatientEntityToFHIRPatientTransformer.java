@@ -18,7 +18,17 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
     public Patient transform(final PatientEntity patientEntity) {
         final Patient patient = new Patient();
 
-        patient.setMeta(new Meta().addProfile(CareConnectProfile.Patient_1));
+        Meta meta = new Meta().addProfile(CareConnectProfile.Patient_1);
+
+        if (patientEntity.getUpdated() != null) {
+            meta.setLastUpdated(patientEntity.getUpdated());
+        }
+        else {
+            if (patientEntity.getCreated() != null) {
+                meta.setLastUpdated(patientEntity.getCreated());
+            }
+        }
+        patient.setMeta(meta);
 
 
         for(int f=0;f<patientEntity.getIdentifiers().size();f++)
@@ -46,11 +56,13 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         patient.setId(patientEntity.getId().toString());
 
-        patient.addName()
+        HumanName name = patient.addName()
                 .addFamily(patientEntity.getFamilyName())
                 .addGiven(patientEntity.getGivenName())
                 .addPrefix(patientEntity.getPrefix());
-
+        if (patientEntity.getNameUse() != null) {
+            name.setUse(patientEntity.getNameUse());
+        }
         if (patientEntity.getDateOfBirth() != null)
         {
             patient.setBirthDate(patientEntity.getDateOfBirth());
@@ -86,7 +98,19 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             patient.addAddress(adr);
         }
 
-        patient.setActive(true);
+        for(int f=0;f<patientEntity.getTelecoms().size();f++)
+        {
+            patient.addTelecom()
+                    .setSystem(patientEntity.getTelecoms().get(f).getSystem())
+                    .setValue(patientEntity.getTelecoms().get(f).getValue())
+                    .setUse(patientEntity.getTelecoms().get(f).getTelecomUse());
+        }
+
+
+        if (patientEntity.getActiveRecord() != null) {
+            patient.setActive(patientEntity.getActiveRecord());
+        }
+
 
         if (patientEntity.getGender() !=null)
         {

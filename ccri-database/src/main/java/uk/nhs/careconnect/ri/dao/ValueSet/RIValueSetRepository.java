@@ -50,37 +50,8 @@ public class RIValueSetRepository implements ValueSetRepository {
     public ValueSet create(ValueSet valueSet) {
         ValueSetEntity valueSetEntity = null;
 
-
         if (valueSet.hasId()) {
-    // Only look up if the id is numeric else need to do a search
-            if (isNumeric(valueSet.getId())) {
-                valueSetEntity = (ValueSetEntity) em.find(ValueSetEntity.class, valueSet.getId());
-            }
-            // if null try a search on strId
-            if (valueSetEntity == null)
-            {
-                CriteriaBuilder builder = em.getCriteriaBuilder();
-
-                CriteriaQuery<ValueSetEntity> criteria = builder.createQuery(ValueSetEntity.class);
-                Root<ValueSetEntity> root = criteria.from(ValueSetEntity.class);
-                List<Predicate> predList = new LinkedList<Predicate>();
-                Predicate p = builder.equal(root.<String>get("strId"),valueSet.getId());
-                predList.add(p);
-                Predicate[] predArray = new Predicate[predList.size()];
-                predList.toArray(predArray);
-                if (predList.size()>0)
-                {
-                    criteria.select(root).where(predArray);
-
-                    List<ValueSetEntity> qryResults = em.createQuery(criteria).getResultList();
-
-                    for (ValueSetEntity cme : qryResults)
-                    {
-                        valueSetEntity = cme;
-                        break;
-                    }
-                }
-            }
+            valueSetEntity = findValueSetEntity(valueSet.getIdElement());
         }
 
         if (valueSetEntity == null)
@@ -145,6 +116,7 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         }
 
+
         if (valueSet.hasId())
         {
             valueSetEntity.setStrId(valueSet.getId());
@@ -176,14 +148,50 @@ public class RIValueSetRepository implements ValueSetRepository {
         return valueSet;
     }
 
+    private ValueSetEntity findValueSetEntity(IdType theId) {
+
+        ValueSetEntity valueSetEntity = null;
+        // Only look up if the id is numeric else need to do a search
+        if (isNumeric(theId.getValue())) {
+            valueSetEntity =(ValueSetEntity) em.find(ValueSetEntity.class, theId.getValue());
+        }
+
+        // if null try a search on strId
+        if (valueSetEntity == null)
+        {
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+
+            CriteriaQuery<ValueSetEntity> criteria = builder.createQuery(ValueSetEntity.class);
+            Root<ValueSetEntity> root = criteria.from(ValueSetEntity.class);
+            List<Predicate> predList = new LinkedList<Predicate>();
+            Predicate p = builder.equal(root.<String>get("strId"),theId.getValue());
+            predList.add(p);
+            Predicate[] predArray = new Predicate[predList.size()];
+            predList.toArray(predArray);
+            if (predList.size()>0)
+            {
+                criteria.select(root).where(predArray);
+
+                List<ValueSetEntity> qryResults = em.createQuery(criteria).getResultList();
+
+                for (ValueSetEntity cme : qryResults)
+                {
+                    valueSetEntity = cme;
+                    break;
+                }
+            }
+        }
+        return valueSetEntity;
+    }
+
 
     public ValueSet read(IdType theId) {
 
-        ValueSetEntity valuesetEntity = (ValueSetEntity) em.find(ValueSetEntity.class,Integer.parseInt(theId.getIdPart()));
+        ValueSetEntity valueSetEntity = findValueSetEntity(theId);
 
-        return valuesetEntity == null
+        return valueSetEntity == null
                 ? null
-                : valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
+                : valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
 
     }
     public List<ValueSet> searchValueset (
@@ -227,7 +235,6 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         for (ValueSetEntity valuesetEntity : qryResults)
         {
-           // log.trace("HAPI Custom = "+doc.getId());
             ValueSet valueset = valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
             results.add(valueset);
         }
