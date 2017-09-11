@@ -15,6 +15,7 @@ import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.IdType;
+import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Patient;
 import org.hl7.fhir.instance.model.Resource;
 import org.junit.Assert;
@@ -29,14 +30,18 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.fail;
 
 
-public class PatientStepsDef {
+public class JPAStepsDef {
 
     @Autowired
     PatientRepository patientDAO;
 
     Patient patient;
+    Organization organization;
 
     List<Patient> patientList = null;
+
+    List<Organization> organizationList = null;
+    
 
     private static final FhirContext ourCtx = FhirContext.forDstu2Hl7Org();
 
@@ -80,6 +85,21 @@ public class PatientStepsDef {
         patientList = patientDAO.searchPatient(null,null,null,null,null,new StringParam(name));
     }
 
+
+
+    @Then("^the results should be a list of CareConnect Organisations$")
+    public void the_results_should_be_a_list_of_CareConnect_Organisations() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Given("^I search for Organisations by SDSCode (\\w+)$")
+    public void i_have_search_for_these_Organisations_by_SDSCode(String arg1) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+
     @Then("^the result should be a list with (\\d+) entry$")
     public void the_result_should_be_a_valid_FHIR_Bundle_with_entry(int count) throws Throwable {
         Assert.assertNotNull(patientList);
@@ -100,6 +120,13 @@ public class PatientStepsDef {
         System.out.println("Patient found = "+patient.getId()+ " "+patient.getName().get(0).getFamily().get(0));
         Assert.assertNotNull(patient);
         Assert.assertThat(patient,instanceOf(Patient.class));
+    }
+
+    @Then("^they shall all be FHIR Organization resources$")
+    public void they_shall_all_be_FHIR_Organization_resources() throws Throwable {
+        for (Organization organization : organizationList) {
+            Assert.assertThat(organization,instanceOf(Organization.class));
+        }
     }
 
     @Then("^the results should be a CareConnect Patient$")

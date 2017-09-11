@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.organization;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,6 +19,27 @@ public class OrganisationEntity extends BaseResource {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)
+    private List<OrganisationIdentifier> identifiers;
+
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationAddress.class)
+    private List<OrganisationAddress> addresses;
+
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
+    private List<OrganisationTelecom> telecoms;
+
+    @ManyToOne
+    @JoinColumn(name="partOf")
+    private OrganisationEntity partOf;
+
+    @Column(name="active")
+    private Boolean active;
+
+    @ManyToOne
+    @JoinColumn(name="type")
+    private ConceptEntity type;
+
 
     public Long getId() {
         return id;
@@ -37,9 +59,7 @@ public class OrganisationEntity extends BaseResource {
 
 
     // Organisation IDENTIFIERS
-    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)
-    private List<OrganisationIdentifier> identifiers;
-    public void setIdentifiers(List<OrganisationIdentifier> identifiers) {
+   public void setIdentifiers(List<OrganisationIdentifier> identifiers) {
         this.identifiers = identifiers;
     }
     public List<OrganisationIdentifier> getIdentifiers( ) {
@@ -56,8 +76,7 @@ public class OrganisationEntity extends BaseResource {
         identifiers.remove(identifiers); return identifiers; }
 
     // Organisation Address
-    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationAddress.class)
-    private List<OrganisationAddress> addresses;
+
     public void setAddresseses(List<OrganisationAddress> addresses) {
         this.addresses = addresses;
     }
@@ -75,8 +94,7 @@ public class OrganisationEntity extends BaseResource {
         addresses.remove(address); return addresses; }
 
     // Organisation Telecom
-    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
-    private List<OrganisationTelecom> telecoms;
+
     public void setTelecoms(List<OrganisationTelecom> telecoms) {
         this.telecoms = telecoms;
     }
@@ -92,4 +110,28 @@ public class OrganisationEntity extends BaseResource {
 
     public List<OrganisationTelecom> removeTelecom(OrganisationTelecom telecom){
         addresses.remove(telecom); return telecoms; }
+
+    public void setPartOf(OrganisationEntity partOf) {
+        this.partOf = partOf;
+    }
+
+    public OrganisationEntity getPartOf() {
+        return partOf;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public ConceptEntity getType() {
+        return type;
+    }
+
+    public void setType(ConceptEntity type) {
+        this.type = type;
+    }
 }

@@ -24,7 +24,7 @@ public class PractitionerAddress extends BaseAddress {
     private PractitionerEntity practitionerEntity;
 
 
-    public Long getPID()
+    public Long getId()
     {
         return this.myId;
     }

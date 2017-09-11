@@ -18,9 +18,6 @@ public class PractitionerEntity extends BaseResource {
     @Column(name = "userid")
     private String userId;
 
-    @Column(name = "role_ids")
-    private String roleIds;
-
     @Column(name = "family_name")
     private String familyName;
 
@@ -33,20 +30,6 @@ public class PractitionerEntity extends BaseResource {
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "organization_id")
-    private Long organizationId;
-
-    @Column(name = "role_code")
-    private String roleCode;
-
-    @Column(name = "role_display")
-    private String roleDisplay;
-
-    @Column(name = "com_code")
-    private String comCode;
-
-    @Column(name = "com_display")
-    private String comDisplay;
 
     public Long getId() {
         return id;
@@ -64,13 +47,6 @@ public class PractitionerEntity extends BaseResource {
         this.userId = userId;
     }
 
-    public String getRoleIds() {
-        return roleIds;
-    }
-
-    public void setRoleIds(String roleIds) {
-        this.roleIds = roleIds;
-    }
 
     public String getFamilyName() {
         return familyName;
@@ -104,45 +80,6 @@ public class PractitionerEntity extends BaseResource {
         this.gender = gender;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public String getRoleCode() {
-        return roleCode;
-    }
-
-    public void setRoleCode(String roleCode) {
-        this.roleCode = roleCode;
-    }
-
-    public String getRoleDisplay() {
-        return roleDisplay;
-    }
-
-    public void setRoleDisplay(String roleDisplay) {
-        this.roleDisplay = roleDisplay;
-    }
-
-    public String getComCode() {
-        return comCode;
-    }
-
-    public void setComCode(String comCode) {
-        this.comCode = comCode;
-    }
-
-    public String getComDisplay() {
-        return comDisplay;
-    }
-
-    public void setComDisplay(String comDisplay) {
-        this.comDisplay = comDisplay;
-    }
 
     // Practitioner IDENTIFIERS
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerIdentifier.class)
@@ -200,4 +137,18 @@ public class PractitionerEntity extends BaseResource {
 
     public List<PractitionerTelecom> removeTelecom(PractitionerTelecom telecom){
         addresses.remove(telecom); return telecoms; }
+
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerRole.class)
+    private List<PractitionerRole> roles;
+
+    public List<PractitionerRole> getRoles() {
+        if (roles == null) {
+            roles = new ArrayList<PractitionerRole>();
+        }
+        return roles;
+    }
+
+    public void setRoles(List<PractitionerRole> roles) {
+        this.roles = roles;
+    }
 }
