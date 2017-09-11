@@ -167,7 +167,16 @@
 			<classifier>classes</classifier>
 			<scope>provided</scope>
 		</dependency>
- 		
+
+		<!-- Flyway for database migrations. This is used by hspc for openid
+
+-->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+
 
 		<!-- Needed for JEE/Servlet support -->
 		<dependency>

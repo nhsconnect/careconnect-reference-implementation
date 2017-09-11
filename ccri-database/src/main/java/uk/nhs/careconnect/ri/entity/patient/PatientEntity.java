@@ -172,14 +172,15 @@ public class PatientEntity extends BaseResource {
 */
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
-    private List<PatientIdentifier> identifiers;
+    private List<PatientIdentifier> identifiers = new ArrayList<>();
     public void setIdentifiers(List<PatientIdentifier> identifiers) {
+        if (identifiers == null) {
+            throw new NullPointerException("Identifiers cannot be null");
+        }
+
         this.identifiers = identifiers;
     }
     public List<PatientIdentifier> getIdentifiers( ) {
-        if (identifiers == null) {
-            identifiers = new ArrayList<PatientIdentifier>();
-        }
         return this.identifiers;
     }
     public List<PatientIdentifier> addIdentifier(PatientIdentifier pi) {

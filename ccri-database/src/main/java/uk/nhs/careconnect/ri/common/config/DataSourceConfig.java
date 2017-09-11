@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.common.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,13 +28,13 @@ import java.util.Properties;
                        basePackages = "uk.nhs.careconnect.ri")
 public class DataSourceConfig {
 
-    @Value("${datasource.vendor:derby}")
+    @Value("${datasource.vendor:h2}")
     private String vendor;
 
-    @Value("${datasource.host:directory}")
+    @Value("${datasource.host:mem}")
     private String host;
 
-    @Value("${datasource.path:target/jpaserver_derby_files;create=true}")
+    @Value("${datasource.path:db1}")
     private String path;
 
     @Value("${datasource.username:}")
@@ -74,6 +75,17 @@ public class DataSourceConfig {
 
         return dataSource;
     }
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+
+        Flyway flyway = new Flyway();
+        flyway.setBaselineOnMigrate(true);
+      //  flyway.setLocations("filesystem:/path/to/migrations/");
+        flyway.setDataSource(dataSource());
+        return flyway;
+    }
+
 
     @Bean
     public HibernateExceptionTranslator hibernateExceptionTranslator() {
