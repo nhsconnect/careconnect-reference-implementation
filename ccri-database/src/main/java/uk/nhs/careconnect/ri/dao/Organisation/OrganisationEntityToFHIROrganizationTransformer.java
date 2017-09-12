@@ -2,10 +2,7 @@ package uk.nhs.careconnect.ri.dao.Organisation;
 
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.ContactPoint;
-import org.hl7.fhir.instance.model.Meta;
-import org.hl7.fhir.instance.model.Organization;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -93,7 +90,19 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
             }
             organisation.addAddress(adr);
         }
-
+        if (organisationEntity.getType()!=null) {
+            organisation.getType().addCoding()
+                    .setCode(organisationEntity.getType().getCode())
+                    .setDisplay(organisationEntity.getType().getDisplay())
+                    .setSystem(organisationEntity.getType().getSystem());
+        }
+        if (organisationEntity.getPartOf() != null) {
+            organisation.setPartOf(new Reference("Organization/"+organisationEntity.getPartOf().getId()));
+            organisation.getPartOf().setDisplay(organisationEntity.getPartOf().getName());
+        }
+        if (organisationEntity.getActive() != null) {
+            organisation.setActive(organisationEntity.getActive());
+        }
         return organisation;
 
     }

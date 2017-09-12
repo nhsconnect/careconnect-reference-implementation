@@ -1,6 +1,9 @@
 package uk.nhs.careconnect.ri.entity.location;
 
+import org.hl7.fhir.instance.model.Location;
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +22,30 @@ public class LocationEntity extends BaseResource {
     @Column(name = "name")
 	private String name;
 
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
+	private List<LocationIdentifier> identifiers;
+
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationAddress.class)
+	private List<LocationAddress> addresses;
+
+	@OneToMany(mappedBy="locationEntity", targetEntity=LocationTelecom.class)
+	private List<LocationTelecom> telecoms;
+
+	@ManyToOne
+	@JoinColumn(name="managingOrganisation")
+	private OrganisationEntity managingOrganisation;
+
+	@ManyToOne
+	@JoinColumn(name="type")
+	private ConceptEntity type;
+
+	@ManyToOne
+	@JoinColumn(name="physicalType")
+	private ConceptEntity physicalType;
+
+	@Enumerated(EnumType.ORDINAL)
+	Location.LocationStatus status;
+
 	public Long getId() {
 		return id;
 	}
@@ -36,8 +63,7 @@ public class LocationEntity extends BaseResource {
 	}
 
 	// Location IDENTIFIERS
-	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
-	private List<LocationIdentifier> identifiers;
+
 	public void setIdentifiers(List<LocationIdentifier> identifiers) {
 		this.identifiers = identifiers;
 	}
@@ -55,8 +81,7 @@ public class LocationEntity extends BaseResource {
 		identifiers.remove(identifiers); return identifiers; }
 
 	// Location Address
-	@OneToMany(mappedBy="locationEntity", targetEntity=LocationAddress.class)
-	private List<LocationAddress> addresses;
+
 	public void setAddresseses(List<LocationAddress> addresses) {
 		this.addresses = addresses;
 	}
@@ -74,8 +99,7 @@ public class LocationEntity extends BaseResource {
 		addresses.remove(address); return addresses; }
 
 	// Location Telecom
-	@OneToMany(mappedBy="locationEntity", targetEntity=LocationTelecom.class)
-	private List<LocationTelecom> telecoms;
+
 	public void setTelecoms(List<LocationTelecom> telecoms) {
 		this.telecoms = telecoms;
 	}
@@ -91,4 +115,35 @@ public class LocationEntity extends BaseResource {
 
 	public List<LocationTelecom> removeTelecom(LocationTelecom telecom){
 		addresses.remove(telecom); return telecoms; }
+
+	public OrganisationEntity getManagingOrganisation() {
+		return managingOrganisation;
+	}
+
+	public void setManagingOrganisation(OrganisationEntity managingOrganisation) {
+		this.managingOrganisation = managingOrganisation;
+	}
+
+	public void setType(ConceptEntity type) {
+		this.type = type;
+	}
+
+	public ConceptEntity getType() {
+		return type;
+	}
+
+	public void setPhysicalType(ConceptEntity physicalType) {
+		this.physicalType = physicalType;
+	}
+
+	public ConceptEntity getPhysicalType() {
+		return physicalType;
+	}
+
+	public Location.LocationStatus getStatus() {
+		return status;
+	}
+	public void setStatus(Location.LocationStatus status) {
+		this.status = status;
+	}
 }

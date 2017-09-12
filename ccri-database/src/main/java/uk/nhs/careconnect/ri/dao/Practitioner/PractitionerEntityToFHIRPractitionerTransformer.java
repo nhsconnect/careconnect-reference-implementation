@@ -8,7 +8,9 @@ import org.hl7.fhir.instance.model.Meta;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 
 @Component
@@ -109,6 +111,26 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
                 case "UNKNOWN":
                     practitioner.setGender(Enumerations.AdministrativeGender.UNKNOWN);
                     break;
+            }
+        }
+        for (PractitionerRole role  : practitionerEntity.getRoles()) {
+            Practitioner.PractitionerPractitionerRoleComponent practitionerRole = practitioner.addPractitionerRole();
+            if (role.getManaginsOrganisation() != null) {
+                practitionerRole.getManagingOrganization()
+                        .setReference("Organization/"+role.getManaginsOrganisation().getId())
+                        .setDisplay(role.getManaginsOrganisation().getName());
+            }
+            if (role.getRole() != null) {
+                practitionerRole.getRole().addCoding()
+                        .setCode(role.getRole().getCode())
+                        .setDisplay(role.getRole().getDisplay())
+                        .setSystem(role.getRole().getSystem());
+            }
+            for (ConceptEntity specialty : role.getSpecialties()) {
+                practitionerRole.addSpecialty().addCoding()
+                        .setCode(specialty.getCode())
+                        .setDisplay(specialty.getDisplay())
+                        .setSystem(specialty.getSystem());
             }
         }
         return practitioner;

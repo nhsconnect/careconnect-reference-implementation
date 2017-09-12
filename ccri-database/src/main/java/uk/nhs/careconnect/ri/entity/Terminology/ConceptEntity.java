@@ -21,14 +21,75 @@ import java.util.*;
 
 public class ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
-	
-	//private static final long serialVersionUID = 1L;
+
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade= {})
 	private Collection<ConceptParentChildLink> children;
 
 	@Column(name = "CODE", length = 100, nullable = false)
 	private String code;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
+	private CodeSystemEntity codeSystemEntity;
+
+	//@formatter:off
+	@Column(name="DISPLAY", length=MAX_DESC_LENGTH, nullable=true)
+	private String myDisplay;
+
+	@Id()
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "CONCEPT_ID")
+	private Long conceptId;
+	public Long getId() {
+		return conceptId;
+	}
+
+	@Column(name = "INDEX_STATUS", nullable = true)
+	private Long myIndexStatus;
+
+	@Transient
+	private String myParentPids;
+
+	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "child")
+	private Collection<ConceptParentChildLink> parents;
+
+	@Column(name = "active")
+	private Boolean active;
+
+	@Column(name = "effectiveDate")
+	private Date effectiveDate;
+
+	@ManyToOne
+	@JoinColumn(name = "moduleId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_MODULE"))
+	private ConceptEntity moduleId;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
+	private ConceptEntity definitionStatusId;
+
+	@Column(name = "description")
+	private String description;
+
+    @Column(name = "abstractCode")
+    private Boolean abstractCode;
+
+    public Boolean getAbstractCode() {
+        return abstractCode;
+    }
+
+    public void setAbstractCode(Boolean abstractCode) {
+        this.abstractCode = abstractCode;
+    }
+
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String getCode() {
 		return code;
 	}
@@ -36,10 +97,7 @@ public class ConceptEntity extends BaseResource {
 		code = theCode;
 	}
 
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
-	private CodeSystemEntity codeSystemEntity;
+
 	public CodeSystemEntity getCodeSystem() {
 		return this.codeSystemEntity;
 	}
@@ -47,9 +105,7 @@ public class ConceptEntity extends BaseResource {
         return this.codeSystemEntity.getCodeSystemUri();
     }
 	
-	//@formatter:off
-	@Column(name="DISPLAY", length=MAX_DESC_LENGTH, nullable=true)
-	private String myDisplay;
+
 	public String getDisplay() {
 		return myDisplay;
 	}
@@ -61,50 +117,25 @@ public class ConceptEntity extends BaseResource {
 		return this;
 	}
 
-	@Id()
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CONCEPT_ID")
-	private Long conceptId;
-	public Long getId() {
-		return conceptId;
-	}
-	
-	@Column(name = "INDEX_STATUS", nullable = true)
-	private Long myIndexStatus;
-
-	@Transient
-	private String myParentPids;
-
-	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "child")
-	private Collection<ConceptParentChildLink> parents;
 
 	public ConceptEntity() {
 		super();
 	}
 	
-	@Column(name = "active")
-	private Boolean active;
+
 	public void setActive(Boolean active) {   this.active = active;   }
 	public Boolean getActive() { return this.active;  }
 	
-	@Column(name = "effectiveDate")
-	private Date effectiveDate;
+
 	public void setEffectiveDate(Date effectiveDate) {   this.effectiveDate = effectiveDate;   }
 	public Date getEffectiveDate() { return this.effectiveDate;  }
 	
-	
-	
-	@ManyToOne
-	@JoinColumn(name = "moduleId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_MODULE"))
-	private ConceptEntity moduleId;
+
 	public void setModuleId(ConceptEntity moduleId) {   this.moduleId = moduleId;   }
 	public ConceptEntity getModuleId() { return this.moduleId;  }
 	
 	
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
-	private ConceptEntity definitionStatusId;
+
 	public void setDefinitionStatusId(ConceptEntity definitionStatusId) {    this.definitionStatusId = definitionStatusId;  }
 	public ConceptEntity getDefinitionStatusId() {    return this.definitionStatusId;    }
     

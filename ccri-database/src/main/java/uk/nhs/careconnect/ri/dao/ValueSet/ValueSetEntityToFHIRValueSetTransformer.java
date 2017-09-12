@@ -5,6 +5,7 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
 
 
@@ -31,13 +32,40 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
         valueSetCodeSystemComponent.setSystem(valueSetEntity.getCodeSystem().getCodeSystemUri());
 
         for (ConceptEntity concept : valueSetEntity.getCodeSystem().getContents()) {
-            valueSetCodeSystemComponent.addConcept()
-                    .setCode(concept.getCode())
-                    .setDisplay(concept.getDisplay());
+            // TODO Only process parent codes. This is a Full System scan
+            if (concept.getParents().size() == 0) {
+                ValueSet.ConceptDefinitionComponent CSconcept = valueSetCodeSystemComponent.addConcept()
+                        .setCode(concept.getCode())
+                        .setDisplay(concept.getDisplay());
+                if (concept.getDescription() != null) {
+                    CSconcept.setDefinition(concept.getDescription());
+                }
+                // TODO Refactor to throw except if codeSystem is too large
+                getChildCodes(concept,CSconcept);
+
+            }
         }
+
         valueSet.setCodeSystem(valueSetCodeSystemComponent);
 
 
         return valueSet;
+    }
+    private void getChildCodes(ConceptEntity conceptEntity, ValueSet.ConceptDefinitionComponent CSconcept ) {
+
+        for (ConceptParentChildLink childConcepts : conceptEntity.getChildren()) {
+
+            ConceptEntity conceptSub = childConcepts.getChild();
+            ValueSet.ConceptDefinitionComponent CSconceptSub = CSconcept.addConcept()
+                    .setCode(conceptSub.getCode())
+                    .setDisplay(conceptSub.getDisplay());
+            if (conceptSub.getDescription() != null) {
+                CSconceptSub.setDefinition(conceptEntity.getDescription());
+            }
+            if (conceptSub.getChildren().size() > 0) {
+                getChildCodes(conceptSub,CSconceptSub);
+            }
+
+        }
     }
 }

@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao.Location;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.instance.model.Address;
-import org.hl7.fhir.instance.model.ContactPoint;
-import org.hl7.fhir.instance.model.Location;
-import org.hl7.fhir.instance.model.Meta;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
@@ -17,7 +14,7 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
     public Location transform(final LocationEntity locationEntity) {
         final Location location = new Location();
 
-        Meta meta = new Meta().addProfile(CareConnectProfile.Organization_1);
+        Meta meta = new Meta().addProfile(CareConnectProfile.Location_1);
 
         if (locationEntity.getUpdated() != null) {
             meta.setLastUpdated(locationEntity.getUpdated());
@@ -44,7 +41,7 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
         for(int f=0;f<locationEntity.getTelecoms().size();f++)
         {
             location.addTelecom()
-                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
+                    .setSystem(locationEntity.getTelecoms().get(f).getSystem())
                     .setValue(locationEntity.getTelecoms().get(f).getValue())
                     .setUse(locationEntity.getTelecoms().get(f).getTelecomUse());
         }
@@ -91,6 +88,23 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
                 adr.setUse(locationEntity.getAddresses().get(f).getAddressUse());
             }
             location.setAddress(adr);
+        }
+
+        if (locationEntity.getManagingOrganisation() != null) {
+            location.setManagingOrganization(new Reference("Organization/"+locationEntity.getManagingOrganisation().getId()));
+            location.getManagingOrganization().setDisplay(locationEntity.getManagingOrganisation().getName());
+        }
+        if (locationEntity.getType()!=null) {
+            location.getType().addCoding()
+                    .setCode(locationEntity.getType().getCode())
+                    .setDisplay(locationEntity.getType().getDisplay())
+                    .setSystem(locationEntity.getType().getSystem());
+        }
+        if (locationEntity.getPhysicalType()!=null) {
+            location.getPhysicalType().addCoding()
+                    .setCode(locationEntity.getPhysicalType().getCode())
+                    .setDisplay(locationEntity.getPhysicalType().getDisplay())
+                    .setSystem(locationEntity.getPhysicalType().getSystem());
         }
 
         return location;

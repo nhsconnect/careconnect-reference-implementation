@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
 
 import javax.persistence.EntityManager;
@@ -93,22 +94,32 @@ public class RIValueSetRepository implements ValueSetRepository {
 
             // This inspects codes already present and if not found it adds the code... CRUDE at present
             for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
-                Boolean found = false;
+
+                ConceptEntity newConcept = null;
                 for (ConceptEntity codeSystemConcept : codeSystemEntity.getContents()) {
                     if (codeSystemConcept.getCode().equals(concept.getCode())) {
-                        found = true;
+
+                        newConcept =codeSystemConcept;
                     }
 
                 }
-                if (!found) {
+                if (newConcept == null) {
                     log.info("Add new code = " + concept.getCode());
-                    ConceptEntity newConcept = new ConceptEntity();
+                    newConcept = new ConceptEntity();
                     newConcept.setCodeSystem(codeSystemEntity);
                     newConcept.setCode(concept.getCode());
                     newConcept.setDisplay(concept.getDisplay());
 
+                    newConcept.setAbstractCode(concept.getAbstract());
+
+
                     em.persist(newConcept);
                 }
+                // call child code
+                if (concept.getConcept().size() > 0) {
+                    processChildConcepts(concept,newConcept);
+                }
+
             }
 
 
@@ -147,7 +158,41 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         return valueSet;
     }
+    private void processChildConcepts(ValueSet.ConceptDefinitionComponent concept, ConceptEntity parentConcept) {
+        for (ValueSet.ConceptDefinitionComponent conceptChild : concept.getConcept()) {
+            ConceptParentChildLink childLink = null;
 
+            if (conceptChild.getCode() != null) {
+                for (ConceptParentChildLink conceptChildLink : parentConcept.getChildren()) {
+                    if (conceptChildLink.getChild().getCode().equals(concept.getCode())) {
+                        childLink = conceptChildLink;
+                    }
+                }
+                if (childLink == null) {
+                    // TODO We are assuming child code doesn't exist, so just inserts.
+                    childLink = new ConceptParentChildLink();
+                    childLink.setParent(parentConcept);
+                    childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
+                    childLink.setCodeSystem(parentConcept.getCodeSystem());
+                    // }
+                    // if (!childLink.getChild().getCode().equals(conceptChild.getCode())) {
+                    ConceptEntity childConcept = new ConceptEntity();
+                    childConcept.setCodeSystem(parentConcept.getCodeSystem());
+                    childConcept.setCode(conceptChild.getCode());
+                    childConcept.setDisplay(conceptChild.getDisplay());
+
+                    em.persist(childConcept);
+                    childLink.setChild(childConcept);
+                    em.persist(childLink);
+
+                    // recursion on child nodes.
+                    if (concept.getConcept().size() > 0) {
+                        processChildConcepts(conceptChild,childConcept);
+                    }
+                }
+            }
+        }
+    }
     private ValueSetEntity findValueSetEntity(IdType theId) {
 
         ValueSetEntity valueSetEntity = null;

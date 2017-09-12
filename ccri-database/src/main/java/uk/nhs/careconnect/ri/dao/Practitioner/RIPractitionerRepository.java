@@ -33,7 +33,7 @@ public class RIPractitionerRepository implements PractitionerRepository {
 
     public Practitioner read(IdType theId) {
 
-        PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Integer.parseInt(theId.getIdPart()));
+        PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Long.parseLong(theId.getIdPart()));
 
         return practitionerEntity == null
                 ? null
