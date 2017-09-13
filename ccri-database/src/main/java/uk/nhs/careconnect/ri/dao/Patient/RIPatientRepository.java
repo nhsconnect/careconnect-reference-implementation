@@ -8,8 +8,11 @@ import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.patient.PatientAddress;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
+import uk.nhs.careconnect.ri.entity.patient.PatientTelecom;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -103,6 +106,33 @@ public class RIPatientRepository implements PatientRepository {
             Predicate pfamily = builder.like(root.get("familyName"),"%"+name.getValue()+"%");
             Predicate p = builder.or(pfamily,pgiven);
             predList.add(p);
+        }
+
+        if (email != null || phone != null)
+        {
+            Join<PatientEntity, PatientTelecom> joinTel = root.join("telecoms", JoinType.LEFT);
+
+            if (email!=null) {
+                Predicate pvalue = builder.equal(joinTel.get("value"),email.getValue());
+                Predicate psystem = builder.equal(joinTel.get("system"),2);
+                Predicate p = builder.and(pvalue,psystem);
+                predList.add(p);
+            }
+            if (phone!=null) {
+                Predicate pvalue = builder.equal(joinTel.get("value"),phone.getValue());
+                Predicate psystem = builder.equal(joinTel.get("system"),0);
+                Predicate p = builder.and(pvalue,psystem);
+                predList.add(p);
+            }
+        }
+        if (addressPostcode != null )
+        {
+            Join<PatientEntity, PatientAddress> joinAdr = root.join("addresses", JoinType.LEFT);
+            Join<PatientAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
+            if (addressPostcode!=null) {
+                Predicate p = builder.equal(joinAdrTable.get("postcode"), addressPostcode.getValue());
+                predList.add(p);
+            }
         }
 
         Predicate[] predArray = new Predicate[predList.size()];

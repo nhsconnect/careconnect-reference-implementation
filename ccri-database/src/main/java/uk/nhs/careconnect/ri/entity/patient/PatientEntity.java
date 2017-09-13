@@ -73,6 +73,16 @@ public class PatientEntity extends BaseResource {
     @Column(name="active")
     private Boolean active;
 
+    // Patient IDENTIFIERS
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
+    private List<PatientIdentifier> identifiers = new ArrayList<>();
+
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
+    private List<PatientAddress> addresses;
+
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
+    private List<PatientTelecom> telecoms;
+
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -177,9 +187,7 @@ public class PatientEntity extends BaseResource {
 		this.registrationEndDateTime = registrationEndDateTime;
 	}
 
-    // Patient IDENTIFIERS
-    @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
-    private List<PatientIdentifier> identifiers = new ArrayList<>();
+
     public void setIdentifiers(List<PatientIdentifier> identifiers) {
         if (identifiers == null) {
             throw new NullPointerException("Identifiers cannot be null");
@@ -198,8 +206,7 @@ public class PatientEntity extends BaseResource {
         identifiers.remove(identifiers); return identifiers; }
 
     // Patient Address
-    @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
-    private List<PatientAddress> addresses;
+
     public void setAddresseses(List<PatientAddress> addresses) {
         this.addresses = addresses;
     }
@@ -230,8 +237,7 @@ public class PatientEntity extends BaseResource {
 
 
     // Patient Telecom
-    @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
-    private List<PatientTelecom> telecoms;
+
     public void setTelecoms(List<PatientTelecom> telecoms) {
         this.telecoms = telecoms;
     }

@@ -1,13 +1,12 @@
 package uk.nhs.careconnect.ri.provider;
 
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.instance.model.IdType;
+import org.hl7.fhir.instance.model.Location;
 import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,9 @@ public class PractitionerResourceProvider  implements IResourceProvider {
     }
 
     @Search
-    public List<Practitioner> getPractitionerByPractitionerUserId(@RequiredParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier) {
-        return practitionerDao.searchPractitioner(identifier);
+    public List<Practitioner> getPractitionerByPractitionerUserId(@RequiredParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
+                                                                  @OptionalParam(name = Location.SP_NAME) StringParam name) {
+        return practitionerDao.searchPractitioner(identifier,name);
     }
 
 

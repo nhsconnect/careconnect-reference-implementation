@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.jpatest;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.validation.FhirValidator;
@@ -23,6 +25,7 @@ import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -60,34 +63,51 @@ public class JPAStepsDef {
 
     @Given("^I search for a Patient with a family name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_family_name_of(String name) throws Throwable {
-        patientList = patientDAO.searchPatient(null,new StringParam(name),null,null,null,null);
+        patientList = patientDAO.searchPatient(null,null,null, new StringParam(name), null, null,null, null,null);
     }
 
     @Given("^I search for a Patient with a given name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_given_name_of(String name) throws Throwable {
-        patientList = patientDAO.searchPatient(null,null,null,new StringParam(name),null,null);
+        patientList = patientDAO.searchPatient(null,null,null, null, null, new StringParam(name),null, null,null);
     }
 
-    @Given("^I search for a Patient with a birthdate of '(\\d+)-(\\d+)-(\\d+)'$")
-    public void i_search_for_a_Patient_with_a_birthdate_of(int arg1, int arg2, int arg3) throws Throwable {
-       //  patientList = patientDAO.searchPatient(new DateRangeParam().setLowerBound(new DateParam());,null,null,null,null,null);
-        throw new PendingException();
-    }
+
 
     @Given("^I search for a Patient with a gender of (\\w+)$")
     public void i_search_for_a_Patient_with_a_gender_of(String gender) throws Throwable {
-        patientList = patientDAO.searchPatient(null,null,new StringParam(gender),null,null,null);
+        patientList = patientDAO.searchPatient(null,null,null,null,new StringParam(gender), null,null,null, null);
     }
 
     @Given("^I search for a Patient with a NHSNumber of (\\d+)$")
     public void i_search_for_a_Patient_with_a_NHSNumber_of(String NHSNumber) throws Throwable {
-        patientList = patientDAO.searchPatient(null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null);
+        patientList = patientDAO.searchPatient(null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
     }
 
     @Given("^I search for a Patient with a name of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_name_of(String name) throws Throwable {
-        patientList = patientDAO.searchPatient(null,null,null,null,null,new StringParam(name));
+        patientList = patientDAO.searchPatient(null,null,null,null,null,null, null,new StringParam(name),null);
     }
+
+    @Given("^I search for a Patient with a birthdate of '(\\d+)-(\\d+)-(\\d+)'$")
+    public void i_search_for_a_Patient_with_a_birthdate_of(int arg1, int arg2, int arg3) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
+    public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
+        patientList = patientDAO.searchPatient(null,null,new StringParam(email),null,null,null, null,null,null);
+    }
+
+    @Given("^I search for a Patient with a address-postcode of \"([^\"]*)\"$")
+    public void i_search_for_a_Patient_with_a_address_postcode_of(String postcode) throws Throwable {
+        patientList = patientDAO.searchPatient(new StringParam(postcode),null,null,null,null,null, null,null,null);
+    }
+    @Given("^I search for a Patient with a phone of \"([^\"]*)\"$")
+    public void i_search_for_a_Patient_with_a_phone_of(String phone) throws Throwable {
+        patientList = patientDAO.searchPatient(null,null,null,null,null,null, null,null,new StringParam(phone));
+    }
+
 
     @Given("^I add a ValueSet with an Id of ([^\"]*)$")
     public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {

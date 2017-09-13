@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.provider;
 
 
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -33,8 +31,9 @@ public class LocationResourceProvider implements IResourceProvider {
 
 
     @Search
-    public List<Location> getLo(@RequiredParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode) {
-        return locationDao.searchLocation(identifierCode);
+    public List<Location> getLo(@RequiredParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
+                                @OptionalParam(name = Location.SP_NAME) StringParam name) {
+        return locationDao.searchLocation(identifierCode,name);
     }
 
     @Read()

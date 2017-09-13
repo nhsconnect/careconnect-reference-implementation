@@ -77,6 +77,26 @@ Scenario: Patient Read
                  Given I search for a Patient with a name of "Eric"
                  Then the result should be a list with 0 entry
 
+   Scenario: Patient email Search Found
+                 Given I search for a Patient with a email of "bernie.kanfeld@nhsdigital.nhs.uk"
+                 Then the result should be a list with 1 entry
 
+    Scenario: Patient POSTCODE Search Found
+                  Given I search for a Patient with a address-postcode of "NG10 1ZZ"
+                  Then the result should be a list with 1 entry
 
+    Scenario: Patient PHONE Search Found
+                  Given I search for a Patient with a phone of "0115 9737320"
+                  Then the result should be a list with 1 entry
 
+  Scenario: Patient email Search NOT Found
+                 Given I search for a Patient with a email of "kevin.mayfield@airelogic.com"
+                 Then the result should be a list with 0 entry
+
+    Scenario: Patient POSTCODE Search NOT Found
+                  Given I search for a Patient with a address-postcode of "LS15 8FR"
+                  Then the result should be a list with 0 entry
+
+    Scenario: Patient PHONE Search NOT Found
+                  Given I search for a Patient with a phone of "0113 9737320"
+                  Then the result should be a list with 0 entry

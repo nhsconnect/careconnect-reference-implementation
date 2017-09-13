@@ -10,6 +10,9 @@ VALUES(2,'ABC8650149', 1001, 1);
 
 INSERT INTO PatientTelecom(`PATIENT_TELECOM_ID`,`value`,`telecomUse`,`system`,`PATIENT_ID`)
 VALUES (1,'0115 9737320',0, 0, 1);
+INSERT INTO `PatientTelecom` (`PATIENT_TELECOM_ID`,`system`,`telecomUse`,`value`,`PATIENT_ID`)
+VALUES (2,2,0,'bernie.kanfeld@nhsdigital.nhs.uk',1);
+
  
 INSERT INTO PatientAddress (`PATIENT_ADDRESS_ID`,`ADDRESS_ID`,`PATIENT_ID`,`addressUse`)
 VALUES(1,5,1,1);
