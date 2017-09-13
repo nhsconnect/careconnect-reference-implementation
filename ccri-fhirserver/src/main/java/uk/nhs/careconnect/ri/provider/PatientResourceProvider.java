@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.provider;
 
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -76,16 +77,20 @@ public class PatientResourceProvider implements IResourceProvider {
 
     @Search
     public List<Patient> searchPatient(HttpServletRequest theRequest,
-                                       // @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
-                                        @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
-                                        @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
-                                        @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
-                                        @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
-                                        @OptionalParam(name= Patient.SP_NAME) StringParam name
+
+                                       @OptionalParam(name= Patient.SP_ADDRESSPOSTALCODE) StringParam addressPostcode,
+                                       @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+                                       @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
+                                       @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
+                                       @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
+                                       @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
+                                       @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+                                       @OptionalParam(name= Patient.SP_NAME) StringParam name,
+                                       @OptionalParam(name= Patient.SP_PHONE) StringParam phone
                                        ) {
 
 
-        return patientDao.searchPatient(null, familyName, gender,givenName, identifier, name);
+        return patientDao.searchPatient(addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
 
 
     }

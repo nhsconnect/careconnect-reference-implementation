@@ -47,12 +47,15 @@ public class RIPatientRepository implements PatientRepository {
 
     }
     public List<Patient> searchPatient (
+            @OptionalParam(name= Patient.SP_ADDRESSPOSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+            @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
             @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
             @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
             @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
             @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name= Patient.SP_NAME) StringParam name
+            @OptionalParam(name= Patient.SP_NAME) StringParam name,
+            @OptionalParam(name= Patient.SP_PHONE) StringParam phone
     )
     {
         List<PatientEntity> qryResults = null;
