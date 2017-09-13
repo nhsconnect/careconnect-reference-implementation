@@ -27,6 +27,6 @@ VALUES(2,2,2);
 INSERT INTO PractitionerAddress (`PRACTITIONER_ADDRESS_ID`,`ADDRESS_ID`,`PRACTITIONER_ID`)
 VALUES(3,4,3);
 
-INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (1,1,1,NULL);
-INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (2,1,2,NULL);
-INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (3,2,3,NULL);
+INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (1,1,1,491);
+INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (2,1,2,491);
+INSERT INTO `PractitionerRole` (`PRACTITIONER_ROLE_ID`,`managingOrganisation`,`PRACTITIONER_ID`,`role`) VALUES (3,2,3,492);

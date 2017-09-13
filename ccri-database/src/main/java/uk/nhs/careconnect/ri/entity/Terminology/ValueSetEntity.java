@@ -77,23 +77,23 @@ public class ValueSetEntity extends BaseResource {
 			identifiers.remove(identifier); return identifiers; }
 		
 		
-		// ValueSet CONTENT
-		@OneToMany(mappedBy="valueSetEntity", targetEntity=ValueSetContent.class)
-		private List<ValueSetContent> contents;
-		public void setContents(List<ValueSetContent> contents) {
-	        this.contents = contents;
+		// ValueSet INCLUDES - typically a subset of SNOMED codes
+		@OneToMany(mappedBy="valueSetEntity", targetEntity=ValueSetInclude.class)
+		private List<ValueSetInclude> includes;
+		public void setIncludes(List<ValueSetInclude> includes) {
+	        this.includes = includes;
 	    }
-		public List<ValueSetContent> getContents( ) {
-			if (contents == null) {
-		        this.contents = new ArrayList<ValueSetContent>();
+		public List<ValueSetInclude> getIncludes( ) {
+			if (includes == null) {
+		        this.includes = new ArrayList<ValueSetInclude>();
 		    }
-	        return this.contents;
+	        return this.includes;
 	    }
-		public List<ValueSetContent> addContent(ValueSetContent pi) { 
-			contents.add(pi);
-			return contents; }
-		public List<ValueSetContent> removeContent(ValueSetContent content){ 
-			contents.remove(content); return contents; }
+		public List<ValueSetInclude> addContent(ValueSetInclude pi) {
+			includes.add(pi);
+			return includes; }
+		public List<ValueSetInclude> removeContent(ValueSetInclude content){
+			includes.remove(content); return includes; }
 		
 		@ManyToOne()
 		@JoinColumn(name = "CODESYSTEM_PID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_VALUESET_PID_CS_PID"))
