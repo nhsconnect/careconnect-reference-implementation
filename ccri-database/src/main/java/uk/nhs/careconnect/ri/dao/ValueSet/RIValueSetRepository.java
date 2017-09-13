@@ -2,16 +2,15 @@ package uk.nhs.careconnect.ri.dao.ValueSet;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
-import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
+import uk.nhs.careconnect.ri.entity.Terminology.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,6 +35,8 @@ public class RIValueSetRepository implements ValueSetRepository {
 
     private static final Logger log = LoggerFactory.getLogger(RIValueSetRepository.class);
 
+    @Autowired
+    CodeSystemRepository codeSystemRepository;
 
     public void save(ValueSetEntity valueset)
     {
@@ -46,9 +47,13 @@ public class RIValueSetRepository implements ValueSetRepository {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
+    ValueSet valueSet;
+
     @Transactional
     @Override
     public ValueSet create(ValueSet valueSet) {
+        this.valueSet = valueSet;
+
         ValueSetEntity valueSetEntity = null;
 
         if (valueSet.hasId()) {
@@ -62,69 +67,59 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         if (valueSet.hasCodeSystem())
         {
-            CriteriaBuilder builder = em.getCriteriaBuilder();
 
-            CodeSystemEntity codeSystemEntity = null;
 
-            CriteriaQuery<CodeSystemEntity> criteria = builder.createQuery(CodeSystemEntity.class);
-            Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
-            List<Predicate> predList = new LinkedList<Predicate>();
-            log.info("Looking for CodeSystem = " + valueSet.getCodeSystem().getSystem());
-            Predicate p = builder.equal(root.<String>get("codeSystemUri"),valueSet.getCodeSystem().getSystem());
-            predList.add(p);
-            Predicate[] predArray = new Predicate[predList.size()];
-            predList.toArray(predArray);
-            if (predList.size()>0)
-            {
-                log.info("Found CodeSystem");
-                criteria.select(root).where(predArray);
-                List<CodeSystemEntity> qryResults = em.createQuery(criteria).getResultList();
+            CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(valueSet.getCodeSystem().getSystem());
 
-                for (CodeSystemEntity cme : qryResults) {
-                    codeSystemEntity = cme;
-                    break;
-                }
-            }
-            if (codeSystemEntity == null) {
-                log.info("Not found adding CodeSystem = "+valueSet.getCodeSystem().getSystem());
-                codeSystemEntity = new CodeSystemEntity();
-                codeSystemEntity.setCodeSystemUri(valueSet.getCodeSystem().getSystem());
-                em.persist(codeSystemEntity);
-            }
+            //// add me
 
-            // This inspects codes already present and if not found it adds the code... CRUDE at present
             for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
-
-                ConceptEntity newConcept = null;
-                for (ConceptEntity codeSystemConcept : codeSystemEntity.getContents()) {
-                    if (codeSystemConcept.getCode().equals(concept.getCode())) {
-
-                        newConcept =codeSystemConcept;
-                    }
-
-                }
-                if (newConcept == null) {
-                    log.info("Add new code = " + concept.getCode());
-                    newConcept = new ConceptEntity();
-                    newConcept.setCodeSystem(codeSystemEntity);
-                    newConcept.setCode(concept.getCode());
-                    newConcept.setDisplay(concept.getDisplay());
-
-                    newConcept.setAbstractCode(concept.getAbstract());
-
-
-                    em.persist(newConcept);
-                }
-                // call child code
-                if (concept.getConcept().size() > 0) {
-                    processChildConcepts(concept,newConcept);
-                }
-
+                codeSystemRepository.findAddCode(codeSystemEntity,concept);
             }
 
 
             valueSetEntity.setCodeSystem(codeSystemEntity);
 
+        }
+        if (valueSet.hasCompose()) {
+            for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
+
+                CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
+
+                ValueSetInclude includeValueSetEntity = null;
+
+                for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+                    if (include.getSystem().equals(component.getSystem())) {
+                        includeValueSetEntity = include;
+                    }
+                }
+                if (includeValueSetEntity == null) {
+                    includeValueSetEntity = new ValueSetInclude();
+                    includeValueSetEntity.setCodeSystem(codeSystemEntity);
+                    includeValueSetEntity.setValueSetEntity(valueSetEntity);
+                    em.persist(includeValueSetEntity);
+                    valueSetEntity.getIncludes().add(includeValueSetEntity);
+                }
+                for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
+                    ConceptEntity conceptEntity = null;
+                    for (ConceptEntity conceptSearch :includeValueSetEntity.getConcepts()) {
+                        if (conceptSearch.getCode().equals(conceptReferenceComponent.getCode())) {
+                            conceptEntity = conceptSearch;
+                        }
+                    }
+                    if (conceptEntity == null) {
+                        // Code may already be in the code System but not in the ValueSet. So we need to search the CodeSystem
+                        ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
+                        // Only supporting simple list
+                        concept.setCode(conceptReferenceComponent.getCode())
+                                .setDisplay(conceptReferenceComponent.getDisplay());
+                        // This is not the ideal way to add a Concept but works for the RI
+                        conceptEntity = codeSystemRepository.findAddCode(codeSystemEntity,concept);
+                        includeValueSetEntity.getConcepts().add(conceptEntity);
+                    }
+                }
+                em.persist(includeValueSetEntity);
+            }
         }
 
 
@@ -158,41 +153,10 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         return valueSet;
     }
-    private void processChildConcepts(ValueSet.ConceptDefinitionComponent concept, ConceptEntity parentConcept) {
-        for (ValueSet.ConceptDefinitionComponent conceptChild : concept.getConcept()) {
-            ConceptParentChildLink childLink = null;
 
-            if (conceptChild.getCode() != null) {
-                for (ConceptParentChildLink conceptChildLink : parentConcept.getChildren()) {
-                    if (conceptChildLink.getChild().getCode().equals(concept.getCode())) {
-                        childLink = conceptChildLink;
-                    }
-                }
-                if (childLink == null) {
-                    // TODO We are assuming child code doesn't exist, so just inserts.
-                    childLink = new ConceptParentChildLink();
-                    childLink.setParent(parentConcept);
-                    childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
-                    childLink.setCodeSystem(parentConcept.getCodeSystem());
-                    // }
-                    // if (!childLink.getChild().getCode().equals(conceptChild.getCode())) {
-                    ConceptEntity childConcept = new ConceptEntity();
-                    childConcept.setCodeSystem(parentConcept.getCodeSystem());
-                    childConcept.setCode(conceptChild.getCode());
-                    childConcept.setDisplay(conceptChild.getDisplay());
 
-                    em.persist(childConcept);
-                    childLink.setChild(childConcept);
-                    em.persist(childLink);
 
-                    // recursion on child nodes.
-                    if (concept.getConcept().size() > 0) {
-                        processChildConcepts(conceptChild,childConcept);
-                    }
-                }
-            }
-        }
-    }
+
     private ValueSetEntity findValueSetEntity(IdType theId) {
 
         ValueSetEntity valueSetEntity = null;
@@ -231,6 +195,8 @@ public class RIValueSetRepository implements ValueSetRepository {
 
 
     public ValueSet read(IdType theId) {
+
+        log.info("Retrieving ValueSet = " + theId.getValue());
 
         ValueSetEntity valueSetEntity = findValueSetEntity(theId);
 

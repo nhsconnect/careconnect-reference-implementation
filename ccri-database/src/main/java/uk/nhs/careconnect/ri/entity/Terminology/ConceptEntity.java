@@ -78,8 +78,9 @@ public class ConceptEntity extends BaseResource {
         return abstractCode;
     }
 
-    public void setAbstractCode(Boolean abstractCode) {
+    public ConceptEntity setAbstractCode(Boolean abstractCode) {
         this.abstractCode = abstractCode;
+        return this;
     }
 
     public String getDescription() {
@@ -93,8 +94,9 @@ public class ConceptEntity extends BaseResource {
 	public String getCode() {
 		return code;
 	}
-	public void setCode(String theCode) {
+	public ConceptEntity setCode(String theCode) {
 		code = theCode;
+		return this;
 	}
 
 
@@ -232,8 +234,9 @@ public class ConceptEntity extends BaseResource {
 	}
 
 
-	public void setCodeSystem(CodeSystemEntity theCodeSystem) {
+	public ConceptEntity setCodeSystem(CodeSystemEntity theCodeSystem) {
 		this.codeSystemEntity = theCodeSystem;
+		return this;
 	}
 
 

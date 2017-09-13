@@ -57,5 +57,10 @@ public class ValueSetInclude {
 	        this.valueSetEntity = valueSetEntity;
 	}
 
-	
+	public Set<ConceptEntity> getConcepts() {
+		return concepts;
+	}
+	public void setConcepts(Set<ConceptEntity> concepts) {
+		this.concepts = concepts;
+	}
 }

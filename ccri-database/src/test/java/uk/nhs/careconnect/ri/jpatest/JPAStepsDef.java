@@ -14,13 +14,12 @@ import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
-import org.hl7.fhir.instance.model.IdType;
-import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Patient;
-import org.hl7.fhir.instance.model.Resource;
+import org.hl7.fhir.instance.model.*;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
+import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
@@ -35,8 +34,13 @@ public class JPAStepsDef {
     @Autowired
     PatientRepository patientDAO;
 
+    @Autowired
+    ValueSetRepository valueSetRepository;
+
     Patient patient;
     Organization organization;
+    ValueSet valueSet;
+    Resource resource;
 
     List<Patient> patientList = null;
 
@@ -83,6 +87,16 @@ public class JPAStepsDef {
     @Given("^I search for a Patient with a name of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_name_of(String name) throws Throwable {
         patientList = patientDAO.searchPatient(null,null,null,null,null,new StringParam(name));
+    }
+
+    @Given("^I add a ValueSet with an Id of ([^\"]*)$")
+    public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {
+        resource = (Resource) valueSetRepository.read(new IdType().setValue("ValueSet/"+valueSetId));
+    }
+
+    @Then("^the result should be a FHIR ValueSet$")
+    public void the_result_should_be_a_FHIR_ValueSet() throws Throwable {
+        Assert.assertThat(resource,instanceOf(ValueSet.class));
     }
 
 

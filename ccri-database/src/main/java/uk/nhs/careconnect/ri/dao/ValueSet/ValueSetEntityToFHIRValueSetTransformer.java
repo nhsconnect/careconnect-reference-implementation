@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetInclude;
 
 
 @Component
@@ -28,25 +29,38 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
 
         valueSet.setStatus(valueSetEntity.getStatus());
 
-        ValueSet.ValueSetCodeSystemComponent valueSetCodeSystemComponent = new ValueSet.ValueSetCodeSystemComponent();
-        valueSetCodeSystemComponent.setSystem(valueSetEntity.getCodeSystem().getCodeSystemUri());
+        if (valueSetEntity.getCodeSystem() != null ) {
+            // ONly for DSTU2 - This should be in the CodeSystemEntity for STU3
+            ValueSet.ValueSetCodeSystemComponent valueSetCodeSystemComponent = new ValueSet.ValueSetCodeSystemComponent();
+            valueSetCodeSystemComponent.setSystem(valueSetEntity.getCodeSystem().getCodeSystemUri());
 
-        for (ConceptEntity concept : valueSetEntity.getCodeSystem().getContents()) {
+            valueSet.setCodeSystem(valueSetCodeSystemComponent);
+            for (ConceptEntity concept : valueSetEntity.getCodeSystem().getContents()) {
             // TODO Only process parent codes. This is a Full System scan
-            if (concept.getParents().size() == 0) {
-                ValueSet.ConceptDefinitionComponent CSconcept = valueSetCodeSystemComponent.addConcept()
-                        .setCode(concept.getCode())
-                        .setDisplay(concept.getDisplay());
-                if (concept.getDescription() != null) {
-                    CSconcept.setDefinition(concept.getDescription());
+                if (concept.getParents().size() == 0) {
+                    ValueSet.ConceptDefinitionComponent CSconcept = valueSetCodeSystemComponent.addConcept()
+                            .setCode(concept.getCode())
+                            .setDisplay(concept.getDisplay());
+                    if (concept.getDescription() != null) {
+                        CSconcept.setDefinition(concept.getDescription());
+                    }
+                    // TODO Refactor to throw except if codeSystem is too large
+                    getChildCodes(concept, CSconcept);
                 }
-                // TODO Refactor to throw except if codeSystem is too large
-                getChildCodes(concept,CSconcept);
-
             }
         }
 
-        valueSet.setCodeSystem(valueSetCodeSystemComponent);
+        for (ValueSetInclude includeEntity : valueSetEntity.getIncludes()) {
+
+            ValueSet.ConceptSetComponent include = valueSet.getCompose().addInclude().setSystem(includeEntity.getSystem());
+
+            for (ConceptEntity conceptEntity : includeEntity.getConcepts()) {
+                include.addConcept()
+                        .setCode(conceptEntity.getCode())
+                        .setDisplay(conceptEntity.getDisplay());
+            }
+        }
+
 
 
         return valueSet;

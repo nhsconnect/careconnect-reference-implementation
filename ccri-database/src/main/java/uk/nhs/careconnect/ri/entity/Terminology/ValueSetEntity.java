@@ -89,10 +89,10 @@ public class ValueSetEntity extends BaseResource {
 		    }
 	        return this.includes;
 	    }
-		public List<ValueSetInclude> addContent(ValueSetInclude pi) {
+		public List<ValueSetInclude> addInclude(ValueSetInclude pi) {
 			includes.add(pi);
 			return includes; }
-		public List<ValueSetInclude> removeContent(ValueSetInclude content){
+		public List<ValueSetInclude> removeInclude(ValueSetInclude content){
 			includes.remove(content); return includes; }
 		
 		@ManyToOne()
