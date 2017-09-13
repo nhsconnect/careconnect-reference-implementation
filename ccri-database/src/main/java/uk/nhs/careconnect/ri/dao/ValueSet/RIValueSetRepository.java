@@ -119,6 +119,7 @@ public class RIValueSetRepository implements ValueSetRepository {
                     }
                 }
                 em.persist(includeValueSetEntity);
+                em.persist(valueSetEntity);
             }
         }
 

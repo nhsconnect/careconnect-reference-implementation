@@ -47,7 +47,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         predList.toArray(predArray);
         if (predList.size()>0)
         {
-            log.info("Found CodeSystem");
+            log.info("Found CodeSystem "+system);
             criteria.select(root).where(predArray);
             List<CodeSystemEntity> qryResults = em.createQuery(criteria).getResultList();
 
