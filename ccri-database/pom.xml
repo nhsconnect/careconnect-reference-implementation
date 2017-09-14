@@ -22,7 +22,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
 
 
@@ -163,7 +163,7 @@
         <repository>
             <id>bintray-kevinmayfield-careconnect</id>
             <name>kevinmayfield-careconnect</name>
-            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/cc-ris-database/;publish=1</url>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/ccri-database/;publish=1</url>
         </repository>
     </distributionManagement>
 </project>

@@ -11,15 +11,7 @@ ADD server.xml /usr/local/tomcat/conf/server.xml
 ADD target/careconnect-ri.war /usr/local/tomcat/webapps/
 
 
-# Use standard MySQL image from docker :::
-# Configure hostname to be ccsql
-# Environment variables: MYSQL_ROOT_PASSWORD=mypassword , MYSQL_DATABASE=careconnect, MYSQL_USER=fhirjpa, MYSQL_PASSWORD=fhirjpa
-
-# build this project :::
-# docker build -t ccris .
-# docker run --detach --name=ccris -p 80:80 -e datasource.username=fhirjpa -e datasource.password=fhirjpa -e datasource.host=ccsql -e datasource.port=3306 --link mysql ccris
-
-# docker logs ccris
+# See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
 
 CMD ["catalina.sh", "run"]
 
