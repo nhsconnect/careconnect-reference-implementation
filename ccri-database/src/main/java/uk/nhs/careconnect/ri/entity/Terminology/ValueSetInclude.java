@@ -1,8 +1,7 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -25,9 +24,6 @@ public class ValueSetInclude {
 
 
 
-	@ElementCollection
-	@CollectionTable(name = "ValueSetIncludeConcepts", joinColumns = @JoinColumn(name = "VALUESET_INCLUDE_ID"))
-	private Set<ConceptEntity> concepts = new HashSet<ConceptEntity>();
 
 	@ManyToOne()
 	@JoinColumn(name = "CODESYSTEM_PID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_VALUESET_INCLUDE_CODESYSTEM_ID"))
@@ -37,6 +33,9 @@ public class ValueSetInclude {
 	@ManyToOne
 	@JoinColumn (name = "VALUESET_ID",foreignKey= @ForeignKey(name="FK_VALUESET_VALUESET_INLCUDE"))
 	private ValueSetEntity valueSetEntity;
+
+    @OneToMany(mappedBy="include", targetEntity=ValueSetIncludeConcept.class)
+    private List<ValueSetIncludeConcept> concepts;
 
 	// Don't allow access to CodeSystem. This is not the place
 	public String getSystem() {
@@ -57,10 +56,15 @@ public class ValueSetInclude {
 	        this.valueSetEntity = valueSetEntity;
 	}
 
-	public Set<ConceptEntity> getConcepts() {
-		return concepts;
-	}
-	public void setConcepts(Set<ConceptEntity> concepts) {
-		this.concepts = concepts;
-	}
+    public List<ValueSetIncludeConcept> getConcepts() {
+	    if (concepts == null) {
+	        concepts = new ArrayList<ValueSetIncludeConcept>() ;
+
+        }
+        return concepts;
+    }
+
+    public void setConcepts(List<ValueSetIncludeConcept> concepts) {
+        this.concepts = concepts;
+    }
 }

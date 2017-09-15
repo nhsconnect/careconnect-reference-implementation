@@ -4,10 +4,7 @@ package uk.nhs.careconnect.ri.dao.ValueSet;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
-import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ValueSetInclude;
+import uk.nhs.careconnect.ri.entity.Terminology.*;
 
 
 @Component
@@ -54,10 +51,11 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
 
             ValueSet.ConceptSetComponent include = valueSet.getCompose().addInclude().setSystem(includeEntity.getSystem());
 
-            for (ConceptEntity conceptEntity : includeEntity.getConcepts()) {
+            for (ValueSetIncludeConcept
+                    conceptEntity : includeEntity.getConcepts()) {
                 include.addConcept()
-                        .setCode(conceptEntity.getCode())
-                        .setDisplay(conceptEntity.getDisplay());
+                        .setCode(conceptEntity.getConcept().getCode())
+                        .setDisplay(conceptEntity.getConcept().getDisplay());
             }
         }
 

@@ -85,6 +85,8 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
             em.persist(conceptEntity);
+            // Need to ensure the local version has a copy of the data
+            codeSystemEntity.getContents().add(conceptEntity);
         }
         // call child code
         if (concept.getConcept().size() > 0) {
@@ -114,15 +116,12 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
                     ConceptEntity childConcept = findAddCode(parentConcept.getCodeSystem(), conceptChild);
 
-                    /*ConceptEntity childConcept = new ConceptEntity();
-                    childConcept.setCodeSystem(parentConcept.getCodeSystem());
-                    childConcept.setCode(conceptChild.getCode());
-                    childConcept.setDisplay(conceptChild.getDisplay());
 
-                    em.persist(childConcept);
-                     */
                     childLink.setChild(childConcept);
                     em.persist(childLink);
+                    // ensure link add to object
+                    parentConcept.getChildren().add(childLink);
+
 
                     /* recursion on child nodes. Now done by recursion call
                     if (concept.getConcept().size() > 0) {

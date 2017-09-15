@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
-import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ValueSetInclude;
+import uk.nhs.careconnect.ri.entity.Terminology.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -69,8 +66,6 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         if (valueSet.hasCodeSystem())
         {
-
-
             CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(valueSet.getCodeSystem().getSystem());
 
             //// add me
@@ -78,57 +73,7 @@ public class RIValueSetRepository implements ValueSetRepository {
             for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
                 codeSystemRepository.findAddCode(codeSystemEntity,concept);
             }
-
-
             valueSetEntity.setCodeSystem(codeSystemEntity);
-
-        }
-        log.info("ValueSet = "+valueSet.getUrl());
-        if (valueSet.hasCompose()) {
-            for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
-
-                CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
-                log.info("CodeSystem Id = "+ codeSystemEntity.getId()+ " Name = " + codeSystemEntity.getName());
-
-                ValueSetInclude includeValueSetEntity = null;
-
-                for (ValueSetInclude include : valueSetEntity.getIncludes()) {
-                    if (include.getSystem().equals(component.getSystem())) {
-                        includeValueSetEntity = include;
-                    }
-                }
-                if (includeValueSetEntity == null) {
-                    includeValueSetEntity = new ValueSetInclude();
-                    includeValueSetEntity.setCodeSystem(codeSystemEntity);
-                    includeValueSetEntity.setValueSetEntity(valueSetEntity);
-                    em.persist(includeValueSetEntity);
-                    valueSetEntity.getIncludes().add(includeValueSetEntity);
-                }
-                log.info("ValueSet include Id ="+includeValueSetEntity.getId());
-
-                for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
-                    ConceptEntity conceptEntity = null;
-                    for (ConceptEntity conceptSearch :includeValueSetEntity.getConcepts()) {
-                        if (conceptSearch.getCode().equals(conceptReferenceComponent.getCode())) {
-                            conceptEntity = conceptSearch;
-                        }
-                    }
-                    if (conceptEntity == null) {
-                        // Code may already be in the code System but not in the ValueSet. So we need to search the CodeSystem
-
-                        ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
-                        concept.setCode(conceptReferenceComponent.getCode())
-                                .setDisplay(conceptReferenceComponent.getDisplay());
-                        // This is not the ideal way to add a Concept but works for the RI
-
-                        conceptEntity = codeSystemRepository.findAddCode(codeSystemEntity,concept);
-                        includeValueSetEntity.getConcepts().add(conceptEntity);
-                        em.persist(includeValueSetEntity);
-                    }
-                }
-
-                em.persist(valueSetEntity);
-            }
         }
 
 
@@ -155,6 +100,63 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         log.info("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
+
+        //Created the ValueSet so add the sub concepts
+
+        log.info("ValueSet = "+valueSet.getUrl());
+        if (valueSet.hasCompose()) {
+            for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
+
+                CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
+                log.info("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
+
+                ValueSetInclude includeValueSetEntity = null;
+
+                // Search for existing entries
+                for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+                    if (include.getSystem().equals(component.getSystem())) {
+                        includeValueSetEntity = include;
+                    }
+                }
+                if (includeValueSetEntity == null) {
+                    includeValueSetEntity = new ValueSetInclude();
+                    includeValueSetEntity.setCodeSystem(codeSystemEntity);
+                    includeValueSetEntity.setValueSetEntity(valueSetEntity);
+                   // valueSetEntity.getIncludes().add(includeValueSetEntity);
+                    em.persist(includeValueSetEntity);
+                }
+                log.info("ValueSet include Id ="+includeValueSetEntity.getId());
+
+                for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
+                    ValueSetIncludeConcept includeConcept = null;
+                    for (ValueSetIncludeConcept conceptSearch :includeValueSetEntity.getConcepts()) {
+                        if (conceptSearch.getConcept().getCode().equals(conceptReferenceComponent.getCode())) {
+                            includeConcept = conceptSearch;
+                            log.info("Found Concept in include = "+ conceptSearch.getConcept().getCode());
+                        }
+                    }
+                    if (includeConcept == null) {
+                        // Code may already be in the code System but not in the ValueSet. So we need to search the CodeSystem
+                        log.info("NOT Found concept in include = "+conceptReferenceComponent.getCode());
+                        ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
+                        concept.setCode(conceptReferenceComponent.getCode())
+                                .setDisplay(conceptReferenceComponent.getDisplay());
+
+                        // This is not the ideal way to add a Concept but works for the RI
+                        includeConcept = new ValueSetIncludeConcept();
+                        //ConceptEntity conceptEntity
+                        includeConcept.setConcept(codeSystemRepository.findAddCode(codeSystemEntity,concept));
+                        log.info("codeSystem returned "+includeConcept.getConcept().getCode()+" Id = "+includeConcept.getConcept().getId());
+                        includeConcept.setInclude(includeValueSetEntity);
+
+                        em.persist(includeConcept);
+                        // Need to ensure the value is availabe for next search 
+                        includeValueSetEntity.getConcepts().add(includeConcept);
+                    }
+                }
+            }
+        }
+
 
 
         log.info("Called PERSIST id="+valueSetEntity.getId().toString());

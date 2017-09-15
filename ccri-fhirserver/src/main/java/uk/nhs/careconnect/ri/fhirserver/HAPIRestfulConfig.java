@@ -44,7 +44,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 				myAppCtx.getBean(OrganizationResourceProvider.class),
 				myAppCtx.getBean(PractitionerResourceProvider.class),
 				myAppCtx.getBean(LocationResourceProvider.class),
-				myAppCtx.getBean(ValueSetResourceProvider.class)
+				myAppCtx.getBean(ValueSetResourceProvider.class),
+				myAppCtx.getBean(StrucutureDefinitionResourceProvider.class)
 
 
 		));
