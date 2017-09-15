@@ -101,7 +101,7 @@ public abstract class BaseCommand implements Comparable<BaseCommand> {
 			specVersion = specVersion.toLowerCase();
 			FhirVersionEnum version;
 			if ("dstu2".equals(specVersion)) {
-				version = FhirVersionEnum.DSTU2;
+				version = FhirVersionEnum.DSTU2_HL7ORG;
 			} else if ("dstu3".equals(specVersion)) {
 				version = FhirVersionEnum.DSTU3;
 		//	} else if ("r4".equals(specVersion)) {
