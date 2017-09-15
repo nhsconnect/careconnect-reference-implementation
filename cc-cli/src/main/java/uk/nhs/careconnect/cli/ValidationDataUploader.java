@@ -16,11 +16,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -86,6 +87,7 @@ public class ValidationDataUploader extends BaseCommand {
 
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
 		    uploadDefinitionsCareConnectDstu2(targetServer,ctx,"https://fhir.nhs.uk/");
+            uploadDefinitionsCareConnectDstu2(targetServer,ctx,"https://fhir-test.hl7.org.uk/");
 			uploadDefinitionsDstu2(targetServer, ctx);
 	//	} else if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 	//		uploadDefinitionsDstu3(targetServer, ctx);
@@ -100,7 +102,7 @@ public class ValidationDataUploader extends BaseCommand {
 
         ourLog.info("Uploading definitions to server: " + targetServer);
 
-        IGenericClient clientCareConnect = newClient(ctx, careConnectServer);
+       // IGenericClient clientCareConnect = newClient(ctx, careConnectServer);
         ourLog.info("From server: " + careConnectServer);
 
         long start = System.currentTimeMillis();
@@ -110,17 +112,46 @@ public class ValidationDataUploader extends BaseCommand {
 
         Bundle bundle = null;
         try {
-            URL url = new URL(careConnectServer+"/ValueSet");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            URL url = new URL(careConnectServer+"/ValueSet?_format=xml");
 
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestProperty("Accept","application/xml");
             con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setUseCaches(false);
+            con.setConnectTimeout(1000 * 5);
+            con.connect();
+
+
             int responseCode = con.getResponseCode();
 
-            con.
+            ourLog.info("Resonse Code "+ responseCode);
+            System.out.println("Resonse Code "+ responseCode);
+            /*
+            System.out.println("Resonse Length "+ con.getContentLength());
 
-            bundle = client.search().forResource(ValueSet.class).returnBundle(Bundle.class)
-                    .execute();
+            for (Map.Entry<String, List<String>> entries : con.getHeaderFields().entrySet()) {
+                String values = "";
+                for (String value : entries.getValue()) {
+                    values += value + ",";
+                }
+                System.out.println("Response : " + entries.getKey() + " - " +  values );
+            }
+            */
+           // StringBuffer sb = new StringBuffer();
 
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+            /*
+            String inputLine = "";
+            while ((inputLine = br.readLine()) != null) {
+                sb.append(inputLine);
+                System.out.println(inputLine);
+            }
+            br.reset();
+            */
+			bundle = ctx.newXmlParser().parseResource(Bundle.class,br);
 
         } catch (Exception e) {
             throw new CommandFailureException(e.toString());
@@ -132,9 +163,15 @@ public class ValidationDataUploader extends BaseCommand {
         for (Bundle.BundleEntryComponent i : bundle.getEntry()) {
             ValueSet next = (ValueSet) i.getResource();
             next.setId(next.getIdElement().toUnqualifiedVersionless());
-
+           // System.out.println("Uploading ValueSet "+ next.getUrl());
             ourLog.info("Uploading ValueSet {}/{} : {}", new Object[]{count, total, next.getIdElement().getValue()});
-            client.update().resource(next).execute();
+
+            try {
+                client.update().resource(next).execute();
+            }
+            catch (Exception ex) {
+                System.out.println("ValueSet "+ next.getUrl() + " ERROR " +ex.getMessage());
+            }
 
             count++;
         }
