@@ -3,10 +3,8 @@ package uk.nhs.careconnect.ri.dao.CodeSystem;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.dao.ValueSet.RIValueSetRepository;
-import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
@@ -113,19 +111,24 @@ public class RICodeSystemRepository implements CodeSystemRepository {
                     childLink.setCodeSystem(parentConcept.getCodeSystem());
                     // }
                     // if (!childLink.getChild().getCode().equals(conceptChild.getCode())) {
-                    ConceptEntity childConcept = new ConceptEntity();
+
+                    ConceptEntity childConcept = findAddCode(parentConcept.getCodeSystem(), conceptChild);
+
+                    /*ConceptEntity childConcept = new ConceptEntity();
                     childConcept.setCodeSystem(parentConcept.getCodeSystem());
                     childConcept.setCode(conceptChild.getCode());
                     childConcept.setDisplay(conceptChild.getDisplay());
 
                     em.persist(childConcept);
+                     */
                     childLink.setChild(childConcept);
                     em.persist(childLink);
 
-                    // recursion on child nodes.
+                    /* recursion on child nodes. Now done by recursion call
                     if (concept.getConcept().size() > 0) {
                         processChildConcepts(conceptChild,childConcept);
                     }
+                    */
                 }
             }
         }

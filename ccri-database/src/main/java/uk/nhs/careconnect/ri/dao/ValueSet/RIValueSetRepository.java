@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ri.dao.ValueSet;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
@@ -10,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
-import uk.nhs.careconnect.ri.entity.Terminology.*;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetInclude;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -81,10 +83,12 @@ public class RIValueSetRepository implements ValueSetRepository {
             valueSetEntity.setCodeSystem(codeSystemEntity);
 
         }
+        log.info("ValueSet = "+valueSet.getUrl());
         if (valueSet.hasCompose()) {
             for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
 
                 CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
+                log.info("CodeSystem Id = "+ codeSystemEntity.getId()+ " Name = " + codeSystemEntity.getName());
 
                 ValueSetInclude includeValueSetEntity = null;
 
@@ -100,6 +104,8 @@ public class RIValueSetRepository implements ValueSetRepository {
                     em.persist(includeValueSetEntity);
                     valueSetEntity.getIncludes().add(includeValueSetEntity);
                 }
+                log.info("ValueSet include Id ="+includeValueSetEntity.getId());
+
                 for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
                     ConceptEntity conceptEntity = null;
                     for (ConceptEntity conceptSearch :includeValueSetEntity.getConcepts()) {
@@ -109,16 +115,18 @@ public class RIValueSetRepository implements ValueSetRepository {
                     }
                     if (conceptEntity == null) {
                         // Code may already be in the code System but not in the ValueSet. So we need to search the CodeSystem
+
                         ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
-                        // Only supporting simple list
                         concept.setCode(conceptReferenceComponent.getCode())
                                 .setDisplay(conceptReferenceComponent.getDisplay());
                         // This is not the ideal way to add a Concept but works for the RI
+
                         conceptEntity = codeSystemRepository.findAddCode(codeSystemEntity,concept);
                         includeValueSetEntity.getConcepts().add(conceptEntity);
+                        em.persist(includeValueSetEntity);
                     }
                 }
-                em.persist(includeValueSetEntity);
+
                 em.persist(valueSetEntity);
             }
         }

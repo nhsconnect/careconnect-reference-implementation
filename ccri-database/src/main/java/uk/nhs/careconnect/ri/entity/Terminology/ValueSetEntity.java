@@ -51,7 +51,7 @@ public class ValueSetEntity extends BaseResource {
 		{  this.url = url; }
 		public String getUrl()  {  return this.url;  }
 		
-		@Column(name = "description")
+		@Column(name = "description", length = 4096)
 		private String description;
 		public void setDescription(String description)
 		{  this.description = description; }

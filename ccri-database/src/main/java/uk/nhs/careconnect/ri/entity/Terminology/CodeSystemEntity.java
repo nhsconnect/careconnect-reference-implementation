@@ -15,10 +15,10 @@ public class CodeSystemEntity extends BaseResource {
 	@Id()
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CODESYSTEM_ID")
-	private Long myPid;
-	public Long getPID()
+	private Long myId;
+	public Long getId()
 	{
-		return this.myPid;
+		return this.myId;
 	}
 
 	

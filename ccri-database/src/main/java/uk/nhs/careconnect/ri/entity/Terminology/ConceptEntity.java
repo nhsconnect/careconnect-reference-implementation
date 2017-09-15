@@ -27,6 +27,7 @@ public class ConceptEntity extends BaseResource {
 	private Collection<ConceptParentChildLink> children;
 
 	@Column(name = "CODE", length = 100, nullable = false)
+	//@Column(name = "CODE", columnDefinition = "varchar(100) COLLATE utf8_bin NOT NULL")
 	private String code;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -68,7 +69,7 @@ public class ConceptEntity extends BaseResource {
 	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
 	private ConceptEntity definitionStatusId;
 
-	@Column(name = "description")
+	@Column(name = "description", length=4096)
 	private String description;
 
     @Column(name = "abstractCode")
