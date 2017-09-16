@@ -50,11 +50,7 @@ public class UIOverlayConfig {
 				.withFhirVersion(FhirVersionEnum.DSTU2)
 				.withBaseUrl(serverBase)
 				.withName("Care Connect FHIR Reference Implementation Server");
-		/*		.addServer()
-				.withId("hapi")
-				.withFhirVersion(FhirVersionEnum.DSTU2)
-				.withBaseUrl("http://fhirtest.uhn.ca/baseDstu2")
-				.withName("Public HAPI Test Server");*/
+
 		return retVal;
 	}
 	
