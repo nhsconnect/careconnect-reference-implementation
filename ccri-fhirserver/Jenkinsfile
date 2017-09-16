@@ -18,11 +18,6 @@ node {
             app = docker.build("ccri-fhirserver/dockerfile")
     }
 
-    stage('Tests') {
-         app.inside {
-             sh 'echo "Tests Passed"'
-         }
-    }
 
     stage('Push Image') {
 
