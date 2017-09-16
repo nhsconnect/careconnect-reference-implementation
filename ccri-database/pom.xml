@@ -139,23 +139,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>apt-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/generated-sources</outputDirectory>
-                            <processor>com.querydsl.apt.hibernate.HibernateAnnotationProcessor</processor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
+
         </plugins>
     </build>
 
