@@ -15,13 +15,13 @@ node {
 
     stage('Build Docker') {
 
-            app = docker.build("ccri")
+            app = docker.build("thorlogic/ccri")
     }
 
 
     stage('Push Image') {
 
-          docker.withRegistry('https://registry.hub.docker.com','docker-hub-credentials') {
+          docker.withRegistry('https://docker.io','docker-hub-credentials') {
             app.push("latest")
             app.push("${env.BUILD_NUMBER}")
           }
