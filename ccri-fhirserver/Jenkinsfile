@@ -15,7 +15,7 @@ node {
 
     stage('Build Docker') {
 
-            app = docker.build("ccri-fhirserver/dockerfile")
+            app = docker.build("ccri")
     }
 
 
