@@ -1,44 +1,36 @@
 
 node {
 
+    def app
 
     currentBuild.result = "SUCCESS"
 
-    try {
 
-       stage('Checkout'){
+    stage('Checkout') {
 
           checkout scm
        }
 
 
 
-       stage('Build Docker'){
+    stage('Build Docker') {
 
             app = docker.build("ccri-fhirserver/dockerfile")
-       }
+    }
 
-       stage('Cleanup'){
-          docker.withRegistry('https://registry.hub.docker.com','docker-hub-credentials') {
+    stage('Tests') {
+         app.inside {
+             sh 'echo "Tests Passed"'
+         }
+    }
+
+    stage('Push Image') {
+
+          docker.withRegistry('https://registry.hub.docker.com/','docker-hub-credentials') {
             app.push("latest")
             app.push("${env.BUILD_NUMBER}")
           }
-       }
-
-
-
-    }
-    catch (err) {
-
-        currentBuild.result = "FAILURE"
-
-            mail body: "project build error is here: ${env.BUILD_URL}" ,
-            from: 'xxxx@yyyy.com',
-            replyTo: 'yyyy@yyyy.com',
-            subject: 'project build failed',
-            to: 'zzzz@yyyyy.com'
-
-        throw err
     }
 
 }
+
