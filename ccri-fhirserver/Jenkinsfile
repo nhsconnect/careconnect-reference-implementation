@@ -15,7 +15,7 @@ node {
 
     stage('Build Docker') {
 
-            app = docker.build("thorlogic/ccri")
+            app = docker.build("ccri")
     }
 
 
