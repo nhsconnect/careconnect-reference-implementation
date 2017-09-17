@@ -127,6 +127,24 @@ public class RIValueSetRepository implements ValueSetRepository {
                 }
                 log.info("ValueSet include Id ="+includeValueSetEntity.getId());
 
+                for (ValueSet.ConceptSetFilterComponent filter : component.getFilter()) {
+                    ValueSetIncludeFilter filterEntity = null;
+                    for (ValueSetIncludeFilter filterSearch : includeValueSetEntity.getFilters()) {
+                        if (filterSearch.getValue().getCode().equals(filter.getValue())) {
+                            filterEntity = filterSearch;
+                        }
+                    }
+                    if (filterEntity == null) {
+                        ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
+                        concept.setCode(filter.getValue());
+
+                        filterEntity = new ValueSetIncludeFilter();
+                        filterEntity.setValue(codeSystemRepository.findAddCode(codeSystemEntity,concept));
+                        filterEntity.setOperator(filter.getOp());
+
+                        em.persist(filterEntity);
+                    }
+                }
                 for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
                     ValueSetIncludeConcept includeConcept = null;
                     for (ValueSetIncludeConcept conceptSearch :includeValueSetEntity.getConcepts()) {

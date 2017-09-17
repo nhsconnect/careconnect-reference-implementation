@@ -37,6 +37,9 @@ public class ValueSetInclude {
     @OneToMany(mappedBy="include", targetEntity=ValueSetIncludeConcept.class)
     private List<ValueSetIncludeConcept> concepts;
 
+	@OneToMany(mappedBy="include", targetEntity=ValueSetIncludeFilter.class)
+	private List<ValueSetIncludeFilter> filters;
+
 	// Don't allow access to CodeSystem. This is not the place
 	public String getSystem() {
 		return this.myCodeSystem.getCodeSystemUri();
@@ -67,4 +70,16 @@ public class ValueSetInclude {
     public void setConcepts(List<ValueSetIncludeConcept> concepts) {
         this.concepts = concepts;
     }
+
+	public List<ValueSetIncludeFilter> getFilters() {
+		if (filters == null) {
+			filters = new ArrayList<ValueSetIncludeFilter>() ;
+
+		}
+		return filters;
+	}
+
+	public void setFilters(List<ValueSetIncludeFilter> filters) {
+		this.filters = filters;
+	}
 }

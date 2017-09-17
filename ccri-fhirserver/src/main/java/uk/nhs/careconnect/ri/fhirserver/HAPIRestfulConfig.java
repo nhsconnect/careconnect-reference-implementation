@@ -47,8 +47,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 				myAppCtx.getBean(ValueSetResourceProvider.class),
 				myAppCtx.getBean(StrucutureDefinitionResourceProvider.class)
 
-
 		));
+
+		registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 
 
 	}

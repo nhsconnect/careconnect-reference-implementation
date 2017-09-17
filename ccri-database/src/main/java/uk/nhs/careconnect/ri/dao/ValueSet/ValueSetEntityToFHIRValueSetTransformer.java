@@ -57,6 +57,11 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
                         .setCode(conceptEntity.getConcept().getCode())
                         .setDisplay(conceptEntity.getConcept().getDisplay());
             }
+            for (ValueSetIncludeFilter filterEntity : includeEntity.getFilters()) {
+                include.addFilter()
+                        .setOp(filterEntity.getOperator())
+                        .setValue(filterEntity.getValue().getCode());
+            }
         }
 
 
