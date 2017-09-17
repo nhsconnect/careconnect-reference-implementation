@@ -1,9 +1,16 @@
-INSERT INTO Practitioner(`PRACTITIONER_ID`,`family_name`,`gender`,`given_name`,`prefix`)
-VALUES(1,'Bhatia','MALE','AA','Dr.');
-INSERT INTO Practitioner(`PRACTITIONER_ID`,`family_name`,`gender`,`given_name`,`prefix`)
-VALUES (2,'Swamp','FEMALE','Karen','Dr.');
-INSERT INTO Practitioner(`PRACTITIONER_ID`,`family_name`,`gender`,`given_name`,`prefix`)
-VALUES(3,'Amber','FEMALE','Ripley','Dr.');
+INSERT INTO Practitioner(`PRACTITIONER_ID`,`gender`)
+VALUES(1,'MALE');
+INSERT INTO Practitioner(`PRACTITIONER_ID`,`gender`)
+VALUES (2,'FEMALE');
+INSERT INTO Practitioner(`PRACTITIONER_ID`,`gender`)
+VALUES(3,'FEMALE');
+
+INSERT INTO PractitionerName(`PRACTITIONER_ID`,`PRACTITIONER_NAME_ID`,`family_name`,`given_name`,`prefix`)
+VALUES(1,1,'Bhatia','AA','Dr.');
+INSERT INTO PractitionerName(`PRACTITIONER_ID`,`PRACTITIONER_NAME_ID`,`family_name`,`given_name`,`prefix`)
+VALUES (2,2,'Swamp','Karen','Dr.');
+INSERT INTO PractitionerName(`PRACTITIONER_ID`,`PRACTITIONER_NAME_ID`,`family_name`,`given_name`,`prefix`)
+VALUES(3,3,'Amber','Ripley','Dr.');
 
 INSERT INTO PractitionerIdentifier(`PRACTITIONER_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PRACTITIONER_ID`)
 VALUES (1,'G8133438', 5, 1);

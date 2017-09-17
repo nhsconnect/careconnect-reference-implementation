@@ -18,18 +18,20 @@ public class PractitionerEntity extends BaseResource {
     @Column(name = "userid")
     private String userId;
 
-    @Column(name = "family_name")
-    private String familyName;
-
-    @Column(name = "given_name")
-    private String givenName;
-
-    @Column(name = "prefix")
-    private String prefix;
-
     @Column(name = "gender")
     private String gender;
 
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerIdentifier.class)
+    private List<PractitionerIdentifier> identifiers;
+
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerAddress.class)
+    private List<PractitionerAddress> addresses;
+
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerName.class)
+    private List<PractitionerName> names;
+
+    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerRole.class)
+    private List<PractitionerRole> roles;
 
     public Long getId() {
         return id;
@@ -48,30 +50,6 @@ public class PractitionerEntity extends BaseResource {
     }
 
 
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
     public String getGender() {
         return gender;
     }
@@ -80,10 +58,21 @@ public class PractitionerEntity extends BaseResource {
         this.gender = gender;
     }
 
+ // Practitioner Name
 
+    public List<PractitionerName> setNames(List<PractitionerName> names) {
+        this.names = names;
+        return names;
+    }
+
+    public List<PractitionerName> getNames() {
+        if (names == null) {
+            names = new ArrayList<PractitionerName>();
+        }
+        return names;
+    }
     // Practitioner IDENTIFIERS
-    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerIdentifier.class)
-    private List<PractitionerIdentifier> identifiers;
+
     public void setIdentifiers(List<PractitionerIdentifier> identifiers) {
         this.identifiers = identifiers;
     }
@@ -101,8 +90,7 @@ public class PractitionerEntity extends BaseResource {
         identifiers.remove(identifiers); return identifiers; }
 
     // Practitioner Address
-    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerAddress.class)
-    private List<PractitionerAddress> addresses;
+
     public void setAddresseses(List<PractitionerAddress> addresses) {
         this.addresses = addresses;
     }
@@ -138,8 +126,7 @@ public class PractitionerEntity extends BaseResource {
     public List<PractitionerTelecom> removeTelecom(PractitionerTelecom telecom){
         addresses.remove(telecom); return telecoms; }
 
-    @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerRole.class)
-    private List<PractitionerRole> roles;
+
 
     public List<PractitionerRole> getRoles() {
         if (roles == null) {

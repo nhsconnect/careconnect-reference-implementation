@@ -6,6 +6,7 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.patient.PatientName;
 import uk.org.hl7.fhir.core.dstu2.CareConnectExtension;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
@@ -56,12 +57,16 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         patient.setId(patientEntity.getId().toString());
 
-        HumanName name = patient.addName()
-                .addFamily(patientEntity.getFamilyName())
-                .addGiven(patientEntity.getGivenName())
-                .addPrefix(patientEntity.getPrefix());
-        if (patientEntity.getNameUse() != null) {
-            name.setUse(patientEntity.getNameUse());
+        for (PatientName nameEntity : patientEntity.getNames()) {
+
+
+            HumanName name = patient.addName()
+                    .addFamily(nameEntity.getFamilyName())
+                    .addGiven(nameEntity.getGivenName())
+                    .addPrefix(nameEntity.getPrefix());
+            if (nameEntity.getNameUse() != null) {
+                name.setUse(nameEntity.getNameUse());
+            }
         }
         if (patientEntity.getDateOfBirth() != null)
         {
@@ -142,9 +147,9 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
                     break;
             }
         }
-        if (patientEntity.getGP() != null) {
+        if (patientEntity.getGP() != null && patientEntity.getNames().size() > 0) {
             patient.addCareProvider()
-                    .setDisplay(patientEntity.getGP().getPrefix()+" "+patientEntity.getGP().getGivenName()+" "+patientEntity.getGP().getFamilyName())
+                    .setDisplay(patientEntity.getGP().getNames().get(0).getPrefix()+" "+patientEntity.getGP().getNames().get(0).getGivenName()+" "+patientEntity.getGP().getNames().get(0).getFamilyName())
                     .setReference("Practitioner/"+patientEntity.getGP().getId());
 
         }

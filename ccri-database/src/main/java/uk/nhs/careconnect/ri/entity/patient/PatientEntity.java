@@ -1,16 +1,13 @@
 
 package uk.nhs.careconnect.ri.entity.patient;
 
-import org.hl7.fhir.instance.model.HumanName;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Entity
@@ -22,17 +19,7 @@ public class PatientEntity extends BaseResource {
     @Column(name="PATIENT_ID")
     private Long id;
 
-    @Column(name = "prefix")
-    private String prefix;
 
-    @Column(name = "given_name")
-    private String givenName;
-
-    @Column(name = "family_name")
-    private String familyName;
-
-    @Enumerated(EnumType.ORDINAL)
-    private HumanName.NameUse nameUse;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
@@ -83,6 +70,18 @@ public class PatientEntity extends BaseResource {
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
     private List<PatientTelecom> telecoms;
 
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
+    private List<PatientName> names;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -109,46 +108,6 @@ public class PatientEntity extends BaseResource {
         this.NHSVerificationCode = code;
     }
 
-
-    public HumanName.NameUse getNameUse() {
-        return this.nameUse;
-    }
-
-    public void setNameUse(HumanName.NameUse nameUse) {
-        this.nameUse = nameUse;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
 
 
 
@@ -204,6 +163,26 @@ public class PatientEntity extends BaseResource {
 
     public List<PatientIdentifier> removeIdentifier(PatientIdentifier identifier){
         identifiers.remove(identifiers); return identifiers; }
+
+    // Patint Name
+
+    public List<PatientName> getNames() {
+        if (names == null) {
+            names = new ArrayList<PatientName>();
+        }
+        return names;
+    }
+
+    public List<PatientName> setNames(List<PatientName> names) {
+        this.names = names;
+        return names;
+    }
+
+    public PatientName addName() {
+        PatientName name = new PatientName();
+        return name;
+    }
+
 
     // Patient Address
 

@@ -42,11 +42,12 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
 
         practitioner.setId(practitionerEntity.getId().toString());
 
-        practitioner.getName()
-                .addFamily(practitionerEntity.getFamilyName())
-                .addGiven(practitionerEntity.getGivenName())
-                .addPrefix(practitionerEntity.getPrefix());
-
+        if (practitionerEntity.getNames().size() > 0) {
+            practitioner.getName()
+                    .addFamily(practitionerEntity.getNames().get(0).getFamilyName())
+                    .addGiven(practitionerEntity.getNames().get(0).getGivenName())
+                    .addPrefix(practitionerEntity.getNames().get(0).getPrefix());
+        }
         for(int f=0;f<practitionerEntity.getTelecoms().size();f++)
         {
             practitioner.addTelecom()

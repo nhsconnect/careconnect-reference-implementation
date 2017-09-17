@@ -1,5 +1,9 @@
-INSERT INTO Patient (`PATIENT_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`date_of_birth`,`family_name`,`gender`,`given_name`,`prefix`,`registration_end`,`registration_start`,`NHSverification`,`ethnic`,`GP_ID`,`marital`,`PRACTICE_ID`,`nameUse`)
-VALUES (1,NULL,NULL,NULL,NULL,'1998-03-19','Kanfeld','FEMALE','Bernie','Miss',NULL,NULL,79,11,1,7,1,0);
+INSERT INTO Patient (`PATIENT_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`date_of_birth`,`gender`,`registration_end`,`registration_start`,`NHSverification`,`ethnic`,`GP_ID`,`marital`,`PRACTICE_ID`)
+VALUES (1,NULL,NULL,NULL,NULL,'1998-03-19','FEMALE',NULL,NULL,79,11,1,7,1);
+
+INSERT INTO PatientName (`PATIENT_ID`,`PATIENT_NAME_ID`,`family_name`,`given_name`,`prefix`,`nameUse`)
+VALUES (1,1,'Kanfeld','Bernie','Miss',0);
+
 
 INSERT INTO PatientIdentifier
 (`PATIENT_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PATIENT_ID`)
