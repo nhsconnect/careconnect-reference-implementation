@@ -49,7 +49,7 @@ public class CodeSystemEntity extends BaseResource {
 	public void setConceptEntities(List<ConceptEntity> conceptEntities) {
 		this.conceptEntities = conceptEntities;
 	}
-	public List<ConceptEntity> getContents( ) {
+	public List<ConceptEntity> getConcepts( ) {
 		if (conceptEntities == null) {
 			this.conceptEntities = new ArrayList<ConceptEntity>();
 		}

@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
+import ca.uhn.fhir.rest.method.RequestDetails;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,13 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
     private static final Logger log = LoggerFactory.getLogger(RIValueSetRepository.class);
+
+
+    @Override
+    public void storeNewCodeSystemVersion(String theSystem, CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails) {
+        //  em.persist(theCodeSystemVersion);
+        // TODO Implement Me!
+    }
 
     @Override
     public CodeSystemEntity findBySystem(String system) {
@@ -69,7 +77,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
         ConceptEntity conceptEntity = null;
-        for (ConceptEntity codeSystemConcept : codeSystemEntity.getContents()) {
+        for (ConceptEntity codeSystemConcept : codeSystemEntity.getConcepts()) {
             if (codeSystemConcept.getCode().equals(concept.getCode())) {
 
                 conceptEntity =codeSystemConcept;
@@ -86,7 +94,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
             em.persist(conceptEntity);
             // Need to ensure the local version has a copy of the data
-            codeSystemEntity.getContents().add(conceptEntity);
+            codeSystemEntity.getConcepts().add(conceptEntity);
         }
         // call child code
         if (concept.getConcept().size() > 0) {

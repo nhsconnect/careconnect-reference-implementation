@@ -100,6 +100,10 @@ public class ConceptEntity extends BaseResource {
 		return this;
 	}
 
+	public ConceptEntity(CodeSystemEntity codeSystemEntity,String theCode) {
+		this.codeSystemEntity = codeSystemEntity;
+		this.code = theCode;
+	}
 
 	public CodeSystemEntity getCodeSystem() {
 		return this.codeSystemEntity;

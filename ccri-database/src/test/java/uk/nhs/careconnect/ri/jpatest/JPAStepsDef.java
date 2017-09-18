@@ -1,10 +1,9 @@
 package uk.nhs.careconnect.ri.jpatest;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
@@ -19,16 +18,20 @@ import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.*;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
+import uk.nhs.careconnect.ri.dao.CodeSystem.TerminologyLoader;
 import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
 import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 
@@ -40,14 +43,24 @@ public class JPAStepsDef {
     @Autowired
     ValueSetRepository valueSetRepository;
 
+    @Autowired
+    CodeSystemRepository myCodeSystemDao;
+
+    @Autowired
+    TerminologyLoader myTermSvc;
+
     Patient patient;
     Organization organization;
     ValueSet valueSet;
     Resource resource;
 
+    CodeSystemEntity cs;
+
     List<Patient> patientList = null;
 
     List<Organization> organizationList = null;
+
+    private static final String CS_URL = "http://example.com/my_code_system";
     
 
     private static final FhirContext ourCtx = FhirContext.forDstu2Hl7Org();
@@ -173,6 +186,35 @@ public class JPAStepsDef {
     public void the_results_should_be_valid_CareConnect_Patient() throws Throwable {
         for (Patient patient : patientList) {
             validateResource(patient);
+        }
+    }
+
+    @Given("^I add a dummy codesystem$")
+    public void i_add_a_dummy_codesystem() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        cs = myCodeSystemDao.findBySystem(CS_URL);
+
+
+        ConceptEntity parent = new ConceptEntity();
+        parent.setCodeSystem(cs);
+        parent.setCode("parent");
+        cs.getConcepts().add(parent);
+
+        ConceptEntity child = new ConceptEntity();
+        child.setCodeSystem(cs);
+        child.setCode("child");
+        parent.addChild(child, ConceptParentChildLink.RelationshipTypeEnum.ISA);
+
+        child.addChild(parent, ConceptParentChildLink.RelationshipTypeEnum.ISA);
+    }
+
+    @Then("^the CodeSystem should save$")
+    public void the_CodeSystem_should_save() throws Throwable {
+        try {
+            myCodeSystemDao.storeNewCodeSystemVersion( CS_URL,cs,null);
+           // fail();
+        } catch (InvalidRequestException e) {
+            assertEquals("CodeSystem contains circular reference around code parent", e.getMessage());
         }
     }
 

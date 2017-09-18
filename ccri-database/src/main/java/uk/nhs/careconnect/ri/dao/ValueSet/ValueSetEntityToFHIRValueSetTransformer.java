@@ -32,7 +32,7 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
             valueSetCodeSystemComponent.setSystem(valueSetEntity.getCodeSystem().getCodeSystemUri());
 
             valueSet.setCodeSystem(valueSetCodeSystemComponent);
-            for (ConceptEntity concept : valueSetEntity.getCodeSystem().getContents()) {
+            for (ConceptEntity concept : valueSetEntity.getCodeSystem().getConcepts()) {
             // TODO Only process parent codes. This is a Full System scan
                 if (concept.getParents().size() == 0) {
                     ValueSet.ConceptDefinitionComponent CSconcept = valueSetCodeSystemComponent.addConcept()
