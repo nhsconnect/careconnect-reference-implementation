@@ -124,6 +124,7 @@ public class RIValueSetRepository implements ValueSetRepository {
                     includeValueSetEntity.setValueSetEntity(valueSetEntity);
                    // valueSetEntity.getIncludes().add(includeValueSetEntity);
                     em.persist(includeValueSetEntity);
+                    valueSetEntity.getIncludes().add(includeValueSetEntity);
                 }
                 log.info("ValueSet include Id ="+includeValueSetEntity.getId());
 
@@ -141,8 +142,10 @@ public class RIValueSetRepository implements ValueSetRepository {
                         filterEntity = new ValueSetIncludeFilter();
                         filterEntity.setValue(codeSystemRepository.findAddCode(codeSystemEntity,concept));
                         filterEntity.setOperator(filter.getOp());
+                        filterEntity.setInclude(includeValueSetEntity);
 
                         em.persist(filterEntity);
+                        includeValueSetEntity.getFilters().add(filterEntity);
                     }
                 }
                 for (ValueSet.ConceptReferenceComponent conceptReferenceComponent : component.getConcept()) {
