@@ -204,8 +204,8 @@ public class JPAStepsDef {
         child.setCodeSystem(cs);
         child.setCode("child");
         parent.addChild(child, ConceptParentChildLink.RelationshipTypeEnum.ISA);
-
-        child.addChild(parent, ConceptParentChildLink.RelationshipTypeEnum.ISA);
+    // use something like this for circular references
+     //   child.addChild(parent, ConceptParentChildLink.RelationshipTypeEnum.ISA);
     }
 
     @Then("^the CodeSystem should save$")

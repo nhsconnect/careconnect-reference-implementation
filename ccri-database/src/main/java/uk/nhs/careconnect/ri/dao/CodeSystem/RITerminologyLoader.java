@@ -217,7 +217,7 @@ public class RITerminologyLoader implements TerminologyLoader {
 
         extractFiles(theZipBytes, expectedFilenameFragments);
 
-        ourLog.info("Beginning LOINC processing # KGM1");
+        ourLog.info("Beginning LOINC processing");
 
         return processLoincFiles(theZipBytes, theRequestDetails);
     }
@@ -228,7 +228,7 @@ public class RITerminologyLoader implements TerminologyLoader {
 
         extractFiles(theZipBytes, expectedFilenameFragments);
 
-        ourLog.info("Beginning SNOMED CT processing #KGM2");
+        ourLog.info("Beginning SNOMED CT processing");
 
         return processSnomedCtFiles(theZipBytes, theRequestDetails);
     }

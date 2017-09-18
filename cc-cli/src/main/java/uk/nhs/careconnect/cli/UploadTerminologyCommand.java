@@ -13,6 +13,7 @@ import org.hl7.fhir.instance.model.Parameters;
 import org.hl7.fhir.instance.model.StringType;
 import org.hl7.fhir.instance.model.UriType;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -44,11 +45,11 @@ public class UploadTerminologyCommand extends BaseCommand {
 		opt.setRequired(true);
 		options.addOption(opt);
 
-		/* TODO
-		opt = new Option("u", "url", true, "The code system URL associated with this upload (e.g. " + IHapiTerminologyLoaderSvc.SCT_URL + ")");
+
+		opt = new Option("u", "url", true, "The code system URL associated with this upload (e.g. " + CareConnectSystem.SNOMEDCT + ")");
 		opt.setRequired(false);
 		options.addOption(opt);
-		*/
+
 
 		opt = new Option("d", "data", true, "Local *.zip containing file to use to upload");
 		opt.setRequired(false);
@@ -90,7 +91,7 @@ public class UploadTerminologyCommand extends BaseCommand {
 
 		IGenericClient client = super.newClient(ctx, targetServer);
 		IBaseParameters inputParameters;
-		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
 			Parameters p = new Parameters();
 			p.addParameter().setName("url").setValue(new UriType(termUrl));
 			for (String next : datafile) {
