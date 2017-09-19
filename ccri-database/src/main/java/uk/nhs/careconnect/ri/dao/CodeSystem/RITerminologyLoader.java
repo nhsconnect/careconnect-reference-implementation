@@ -17,13 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import javax.persistence.PersistenceContextType;
 import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -44,11 +45,16 @@ public class RITerminologyLoader implements TerminologyLoader {
         }
 
     }
-    @PersistenceContext
-    EntityManager em;
+    @PersistenceContext(type = PersistenceContextType.TRANSACTION)
+    protected EntityManager em;
 
     @Autowired
     private CodeSystemRepository myTermSvc;
+
+
+
+
+
 
     private static final int LOG_INCREMENT = 100000;
 
@@ -62,17 +68,15 @@ public class RITerminologyLoader implements TerminologyLoader {
 
     private static final Logger ourLog = LoggerFactory.getLogger(RITerminologyLoader.class);
 
-    public void saveDeferred() {
-
-    }
-
     /**
      * This is mostly for unit tests - we can disable processing of deferred concepts
      * by changing this flag
      */
-    public void setProcessDeferred(boolean theProcessDeferred) {
 
-    }
+
+
+
+
 
     private void dropCircularRefs(ConceptEntity theConcept, ArrayList<String> theChain, Map<String, ConceptEntity> theCode2concept, Counter theCircularCounter) {
 
@@ -222,6 +226,12 @@ public class RITerminologyLoader implements TerminologyLoader {
         return processLoincFiles(theZipBytes, theRequestDetails);
     }
 
+    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url) {
+        myTermSvc.setProcessDeferred(false);
+        myTermSvc.storeNewCodeSystemVersion(url , codeSystemVersion,theRequestDetails );
+        myTermSvc.setProcessDeferred(true);
+    }
+
     @Override
     public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
         List<String> expectedFilenameFragments = Arrays.asList(SCT_FILE_DESCRIPTION, SCT_FILE_RELATIONSHIP, SCT_FILE_CONCEPT);
@@ -233,89 +243,85 @@ public class RITerminologyLoader implements TerminologyLoader {
         return processSnomedCtFiles(theZipBytes, theRequestDetails);
     }
 
-    UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
-        final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
-        final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
+    public UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+            final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
+            final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
 
-        IRecordHandler handler = new LoincHandler(codeSystemVersion, code2concept);
-        iterateOverZipFile(theZipBytes, LOINC_FILE, handler, ',', QuoteMode.NON_NUMERIC);
+            IRecordHandler handler = new LoincHandler(codeSystemVersion, code2concept);
+            iterateOverZipFile(theZipBytes, LOINC_FILE, handler, ',', QuoteMode.NON_NUMERIC);
 
-        handler = new LoincHierarchyHandler(codeSystemVersion, code2concept);
-        iterateOverZipFile(theZipBytes, LOINC_HIERARCHY_FILE, handler, ',', QuoteMode.NON_NUMERIC);
+            handler = new LoincHierarchyHandler(codeSystemVersion, code2concept);
+            iterateOverZipFile(theZipBytes, LOINC_HIERARCHY_FILE, handler, ',', QuoteMode.NON_NUMERIC);
 
-        theZipBytes.clear();
+            theZipBytes.clear();
 
-        for (Iterator<Map.Entry<String, ConceptEntity>> iter = code2concept.entrySet().iterator(); iter.hasNext();) {
-            Map.Entry<String, ConceptEntity> next = iter.next();
-            // if (isBlank(next.getKey())) {
-            // ourLog.info("Removing concept with blankc code[{}] and display [{}", next.getValue().getCode(), next.getValue().getDisplay());
-            // iter.remove();
-            // continue;
-            // }
-            ConceptEntity nextConcept = next.getValue();
-            if (nextConcept.getParents().isEmpty()) {
-                codeSystemVersion.getConcepts().add(nextConcept);
+            for (Iterator<Map.Entry<String, ConceptEntity>> iter = code2concept.entrySet().iterator(); iter.hasNext();) {
+                Map.Entry<String, ConceptEntity> next = iter.next();
+                // if (isBlank(next.getKey())) {
+                // ourLog.info("Removing concept with blankc code[{}] and display [{}", next.getValue().getCode(), next.getValue().getDisplay());
+                // iter.remove();
+                // continue;
+                // }
+                ConceptEntity nextConcept = next.getValue();
+                if (nextConcept.getParents().isEmpty()) {
+                    codeSystemVersion.getConcepts().add(nextConcept);
+                }
             }
+
+            ourLog.info("Have {} total concepts, {} root concepts", code2concept.size(), codeSystemVersion.getConcepts().size());
+
+            String url = LOINC_URL;
+            storeCodeSystem(theRequestDetails, codeSystemVersion, url);
+
+            return new UploadStatistics(code2concept.size());
         }
 
-        ourLog.info("Have {} total concepts, {} root concepts", code2concept.size(), codeSystemVersion.getConcepts().size());
 
-        String url = LOINC_URL;
-        storeCodeSystem(theRequestDetails, codeSystemVersion, url);
 
-        return new UploadStatistics(code2concept.size());
-    }
+       public  UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+            final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
+            final Map<String, ConceptEntity> id2concept = new HashMap<String, ConceptEntity>();
+            final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
+            final Set<String> validConceptIds = new HashSet<String>();
 
-    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url) {
-      // TODO KGM  myTermSvc.setProcessDeferred(false);
-        myTermSvc.storeNewCodeSystemVersion(url , codeSystemVersion,theRequestDetails );
-      // TODO KGM  myTermSvc.setProcessDeferred(true);
-    }
+            IRecordHandler handler = new SctHandlerConcept(validConceptIds);
+            iterateOverZipFile(theZipBytes, SCT_FILE_CONCEPT, handler, '\t', null);
 
-    UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
-        final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
-        final Map<String, ConceptEntity> id2concept = new HashMap<String, ConceptEntity>();
-        final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
-        final Set<String> validConceptIds = new HashSet<String>();
+            ourLog.info("Have {} valid concept IDs", validConceptIds.size());
 
-        IRecordHandler handler = new SctHandlerConcept(validConceptIds);
-        iterateOverZipFile(theZipBytes, SCT_FILE_CONCEPT, handler, '\t', null);
+            handler = new SctHandlerDescription(validConceptIds, code2concept, id2concept, codeSystemVersion);
+            iterateOverZipFile(theZipBytes, SCT_FILE_DESCRIPTION, handler, '\t', null);
 
-        ourLog.info("Have {} valid concept IDs", validConceptIds.size());
+            ourLog.info("Got {} concepts, cloning map", code2concept.size());
+            final HashMap<String, ConceptEntity> rootConcepts = new HashMap<String, ConceptEntity>(code2concept);
 
-        handler = new SctHandlerDescription(validConceptIds, code2concept, id2concept, codeSystemVersion);
-        iterateOverZipFile(theZipBytes, SCT_FILE_DESCRIPTION, handler, '\t', null);
+            handler = new SctHandlerRelationship(codeSystemVersion, rootConcepts, code2concept);
+            iterateOverZipFile(theZipBytes, SCT_FILE_RELATIONSHIP, handler, '\t', null);
 
-        ourLog.info("Got {} concepts, cloning map", code2concept.size());
-        final HashMap<String, ConceptEntity> rootConcepts = new HashMap<String, ConceptEntity>(code2concept);
+            theZipBytes.clear();
 
-        handler = new SctHandlerRelationship(codeSystemVersion, rootConcepts, code2concept);
-        iterateOverZipFile(theZipBytes, SCT_FILE_RELATIONSHIP, handler, '\t', null);
-
-        theZipBytes.clear();
-
-        ourLog.info("Looking for root codes");
-        for (Iterator<Map.Entry<String, ConceptEntity>> iter = rootConcepts.entrySet().iterator(); iter.hasNext(); ) {
-            if (iter.next().getValue().getParents().isEmpty() == false) {
-                iter.remove();
+            ourLog.info("Looking for root codes");
+            for (Iterator<Map.Entry<String, ConceptEntity>> iter = rootConcepts.entrySet().iterator(); iter.hasNext(); ) {
+                if (iter.next().getValue().getParents().isEmpty() == false) {
+                    iter.remove();
+                }
             }
-        }
 
-        ourLog.info("Done loading SNOMED CT files - {} root codes, {} total codes", rootConcepts.size(), code2concept.size());
+            ourLog.info("Done loading SNOMED CT files - {} root codes, {} total codes", rootConcepts.size(), code2concept.size());
 
-        Counter circularCounter = new Counter();
-        for (ConceptEntity next : rootConcepts.values()) {
-            long count = circularCounter.getThenAdd();
-            float pct = ((float)count / rootConcepts.size()) * 100.0f;
-            ourLog.info(" * Scanning for circular refs - have scanned {} / {} codes ({}%)", count, rootConcepts.size(), pct);
-            dropCircularRefs(next, new ArrayList<String>(), code2concept, circularCounter);
-        }
+            Counter circularCounter = new Counter();
+            for (ConceptEntity next : rootConcepts.values()) {
+                long count = circularCounter.getThenAdd();
+                float pct = ((float)count / rootConcepts.size()) * 100.0f;
+                ourLog.info(" * Scanning for circular refs - have scanned {} / {} codes ({}%)", count, rootConcepts.size(), pct);
+                dropCircularRefs(next, new ArrayList<String>(), code2concept, circularCounter);
+            }
 
-        codeSystemVersion.getConcepts().addAll(rootConcepts.values());
-        String url = SCT_URL;
-        storeCodeSystem(theRequestDetails, codeSystemVersion, url);
+            codeSystemVersion.getConcepts().addAll(rootConcepts.values());
+            String url = SCT_URL;
+            storeCodeSystem(theRequestDetails, codeSystemVersion, url);
 
-        return new UploadStatistics(code2concept.size());
+            return new UploadStatistics(code2concept.size());
     }
 
     @VisibleForTesting

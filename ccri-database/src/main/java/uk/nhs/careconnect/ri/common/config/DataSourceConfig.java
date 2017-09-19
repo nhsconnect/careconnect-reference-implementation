@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.common.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.flywaydb.core.Flyway;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +16,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManagerFactory;
+import java.sql.Connection;
 import java.util.Properties;
 
 @Configuration
@@ -104,11 +107,14 @@ public class DataSourceConfig {
 
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setPersistenceUnitName("CCRI_PU");
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("uk.nhs.careconnect.ri.entity");
         factory.setDataSource(dataSource);
+        factory.setPersistenceProvider(new HibernatePersistenceProvider());
         factory.setJpaProperties(jpaProperties());
         factory.afterPropertiesSet();
+
 
         return factory.getObject();
     }
@@ -123,16 +129,26 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.cache.use_second_level_cache", "false");
         extraProperties.put("hibernate.cache.use_structured_entries", "false");
         extraProperties.put("hibernate.cache.use_minimal_puts", "false");
-        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
-        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
-        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+      //  extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+      //  extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
+      //  extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+        extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
 //		extraProperties.put("hibernate.search.default.worker.execution", "async");
         return extraProperties;
     }
 
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-        return new JpaTransactionManager(entityManagerFactory);
+        PlatformTransactionManager transactionManager = new JpaTransactionManager(entityManagerFactory);
+
+        return transactionManager;
+    }
+
+    @Bean
+    public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+
+        return transactionTemplate;
     }
 
     @Bean
