@@ -20,10 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,7 +80,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         CodeSystemEntity worker = findBySystem(theSystem);
         log.info("Starting Code Processing CodeSystem.id = "+worker.getId());
         for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            findAddCode(worker, conceptEntity);
+            findAddCode(worker, conceptEntity );
         }
         log.info("Finished Code Processing");
     }
@@ -135,11 +132,10 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             flushCount=1000;
         }
         emPersist(entity);
-
     }
 
 
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ConceptEntity concept) {
+    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel) {
         // This inspects codes already present and if not found it adds the code... CRUDE at present
         level++;
 
@@ -153,46 +149,42 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
         List<Predicate> predList = new LinkedList<Predicate>();
         List<ConceptEntity> results = new ArrayList<ConceptEntity>();
-        List<ConceptEntity> qryResults = null;
-        log.info("Looking for code ="+concept.getCode()+" in "+codeSystemEntity.getId());
-        Predicate pcode = builder.equal(root.get("code"), concept.getCode());
+
+        log.info("Looking for code ="+conceptModel.getCode()+" in "+codeSystemEntityDb.getId());
+        Predicate pcode = builder.equal(root.get("code"), conceptModel.getCode());
         predList.add(pcode);
 
-        Predicate psystem = builder.equal(root.get("codeSystemEntity"), codeSystemEntity.getId());
+        Predicate psystem = builder.equal(root.get("codeSystemEntity"), codeSystemEntityDb.getId());
         predList.add(psystem);
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
-        if (predList.size()>0)
-        {
-            criteria.select(root).where(predArray);
-        }
-        else
-        {
-            criteria.select(root);
-        }
+
+        criteria.select(root).where(predArray);
+
         TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
         qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        qryResults = qry.getResultList();
+        List<ConceptEntity> qryResults = qry.getResultList();
 
         if (qryResults.size() > 0) {
             conceptEntity = qryResults.get(0);
-            log.info("Found for code="+concept.getCode()+" ConceptEntity.Id="+conceptEntity.getId());
+            log.info("Found for code="+conceptModel.getCode()+" ConceptEntity.Id="+conceptEntity.getId());
         } else {
-            log.info("Not found existing entry for code="+concept.getCode());
+            log.info("Not found existing entry for code="+conceptModel.getCode());
         }
 
 
         if (conceptEntity == null) {
-            log.info("Add new code =" + concept.getCode());
+            log.info("Add new code =" + conceptModel.getCode());
             conceptEntity = new ConceptEntity()
-                    .setCode(concept.getCode())
-                    .setCodeSystem(codeSystemEntity)
-                    .setDisplay(concept.getDisplay()
+                    .setCode(conceptModel.getCode())
+                    .setCodeSystem(codeSystemEntityDb)
+                    .setDisplay(conceptModel.getDisplay()
                     );
 
 
             saveAndFlush(conceptEntity);
+        //    codeSystemEntityDb.getConcepts().add(conceptEntity);
 
         } else {
             if (conceptEntity.getDisplay() == null || conceptEntity.getDisplay().isEmpty()) {
@@ -201,10 +193,10 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             }
         }
 
-        // call child code
-      //  if ((concept.getChildren().size() > 0) && (level < 6)) {
-        if ((concept.getChildren().size() > 0) ) {
-            processChildConcepts(concept,conceptEntity);
+
+
+        if ((conceptModel.getChildren().size() > 0) ) {
+            processChildConcepts(conceptModel,conceptEntity);
         }
 
         level--;
@@ -212,35 +204,74 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 
 
-    private void processChildConcepts(ConceptEntity concept, ConceptEntity parentConcept) {
+    private void processChildConcepts(ConceptEntity conceptModel, ConceptEntity parentConceptDb) {
         String lastConcept = null;
         // Simple check to ensure codes are being repeated
-        for (ConceptParentChildLink conceptChild : concept.getChildren()) {
-            ConceptParentChildLink childLink = null;
+        for (ConceptParentChildLink conceptChild : conceptModel.getChildren()) {
+
+
+
 
             if (conceptChild.getChild().getCode() != null  && !conceptChild.getChild().getCode().equals(lastConcept)) {
                 lastConcept = conceptChild.getChild().getCode();
                 // Look in the parentConcept for existing link
+                ConceptParentChildLink childLink = null;
+                /*
+
                 for (ConceptParentChildLink conceptChildLink : parentConcept.getChildren()) {
                     if (conceptChildLink.getChild().getCode().equals(concept.getCode())) {
                         childLink = conceptChildLink;
                     }
                 }
+*/
+
+
+                CriteriaBuilder builder = em.getCriteriaBuilder();
+
+                CriteriaQuery<ConceptParentChildLink> criteria = builder.createQuery(ConceptParentChildLink.class);
+                Root<ConceptParentChildLink> root = criteria.from(ConceptParentChildLink.class);
+
+                List<Predicate> predList = new LinkedList<Predicate>();
+                List<ConceptParentChildLink> results = new ArrayList<ConceptParentChildLink>();
+
+                Join<ConceptParentChildLink,ConceptEntity> join = root.join("child", JoinType.LEFT);
+
+                Predicate parentid = builder.equal(root.get("parent"), parentConceptDb.getId());
+                predList.add(parentid);
+                Predicate pchildcode = builder.equal(join.get("code"), conceptModel.getCode());
+                predList.add(pchildcode);
+
+                Predicate[] predArray = new Predicate[predList.size()];
+                predList.toArray(predArray);
+
+                criteria.select(root).where(predArray);
+
+                List<ConceptParentChildLink> qryResults = em.createQuery(criteria).getResultList();
+
+
+                if (qryResults.size() > 0) {
+                    childLink = qryResults.get(0);
+                    log.info("Found for childcodelink code="+conceptModel.getCode()+" childLink.Id="+childLink.getId());
+                } else {
+                    log.info("Not found existing childcodelink entry for code="+conceptModel.getCode());
+                }
+
+
                 if (childLink == null) {
                     // TODO We are assuming child code doesn't exist, so just inserts.
                     childLink = new ConceptParentChildLink();
-                    childLink.setParent(parentConcept);
+                    childLink.setParent(parentConceptDb);
                     childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
-                    childLink.setCodeSystem(parentConcept.getCodeSystem());
+                    childLink.setCodeSystem(parentConceptDb.getCodeSystem());
 
-                    ConceptEntity childConcept = findAddCode(parentConcept.getCodeSystem(), conceptChild.getChild());
+                    ConceptEntity childConcept = findAddCode(parentConceptDb.getCodeSystem(), conceptChild.getChild());
 
 
                     childLink.setChild(childConcept);
                     saveAndFlush(childLink);
 
                     // ensure link add to object
-                    parentConcept.getChildren().add(childLink);
+                    parentConceptDb.getChildren().add(childLink);
 
                 }
             }
