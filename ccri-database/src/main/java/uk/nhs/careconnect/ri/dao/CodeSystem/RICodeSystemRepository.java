@@ -11,7 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import uk.nhs.careconnect.ri.dao.ValueSet.RIValueSetRepository;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
@@ -19,7 +18,6 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,11 +35,15 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    private ConceptRepository conceptRepository;
+
+
     Integer flushCount = 1000;
     Integer flushNumber = 0;
     Integer level = 0;
 
-    private static final Logger log = LoggerFactory.getLogger(RIValueSetRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(RICodeSystemRepository.class);
 
     private boolean myProcessDeferred = true;
 
@@ -60,7 +62,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 
 
-    private void emPersist(Object object) {
+    private void codeSystemSave(CodeSystemEntity object) {
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         tt.execute(new TransactionCallbackWithoutResult() {
@@ -68,10 +70,26 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 em.persist(object);
                 em.flush();
+                log.info("Saved CodeSystemId = "+object.getId());
             }
 
         });
     }
+
+    private void childLinkSave(ConceptParentChildLink object) {
+        TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
+        tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+        tt.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                em.persist(object);
+                em.flush();
+                log.info("Saved CodeSystemId = "+object.getId());
+            }
+
+        });
+    }
+
 
 
     @Override
@@ -118,11 +136,12 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             log.info("Not found adding CodeSystem = "+system);
             codeSystemEntity = new CodeSystemEntity();
             codeSystemEntity.setCodeSystemUri(system);
-            emPersist(codeSystemEntity);
+
+            codeSystemSave(codeSystemEntity);
         }
         return codeSystemEntity;
     }
-
+/*
     public void saveAndFlush(Object entity) {
         flushCount--;
         if (flushCount<1) {
@@ -133,67 +152,23 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         }
         emPersist(entity);
     }
-
+*/
 
     public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel) {
         // This inspects codes already present and if not found it adds the code... CRUDE at present
         level++;
 
-        ConceptEntity conceptEntity = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<ConceptEntity> criteria = builder.createQuery(ConceptEntity.class);
-        Root<ConceptEntity> root = criteria.from(ConceptEntity.class);
-
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<ConceptEntity> results = new ArrayList<ConceptEntity>();
-
-        log.info("Looking for code ="+conceptModel.getCode()+" in "+codeSystemEntityDb.getId());
-        Predicate pcode = builder.equal(root.get("code"), conceptModel.getCode());
-        predList.add(pcode);
-
-        Predicate psystem = builder.equal(root.get("codeSystemEntity"), codeSystemEntityDb.getId());
-        predList.add(psystem);
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-
-        criteria.select(root).where(predArray);
-
-        TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
-        qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        List<ConceptEntity> qryResults = qry.getResultList();
-
-        if (qryResults.size() > 0) {
-            conceptEntity = qryResults.get(0);
-            log.info("Found for code="+conceptModel.getCode()+" ConceptEntity.Id="+conceptEntity.getId());
-        } else {
-            log.info("Not found existing entry for code="+conceptModel.getCode());
-        }
-
+        ConceptEntity conceptEntity = conceptRepository.findCode(codeSystemEntityDb.getCodeSystemUri(),conceptModel.getCode());
 
         if (conceptEntity == null) {
-            log.info("Add new code =" + conceptModel.getCode());
-            conceptEntity = new ConceptEntity()
-                    .setCode(conceptModel.getCode())
-                    .setCodeSystem(codeSystemEntityDb)
-                    .setDisplay(conceptModel.getDisplay()
-                    );
-
-
-            saveAndFlush(conceptEntity);
-        //    codeSystemEntityDb.getConcepts().add(conceptEntity);
+            conceptEntity = conceptRepository.addCode(conceptModel.getCode(),conceptModel.getDisplay(),codeSystemEntityDb);
 
         } else {
             if (conceptEntity.getDisplay() == null || conceptEntity.getDisplay().isEmpty()) {
                 conceptEntity.setDisplay(conceptEntity.getDisplay());
-                saveAndFlush(conceptEntity);
+                conceptRepository.save(conceptEntity);
             }
         }
-
-
 
         if ((conceptModel.getChildren().size() > 0) ) {
             processChildConcepts(conceptModel,conceptEntity);
@@ -203,59 +178,58 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         return conceptEntity;
     }
 
+    private ConceptParentChildLink findChildLinks(ConceptEntity conceptModel, ConceptEntity parentConceptDb) {
+        ConceptParentChildLink childLink = null;
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<ConceptParentChildLink> criteria = builder.createQuery(ConceptParentChildLink.class);
+        Root<ConceptParentChildLink> root = criteria.from(ConceptParentChildLink.class);
+
+        List<Predicate> predList = new LinkedList<Predicate>();
+        List<ConceptParentChildLink> results = new ArrayList<ConceptParentChildLink>();
+
+        Join<ConceptParentChildLink,ConceptEntity> join = root.join("child", JoinType.LEFT);
+
+        Predicate parentid = builder.equal(root.get("parent"), parentConceptDb.getId());
+        predList.add(parentid);
+        Predicate pchildcode = builder.equal(join.get("code"), conceptModel.getCode());
+        predList.add(pchildcode);
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+
+        criteria.select(root).where(predArray);
+
+        List<ConceptParentChildLink> qryResults = em.createQuery(criteria).getResultList();
+
+        for (ConceptParentChildLink child :qryResults) {
+            log.info("Found for childcodelink code="+conceptModel.getCode()+" childLink.Id="+childLink.getId());
+            childLink = child;
+            break;
+        }
+        return childLink;
+    }
 
     private void processChildConcepts(ConceptEntity conceptModel, ConceptEntity parentConceptDb) {
         String lastConcept = null;
         // Simple check to ensure codes are being repeated
         for (ConceptParentChildLink conceptChild : conceptModel.getChildren()) {
 
-
-
-
             if (conceptChild.getChild().getCode() != null  && !conceptChild.getChild().getCode().equals(lastConcept)) {
                 lastConcept = conceptChild.getChild().getCode();
                 // Look in the parentConcept for existing link
                 ConceptParentChildLink childLink = null;
-                /*
 
-                for (ConceptParentChildLink conceptChildLink : parentConcept.getChildren()) {
-                    if (conceptChildLink.getChild().getCode().equals(concept.getCode())) {
+                for (ConceptParentChildLink conceptChildLink : parentConceptDb.getChildren()) {
+                    if (conceptChildLink.getChild().getCode().equals(conceptModel.getCode())) {
                         childLink = conceptChildLink;
                     }
                 }
-*/
 
-
-                CriteriaBuilder builder = em.getCriteriaBuilder();
-
-                CriteriaQuery<ConceptParentChildLink> criteria = builder.createQuery(ConceptParentChildLink.class);
-                Root<ConceptParentChildLink> root = criteria.from(ConceptParentChildLink.class);
-
-                List<Predicate> predList = new LinkedList<Predicate>();
-                List<ConceptParentChildLink> results = new ArrayList<ConceptParentChildLink>();
-
-                Join<ConceptParentChildLink,ConceptEntity> join = root.join("child", JoinType.LEFT);
-
-                Predicate parentid = builder.equal(root.get("parent"), parentConceptDb.getId());
-                predList.add(parentid);
-                Predicate pchildcode = builder.equal(join.get("code"), conceptModel.getCode());
-                predList.add(pchildcode);
-
-                Predicate[] predArray = new Predicate[predList.size()];
-                predList.toArray(predArray);
-
-                criteria.select(root).where(predArray);
-
-                List<ConceptParentChildLink> qryResults = em.createQuery(criteria).getResultList();
-
-
-                if (qryResults.size() > 0) {
-                    childLink = qryResults.get(0);
-                    log.info("Found for childcodelink code="+conceptModel.getCode()+" childLink.Id="+childLink.getId());
-                } else {
-                    log.info("Not found existing childcodelink entry for code="+conceptModel.getCode());
+                if (childLink == null) {
+                    childLink = findChildLinks(conceptModel,parentConceptDb);
                 }
-
 
                 if (childLink == null) {
                     // TODO We are assuming child code doesn't exist, so just inserts.
@@ -266,9 +240,8 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
                     ConceptEntity childConcept = findAddCode(parentConceptDb.getCodeSystem(), conceptChild.getChild());
 
-
                     childLink.setChild(childConcept);
-                    saveAndFlush(childLink);
+                    childLinkSave(childLink);
 
                     // ensure link add to object
                     parentConceptDb.getChildren().add(childLink);
