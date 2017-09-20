@@ -13,7 +13,6 @@ import org.hl7.fhir.instance.model.Parameters;
 import org.hl7.fhir.instance.model.StringType;
 import org.hl7.fhir.instance.model.UriType;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
-import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -46,7 +45,7 @@ public class UploadTerminologyCommand extends BaseCommand {
 		options.addOption(opt);
 
 
-		opt = new Option("u", "url", true, "The code system URL associated with this upload (e.g. " + CareConnectSystem.SNOMEDCT + ")");
+		opt = new Option("u", "url", true, "The code system URL associated with this upload (e.g. " + "http://snomed.info/sct" /* CareConnectSystem.SNOMEDCT */ + ")");
 		opt.setRequired(false);
 		options.addOption(opt);
 

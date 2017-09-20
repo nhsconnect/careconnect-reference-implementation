@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.dao.Organisation;
 
+import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -15,6 +17,8 @@ public interface OrganisationRepository {
 
    void save(OrganisationEntity organization);
    Organization read(IdType theId);
+
+    Organization create(Organization organization, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
    List<Organization> searchOrganization (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,

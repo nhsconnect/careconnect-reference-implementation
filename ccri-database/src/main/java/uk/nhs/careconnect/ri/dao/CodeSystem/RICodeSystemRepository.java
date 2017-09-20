@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -97,7 +98,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         log.info("Starting Code Processing CodeSystem.id = "+worker.getId());
         log.info("Adding Concepts - Number of Concepts CodeSystem.id = "+theCodeSystem.getConcepts().size());
         for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            findAddCode(worker, conceptEntity, false );
+            findAddCode(worker, conceptEntity, true );
         }
         log.info("Finished Code Processing");
     }
@@ -154,18 +155,44 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         }
         return codeSystemEntity;
     }
-/*
-    public void saveAndFlush(Object entity) {
-        flushCount--;
-        if (flushCount<1) {
-            flushNumber++;
-            log.info("Flush: "+flushNumber+ " @level: "+level);
+    @Override
+    public SystemEntity findSystem(String system) {
 
-            flushCount=1000;
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        SystemEntity systemEntity = null;
+        CriteriaQuery<SystemEntity> criteria = builder.createQuery(SystemEntity.class);
+
+        Root<SystemEntity> root = criteria.from(SystemEntity.class);
+        List<Predicate> predList = new LinkedList<Predicate>();
+        log.info("Looking for System = " + system);
+
+        Predicate p = builder.equal(root.<String>get("codeSystemUri"),system);
+        predList.add(p);
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+        if (predList.size()>0)
+        {
+            log.info("Found System "+system);
+            criteria.select(root).where(predArray);
+
+            List<SystemEntity> qryResults = em.createQuery(criteria).getResultList();
+
+            for (SystemEntity cme : qryResults) {
+                systemEntity = cme;
+                break;
+            }
         }
-        emPersist(entity);
+        if (systemEntity == null) {
+            log.info("Not found adding System = "+system);
+            systemEntity = new SystemEntity();
+            systemEntity.setUri(system);
+
+            em.persist(systemEntity);
+        }
+        return systemEntity;
     }
-*/
+
 
     public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel, boolean processChildren) {
         // This inspects codes already present and if not found it adds the code... CRUDE at present
@@ -282,7 +309,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
         }
         if (conceptEntity == null) {
-            log.info("Add new code = " + concept.getCode());
+            log.debug("Add new code = " + concept.getCode());
             conceptEntity = new ConceptEntity()
                     .setCode(concept.getCode()).setCodeSystem(codeSystemEntity)
                     .setDisplay(concept.getDisplay())

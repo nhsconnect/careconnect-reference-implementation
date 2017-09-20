@@ -40,10 +40,7 @@ public class App  {
             ourCommands.add(new ValidationDataUploader());
 
             ourCommands.add(new UploadTerminologyCommand());
-
-        //  ourCommands.add(new WebsocketSubscribeCommand());
-        //  ourCommands.add(new ValidateCommand());
-     //   ourCommands.add(new IgPackUploader());
+            ourCommands.add(new ODSUploader());
 
         Collections.sort(ourCommands);
     }
@@ -58,7 +55,7 @@ public class App  {
 
     private static void logCommandUsageNoHeader(BaseCommand theCommand) {
         System.out.println("Usage:");
-        System.out.println("  hapi-fhir-cli " + theCommand.getCommandName() + " [options]");
+        System.out.println("  cc-cli " + theCommand.getCommandName() + " [options]");
         System.out.println();
         System.out.println("Options:");
 
@@ -94,7 +91,7 @@ public class App  {
     private static void logUsage() {
         logAppHeader();
         System.out.println("Usage:");
-        System.out.println("  hapi-fhir-cli {command} [options]");
+        System.out.println("  cc-cli {command} [options]");
         System.out.println();
         System.out.println("Commands:");
 
@@ -216,9 +213,9 @@ public class App  {
         double version = Double.parseDouble(specVersion);
         if (version < 1.8) {
             System.err.flush();
-            System.err.println("HAPI-CLI requires Java 1.8+ to run (detected " + specVersion + ")");
+            System.err.println("CC-CLI requires Java 1.8+ to run (detected " + specVersion + ")");
             System.err.println("Note that the HAPI library requires only Java 1.6, but you must install");
-            System.err.println("a newer JVM in order to use the HAPI CLI tool.");
+            System.err.println("a newer JVM in order to use the Care Connect CLI tool.");
             System.exit(1);
         }
     }

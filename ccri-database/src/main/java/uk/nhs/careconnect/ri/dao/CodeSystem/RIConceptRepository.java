@@ -61,7 +61,7 @@ public class RIConceptRepository implements ConceptRepository {
     @Override
     public ConceptEntity addCode(String code, String display, CodeSystemEntity codeSystemEntity)
     {
-        log.info("Add new code =" + code);
+        log.debug("Add new code =" + code);
         ConceptEntity conceptEntity = new ConceptEntity()
                 .setCode(code)
                 .setCodeSystem(codeSystemEntity)
@@ -86,7 +86,7 @@ public class RIConceptRepository implements ConceptRepository {
         List<ConceptEntity> results = new ArrayList<ConceptEntity>();
 
 
-        log.info("Looking for code ="+code+" in "+codeSystem.getCodeSystemUri());
+        log.debug("Looking for code ="+code+" in "+codeSystem.getCodeSystemUri());
         Predicate pcode = builder.equal(root.get("code"), code);
         predList.add(pcode);
 
@@ -104,7 +104,7 @@ public class RIConceptRepository implements ConceptRepository {
 
         for (ConceptEntity concept : qryResults) {
             conceptEntity = concept;
-            log.info("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
+            log.debug("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
             break;
         }
 
@@ -126,7 +126,7 @@ public class RIConceptRepository implements ConceptRepository {
         List<ConceptEntity> results = new ArrayList<ConceptEntity>();
         Join<ConceptEntity,CodeSystemRepository> join = root.join("codeSystemEntity");
 
-        log.info("Looking for code ="+code+" in "+codeSystemUri);
+        log.debug("Looking for code ="+code+" in "+codeSystemUri);
         Predicate pcode = builder.equal(root.get("code"), code);
         predList.add(pcode);
 
@@ -144,7 +144,7 @@ public class RIConceptRepository implements ConceptRepository {
 
         for (ConceptEntity concept : qryResults) {
             conceptEntity = concept;
-            log.info("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
+            log.debug("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
             break;
         }
 
