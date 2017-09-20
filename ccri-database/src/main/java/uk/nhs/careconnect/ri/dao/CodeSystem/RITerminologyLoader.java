@@ -49,10 +49,7 @@ public class RITerminologyLoader implements TerminologyLoader {
     protected EntityManager em;
 
     @Autowired
-    private CodeSystemRepository myTermSvc;
-
-
-
+    CodeSystemRepository myTermSvc;
 
 
 
@@ -226,6 +223,12 @@ public class RITerminologyLoader implements TerminologyLoader {
         return processLoincFiles(theZipBytes, theRequestDetails);
     }
 
+
+    public void storeConcepts(Map<String, ConceptEntity> code2concept,  String codeSystemUri, RequestDetails theRequestDetails) {
+        ourLog.info("Calling StoreConcepts Service (myTermSvc)");
+       myTermSvc.storeConcepts(code2concept,codeSystemUri,theRequestDetails );
+    }
+
     public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url) {
         myTermSvc.setProcessDeferred(false);
         myTermSvc.storeNewCodeSystemVersion(url , codeSystemVersion,theRequestDetails );
@@ -291,6 +294,8 @@ public class RITerminologyLoader implements TerminologyLoader {
 
             handler = new SctHandlerDescription(validConceptIds, code2concept, id2concept, codeSystemVersion);
             iterateOverZipFile(theZipBytes, SCT_FILE_DESCRIPTION, handler, '\t', null);
+
+            storeConcepts(code2concept,SCT_URL,theRequestDetails);
 
             ourLog.info("Got {} concepts, cloning map", code2concept.size());
             final HashMap<String, ConceptEntity> rootConcepts = new HashMap<String, ConceptEntity>(code2concept);

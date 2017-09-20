@@ -2,8 +2,10 @@ package uk.nhs.careconnect.ri.dao.CodeSystem;
 
 import ca.uhn.fhir.rest.method.RequestDetails;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TerminologyLoader {
     String LOINC_URL = "http://loinc.org";
@@ -15,7 +17,7 @@ public interface TerminologyLoader {
 
     void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url);
 
-
+    void storeConcepts(Map<String, ConceptEntity> code2concept, String codeSystemUri, RequestDetails theRequestDetails);
 
 
 

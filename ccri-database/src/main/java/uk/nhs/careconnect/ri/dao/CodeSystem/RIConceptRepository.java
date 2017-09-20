@@ -31,7 +31,13 @@ public class RIConceptRepository implements ConceptRepository {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    CodeSystemRepository codeSystemRepository;
+
     private static final Logger log = LoggerFactory.getLogger(RIConceptRepository.class);
+
+
+
 
     private void emPersist(Object object) {
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
@@ -61,6 +67,46 @@ public class RIConceptRepository implements ConceptRepository {
                 .setCodeSystem(codeSystemEntity)
                 .setDisplay(display);
        emPersist(conceptEntity);
+
+        return conceptEntity;
+    }
+
+    @Override
+    public ConceptEntity findCode(CodeSystemEntity codeSystem, String code) {
+
+
+        ConceptEntity conceptEntity = null;
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<ConceptEntity> criteria = builder.createQuery(ConceptEntity.class);
+        Root<ConceptEntity> root = criteria.from(ConceptEntity.class);
+
+
+        List<Predicate> predList = new LinkedList<Predicate>();
+        List<ConceptEntity> results = new ArrayList<ConceptEntity>();
+
+
+        log.info("Looking for code ="+code+" in "+codeSystem.getCodeSystemUri());
+        Predicate pcode = builder.equal(root.get("code"), code);
+        predList.add(pcode);
+
+        Predicate psystem = builder.equal(root.get("codeSystemEntity"), codeSystem.getId());
+        predList.add(psystem);
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+
+        criteria.select(root).where(predArray);
+
+        TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
+        qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        List<ConceptEntity> qryResults = qry.getResultList();
+
+        for (ConceptEntity concept : qryResults) {
+            conceptEntity = concept;
+            log.info("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
+            break;
+        }
 
         return conceptEntity;
     }

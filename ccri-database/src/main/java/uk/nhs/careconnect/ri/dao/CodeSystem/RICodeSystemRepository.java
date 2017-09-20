@@ -19,9 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class RICodeSystemRepository implements CodeSystemRepository {
@@ -97,10 +95,25 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         em.setFlushMode(FlushModeType.AUTO);
         CodeSystemEntity worker = findBySystem(theSystem);
         log.info("Starting Code Processing CodeSystem.id = "+worker.getId());
+        log.info("Adding Concepts - Number of Concepts CodeSystem.id = "+theCodeSystem.getConcepts().size());
         for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            findAddCode(worker, conceptEntity );
+            findAddCode(worker, conceptEntity, false );
         }
         log.info("Finished Code Processing");
+    }
+
+    @Override
+    public void storeConcepts(Map<String, ConceptEntity> code2concept, String codeSystemUri, RequestDetails theRequestDetails) {
+        log.info("ConceptRepository storeConcepts");
+        CodeSystemEntity codeSystemEntity = findBySystem(codeSystemUri);
+        log.info("Store Concepts Processing: Number of concepts"+code2concept.size());
+
+        for ( ConceptEntity currentConcept : code2concept.values() ) {
+            ConceptEntity concept = conceptRepository.findCode(codeSystemEntity, currentConcept.getCode());
+            if (concept == null) {
+                conceptRepository.addCode(currentConcept.getCode(),currentConcept.getDisplay(),codeSystemEntity);
+            }
+        }
     }
 
     @Override
@@ -154,7 +167,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 */
 
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel) {
+    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel, boolean processChildren) {
         // This inspects codes already present and if not found it adds the code... CRUDE at present
         level++;
 
@@ -170,7 +183,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             }
         }
 
-        if ((conceptModel.getChildren().size() > 0) ) {
+        if ((processChildren) && (conceptModel.getChildren().size() > 0) ) {
             processChildConcepts(conceptModel,conceptEntity);
         }
 
@@ -238,7 +251,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
                     childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
                     childLink.setCodeSystem(parentConceptDb.getCodeSystem());
 
-                    ConceptEntity childConcept = findAddCode(parentConceptDb.getCodeSystem(), conceptChild.getChild());
+                    ConceptEntity childConcept = findAddCode(parentConceptDb.getCodeSystem(), conceptChild.getChild(), true);
 
                     childLink.setChild(childConcept);
                     childLinkSave(childLink);
