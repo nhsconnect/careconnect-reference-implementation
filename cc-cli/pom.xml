@@ -80,8 +80,8 @@
       <dependency>
           <groupId>uk.org.hl7.fhir</groupId>
           <artifactId>cc-core</artifactId>
-          <version>3.0.0</version>
-          <type>pom</type>
+          <version>3.0.1-SNAPSHOT</version>
+
       </dependency>
 
    <!-- HL7 HAPI FHIR -->
