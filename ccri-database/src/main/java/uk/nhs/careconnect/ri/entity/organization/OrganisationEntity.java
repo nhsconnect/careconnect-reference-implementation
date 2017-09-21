@@ -86,9 +86,9 @@ public class OrganisationEntity extends BaseResource {
         }
         return this.addresses;
     }
-    public List<OrganisationAddress> addAddress(OrganisationAddress pi) {
+    public OrganisationAddress addAddress(OrganisationAddress pi) {
         addresses.add(pi);
-        return addresses; }
+        return pi; }
 
     public List<OrganisationAddress> removeAddress(OrganisationAddress address){
         addresses.remove(address); return addresses; }
@@ -104,9 +104,9 @@ public class OrganisationEntity extends BaseResource {
         }
         return this.telecoms;
     }
-    public List<OrganisationTelecom> addTelecom(OrganisationTelecom pi) {
+    public OrganisationTelecom addTelecom(OrganisationTelecom pi) {
         telecoms.add(pi);
-        return telecoms; }
+        return pi; }
 
     public List<OrganisationTelecom> removeTelecom(OrganisationTelecom telecom){
         addresses.remove(telecom); return telecoms; }

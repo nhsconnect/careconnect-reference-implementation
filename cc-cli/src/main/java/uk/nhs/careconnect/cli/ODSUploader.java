@@ -18,6 +18,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.hl7.fhir.instance.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
+import uk.nhs.careconnect.cli.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.cli.dstu2.CareConnectSystem;
+
 
 import java.io.*;
 import java.net.URL;
@@ -233,21 +236,19 @@ public class ODSUploader extends BaseCommand {
                 /// ResourceMetadataKeyEnum.PROFILES.put(organization, profiles);
 
                 organization.setId("dummy");
-                organization.setMeta(new Meta().addProfile("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Organization-1" /* CareConnectProfile.Organization_1 */));
+                organization.setMeta(new Meta().addProfile(CareConnectProfile.Organization_1));
 
 
                 organization.addIdentifier()
-                        .setSystem("https://fhir.nhs.uk/Id/ods-organization-code" /* CareConnectSystem.ODSOrganisationCode */ )
+                        .setSystem(CareConnectSystem.ODSOrganisationCode )
                         .setValue(theRecord.get("OrganisationCode"));
 
-               // switch (type) {
-               //     case "prov":
-                        organization.getType().addCoding()
-                                .setSystem("http://hl7.org/fhir/organization-type" /* CareConnectSystem.OrganisationType */)
-                                .setCode("prov")
-                                .setDisplay("Healthcare Provider");
-                //        break;
-                //}
+
+                organization.getType().addCoding()
+                        .setSystem(CareConnectSystem.OrganisationType)
+                        .setCode("prov")
+                        .setDisplay("Healthcare Provider");
+
                 organization.setName(theRecord.get("Name"));
 
                 if (!theRecord.get("ContactTelephoneNumber").isEmpty()) {
@@ -262,6 +263,11 @@ public class ODSUploader extends BaseCommand {
                         organization.setPartOf(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
                     }
                 }
+                organization.setActive(true);
+                if (!theRecord.get("CloseDate").isEmpty()) {
+                    organization.setActive(false);
+                }
+
                 organization.addAddress()
                         .setUse(Address.AddressUse.WORK)
                         .addLine(theRecord.get("AddressLine_1"))
@@ -272,31 +278,8 @@ public class ODSUploader extends BaseCommand {
                         .setPostalCode(theRecord.get("Postcode"));
                 orgs.add(organization);
             //System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(organization));
-                /*
-                switch (type) {
-                    case "CSC":
-                        organization.getType().addCoding()
-                                .setSystem("http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType")
-                                .setCode(type)
-                                .setDisplay("Community Service Centre");
-                        break;
-                }
-                */
-            /*
-            String code = theRecord.get("LOINC_NUM");
-            if (isNotBlank(code)) {
-                String longCommonName = theRecord.get("LONG_COMMON_NAME");
-                String shortName = theRecord.get("SHORTNAME");
-                String consumerName = theRecord.get("CONSUMER_NAME");
-                String display = firstNonBlank(longCommonName, shortName, consumerName);
 
-                ConceptEntity concept = new ConceptEntity(myCodeSystemVersion, code);
-                concept.setDisplay(display);
 
-                Validate.isTrue(!myCode2Concept.containsKey(code));
-                myCode2Concept.put(code, concept);
-            }
-            */
         }
 
     }

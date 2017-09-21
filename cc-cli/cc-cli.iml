@@ -29,7 +29,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.11.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.11.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.jansi:jansi:1.16" level="project" />
-    <orderEntry type="module" module-name="careconnect-core" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-base:2.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:woodstox-core-asl:4.4.1" level="project" />

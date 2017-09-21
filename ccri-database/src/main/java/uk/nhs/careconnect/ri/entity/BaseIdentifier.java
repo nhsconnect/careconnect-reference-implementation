@@ -28,6 +28,9 @@ public class BaseIdentifier {
     public SystemEntity getSystem() {
         return this.systemEntity;
     }
+    public String getSystemUri() {
+        return this.systemEntity.getUri();
+    }
     public void setSystem(SystemEntity systemEntity) {
         this.systemEntity = systemEntity;
     }

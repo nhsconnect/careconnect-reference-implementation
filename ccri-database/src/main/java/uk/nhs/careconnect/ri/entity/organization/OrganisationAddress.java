@@ -41,7 +41,10 @@ public class OrganisationAddress extends BaseAddress {
     public AddressEntity getAddress() {
         return this.address;
     }
-    public void setAddress(AddressEntity addressEntity) { this.address = addressEntity; }
+    public AddressEntity setAddress(AddressEntity addressEntity) {
+        this.address = addressEntity;
+        return addressEntity;
+    }
 
 
 

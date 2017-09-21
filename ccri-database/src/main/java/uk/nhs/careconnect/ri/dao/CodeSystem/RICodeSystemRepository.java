@@ -165,7 +165,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
         Root<SystemEntity> root = criteria.from(SystemEntity.class);
         List<Predicate> predList = new LinkedList<Predicate>();
-        log.info("Looking for System = " + system);
+        log.debug("Looking for System = " + system);
 
         Predicate p = builder.equal(root.<String>get("codeSystemUri"),system);
         predList.add(p);
@@ -173,7 +173,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         predList.toArray(predArray);
         if (predList.size()>0)
         {
-            log.info("Found System "+system);
+            log.debug("Found System "+system);
             criteria.select(root).where(predArray);
 
             List<SystemEntity> qryResults = em.createQuery(criteria).getResultList();
@@ -184,7 +184,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             }
         }
         if (systemEntity == null) {
-            log.info("Not found adding System = "+system);
+            log.info("Not found. Adding SystemEntity = "+system);
             systemEntity = new SystemEntity();
             systemEntity.setUri(system);
 
