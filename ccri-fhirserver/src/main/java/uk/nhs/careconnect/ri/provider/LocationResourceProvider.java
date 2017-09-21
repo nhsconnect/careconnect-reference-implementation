@@ -2,6 +2,8 @@ package uk.nhs.careconnect.ri.provider;
 
 
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.method.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
@@ -30,9 +33,30 @@ public class LocationResourceProvider implements IResourceProvider {
     }
 
 
+    @Update
+    public MethodOutcome updateLocation(HttpServletRequest theRequest, @ResourceParam Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        Location newLocation = locationDao.create(location, theId, theConditional);
+        method.setId(newLocation.getIdElement());
+        method.setResource(newLocation);
+
+
+
+        return method;
+    }
+
     @Search
-    public List<Location> getLo(@RequiredParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
-                                @OptionalParam(name = Location.SP_NAME) StringParam name) {
+    public List<Location> searchLocation(HttpServletRequest theRequest,
+                                         @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
+                                         @OptionalParam(name = Location.SP_NAME) StringParam name) {
         return locationDao.searchLocation(identifierCode,name);
     }
 

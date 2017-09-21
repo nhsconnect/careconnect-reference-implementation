@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.dao.Location;
 
+import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -13,6 +15,9 @@ public interface LocationRepository  {
     void save(LocationEntity location);
 
     Location read(IdType theId);
+
+    Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+
 
     List<Location> searchLocation(
 

@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.TerminologyLoader;
+import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
 import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
 import uk.nhs.careconnect.ri.dao.Practitioner.PractitionerRepository;
@@ -55,6 +56,9 @@ public class JPAStepsDef {
     PractitionerRepository practitionerRepository;
 
     @Autowired
+    LocationRepository locationRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -69,6 +73,7 @@ public class JPAStepsDef {
     List<Organization> organizationList = null;
 
     List<Practitioner> practitionerList = null;
+    List<Location> locationList = null;
 
     private static final String CS_URL = "http://example.com/my_code_system";
     
@@ -272,6 +277,40 @@ public class JPAStepsDef {
     @Given("^I search for Practitioners by name (\\w+)$")
     public void i_search_for_Practitioners_by_name_Bhatia(String name) throws Throwable {
         practitionerList = practitionerRepository.searchPractitioner(null,new StringParam(name));
+    }
+
+
+    // Location
+
+    @Given("^I search for Locations by SDSCode (\\w+)$")
+    public void i_search_for_Locations_by_SDSCode(String code) throws Throwable {
+        locationList = locationRepository.searchLocation(new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null);
+    }
+
+    @Then("^the result should be a Location list with (\\d+) entry$")
+    public void the_result_should_be_a_Location_list_with_entry(int count) throws Throwable {
+        Assert.assertNotNull(locationList);
+        Assert.assertEquals(count,locationList.size());
+    }
+
+    @Then("^they shall all be FHIR Location resources$")
+    public void they_shall_all_be_FHIR_Location_resources() throws Throwable {
+        for (Location location : locationList) {
+            Assert.assertThat(location,instanceOf(Location.class));
+        }
+    }
+
+    @Then("^the results should be a list of CareConnect Locations$")
+    public void the_results_should_be_a_list_of_CareConnect_Locations() throws Throwable {
+        for (Location location : locationList) {
+            validateResource(location);
+        }
+    }
+
+
+    @Given("^I search for Locations by name (\\w+)$")
+    public void i_search_for_Locations_by_name(String name) throws Throwable {
+        locationList = locationRepository.searchLocation(null,new StringParam(name));
     }
 
 

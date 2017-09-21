@@ -18,10 +18,7 @@ import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.Organization;
-import org.hl7.fhir.instance.model.Patient;
-import org.hl7.fhir.instance.model.Practitioner;
+import org.hl7.fhir.instance.model.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -79,6 +76,16 @@ public class ResourceRESTfulSteps {
 
         Assert.assertNotNull(bundle);
     }
+
+    @Given("^Location Search by name Long$")
+    public void location_Search_by_name_Long() throws Throwable {
+        bundle = client.search().forResource(Location.class)
+                .where(new StringClientParam("name").matches().value("Long Eaton"))
+                .returnBundle(Bundle.class).execute();
+
+        Assert.assertNotNull(bundle);
+    }
+
 
     @Then("^the result should be a valid FHIR Bundle$")
     public void the_result_should_be_a_valid_FHIR_Bundle() throws Throwable {

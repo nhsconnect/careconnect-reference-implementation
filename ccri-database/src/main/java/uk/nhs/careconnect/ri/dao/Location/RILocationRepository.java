@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.dao.Location;
 
+import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -42,6 +44,15 @@ public class RILocationRepository implements LocationRepository {
                 : locationEntityToFHIRLocationTransformer.transform(locationEntity);
 
     }
+
+    @Override
+    public Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
+
+
+        return location;
+    }
+
+
     public List<Location> searchLocation (
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
@@ -54,17 +65,29 @@ public class RILocationRepository implements LocationRepository {
 
         CriteriaQuery<LocationEntity> criteria = builder.createQuery(LocationEntity.class);
         Root<LocationEntity> root = criteria.from(LocationEntity.class);
-        Join<LocationEntity, LocationIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
         List<Predicate> predList = new LinkedList<Predicate>();
         List<Location> results = new ArrayList<Location>();
 
         if (identifier !=null)
         {
+            Join<LocationEntity, LocationIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
             Predicate p = builder.equal(join.get("value"),identifier.getValue());
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
+        }
+        if (name !=null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("name").as(String.class)),
+                            builder.upper(builder.literal("%"+name.getValue()+"%"))
+                    );
+
+            predList.add(p);
         }
 
 
