@@ -194,8 +194,8 @@ public class RIPractitionerRepository implements PractitionerRepository {
                 practitionerRole.setPractitioner(practitionerEntity);
             }
 
-            if (practitioner.getPractitionerRole().get(0).getManagingOrganization().getIdElement().getIdPart() != null) {
-                practitionerRole.setManaginsOrganisation(organisationRepository.readEntity(practitioner.getPractitionerRole().get(0).getManagingOrganization().getIdElement()));
+            if (practitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null) {
+                practitionerRole.setManaginsOrganisation(organisationRepository.readEntity(new IdType(practitioner.getPractitionerRole().get(0).getManagingOrganization().getReference())));
             }
 
             if (practitioner.getPractitionerRole().get(0).getRole().getCoding().size()>0) {
@@ -203,6 +203,7 @@ public class RIPractitionerRepository implements PractitionerRepository {
                     practitionerRole.setRole(codeSvc.findCode(CareConnectSystem.SDSJobRoleName, practitioner.getPractitionerRole().get(0).getRole().getCoding().get(0).getCode()));
                 }
             }
+            em.persist(practitionerRole);
         }
 
         log.debug("Called PERSIST id="+practitionerEntity.getId().toString());

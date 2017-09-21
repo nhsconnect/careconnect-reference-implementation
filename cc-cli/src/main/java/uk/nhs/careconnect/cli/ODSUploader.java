@@ -110,6 +110,8 @@ public class ODSUploader extends BaseCommand {
 
 
             IRecordHandler handler = new OrgHandler();
+
+
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
             uploadOrganisation();
 
@@ -118,6 +120,7 @@ public class ODSUploader extends BaseCommand {
 
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
             uploadOrganisation();
+
 
             handler = new PractitionerHandler();
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
@@ -135,7 +138,7 @@ public class ODSUploader extends BaseCommand {
             MethodOutcome outcome = client.update().resource(organization)
                     .conditionalByUrl("Organization?identifier=" + organization.getIdentifier().get(0).getSystem() + "%7C" +organization.getIdentifier().get(0).getValue())
                     .execute();
-            System.out.println(outcome.getId());
+           // System.out.println(outcome.getId());
             if (outcome.getId() != null ) {
                 organization.setId(outcome.getId().getIdPart());
                 orgMap.put(organization.getIdentifier().get(0).getValue(), organization);
@@ -151,7 +154,7 @@ public class ODSUploader extends BaseCommand {
             MethodOutcome outcome = client.update().resource(practitioner)
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
                     .execute();
-            System.out.println(outcome.getId());
+       //     System.out.println(outcome.getId());
             if (outcome.getId() != null ) {
                 practitioner.setId(outcome.getId().getIdPart());
                 docMap.put(practitioner.getIdentifier().get(0).getValue(), practitioner);
@@ -274,6 +277,7 @@ public class ODSUploader extends BaseCommand {
     public class PractitionerHandler implements IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
+           // System.out.println(theRecord.toString());
             Practitioner practitioner = new Practitioner();
             practitioner.setId("dummy");
             practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
@@ -303,8 +307,11 @@ public class ODSUploader extends BaseCommand {
             Practitioner.PractitionerPractitionerRoleComponent role = practitioner.addPractitionerRole();
 
             if (!theRecord.get("Commissioner").isEmpty()) {
+             //   System.out.println("Commissioner="+theRecord.get("Commissioner"));
                 Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
+
                 if (parentOrg != null) {
+                    System.out.println("Org Id = "+parentOrg.getId());
                    role.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
                 }
             }

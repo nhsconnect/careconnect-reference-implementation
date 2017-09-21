@@ -66,6 +66,7 @@ public class RIOrganisationRepository implements OrganisationRepository {
     }
 
     public OrganisationEntity readEntity(IdType theId) {
+
     if (theId.getIdPart() != null) {
         OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -132,7 +133,8 @@ public class RIOrganisationRepository implements OrganisationRepository {
         }
 
         if (organisation.getPartOf() != null) {
-            organisationEntity.setPartOf(readEntity(organisation.getPartOf().getIdElement()));
+            log.debug("Ref="+organisation.getPartOf().getReference());
+            organisationEntity.setPartOf(readEntity(new IdType().setValue(organisation.getPartOf().getReference())));
         }
 
         em.persist(organisationEntity);
