@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.dao.ValueSet;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
@@ -238,7 +238,7 @@ public class RIValueSetRepository implements ValueSetRepository {
 
     }
     public List<ValueSet> searchValueset (
-            @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
+            @OptionalParam(name = ValueSet.SP_NAME) StringParam name
     )
     {
         List<ValueSetEntity> qryResults = null;
@@ -252,13 +252,16 @@ public class RIValueSetRepository implements ValueSetRepository {
         List<Predicate> predList = new LinkedList<Predicate>();
         List<ValueSet> results = new ArrayList<ValueSet>();
 
-        if (identifier !=null)
+        if (name !=null)
         {
-           /* TODO Join<ValueSetEntity, ValueSetIdentifier> join = root.join("identifiers", JoinType.LEFT);
-            
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("name").as(String.class)),
+                            builder.upper(builder.literal("%"+name.getValue()+"%"))
+                    );
+
             predList.add(p);
-            */
         }
 
        

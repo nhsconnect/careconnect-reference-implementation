@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.provider;
 
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.instance.model.IdType;
@@ -13,6 +14,7 @@ import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Component
 public class ValueSetResourceProvider implements IResourceProvider {
@@ -46,6 +48,14 @@ public class ValueSetResourceProvider implements IResourceProvider {
 
         return method;
     }
+
+    @Search
+    public List<ValueSet> searchOrganisation(HttpServletRequest theRequest,
+                                                 @OptionalParam(name =ValueSet.SP_NAME) StringParam name
+    ) {
+        return valueSetDao.searchValueset(name);
+    }
+
 
 
 
