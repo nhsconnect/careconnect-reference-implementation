@@ -1,0 +1,28 @@
+<Practitioner xmlns="http://hl7.org/fhir">
+    <id value="dummy"/>
+    <meta>
+        <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1"/>
+    </meta>
+    <identifier>
+        <system value="https://fhir.nhs.uk/Id/sds-user-id"/>
+        <value value="G0102005"/>
+    </identifier>
+    <active value="true"/>
+    <address>
+        <use value="work"/>
+        <line value="Fircroft, London Road"/>
+        <line value="Englefield Green"/>
+        <line value="Egham"/>
+        <city value="Surrey"/>
+        <postalCode value="TW20 0BS"/>
+    </address>
+    <practitionerRole>
+        <role>
+            <coding>
+                <system value="https://fhir.hl7.org.uk/CareConnect-SDSJobRoleName-1"/>
+                <code value="R0260"/>
+                <display value="General Medical Practitioner"/>
+            </coding>
+        </role>
+    </practitionerRole>
+</Practitioner>

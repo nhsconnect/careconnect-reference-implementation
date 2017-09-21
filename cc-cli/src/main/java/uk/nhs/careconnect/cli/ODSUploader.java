@@ -105,14 +105,11 @@ public class ODSUploader extends BaseCommand {
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
             client = ctx.newRestfulGenericClient(targetServer);
 
-            IRecordHandler handler = new PractitionerHandler();
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
-            uploadPractitioner();
 
-           // uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
-           // uploadPractitioner();
 
-            handler = new OrgHandler();
+
+
+            IRecordHandler handler = new OrgHandler();
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
             uploadOrganisation();
 
@@ -121,6 +118,13 @@ public class ODSUploader extends BaseCommand {
 
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
             uploadOrganisation();
+
+            handler = new PractitionerHandler();
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            uploadPractitioner();
+
+            // uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
+            // uploadPractitioner();
 
 		}
 
@@ -142,6 +146,8 @@ public class ODSUploader extends BaseCommand {
 
     private void uploadPractitioner() {
         for (Practitioner practitioner : docs) {
+
+         //   System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
             MethodOutcome outcome = client.update().resource(practitioner)
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
                     .execute();
@@ -192,7 +198,8 @@ public class ODSUploader extends BaseCommand {
                                         .newFormat(theDelimiter)
                                         .withAllowMissingColumnNames()
                                         .withHeader("OrganisationCode"
-                                                ,"Name","NationalGrouping"
+                                                ,"Name"
+                                                ,"NationalGrouping"
                                                 ,"HighLevelHealthGeography"
                                                 ,"AddressLine_1"
                                                 ,"AddressLine_2"
@@ -311,8 +318,27 @@ public class ODSUploader extends BaseCommand {
                                 .setDisplay("General Medical Practitioner");
                 }
             }
+            if (!theRecord.get("Name").isEmpty()) {
+                String[] nameStr = theRecord.get("Name").split(" ");
 
-          //  System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
+                if (nameStr.length>0) {
+                   HumanName name = practitioner.getName().addFamily(Inicaps(nameStr[0]));
+                   name.addPrefix("Dr");
+                   String foreName = "";
+                   for (Integer f=1; f<nameStr.length;f++) {
+                       if (f==1) {
+                           foreName = nameStr[1];
+                       } else {
+                           foreName = foreName + " " + nameStr[f];
+                       }
+                   }
+                   if (!foreName.isEmpty()) {
+                       name.addGiven(foreName);
+                   }
+                }
+            }
+
+
 
 
             docs.add(practitioner);

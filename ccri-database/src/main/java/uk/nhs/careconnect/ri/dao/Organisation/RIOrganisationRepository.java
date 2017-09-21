@@ -54,21 +54,25 @@ public class RIOrganisationRepository implements OrganisationRepository {
     }
 
     public Organization read(IdType theId) {
+        if (theId.getIdPart() != null) {
+            OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
 
-        OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class,Long.parseLong(theId.getIdPart()));
-
-        return organizationEntity == null
-                ? null
-                : organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
+            return organizationEntity == null
+                    ? null
+                    : organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
+        }
+        else { return null; }
 
     }
 
     public OrganisationEntity readEntity(IdType theId) {
+    if (theId.getIdPart() != null) {
+        OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
 
-        OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class,Long.parseLong(theId.getIdPart()));
-
-        return organizationEntity ;
-
+        return organizationEntity;
+    } else {
+        return null;
+    }
     }
 
     private String decode(String value) {

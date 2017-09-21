@@ -112,12 +112,12 @@ public class RIPractitionerRepository implements PractitionerRepository {
             practitionerName.setPractitionerEntity(practitionerEntity);
         }
 
-        if (practitioner.getName().getFamily() != null) {
-            practitionerName.setFamilyName(practitioner.getName().getFamily().toString()); }
-        if (practitioner.getName().getGiven() != null) {
-            practitionerName.setGivenName(practitioner.getName().getGiven().toString()); }
-        if (practitioner.getName().getPrefix() != null) {
-            practitionerName.setPrefix(practitioner.getName().getPrefix().toString()); }
+        if (practitioner.getName().getFamily().size() >0 ) {
+            practitionerName.setFamilyName(practitioner.getName().getFamily().get(0).getValue()); }
+        if (practitioner.getName().getGiven().size() > 0 ) {
+            practitionerName.setGivenName(practitioner.getName().getGiven().get(0).getValue()); }
+        if (practitioner.getName().getPrefix().size() >0) {
+            practitionerName.setPrefix(practitioner.getName().getPrefix().get(0).getValue()); }
         em.persist(practitionerName);
 
         for (Identifier ident : practitioner.getIdentifier()) {
@@ -194,7 +194,7 @@ public class RIPractitionerRepository implements PractitionerRepository {
                 practitionerRole.setPractitioner(practitionerEntity);
             }
 
-            if (practitioner.getPractitionerRole().get(0).getManagingOrganization() != null) {
+            if (practitioner.getPractitionerRole().get(0).getManagingOrganization().getIdElement().getIdPart() != null) {
                 practitionerRole.setManaginsOrganisation(organisationRepository.readEntity(practitioner.getPractitionerRole().get(0).getManagingOrganization().getIdElement()));
             }
 
