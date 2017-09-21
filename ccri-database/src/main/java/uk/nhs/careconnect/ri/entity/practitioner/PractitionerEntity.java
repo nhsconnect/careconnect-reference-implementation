@@ -33,6 +33,9 @@ public class PractitionerEntity extends BaseResource {
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerRole.class)
     private List<PractitionerRole> roles;
 
+    @Column(name="active")
+    private Boolean active;
+
     public Long getId() {
         return id;
     }
@@ -137,5 +140,13 @@ public class PractitionerEntity extends BaseResource {
 
     public void setRoles(List<PractitionerRole> roles) {
         this.roles = roles;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return active;
     }
 }

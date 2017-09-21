@@ -19,6 +19,8 @@ public interface OrganisationRepository {
 
     Organization create(Organization organization, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
+    OrganisationEntity readEntity(IdType theId);
+
    List<Organization> searchOrganization (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name

@@ -19,7 +19,9 @@ import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.Bundle;
+import org.hl7.fhir.instance.model.Organization;
 import org.hl7.fhir.instance.model.Patient;
+import org.hl7.fhir.instance.model.Practitioner;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ import java.io.File;
 import static org.junit.Assert.fail;
 
 
-public class PatientRESTfulSteps {
+public class ResourceRESTfulSteps {
 
     private static IGenericClient client;
     private static final FhirContext ourCtx = FhirContext.forDstu2Hl7Org();
@@ -49,10 +51,30 @@ public class PatientRESTfulSteps {
 
     @Given("^Patient Search by familyName kanfeld$")
     public void patient_Search_by_familyName_kanfeld() throws Throwable {
-        ourLog.info("GIVEN - Patient Search by familyName");
+    //    ourLog.info("GIVEN - Patient Search by familyName");
 
         bundle = client.search().forResource(Patient.class)
                 .where(new StringClientParam("family").matches().value("kanfeld"))
+                .returnBundle(Bundle.class).execute();
+
+        Assert.assertNotNull(bundle);
+    }
+
+    @Given("^Organisation Search by name moir$")
+    public void organisation_Search_by_name_moir() throws Throwable {
+      //  ourLog.info("GIVEN - Organization Search by name");
+
+        bundle = client.search().forResource(Organization.class)
+                .where(new StringClientParam("name").matches().value("moir"))
+                .returnBundle(Bundle.class).execute();
+
+        Assert.assertNotNull(bundle);
+    }
+
+    @Given("^Practitioner Search by name Bhatia$")
+    public void practitioner_Search_by_name_Bhatia() throws Throwable {
+        bundle = client.search().forResource(Practitioner.class)
+                .where(new StringClientParam("name").matches().value("Bhatia"))
                 .returnBundle(Bundle.class).execute();
 
         Assert.assertNotNull(bundle);
@@ -95,13 +117,13 @@ public class PatientRESTfulSteps {
 
     @AfterClass
     public static void afterClass() throws Exception {
-        ourLog.info("STOP - After Class CALLED");
+     //   ourLog.info("STOP - After Class CALLED");
         ourServer.stop();
     }
 
     @After
     public static void after() throws Exception {
-        ourLog.info("STOP - After CALLED");
+     //   ourLog.info("STOP - After CALLED");
        // ourServer.stop();
     }
 

@@ -20,7 +20,9 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.TerminologyLoader;
+import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
 import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
+import uk.nhs.careconnect.ri.dao.Practitioner.PractitionerRepository;
 import uk.nhs.careconnect.ri.dao.ValueSet.ValueSetRepository;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -47,6 +49,12 @@ public class JPAStepsDef {
     CodeSystemRepository myCodeSystemDao;
 
     @Autowired
+    OrganisationRepository organisationRepository;
+
+    @Autowired
+    PractitionerRepository practitionerRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -59,6 +67,8 @@ public class JPAStepsDef {
     List<Patient> patientList = null;
 
     List<Organization> organizationList = null;
+
+    List<Practitioner> practitionerList = null;
 
     private static final String CS_URL = "http://example.com/my_code_system";
     
@@ -133,20 +143,31 @@ public class JPAStepsDef {
     }
 
 
+    // ORGANISATION
+
+
+    @Given("^I search for Organisations by name (\\w+)$")
+    public void i_search_for_Organisations_by_name(String name) throws Throwable {
+        organizationList = organisationRepository.searchOrganization(null,new StringParam(name));
+    }
 
     @Then("^the results should be a list of CareConnect Organisations$")
     public void the_results_should_be_a_list_of_CareConnect_Organisations() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        for (Organization organization : organizationList) {
+            validateResource(organization);
+        }
     }
 
     @Given("^I search for Organisations by SDSCode (\\w+)$")
-    public void i_have_search_for_these_Organisations_by_SDSCode(String arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void i_have_search_for_these_Organisations_by_SDSCode(String SDSCode) throws Throwable {
+        organizationList = organisationRepository.searchOrganization(new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null);
     }
 
-
+    @Then("^the result should be a organisation list with (\\d+) entry$")
+    public void the_result_should_be_a_organisation_list_with_entry(int count) throws Throwable {
+        Assert.assertNotNull(organizationList);
+        Assert.assertEquals(count,organizationList.size());
+    }
     @Then("^the result should be a list with (\\d+) entry$")
     public void the_result_should_be_a_valid_FHIR_Bundle_with_entry(int count) throws Throwable {
         Assert.assertNotNull(patientList);
@@ -217,6 +238,42 @@ public class JPAStepsDef {
             assertEquals("CodeSystem contains circular reference around code parent", e.getMessage());
         }
     }
+
+
+    //PRACTITIONER
+
+
+
+    @Then("^the result should be a practitioner list with (\\d+) entry$")
+    public void the_result_should_be_a_practitioner_list_with_entry(int count) throws Throwable {
+        Assert.assertNotNull(practitionerList);
+        Assert.assertEquals(count,practitionerList.size());
+    }
+
+    @Then("^they shall all be FHIR Practitioner resources$")
+    public void they_shall_all_be_FHIR_Practitioner_resources() throws Throwable {
+        for (Practitioner practitioner : practitionerList) {
+            Assert.assertThat(practitioner,instanceOf(Practitioner.class));
+        }
+    }
+
+    @Then("^the results should be a list of CareConnect Practitioners$")
+    public void the_results_should_be_a_list_of_CareConnect_Practitioners() throws Throwable {
+        for (Practitioner practitioner : practitionerList) {
+            validateResource(practitioner);
+        }
+    }
+
+    @Given("^I search for Practitioners by SDSId (\\w+)$")
+    public void i_search_for_Practitioners_by_SDSId_S(String Id) throws Throwable {
+        practitionerList = practitionerRepository.searchPractitioner(new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null);
+    }
+
+    @Given("^I search for Practitioners by name (\\w+)$")
+    public void i_search_for_Practitioners_by_name_Bhatia(String name) throws Throwable {
+        practitionerList = practitionerRepository.searchPractitioner(null,new StringParam(name));
+    }
+
 
 
     private void validateResource(Resource resource) {

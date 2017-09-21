@@ -82,18 +82,32 @@ public class RIPatientRepository implements PatientRepository {
 
             Join<PatientEntity,PatientName> namejoin = root.join("names",JoinType.LEFT);
             if (familyName != null) {
-
-                Predicate p = builder.equal(namejoin.get("familyName"), familyName.getValue());
+                Predicate p =
+                        builder.like(
+                                builder.upper(namejoin.get("familyName").as(String.class)),
+                                builder.upper(builder.literal("%"+familyName.getValue()+"%"))
+                        );
                 predList.add(p);
             }
             if (givenName != null) {
-                Predicate p = builder.equal(namejoin.get("givenName"), givenName.getValue());
+                Predicate p =
+                        builder.like(
+                                builder.upper(namejoin.get("givenName").as(String.class)),
+                                builder.upper(builder.literal("%"+givenName.getValue()+"%"))
+                        );
+
                 predList.add(p);
             }
 
             if (name != null) {
-                Predicate pgiven = builder.like(namejoin.get("givenName"), "%" + name.getValue() + "%");
-                Predicate pfamily = builder.like(namejoin.get("familyName"), "%" + name.getValue() + "%");
+                Predicate pgiven = builder.like(
+                        builder.upper(namejoin.get("givenName").as(String.class)),
+                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                );
+                Predicate pfamily = builder.like(
+                        builder.upper(namejoin.get("familyName").as(String.class)),
+                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                );
                 Predicate p = builder.or(pfamily, pgiven);
                 predList.add(p);
             }

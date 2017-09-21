@@ -63,6 +63,14 @@ public class RIOrganisationRepository implements OrganisationRepository {
 
     }
 
+    public OrganisationEntity readEntity(IdType theId) {
+
+        OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class,Long.parseLong(theId.getIdPart()));
+
+        return organizationEntity ;
+
+    }
+
     private String decode(String value) {
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
@@ -117,6 +125,10 @@ public class RIOrganisationRepository implements OrganisationRepository {
             if (organisation.getType().getCoding().get(0).getSystem().equals(CareConnectSystem.OrganisationType)) {
                 organisationEntity.setType(codeSvc.findCode(CareConnectSystem.OrganisationType,organisation.getType().getCoding().get(0).getCode()));
             }
+        }
+
+        if (organisation.getPartOf() != null) {
+            organisationEntity.setPartOf(readEntity(organisation.getPartOf().getIdElement()));
         }
 
         em.persist(organisationEntity);
@@ -273,7 +285,7 @@ public class RIOrganisationRepository implements OrganisationRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal("%"+identifier.getValue()+"%"))
+                            builder.upper(builder.literal("%"+name.getValue()+"%"))
                     );
 
             predList.add(p);

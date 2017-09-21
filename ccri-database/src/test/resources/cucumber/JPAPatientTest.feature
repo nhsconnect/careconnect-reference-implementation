@@ -12,6 +12,12 @@ Scenario: Patient Read
         And they shall all be FHIR Patient resources
         And the results should be a list of CareConnect Patients
 
+  Scenario: Patient first name mixed case Search Found
+        Given I search for a Patient with a family name of KanFelD
+        Then the result should be a list with 1 entry
+        And they shall all be FHIR Patient resources
+        And the results should be a list of CareConnect Patients
+
    Scenario: Patient first name Search NOT Found
          Given I search for a Patient with a family name of Smith
          Then the result should be a list with 0 entry

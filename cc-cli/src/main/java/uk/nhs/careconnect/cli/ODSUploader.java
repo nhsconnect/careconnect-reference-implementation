@@ -16,6 +16,7 @@ import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
 import uk.nhs.careconnect.cli.dstu2.CareConnectProfile;
@@ -41,7 +42,11 @@ public class ODSUploader extends BaseCommand {
 
 	private ArrayList<Organization> orgs = new ArrayList<>();
 
+    private ArrayList<Practitioner> docs = new ArrayList<>();
+
 	private Map<String,Organization> orgMap = new HashMap<>();
+
+    private Map<String,Practitioner> docMap = new HashMap<>();
 
     FhirContext ctx ;
 
@@ -100,13 +105,21 @@ public class ODSUploader extends BaseCommand {
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
             client = ctx.newRestfulGenericClient(targetServer);
 
-            uploadODSDstu2(targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
+            IRecordHandler handler = new PractitionerHandler();
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            uploadPractitioner();
+
+           // uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
+           // uploadPractitioner();
+
+            handler = new OrgHandler();
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
             uploadOrganisation();
 
-            uploadODSDstu2(targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
             uploadOrganisation();
 
-            uploadODSDstu2(targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
             uploadOrganisation();
 
 		}
@@ -127,8 +140,22 @@ public class ODSUploader extends BaseCommand {
         orgs.clear();
     }
 
+    private void uploadPractitioner() {
+        for (Practitioner practitioner : docs) {
+            MethodOutcome outcome = client.update().resource(practitioner)
+                    .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
+                    .execute();
+            System.out.println(outcome.getId());
+            if (outcome.getId() != null ) {
+                practitioner.setId(outcome.getId().getIdPart());
+                docMap.put(practitioner.getIdentifier().get(0).getValue(), practitioner);
+            }
+        }
+        orgs.clear();
+    }
 
-	private void uploadODSDstu2(String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart, String webSite) throws CommandFailureException {
+
+	private void uploadODSDstu2(IRecordHandler handler, String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart, String webSite) throws CommandFailureException {
 
 
 	    Boolean found = false;
@@ -143,7 +170,7 @@ public class ODSUploader extends BaseCommand {
             byte[] nextData = IOUtils.toByteArray(new FileInputStream(fileName));
             theZipBytes.add(nextData);
 
-            IRecordHandler handler = new OrgHandler();
+
 
             for (byte[] nextZipBytes : theZipBytes) {
                 ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new ByteArrayInputStream(nextZipBytes)));
@@ -176,7 +203,7 @@ public class ODSUploader extends BaseCommand {
                                                 ,"OpenDate"
                                                 ,"CloseDate"
                                                 ,"Fld13"
-                                                ,"Fld14"
+                                                ,"OrganisationSubTypeCode"
                                                 ,"Commissioner"
                                                 ,"Fld16"
                                                 ,"Fld17"
@@ -222,7 +249,76 @@ public class ODSUploader extends BaseCommand {
     private interface IRecordHandler {
         void accept(CSVRecord theRecord);
     }
+    private String Inicaps(String string) {
+	    String result = null;
+	    String[] array = string.split(" ");
 
+	    for (int f=0; f<array.length;f++) {
+	        if (f==0) {
+	            result = StringUtils.capitalize(StringUtils.lowerCase(array[f]));
+            } else
+            {
+                result = result + " "+ StringUtils.capitalize(StringUtils.lowerCase(array[f]));
+            }
+        }
+	    return result;
+    }
+
+    public class PractitionerHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Practitioner practitioner = new Practitioner();
+            practitioner.setId("dummy");
+            practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
+
+            practitioner.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get("OrganisationCode"));
+
+            if (!theRecord.get("ContactTelephoneNumber").isEmpty()) {
+                practitioner.addTelecom()
+                        .setUse(ContactPoint.ContactPointUse.WORK)
+                        .setValue(theRecord.get("ContactTelephoneNumber"))
+                        .setSystem(ContactPoint.ContactPointSystem.PHONE);
+            }
+            practitioner.setActive(true);
+            if (!theRecord.get("CloseDate").isEmpty()) {
+                practitioner.setActive(false);
+            }
+            practitioner.addAddress()
+                    .setUse(Address.AddressUse.WORK)
+                    .addLine(Inicaps(theRecord.get("AddressLine_1")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_2")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_3")))
+                    .setCity(Inicaps(theRecord.get("AddressLine_4")))
+                    .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
+                    .setPostalCode(theRecord.get("Postcode"));
+            Practitioner.PractitionerPractitionerRoleComponent role = practitioner.addPractitionerRole();
+
+            if (!theRecord.get("Commissioner").isEmpty()) {
+                Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
+                if (parentOrg != null) {
+                   role.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
+                }
+            }
+            if (!theRecord.get("OrganisationSubTypeCode").isEmpty()) {
+                switch (theRecord.get("OrganisationSubTypeCode")) {
+                    case "O":
+                    case "P":
+                        role.getRole().addCoding()
+                                .setSystem(CareConnectSystem.SDSJobRoleName)
+                                .setCode("R0260")
+                                .setDisplay("General Medical Practitioner");
+                }
+            }
+
+          //  System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
+
+
+            docs.add(practitioner);
+        }
+
+    }
     public class OrgHandler implements IRecordHandler {
 
 
@@ -231,9 +327,7 @@ public class ODSUploader extends BaseCommand {
               //v  System.out.println(theRecord.toString());
                 Organization organization = new Organization();
 
-                // List<IdDt> profiles = new ArrayList<IdDt>();
-                // profiles.add(new IdDt(CareConnectSystem.ProfileOrganization));
-                /// ResourceMetadataKeyEnum.PROFILES.put(organization, profiles);
+
 
                 organization.setId("dummy");
                 organization.setMeta(new Meta().addProfile(CareConnectProfile.Organization_1));
@@ -249,7 +343,7 @@ public class ODSUploader extends BaseCommand {
                         .setCode("prov")
                         .setDisplay("Healthcare Provider");
 
-                organization.setName(theRecord.get("Name"));
+                organization.setName(Inicaps(theRecord.get("Name")));
 
                 if (!theRecord.get("ContactTelephoneNumber").isEmpty()) {
                     organization.addTelecom()
@@ -270,11 +364,11 @@ public class ODSUploader extends BaseCommand {
 
                 organization.addAddress()
                         .setUse(Address.AddressUse.WORK)
-                        .addLine(theRecord.get("AddressLine_1"))
-                        .addLine(theRecord.get("AddressLine_2"))
-                        .addLine(theRecord.get("AddressLine_3"))
-                        .setCity(theRecord.get("AddressLine_4"))
-                        .setDistrict(theRecord.get("AddressLine_5"))
+                        .addLine(Inicaps(theRecord.get("AddressLine_1")))
+                        .addLine(Inicaps(theRecord.get("AddressLine_2")))
+                        .addLine(Inicaps(theRecord.get("AddressLine_3")))
+                        .setCity(Inicaps(theRecord.get("AddressLine_4")))
+                        .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
                         .setPostalCode(theRecord.get("Postcode"));
                 orgs.add(organization);
             //System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(organization));
