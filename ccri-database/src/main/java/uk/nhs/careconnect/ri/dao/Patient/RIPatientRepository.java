@@ -95,7 +95,6 @@ public class RIPatientRepository implements PatientRepository {
                                 builder.upper(namejoin.get("givenName").as(String.class)),
                                 builder.upper(builder.literal("%"+givenName.getValue()+"%"))
                         );
-
                 predList.add(p);
             }
 
@@ -141,19 +140,22 @@ public class RIPatientRepository implements PatientRepository {
             Join<PatientEntity, PatientAddress> joinAdr = root.join("addresses", JoinType.LEFT);
             Join<PatientAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
             if (addressPostcode!=null) {
-                Predicate p = builder.equal(joinAdrTable.get("postcode"), addressPostcode.getValue());
+
+
+                Predicate p = builder.like(
+                        builder.upper(joinAdrTable.get("postcode").as(String.class)),
+                        builder.upper(builder.literal("%"+addressPostcode.getValue()+"%"))
+                );
                 predList.add(p);
             }
         }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
-        if (predList.size()>0)
-        {
+        if (predList.size()>0) {
             criteria.select(root).where(predArray);
         }
-        else
-        {
+        else {
             criteria.select(root);
         }
 

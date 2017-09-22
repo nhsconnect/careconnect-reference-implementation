@@ -2,7 +2,12 @@ package uk.nhs.careconnect.ri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.provider.*;
@@ -52,6 +57,17 @@ public class HAPIRestfulConfig extends RestfulServer {
 		registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 
 
+		FhirContext ctx = getFhirContext();
+		ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+	}
+
+	/**
+	 * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
+	 */
+	@Bean(autowire = Autowire.BY_TYPE)
+	public IServerInterceptor responseHighlighterInterceptor() {
+		ResponseHighlighterInterceptor retVal = new ResponseHighlighterInterceptor();
+		return retVal;
 	}
 
 }
