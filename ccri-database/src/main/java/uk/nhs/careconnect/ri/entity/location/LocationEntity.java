@@ -43,6 +43,10 @@ public class LocationEntity extends BaseResource {
 	@JoinColumn(name="physicalType")
 	private ConceptEntity physicalType;
 
+	@ManyToOne
+	@JoinColumn(name="PART_OF_LOCATION_ID")
+	private LocationEntity partOf;
+
 	@Enumerated(EnumType.ORDINAL)
 	Location.LocationStatus status;
 

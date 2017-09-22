@@ -44,7 +44,9 @@ public class ODSUploader extends BaseCommand {
 
     private ArrayList<Practitioner> docs = new ArrayList<>();
 
-	private Map<String,Organization> orgMap = new HashMap<>();
+    private ArrayList<Location> locs = new ArrayList<>();
+
+    private Map<String,Organization> orgMap = new HashMap<>();
 
     private Map<String,Practitioner> docMap = new HashMap<>();
 
@@ -106,11 +108,7 @@ public class ODSUploader extends BaseCommand {
             client = ctx.newRestfulGenericClient(targetServer);
 
 
-
-
-
             IRecordHandler handler = new OrgHandler();
-
 
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
             uploadOrganisation();
@@ -120,6 +118,13 @@ public class ODSUploader extends BaseCommand {
 
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
             uploadOrganisation();
+
+            handler = new LocationHandler();
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv", "https://digital.nhs.uk/media/351/ets/zip/ets");
+            uploadLocation();
+
+            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv", "https://digital.nhs.uk/media/393/ebranchs/zip/ebranchs");
+            uploadLocation();
 
 
             handler = new PractitionerHandler();
@@ -146,7 +151,18 @@ public class ODSUploader extends BaseCommand {
         }
         orgs.clear();
     }
+    private void uploadLocation() {
+        for (Location location : locs) {
+            MethodOutcome outcome = client.update().resource(location)
+                    .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" +location.getIdentifier().get(0).getValue())
+                    .execute();
 
+            if (outcome.getId() != null ) {
+                location.setId(outcome.getId().getIdPart());
+            }
+        }
+        locs.clear();
+    }
     private void uploadPractitioner() {
         for (Practitioner practitioner : docs) {
 
@@ -274,6 +290,54 @@ public class ODSUploader extends BaseCommand {
 	    return result;
     }
 
+    public class LocationHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Location location = new Location();
+            location.setId("dummy");
+            location.setMeta(new Meta().addProfile(CareConnectProfile.Location_1));
+
+            location.addIdentifier()
+                    .setSystem(CareConnectSystem.ODSSiteCode)
+                    .setValue(theRecord.get("OrganisationCode"));
+
+            location.setName(Inicaps(theRecord.get("Name")));
+
+            if (!theRecord.get("ContactTelephoneNumber").isEmpty()) {
+                location.addTelecom()
+                        .setUse(ContactPoint.ContactPointUse.WORK)
+                        .setValue(theRecord.get("ContactTelephoneNumber"))
+                        .setSystem(ContactPoint.ContactPointSystem.PHONE);
+            }
+            location.setStatus(Location.LocationStatus.ACTIVE);
+            if (!theRecord.get("CloseDate").isEmpty()) {
+                location.setStatus(Location.LocationStatus.ACTIVE);
+            }
+            location.getAddress()
+                    .setUse(Address.AddressUse.WORK)
+                    .addLine(Inicaps(theRecord.get("AddressLine_1")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_2")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_3")))
+                    .setCity(Inicaps(theRecord.get("AddressLine_4")))
+                    .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
+                    .setPostalCode(theRecord.get("Postcode"));
+            if (!theRecord.get("Commissioner").isEmpty()) {
+
+                Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
+
+                if (parentOrg != null) {
+                   // System.out.println("Org Id = "+parentOrg.getId());
+                    location.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
+                }
+            }
+
+         //   System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location));
+
+            locs.add(location);
+        }
+
+    }
+
     public class PractitionerHandler implements IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
@@ -311,7 +375,7 @@ public class ODSUploader extends BaseCommand {
                 Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
 
                 if (parentOrg != null) {
-                    System.out.println("Org Id = "+parentOrg.getId());
+                  //  System.out.println("Org Id = "+parentOrg.getId());
                    role.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
                 }
             }

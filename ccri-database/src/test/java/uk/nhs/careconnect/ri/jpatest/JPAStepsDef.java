@@ -31,10 +31,14 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 
@@ -62,8 +66,8 @@ public class JPAStepsDef {
     TerminologyLoader myTermSvc;
 
     Patient patient;
-    Organization organization;
-    ValueSet valueSet;
+
+    Location location;
     Resource resource;
 
     CodeSystemEntity cs;
@@ -74,6 +78,8 @@ public class JPAStepsDef {
 
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
+
+    protected FhirContext ctx = FhirContext.forDstu2Hl7Org();
 
     private static final String CS_URL = "http://example.com/my_code_system";
     
@@ -311,6 +317,21 @@ public class JPAStepsDef {
     @Given("^I search for Locations by name (\\w+)$")
     public void i_search_for_Locations_by_name(String name) throws Throwable {
         locationList = locationRepository.searchLocation(null,new StringParam(name));
+    }
+
+    @Given("^Location resource file$")
+    public void location_resource_file() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/Location.xml");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        location = ctx.newXmlParser().parseResource(Location.class,reader);
+    }
+
+    @Then("^save the location$")
+    public void save_the_location() throws Throwable {
+        locationRepository.create(location,null,"Location?identifier="+location.getIdentifier().get(0).getSystem()+"%7C"+location.getIdentifier().get(0).getValue());
     }
 
 

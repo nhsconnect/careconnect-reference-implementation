@@ -33,7 +33,8 @@ public class LocationIdentifier extends BaseIdentifier {
 	public LocationEntity getLocation() {
 	        return this.locationEntity;
 	}
-	public void setLocationEntity(LocationEntity organisationEntity) {
+
+	public void setLocation(LocationEntity locationEntity) {
 	        this.locationEntity = locationEntity;
 	}
 

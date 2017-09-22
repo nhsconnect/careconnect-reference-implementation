@@ -28,5 +28,10 @@ Feature: Location Integration Test
             Given I search for Locations by name xanadu
             Then the result should be a Location list with 0 entry
 
+         Scenario: Location Load
+                   Given Location resource file
+                   Then save the location
+
+
 
 

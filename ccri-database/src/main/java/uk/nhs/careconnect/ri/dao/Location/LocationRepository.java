@@ -24,4 +24,10 @@ public interface LocationRepository  {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name
     );
+
+    List<LocationEntity> searchLocationEntity (
+
+            @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
+            @OptionalParam(name = Location.SP_NAME) StringParam name
+    );
 }

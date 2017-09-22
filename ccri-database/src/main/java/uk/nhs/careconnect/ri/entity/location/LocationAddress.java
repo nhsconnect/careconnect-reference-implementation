@@ -33,7 +33,7 @@ public class LocationAddress extends BaseAddress {
     public LocationEntity getPractitioner() {
         return this.locationEntity;
     }
-    public void setPractitioner(LocationEntity locationEntity) {
+    public void setLocation(LocationEntity locationEntity) {
         this.locationEntity = locationEntity;
     }
 
@@ -41,7 +41,10 @@ public class LocationAddress extends BaseAddress {
     public AddressEntity getAddress() {
         return this.address;
     }
-    public void setAddress(AddressEntity addressEntity) { this.address = addressEntity; }
+    public AddressEntity setAddress(AddressEntity addressEntity) {
+        this.address = addressEntity;
+        return this.address;
+    }
 
 
 
