@@ -41,6 +41,7 @@ public class App  {
 
             ourCommands.add(new UploadTerminologyCommand());
             ourCommands.add(new ODSUploader());
+            ourCommands.add(new ITKSRPDataUploader());
 
         Collections.sort(ourCommands);
     }

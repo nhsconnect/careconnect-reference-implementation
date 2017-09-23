@@ -185,11 +185,12 @@
 			<version>3.1.0</version>
 		</dependency>
 
-		<!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well. Otherwise the following can be omitted. -->
+		<!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well. Otherwise the following can be omitted.	-->
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>
 			<version>${thymeleaf-version}</version>
+			<scope>test</scope>
 			<exclusions>
 			<exclusion>
 				<groupId>org.slf4j</groupId>
@@ -201,6 +202,7 @@
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf-spring4</artifactId>
 				<version>${thymeleaf-version}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

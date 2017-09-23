@@ -85,17 +85,16 @@ public class ValidationDataUploader extends BaseCommand {
 			}
 		}
 
+
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
 		    uploadDefinitionsCareConnectDstu2(targetServer,ctx,"https://fhir.nhs.uk/");
             uploadDefinitionsCareConnectDstu2(targetServer,ctx,"https://fhir-test.hl7.org.uk/");
 			uploadDefinitionsDstu2(targetServer, ctx);
-	//	} else if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
-	//		uploadDefinitionsDstu3(targetServer, ctx);
-	//	} else if (ctx.getVersion().getVersion() == FhirVersionEnum.R4) {
-	//		uploadDefinitionsR4(targetServer, ctx);
+
 		}
 
 	}
+
 
     private void uploadDefinitionsCareConnectDstu2(String targetServer, FhirContext ctx,String careConnectServer) throws CommandFailureException {
         IGenericClient client = newClient(ctx, targetServer);
@@ -128,29 +127,11 @@ public class ValidationDataUploader extends BaseCommand {
 
             ourLog.info("Resonse Code "+ responseCode);
             System.out.println("Resonse Code "+ responseCode);
-            /*
-            System.out.println("Resonse Length "+ con.getContentLength());
 
-            for (Map.Entry<String, List<String>> entries : con.getHeaderFields().entrySet()) {
-                String values = "";
-                for (String value : entries.getValue()) {
-                    values += value + ",";
-                }
-                System.out.println("Response : " + entries.getKey() + " - " +  values );
-            }
-            */
-           // StringBuffer sb = new StringBuffer();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-            /*
-            String inputLine = "";
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
-                System.out.println(inputLine);
-            }
-            br.reset();
-            */
+
 			bundle = ctx.newXmlParser().parseResource(Bundle.class,br);
 
         } catch (Exception e) {

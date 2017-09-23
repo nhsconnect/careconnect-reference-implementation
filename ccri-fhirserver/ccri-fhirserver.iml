@@ -98,11 +98,11 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-testpage-overlay:classes:2.5" level="project" />
     <orderEntry type="library" name="Maven: org.flywaydb:flyway-core:4.2.0" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf:3.0.7.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: ognl:ognl:3.1.12" level="project" />
-    <orderEntry type="library" name="Maven: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf-spring4:3.0.7.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.thymeleaf:thymeleaf:3.0.7.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: ognl:ognl:3.1.12" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.thymeleaf:thymeleaf-spring4:3.0.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.ebaysf.web:cors-filter:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.3.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.7.RELEASE" level="project" />
@@ -148,7 +148,7 @@
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-juli:8.5.16" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:4.3.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
-    <orderEntry type="module" module-name="careconnect-core" />
+    <orderEntry type="module" module-name="cc-core" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
