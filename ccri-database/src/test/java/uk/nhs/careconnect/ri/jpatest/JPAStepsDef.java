@@ -1,13 +1,14 @@
 package uk.nhs.careconnect.ri.jpatest;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.ParamPrefixEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -37,9 +38,7 @@ import java.io.Reader;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 public class JPAStepsDef {
@@ -122,15 +121,16 @@ public class JPAStepsDef {
         patientList = patientDAO.searchPatient(null,null,null,null,null,null, null,new StringParam(name),null);
     }
 
-    @Given("^I search for a Patient with a birthdate of '(\\d+)-(\\d+)-(\\d+)'$")
-    public void i_search_for_a_Patient_with_a_birthdate_of(int arg1, int arg2, int arg3) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Given("^I search for a Patient with a birthdate of '(\\w+)-(\\w+)-(\\w+)'$")
+    public void i_search_for_a_Patient_with_a_birthdate_of(String year, String month, String day) throws Throwable {
+        patientList = patientDAO.searchPatient(null, new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day),null,null,null,null, null,null,null);
+
     }
 
     @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
         patientList = patientDAO.searchPatient(null,null,new StringParam(email),null,null,null, null,null,null);
+
     }
 
     @Given("^I search for a Patient with a address-postcode of \"([^\"]*)\"$")

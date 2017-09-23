@@ -1,11 +1,13 @@
 package uk.nhs.careconnect.ri.dao.Patient;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.IdType;
 import org.hl7.fhir.instance.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
@@ -13,9 +15,11 @@ import uk.nhs.careconnect.ri.entity.patient.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +33,9 @@ public class RIPatientRepository implements PatientRepository {
 
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
+
+    private static final Logger log = LoggerFactory.getLogger(RIPatientRepository.class);
+
 
     @Transactional
     @Override
@@ -48,7 +55,7 @@ public class RIPatientRepository implements PatientRepository {
     }
     public List<Patient> searchPatient (
             @OptionalParam(name= Patient.SP_ADDRESSPOSTALCODE) StringParam addressPostcode,
-            @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+            @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
             @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
             @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
@@ -58,7 +65,7 @@ public class RIPatientRepository implements PatientRepository {
             @OptionalParam(name= Patient.SP_PHONE) StringParam phone
     )
     {
-        List<PatientEntity> qryResults = null;
+
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -111,6 +118,20 @@ public class RIPatientRepository implements PatientRepository {
                 predList.add(p);
             }
         }
+        ParameterExpression<java.util.Date> parameter = null;
+        Date dob = null;
+
+        if (birthDate !=null)
+        {
+            dob = birthDate.getValue();
+
+            parameter = builder.parameter(java.util.Date.class);
+
+            log.info("birthDate="+dob.toString());
+
+            Predicate p = builder.equal(root.<Date>get("dateOfBirth"),parameter);
+            predList.add(p);
+        }
 
         if (gender != null)
         {
@@ -140,8 +161,6 @@ public class RIPatientRepository implements PatientRepository {
             Join<PatientEntity, PatientAddress> joinAdr = root.join("addresses", JoinType.LEFT);
             Join<PatientAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
             if (addressPostcode!=null) {
-
-
                 Predicate p = builder.like(
                         builder.upper(joinAdrTable.get("postcode").as(String.class)),
                         builder.upper(builder.literal("%"+addressPostcode.getValue()+"%"))
@@ -158,8 +177,14 @@ public class RIPatientRepository implements PatientRepository {
         else {
             criteria.select(root);
         }
+        List<PatientEntity> qryResults = null;
+        if (dob==null) {
+            qryResults = em.createQuery(criteria).getResultList();
+        } else {
+            qryResults = em.createQuery(criteria).setParameter(parameter,dob, TemporalType.DATE).getResultList();
+        }
 
-        qryResults = em.createQuery(criteria).getResultList();
+
         for (PatientEntity patientEntity : qryResults)
         {
             Patient patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);

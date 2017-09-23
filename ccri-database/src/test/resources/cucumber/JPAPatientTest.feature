@@ -34,7 +34,7 @@ Scenario: Patient Read
 
 
     Scenario: Patient birthdate name Search Found
-         Given I search for a Patient with a birthdate of '1998-03-06'
+         Given I search for a Patient with a birthdate of '1998-03-19'
          Then the result should be a list with 1 entry
          And they shall all be FHIR Patient resources
          And the results should be a list of CareConnect Patients
