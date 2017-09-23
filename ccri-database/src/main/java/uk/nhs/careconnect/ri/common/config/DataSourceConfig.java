@@ -60,6 +60,7 @@ public class DataSourceConfig {
 
     //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
 
+   // com.mchange.v2.c3p0.ComboPooledDataSource
 
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
@@ -129,6 +130,12 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.cache.use_second_level_cache", "false");
         extraProperties.put("hibernate.cache.use_structured_entries", "false");
         extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+
+        extraProperties.put("hibernate.c3p0.min_size","5");
+        extraProperties.put("hibernate.c3p0.max_size","20");
+        extraProperties.put("hibernate.c3p0.timeout","300");
+        extraProperties.put("hibernate.c3p0.max_statements","50");
+        extraProperties.put("hibernate.c3p0.idle_test_period","3000");
       //  extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
       //  extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
       //  extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
