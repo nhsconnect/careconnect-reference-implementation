@@ -130,6 +130,9 @@ public class RIOrganisationRepository implements OrganisationRepository {
             if (organisation.getType().getCoding().get(0).getSystem().equals(CareConnectSystem.OrganisationType)) {
                 organisationEntity.setType(codeSvc.findCode(CareConnectSystem.OrganisationType,organisation.getType().getCoding().get(0).getCode()));
             }
+            if (organisation.getType().getCoding().get(0).getSystem().equals(CareConnectSystem.SNOMEDCT)) {
+                organisationEntity.setType(codeSvc.findCode(CareConnectSystem.SNOMEDCT,organisation.getType().getCoding().get(0).getCode()));
+            }
         }
 
         if (organisation.getPartOf() != null) {

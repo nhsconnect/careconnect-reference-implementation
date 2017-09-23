@@ -54,6 +54,8 @@ public class ODSUploader extends BaseCommand {
 
     IGenericClient client;
 
+
+
 	@Override
 	public String getCommandDescription() {
 		return "Uploads the ods/sds resources from NHS Digital.";
@@ -108,21 +110,23 @@ public class ODSUploader extends BaseCommand {
             client = ctx.newRestfulGenericClient(targetServer);
 
 
-            IRecordHandler handler = new OrgHandler();
-
+            IRecordHandler handler = new OrgHandler("930621000000104","National Health Service Trust");
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
             uploadOrganisation();
 
+            handler = new OrgHandler("394747008","Health Authority");
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
             uploadOrganisation();
 
+            handler = new OrgHandler("394745000","General practice");
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
             uploadOrganisation();
 
-            handler = new LocationHandler();
+            handler = new LocationHandler("930631000000102", "National Health Service Trust site");
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv", "https://digital.nhs.uk/media/351/ets/zip/ets");
             uploadLocation();
 
+            handler = new LocationHandler("394761003", "GP practice site");
             uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv", "https://digital.nhs.uk/media/393/ebranchs/zip/ebranchs");
             uploadLocation();
 
@@ -291,6 +295,19 @@ public class ODSUploader extends BaseCommand {
     }
 
     public class LocationHandler implements IRecordHandler {
+
+	    private String typeSncCT = "";
+
+        private String typeDisplay = "";
+	    LocationHandler(String typeSncCT, String typeDisplay) {
+	        this.typeSncCT = typeSncCT;
+	        this.typeDisplay = typeDisplay;
+        }
+
+        public void setType(String type) {
+            this.typeSncCT = type;
+        }
+
         @Override
         public void accept(CSVRecord theRecord) {
             Location location = new Location();
@@ -321,6 +338,17 @@ public class ODSUploader extends BaseCommand {
                     .setCity(Inicaps(theRecord.get("AddressLine_4")))
                     .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
                     .setPostalCode(theRecord.get("Postcode"));
+
+
+            if (typeSncCT!=null) {
+                location.getType()
+                        .addCoding()
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setCode(typeSncCT)
+                        .setDisplay(typeDisplay);
+
+            }
+
             if (!theRecord.get("Commissioner").isEmpty()) {
 
                 Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
@@ -418,6 +446,17 @@ public class ODSUploader extends BaseCommand {
     }
     public class OrgHandler implements IRecordHandler {
 
+        private String typeSncCT = "";
+
+        private String typeDisplay = "";
+        OrgHandler(String typeSncCT, String typeDisplay) {
+            this.typeSncCT = typeSncCT;
+            this.typeDisplay = typeDisplay;
+        }
+
+        public void setType(String type) {
+            this.typeSncCT = type;
+        }
 
         @Override
         public void accept(CSVRecord theRecord) {
@@ -435,10 +474,7 @@ public class ODSUploader extends BaseCommand {
                         .setValue(theRecord.get("OrganisationCode"));
 
 
-                organization.getType().addCoding()
-                        .setSystem(CareConnectSystem.OrganisationType)
-                        .setCode("prov")
-                        .setDisplay("Healthcare Provider");
+
 
                 organization.setName(Inicaps(theRecord.get("Name")));
 
@@ -457,6 +493,19 @@ public class ODSUploader extends BaseCommand {
                 organization.setActive(true);
                 if (!theRecord.get("CloseDate").isEmpty()) {
                     organization.setActive(false);
+                }
+                if (typeSncCT!=null)
+                {
+                    organization.getType()
+                            .addCoding()
+                            .setDisplay(typeDisplay)
+                            .setSystem(CareConnectSystem.SNOMEDCT)
+                            .setCode(typeSncCT);
+                } else {
+                    organization.getType().addCoding()
+                            .setSystem(CareConnectSystem.OrganisationType)
+                            .setCode("prov")
+                            .setDisplay("Healthcare Provider");
                 }
 
                 organization.addAddress()

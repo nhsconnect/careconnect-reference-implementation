@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
+import uk.nhs.careconnect.ri.dao.CodeSystem.ConceptRepository;
 import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationAddress;
@@ -43,6 +44,9 @@ public class RILocationRepository implements LocationRepository {
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    private ConceptRepository codeSvc;
 
 
     private static final Logger log = LoggerFactory.getLogger(RILocationRepository.class);
@@ -102,6 +106,10 @@ public class RILocationRepository implements LocationRepository {
         }
         locationEntity.setName(location.getName());
         locationEntity.setStatus(location.getStatus());
+
+        if (location.hasType() && location.getType().getCoding().size()>0) {
+            locationEntity.setType(codeSvc.findCode(location.getType().getCoding().get(0).getSystem(),location.getType().getCoding().get(0).getCode()));
+        }
 
       
         if (location.getManagingOrganization() != null) {
