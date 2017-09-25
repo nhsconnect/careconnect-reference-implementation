@@ -53,7 +53,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 		));
 
-		registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
+		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 
 
 		FhirContext ctx = getFhirContext();

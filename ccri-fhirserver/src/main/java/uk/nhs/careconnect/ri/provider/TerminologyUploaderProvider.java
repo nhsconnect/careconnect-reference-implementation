@@ -1,25 +1,9 @@
 package uk.nhs.careconnect.ri.provider;
 
 
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.method.RequestDetails;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
-import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.instance.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.dao.CodeSystem.TerminologyLoader;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.defaultString;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component
 public class TerminologyUploaderProvider extends BaseProvider  {
@@ -33,6 +17,11 @@ public class TerminologyUploaderProvider extends BaseProvider  {
     private TerminologyLoader myTerminologyLoaderSvc;
 
     //@formatter:off
+
+   /*
+
+   Not fully tested
+
     @Operation(name = UPLOAD_EXTERNAL_CODE_SYSTEM, idempotent = false, returnParameters= {
             @OperationParam(name="conceptCount", type=IntegerType.class, min=1)
     })
@@ -88,4 +77,5 @@ public class TerminologyUploaderProvider extends BaseProvider  {
            endRequest(theServletRequest);
         }
     }
+    */
 }

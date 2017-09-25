@@ -39,7 +39,7 @@ public class App  {
             ourCommands.add(new ExampleDataUploader());
             ourCommands.add(new ValidationDataUploader());
 
-            ourCommands.add(new UploadTerminologyCommand());
+         // disabled due to performance issues   ourCommands.add(new UploadTerminologyCommand());
             ourCommands.add(new ODSUploader());
             ourCommands.add(new ITKSRPDataUploader());
 

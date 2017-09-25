@@ -131,7 +131,7 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.cache.use_minimal_puts", "false");
 
         extraProperties.put("hibernate.c3p0.min_size","5");
-        extraProperties.put("hibernate.c3p0.max_size","20");
+        extraProperties.put("hibernate.c3p0.max_size","50");
         extraProperties.put("hibernate.c3p0.timeout","300");
         extraProperties.put("hibernate.c3p0.max_statements","50");
         extraProperties.put("hibernate.c3p0.idle_test_period","3000");

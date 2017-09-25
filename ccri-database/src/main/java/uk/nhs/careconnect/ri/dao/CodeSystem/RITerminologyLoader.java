@@ -177,7 +177,7 @@ public class RITerminologyLoader implements TerminologyLoader {
             concept = new ConceptEntity();
             id2concept.put(id, concept);
             concept.setCodeSystem(codeSystemVersion);
-           // codeSvc.save(concept);
+            codeSvc.save(concept);
         }
         return concept;
     }
@@ -302,7 +302,6 @@ public class RITerminologyLoader implements TerminologyLoader {
 
         session = codeSvc.getSession();
         tx = codeSvc.getTransaction(session);
-      //  codeSvc.beginTransaction(tx);
         List<String> expectedFilenameFragments = Arrays.asList(SCT_FILE_DESCRIPTION, SCT_FILE_RELATIONSHIP, SCT_FILE_CONCEPT);
 
         extractFiles(theZipBytes, expectedFilenameFragments);
@@ -391,6 +390,8 @@ public class RITerminologyLoader implements TerminologyLoader {
                 long count = circularCounter.getThenAdd();
                 float pct = ((float)count / rootConcepts.size()) * 100.0f;
                 ourLog.info(" * Scanning for circular refs - have scanned {} / {} codes ({}%)", count, rootConcepts.size(), pct);
+                session.flush();
+                session.clear();
                 dropCircularRefs(next, new ArrayList<String>(), code2concept, circularCounter);
             }
             codeSystemVersion.getConcepts().addAll(rootConcepts.values());
@@ -539,7 +540,7 @@ public class RITerminologyLoader implements TerminologyLoader {
             concept.setCode(conceptId);
             myCodeSystemVersion.getConcepts().add(concept);
 
-            codeSvc.save(concept);
+            //codeSvc.save(concept);
 
             ConceptDesignation designation =null;
             for (ConceptDesignation designationSearch : concept.getDesignations()) {
