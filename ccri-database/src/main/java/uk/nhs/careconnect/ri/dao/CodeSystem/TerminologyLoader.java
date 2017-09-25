@@ -2,10 +2,8 @@ package uk.nhs.careconnect.ri.dao.CodeSystem;
 
 import ca.uhn.fhir.rest.method.RequestDetails;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
 import java.util.List;
-import java.util.Map;
 
 public interface TerminologyLoader {
     String LOINC_URL = "http://loinc.org";
@@ -15,11 +13,13 @@ public interface TerminologyLoader {
 
     UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails);
 
-    void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url);
+    void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion);
+/*
+    void storeConcepts(Map<String, ConceptEntity> code2concept,  RequestDetails theRequestDetails);
 
-    void storeConcepts(Map<String, ConceptEntity> code2concept, String codeSystemUri, RequestDetails theRequestDetails);
-
-
+    @Scheduled(fixedRate = 5000)
+    void persistScheduled();
+*/
 
     public static class UploadStatistics {
         private final int myConceptCount;

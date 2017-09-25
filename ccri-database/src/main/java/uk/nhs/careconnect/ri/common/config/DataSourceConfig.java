@@ -12,7 +12,6 @@ import org.springframework.orm.hibernate5.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -100,16 +99,16 @@ public class DataSourceConfig {
     @Bean
     public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
         final Database database = Database.valueOf(vendor.toUpperCase());
-
+        /*
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setShowSql(showSql);
         vendorAdapter.setGenerateDdl(showDdl);
         vendorAdapter.setDatabase(database);
-
+        */
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setPersistenceUnitName("CCRI_PU");
-        factory.setJpaVendorAdapter(vendorAdapter);
+       // factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("uk.nhs.careconnect.ri.entity");
         factory.setDataSource(dataSource);
         factory.setPersistenceProvider(new HibernatePersistenceProvider());
@@ -136,11 +135,8 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.c3p0.timeout","300");
         extraProperties.put("hibernate.c3p0.max_statements","50");
         extraProperties.put("hibernate.c3p0.idle_test_period","3000");
-      //  extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
-      //  extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
-      //  extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
-        extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
-//		extraProperties.put("hibernate.search.default.worker.execution", "async");
+       extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
+;
         return extraProperties;
     }
 

@@ -75,6 +75,11 @@ public class ConceptEntity extends BaseResource {
     @Column(name = "abstractCode")
     private Boolean abstractCode;
 
+	@OneToMany(mappedBy="conceptEntity", targetEntity=ConceptDesignation.class)
+	private List<ConceptDesignation> designations;
+
+
+
     public Boolean getAbstractCode() {
         return abstractCode;
     }
@@ -238,8 +243,18 @@ public class ConceptEntity extends BaseResource {
 		//ourLog.trace("Code {}/{} has parents {}", entity.getId(), entity.getCode(), entity.getParentPidsAsString());
 	}
 
+    public List<ConceptDesignation> getDesignations() {
+        if (designations == null) {
+            designations = new ArrayList<ConceptDesignation>();
+        }
+        return designations;
+    }
 
-	public ConceptEntity setCodeSystem(CodeSystemEntity theCodeSystem) {
+    public void setDesignations(List<ConceptDesignation> designations) {
+        this.designations = designations;
+    }
+
+    public ConceptEntity setCodeSystem(CodeSystemEntity theCodeSystem) {
 		this.codeSystemEntity = theCodeSystem;
 		return this;
 	}

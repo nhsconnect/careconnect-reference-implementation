@@ -20,6 +20,7 @@ import org.hl7.fhir.instance.model.*;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
+import uk.nhs.careconnect.ri.dao.CodeSystem.ConceptRepository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.TerminologyLoader;
 import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
 import uk.nhs.careconnect.ri.dao.Organisation.OrganisationRepository;
@@ -51,6 +52,9 @@ public class JPAStepsDef {
 
     @Autowired
     CodeSystemRepository myCodeSystemDao;
+
+    @Autowired
+    ConceptRepository conceptRepository;
 
     @Autowired
     OrganisationRepository organisationRepository;
@@ -243,7 +247,7 @@ public class JPAStepsDef {
     @Then("^the CodeSystem should save$")
     public void the_CodeSystem_should_save() throws Throwable {
         try {
-            myCodeSystemDao.storeNewCodeSystemVersion( CS_URL,cs,null);
+            myCodeSystemDao.storeNewCodeSystemVersion( cs,null);
            // fail();
         } catch (InvalidRequestException e) {
             assertEquals("CodeSystem contains circular reference around code parent", e.getMessage());

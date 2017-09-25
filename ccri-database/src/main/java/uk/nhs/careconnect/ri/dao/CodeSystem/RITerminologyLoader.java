@@ -16,15 +16,16 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -32,8 +33,8 @@ import java.util.zip.ZipInputStream;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@Repository
-@Transactional
+@Service
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
 public class RITerminologyLoader implements TerminologyLoader {
 
     public class Counter {
@@ -45,15 +46,18 @@ public class RITerminologyLoader implements TerminologyLoader {
         }
 
     }
-    @PersistenceContext(type = PersistenceContextType.TRANSACTION)
-    protected EntityManager em;
+
+
 
     @Autowired
     CodeSystemRepository myTermSvc;
 
+    @Autowired
+    ConceptRepository codeSvc;
 
 
-    private static final int LOG_INCREMENT = 100000;
+    private TransactionStatus tx;
+    private static final int LOG_INCREMENT = 10000;
 
     public static final String LOINC_FILE = "loinc.csv";
 
@@ -69,6 +73,7 @@ public class RITerminologyLoader implements TerminologyLoader {
      * This is mostly for unit tests - we can disable processing of deferred concepts
      * by changing this flag
      */
+
 
 
 
@@ -107,6 +112,7 @@ public class RITerminologyLoader implements TerminologyLoader {
         theChain.remove(theChain.size() - 1);
 
     }
+
 
     private void extractFiles(List<byte[]> theZipBytes, List<String> theExpectedFilenameFragments) {
         Set<String> foundFragments = new HashSet<String>();
@@ -147,12 +153,28 @@ public class RITerminologyLoader implements TerminologyLoader {
         return retVal;
     }
 
-    private ConceptEntity getOrCreateConcept(CodeSystemEntity codeSystemVersion, Map<String, ConceptEntity> id2concept, String id) {
+    private ConceptEntity getOrCreateConcept(CodeSystemEntity codeSystemVersion, Map<String, ConceptEntity> id2concept,Map<String, ConceptEntity> code2concept, String  id, String conceptId) {
         ConceptEntity concept = id2concept.get(id);
+        if (concept==null) {
+            ourLog.trace("Fnd in map id="+id);
+            concept = code2concept.get(conceptId);
+        }
         if (concept == null) {
+            // check database KGM. To ensure correct conceptUsed
+            concept = codeSvc.findCode(codeSystemVersion,conceptId);
+            if (concept != null) {
+                id2concept.put(id, concept);
+                ourLog.trace("Fnd id="+id);
+               // concept.setCodeSystem(codeSystemVersion);
+            }
+        }
+
+        if (concept == null) {
+            ourLog.trace("Not Fnd id="+id);
             concept = new ConceptEntity();
             id2concept.put(id, concept);
             concept.setCodeSystem(codeSystemVersion);
+            codeSvc.save(concept);
         }
         return concept;
     }
@@ -222,21 +244,61 @@ public class RITerminologyLoader implements TerminologyLoader {
 
         return processLoincFiles(theZipBytes, theRequestDetails);
     }
+/*
+    @Scheduled(fixedRate = 5000)
+    public void persistScheduled() {
+        ourLog.info("Persist count = "+objectsToPersist.size());
+
+        TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
+        tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+
+       // Iterator<Object> it = objectsToPersist.iterator();
+        //while (it.hasNext()) {
+        Integer batch = 0;
+        while (!objectsToPersist.isEmpty() && batch < 10) {
+            batch++;
+            Object object = objectsToPersist.remove();
+            ourLog.info("Persist: "+object.getClass().toString());
+            tt.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+                if (object instanceof ConceptEntity) {
+                    ConceptEntity newConcept = (ConceptEntity) em.merge(object);
+                    ConceptEntity oldConcept = (ConceptEntity) object;
 
 
-    public void storeConcepts(Map<String, ConceptEntity> code2concept,  String codeSystemUri, RequestDetails theRequestDetails) {
-        ourLog.info("Calling StoreConcepts Service (myTermSvc)");
-       myTermSvc.storeConcepts(code2concept,codeSystemUri,theRequestDetails );
+                    for (ConceptDesignation designation : oldConcept.getDesignations()) {
+                        designation.setConceptEntity(newConcept);
+                    }
+
+                    // should process parent and child links to new reference
+                }
+                else if (object instanceof ConceptDesignation){
+                    em.merge(object);
+                    // should be ok
+                }
+            }
+
+        });
+
+        }
     }
+    */
 
-    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion, String url) {
+
+    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion) {
         myTermSvc.setProcessDeferred(false);
-        myTermSvc.storeNewCodeSystemVersion(url , codeSystemVersion,theRequestDetails );
+        myTermSvc.storeNewCodeSystemVersion(codeSystemVersion,theRequestDetails );
         myTermSvc.setProcessDeferred(true);
     }
 
+
     @Override
-    public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+    public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails)  {
+
+
+
         List<String> expectedFilenameFragments = Arrays.asList(SCT_FILE_DESCRIPTION, SCT_FILE_RELATIONSHIP, SCT_FILE_CONCEPT);
 
         extractFiles(theZipBytes, expectedFilenameFragments);
@@ -247,7 +309,8 @@ public class RITerminologyLoader implements TerminologyLoader {
     }
 
     public UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
-            final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
+            String url = LOINC_URL;
+            final CodeSystemEntity codeSystemVersion = myTermSvc.findBySystem(url);
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
 
             IRecordHandler handler = new LoincHandler(codeSystemVersion, code2concept);
@@ -273,8 +336,8 @@ public class RITerminologyLoader implements TerminologyLoader {
 
             ourLog.info("Have {} total concepts, {} root concepts", code2concept.size(), codeSystemVersion.getConcepts().size());
 
-            String url = LOINC_URL;
-            storeCodeSystem(theRequestDetails, codeSystemVersion, url);
+
+            storeCodeSystem(theRequestDetails, codeSystemVersion);
 
             return new UploadStatistics(code2concept.size());
         }
@@ -282,11 +345,14 @@ public class RITerminologyLoader implements TerminologyLoader {
 
 
        public  UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
-            final CodeSystemEntity codeSystemVersion = new CodeSystemEntity();
+            final CodeSystemEntity codeSystemVersion = myTermSvc.findBySystem(CareConnectSystem.SNOMEDCT); // new CodeSystemEntity();
             final Map<String, ConceptEntity> id2concept = new HashMap<String, ConceptEntity>();
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
             final Set<String> validConceptIds = new HashSet<String>();
 
+            //if (codeSystemVersion.getId()==null) objectsToPersist.add(codeSystemVersion);
+
+            ourLog.info("SNOMED CodeSystems="+codeSystemVersion.getCodeSystemUri());
             IRecordHandler handler = new SctHandlerConcept(validConceptIds);
             iterateOverZipFile(theZipBytes, SCT_FILE_CONCEPT, handler, '\t', null);
 
@@ -295,7 +361,7 @@ public class RITerminologyLoader implements TerminologyLoader {
             handler = new SctHandlerDescription(validConceptIds, code2concept, id2concept, codeSystemVersion);
             iterateOverZipFile(theZipBytes, SCT_FILE_DESCRIPTION, handler, '\t', null);
 
-            storeConcepts(code2concept,SCT_URL,theRequestDetails);
+            // storeConcepts(code2concept,theRequestDetails);
 
             ourLog.info("Got {} concepts, cloning map", code2concept.size());
             final HashMap<String, ConceptEntity> rootConcepts = new HashMap<String, ConceptEntity>(code2concept);
@@ -321,17 +387,17 @@ public class RITerminologyLoader implements TerminologyLoader {
                 ourLog.info(" * Scanning for circular refs - have scanned {} / {} codes ({}%)", count, rootConcepts.size(), pct);
                 dropCircularRefs(next, new ArrayList<String>(), code2concept, circularCounter);
             }
-
             codeSystemVersion.getConcepts().addAll(rootConcepts.values());
-            String url = SCT_URL;
-            storeCodeSystem(theRequestDetails, codeSystemVersion, url);
+
+            storeCodeSystem(theRequestDetails, codeSystemVersion);
 
             return new UploadStatistics(code2concept.size());
     }
 
     @VisibleForTesting
-    public void setTermSvcForUnitTests(CodeSystemRepository theTermSvc) {
+    public void setTermSvcForUnitTests(CodeSystemRepository theTermSvc, ConceptRepository conceptRepository) {
         myTermSvc = theTermSvc;
+        this.codeSvc = conceptRepository;
     }
 
     private interface IRecordHandler {
@@ -437,6 +503,8 @@ public class RITerminologyLoader implements TerminologyLoader {
         private final CodeSystemEntity myCodeSystemVersion;
         private final Map<String, ConceptEntity> myId2concept;
         private Set<String> myValidConceptIds;
+        private Integer count = 0;
+    //    private final Logger ourLog = LoggerFactory.getLogger(RITerminologyLoader.class);
 
         private SctHandlerDescription(Set<String> theValidConceptIds, Map<String, ConceptEntity> theCode2concept, Map<String, ConceptEntity> theId2concept, CodeSystemEntity theCodeSystemVersion) {
             myCode2concept = theCode2concept;
@@ -459,10 +527,52 @@ public class RITerminologyLoader implements TerminologyLoader {
 
             String term = theRecord.get("term");
 
-            ConceptEntity concept = getOrCreateConcept(myCodeSystemVersion, myId2concept, id);
+            String typeId = theRecord.get("typeId");
+
+            ConceptEntity concept = getOrCreateConcept(myCodeSystemVersion, myId2concept,myCode2concept, id,conceptId);
             concept.setCode(conceptId);
-            concept.setDisplay(term);
-            myCode2concept.put(conceptId, concept);
+            myCodeSystemVersion.getConcepts().add(concept);
+
+            codeSvc.save(concept);
+
+            ConceptDesignation designation =null;
+            for (ConceptDesignation designationSearch : concept.getDesignations()) {
+                if (designationSearch.getDesignationId().equals(id)) {
+                    designation = designationSearch;
+                    break;
+                }
+            }
+            if (designation == null) {
+                designation = new ConceptDesignation();
+                designation.setDesignationId(id);
+                designation.setConceptEntity(concept);
+                concept.getDesignations().add(designation);
+
+            }
+            designation.setTerm(term);
+            if (concept.getDisplay() == null) {
+                concept.setDisplay(term);
+            }
+            switch (typeId) {
+                case "900000000000003001":
+                    designation.setUse(ConceptDesignation.DesignationUse.FullySpecifiedName);
+                    concept.setDisplay(term);
+                    break;
+                case "900000000000013009":
+                    designation.setUse(ConceptDesignation.DesignationUse.Synonym);
+                    break;
+                case "900000000000550004":
+                    designation.setUse(ConceptDesignation.DesignationUse.Definition);
+                    concept.setDisplay(term);
+                    break;
+                default :
+                     ourLog.info("Unknown typeId="+typeId);
+            }
+
+
+           codeSvc.save(designation);
+
+
         }
     }
 

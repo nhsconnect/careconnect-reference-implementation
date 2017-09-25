@@ -19,8 +19,13 @@ import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-import java.util.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Repository
 public class RICodeSystemRepository implements CodeSystemRepository {
@@ -61,7 +66,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 
 
-    private void codeSystemSave(CodeSystemEntity object) {
+    public void save(CodeSystemEntity object) {
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         tt.execute(new TransactionCallbackWithoutResult() {
@@ -69,21 +74,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 em.persist(object);
                 em.flush();
-                log.info("Saved CodeSystemId = "+object.getId());
-            }
-
-        });
-    }
-
-    private void childLinkSave(ConceptParentChildLink object) {
-        TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
-        tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        tt.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                em.persist(object);
-                em.flush();
-                log.info("Saved CodeSystemId = "+object.getId());
+                log.info("Saved CodeSystemEntity.Id = "+object.getId());
             }
 
         });
@@ -92,30 +83,34 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
     @Override
-    public void storeNewCodeSystemVersion(String theSystem, CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) {
+    @Transactional
+    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) {
         em.setFlushMode(FlushModeType.AUTO);
-        CodeSystemEntity worker = findBySystem(theSystem);
-        log.info("Starting Code Processing CodeSystem.id = "+worker.getId());
+       // CodeSystemEntity worker = findBySystem(theSystem);
+        if (theCodeSystem.getId() == null) {
+            save(theCodeSystem);
+        }
+        log.info("Starting Code Processing CodeSystem.id = "+theCodeSystem.getId());
         log.info("Adding Concepts - Number of Concepts CodeSystem.id = "+theCodeSystem.getConcepts().size());
         for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            findAddCode(worker, conceptEntity, true );
+            conceptRepository.save(conceptEntity);
+            saveChildConcepts(conceptEntity);
+        }
+        for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
+            conceptRepository.persistLinks(conceptEntity);
         }
         log.info("Finished Code Processing");
     }
 
-    @Override
-    public void storeConcepts(Map<String, ConceptEntity> code2concept, String codeSystemUri, RequestDetails theRequestDetails) {
-        log.info("ConceptRepository storeConcepts");
-        CodeSystemEntity codeSystemEntity = findBySystem(codeSystemUri);
-        log.info("Store Concepts Processing: Number of concepts"+code2concept.size());
-
-        for ( ConceptEntity currentConcept : code2concept.values() ) {
-            ConceptEntity concept = conceptRepository.findCode(codeSystemEntity, currentConcept.getCode());
-            if (concept == null) {
-                conceptRepository.addCode(currentConcept.getCode(),currentConcept.getDisplay(),codeSystemEntity);
-            }
+    private void saveChildConcepts(ConceptEntity conceptEntity) {
+        for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
+            conceptRepository.save(childLink.getChild());
+            saveChildConcepts(childLink.getChild());
         }
     }
+
+
+
 
     @Override
     public CodeSystemEntity findBySystem(String system) {
@@ -151,11 +146,14 @@ public class RICodeSystemRepository implements CodeSystemRepository {
             codeSystemEntity = new CodeSystemEntity();
             codeSystemEntity.setCodeSystemUri(system);
 
-            codeSystemSave(codeSystemEntity);
+            save(codeSystemEntity);
+
         }
         return codeSystemEntity;
     }
+
     @Override
+    @Transactional
     public SystemEntity findSystem(String system) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -194,103 +192,6 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 
 
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntityDb, ConceptEntity conceptModel, boolean processChildren) {
-        // This inspects codes already present and if not found it adds the code... CRUDE at present
-        level++;
-
-        ConceptEntity conceptEntity = conceptRepository.findCode(codeSystemEntityDb.getCodeSystemUri(),conceptModel.getCode());
-
-        if (conceptEntity == null) {
-            conceptEntity = conceptRepository.addCode(conceptModel.getCode(),conceptModel.getDisplay(),codeSystemEntityDb);
-
-        } else {
-            if (conceptEntity.getDisplay() == null || conceptEntity.getDisplay().isEmpty()) {
-                conceptEntity.setDisplay(conceptEntity.getDisplay());
-                conceptRepository.save(conceptEntity);
-            }
-        }
-
-        if ((processChildren) && (conceptModel.getChildren().size() > 0) ) {
-            processChildConcepts(conceptModel,conceptEntity);
-        }
-
-        level--;
-        return conceptEntity;
-    }
-
-    private ConceptParentChildLink findChildLinks(ConceptEntity conceptModel, ConceptEntity parentConceptDb) {
-        ConceptParentChildLink childLink = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<ConceptParentChildLink> criteria = builder.createQuery(ConceptParentChildLink.class);
-        Root<ConceptParentChildLink> root = criteria.from(ConceptParentChildLink.class);
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<ConceptParentChildLink> results = new ArrayList<ConceptParentChildLink>();
-
-        Join<ConceptParentChildLink,ConceptEntity> join = root.join("child", JoinType.LEFT);
-
-        Predicate parentid = builder.equal(root.get("parent"), parentConceptDb.getId());
-        predList.add(parentid);
-        Predicate pchildcode = builder.equal(join.get("code"), conceptModel.getCode());
-        predList.add(pchildcode);
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-
-        criteria.select(root).where(predArray);
-
-        List<ConceptParentChildLink> qryResults = em.createQuery(criteria).getResultList();
-
-        for (ConceptParentChildLink child :qryResults) {
-            log.info("Found for childcodelink code="+conceptModel.getCode()+" childLink.Id="+childLink.getId());
-            childLink = child;
-            break;
-        }
-        return childLink;
-    }
-
-    private void processChildConcepts(ConceptEntity conceptModel, ConceptEntity parentConceptDb) {
-        String lastConcept = null;
-        // Simple check to ensure codes are being repeated
-        for (ConceptParentChildLink conceptChild : conceptModel.getChildren()) {
-
-            if (conceptChild.getChild().getCode() != null  && !conceptChild.getChild().getCode().equals(lastConcept)) {
-                lastConcept = conceptChild.getChild().getCode();
-                // Look in the parentConcept for existing link
-                ConceptParentChildLink childLink = null;
-
-                for (ConceptParentChildLink conceptChildLink : parentConceptDb.getChildren()) {
-                    if (conceptChildLink.getChild().getCode().equals(conceptModel.getCode())) {
-                        childLink = conceptChildLink;
-                    }
-                }
-
-                if (childLink == null) {
-                    childLink = findChildLinks(conceptModel,parentConceptDb);
-                }
-
-                if (childLink == null) {
-                    // TODO We are assuming child code doesn't exist, so just inserts.
-                    childLink = new ConceptParentChildLink();
-                    childLink.setParent(parentConceptDb);
-                    childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
-                    childLink.setCodeSystem(parentConceptDb.getCodeSystem());
-
-                    ConceptEntity childConcept = findAddCode(parentConceptDb.getCodeSystem(), conceptChild.getChild(), true);
-
-                    childLink.setChild(childConcept);
-                    childLinkSave(childLink);
-
-                    // ensure link add to object
-                    parentConceptDb.getChildren().add(childLink);
-
-                }
-            }
-        }
-    }
-
 
 
     @Override
@@ -311,7 +212,8 @@ public class RICodeSystemRepository implements CodeSystemRepository {
         if (conceptEntity == null) {
             log.debug("Add new code = " + concept.getCode());
             conceptEntity = new ConceptEntity()
-                    .setCode(concept.getCode()).setCodeSystem(codeSystemEntity)
+                    .setCode(concept.getCode())
+                    .setCodeSystem(codeSystemEntity)
                     .setDisplay(concept.getDisplay())
                     .setAbstractCode(concept.getAbstract());
 

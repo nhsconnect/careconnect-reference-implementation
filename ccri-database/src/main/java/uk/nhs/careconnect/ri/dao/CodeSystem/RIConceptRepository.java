@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -39,7 +40,11 @@ public class RIConceptRepository implements ConceptRepository {
 
 
 
-    private void emPersist(Object object) {
+    @Override
+    @Transactional
+    public void save(ConceptParentChildLink conceptParentChildLink) {
+        em.persist(conceptParentChildLink);
+        /*
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         tt.execute(new TransactionCallbackWithoutResult() {
@@ -47,28 +52,44 @@ public class RIConceptRepository implements ConceptRepository {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 em.persist(object);
                 em.flush();
-
+                log.info("Saved ConceptParentChildLink.Id = "+object.getId());
             }
 
         });
+        */
     }
+
     @Override
+    @Transactional
+    //PersistenceContextType.EXTENDED
     public ConceptEntity save(ConceptEntity conceptEntity){
-        emPersist(conceptEntity);
+        em.persist(conceptEntity);
+        for (ConceptParentChildLink child: conceptEntity.getChildren()) {
+            child.setParent(conceptEntity);
+        }
 
         return conceptEntity;
     }
-    @Override
-    public ConceptEntity addCode(String code, String display, CodeSystemEntity codeSystemEntity)
-    {
-        log.debug("Add new code =" + code);
-        ConceptEntity conceptEntity = new ConceptEntity()
-                .setCode(code)
-                .setCodeSystem(codeSystemEntity)
-                .setDisplay(display);
-       emPersist(conceptEntity);
 
-        return conceptEntity;
+    @Override
+    public ConceptDesignation save(ConceptDesignation conceptDesignation){
+        em.persist(conceptDesignation);
+        return conceptDesignation;
+    }
+
+    @Override
+    public void persistLinks(ConceptEntity conceptEntity) {
+
+        for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
+            if (childLink.getId() == null) {
+                childLink.setCodeSystem(childLink.getChild().getCodeSystem());
+
+                save(childLink);
+            }
+        }
+        for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
+            persistLinks(childLink.getChild());
+        }
     }
 
     @Override
@@ -99,7 +120,7 @@ public class RIConceptRepository implements ConceptRepository {
         criteria.select(root).where(predArray);
 
         TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
-        qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
         List<ConceptEntity> qryResults = qry.getResultList();
 
         for (ConceptEntity concept : qryResults) {

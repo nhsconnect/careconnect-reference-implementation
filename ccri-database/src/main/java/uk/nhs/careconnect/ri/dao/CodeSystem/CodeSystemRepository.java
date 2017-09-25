@@ -6,8 +6,6 @@ import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
-import java.util.Map;
-
 public interface CodeSystemRepository {
 
     public CodeSystemEntity findBySystem(String system);
@@ -16,9 +14,9 @@ public interface CodeSystemRepository {
 
     public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptDefinitionComponent concept);
 
-    public void storeNewCodeSystemVersion(String theSystem, CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
+    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
 
-    public void storeConcepts(Map<String, ConceptEntity> code2concept, String codeSystemUri , RequestDetails theRequestDetails);
+    public void save(CodeSystemEntity codeSystemEntity);
 
     public void setProcessDeferred(boolean theProcessDeferred);
 

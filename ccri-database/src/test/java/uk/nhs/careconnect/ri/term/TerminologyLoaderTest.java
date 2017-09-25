@@ -17,10 +17,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.nhs.careconnect.ri.dao.CodeSystem.CodeSystemRepository;
+import uk.nhs.careconnect.ri.dao.CodeSystem.ConceptRepository;
 import uk.nhs.careconnect.ri.dao.CodeSystem.RITerminologyLoader;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
+import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -32,8 +34,7 @@ import java.util.zip.ZipOutputStream;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,13 +46,19 @@ public class TerminologyLoaderTest {
     @Mock
     private CodeSystemRepository myTermSvc;
 
+    @Mock
+    private ConceptRepository codeSvc;
+
+
+
     @Captor
     private ArgumentCaptor<CodeSystemEntity> myCsvCaptor;
 
     @Before
     public void before() {
         mySvc = new RITerminologyLoader();
-        mySvc.setTermSvcForUnitTests(myTermSvc);
+        mySvc.setTermSvcForUnitTests(myTermSvc, codeSvc);
+
     }
 
     @AfterClass
@@ -75,9 +82,10 @@ public class TerminologyLoaderTest {
         ourLog.info("ZIP file has {} bytes", bos2.toByteArray().length);
 
         RequestDetails details = mock(RequestDetails.class);
+        when(myTermSvc.findBySystem("http://loinc.org")).thenReturn(new CodeSystemEntity());
         mySvc.loadLoinc(list(bos1.toByteArray(), bos2.toByteArray()), details);
 
-        verify(myTermSvc).storeNewCodeSystemVersion(any(String.class), myCsvCaptor.capture(), any(RequestDetails.class));
+        verify(myTermSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
 
         CodeSystemEntity ver = myCsvCaptor.getValue();
         ConceptEntity code = ver.getConcepts().iterator().next();
@@ -120,9 +128,12 @@ public class TerminologyLoaderTest {
         ourLog.info("ZIP file has {} bytes", bos.toByteArray().length);
 
         RequestDetails details = mock(RequestDetails.class);
+        when(myTermSvc.findBySystem(CareConnectSystem.SNOMEDCT)).thenReturn(new CodeSystemEntity());
+       // when(codeSvc.newTransaction()).thenReturn(mock(TransactionStatus.class));
+
         mySvc.loadSnomedCt(list(bos.toByteArray()), details);
 
-        verify(myTermSvc).storeNewCodeSystemVersion(any(String.class), myCsvCaptor.capture(), any(RequestDetails.class));
+        verify(myTermSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
 
         CodeSystemEntity csv = myCsvCaptor.getValue();
         TreeSet<String> allCodes = toCodes(csv, true);
@@ -165,6 +176,7 @@ public class TerminologyLoaderTest {
         zos.close();
 
         ourLog.info("ZIP file has {} bytes", bos.toByteArray().length);
+        //when(mySvc.newTx()).thenReturn(mock(EntityTransaction.class));
 
         RequestDetails details = mock(RequestDetails.class);
         try {

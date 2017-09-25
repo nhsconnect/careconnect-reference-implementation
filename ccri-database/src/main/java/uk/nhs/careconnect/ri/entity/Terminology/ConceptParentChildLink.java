@@ -106,7 +106,8 @@ public class ConceptParentChildLink {
 	public enum RelationshipTypeEnum{
 		// ********************************************
 		// IF YOU ADD HERE MAKE SURE ORDER IS PRESERVED
-		ISA
+		ISA,
+		FindingSite
 	}
 
 
