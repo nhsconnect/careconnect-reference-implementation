@@ -23,7 +23,7 @@ node {
 
           docker.withRegistry('https://docker.io','docker-hub-credentials') {
             app.push("latest")
-            app.push("3.0.2")
+            app.push(env.BUILD_ID)
           }
     }
 
