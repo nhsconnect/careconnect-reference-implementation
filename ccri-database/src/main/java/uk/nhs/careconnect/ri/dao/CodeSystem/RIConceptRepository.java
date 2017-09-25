@@ -1,5 +1,8 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
+import ca.uhn.fhir.rest.method.RequestDetails;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ public class RIConceptRepository implements ConceptRepository {
     @PersistenceContext
     EntityManager em;
 
+    private EntityManager sessionEntityManager;
+
     @Autowired
     private PlatformTransactionManager myTransactionMgr;
 
@@ -38,12 +43,35 @@ public class RIConceptRepository implements ConceptRepository {
     private static final Logger log = LoggerFactory.getLogger(RIConceptRepository.class);
 
 
+    public Session getSession(){
+        sessionEntityManager = em.getEntityManagerFactory().createEntityManager();
+
+        Session session = (Session) sessionEntityManager.unwrap(Session.class);
+        return session;
+    }
 
 
     @Override
-    @Transactional
+    public Transaction getTransaction(Session session) {
+
+        return session.beginTransaction();
+    }
+
+    public void beginTransaction(Transaction tx) {
+       // tx.begin();
+    }
+
+    public void commitTransaction(Transaction tx) {
+      tx.commit();
+    }
+
+
+
+    @Override
+
     public void save(ConceptParentChildLink conceptParentChildLink) {
-        em.persist(conceptParentChildLink);
+        sessionEntityManager.persist(conceptParentChildLink);
+        sessionEntityManager.flush();
         /*
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -60,20 +88,20 @@ public class RIConceptRepository implements ConceptRepository {
     }
 
     @Override
-    @Transactional
-    //PersistenceContextType.EXTENDED
+
     public ConceptEntity save(ConceptEntity conceptEntity){
-        em.persist(conceptEntity);
+        sessionEntityManager.persist(conceptEntity);
         for (ConceptParentChildLink child: conceptEntity.getChildren()) {
             child.setParent(conceptEntity);
         }
-
+        sessionEntityManager.flush();
         return conceptEntity;
     }
 
     @Override
     public ConceptDesignation save(ConceptDesignation conceptDesignation){
-        em.persist(conceptDesignation);
+        sessionEntityManager.persist(conceptDesignation);
+        sessionEntityManager.flush();
         return conceptDesignation;
     }
 
@@ -93,11 +121,76 @@ public class RIConceptRepository implements ConceptRepository {
     }
 
     @Override
+    @Transactional
+    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) {
+
+
+
+        log.info("Starting Code Processing CodeSystem.id = "+theCodeSystem.getId());
+        log.info("Adding Concepts - Number of Concepts CodeSystem.id = "+theCodeSystem.getConcepts().size());
+        for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
+            save(conceptEntity);
+            saveChildConcepts(conceptEntity);
+        }
+        for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
+            persistLinks(conceptEntity);
+        }
+        log.info("Finished Code Processing");
+    }
+
+    private void saveChildConcepts(ConceptEntity conceptEntity) {
+        for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
+            save(childLink.getChild());
+            saveChildConcepts(childLink.getChild());
+        }
+    }
+
+
+
+    @Override
+    public CodeSystemEntity findBySystem(String system) {
+
+        CriteriaBuilder builder = sessionEntityManager.getCriteriaBuilder();
+
+        CodeSystemEntity codeSystemEntity = null;
+        CriteriaQuery<CodeSystemEntity> criteria = builder.createQuery(CodeSystemEntity.class);
+
+        Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
+        List<Predicate> predList = new LinkedList<Predicate>();
+
+        Predicate p = builder.equal(root.<String>get("codeSystemUri"),system);
+        predList.add(p);
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+        if (predList.size()>0)
+        {
+            log.info("Found CodeSystem "+system);
+            criteria.select(root).where(predArray);
+
+            List<CodeSystemEntity> qryResults = sessionEntityManager.createQuery(criteria).getResultList();
+
+            for (CodeSystemEntity cme : qryResults) {
+                codeSystemEntity = cme;
+                break;
+            }
+        }
+        if (codeSystemEntity == null) {
+            log.info("Not found adding CodeSystem = "+system);
+            codeSystemEntity = new CodeSystemEntity();
+            codeSystemEntity.setCodeSystemUri(system);
+
+            sessionEntityManager.persist(codeSystemEntity);
+
+        }
+        return codeSystemEntity;
+    }
+
+    @Override
     public ConceptEntity findCode(CodeSystemEntity codeSystem, String code) {
 
 
         ConceptEntity conceptEntity = null;
-        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaBuilder builder = sessionEntityManager.getCriteriaBuilder();
 
         CriteriaQuery<ConceptEntity> criteria = builder.createQuery(ConceptEntity.class);
         Root<ConceptEntity> root = criteria.from(ConceptEntity.class);
@@ -119,7 +212,7 @@ public class RIConceptRepository implements ConceptRepository {
 
         criteria.select(root).where(predArray);
 
-        TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
+        TypedQuery<ConceptEntity> qry = sessionEntityManager.createQuery(criteria);
 
         List<ConceptEntity> qryResults = qry.getResultList();
 

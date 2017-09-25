@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
-import ca.uhn.fhir.rest.method.RequestDetails;
 import org.hl7.fhir.instance.model.ValueSet;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -14,7 +13,7 @@ public interface CodeSystemRepository {
 
     public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptDefinitionComponent concept);
 
-    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
+
 
     public void save(CodeSystemEntity codeSystemEntity);
 

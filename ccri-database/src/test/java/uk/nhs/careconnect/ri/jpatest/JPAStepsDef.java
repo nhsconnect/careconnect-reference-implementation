@@ -12,6 +12,8 @@ import ca.uhn.fhir.validation.ValidationResult;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
@@ -81,6 +83,8 @@ public class JPAStepsDef {
 
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
+
+    Transaction tx;
 
     protected FhirContext ctx = FhirContext.forDstu2Hl7Org();
 
@@ -228,6 +232,10 @@ public class JPAStepsDef {
     @Given("^I add a dummy codesystem$")
     public void i_add_a_dummy_codesystem() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
+
+        Session session =  conceptRepository.getSession();
+         tx = conceptRepository.getTransaction(session);
+      //  conceptRepository.beginTransaction(tx);
         cs = myCodeSystemDao.findBySystem(CS_URL);
 
 
@@ -247,7 +255,7 @@ public class JPAStepsDef {
     @Then("^the CodeSystem should save$")
     public void the_CodeSystem_should_save() throws Throwable {
         try {
-            myCodeSystemDao.storeNewCodeSystemVersion( cs,null);
+            conceptRepository.storeNewCodeSystemVersion( cs,null);
            // fail();
         } catch (InvalidRequestException e) {
             assertEquals("CodeSystem contains circular reference around code parent", e.getMessage());

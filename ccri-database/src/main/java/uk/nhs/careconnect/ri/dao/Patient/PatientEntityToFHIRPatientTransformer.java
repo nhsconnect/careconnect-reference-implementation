@@ -6,6 +6,7 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientName;
 import uk.org.hl7.fhir.core.dstu2.CareConnectExtension;
 import uk.org.hl7.fhir.core.dstu2.CareConnectProfile;
@@ -32,13 +33,13 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
         patient.setMeta(meta);
 
 
-        for(int f=0;f<patientEntity.getIdentifiers().size();f++)
+        for(PatientIdentifier patientIdentifier : patientEntity.getIdentifiers())
         {
             Identifier identifier = patient.addIdentifier()
-                    .setSystem(patientEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(patientEntity.getIdentifiers().get(f).getValue());
+                    .setSystem(patientIdentifier.getSystemUri())
+                    .setValue(patientIdentifier.getValue());
            // NHS Verification Status
-            if ( (patientEntity.getIdentifiers().get(f).getSystem().getUri().equals(CareConnectSystem.NHSNumber))
+            if ( (patientIdentifier.getSystemUri().equals(CareConnectSystem.NHSNumber))
                     && (patientEntity.getNHSVerificationCode() != null)) {
                 CodeableConcept verificationStatusCode = new CodeableConcept();
                 verificationStatusCode
@@ -59,11 +60,15 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         for (PatientName nameEntity : patientEntity.getNames()) {
 
-
             HumanName name = patient.addName()
                     .addFamily(nameEntity.getFamilyName())
-                    .addGiven(nameEntity.getGivenName())
                     .addPrefix(nameEntity.getPrefix());
+
+            String[] given = nameEntity.getGivenName().split(" ");
+            for (Integer i=0; i<given.length; i++  ) {
+                name.getGiven().add(new StringType(given[i]));
+            }
+
             if (nameEntity.getNameUse() != null) {
                 name.setUse(nameEntity.getNameUse());
             }

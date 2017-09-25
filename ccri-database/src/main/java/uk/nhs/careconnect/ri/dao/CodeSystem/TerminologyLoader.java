@@ -14,12 +14,6 @@ public interface TerminologyLoader {
     UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails);
 
     void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion);
-/*
-    void storeConcepts(Map<String, ConceptEntity> code2concept,  RequestDetails theRequestDetails);
-
-    @Scheduled(fixedRate = 5000)
-    void persistScheduled();
-*/
 
     public static class UploadStatistics {
         private final int myConceptCount;

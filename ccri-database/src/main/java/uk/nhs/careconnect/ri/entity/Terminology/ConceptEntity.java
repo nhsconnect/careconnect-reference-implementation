@@ -23,7 +23,7 @@ public class ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
 
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade= {})
+	@OneToMany(mappedBy = "parent", cascade= {})
 	private Collection<ConceptParentChildLink> children;
 
 	@Column(name = "CODE", length = 100, nullable = false)
@@ -52,7 +52,7 @@ public class ConceptEntity extends BaseResource {
 	@Transient
 	private String myParentPids;
 
-	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "child")
+	@OneToMany(cascade = {}, mappedBy = "child")
 	private Collection<ConceptParentChildLink> parents;
 
 	@Column(name = "active")
@@ -65,7 +65,7 @@ public class ConceptEntity extends BaseResource {
 	@JoinColumn(name = "moduleId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_MODULE"))
 	private ConceptEntity moduleId;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
 	private ConceptEntity definitionStatusId;
 

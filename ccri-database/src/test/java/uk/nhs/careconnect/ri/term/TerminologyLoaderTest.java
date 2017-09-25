@@ -7,6 +7,8 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.util.TestUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,7 +51,7 @@ public class TerminologyLoaderTest {
     @Mock
     private ConceptRepository codeSvc;
 
-
+    Session session = null;
 
     @Captor
     private ArgumentCaptor<CodeSystemEntity> myCsvCaptor;
@@ -82,10 +84,10 @@ public class TerminologyLoaderTest {
         ourLog.info("ZIP file has {} bytes", bos2.toByteArray().length);
 
         RequestDetails details = mock(RequestDetails.class);
-        when(myTermSvc.findBySystem("http://loinc.org")).thenReturn(new CodeSystemEntity());
+        when(codeSvc.findBySystem("http://loinc.org")).thenReturn(new CodeSystemEntity());
         mySvc.loadLoinc(list(bos1.toByteArray(), bos2.toByteArray()), details);
 
-        verify(myTermSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
+        verify(codeSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
 
         CodeSystemEntity ver = myCsvCaptor.getValue();
         ConceptEntity code = ver.getConcepts().iterator().next();
@@ -128,12 +130,13 @@ public class TerminologyLoaderTest {
         ourLog.info("ZIP file has {} bytes", bos.toByteArray().length);
 
         RequestDetails details = mock(RequestDetails.class);
-        when(myTermSvc.findBySystem(CareConnectSystem.SNOMEDCT)).thenReturn(new CodeSystemEntity());
-       // when(codeSvc.newTransaction()).thenReturn(mock(TransactionStatus.class));
+        when(codeSvc.findBySystem(CareConnectSystem.SNOMEDCT)).thenReturn(new CodeSystemEntity());
+        when(codeSvc.getSession()).thenReturn(mock(Session.class));
+        when(codeSvc.getTransaction(any())).thenReturn(mock(Transaction.class));
 
         mySvc.loadSnomedCt(list(bos.toByteArray()), details);
 
-        verify(myTermSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
+        verify(codeSvc).storeNewCodeSystemVersion( myCsvCaptor.capture(), any(RequestDetails.class));
 
         CodeSystemEntity csv = myCsvCaptor.getValue();
         TreeSet<String> allCodes = toCodes(csv, true);

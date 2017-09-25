@@ -17,7 +17,6 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -81,33 +80,6 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     }
 
 
-
-    @Override
-    @Transactional
-    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) {
-        em.setFlushMode(FlushModeType.AUTO);
-       // CodeSystemEntity worker = findBySystem(theSystem);
-        if (theCodeSystem.getId() == null) {
-            save(theCodeSystem);
-        }
-        log.info("Starting Code Processing CodeSystem.id = "+theCodeSystem.getId());
-        log.info("Adding Concepts - Number of Concepts CodeSystem.id = "+theCodeSystem.getConcepts().size());
-        for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            conceptRepository.save(conceptEntity);
-            saveChildConcepts(conceptEntity);
-        }
-        for (ConceptEntity conceptEntity : theCodeSystem.getConcepts()) {
-            conceptRepository.persistLinks(conceptEntity);
-        }
-        log.info("Finished Code Processing");
-    }
-
-    private void saveChildConcepts(ConceptEntity conceptEntity) {
-        for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
-            conceptRepository.save(childLink.getChild());
-            saveChildConcepts(childLink.getChild());
-        }
-    }
 
 
 

@@ -29,7 +29,9 @@ public class BaseIdentifier {
         return this.systemEntity;
     }
     public String getSystemUri() {
-        return this.systemEntity.getUri();
+        String result = "";
+        if (this.systemEntity != null) result=this.systemEntity.getUri();
+        return result;
     }
     public void setSystem(SystemEntity systemEntity) {
         this.systemEntity = systemEntity;

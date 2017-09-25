@@ -13,19 +13,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -34,7 +35,6 @@ import java.util.zip.ZipInputStream;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
 public class RITerminologyLoader implements TerminologyLoader {
 
     public class Counter {
@@ -47,16 +47,19 @@ public class RITerminologyLoader implements TerminologyLoader {
 
     }
 
-
-
-    @Autowired
-    CodeSystemRepository myTermSvc;
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     ConceptRepository codeSvc;
 
+    @Autowired
+    CodeSystemRepository myTermSvc;
 
-    private TransactionStatus tx;
+
+    private Transaction tx;
+
+    private Session session = null;
     private static final int LOG_INCREMENT = 10000;
 
     public static final String LOINC_FILE = "loinc.csv";
@@ -174,7 +177,7 @@ public class RITerminologyLoader implements TerminologyLoader {
             concept = new ConceptEntity();
             id2concept.put(id, concept);
             concept.setCodeSystem(codeSystemVersion);
-            codeSvc.save(concept);
+           // codeSvc.save(concept);
         }
         return concept;
     }
@@ -288,29 +291,32 @@ public class RITerminologyLoader implements TerminologyLoader {
 
 
     public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion) {
-        myTermSvc.setProcessDeferred(false);
-        myTermSvc.storeNewCodeSystemVersion(codeSystemVersion,theRequestDetails );
-        myTermSvc.setProcessDeferred(true);
+
+        codeSvc.storeNewCodeSystemVersion(codeSystemVersion,theRequestDetails );
+
     }
 
 
     @Override
     public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails)  {
 
-
-
+        session = codeSvc.getSession();
+        tx = codeSvc.getTransaction(session);
+      //  codeSvc.beginTransaction(tx);
         List<String> expectedFilenameFragments = Arrays.asList(SCT_FILE_DESCRIPTION, SCT_FILE_RELATIONSHIP, SCT_FILE_CONCEPT);
 
         extractFiles(theZipBytes, expectedFilenameFragments);
 
         ourLog.info("Beginning SNOMED CT processing");
 
-        return processSnomedCtFiles(theZipBytes, theRequestDetails);
+        UploadStatistics stats = processSnomedCtFiles(theZipBytes, theRequestDetails);
+        codeSvc.commitTransaction(tx);
+        return stats;
     }
 
     public UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
             String url = LOINC_URL;
-            final CodeSystemEntity codeSystemVersion = myTermSvc.findBySystem(url);
+            final CodeSystemEntity codeSystemVersion = codeSvc.findBySystem(url);
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
 
             IRecordHandler handler = new LoincHandler(codeSystemVersion, code2concept);
@@ -345,7 +351,7 @@ public class RITerminologyLoader implements TerminologyLoader {
 
 
        public  UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
-            final CodeSystemEntity codeSystemVersion = myTermSvc.findBySystem(CareConnectSystem.SNOMEDCT); // new CodeSystemEntity();
+            final CodeSystemEntity codeSystemVersion = codeSvc.findBySystem(CareConnectSystem.SNOMEDCT); // new CodeSystemEntity();
             final Map<String, ConceptEntity> id2concept = new HashMap<String, ConceptEntity>();
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
             final Set<String> validConceptIds = new HashSet<String>();
@@ -396,7 +402,7 @@ public class RITerminologyLoader implements TerminologyLoader {
 
     @VisibleForTesting
     public void setTermSvcForUnitTests(CodeSystemRepository theTermSvc, ConceptRepository conceptRepository) {
-        myTermSvc = theTermSvc;
+      //  myTermSvc = theTermSvc;
         this.codeSvc = conceptRepository;
     }
 

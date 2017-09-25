@@ -1,9 +1,9 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
-import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
+import ca.uhn.fhir.rest.method.RequestDetails;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import uk.nhs.careconnect.ri.entity.Terminology.*;
 
 public interface ConceptRepository {
 
@@ -17,10 +17,20 @@ public interface ConceptRepository {
 
     public void persistLinks(ConceptEntity conceptEntity);
 
-  //  public void storeConcepts(Map<String, ConceptEntity> code2concept, RequestDetails theRequestDetails);
+    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
 
     public ConceptDesignation save(ConceptDesignation conceptDesignation);
 
+    public Session getSession();
+
+    public CodeSystemEntity findBySystem(String system);
+
+
+    public Transaction getTransaction(Session session);
+
+  //  public void beginTransaction(Transaction tx);
+
+    public void commitTransaction(Transaction tx);
 
 
 
