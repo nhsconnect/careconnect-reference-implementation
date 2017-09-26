@@ -98,17 +98,17 @@ public class RIValueSetRepository implements ValueSetRepository {
             valueSetEntity.setDescription(valueSet.getDescription());
         }
 
-        log.info("Call em.persist ValueSetEntity");
+        log.trace("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
 
         //Created the ValueSet so add the sub concepts
 
-        log.info("ValueSet = "+valueSet.getUrl());
+        log.trace("ValueSet = "+valueSet.getUrl());
         if (valueSet.hasCompose()) {
             for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
 
                 CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
-                log.info("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
+                log.trace("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
 
                 ValueSetInclude includeValueSetEntity = null;
 
@@ -126,7 +126,7 @@ public class RIValueSetRepository implements ValueSetRepository {
                     em.persist(includeValueSetEntity);
                     valueSetEntity.getIncludes().add(includeValueSetEntity);
                 }
-                log.info("ValueSet include Id ="+includeValueSetEntity.getId());
+                log.trace("ValueSet include Id ="+includeValueSetEntity.getId());
 
                 for (ValueSet.ConceptSetFilterComponent filter : component.getFilter()) {
                     ValueSetIncludeFilter filterEntity = null;
@@ -153,12 +153,12 @@ public class RIValueSetRepository implements ValueSetRepository {
                     for (ValueSetIncludeConcept conceptSearch :includeValueSetEntity.getConcepts()) {
                         if (conceptSearch.getConcept().getCode().equals(conceptReferenceComponent.getCode())) {
                             includeConcept = conceptSearch;
-                            log.info("Found Concept in include = "+ conceptSearch.getConcept().getCode());
+                            log.trace("Found Concept in include = "+ conceptSearch.getConcept().getCode());
                         }
                     }
                     if (includeConcept == null) {
                         // Code may already be in the code System but not in the ValueSet. So we need to search the CodeSystem
-                        log.info("NOT Found concept in include = "+conceptReferenceComponent.getCode());
+                        log.debug("NOT Found concept in include = "+conceptReferenceComponent.getCode());
                         ValueSet.ConceptDefinitionComponent concept = new ValueSet.ConceptDefinitionComponent();
                         concept.setCode(conceptReferenceComponent.getCode())
                                 .setDisplay(conceptReferenceComponent.getDisplay());
@@ -167,7 +167,7 @@ public class RIValueSetRepository implements ValueSetRepository {
                         includeConcept = new ValueSetIncludeConcept();
                         //ConceptEntity conceptEntity
                         includeConcept.setConcept(codeSystemRepository.findAddCode(codeSystemEntity,concept));
-                        log.info("codeSystem returned "+includeConcept.getConcept().getCode()+" Id = "+includeConcept.getConcept().getId());
+                        log.trace("codeSystem returned "+includeConcept.getConcept().getCode()+" Id = "+includeConcept.getConcept().getId());
                         includeConcept.setInclude(includeValueSetEntity);
 
                         em.persist(includeConcept);
@@ -180,7 +180,7 @@ public class RIValueSetRepository implements ValueSetRepository {
 
 
 
-        log.info("Called PERSIST id="+valueSetEntity.getId().toString());
+        log.debug("Called PERSIST id="+valueSetEntity.getId().toString());
         valueSet.setId(valueSetEntity.getId().toString());
 
         return valueSet;
@@ -228,7 +228,7 @@ public class RIValueSetRepository implements ValueSetRepository {
 
     public ValueSet read(IdType theId) {
 
-        log.info("Retrieving ValueSet = " + theId.getValue());
+        log.trace("Retrieving ValueSet = " + theId.getValue());
 
         ValueSetEntity valueSetEntity = findValueSetEntity(theId);
 

@@ -1,15 +1,12 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
-import ca.uhn.fhir.rest.method.RequestDetails;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -27,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class RICodeSystemRepository implements CodeSystemRepository {
 
     @PersistenceContext
@@ -66,6 +64,8 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
     public void save(CodeSystemEntity object) {
+        em.persist(object);
+        /*
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         tt.execute(new TransactionCallbackWithoutResult() {
@@ -76,7 +76,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
                 log.info("Saved CodeSystemEntity.Id = "+object.getId());
             }
 
-        });
+        });*/
     }
 
 
@@ -94,9 +94,8 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
         Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
         List<Predicate> predList = new LinkedList<Predicate>();
-        log.info("Looking for CodeSystem = " + system);
-        log.info("FlushMode = "+em.getFlushMode());
-        log.info("Entity Manager Properties = "+ em.getProperties().toString());
+        log.debug("FlushMode = "+em.getFlushMode());
+        log.debug("Entity Manager Properties = "+ em.getProperties().toString());
         Predicate p = builder.equal(root.<String>get("codeSystemUri"),system);
         predList.add(p);
         Predicate[] predArray = new Predicate[predList.size()];
