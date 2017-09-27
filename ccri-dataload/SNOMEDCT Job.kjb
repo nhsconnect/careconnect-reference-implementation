@@ -380,8 +380,8 @@ truncate table `tempConcept`;</sql>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>256</xloc>
-      <yloc>208</yloc>
+      <xloc>512</xloc>
+      <yloc>80</yloc>
     </entry>
     <entry>
       <name>Load Data</name>
@@ -420,7 +420,7 @@ truncate table `tempConcept`;</sql>
       <yloc>224</yloc>
     </entry>
     <entry>
-      <name>SQL</name>
+      <name>populate Concept table</name>
       <description />
       <type>SQL</type>
       <sql>insert into Concept (CODE, CODESYSTEM_ID, active)
@@ -440,6 +440,53 @@ FROM
       <xloc>576</xloc>
       <yloc>224</yloc>
     </entry>
+    <entry>
+      <name>populate Concept Designation</name>
+      <description />
+      <type>SQL</type>
+      <sql>insert into careconnect.ConceptDesignation(designationId,term,CONCEPT_ID,designationUse,active)
+SELECT 
+	distinct d.id,d.term,c.CONCEPT_ID,
+	case d.typeId 
+	   when '900000000000003001' then 0
+	   when '900000000000013009' then 1
+	   when '900000000000550004' then 2
+	end 'type'
+	,1 	
+FROM
+	careconnect.tempDescription d
+join careconnect.Concept c on c.CODE = d.conceptId
+	where d.active = 1 and idDescription not in (select designationId from careconnect.ConceptDesignation); </sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename />
+      <sendOneStatement>F</sendOneStatement>
+      <connection>ccri</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>480</xloc>
+      <yloc>336</yloc>
+    </entry>
+    <entry>
+      <name>Update Concept display term</name>
+      <description />
+      <type>SQL</type>
+      <sql>update Concept c 
+join careconnect.ConceptDesignation d on c.CONCEPT_ID = d.CONCEPT_ID
+ set c.DISPLAY = d.term
+where designationUse=0</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename />
+      <sendOneStatement>F</sendOneStatement>
+      <connection>ccri</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>496</xloc>
+      <yloc>432</yloc>
+    </entry>
   </entries>
   <hops>
     <hop>
@@ -453,7 +500,25 @@ FROM
     </hop>
     <hop>
       <from>Load Data</from>
-      <to>SQL</to>
+      <to>populate Concept table</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>populate Concept table</from>
+      <to>populate Concept Designation</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>populate Concept Designation</from>
+      <to>Update Concept display term</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
