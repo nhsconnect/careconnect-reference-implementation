@@ -8,7 +8,8 @@ import java.util.List;
 
 @Table(name="CodeSystem", uniqueConstraints= {
 		@UniqueConstraint(name="IDX_CS_CODESYSTEM", columnNames= {"CODE_SYSTEM_URI"})
-	})
+	}
+	)
 @Entity()
 public class CodeSystemEntity extends BaseResource {
 

@@ -3,7 +3,10 @@ package uk.nhs.careconnect.ri.entity.Terminology;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ConceptParentChildLink")
+@Table(name="ConceptParentChildLink", indexes= {
+		// For data loading
+		@Index(columnList = "relationshipId", name = "IDX_RELATIONSHIP")
+})
 public class ConceptParentChildLink {
 	
 
@@ -27,6 +30,9 @@ public class ConceptParentChildLink {
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name="REL_TYPE", length=5, nullable=true)
 	private RelationshipTypeEnum myRelationshipType;
+
+	@Column(name="relationshipId")
+	private String relationshipId;
 
 	public ConceptEntity getChild() {
 		return child;
@@ -55,8 +61,16 @@ public class ConceptParentChildLink {
 	public void setParent(ConceptEntity theParent) {
 		parent = theParent;
 	}
-	
-	
+
+	public String getRelationshipId() {
+		return relationshipId;
+	}
+
+	public ConceptParentChildLink setRelationshipId(String relationshipId) {
+		this.relationshipId = relationshipId;
+		return this;
+	}
+
 	public void setRelationshipType(RelationshipTypeEnum theRelationshipType) {
 		myRelationshipType = theRelationshipType;
 	}

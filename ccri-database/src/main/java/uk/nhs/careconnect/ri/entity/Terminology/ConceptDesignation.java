@@ -5,7 +5,10 @@ import uk.nhs.careconnect.ri.entity.BaseResource;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ConceptDesignation")
+@Table(name="ConceptDesignation", indexes= {
+
+        @Index(columnList = "designationId", name = "IDX_DESIGNATION")
+})
 public class ConceptDesignation extends BaseResource {
 
     public enum DesignationUse {

@@ -16,7 +16,10 @@ import java.util.*;
 @Table(name="Concept", uniqueConstraints= {
 	@UniqueConstraint(name="IDX_CONCEPT_CS_CODE", columnNames= {"CODESYSTEM_ID", "CODE"})
 }, indexes= {
-	@Index(name = "IDX_CONCEPT_INDEXSTATUS", columnList="INDEX_STATUS") 
+	@Index(name = "IDX_CONCEPT_INDEXSTATUS", columnList="INDEX_STATUS"),
+
+		@Index(columnList = "CODE", name = "IDX_CODE")	,
+		@Index(columnList = "CODE,CODESYSTEM_ID", name = "IDX_CODE_CODESYSTEM")
 })
 
 public class ConceptEntity extends BaseResource {
