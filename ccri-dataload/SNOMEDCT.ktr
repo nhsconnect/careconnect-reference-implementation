@@ -458,35 +458,160 @@
   <order>
     <hop>
       <from>CSV file INT Description</from>
-      <to>Table output 2</to>
+      <to>Description</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>CSV file INT Concept</from>
-      <to>Table output</to>
+      <to>Concept to MySQL table</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table output 2</from>
+      <from>Description</from>
       <to>Add New codes to Concept</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
     <hop>
-      <from>Table output</from>
+      <from>Concept to MySQL table</from>
       <to>Add New codes to Concept</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
     <hop>
       <from>CSV file UK Concept</from>
-      <to>Table output</to>
+      <to>Concept to MySQL table</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>CSV file UK Description</from>
-      <to>Table output 2</to>
+      <to>Description</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>CREATE Tables</from>
+      <to>CSV file INT Description</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>CREATE Tables</from>
+      <to>CSV file INT Concept</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>CREATE Tables</from>
+      <to>CSV file UK Concept</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>CREATE Tables</from>
+      <to>CSV file UK Description</to>
+      <enabled>N</enabled>
+    </hop>
   </order>
+  <step>
+    <name>Add New codes to Concept</name>
+    <type>ExecSQL</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>ccrisql</connection>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quoteString>N</quoteString>
+    <sql>insert into Concept (CODE, CODESYSTEM_ID, active)
+SELECT 
+	distinct c.id, 9, 1
+FROM
+	careconnect.tempConcept c
+	where active = 1 and id not in (select code from careconnect.Concept where CODESYSTEM_ID=9); </sql>
+    <set_params>N</set_params>
+    <insert_field />
+    <update_field />
+    <delete_field />
+    <read_field />
+    <arguments>
+    </arguments>
+    <cluster_schema />
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>672</xloc>
+      <yloc>176</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>CREATE Tables</name>
+    <type>ExecSQL</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>ccrisql</connection>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>N</single_statement>
+    <replace_variables>N</replace_variables>
+    <quoteString>N</quoteString>
+    <sql>CREATE TABLE if NOT EXISTS `tempConcept` (
+  `idConcept` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `effectiveTime` date DEFAULT NULL,
+  `active` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `moduleId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `definitionStatusId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`idConcept`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `tempDescription` (
+  `idDescription` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `effectiveTime` date DEFAULT NULL,
+  `active` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `moduleId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `conceptId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `languageCode` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `typeId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `term` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
+  `caseSignificanceId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`idDescription`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+truncate table `tempDescription`;
+
+truncate table `tempConcept`;</sql>
+    <set_params>N</set_params>
+    <insert_field />
+    <update_field />
+    <delete_field />
+    <read_field />
+    <arguments>
+    </arguments>
+    <cluster_schema />
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>16</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
   <step>
     <name>CSV file INT Concept</name>
     <type>CsvInput</type>
@@ -499,100 +624,6 @@
       <schema_name />
     </partitioning>
     <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Concept_Full_INT_20170131.txt</filename>
-    <filename_field />
-    <rownum_field />
-    <include_filename>N</include_filename>
-    <separator>	</separator>
-    <enclosure />
-    <header>Y</header>
-    <buffer_size>50000</buffer_size>
-    <lazy_conversion>Y</lazy_conversion>
-    <add_filename_result>N</add_filename_result>
-    <parallel>N</parallel>
-    <newline_possible>N</newline_possible>
-    <encoding />
-    <fields>
-      <field>
-        <name>id</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>effectiveTime</name>
-        <type>Date</type>
-        <format>yyyyMMdd</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>active</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>moduleId</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>definitionStatusId</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>96</xloc>
-      <yloc>80</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>CSV file INT Description</name>
-    <type>CsvInput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Description_Full-en_INT_20170131.txt</filename>
     <filename_field />
     <rownum_field />
     <include_filename>N</include_filename>
@@ -630,7 +661,101 @@
       </field>
       <field>
         <name>active</name>
-        <type>Integer</type>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>moduleId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>definitionStatusId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+    </fields>
+    <cluster_schema />
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>272</xloc>
+      <yloc>112</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>CSV file INT Description</name>
+    <type>CsvInput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Description_Full-en_INT_20170131.txt</filename>
+    <filename_field>dsfsdf</filename_field>
+    <rownum_field />
+    <include_filename>Y</include_filename>
+    <separator>	</separator>
+    <enclosure />
+    <header>Y</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>Y</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <newline_possible>N</newline_possible>
+    <encoding />
+    <fields>
+      <field>
+        <name>id</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>effectiveTime</name>
+        <type>Date</type>
+        <format>yyyyMMdd</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>active</name>
+        <type>String</type>
         <format>#</format>
         <currency>£</currency>
         <decimal>.</decimal>
@@ -696,7 +821,7 @@
       </field>
       <field>
         <name>caseSignificanceId</name>
-        <type>None</type>
+        <type>String</type>
         <format>#</format>
         <currency>£</currency>
         <decimal>.</decimal>
@@ -714,188 +839,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>224</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Table output 2</name>
-    <type>TableOutput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <connection>ccrisql</connection>
-    <schema />
-    <table>tempDescription</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field />
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field />
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field />
-    <fields>
-      <field>
-        <column_name>effectiveTime</column_name>
-        <stream_name>effectiveTime</stream_name>
-      </field>
-      <field>
-        <column_name>active</column_name>
-        <stream_name>active</stream_name>
-      </field>
-      <field>
-        <column_name>moduleId</column_name>
-        <stream_name>moduleId</stream_name>
-      </field>
-      <field>
-        <column_name>conceptId</column_name>
-        <stream_name>conceptId</stream_name>
-      </field>
-      <field>
-        <column_name>languageCode</column_name>
-        <stream_name>languageCode</stream_name>
-      </field>
-      <field>
-        <column_name>typeId</column_name>
-        <stream_name>typeId</stream_name>
-      </field>
-      <field>
-        <column_name>term</column_name>
-        <stream_name>term</stream_name>
-      </field>
-      <field>
-        <column_name>caseSignificanceId</column_name>
-        <stream_name>caseSignificanceId</stream_name>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>240</xloc>
-      <yloc>224</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Table output</name>
-    <type>TableOutput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <connection>ccrisql</connection>
-    <schema />
-    <table>tempConcept</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field />
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field />
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field />
-    <fields>
-      <field>
-        <column_name>id</column_name>
-        <stream_name>id</stream_name>
-      </field>
-      <field>
-        <column_name>effectiveTime</column_name>
-        <stream_name>effectiveTime</stream_name>
-      </field>
-      <field>
-        <column_name>active</column_name>
-        <stream_name>active</stream_name>
-      </field>
-      <field>
-        <column_name>moduleId</column_name>
-        <stream_name>moduleId</stream_name>
-      </field>
-      <field>
-        <column_name>definitionStatusId</column_name>
-        <stream_name>definitionStatusId</stream_name>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>240</xloc>
-      <yloc>128</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Add New codes to Concept</name>
-    <type>ExecSQL</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <connection>ccrisql</connection>
-    <execute_each_row>N</execute_each_row>
-    <single_statement>N</single_statement>
-    <replace_variables>N</replace_variables>
-    <quoteString>N</quoteString>
-    <sql>insert into Concept (CODE, CODESYSTEM_ID, active)
-SELECT 
-	distinct c.id, 9, 1
-FROM
-	careconnect.tempConcept c
-	where active = 1 and id not in (select code from careconnect.Concept where CODESYSTEM_ID=9); </sql>
-    <set_params>N</set_params>
-    <insert_field />
-    <update_field />
-    <delete_field />
-    <read_field />
-    <arguments>
-    </arguments>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>384</xloc>
-      <yloc>176</yloc>
+      <xloc>272</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -988,8 +933,8 @@ FROM
       </output>
     </remotesteps>
     <GUI>
-      <xloc>192</xloc>
-      <yloc>48</yloc>
+      <xloc>272</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1108,7 +1053,7 @@ FROM
       </field>
       <field>
         <name>caseSignificanceId</name>
-        <type>None</type>
+        <type>String</type>
         <format>#</format>
         <currency>£</currency>
         <decimal>.</decimal>
@@ -1126,8 +1071,150 @@ FROM
       </output>
     </remotesteps>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>336</yloc>
+      <xloc>272</xloc>
+      <yloc>272</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Description</name>
+    <type>TableOutput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>ccrisql</connection>
+    <schema />
+    <table>tempDescription</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>id</column_name>
+        <stream_name>id</stream_name>
+      </field>
+      <field>
+        <column_name>effectiveTime</column_name>
+        <stream_name>effectiveTime</stream_name>
+      </field>
+      <field>
+        <column_name>active</column_name>
+        <stream_name>active</stream_name>
+      </field>
+      <field>
+        <column_name>moduleId</column_name>
+        <stream_name>moduleId</stream_name>
+      </field>
+      <field>
+        <column_name>conceptId</column_name>
+        <stream_name>conceptId</stream_name>
+      </field>
+      <field>
+        <column_name>languageCode</column_name>
+        <stream_name>languageCode</stream_name>
+      </field>
+      <field>
+        <column_name>typeId</column_name>
+        <stream_name>typeId</stream_name>
+      </field>
+      <field>
+        <column_name>term</column_name>
+        <stream_name>term</stream_name>
+      </field>
+      <field>
+        <column_name>caseSignificanceId</column_name>
+        <stream_name>caseSignificanceId</stream_name>
+      </field>
+    </fields>
+    <cluster_schema />
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>512</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Concept to MySQL table</name>
+    <type>TableOutput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>ccrisql</connection>
+    <schema />
+    <table>tempConcept</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <fields>
+      <field>
+        <column_name>id</column_name>
+        <stream_name>id</stream_name>
+      </field>
+      <field>
+        <column_name>effectiveTime</column_name>
+        <stream_name>effectiveTime</stream_name>
+      </field>
+      <field>
+        <column_name>active</column_name>
+        <stream_name>active</stream_name>
+      </field>
+      <field>
+        <column_name>moduleId</column_name>
+        <stream_name>moduleId</stream_name>
+      </field>
+      <field>
+        <column_name>definitionStatusId</column_name>
+        <stream_name>definitionStatusId</stream_name>
+      </field>
+    </fields>
+    <cluster_schema />
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>512</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
