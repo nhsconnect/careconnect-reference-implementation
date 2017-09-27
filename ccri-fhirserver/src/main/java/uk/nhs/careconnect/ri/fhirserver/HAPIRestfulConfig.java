@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.server.EncodingEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -54,7 +55,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 		));
 
 		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
-
+		setDefaultPrettyPrint(true);
+		setDefaultResponseEncoding(EncodingEnum.JSON);
 
 		FhirContext ctx = getFhirContext();
 		// Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());

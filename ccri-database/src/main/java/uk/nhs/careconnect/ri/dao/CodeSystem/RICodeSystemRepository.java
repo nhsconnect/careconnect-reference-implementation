@@ -85,6 +85,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
 
     @Override
+    @Transactional
     public CodeSystemEntity findBySystem(String system) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -94,15 +95,15 @@ public class RICodeSystemRepository implements CodeSystemRepository {
 
         Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
         List<Predicate> predList = new LinkedList<Predicate>();
-        log.debug("FlushMode = "+em.getFlushMode());
-        log.debug("Entity Manager Properties = "+ em.getProperties().toString());
+        log.trace("FlushMode = "+em.getFlushMode());
+        log.trace("Entity Manager Properties = "+ em.getProperties().toString());
         Predicate p = builder.equal(root.<String>get("codeSystemUri"),system);
         predList.add(p);
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
         if (predList.size()>0)
         {
-            log.info("Found CodeSystem "+system);
+            log.trace("Found CodeSystem "+system);
             criteria.select(root).where(predArray);
 
             List<CodeSystemEntity> qryResults = em.createQuery(criteria).getResultList();
