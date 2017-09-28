@@ -547,8 +547,8 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
       <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
 select r.id,2,d.CONCEPT_ID,s.CONCEPT_ID, 9 
 from careconnect.tempSimple r
-left outer join Concept s on r.refsetId = s.CODE and s.CODESYSTEM_ID = 9
-left outer join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
+join Concept s on r.refsetId = s.CODE and s.CODESYSTEM_ID = 9
+join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
  where r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null)</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
