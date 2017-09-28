@@ -14,10 +14,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
-import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
-import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
-import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.*;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +29,6 @@ import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
-import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -379,12 +374,14 @@ public class JPAStepsDef {
 		 * This runs under maven, and I'm not sure how else to figure out the target directory from code..
 		 */
         if (validator == null) {
+            /* TODO STU3
             FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
             validator.registerValidatorModule(instanceValidator);
 
             IValidationSupport valSupport = new CareConnectValidation();
             ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
             instanceValidator.setValidationSupport(support);
+            */
         }
         else {
            // ourLog.info("START - CALLED NOT Creating Server");

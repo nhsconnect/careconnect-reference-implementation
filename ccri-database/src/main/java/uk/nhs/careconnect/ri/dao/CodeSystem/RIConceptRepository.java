@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.dao.CodeSystem;
 
-import ca.uhn.fhir.rest.method.RequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;

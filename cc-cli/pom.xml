@@ -20,7 +20,7 @@
   
     <groupId>uk.nhs.careconnect</groupId>
     <artifactId>cc-cli</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -44,8 +44,8 @@
     <properties>
     	<category>Rest</category>
 
-        <care-connect-version>3.0.1-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>2.5</hapi-fhir-version>
+        <care-connect-version>3.0.2-SNAPSHOT</care-connect-version>
+        <hapi-fhir-version>3.0.0</hapi-fhir-version>
         <junit-version>4.12</junit-version>
         <spring-boot-version>1.5.7.RELEASE</spring-boot-version>
     </properties>
@@ -80,7 +80,7 @@
       <dependency>
           <groupId>uk.org.hl7.fhir</groupId>
           <artifactId>cc-core</artifactId>
-          <version>3.0.1-SNAPSHOT</version>
+          <version>3.0.2-SNAPSHOT</version>
 
       </dependency>
 
@@ -124,6 +124,12 @@
           <version>${hapi-fhir-version}</version>
       </dependency>
 
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-client</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
 
       <dependency>
 		    <groupId>org.json</groupId>
@@ -163,6 +169,12 @@
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-csv</artifactId>
           <version>1.5</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.5.3</version>
       </dependency>
 
 

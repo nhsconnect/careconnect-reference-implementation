@@ -11,9 +11,10 @@ import ca.uhn.fhir.model.dstu2.valueset.HTTPVerbEnum;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.parser.DataFormatException;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.client.apache.GZipContentInterceptor;
-import ca.uhn.fhir.rest.server.IVersionSpecificBundleFactory;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.util.BundleUtil;
 import ca.uhn.fhir.util.ResourceReferenceInfo;

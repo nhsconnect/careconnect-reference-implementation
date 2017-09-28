@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.term;
 
 
 
-import ca.uhn.fhir.rest.method.RequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.util.TestUtil;
 import org.apache.commons.io.IOUtils;

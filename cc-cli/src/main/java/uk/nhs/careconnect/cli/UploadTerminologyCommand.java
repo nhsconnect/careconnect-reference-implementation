@@ -2,9 +2,7 @@ package uk.nhs.careconnect.cli;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.client.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
-import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -15,7 +13,6 @@ import org.hl7.fhir.instance.model.UriType;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class UploadTerminologyCommand extends BaseCommand {
 
@@ -100,7 +97,7 @@ public class UploadTerminologyCommand extends BaseCommand {
 		} else {
 			throw new ParseException("This command does not support FHIR version " + ctx.getVersion().getVersion());
 		}
-
+		/*
 		if (isNotBlank(bearerToken)) {
 			client.registerInterceptor(new BearerTokenAuthInterceptor(bearerToken));
 		}
@@ -108,7 +105,7 @@ public class UploadTerminologyCommand extends BaseCommand {
 		if (theCommandLine.hasOption('v')) {
 			client.registerInterceptor(new LoggingInterceptor(true));
 		}
-		
+		*/
 		ourLog.info("Beginning upload - This may take a while...");
 		IBaseParameters response = client
 			.operation()
