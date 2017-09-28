@@ -4,7 +4,11 @@ import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PatientIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PATIENT_IDENTIFIER", columnNames={"PATIENT_IDENTIFIER_ID"}))
+@Table(name="PatientIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PATIENT_IDENTIFIER", columnNames={"PATIENT_IDENTIFIER_ID"})
+		,indexes =
+		{
+				@Index(name = "IDX_PATIENT_IDENTIFER", columnList="value,SYSTEM_ID")
+		})
 public class PatientIdentifier extends BaseIdentifier {
 	
 	public PatientIdentifier() {

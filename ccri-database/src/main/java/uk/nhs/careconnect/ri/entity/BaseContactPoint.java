@@ -9,7 +9,7 @@ import javax.persistence.MappedSuperclass;
 
 
 @MappedSuperclass
-public class BaseContactPoint {
+public class BaseContactPoint extends BaseResource {
 
     @Column(name = "value")
     private String value;

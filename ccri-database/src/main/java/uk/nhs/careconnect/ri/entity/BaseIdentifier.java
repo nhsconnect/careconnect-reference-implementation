@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 
 @MappedSuperclass
-public class BaseIdentifier {
+public class BaseIdentifier extends BaseResource {
 
 
 

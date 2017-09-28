@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Organisation")
+@Table(name = "Organisation",indexes =
+        {
+                @Index(name = "IDX_ORGANISATION_NAME", columnList="name")
+
+        })
 public class OrganisationEntity extends BaseResource {
 
     @Id

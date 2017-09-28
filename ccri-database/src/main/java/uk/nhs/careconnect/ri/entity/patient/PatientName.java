@@ -6,7 +6,11 @@ import uk.nhs.careconnect.ri.entity.BaseHumanName;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PatientName")
+@Table(name = "PatientName",indexes =
+        {
+            @Index(name = "IDX_PATIENT_FAMILY", columnList="family_name")
+                , @Index(name = "IDX_PATIENT_GIVEN", columnList="given_name")
+        })
 public class PatientName extends BaseHumanName {
 
     @Id

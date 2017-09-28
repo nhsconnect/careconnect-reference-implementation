@@ -5,7 +5,11 @@ import uk.nhs.careconnect.ri.entity.BaseHumanName;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PractitionerName")
+@Table(name = "PractitionerName",indexes =
+        {
+                @Index(name = "IDX_PRACTITIONER_FAMILY", columnList="family_name")
+                , @Index(name = "IDX_PRACTIONER_GIVEN", columnList="given_name")
+        })
 public class PractitionerName extends BaseHumanName {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

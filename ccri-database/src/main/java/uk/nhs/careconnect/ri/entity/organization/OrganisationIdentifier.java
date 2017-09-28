@@ -6,7 +6,11 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="OrganisationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_ORGANISATION_IDENTIFIER", columnNames={"ORGANISATION_IDENTIFIER_ID"}))
+@Table(name="OrganisationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_ORGANISATION_IDENTIFIER", columnNames={"ORGANISATION_IDENTIFIER_ID"}),indexes =
+		{
+				@Index(name = "IDX_ORGANISATION_IDENTIFER", columnList="value,SYSTEM_ID")
+
+		})
 public class OrganisationIdentifier extends BaseIdentifier {
 
 	public OrganisationIdentifier() {

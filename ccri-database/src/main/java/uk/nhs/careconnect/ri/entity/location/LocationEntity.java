@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Location")
+@Table(name = "Location",indexes =
+		{
+				@Index(name = "IDX_LOCATION_NAME", columnList="name")
+
+		})
 public class LocationEntity extends BaseResource {
 
     @Id

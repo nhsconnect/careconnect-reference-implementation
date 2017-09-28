@@ -6,7 +6,12 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="LocationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_LOCATION_IDENTIFIER", columnNames={"LOCATION_IDENTIFIER_ID"}))
+@Table(name="LocationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_LOCATION_IDENTIFIER", columnNames={"LOCATION_IDENTIFIER_ID"})
+		,indexes =
+		{
+				@Index(name = "IDX_LOCATION_IDENTIFER", columnList="value,SYSTEM_ID")
+
+		})
 public class LocationIdentifier extends BaseIdentifier {
 
 	public LocationIdentifier() {

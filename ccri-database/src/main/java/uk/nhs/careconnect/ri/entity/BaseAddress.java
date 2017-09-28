@@ -8,7 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class BaseAddress {
+public class BaseAddress extends BaseResource {
 
     @Enumerated(EnumType.ORDINAL)
     Address.AddressUse addressUse;

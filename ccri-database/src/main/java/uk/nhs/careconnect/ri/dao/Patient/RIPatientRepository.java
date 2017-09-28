@@ -100,7 +100,7 @@ public class RIPatientRepository implements PatientRepository {
                 Predicate p =
                         builder.like(
                                 builder.upper(namejoin.get("givenName").as(String.class)),
-                                builder.upper(builder.literal("%"+givenName.getValue()+"%"))
+                                builder.upper(builder.literal(givenName.getValue()+"%"))
                         );
                 predList.add(p);
             }
@@ -108,11 +108,11 @@ public class RIPatientRepository implements PatientRepository {
             if (name != null) {
                 Predicate pgiven = builder.like(
                         builder.upper(namejoin.get("givenName").as(String.class)),
-                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                        builder.upper(builder.literal(name.getValue()+"%"))
                 );
                 Predicate pfamily = builder.like(
                         builder.upper(namejoin.get("familyName").as(String.class)),
-                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                        builder.upper(builder.literal(name.getValue()+"%"))
                 );
                 Predicate p = builder.or(pfamily, pgiven);
                 predList.add(p);

@@ -11,7 +11,10 @@ import java.util.*;
 
 
 @Entity
-@Table(name = "Patient")
+@Table(name = "Patient",
+indexes = {
+        @Index(name = "IDX_PATIENT_DOB", columnList="date_of_birth"),
+})
 public class PatientEntity extends BaseResource {
 
     @Id

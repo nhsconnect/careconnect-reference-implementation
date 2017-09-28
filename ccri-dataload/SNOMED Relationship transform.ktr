@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>SNOMEDCT</name>
+    <name>SNOMED Relationship transform</name>
     <description />
     <extended_description />
     <trans_version />
     <trans_type>Normal</trans_type>
-    <trans_status>0</trans_status>
     <directory>/</directory>
     <parameters>
     </parameters>
@@ -416,7 +415,7 @@
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file />
-    <capture_step_performance>Y</capture_step_performance>
+    <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <step_performance_capturing_size_limit>100</step_performance_capturing_size_limit>
     <dependencies>
@@ -428,16 +427,16 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2017/09/25 19:01:31.831</created_date>
+    <created_date>2017/09/28 11:16:20.502</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2017/09/25 19:01:31.831</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
+    <modified_date>2017/09/28 11:16:20.502</modified_date>
+    <key_for_session_key />
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>ccrisql</name>
+    <name>ccri</name>
     <server>localhost</server>
     <type>MYSQL</type>
     <access>Native</access>
@@ -450,35 +449,61 @@
     <index_tablespace />
     <attributes>
       <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
         <code>PORT_NUMBER</code>
         <attribute>3306</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>STREAM_RESULTS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
       </attribute>
     </attributes>
   </connection>
   <order>
     <hop>
-      <from>CSV file INT Description</from>
-      <to>Description</to>
+      <from>International Relationship</from>
+      <to>Populate tempRelationship</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>CSV file INT Concept</from>
-      <to>Concept to MySQL table</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>CSV file UK Concept</from>
-      <to>Concept to MySQL table</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>CSV file UK Description</from>
-      <to>Description</to>
+      <from>UK Relationship</from>
+      <to>Populate tempRelationship</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>CSV file INT Concept</name>
+    <name>International Relationship</name>
     <type>CsvInput</type>
     <description />
     <distribute>Y</distribute>
@@ -488,12 +513,12 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Concept_Full_INT_20170131.txt</filename>
+    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Relationship_Full_INT_20170131.txt</filename>
     <filename_field />
     <rownum_field />
     <include_filename>N</include_filename>
     <separator>	</separator>
-    <enclosure />
+    <enclosure>"</enclosure>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
     <lazy_conversion>Y</lazy_conversion>
@@ -547,57 +572,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>definitionStatusId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>272</xloc>
-      <yloc>112</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>CSV file INT Description</name>
-    <type>CsvInput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Description_Full-en_INT_20170131.txt</filename>
-    <filename_field>dsfsdf</filename_field>
-    <rownum_field />
-    <include_filename>Y</include_filename>
-    <separator>	</separator>
-    <enclosure />
-    <header>Y</header>
-    <buffer_size>50000</buffer_size>
-    <lazy_conversion>Y</lazy_conversion>
-    <add_filename_result>N</add_filename_result>
-    <parallel>N</parallel>
-    <newline_possible>N</newline_possible>
-    <encoding />
-    <fields>
-      <field>
-        <name>id</name>
+        <name>sourceId</name>
         <type>String</type>
         <format>#</format>
         <currency>£</currency>
@@ -608,18 +583,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>effectiveTime</name>
-        <type>Date</type>
-        <format>yyyyMMdd</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>active</name>
+        <name>destinationId</name>
         <type>String</type>
         <format>#</format>
         <currency>£</currency>
@@ -630,7 +594,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>moduleId</name>
+        <name>relationshipGroup</name>
         <type>String</type>
         <format>#</format>
         <currency>£</currency>
@@ -638,28 +602,6 @@
         <group>,</group>
         <length>15</length>
         <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>conceptId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>languageCode</name>
-        <type>String</type>
-        <format />
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>2</length>
-        <precision>-1</precision>
         <trim_type>none</trim_type>
       </field>
       <field>
@@ -674,162 +616,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>term</name>
-        <type>String</type>
-        <format />
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>47</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>caseSignificanceId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>272</xloc>
-      <yloc>208</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>CSV file UK Concept</name>
-    <type>CsvInput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Terminology/sct2_Concept_Full_GB1000000_20170401.txt</filename>
-    <filename_field />
-    <rownum_field />
-    <include_filename>N</include_filename>
-    <separator>	</separator>
-    <enclosure />
-    <header>Y</header>
-    <buffer_size>50000</buffer_size>
-    <lazy_conversion>Y</lazy_conversion>
-    <add_filename_result>N</add_filename_result>
-    <parallel>N</parallel>
-    <newline_possible>N</newline_possible>
-    <encoding />
-    <fields>
-      <field>
-        <name>id</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>effectiveTime</name>
-        <type>Date</type>
-        <format>yyyyMMdd</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>active</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>moduleId</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>definitionStatusId</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-    </fields>
-    <cluster_schema />
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>272</xloc>
-      <yloc>64</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>CSV file UK Description</name>
-    <type>CsvInput</type>
-    <description />
-    <distribute>Y</distribute>
-    <custom_distribution />
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name />
-    </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Terminology/sct2_Description_Full-en-GB_GB1000000_20170401.txt</filename>
-    <filename_field />
-    <rownum_field />
-    <include_filename>N</include_filename>
-    <separator>	</separator>
-    <enclosure />
-    <header>Y</header>
-    <buffer_size>50000</buffer_size>
-    <lazy_conversion>Y</lazy_conversion>
-    <add_filename_result>N</add_filename_result>
-    <parallel>N</parallel>
-    <newline_possible>N</newline_possible>
-    <encoding />
-    <fields>
-      <field>
-        <name>id</name>
+        <name>characteristicTypeId</name>
         <type>String</type>
         <format>#</format>
         <currency>£</currency>
@@ -840,84 +627,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>effectiveTime</name>
-        <type>Date</type>
-        <format>yyyyMMdd</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>active</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>moduleId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>conceptId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>languageCode</name>
-        <type>String</type>
-        <format />
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>2</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>typeId</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>term</name>
-        <type>String</type>
-        <format />
-        <currency>£</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>47</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>caseSignificanceId</name>
+        <name>modifierId</name>
         <type>String</type>
         <format>#</format>
         <currency>£</currency>
@@ -936,13 +646,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>272</xloc>
-      <yloc>272</yloc>
+      <xloc>144</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Description</name>
+    <name>Populate tempRelationship</name>
     <type>TableOutput</type>
     <description />
     <distribute>Y</distribute>
@@ -952,9 +662,9 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <connection>ccrisql</connection>
+    <connection>ccri</connection>
     <schema />
-    <table>tempDescription</table>
+    <table>tempRelationship</table>
     <commit>1000</commit>
     <truncate>N</truncate>
     <ignore_errors>N</ignore_errors>
@@ -987,24 +697,28 @@
         <stream_name>moduleId</stream_name>
       </field>
       <field>
-        <column_name>conceptId</column_name>
-        <stream_name>conceptId</stream_name>
+        <column_name>sourceId</column_name>
+        <stream_name>sourceId</stream_name>
       </field>
       <field>
-        <column_name>languageCode</column_name>
-        <stream_name>languageCode</stream_name>
+        <column_name>destinationId</column_name>
+        <stream_name>destinationId</stream_name>
+      </field>
+      <field>
+        <column_name>relationshipGroup</column_name>
+        <stream_name>relationshipGroup</stream_name>
       </field>
       <field>
         <column_name>typeId</column_name>
         <stream_name>typeId</stream_name>
       </field>
       <field>
-        <column_name>term</column_name>
-        <stream_name>term</stream_name>
+        <column_name>characteristicTypeId</column_name>
+        <stream_name>characteristicTypeId</stream_name>
       </field>
       <field>
-        <column_name>caseSignificanceId</column_name>
-        <stream_name>caseSignificanceId</stream_name>
+        <column_name>modifierId</column_name>
+        <stream_name>modifierId</stream_name>
       </field>
     </fields>
     <cluster_schema />
@@ -1015,14 +729,14 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>512</xloc>
-      <yloc>224</yloc>
+      <xloc>336</xloc>
+      <yloc>112</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Concept to MySQL table</name>
-    <type>TableOutput</type>
+    <name>UK Relationship</name>
+    <type>CsvInput</type>
     <description />
     <distribute>Y</distribute>
     <custom_distribution />
@@ -1031,43 +745,129 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <connection>ccrisql</connection>
-    <schema />
-    <table>tempConcept</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field />
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field />
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field />
+    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Terminology/sct2_Relationship_Full_GB1000000_20170401.txt</filename>
+    <filename_field />
+    <rownum_field />
+    <include_filename>N</include_filename>
+    <separator>	</separator>
+    <enclosure>"</enclosure>
+    <header>Y</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>Y</lazy_conversion>
+    <add_filename_result>N</add_filename_result>
+    <parallel>N</parallel>
+    <newline_possible>N</newline_possible>
+    <encoding />
     <fields>
       <field>
-        <column_name>id</column_name>
-        <stream_name>id</stream_name>
+        <name>id</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
       </field>
       <field>
-        <column_name>effectiveTime</column_name>
-        <stream_name>effectiveTime</stream_name>
+        <name>effectiveTime</name>
+        <type>Date</type>
+        <format>yyyyMMdd</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
       </field>
       <field>
-        <column_name>active</column_name>
-        <stream_name>active</stream_name>
+        <name>active</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
       </field>
       <field>
-        <column_name>moduleId</column_name>
-        <stream_name>moduleId</stream_name>
+        <name>moduleId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
       </field>
       <field>
-        <column_name>definitionStatusId</column_name>
-        <stream_name>definitionStatusId</stream_name>
+        <name>sourceId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>destinationId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>relationshipGroup</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>typeId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>characteristicTypeId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>modifierId</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>£</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
       </field>
     </fields>
     <cluster_schema />
@@ -1078,8 +878,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>512</xloc>
-      <yloc>96</yloc>
+      <xloc>112</xloc>
+      <yloc>224</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

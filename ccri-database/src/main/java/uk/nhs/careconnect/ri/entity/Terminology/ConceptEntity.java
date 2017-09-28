@@ -19,6 +19,7 @@ import java.util.*;
 	@Index(name = "IDX_CONCEPT_INDEXSTATUS", columnList="INDEX_STATUS"),
 
 		@Index(columnList = "CODE", name = "IDX_CODE")	,
+		@Index(columnList = "DISPLAY", name = "IDX_DISPLAY")	,
 		@Index(columnList = "CODE,CODESYSTEM_ID", name = "IDX_CODE_CODESYSTEM")
 })
 

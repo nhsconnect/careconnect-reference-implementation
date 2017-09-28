@@ -3,7 +3,12 @@ package uk.nhs.careconnect.ri.entity;
 import javax.persistence.*;
 
 
-@Table(name = "Address")
+@Table(name = "Address"
+        ,indexes =
+        {
+                @Index(name = "IDX_ADDRESS_POSTCODE", columnList="postcode")
+
+        })
 @Entity
 public class AddressEntity extends BaseResource {
 
