@@ -121,7 +121,8 @@ public class ConceptParentChildLink {
 		// ********************************************
 		// IF YOU ADD HERE MAKE SURE ORDER IS PRESERVED
 		ISA,
-		FindingSite
+		FindingSite,
+		SubSet
 	}
 
 

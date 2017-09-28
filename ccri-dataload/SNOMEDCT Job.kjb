@@ -384,6 +384,19 @@ CREATE TABLE if NOT EXISTS careconnect.`tempRelationship` (
   PRIMARY KEY (`idRelationship`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE careconnect.`tempSimple` (
+  `idSimple` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `effectiveTime` date DEFAULT NULL,
+  `active` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `moduleId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `refsetId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `referencedComponentId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`idSimple`)
+) ENGINE=InnoDB AUTO_INCREMENT=671910 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+truncate table careconnect.tempSimple;
+
 truncate table `tempDescription`;
 
 truncate table `tempConcept`;
@@ -505,7 +518,7 @@ where designationUse=0</sql>
       <yloc>432</yloc>
     </entry>
     <entry>
-      <name>Populate Relationship Table</name>
+      <name>Populate Relationship Table (isA only)</name>
       <description />
       <type>SQL</type>
       <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
@@ -526,6 +539,27 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
       <nr>0</nr>
       <xloc>272</xloc>
       <yloc>496</yloc>
+    </entry>
+    <entry>
+      <name>SubSet - MISSING Active filter</name>
+      <description />
+      <type>SQL</type>
+      <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
+select r.id,2,d.CONCEPT_ID,s.CONCEPT_ID, 9 
+from careconnect.tempSimple r
+left outer join Concept s on r.refsetId = s.CODE and s.CODESYSTEM_ID = 9
+left outer join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
+ where r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null)</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename />
+      <sendOneStatement>F</sendOneStatement>
+      <connection>ccri</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>544</xloc>
+      <yloc>560</yloc>
     </entry>
   </entries>
   <hops>
@@ -567,7 +601,16 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
     </hop>
     <hop>
       <from>Update Concept display term</from>
-      <to>Populate Relationship Table</to>
+      <to>Populate Relationship Table (isA only)</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Populate Relationship Table (isA only)</from>
+      <to>SubSet - MISSING Active filter</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
