@@ -1,7 +1,9 @@
 package uk.nhs.careconnect.ri.provider;
 
-import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -46,21 +48,6 @@ public class PatientResourceProvider implements IResourceProvider {
         return Patient.class;
     }
 
-
-    @Create()
-    public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam Patient thePatient) {
-
-
-        MethodOutcome method = new MethodOutcome();
-        method.setCreated(true);
-        OperationOutcome opOutcome = new OperationOutcome();
-
-        method.setOperationOutcome(opOutcome);
-
-
-
-        return method;
-    }
 
     @Read
     public Patient getPatientById(@IdParam IdType internalId) {

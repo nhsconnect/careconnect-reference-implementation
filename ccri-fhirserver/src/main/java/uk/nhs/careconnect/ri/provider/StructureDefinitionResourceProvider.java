@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.OperationOutcomeFactory;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class StrucutureDefinitionResourceProvider implements IResourceProvider {
+public class StructureDefinitionResourceProvider implements IResourceProvider {
 
 
    
