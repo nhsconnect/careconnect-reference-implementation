@@ -381,8 +381,10 @@ CREATE TABLE if NOT EXISTS careconnect.`tempRelationship` (
   `typeId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `characteristicTypeId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `modifierId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`idRelationship`)
+  PRIMARY KEY (`idRelationship`),
+	KEY `ID_idConcept` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 
 CREATE TABLE careconnect.`tempSimple` (
   `idSimple` int(11) NOT NULL AUTO_INCREMENT,
@@ -392,7 +394,8 @@ CREATE TABLE careconnect.`tempSimple` (
   `moduleId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `refsetId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `referencedComponentId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`idSimple`)
+  PRIMARY KEY (`idSimple`),
+  KEY `ID_idSimple` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=671910 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 truncate table careconnect.tempSimple;
@@ -541,7 +544,7 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
       <yloc>496</yloc>
     </entry>
     <entry>
-      <name>SubSet - MISSING Active filter</name>
+      <name>SubSet</name>
       <description />
       <type>SQL</type>
       <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
@@ -549,8 +552,7 @@ select r.id,2,d.CONCEPT_ID,s.CONCEPT_ID, 9
 from careconnect.tempSimple r
 join Concept s on r.refsetId = s.CODE and s.CODESYSTEM_ID = 9
 join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
- where active = 1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null);
-</sql>
+ where r.active = 1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null)</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
       <sqlfilename />
@@ -611,7 +613,7 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
     </hop>
     <hop>
       <from>Populate Relationship Table (isA only)</from>
-      <to>SubSet - MISSING Active filter</to>
+      <to>SubSet</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
