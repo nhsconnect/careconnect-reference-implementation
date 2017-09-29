@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.interceptor.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -10,41 +11,53 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.*;
 
 @Component
 public class PatientResourceProvider implements IResourceProvider {
-    private static final String TEMPORARY_RESIDENT_REGISTRATION_TYPE = "T";
-    private static final String ACTIVE_REGISTRATION_STATUS = "A";
-    private static final int ENCOUNTERS_SUMMARY_LIMIT = 3;
+
+
+    FhirContext ctx = FhirContext.forDstu3();
+
+    @Autowired
+    CamelContext context;
 
     private static final List<String> MANDATORY_PARAM_NAMES = Arrays.asList("patientNHSNumber", "recordSection");
     private static final List<String> PERMITTED_PARAM_NAMES = new ArrayList<String>(MANDATORY_PARAM_NAMES) {{
         add("timePeriod");
     }};
 
+
+    private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
+
+
+
     @Override
     public Class<Patient> getResourceType() {
         return Patient.class;
     }
 
-    @Autowired
-    CamelContext context;
+
 
     @Read
-    public Patient getPatientById(@IdParam IdType internalId) {
-        Patient patient = new Patient();
+    public Patient getPatientById(HttpServletRequest theRequest, @IdParam IdType internalId) {
 
-        return patient;
+        log.info("Request:"+ theRequest.getRequestURI());
+        return null;
     }
 
     @Search
@@ -61,19 +74,37 @@ public class PatientResourceProvider implements IResourceProvider {
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
                                        ) {
 
+        List<Patient> results = new ArrayList<Patient>();
+        log.info("Request:"+ theRequest.getRequestURI());
+
+        log.info("Request Query String:"+ theRequest.getQueryString());
+
         ProducerTemplate template = context.createProducerTemplate();
 
+        Map<String, Object> headerMap = new HashMap<>();
+        headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
+        headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
+        headerMap.put(Exchange.HTTP_PATH, "Patient");
+        headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
-// send to a specific queue
-       // template.sendBody("direct:FHIRServer", "<hello>world!</hello>");
+        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIRServer",
+                ExchangePattern.InOut,"", headerMap);
 
-// send with a body and header
-        template.sendBodyAndHeader("direct:FHIRServer",
-                "",
-                Exchange.HTTP_METHOD, "GET");
+        Bundle bundle = null;
 
-        return null;
+        try {
+            Reader reader = new InputStreamReader(inputStream);
+            bundle = ctx.newJsonParser().parseResource(Bundle.class,reader);
+            log.info("Found Entries = "+bundle.getEntry().size());
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                results.add((Patient) entry.getResource());
+            }
+        }
+        catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+        }
 
+        return results;
 
     }
 

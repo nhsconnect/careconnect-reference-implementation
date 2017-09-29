@@ -7,6 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
+
 @Component
 @PropertySource("classpath:application.properties")
 public class CamelRoute extends RouteBuilder {
@@ -24,8 +26,8 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRServer")
 			.routeId("CCRI FHIR Server")
 			.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
-			.to("http://localhost:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true");
-			
+			.to("http://localhost:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
+			.convertBodyTo(InputStream.class);
 
     }
 }

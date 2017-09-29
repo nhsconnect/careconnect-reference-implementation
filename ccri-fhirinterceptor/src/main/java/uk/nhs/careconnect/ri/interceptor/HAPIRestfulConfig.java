@@ -65,4 +65,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 		return retVal;
 	}
 
+	@Bean
+	public FhirContext getFhirContext() {
+		return FhirContext.forDstu3();
+	}
+
 }
