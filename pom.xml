@@ -55,6 +55,7 @@
         <module>cc-cli</module>
       <!-- Hangover from GPConnect <module>ccri-dbcore</module> -->
         <module>ccri-database</module>
+        <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver</module>
      <!-- TODO Removed is a mock test  <module>ccri-integrationtest</module> -->
     </modules>

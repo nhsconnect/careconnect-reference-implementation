@@ -91,6 +91,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
     <orderEntry type="library" name="Maven: org.flywaydb:flyway-core:4.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu2:3.0.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu3:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-server:3.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: info.cukes:cucumber-spring:1.2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: info.cukes:cucumber-java:1.2.5" level="project" />

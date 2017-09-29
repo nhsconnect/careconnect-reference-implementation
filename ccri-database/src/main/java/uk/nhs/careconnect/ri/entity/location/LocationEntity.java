@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.entity.location;
 
-import org.hl7.fhir.instance.model.Location;
+import org.hl7.fhir.dstu3.model.Location;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;

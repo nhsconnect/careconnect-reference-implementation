@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
-import org.hl7.fhir.instance.model.ValueSet;
+
+
+import org.hl7.fhir.dstu3.model.ValueSet;
 
 import javax.persistence.*;
 

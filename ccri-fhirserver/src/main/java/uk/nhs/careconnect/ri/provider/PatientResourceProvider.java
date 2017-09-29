@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.provider;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -14,7 +13,7 @@ import org.hl7.fhir.instance.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.dao.Patient.PatientRepository;
+import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

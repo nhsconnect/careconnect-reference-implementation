@@ -13,7 +13,7 @@ import org.hl7.fhir.instance.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.dao.Practitioner.PractitionerRepository;
+import uk.nhs.careconnect.ri.daointerface.PractitionerRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

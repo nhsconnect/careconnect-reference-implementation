@@ -16,7 +16,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.dao.Location.LocationRepository;
+import uk.nhs.careconnect.ri.daointerface.LocationRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
