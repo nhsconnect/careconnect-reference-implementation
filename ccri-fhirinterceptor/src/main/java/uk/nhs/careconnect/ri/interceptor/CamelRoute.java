@@ -20,9 +20,7 @@ public class CamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
-     	
 
-		
 		from("direct:FHIRServer")
 			.routeId("CCRI FHIR Server")
 			.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")

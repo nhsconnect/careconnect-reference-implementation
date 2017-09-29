@@ -30,11 +30,11 @@ import java.util.*;
 @Component
 public class PatientResourceProvider implements IResourceProvider {
 
-
-    FhirContext ctx = FhirContext.forDstu3();
-
     @Autowired
     CamelContext context;
+
+    @Autowired
+    FhirContext ctx;
 
     private static final List<String> MANDATORY_PARAM_NAMES = Arrays.asList("patientNHSNumber", "recordSection");
     private static final List<String> PERMITTED_PARAM_NAMES = new ArrayList<String>(MANDATORY_PARAM_NAMES) {{

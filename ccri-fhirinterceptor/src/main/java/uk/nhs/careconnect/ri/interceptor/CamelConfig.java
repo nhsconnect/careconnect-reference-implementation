@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.interceptor;
 
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,16 +19,8 @@ public class CamelConfig extends CamelConfiguration {
 	@Override
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
+		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Interceptor"));
 
-		/*// setup the ActiveMQ component
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-		connectionFactory.setBrokerURL("vm://localhost?broker.persistent=false&broker.useJmx=false");
-
-		// and register it into the CamelContext
-		JmsComponent answer = new JmsComponent();
-		answer.setConnectionFactory(connectionFactory);
-		camelContext.addComponent("jms", answer);
-		*/
 
 	}
 
