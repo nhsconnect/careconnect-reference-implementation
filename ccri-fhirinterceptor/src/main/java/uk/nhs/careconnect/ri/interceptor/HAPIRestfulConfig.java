@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.fhirserver;
+package uk.nhs.careconnect.ri.interceptor;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.fhirserver.provider.*;
+import uk.nhs.careconnect.ri.interceptor.provider.PatientResourceProvider;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
@@ -45,13 +45,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		 * contains bean definitions for a resource provider for each resource type
 		 */
 		setResourceProviders(Arrays.asList(
-				myAppCtx.getBean(PatientResourceProvider.class),
-				myAppCtx.getBean(OrganizationResourceProvider.class),
-				myAppCtx.getBean(PractitionerResourceProvider.class),
-				myAppCtx.getBean(LocationResourceProvider.class),
-				myAppCtx.getBean(ValueSetResourceProvider.class),
-				myAppCtx.getBean(StructureDefinitionResourceProvider.class)
-
+				myAppCtx.getBean(PatientResourceProvider.class)
 		));
 
 		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));

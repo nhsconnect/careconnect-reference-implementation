@@ -13,8 +13,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-            uk.nhs.careconnect.ri.fhirserver.Config
-        </param-value>
+			uk.nhs.careconnect.ri.interceptor.Config
+		</param-value>
 	</context-param>
 
 	<!-- Servlets -->
@@ -28,28 +28,28 @@
 		</init-param>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>uk.nhs.careconnect.ri.fhirserver.UIOverlayConfig</param-value>
+			<param-value>uk.nhs.careconnect.ri.interceptor.UIOverlayConfig</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
 	<servlet>
 		<servlet-name>fhirServlet</servlet-name>
-		<servlet-class>uk.nhs.careconnect.ri.fhirserver.HAPIRestfulConfig</servlet-class>
+		<servlet-class>uk.nhs.careconnect.ri.interceptor.HAPIRestfulConfig</servlet-class>
 		<init-param>
 			<param-name>ImplementationDescription</param-name>
 			<param-value>FHIR JPA Server</param-value>
 		</init-param>
 		<init-param>
 			<param-name>FhirVersion</param-name>
-			<param-value>DSTU2</param-value>
+			<param-value>STU3</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>fhirServlet</servlet-name>
-		<url-pattern>/DSTU2/*</url-pattern>
+		<url-pattern>/STU3/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
