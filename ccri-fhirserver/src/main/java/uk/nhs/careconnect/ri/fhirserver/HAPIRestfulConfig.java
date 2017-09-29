@@ -33,7 +33,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		 *
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
 		 */
-		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU2_HL7ORG;
+		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
 		setFhirContext(new FhirContext(fhirVersion));
 
 		// Get the spring context from the web container (it's declared in web.xml)

@@ -2,8 +2,8 @@ package uk.nhs.careconnect.ri;
 
 
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 public class OperationOutcomeFactory {
 

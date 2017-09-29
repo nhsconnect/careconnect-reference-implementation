@@ -144,7 +144,7 @@
     <orderEntry type="library" name="Maven: com.phloc:phloc-schematron:2.7.1" level="project" />
     <orderEntry type="library" name="Maven: com.phloc:phloc-commons:4.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:annotations:2.0.3" level="project" />
-    <orderEntry type="module" module-name="ccri-database" />
+    <orderEntry type="module" module-name="ccri-dao-stu3" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:1.5.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.5.7.RELEASE" level="project" />
@@ -163,6 +163,7 @@
     <orderEntry type="library" name="Maven: com.mchange:c3p0:0.9.5.2" level="project" />
     <orderEntry type="library" name="Maven: com.mchange:mchange-commons-java:0.2.11" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
+    <orderEntry type="module" module-name="ccri-database" />
     <orderEntry type="module" module-name="cc-core" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />

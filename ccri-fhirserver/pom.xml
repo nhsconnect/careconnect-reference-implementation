@@ -315,7 +315,11 @@
             <version>${phloc_schematron_version}</version>
         </dependency>
 
-
+		<dependency>
+			<groupId>uk.nhs.careconnect.ri</groupId>
+			<artifactId>ccri-dao-stu3</artifactId>
+			<version>${care-connect-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>uk.nhs.careconnect.ri</groupId>
 			<artifactId>ccri-database</artifactId>

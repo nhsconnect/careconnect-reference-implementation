@@ -41,13 +41,13 @@ public class UIOverlayConfig {
 		TesterConfig retVal = new TesterConfig();
 
 
-		String serverBase = "${serverBase}/DSTU2";
+		String serverBase = "${serverBase}/STU3";
 
 
 		retVal
 			.addServer()
 				.withId("home")
-				.withFhirVersion(FhirVersionEnum.DSTU2)
+				.withFhirVersion(FhirVersionEnum.DSTU3)
 				.withBaseUrl(serverBase)
 				.withName("Care Connect FHIR Reference Implementation Server");
 

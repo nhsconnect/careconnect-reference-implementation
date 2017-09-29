@@ -160,7 +160,7 @@ public class ResourceRESTfulSteps {
 
             ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-            ourServerBase = "http://localhost:" + ourPort + "/careconnect-ri/DSTU2";
+            ourServerBase = "http://localhost:" + ourPort + "/careconnect-ri/STU3";
             client = ourCtx.newRestfulGenericClient(ourServerBase);
             client.registerInterceptor(new LoggingInterceptor(true));
 
