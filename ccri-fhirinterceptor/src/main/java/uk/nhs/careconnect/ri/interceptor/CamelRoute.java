@@ -20,12 +20,24 @@ public class CamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+/*
+		from("hl7fhir:Patient")
+				.routeId("Patient")
+				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
+				.to("http://localhost:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.convertBodyTo(InputStream.class);
+*/
+		from("direct:FHIRPatient")
+			.routeId("DMZ Patient")
+				.to("direct:HAPIServer");
 
-		from("direct:FHIRServer")
-			.routeId("CCRI FHIR Server")
-			.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
-			.to("http://localhost:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
-			.convertBodyTo(InputStream.class);
+
+
+		from("direct:HAPIServer")
+            .routeId("INT HAPI Server")
+				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
+				.to("http://localhost:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.convertBodyTo(InputStream.class);
 
     }
 }

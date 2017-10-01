@@ -28,7 +28,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		super.initialize();
 
 		/* 
-		 * We want to support FHIR DSTU2 format. This means that the server
+		 * We want to support HAPIComponent DSTU2 format. This means that the server
 		 * will use the DSTU2 bundle format and other DSTU2 encoding changes.
 		 *
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1

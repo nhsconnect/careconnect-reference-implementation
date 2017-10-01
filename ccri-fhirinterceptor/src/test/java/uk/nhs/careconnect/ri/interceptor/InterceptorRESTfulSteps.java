@@ -36,6 +36,8 @@ public class InterceptorRESTfulSteps {
 
     Bundle bundle;
 
+    Patient patient;
+
 
     @Given("^Patient Search by familyName kanfeld$")
     public void patient_Search_by_familyName_kanfeld() throws Throwable {
@@ -45,12 +47,24 @@ public class InterceptorRESTfulSteps {
                 .where(new StringClientParam("family").matches().value("kanfeld"))
                 .returnBundle(Bundle.class).execute();
 
-        Assert.assertNotNull(bundle);
+
     }
 
     @Then("^the result should be a valid FHIR Bundle$")
     public void the_result_should_be_a_valid_FHIR_Bundle() throws Throwable {
         Assert.assertNotNull(bundle);
+    }
+
+    @Given("^I Patient GET Patient (\\d+)$")
+    public void i_Patient_GET_Patient(Long Id) throws Throwable {
+        patient = client.read().resource(Patient.class).withId(Id).execute();
+
+    }
+
+    @Then("^the result should be a valid FHIR Patient$")
+    public void the_result_should_be_a_valid_FHIR_Patient() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        Assert.assertNotNull(patient);
     }
 
 

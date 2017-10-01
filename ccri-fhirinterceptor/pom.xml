@@ -64,6 +64,11 @@
 			<artifactId>camel-http</artifactId>
 			<version>${camel-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-hl7</artifactId>
+			<version>2.18.3</version>
+		</dependency>
 
 
 		<dependency>
@@ -126,7 +131,7 @@
 			<version>${hapi-fhir-version}</version>
 		</dependency>
 
-		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
+		<!-- This dependency is used for the "HAPIComponent Tester" web app overlay -->
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -336,7 +341,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+			<!-- The configuration here tells the WAR plugin to include the HAPIComponent Tester overlay. You can omit it if you are not using that feature. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>

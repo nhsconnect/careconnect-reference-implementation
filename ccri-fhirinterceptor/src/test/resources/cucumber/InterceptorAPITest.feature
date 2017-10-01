@@ -7,6 +7,9 @@ Feature: Phase 1 Exemplar Test
     Given Patient Search by familyName kanfeld
     Then the result should be a valid FHIR Bundle
 
+Scenario: Patient GET Patient 1
+    Given I Patient GET Patient 1
+    Then the result should be a valid FHIR Patient
 
 
 

@@ -56,8 +56,31 @@ public class PatientResourceProvider implements IResourceProvider {
     @Read
     public Patient getPatientById(HttpServletRequest theRequest, @IdParam IdType internalId) {
 
-        log.info("Request:"+ theRequest.getRequestURI());
-        return null;
+        ProducerTemplate template = context.createProducerTemplate();
+
+        Map<String, Object> headerMap = new HashMap<>();
+
+        headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
+        headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
+        headerMap.put(Exchange.HTTP_PATH, theRequest.getPathInfo());
+        headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
+
+
+        Patient patient = null;
+
+        try {
+            InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIRPatient",
+                    ExchangePattern.InOut,theRequest.getInputStream(), headerMap);
+            log.info("Producer Return :" + inputStream);
+
+            Reader reader = new InputStreamReader(inputStream);
+            patient = ctx.newJsonParser().parseResource(Patient.class,reader);
+
+        }
+        catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+        }
+        return patient;
     }
 
     @Search
@@ -75,19 +98,16 @@ public class PatientResourceProvider implements IResourceProvider {
                                        ) {
 
         List<Patient> results = new ArrayList<Patient>();
-        log.info("Request:"+ theRequest.getRequestURI());
-
-        log.info("Request Query String:"+ theRequest.getQueryString());
 
         ProducerTemplate template = context.createProducerTemplate();
 
         Map<String, Object> headerMap = new HashMap<>();
         headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
         headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
-        headerMap.put(Exchange.HTTP_PATH, "Patient");
+        headerMap.put(Exchange.HTTP_PATH,  theRequest.getPathInfo());
         headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
-        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIRServer",
+        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIRPatient",
                 ExchangePattern.InOut,"", headerMap);
 
         Bundle bundle = null;

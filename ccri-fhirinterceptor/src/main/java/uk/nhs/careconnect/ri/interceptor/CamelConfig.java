@@ -20,8 +20,9 @@ public class CamelConfig extends CamelConfiguration {
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
 		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Interceptor"));
-
-
+	/*
+		camelContext.addComponent("hl7fhir",new HAPIComponent());
+*/
 	}
 
 
