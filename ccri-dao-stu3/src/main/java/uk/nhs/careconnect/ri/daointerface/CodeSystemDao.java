@@ -25,7 +25,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RICodeSystemRepository implements CodeSystemRepository {
+public class CodeSystemDao implements CodeSystemRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -44,7 +44,7 @@ public class RICodeSystemRepository implements CodeSystemRepository {
     Integer flushNumber = 0;
     Integer level = 0;
 
-    private static final Logger log = LoggerFactory.getLogger(RICodeSystemRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(CodeSystemDao.class);
 
     private boolean myProcessDeferred = true;
 

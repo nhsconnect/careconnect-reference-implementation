@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class PatientResourceProvider implements IResourceProvider {
+public class PatientProvider implements IResourceProvider {
     private static final String TEMPORARY_RESIDENT_REGISTRATION_TYPE = "T";
     private static final String ACTIVE_REGISTRATION_STATUS = "A";
     private static final int ENCOUNTERS_SUMMARY_LIMIT = 3;
@@ -33,10 +33,10 @@ public class PatientResourceProvider implements IResourceProvider {
     }};
 
     @Autowired
-    private PractitionerResourceProvider practitionerResourceProvider;
+    private PractitionerProvider practitionerResourceProvider;
 
     @Autowired
-    private OrganizationResourceProvider organizationResourceProvider;
+    private OrganizationProvider organizationResourceProvider;
 
     @Autowired
     private PatientRepository patientDao;

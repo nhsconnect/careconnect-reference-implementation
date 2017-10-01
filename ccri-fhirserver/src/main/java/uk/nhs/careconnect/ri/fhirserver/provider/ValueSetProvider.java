@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class ValueSetResourceProvider implements IResourceProvider {
+public class ValueSetProvider implements IResourceProvider {
 
 
     @Autowired

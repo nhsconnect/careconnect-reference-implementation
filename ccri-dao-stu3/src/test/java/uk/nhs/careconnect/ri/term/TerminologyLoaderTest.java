@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.nhs.careconnect.ri.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.daointerface.RITerminologyLoader;
+import uk.nhs.careconnect.ri.daointerface.TerminologyLoaderDao;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 public class TerminologyLoaderTest {
     private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(TerminologyLoaderTest.class);
 
-    private RITerminologyLoader mySvc;
+    private TerminologyLoaderDao mySvc;
 
     @Mock
     private CodeSystemRepository myTermSvc;
@@ -58,7 +58,7 @@ public class TerminologyLoaderTest {
 
     @Before
     public void before() {
-        mySvc = new RITerminologyLoader();
+        mySvc = new TerminologyLoaderDao();
         mySvc.setTermSvcForUnitTests(myTermSvc, codeSvc);
 
     }

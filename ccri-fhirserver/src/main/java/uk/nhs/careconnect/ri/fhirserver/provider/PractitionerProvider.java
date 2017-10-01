@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class PractitionerResourceProvider  implements IResourceProvider {
+public class PractitionerProvider implements IResourceProvider {
 
     @Autowired
     private PractitionerRepository practitionerDao;

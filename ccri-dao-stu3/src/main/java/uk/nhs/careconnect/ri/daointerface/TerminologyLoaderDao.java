@@ -36,7 +36,7 @@ import java.util.zip.ZipInputStream;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
-public class RITerminologyLoader implements TerminologyLoader {
+public class TerminologyLoaderDao implements TerminologyLoader {
 
     public class Counter {
 
@@ -71,7 +71,7 @@ public class RITerminologyLoader implements TerminologyLoader {
     public static final String SCT_FILE_DESCRIPTION = "Terminology/sct2_Description_Full-en";
     public static final String SCT_FILE_RELATIONSHIP = "Terminology/sct2_Relationship_Full";
 
-    private static final Logger ourLog = LoggerFactory.getLogger(RITerminologyLoader.class);
+    private static final Logger ourLog = LoggerFactory.getLogger(TerminologyLoaderDao.class);
 
     /**
      * This is mostly for unit tests - we can disable processing of deferred concepts
@@ -512,7 +512,7 @@ public class RITerminologyLoader implements TerminologyLoader {
         private final Map<String, ConceptEntity> myId2concept;
         private Set<String> myValidConceptIds;
         private Integer count = 0;
-    //    private final Logger ourLog = LoggerFactory.getLogger(RITerminologyLoader.class);
+    //    private final Logger ourLog = LoggerFactory.getLogger(TerminologyLoaderDao.class);
 
         private SctHandlerDescription(Set<String> theValidConceptIds, Map<String, ConceptEntity> theCode2concept, Map<String, ConceptEntity> theId2concept, CodeSystemEntity theCodeSystemVersion) {
             myCode2concept = theCode2concept;

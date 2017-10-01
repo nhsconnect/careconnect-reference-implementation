@@ -17,6 +17,8 @@ public interface PatientRepository {
 
     Patient read(IdType theId);
 
+    PatientEntity readEntity(IdType theId);
+
     List<Patient> searchPatient (
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,

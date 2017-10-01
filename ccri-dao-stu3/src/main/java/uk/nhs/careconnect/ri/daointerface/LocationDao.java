@@ -29,7 +29,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RILocationRepository implements LocationRepository {
+public class LocationDao implements LocationRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -47,7 +47,7 @@ public class RILocationRepository implements LocationRepository {
     private ConceptRepository codeSvc;
 
 
-    private static final Logger log = LoggerFactory.getLogger(RILocationRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationDao.class);
 
     public void save(LocationEntity location)
     {

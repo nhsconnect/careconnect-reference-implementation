@@ -45,12 +45,14 @@ public class HAPIRestfulConfig extends RestfulServer {
 		 * contains bean definitions for a resource provider for each resource type
 		 */
 		setResourceProviders(Arrays.asList(
-				myAppCtx.getBean(PatientResourceProvider.class),
-				myAppCtx.getBean(OrganizationResourceProvider.class),
-				myAppCtx.getBean(PractitionerResourceProvider.class),
-				myAppCtx.getBean(LocationResourceProvider.class),
-				myAppCtx.getBean(ValueSetResourceProvider.class),
-				myAppCtx.getBean(StructureDefinitionResourceProvider.class)
+				myAppCtx.getBean(PatientProvider.class),
+				myAppCtx.getBean(OrganizationProvider.class),
+				myAppCtx.getBean(PractitionerProvider.class),
+				myAppCtx.getBean(LocationProvider.class),
+				myAppCtx.getBean(ValueSetProvider.class),
+				myAppCtx.getBean(StructureDefinitionProvider.class),
+				myAppCtx.getBean(CodeSystemProvider.class),
+				myAppCtx.getBean(ObservationProvider.class)
 
 		));
 

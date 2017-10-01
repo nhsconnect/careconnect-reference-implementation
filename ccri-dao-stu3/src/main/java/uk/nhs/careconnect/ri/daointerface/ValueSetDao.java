@@ -25,7 +25,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RIValueSetRepository implements ValueSetRepository {
+public class ValueSetDao implements ValueSetRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -33,7 +33,7 @@ public class RIValueSetRepository implements ValueSetRepository {
     @Autowired
     private ValueSetEntityToFHIRValueSetTransformer valuesetEntityToFHIRValuesetTransformer;
 
-    private static final Logger log = LoggerFactory.getLogger(RIValueSetRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(ValueSetDao.class);
 
     @Autowired
     CodeSystemRepository codeSystemRepository;

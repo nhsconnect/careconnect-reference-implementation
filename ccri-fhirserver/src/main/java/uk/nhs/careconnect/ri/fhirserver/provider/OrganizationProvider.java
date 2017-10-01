@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class OrganizationResourceProvider implements IResourceProvider {
+public class OrganizationProvider implements IResourceProvider {
 
     @Autowired
     private OrganisationRepository organisationDao;

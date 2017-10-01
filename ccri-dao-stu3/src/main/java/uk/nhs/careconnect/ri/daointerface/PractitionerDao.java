@@ -26,7 +26,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RIPractitionerRepository implements PractitionerRepository {
+public class PractitionerDao implements PractitionerRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -42,7 +42,7 @@ public class RIPractitionerRepository implements PractitionerRepository {
     @Autowired
     private ConceptRepository codeSvc;
 
-    private static final Logger log = LoggerFactory.getLogger(RIPractitionerRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(PractitionerDao.class);
 
     public void save(PractitionerEntity practitioner)
     {
@@ -57,6 +57,13 @@ public class RIPractitionerRepository implements PractitionerRepository {
                 ? null
                 : practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
 
+    }
+
+    public PractitionerEntity readEntity(IdType theId) {
+
+        PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Long.parseLong(theId.getIdPart()));
+
+        return practitionerEntity;
     }
 
     @Override

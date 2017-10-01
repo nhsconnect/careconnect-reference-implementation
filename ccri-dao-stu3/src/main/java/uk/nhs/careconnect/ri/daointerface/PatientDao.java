@@ -26,7 +26,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RIPatientRepository implements PatientRepository {
+public class PatientDao implements PatientRepository {
 
 
     @PersistenceContext
@@ -35,7 +35,7 @@ public class RIPatientRepository implements PatientRepository {
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
 
-    private static final Logger log = LoggerFactory.getLogger(RIPatientRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
 
     @Transactional
@@ -52,6 +52,12 @@ public class RIPatientRepository implements PatientRepository {
         return patientEntity == null
                 ? null
                 : patientEntityToFHIRPatientTransformer.transform(patientEntity);
+
+    }
+
+    public PatientEntity readEntity(IdType theId) {
+
+        return  (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
     }
     public List<Patient> searchPatient (

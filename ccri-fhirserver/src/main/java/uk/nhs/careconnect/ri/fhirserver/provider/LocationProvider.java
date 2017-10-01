@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class LocationResourceProvider implements IResourceProvider {
+public class LocationProvider implements IResourceProvider {
 
 
     @Autowired

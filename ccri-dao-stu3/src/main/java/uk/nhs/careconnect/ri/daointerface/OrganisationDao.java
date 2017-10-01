@@ -31,7 +31,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RIOrganisationRepository implements OrganisationRepository {
+public class OrganisationDao implements OrganisationRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -45,7 +45,7 @@ public class RIOrganisationRepository implements OrganisationRepository {
     @Autowired
     private OrganisationEntityToFHIROrganizationTransformer organizationEntityToFHIROrganizationTransformer;
 
-    private static final Logger log = LoggerFactory.getLogger(RIOrganisationRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(OrganisationDao.class);
 
     public void save(OrganisationEntity organization)
     {

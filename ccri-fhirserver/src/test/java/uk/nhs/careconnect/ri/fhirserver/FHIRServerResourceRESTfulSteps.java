@@ -12,19 +12,24 @@ import cucumber.api.java.Before;
 import cucumber.api.java.After;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.hl7.fhir.instance.model.*;
 
+import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 import org.junit.AfterClass;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import static org.junit.Assert.assertNotNull;
 
 
 public class FHIRServerResourceRESTfulSteps {
 
     private static IGenericClient client;
-    private static final FhirContext ourCtx = FhirContext.forDstu2Hl7Org();
+    private static final FhirContext ourCtx = FhirContext.forDstu3();
     private static final Logger ourLog = org.slf4j.LoggerFactory.getLogger(FHIRServerTest.class);
 
     private static int ourPort;
@@ -32,11 +37,22 @@ public class FHIRServerResourceRESTfulSteps {
     private static Server ourServer;
     private static String ourServerBase;
 
-    private static FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
+    private static FhirContext ctxFHIR = FhirContext.forDstu3();
     private static FhirValidator validator = ctxFHIR.newValidator();
+
+    Observation observation;
 
     Bundle bundle;
 
+    @Given("^Observation resource file$")
+    public void observation_resource_file() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/Observation.xml");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        observation = ctxFHIR.newXmlParser().parseResource(Observation.class,reader);
+    }
 
     @Given("^Patient Search by familyName kanfeld$")
     public void patient_Search_by_familyName_kanfeld() throws Throwable {
@@ -78,14 +94,25 @@ public class FHIRServerResourceRESTfulSteps {
         Assert.assertNotNull(bundle);
     }
 
+    @Then("^save the Observation$")
+    public void save_the_Observation() throws Throwable {
+        client
+            .create()
+            .resource(observation)
+            .prettyPrint()
+            .execute();
+    }
 
     @Then("^the result should be a valid FHIR Bundle$")
     public void the_result_should_be_a_valid_FHIR_Bundle() throws Throwable {
         Assert.assertNotNull(bundle);
     }
 
+
+
     @Then("^the results should be valid CareConnect Profiles$")
     public void the_results_should_be_valid_CareConnect_Profiles() throws Throwable {
+
 
 
 /* TODO STU3

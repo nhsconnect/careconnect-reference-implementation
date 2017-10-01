@@ -18,6 +18,8 @@ public interface PractitionerRepository {
 
     Practitioner read(IdType theId);
 
+    PractitionerEntity readEntity(IdType theId);
+
     Practitioner create(Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
     List<Practitioner> searchPractitioner (

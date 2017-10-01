@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Repository
-public class RIConceptRepository implements ConceptRepository {
+public class ConceptDao implements ConceptRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -40,7 +40,7 @@ public class RIConceptRepository implements ConceptRepository {
     @Autowired
     CodeSystemRepository codeSystemRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(RIConceptRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(ConceptDao.class);
 
 
     public Session getSession(){
