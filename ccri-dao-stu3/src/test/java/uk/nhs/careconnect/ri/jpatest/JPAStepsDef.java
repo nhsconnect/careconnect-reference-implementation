@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.jpatest;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.ParamPrefixEnum;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
@@ -125,7 +122,7 @@ public class JPAStepsDef {
 
     @Given("^I search for a Patient with a birthdate of '(\\w+)-(\\w+)-(\\w+)'$")
     public void i_search_for_a_Patient_with_a_birthdate_of(String year, String month, String day) throws Throwable {
-        patientList = patientRepository.searchPatient(null, new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day),null,null,null,null, null,null,null);
+        patientList = patientRepository.searchPatient(null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
 
     }
 

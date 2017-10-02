@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -17,6 +17,7 @@ import uk.nhs.careconnect.ri.entity.patient.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class PatientDao implements PatientRepository {
     }
     public List<Patient> searchPatient (
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
-            @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
+            @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
             @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
             @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
@@ -125,19 +126,126 @@ public class PatientDao implements PatientRepository {
                 predList.add(p);
             }
         }
-        ParameterExpression<java.util.Date> parameter = null;
-        Date dob = null;
+        ParameterExpression<java.util.Date> parameterTo = null;
+        ParameterExpression<java.util.Date> parameterFrom = null;
+        Date dobFrom = null;
+        Date dobTo = null;
 
         if (birthDate !=null)
         {
-            dob = birthDate.getValue();
 
-            parameter = builder.parameter(java.util.Date.class);
+            Date from = birthDate.getLowerBoundAsInstant();
+            Date to = birthDate.getUpperBoundAsInstant();
 
-            log.info("birthDate="+dob.toString());
 
-            Predicate p = builder.equal(root.<Date>get("dateOfBirth"),parameter);
-            predList.add(p);
+            parameterFrom = builder.parameter(java.util.Date.class);
+
+            switch (birthDate.getValuesAsQueryTokens().get(0).getPrefix())
+            {
+                case GREATERTHAN :
+                {
+                    Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+                case GREATERTHAN_OR_EQUALS :
+                {
+                    Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+                case APPROXIMATE :
+                case EQUAL :
+                {
+                    Predicate p = builder.equal(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+
+                case NOT_EQUAL :
+                {
+                    Predicate p = builder.notEqual(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+                case STARTS_AFTER :
+                {
+                    Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+
+                }
+                case LESSTHAN_OR_EQUALS :
+                {
+                    Predicate p = builder.lessThanOrEqualTo(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+                case ENDS_BEFORE :
+                case LESSTHAN :
+                {
+                    Predicate p = builder.lessThan(root.<Date>get("dateOfBirth"),parameterFrom);
+                    predList.add(p);
+                    break;
+                }
+            }
+            if (birthDate.getValuesAsQueryTokens().size()>1)
+            {
+                log.info("MORE THAN ONE DATE");
+                parameterTo = builder.parameter(java.util.Date.class);
+                switch (birthDate.getValuesAsQueryTokens().get(1).getPrefix())
+                {
+                    case GREATERTHAN :
+                    {
+                        Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+                    case GREATERTHAN_OR_EQUALS :
+                    {
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+                    case APPROXIMATE :
+                    case EQUAL :
+                    {
+                        Predicate p = builder.equal(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+
+                    case NOT_EQUAL :
+                    {
+                        Predicate p = builder.notEqual(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+                    case STARTS_AFTER :
+                    {
+                        Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+
+                    }
+                    case LESSTHAN_OR_EQUALS :
+                    {
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+                    case ENDS_BEFORE :
+                    case LESSTHAN :
+                    {
+                        Predicate p = builder.lessThan(root.<Date>get("dateOfBirth"),parameterTo);
+                        predList.add(p);
+                        break;
+                    }
+                }
+            }
+
+
+
         }
 
         if (gender != null)
@@ -185,11 +293,12 @@ public class PatientDao implements PatientRepository {
             criteria.select(root);
         }
         List<PatientEntity> qryResults = null;
-        if (dob==null) {
-            qryResults = em.createQuery(criteria).getResultList();
-        } else {
-            qryResults = em.createQuery(criteria).setParameter(parameter,dob, TemporalType.DATE).getResultList();
-        }
+        TypedQuery<PatientEntity> typedQuery = em.createQuery(criteria);
+
+        if (dobFrom!=null) typedQuery.setParameter(parameterFrom,dobFrom, TemporalType.DATE);
+        if (dobTo!=null) typedQuery.setParameter(parameterFrom,dobFrom, TemporalType.DATE);
+
+        qryResults = typedQuery.getResultList();
 
 
         for (PatientEntity patientEntity : qryResults)

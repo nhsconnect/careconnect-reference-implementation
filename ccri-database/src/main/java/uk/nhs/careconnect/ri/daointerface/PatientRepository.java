@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -21,7 +21,7 @@ public interface PatientRepository {
 
     List<Patient> searchPatient (
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
-            @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
+            @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
             @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
             @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,

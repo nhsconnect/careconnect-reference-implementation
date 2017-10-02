@@ -4,7 +4,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
-import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -17,20 +17,11 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class PatientProvider implements IResourceProvider {
-    private static final String TEMPORARY_RESIDENT_REGISTRATION_TYPE = "T";
-    private static final String ACTIVE_REGISTRATION_STATUS = "A";
-    private static final int ENCOUNTERS_SUMMARY_LIMIT = 3;
 
-    private static final List<String> MANDATORY_PARAM_NAMES = Arrays.asList("patientNHSNumber", "recordSection");
-    private static final List<String> PERMITTED_PARAM_NAMES = new ArrayList<String>(MANDATORY_PARAM_NAMES) {{
-        add("timePeriod");
-    }};
 
     @Autowired
     private PractitionerProvider practitionerResourceProvider;
@@ -65,7 +56,7 @@ public class PatientProvider implements IResourceProvider {
     public List<Patient> searchPatient(HttpServletRequest theRequest,
 
                                        @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
-                                       @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
+                                       @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
                                        @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
                                        @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
                                        @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
