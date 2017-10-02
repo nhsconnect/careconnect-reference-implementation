@@ -23,6 +23,7 @@
 
     <!-- At least one "structures" JAR must also be included -->
 
+
     <dependency>
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
