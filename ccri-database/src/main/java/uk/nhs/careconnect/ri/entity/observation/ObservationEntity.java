@@ -6,6 +6,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,13 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="parentObservation")
     private ObservationEntity parentObservation;
 
+    @Column(name="valueQuantity")
+    private BigDecimal valueQuantity;
+
+    @ManyToOne
+    @JoinColumn(name="valueUnitOfMeasure")
+    private ConceptEntity valueUnitOfMeasure;
+
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private List<ObservationCategory> categories = new ArrayList<>();
 
@@ -49,6 +57,8 @@ public class ObservationEntity extends BaseResource {
     @OneToMany(mappedBy="observation", targetEntity=ObservationPerformer.class)
     private List<ObservationPerformer> performers = new ArrayList<>();
 
+    @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
+    private List<ObservationEntity> components = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -123,5 +133,29 @@ public class ObservationEntity extends BaseResource {
 
     public void setStatus(Observation.ObservationStatus status) {
         this.status = status;
+    }
+
+    public BigDecimal getValueQuantity() {
+        return valueQuantity;
+    }
+
+    public ConceptEntity getValueUnitOfMeasure() {
+        return valueUnitOfMeasure;
+    }
+
+    public List<ObservationEntity> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<ObservationEntity> components) {
+        this.components = components;
+    }
+
+    public void setValueQuantity(BigDecimal valueQuantity) {
+        this.valueQuantity = valueQuantity;
+    }
+
+    public void setValueUnitOfMeasure(ConceptEntity valueUnitOfMeasure) {
+        this.valueUnitOfMeasure = valueUnitOfMeasure;
     }
 }

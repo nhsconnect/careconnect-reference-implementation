@@ -18,7 +18,10 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Repository
@@ -67,11 +70,27 @@ public class ObservationDao implements ObservationRepository {
 
             }
         }
+        PatientEntity patientEntity = null;
         if (observation.hasSubject()) {
             log.info(observation.getSubject().getReference());
-            PatientEntity patientEntity = patientDao.readEntity(new IdType(observation.getSubject().getReference()));
+            patientEntity = patientDao.readEntity(new IdType(observation.getSubject().getReference()));
             observationEntity.setPatient(patientEntity);
         }
+        try {
+            if (observation.hasValueQuantity()) {
+
+                observationEntity.setValueQuantity(observation.getValueQuantity().getValue());
+
+                if (observation.getValueQuantity().getCode() != null) {
+                    ConceptEntity concept = conceptDao.findCode(observation.getValueQuantity().getSystem(),observation.getValueQuantity().getCode());
+                    if (concept != null) observationEntity.setValueUnitOfMeasure(concept);
+
+                }
+            }
+        } catch (Exception ex) { }
+
+
+
         em.persist(observationEntity);
 
         for (Reference reference : observation.getPerformer()) {
@@ -101,6 +120,42 @@ public class ObservationDao implements ObservationRepository {
                 }
             }
         }
+
+        for (Observation.ObservationComponentComponent component :observation.getComponent()) {
+            ObservationEntity observationComponent = new ObservationEntity();
+            if (patientEntity != null) observationComponent.setPatient(patientEntity);
+            if (observation.hasEffectiveDateTimeType()) {
+                try {
+                    observationComponent.setEffectiveDateTime(observation.getEffectiveDateTimeType().getValue());
+                } catch (Exception ex) {
+
+                }
+            }
+            // Code
+            if (component.hasCode()) {
+                ConceptEntity code = conceptDao.findCode(component.getCode().getCoding().get(0).getSystem(),component.getCode().getCoding().get(0).getCode());
+                if (code != null) observationComponent.setCode(code);
+            }
+            // Value
+
+            try {
+                if (component.hasValueQuantity()) {
+
+                    observationComponent.setValueQuantity(component.getValueQuantity().getValue());
+
+                    if (component.getValueQuantity().getCode() != null) {
+                        ConceptEntity concept = conceptDao.findCode(component.getValueQuantity().getSystem(),component.getValueQuantity().getCode());
+                        if (concept != null) observationComponent.setValueUnitOfMeasure(concept);
+
+                    }
+                }
+            } catch (Exception ex) { }
+
+
+            observationComponent.setParentObservation(observationEntity);
+            em.persist(observationComponent);
+            observationEntity.getComponents().add(observationComponent);
+        }
         return observation;
     }
 
@@ -125,6 +180,44 @@ public class ObservationDao implements ObservationRepository {
 
     @Override
     public List<Observation> search(TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
-        return null;
+        List<ObservationEntity> qryResults = null;
+        List<Observation> results = new ArrayList<Observation>();
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<ObservationEntity> criteria = builder.createQuery(ObservationEntity.class);
+        Root<ObservationEntity> root = criteria.from(ObservationEntity.class);
+        List<Predicate> predList = new LinkedList<Predicate>();
+
+        if (patient != null) {
+            Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("id"),patient.getIdPart());
+            predList.add(p);
+        }
+        // Ensure we don't search on components
+        Predicate p = builder.isNull(root.get("parentObservation"));
+        predList.add(p);
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+        if (predList.size()>0)
+        {
+            criteria.select(root).where(predArray);
+        }
+        else
+        {
+            criteria.select(root);
+        }
+
+        qryResults = em.createQuery(criteria).getResultList();
+
+        for (ObservationEntity observationEntity : qryResults)
+        {
+
+            Observation observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+            results.add(observation);
+        }
+        return results;
     }
 }

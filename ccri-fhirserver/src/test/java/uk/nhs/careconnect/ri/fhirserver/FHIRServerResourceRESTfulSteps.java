@@ -54,6 +54,16 @@ public class FHIRServerResourceRESTfulSteps {
         observation = ctxFHIR.newXmlParser().parseResource(Observation.class,reader);
     }
 
+    @Given("^Observation a Blood Pressure import$")
+    public void observation_a_Blood_Pressure_import() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/Observation-BloodPressure.xml");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        observation = ctxFHIR.newXmlParser().parseResource(Observation.class,reader);
+    }
+
     @Given("^Patient Search by familyName kanfeld$")
     public void patient_Search_by_familyName_kanfeld() throws Throwable {
     //    ourLog.info("GIVEN - Patient Search by familyName");

@@ -7,5 +7,8 @@ Feature: Observation Integration Test
                    Then save the Observation
 
 
+        Scenario: Observation Blood Pressue Post
+                   Given Observation a Blood Pressure import
+                   Then save the Observation
 
 
