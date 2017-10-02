@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3bf57355-7802-4393-9e3a-3885c892926c" name="Default" comment="">
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/cc-cli/target/" />
@@ -139,6 +138,14 @@
       <option name="presentableId" value="Default" />
       <updated>1506935927229</updated>
     </task>
+    <task id="LOCAL-00001" summary="Git Admin">
+      <created>1506935956012</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1506935956012</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -181,6 +188,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Git Admin" />
+    <option name="LAST_COMMIT_MESSAGE" value="Git Admin" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
