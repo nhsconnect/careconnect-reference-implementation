@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class ObservationEntityToFHIRObservationTransformer implements Transformer<ObservationEntity, Observation> {

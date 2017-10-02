@@ -5,7 +5,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class LocationEntityToFHIRLocationTransformer implements Transformer<LocationEntity, Location> {
