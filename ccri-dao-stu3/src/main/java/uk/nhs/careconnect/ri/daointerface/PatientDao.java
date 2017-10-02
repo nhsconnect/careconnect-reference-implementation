@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.Transforms.PatientEntityToFHIRPatientTransformer;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
 import uk.nhs.careconnect.ri.entity.patient.*;
 
 import javax.persistence.EntityManager;
@@ -88,10 +89,13 @@ public class PatientDao implements PatientRepository {
         if (identifier !=null)
         {
             Join<PatientEntity, PatientIdentifier> join = root.join("identifiers", JoinType.LEFT);
+            Join<PatientIdentifier,SystemEntity> joinSystem = join.join("systemEntity",JoinType.LEFT);
 
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            Predicate pvalue = builder.equal(join.get("value"),identifier.getValue());
+            Predicate psystem = builder.equal(joinSystem.get("codeSystemUri"),identifier.getSystem());
+            Predicate p = builder.and(pvalue,psystem);
             predList.add(p);
-            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
 
         }
         if ((familyName != null) || (givenName != null) || (name != null)) {
@@ -101,7 +105,7 @@ public class PatientDao implements PatientRepository {
                 Predicate p =
                         builder.like(
                                 builder.upper(namejoin.get("familyName").as(String.class)),
-                                builder.upper(builder.literal("%"+familyName.getValue()+"%"))
+                                builder.upper(builder.literal(familyName.getValue()+"%"))
                         );
                 predList.add(p);
             }
@@ -139,15 +143,15 @@ public class PatientDao implements PatientRepository {
 
             dobFrom = birthDate.getLowerBoundAsInstant();
             dobTo = birthDate.getUpperBoundAsInstant();
-            if (dobFrom != null) log.info("dob lower"+dobFrom.toString());
-            if (dobTo!= null) log.info("dob upper"+dobTo.toString());
+            if (dobFrom != null) log.trace("dob lower"+dobFrom.toString());
+            if (dobTo!= null) log.trace("dob upper"+dobTo.toString());
 
             parameterLower = builder.parameter(java.util.Date.class);
             parameterUpper = builder.parameter(java.util.Date.class);
 
             for (DateParam dateParam: birthDate.getValuesAsQueryTokens()) {
 
-                log.info("Date Param - "+dateParam.getValue()+" Prefix - "+dateParam.getPrefix());
+                log.trace("Date Param - "+dateParam.getValue()+" Prefix - "+dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
                     case GREATERTHAN: {
@@ -200,7 +204,7 @@ public class PatientDao implements PatientRepository {
                         break;
                     }
                     default:
-                        log.info("DEFAULT DATE(0) Prefix = " + birthDate.getValuesAsQueryTokens().get(0).getPrefix());
+                        log.trace("DEFAULT DATE(0) Prefix = " + birthDate.getValuesAsQueryTokens().get(0).getPrefix());
                 }
             }
         }
@@ -216,8 +220,14 @@ public class PatientDao implements PatientRepository {
             Join<PatientEntity, PatientTelecom> joinTel = root.join("telecoms", JoinType.LEFT);
 
             if (email!=null) {
-                Predicate pvalue = builder.equal(joinTel.get("value"),email.getValue());
                 Predicate psystem = builder.equal(joinTel.get("system"),2);
+
+                Predicate pvalue =
+                        builder.like(
+                                builder.upper(joinTel.get("value").as(String.class)),
+                                builder.upper(builder.literal(email.getValue()+"%"))
+                        );
+
                 Predicate p = builder.and(pvalue,psystem);
                 predList.add(p);
             }
