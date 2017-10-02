@@ -134,8 +134,8 @@ public class PatientDao implements PatientRepository {
         if (birthDate !=null)
         {
 
-            Date from = birthDate.getLowerBoundAsInstant();
-            Date to = birthDate.getUpperBoundAsInstant();
+            dobFrom = birthDate.getLowerBoundAsInstant();
+            dobTo = birthDate.getUpperBoundAsInstant();
 
 
             parameterFrom = builder.parameter(java.util.Date.class);
@@ -188,7 +188,10 @@ public class PatientDao implements PatientRepository {
                     predList.add(p);
                     break;
                 }
+                default:
+                    log.info("DEFAULT DATE(0) Prefix = "+birthDate.getValuesAsQueryTokens().get(0).getPrefix());
             }
+            /*
             if (birthDate.getValuesAsQueryTokens().size()>1)
             {
                 log.info("MORE THAN ONE DATE");
@@ -241,9 +244,11 @@ public class PatientDao implements PatientRepository {
                         predList.add(p);
                         break;
                     }
+                    default:
+                        log.info("DEFAULT DATE(1) Prefix = "+birthDate.getValuesAsQueryTokens().get(1).getPrefix());
                 }
             }
-
+*/
 
 
         }
@@ -296,7 +301,7 @@ public class PatientDao implements PatientRepository {
         TypedQuery<PatientEntity> typedQuery = em.createQuery(criteria);
 
         if (dobFrom!=null) typedQuery.setParameter(parameterFrom,dobFrom, TemporalType.DATE);
-        if (dobTo!=null) typedQuery.setParameter(parameterFrom,dobFrom, TemporalType.DATE);
+       // if (dobTo!=null) typedQuery.setParameter(parameterTo,dobTo, TemporalType.DATE);
 
         qryResults = typedQuery.getResultList();
 
