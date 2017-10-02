@@ -91,10 +91,20 @@ public class PatientDao implements PatientRepository {
             Join<PatientEntity, PatientIdentifier> join = root.join("identifiers", JoinType.LEFT);
             Join<PatientIdentifier,SystemEntity> joinSystem = join.join("systemEntity",JoinType.LEFT);
 
-            Predicate pvalue = builder.equal(join.get("value"),identifier.getValue());
-            Predicate psystem = builder.equal(joinSystem.get("codeSystemUri"),identifier.getSystem());
-            Predicate p = builder.and(pvalue,psystem);
-            predList.add(p);
+            Predicate pvalue = builder.like(
+                    builder.upper(join.get("value")),
+                    builder.upper(builder.literal(identifier.getValue()))
+            );
+            if (identifier.getSystem() != null) {
+                Predicate psystem = builder.like(
+                        builder.upper(joinSystem.get("codeSystemUri")),
+                        builder.upper(builder.literal(identifier.getSystem()))
+                );
+                Predicate p = builder.and(pvalue, psystem);
+                predList.add(p);
+            } else {
+                predList.add(pvalue);
+            }
 
 
         }
