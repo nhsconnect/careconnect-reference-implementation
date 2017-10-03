@@ -29,6 +29,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
             }
         }
         practitioner.setMeta(meta);
+        practitioner.setActive(practitionerEntity.getActive());
 
         for(int f=0;f<practitionerEntity.getIdentifiers().size();f++)
         {
