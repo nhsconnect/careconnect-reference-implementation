@@ -323,6 +323,7 @@
 						</webApp>
 					</configuration>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 
@@ -361,7 +362,14 @@
 					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
 			
 
 			<!-- This is to run the integration tests -->

@@ -20,7 +20,7 @@ public class ValidateTest {
 		
 		App.main(new String[] {"validate", "-p"
 				//,"-r"
-				,"-l","/Development/NHSD/CareConnect-profiles/constraints/CareConnect-Patient-1.xml"
+				//,"-l","/Development/NHSD/CareConnect-profiles/constraints/CareConnect-Patient-1.xml"
 				,"-n",resourcePath});
 	}
 	
