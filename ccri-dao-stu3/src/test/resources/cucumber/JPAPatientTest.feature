@@ -45,15 +45,17 @@ Scenario: Patient Read
              Then the result should be a list with 0 entry
 
 
-   Scenario: Patient gender Search Found
+   Scenario: Patient gender Search Female
              Given I search for a Patient with a gender of FEMALE
-             Then the result should be a list with 1 entry
+             Then the result should be a list with several entries
              And they shall all be FHIR Patient resources
              And the results should be a list of CareConnect Patients
 
-  Scenario: Patient gender Search NOT Found
+  Scenario: Patient gender Search Male
              Given I search for a Patient with a gender of MALE
-             Then the result should be a list with 0 entry
+             Then the result should be a list with several entries
+             And they shall all be FHIR Patient resources
+             And the results should be a list of CareConnect Patients
 
 
  Scenario: Patient identifier Search Found
@@ -80,7 +82,7 @@ Scenario: Patient Read
                  And the results should be a list of CareConnect Patients
 
    Scenario: Patient name Search NOT Found
-                 Given I search for a Patient with a name of "Eric"
+                 Given I search for a Patient with a name of "Loki"
                  Then the result should be a list with 0 entry
 
    Scenario: Patient email Search Found
