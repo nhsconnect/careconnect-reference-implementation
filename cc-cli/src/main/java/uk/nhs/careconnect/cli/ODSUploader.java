@@ -17,11 +17,10 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.*;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
-import uk.nhs.careconnect.cli.dstu2.CareConnectProfile;
-import uk.nhs.careconnect.cli.dstu2.CareConnectSystem;
-
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.*;
 import java.net.URL;
@@ -396,6 +395,7 @@ public class ODSUploader extends BaseCommand {
                     .setCity(Inicaps(theRecord.get("AddressLine_4")))
                     .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
                     .setPostalCode(theRecord.get("Postcode"));
+            /* STU3
             Practitioner.PractitionerPractitionerRoleComponent role = practitioner.addPractitionerRole();
 
             if (!theRecord.get("Commissioner").isEmpty()) {
@@ -417,11 +417,14 @@ public class ODSUploader extends BaseCommand {
                                 .setDisplay("General Medical Practitioner");
                 }
             }
+            */
             if (!theRecord.get("Name").isEmpty()) {
                 String[] nameStr = theRecord.get("Name").split(" ");
 
                 if (nameStr.length>0) {
-                   HumanName name = practitioner.getName().addFamily(Inicaps(nameStr[0]));
+                   HumanName name = new HumanName();
+                   practitioner.getName().add(name);
+                   name.setFamily(Inicaps(nameStr[0]));
                    name.addPrefix("Dr");
                    String foreName = "";
                    for (Integer f=1; f<nameStr.length;f++) {
@@ -496,13 +499,13 @@ public class ODSUploader extends BaseCommand {
                 }
                 if (typeSncCT!=null)
                 {
-                    organization.getType()
-                            .addCoding()
-                            .setDisplay(typeDisplay)
-                            .setSystem(CareConnectSystem.SNOMEDCT)
-                            .setCode(typeSncCT);
+                    organization.addType().addCoding().setDisplay(typeDisplay)
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setCode(typeSncCT);
+
+
                 } else {
-                    organization.getType().addCoding()
+                    organization.addType().addCoding()
                             .setSystem(CareConnectSystem.OrganisationType)
                             .setCode("prov")
                             .setDisplay("Healthcare Provider");

@@ -9,7 +9,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.ValueSet;
+import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IIdType;
 import uk.nhs.careconnect.itksrp.Vocabulary;
 import uk.nhs.careconnect.itksrp.VocabularyToFHIRValueSet;
@@ -95,7 +95,7 @@ public class ITKSRPDataUploader extends BaseCommand {
         callLoadFolders(theCommandLine.getOptionValue("d")+"/Vocabulary/SNOMEDCT/","SNOMEDCT.XML","itk-snct-");
 
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
-			uploadValueSetsDstu2(targetServer);
+			uploadValueSetsStu3(targetServer);
 		}
 
 	}
@@ -153,7 +153,7 @@ public class ITKSRPDataUploader extends BaseCommand {
 
 	}
 
-	private void uploadValueSetsDstu2(String targetServer) throws CommandFailureException {
+	private void uploadValueSetsStu3(String targetServer) throws CommandFailureException {
 		IGenericClient client = newClient(ctx, targetServer);
 		ourLog.info("Uploading ValueSets to server: " + targetServer);
 
@@ -163,12 +163,14 @@ public class ITKSRPDataUploader extends BaseCommand {
 
 
 		int count = 1;
+		/*
 		for (ValueSet next : valueSets) {
 		    System.out.println(next.getCodeSystem().getSystem());
             client.update().resource(next).execute();
 
 			count++;
 		}
+		*/
 
 		try {
 			vsContents = IOUtils.toString(ITKSRPDataUploader.class.getResourceAsStream("/org/hl7/fhir/instance/model/valueset/" + "v3-codesystems.xml"), "UTF-8");
