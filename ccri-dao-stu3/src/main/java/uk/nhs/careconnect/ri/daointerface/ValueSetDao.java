@@ -262,7 +262,7 @@ public class ValueSetDao implements ValueSetRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal("%"+name.getValue()+"%"))
+                            builder.upper(builder.literal(name.getValue()+"%"))
                     );
 
             predList.add(p);
