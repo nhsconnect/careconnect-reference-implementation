@@ -6,6 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @MappedSuperclass
 public class BaseHumanName extends BaseResource {
@@ -42,8 +47,6 @@ public class BaseHumanName extends BaseResource {
         this.nameUse = nameUse;
     }
 
-
-
     public String getPrefix() {
         return prefix;
     }
@@ -68,5 +71,17 @@ public class BaseHumanName extends BaseResource {
         this.familyName = familyName;
     }
 
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public String getDisplayName(){
+        List<String> names = Arrays.asList(getPrefix(), getGivenName(), getFamilyName(), getSuffix());
+        return names.stream().filter(Objects::nonNull).collect(Collectors.joining(" "));
+    }
 
 }
