@@ -40,6 +40,7 @@ public class PractitionerAddress extends BaseAddress {
     public AddressEntity getAddress() {
         return this.address;
     }
+    @Override
     public AddressEntity setAddress(AddressEntity addressEntity) {
         this.address = addressEntity;
         return this.address;

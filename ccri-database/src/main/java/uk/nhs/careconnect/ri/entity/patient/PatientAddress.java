@@ -39,6 +39,10 @@ public class PatientAddress extends BaseAddress {
     public AddressEntity getAddress() {
         return this.address;
     }
-    public void setAddress(AddressEntity addressEntity) { this.address = addressEntity; }
+    @Override
+    public AddressEntity setAddress(AddressEntity addressEntity) {
+        this.address = addressEntity;
+        return this.address;
+    }
 
 }
