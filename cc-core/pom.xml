@@ -6,7 +6,7 @@
 
     <groupId>uk.org.hl7.fhir</groupId>
     <artifactId>cc-core</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <hapi-fhir-version>3.0.0</hapi-fhir-version>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>uk.org.hl7.fhir</groupId>
             <artifactId>cc-fhir-validation-resources-stu3</artifactId>
-            <version>3.0.2-SNAPSHOT</version>
+            <version>3.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
