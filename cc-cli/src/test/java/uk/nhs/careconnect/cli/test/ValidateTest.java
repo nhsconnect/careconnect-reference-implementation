@@ -30,6 +30,22 @@ public class ValidateTest {
 		App.main(new String[] {"validate", "-p"
 				,"-n",resourcePath});
 	}
-	
+	@Test
+	public void testValidateLocalObservationBloodPressure() {
+		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p"
+				,"-n",resourcePath});
+	}
+
+	@Test
+	public void testValidateLocalOrganizationODS() {
+		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p"
+				,"-n",resourcePath});
+	}
 
 }

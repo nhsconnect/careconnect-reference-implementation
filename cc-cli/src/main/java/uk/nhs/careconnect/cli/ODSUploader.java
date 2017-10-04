@@ -53,7 +53,13 @@ public class ODSUploader extends BaseCommand {
 
     IGenericClient client;
 
+/* PROGRAM ARGUMENTS
 
+upload-ods
+-t
+http://127.0.0.1:8080/careconnect-ri/STU3
+
+    */
 
 	@Override
 	public String getCommandDescription() {
@@ -105,37 +111,48 @@ public class ODSUploader extends BaseCommand {
 			}
 		}
 
-		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU2_HL7ORG) {
+		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
             client = ctx.newRestfulGenericClient(targetServer);
 
-
-            IRecordHandler handler = new OrgHandler("930621000000104","National Health Service Trust");
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
-            uploadOrganisation();
-
-            handler = new OrgHandler("394747008","Health Authority");
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
-            uploadOrganisation();
-
-            handler = new OrgHandler("394745000","General practice");
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
-            uploadOrganisation();
-
-            handler = new LocationHandler("930631000000102", "National Health Service Trust site");
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv", "https://digital.nhs.uk/media/351/ets/zip/ets");
-            uploadLocation();
-
-            handler = new LocationHandler("394761003", "GP practice site");
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv", "https://digital.nhs.uk/media/393/ebranchs/zip/ebranchs");
-            uploadLocation();
+            IRecordHandler handler = null;
 
 
-            handler = new PractitionerHandler();
-            uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            System.out.println("Consultants");
+            handler = new ConsultantHandler();
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
             uploadPractitioner();
 
-            // uploadODSDstu2(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
-            // uploadPractitioner();
+            System.out.println("National Health Service Trust");
+            handler = new OrgHandler("930621000000104","National Health Service Trust");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
+            uploadOrganisation();
+
+            System.out.println("Health Authority (CCG)");
+            handler = new OrgHandler("394747008","Health Authority");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
+            uploadOrganisation();
+
+            System.out.println("General practice");
+            handler = new OrgHandler("394745000","General practice");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
+            uploadOrganisation();
+
+            System.out.println("National Health Service Trust site");
+            handler = new LocationHandler("930631000000102", "National Health Service Trust site");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv", "https://digital.nhs.uk/media/351/ets/zip/ets");
+            uploadLocation();
+
+            System.out.println("GP practice site");
+            handler = new LocationHandler("394761003", "GP practice site");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv", "https://digital.nhs.uk/media/393/ebranchs/zip/ebranchs");
+            uploadLocation();
+
+            System.out.println("GP");
+            handler = new PractitionerHandler();
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            uploadPractitioner();
+
+
 
 		}
 
@@ -146,7 +163,7 @@ public class ODSUploader extends BaseCommand {
             MethodOutcome outcome = client.update().resource(organization)
                     .conditionalByUrl("Organization?identifier=" + organization.getIdentifier().get(0).getSystem() + "%7C" +organization.getIdentifier().get(0).getValue())
                     .execute();
-           // System.out.println(outcome.getId());
+
             if (outcome.getId() != null ) {
                 organization.setId(outcome.getId().getIdPart());
                 orgMap.put(organization.getIdentifier().get(0).getValue(), organization);
@@ -169,7 +186,7 @@ public class ODSUploader extends BaseCommand {
     private void uploadPractitioner() {
         for (Practitioner practitioner : docs) {
 
-         //   System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
+           // System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
             MethodOutcome outcome = client.update().resource(practitioner)
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
                     .execute();
@@ -183,7 +200,7 @@ public class ODSUploader extends BaseCommand {
     }
 
 
-	private void uploadODSDstu2(IRecordHandler handler, String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart, String webSite) throws CommandFailureException {
+	private void uploadODSStu3(IRecordHandler handler, String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart, String webSite) throws CommandFailureException {
 
 
 	    Boolean found = false;
@@ -365,10 +382,50 @@ public class ODSUploader extends BaseCommand {
 
     }
 
+    public class ConsultantHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            // System.out.println(theRecord.toString());
+            Practitioner practitioner = new Practitioner();
+            practitioner.setId("dummy");
+            practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
+
+            practitioner.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get(1));
+
+            practitioner.setActive(true);
+
+            if (!theRecord.get(2).isEmpty()) {
+
+                HumanName name = new HumanName();
+                practitioner.getName().add(name);
+                name.setFamily(Inicaps(theRecord.get(2)));
+                name.addPrefix("Dr");
+
+                if (!theRecord.get(3).isEmpty()) {
+                    name.addGiven(theRecord.get(3));
+                }
+            }
+            if (!theRecord.get(4).isEmpty()) {
+                switch (theRecord.get(4)) {
+                    case "M" : practitioner.setGender(Enumerations.AdministrativeGender.MALE);
+                        break;
+                    case "F" : practitioner.setGender(Enumerations.AdministrativeGender.FEMALE);
+                        break;
+                }
+            }
+            // TODO Missing addition of specialty field 5 and organisation field 7
+
+            docs.add(practitioner);
+        }
+
+    }
+
     public class PractitionerHandler implements IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
-           // System.out.println(theRecord.toString());
+          // System.out.println(theRecord.toString());
             Practitioner practitioner = new Practitioner();
             practitioner.setId("dummy");
             practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));

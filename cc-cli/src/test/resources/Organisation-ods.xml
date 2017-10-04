@@ -1,0 +1,29 @@
+<Organization xmlns="http://hl7.org/fhir">
+    <id value="5860"/>
+    <meta>
+        <lastUpdated value="2017-10-04T14:30:08.734+01:00"/>
+        <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+    </meta>
+    <identifier>
+        <system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+        <value value="K81060"/>
+    </identifier>
+    <active value="true"/>
+    <name value="Binfield Surgery"/>
+    <telecom>
+        <system value="phone"/>
+        <value value="01344 286264"/>
+        <use value="work"/>
+    </telecom>
+    <address>
+        <use value="work"/>
+        <line value="Binfield Surgery"/>
+        <line value="Terrace Rd. N., Binfield"/>
+        <line value="Bracknell"/>
+        <postalCode value="RG42 5JG"/>
+    </address>
+    <partOf>
+        <reference value="Organization/408"/>
+        <display value="Nhs Bracknell And Ascot Ccg"/>
+    </partOf>
+</Organization>
