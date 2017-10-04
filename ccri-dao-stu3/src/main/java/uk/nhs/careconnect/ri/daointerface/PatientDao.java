@@ -255,7 +255,7 @@ public class PatientDao implements PatientRepository {
             if (addressPostcode!=null) {
                 Predicate p = builder.like(
                         builder.upper(joinAdrTable.get("postcode").as(String.class)),
-                        builder.upper(builder.literal("%"+addressPostcode.getValue()+"%"))
+                        builder.upper(builder.literal(addressPostcode.getValue()+"%"))
                 );
                 predList.add(p);
             }

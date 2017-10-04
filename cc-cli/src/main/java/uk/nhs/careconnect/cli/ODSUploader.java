@@ -117,10 +117,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             IRecordHandler handler = null;
 
 
-            System.out.println("Consultants");
-            handler = new ConsultantHandler();
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
-            uploadPractitioner();
+
 
             System.out.println("National Health Service Trust");
             handler = new OrgHandler("930621000000104","National Health Service Trust");
@@ -152,6 +149,10 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
             uploadPractitioner();
 
+            System.out.println("Consultants");
+            handler = new ConsultantHandler();
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
+            uploadPractitioner();
 
 
 		}
@@ -374,8 +375,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     location.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
                 }
             }
-
-         //   System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(location));
 
             locs.add(location);
         }

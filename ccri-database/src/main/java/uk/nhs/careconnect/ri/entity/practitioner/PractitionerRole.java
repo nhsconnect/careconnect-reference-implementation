@@ -4,7 +4,9 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,7 +34,13 @@ public class PractitionerRole {
     @CollectionTable(name = "PractitionerSpecialty", joinColumns = @JoinColumn(name = "PRACTITIONER_ROLE_ID"))
     private Set<ConceptEntity> specialties = new HashSet<ConceptEntity>();
 
+    @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerRoleIdentifier.class)
+    private List<PractitionerRoleIdentifier> identifiers;
+
     public Set<ConceptEntity> getSpecialties() {
+        if (specialties == null) {
+            specialties = new HashSet<>();
+        }
         return specialties;
     }
     public void setSpecialties(Set<ConceptEntity> specialties) {
@@ -66,4 +74,14 @@ public class PractitionerRole {
         this.practitionerEntity = practitionerEntity;
     }
 
+    public void setIdentifiers(List<PractitionerRoleIdentifier> identifiers) {
+        this.identifiers = identifiers;
+    }
+
+    public List<PractitionerRoleIdentifier> getIdentifiers() {
+        if (identifiers==null) {
+            identifiers= new ArrayList<>();
+        }
+        return identifiers;
+    }
 }

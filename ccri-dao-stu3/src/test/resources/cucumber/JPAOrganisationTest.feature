@@ -13,13 +13,13 @@ Feature: Organisation Integration Test
             Then the result should be a organisation list with 0 entry
 
         Scenario: Organisation Search by Name
-            Given I search for Organisations by name moir
+            Given I search for Organisations by name the
             Then the result should be a organisation list with 1 entry
             And they shall all be FHIR Organization resources
             And the results should be a list of CareConnect Organisations
 
        Scenario: Organisation Search by Name Mixed case
-                Given I search for Organisations by name mOiR
+                Given I search for Organisations by name ThE
                 Then the result should be a organisation list with 1 entry
                 And they shall all be FHIR Organization resources
                 And the results should be a list of CareConnect Organisations

@@ -192,30 +192,6 @@ public class PractitionerDao implements PractitionerRepository {
             em.persist(practitionerAddress);
 
         }
-/* TODO Not in STU3
-        if (practitioner.getPractitionerRole().size()>0) {
-
-            PractitionerRole practitionerRole = null;
-
-            if (practitionerEntity.getRoles().size()>0) {
-                practitionerRole = practitionerEntity.getRoles().get(0);
-            } else {
-                practitionerRole = new PractitionerRole();
-                practitionerRole.setPractitioner(practitionerEntity);
-            }
-
-            if (practitioner.getPractitionerRole().get(0).getManagingOrganization().getReference() != null) {
-                practitionerRole.setManaginsOrganisation(organisationRepository.readEntity(new IdType(practitioner.getPractitionerRole().get(0).getManagingOrganization().getReference())));
-            }
-
-            if (practitioner.getPractitionerRole().get(0).getRole().getCoding().size()>0) {
-                if (practitioner.getPractitionerRole().get(0).getRole().getCoding().get(0).getSystem().equals(CareConnectSystem.SDSJobRoleName)) {
-                    practitionerRole.setRole(codeSvc.findCode(CareConnectSystem.SDSJobRoleName, practitioner.getPractitionerRole().get(0).getRole().getCoding().get(0).getCode()));
-                }
-            }
-            em.persist(practitionerRole);
-        }
-        */
 
         log.debug("Called PERSIST id="+practitionerEntity.getId().toString());
         practitioner.setId(practitionerEntity.getId().toString());
@@ -311,7 +287,7 @@ public class PractitionerDao implements PractitionerRepository {
                 Predicate p =
                         builder.like(
                                 builder.upper(namejoin.get("familyName").as(String.class)),
-                                builder.upper(builder.literal("%"+familyName.getValue()+"%"))
+                                builder.upper(builder.literal(familyName.getValue()+"%"))
                         );
                 predList.add(p);
             }
@@ -319,7 +295,7 @@ public class PractitionerDao implements PractitionerRepository {
                 Predicate p =
                         builder.like(
                                 builder.upper(namejoin.get("givenName").as(String.class)),
-                                builder.upper(builder.literal("%"+givenName.getValue()+"%"))
+                                builder.upper(builder.literal(givenName.getValue()+"%"))
                         );
 
                 predList.add(p);
@@ -328,11 +304,11 @@ public class PractitionerDao implements PractitionerRepository {
             if (name != null) {
                 Predicate pgiven = builder.like(
                         builder.upper(namejoin.get("givenName").as(String.class)),
-                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                        builder.upper(builder.literal(name.getValue()+"%"))
                 );
                 Predicate pfamily = builder.like(
                         builder.upper(namejoin.get("familyName").as(String.class)),
-                        builder.upper(builder.literal("%"+name.getValue()+"%"))
+                        builder.upper(builder.literal(name.getValue()+"%"))
                 );
                 Predicate p = builder.or(pfamily, pgiven);
                 predList.add(p);

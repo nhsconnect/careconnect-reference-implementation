@@ -4,11 +4,11 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,8 +24,8 @@ public class PractitionerRoleProvider implements IResourceProvider {
     private PractitionerRoleRepository practitionerRoleDao;
 
     @Override
-    public Class<Practitioner> getResourceType() {
-        return Practitioner.class;
+    public Class<PractitionerRole> getResourceType() {
+        return PractitionerRole.class;
     }
 
 
@@ -64,9 +64,10 @@ public class PractitionerRoleProvider implements IResourceProvider {
 
     @Search
     public List<PractitionerRole> searchPractitioner(HttpServletRequest theRequest,
+                                                     @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
                                                      @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
                                                      @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation) {
-        return practitionerRoleDao.search(practitioner,organisation);
+        return practitionerRoleDao.search(identifier,practitioner,organisation);
     }
 
 

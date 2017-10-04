@@ -226,7 +226,7 @@ public class LocationDao implements LocationRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal("%"+name.getValue()+"%"))
+                            builder.upper(builder.literal(name.getValue()+"%"))
                     );
 
             predList.add(p);
@@ -286,7 +286,7 @@ public class LocationDao implements LocationRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal("%"+name.getValue()+"%"))
+                            builder.upper(builder.literal(name.getValue()+"%"))
                     );
 
             predList.add(p);
