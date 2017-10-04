@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

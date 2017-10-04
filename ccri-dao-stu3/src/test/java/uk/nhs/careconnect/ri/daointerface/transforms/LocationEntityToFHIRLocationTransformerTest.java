@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.nhs.careconnect.ri.daointerface.Transforms.builder.LocationEntityBuilder;
+import uk.nhs.careconnect.ri.daointerface.transforms.builder.LocationEntityBuilder;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LocationEntityToFHIRLoactionTransformerTest {
+public class LocationEntityToFHIRLocationTransformerTest {
 
     private LocationEntityToFHIRLocationTransformer transformer;
 

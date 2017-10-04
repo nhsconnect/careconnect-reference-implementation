@@ -17,6 +17,7 @@ public abstract class BaseAddress extends BaseResource {
     Address.AddressType addressType;
 
     public abstract AddressEntity getAddress();
+    public abstract AddressEntity setAddress(AddressEntity addressEntity);
 
     public Address.AddressUse getAddressUse() {
         return addressUse;

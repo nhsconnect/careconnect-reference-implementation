@@ -1,7 +1,7 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms.builder;
+package uk.nhs.careconnect.ri.daointerface.transforms.builder;
 
 import org.hl7.fhir.dstu3.model.HumanName;
-import uk.nhs.careconnect.ri.daointerface.Transforms.DateUtils;
+import uk.nhs.careconnect.ri.daointerface.transforms.DateUtils;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientName;
 

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.daointerface.Transforms.ObservationEntityToFHIRObservationTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;

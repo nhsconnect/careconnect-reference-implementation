@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.HumanName;
@@ -6,7 +6,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.Before;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PatientEntityBuilder;
+import uk.nhs.careconnect.ri.daointerface.transforms.builder.PatientEntityBuilder;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import java.time.LocalDate;

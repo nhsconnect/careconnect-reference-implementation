@@ -1,10 +1,10 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.hl7.fhir.dstu3.model.Observation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.nhs.careconnect.ri.daointerface.Transforms.builder.ObservationEntityBuilder;
+import uk.nhs.careconnect.ri.daointerface.transforms.builder.ObservationEntityBuilder;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;

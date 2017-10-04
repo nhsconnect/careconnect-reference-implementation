@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
@@ -10,6 +10,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientAddress;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientName;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerName;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
@@ -123,9 +124,10 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
                     break;
             }
         }
-        if (patientEntity.getGP() != null && patientEntity.getNames().size() > 0) {
+        if (patientEntity.getGP() != null && patientEntity.getGP().getNames().size() > 0) {
+            PractitionerName gpName = patientEntity.getGP().getNames().get(0);
             patient.addGeneralPractitioner()
-                    .setDisplay(patientEntity.getGP().getNames().get(0).getPrefix()+" "+patientEntity.getGP().getNames().get(0).getGivenName()+" "+patientEntity.getGP().getNames().get(0).getFamilyName())
+                    .setDisplay(gpName.getDisplayName())
                     .setReference("Practitioner/"+patientEntity.getGP().getId());
 
         }

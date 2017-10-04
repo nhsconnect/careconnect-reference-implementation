@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.daointerface.Transforms.ValueSetEntityToFHIRValueSetTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.*;
 
 import javax.persistence.EntityManager;
