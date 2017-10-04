@@ -56,6 +56,9 @@ public class JPAStepsDef {
     ObservationRepository observationRepository;
 
     @Autowired
+    PractitionerRoleRepository practitionerRoleRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;

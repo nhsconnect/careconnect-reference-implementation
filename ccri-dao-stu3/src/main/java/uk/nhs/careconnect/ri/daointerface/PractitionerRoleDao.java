@@ -2,11 +2,21 @@ package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Repository
+@Transactional
 public class PractitionerRoleDao implements PractitionerRoleRepository {
+
+    @PersistenceContext
+    EntityManager em;
+
     @Override
     public void save(PractitionerRole practitioner) {
 
