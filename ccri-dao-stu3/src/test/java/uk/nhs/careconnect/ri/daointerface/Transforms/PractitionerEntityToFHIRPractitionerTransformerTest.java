@@ -7,7 +7,6 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.junit.Before;
 import org.junit.Test;
 import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PractitionerEntityBuilder;
-import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 

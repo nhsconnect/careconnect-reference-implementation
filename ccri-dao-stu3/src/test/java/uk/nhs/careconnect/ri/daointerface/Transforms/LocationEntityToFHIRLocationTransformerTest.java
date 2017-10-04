@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LocationEntityToFHIRLoactionTransformerTest {
+public class LocationEntityToFHIRLocationTransformerTest {
 
     private LocationEntityToFHIRLocationTransformer transformer;
 
