@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
@@ -50,7 +50,8 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
         for (ObservationPerformer performer :observationEntity.getPerformers()) {
             switch (performer.getPerformerType()) {
                 case Practitioner:
-                    observation.getPerformer().add(new Reference("Practioner/"+performer.getPerformerPractitioner().getId()).setDisplay(performer.getPerformerPractitioner().getNames().get(0).getFamilyName()));
+                    observation.getPerformer().add(new Reference("Practioner/"+performer.getPerformerPractitioner().getId())
+                            .setDisplay(performer.getPerformerPractitioner().getNames().get(0).getDisplayName()));
             }
         }
         if (observationEntity.getValueQuantity() != null) {

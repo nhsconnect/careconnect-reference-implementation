@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;

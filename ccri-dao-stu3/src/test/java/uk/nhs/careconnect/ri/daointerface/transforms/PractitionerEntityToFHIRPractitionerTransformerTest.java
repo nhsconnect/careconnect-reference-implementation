@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;
@@ -6,7 +6,7 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.junit.Before;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PractitionerEntityBuilder;
+import uk.nhs.careconnect.ri.daointerface.transforms.builder.PractitionerEntityBuilder;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 

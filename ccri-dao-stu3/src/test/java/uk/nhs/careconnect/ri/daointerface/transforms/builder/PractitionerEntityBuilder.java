@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms.builder;
+package uk.nhs.careconnect.ri.daointerface.transforms.builder;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.HumanName;

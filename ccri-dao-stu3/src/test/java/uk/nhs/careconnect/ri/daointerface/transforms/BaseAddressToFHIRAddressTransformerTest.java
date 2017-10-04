@@ -1,9 +1,9 @@
-package uk.nhs.careconnect.ri.daointerface.Transforms;
+package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.junit.Before;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PatientAddressBuilder;
+import uk.nhs.careconnect.ri.daointerface.transforms.builder.PatientAddressBuilder;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 
 import static org.hamcrest.MatcherAssert.assertThat;
