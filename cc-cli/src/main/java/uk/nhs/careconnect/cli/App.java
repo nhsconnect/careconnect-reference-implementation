@@ -42,6 +42,7 @@ public class App  {
 
             ourCommands.add(new ODSUploader());
             ourCommands.add(new ITKSRPDataUploader());
+            ourCommands.add(new GitDownloader());
 
         // disabled due to performance issues   ourCommands.add(new UploadTerminologyCommand());
 
