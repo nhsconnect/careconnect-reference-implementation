@@ -110,6 +110,10 @@ public class GitDownloader extends BaseCommand {
 					            //    System.out.println("ValueSet");
 					                valueSet.addEntry().setResource((ValueSet) resource);
                                 }
+                                if (resource instanceof CodeSystem) {
+                                    //    System.out.println("ValueSet");
+                                    valueSet.addEntry().setResource((CodeSystem) resource);
+                                }
                                 if (resource instanceof StructureDefinition) {
                                  //   System.out.println("StructuredDefinition");
                                     structuredDefinition.addEntry().setResource((StructureDefinition) resource);

@@ -14,13 +14,20 @@ public class ValidateTest {
 	}
 	
 	@Test
-	public void testValidateLocalProfile() {
-		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example1.xml").getFile();
+	public void testValidateLocalProfileGood() {
+		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Good.xml").getFile();
 		ourLog.info(resourcePath);
 		
 		App.main(new String[] {"validate", "-p"
-				//,"-r"
-				//,"-l","/Development/NHSD/CareConnect-profiles/constraints/CareConnect-Patient-1.xml"
+				,"-n",resourcePath});
+	}
+
+	@Test
+	public void testValidateLocalProfileBad() {
+		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Bad.xml").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p"
 				,"-n",resourcePath});
 	}
 	

@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 
 import java.io.*;
 
@@ -102,7 +103,10 @@ public class ValidateCommand extends BaseCommand {
 			case DSTU3: {
 				FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
 				val.registerValidatorModule(instanceValidator);
-				ValidationSupportChain validationSupport = new ValidationSupportChain(new DefaultProfileValidationSupport());
+				ValidationSupportChain validationSupport = new ValidationSupportChain(
+				        new DefaultProfileValidationSupport()
+                        , new CareConnectProfileValidationSupport()
+                );
 				if (localProfileResource != null) {
 					instanceValidator.setStructureDefintion((StructureDefinition) localProfileResource);
 				}
@@ -152,6 +156,7 @@ public class ValidateCommand extends BaseCommand {
 
 		if (count > 0) {
 			ourLog.info(b.toString());
+            System.out.println(b.toString());
 		}
 
 		if (results.isSuccessful()) {

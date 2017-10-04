@@ -3,20 +3,20 @@
 	<meta>
 		<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
 	</meta>
-	<extension url="https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-EthnicCategory-1">
+	<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-EthnicCategory-1">
 		<valueCodeableConcept>
 			<coding>
-				<system value="https://fhir.hl7.org.uk/CareConnect-EthnicCategory-1"/>
+				<system value="https://fhir.hl7.org.uk/STU3/CareConnect-EthnicCategory-1"/>
 				<code value="A"/>
 				<display value="British, Mixed British"/>
 			</coding>
 		</valueCodeableConcept>
 	</extension>
 	<identifier>
-		<extension url="https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+		<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
 			<valueCodeableConcept>
 				<coding>
-					<system value="https://fhir.hl7.org.uk/CareConnect-NHSNumberVerificationStatus-1"/>
+					<system value="https://fhir.hl7.org.uk/STU3/CareConnect-NHSNumberVerificationStatus-1"/>
 					<code value="01"/>
 					<display value="Number present and verified"/>
 				</coding>

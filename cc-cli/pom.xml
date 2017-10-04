@@ -85,6 +85,13 @@
 
       </dependency>
 
+      <dependency>
+          <groupId>uk.org.hl7.fhir</groupId>
+          <artifactId>cc-fhir-validation-resources-stu3</artifactId>
+          <version>3.0.2-SNAPSHOT</version>
+
+      </dependency>
+
    <!-- HL7 HAPI FHIR -->
       <dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
