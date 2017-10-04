@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationAddress;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationTelecom;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class OrganisationEntityToFHIROrganizationTransformer implements Transformer<OrganisationEntity, Organization> {

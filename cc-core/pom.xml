@@ -14,21 +14,25 @@
 
     <dependencies>
 
-
-    <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-base</artifactId>
-        <version>${hapi-fhir-version}</version>
-    </dependency>
+        <dependency>
+            <groupId>uk.org.hl7.fhir</groupId>
+            <artifactId>cc-fhir-validation-resources-stu3</artifactId>
+            <version>3.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
 
     <!-- At least one "structures" JAR must also be included -->
 
 
-    <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
-        <version>${hapi-fhir-version}</version>
-    </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>

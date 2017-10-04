@@ -1,9 +1,9 @@
 package uk.nhs.careconnect.itksrp;
 
 import ca.uhn.fhir.context.FhirContext;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hl7.fhir.instance.model.*;
+import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.dstu3.model.ValueSet;
 
 
 public class VocabularyToFHIRValueSet  {
@@ -58,7 +58,7 @@ public class VocabularyToFHIRValueSet  {
 
         valueSet.setUrl("https://fhir-dev.nhs.uk/ValueSet/"+idStr);
 
-        valueSet.getCodeSystem().setSystem(system);
+     //   valueSet.getCodeSystem().setSystem(system);
         valueSet.setName(vocab.name);
         String desc = vocab.getDescription();
         valueSet.setDescription(desc);
@@ -69,13 +69,13 @@ public class VocabularyToFHIRValueSet  {
             case "active" :
             case "Active" :
             case "created" :
-                valueSet.setStatus(Enumerations.ConformanceResourceStatus.ACTIVE);
+                valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
                 break;
             case "superseded" :
-                valueSet.setStatus(Enumerations.ConformanceResourceStatus.RETIRED);
+                valueSet.setStatus(Enumerations.PublicationStatus.RETIRED);
                 break;
             default:
-                valueSet.setStatus(Enumerations.ConformanceResourceStatus.NULL);
+                valueSet.setStatus(Enumerations.PublicationStatus.NULL);
         }
 
 		
@@ -125,7 +125,7 @@ public class VocabularyToFHIRValueSet  {
 		else
 		{
 
-
+/* TODO This needs to be moved over to CodeSystem
 
            for (int f=0;f<vocab.getConcept().size();f++)
 			{
@@ -148,7 +148,7 @@ public class VocabularyToFHIRValueSet  {
 				}
 				valueSet.getCodeSystem().addConcept(concept);
 			}
-
+*/
 		}
 
 		return valueSet;

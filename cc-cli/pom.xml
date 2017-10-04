@@ -48,6 +48,7 @@
         <hapi-fhir-version>3.0.0</hapi-fhir-version>
         <junit-version>4.12</junit-version>
         <spring-boot-version>1.5.7.RELEASE</spring-boot-version>
+        <phloc_schematron_version>2.7.1</phloc_schematron_version>
     </properties>
 
 
@@ -84,6 +85,13 @@
 
       </dependency>
 
+      <dependency>
+          <groupId>uk.org.hl7.fhir</groupId>
+          <artifactId>cc-fhir-validation-resources-stu3</artifactId>
+          <version>3.0.2-SNAPSHOT</version>
+
+      </dependency>
+
    <!-- HL7 HAPI FHIR -->
       <dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -100,11 +108,6 @@
                   </exclusion>
               </exclusions>
           </dependency>
-	    <dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-structures-dstu2</artifactId>
-			<version>${hapi-fhir-version}</version>
-		</dependency>
 
       <dependency>
           <groupId>ca.uhn.hapi.fhir</groupId>
@@ -112,21 +115,22 @@
           <version>${hapi-fhir-version}</version>
       </dependency>
 
-      <dependency>
-          <groupId>ca.uhn.hapi.fhir</groupId>
-          <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
-          <version>${hapi-fhir-version}</version>
-      </dependency>
 
       <dependency>
           <groupId>ca.uhn.hapi.fhir</groupId>
-          <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
+          <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
           <version>${hapi-fhir-version}</version>
       </dependency>
 
       <dependency>
           <groupId>ca.uhn.hapi.fhir</groupId>
           <artifactId>hapi-fhir-client</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-validation</artifactId>
           <version>${hapi-fhir-version}</version>
       </dependency>
 
@@ -201,6 +205,17 @@
           <groupId>org.aspectj</groupId>
           <artifactId>aspectjweaver</artifactId>
 
+      </dependency>
+      <dependency>
+          <groupId>com.phloc</groupId>
+          <artifactId>phloc-schematron</artifactId>
+          <version>${phloc_schematron_version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.eclipse.jgit</groupId>
+          <artifactId>org.eclipse.jgit</artifactId>
+          <version>3.5.0.201409260305-r</version>
       </dependency>
 
   </dependencies>

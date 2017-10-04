@@ -49,7 +49,6 @@
 	<dependencies>
 
 
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -93,25 +92,6 @@
 			<version>1.4.196</version>
 			<scope>test</scope>
 		</dependency>
-
-
-
-
-
-
-
-
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
-            <version>${hapi-fhir-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
-            <version>${hapi-fhir-version}</version>
-        </dependency>
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>

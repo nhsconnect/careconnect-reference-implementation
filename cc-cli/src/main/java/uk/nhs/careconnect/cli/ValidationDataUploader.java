@@ -8,9 +8,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.instance.model.Bundle;
-import org.hl7.fhir.instance.model.StructureDefinition;
-import org.hl7.fhir.instance.model.ValueSet;
+
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;

@@ -36,12 +36,15 @@ public class App  {
 
     static {
         ourCommands = new ArrayList<BaseCommand>();
-            ourCommands.add(new ExampleDataUploader());
+          //  ourCommands.add(new ExampleDataUploader());
             ourCommands.add(new ValidationDataUploader());
+            ourCommands.add(new ValidateCommand());
 
-         // disabled due to performance issues   ourCommands.add(new UploadTerminologyCommand());
             ourCommands.add(new ODSUploader());
             ourCommands.add(new ITKSRPDataUploader());
+            ourCommands.add(new GitDownloader());
+
+        // disabled due to performance issues   ourCommands.add(new UploadTerminologyCommand());
 
         Collections.sort(ourCommands);
     }

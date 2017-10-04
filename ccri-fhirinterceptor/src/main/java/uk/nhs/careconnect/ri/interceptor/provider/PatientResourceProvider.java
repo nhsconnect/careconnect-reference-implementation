@@ -61,7 +61,14 @@ public class PatientResourceProvider implements IResourceProvider {
         Map<String, Object> headerMap = new HashMap<>();
 
         headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
-        headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
+
+        if (theRequest.getQueryString() != null) {
+            headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString().replace("format=xml","format=json"));
+        } else {
+            headerMap.put(Exchange.HTTP_QUERY,null);
+        }
+
+        //headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
         headerMap.put(Exchange.HTTP_PATH, theRequest.getPathInfo());
         headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
@@ -103,7 +110,12 @@ public class PatientResourceProvider implements IResourceProvider {
 
         Map<String, Object> headerMap = new HashMap<>();
         headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
-        headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
+        if (theRequest.getQueryString() != null) {
+            headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString().replace("format=xml","format=json"));
+        } else {
+            headerMap.put(Exchange.HTTP_QUERY,null);
+        }
+
         headerMap.put(Exchange.HTTP_PATH,  theRequest.getPathInfo());
         headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 

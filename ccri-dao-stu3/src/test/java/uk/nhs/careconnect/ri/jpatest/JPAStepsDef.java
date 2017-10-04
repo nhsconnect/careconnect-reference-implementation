@@ -185,6 +185,12 @@ public class JPAStepsDef {
 
     }
 
+    @Then("^the result should be a list with several entries$")
+    public void the_result_should_be_a_list_with_several_entries() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        Assert.assertTrue(patientList.size() > 0);
+    }
+
     @Then("^they shall all be FHIR Patient resources$")
     public void they_shall_all_be_FHIR_Patient_resources() throws Throwable {
 

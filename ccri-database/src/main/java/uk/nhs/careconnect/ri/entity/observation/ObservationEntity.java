@@ -60,6 +60,17 @@ public class ObservationEntity extends BaseResource {
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
     private List<ObservationEntity> components = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name="bodySite")
+    private ConceptEntity bodySite;
+
+    @ManyToOne
+    @JoinColumn(name="method")
+    private ConceptEntity method;
+
+    @Column(name="valueString")
+    private BigDecimal valueString;
+
     public Long getId() {
         return id;
     }
@@ -96,8 +107,9 @@ public class ObservationEntity extends BaseResource {
         this.effectiveDateTime = effectiveDateTime;
     }
 
-    public void setParentObservation(ObservationEntity parentObservation) {
+    public ObservationEntity setParentObservation(ObservationEntity parentObservation) {
         this.parentObservation = parentObservation;
+        return this;
     }
 
     public List<ObservationCategory> getCategories() {
@@ -115,24 +127,28 @@ public class ObservationEntity extends BaseResource {
         return performers;
     }
 
-    public void setCategories(List<ObservationCategory> categories) {
+    public ObservationEntity setCategories(List<ObservationCategory> categories) {
         this.categories = categories;
+        return this;
     }
 
     public Observation.ObservationStatus getStatus() {
         return status;
     }
 
-    public void setIdentifiers(List<ObservationIdentifier> identifiers) {
+    public ObservationEntity setIdentifiers(List<ObservationIdentifier> identifiers) {
         this.identifiers = identifiers;
+        return this;
     }
 
-    public void setPerformers(List<ObservationPerformer> performers) {
+    public ObservationEntity setPerformers(List<ObservationPerformer> performers) {
         this.performers = performers;
+        return this;
     }
 
-    public void setStatus(Observation.ObservationStatus status) {
+    public ObservationEntity setStatus(Observation.ObservationStatus status) {
         this.status = status;
+        return this;
     }
 
     public BigDecimal getValueQuantity() {
@@ -147,15 +163,43 @@ public class ObservationEntity extends BaseResource {
         return components;
     }
 
-    public void setComponents(List<ObservationEntity> components) {
+    public ObservationEntity setComponents(List<ObservationEntity> components) {
         this.components = components;
+        return this;
     }
 
-    public void setValueQuantity(BigDecimal valueQuantity) {
+    public ObservationEntity setValueQuantity(BigDecimal valueQuantity) {
         this.valueQuantity = valueQuantity;
+        return this;
     }
 
-    public void setValueUnitOfMeasure(ConceptEntity valueUnitOfMeasure) {
+    public ObservationEntity setValueUnitOfMeasure(ConceptEntity valueUnitOfMeasure) {
         this.valueUnitOfMeasure = valueUnitOfMeasure;
+        return this;
+    }
+
+    public ConceptEntity getBodySite() {
+        return bodySite;
+    }
+
+    public ConceptEntity getMethod() {
+        return method;
+    }
+
+    public ObservationEntity setBodySite(ConceptEntity bodySite) {
+        this.bodySite = bodySite;
+        return this;
+    }
+
+    public ObservationEntity setMethod(ConceptEntity method) {
+        this.method = method;
+        return this;
+    }
+    public BigDecimal getValueString() {
+        return valueString;
+    }
+    public ObservationEntity setValueString(BigDecimal valueString) {
+        this.valueString = valueString;
+        return this;
     }
 }

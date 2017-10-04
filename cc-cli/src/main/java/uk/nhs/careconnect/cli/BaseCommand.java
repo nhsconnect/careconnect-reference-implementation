@@ -32,7 +32,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public abstract class BaseCommand implements Comparable<BaseCommand> {
 
-	private static final String SPEC_DEFAULT_VERSION = "dstu2";
+	private static final String SPEC_DEFAULT_VERSION = "dstu3";
 	private static final Logger ourLog = LoggerFactory.getLogger(BaseCommand.class);
 	private FhirContext myFhirCtx;
 
