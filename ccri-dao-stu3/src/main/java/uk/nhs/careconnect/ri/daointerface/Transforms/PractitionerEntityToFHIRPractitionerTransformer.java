@@ -6,13 +6,21 @@ import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
 
 @Component
 public class PractitionerEntityToFHIRPractitionerTransformer implements Transformer<PractitionerEntity, Practitioner> {
+
+    private final Transformer<BaseAddress, Address> addressTransformer;
+
+    public PractitionerEntityToFHIRPractitionerTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
+        this.addressTransformer = addressTransformer;
+    }
 
     @Override
     public Practitioner transform(final PractitionerEntity practitionerEntity) {
@@ -29,7 +37,9 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
             }
         }
         practitioner.setMeta(meta);
-        practitioner.setActive(practitionerEntity.getActive());
+        if (practitionerEntity.getActive() != null) {
+            practitioner.setActive(practitionerEntity.getActive());
+        }
 
         for(int f=0;f<practitionerEntity.getIdentifiers().size();f++)
         {
@@ -57,45 +67,11 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
         }
 
 
-        for(int f=0;f<practitionerEntity.getAddresses().size();f++)
-        {
-            AddressEntity adressEnt = practitionerEntity.getAddresses().get(f).getAddress();
-
-            Address adr= new Address();
-            if (adressEnt.getAddress1()!="")
-            {
-                adr.addLine(adressEnt.getAddress1());
-            }
-            if (adressEnt.getAddress2()!="")
-            {
-                adr.addLine(adressEnt.getAddress2());
-            }
-            if (adressEnt.getAddress3()!="")
-            {
-                adr.addLine(adressEnt.getAddress3());
-            }
-            if (adressEnt.getAddress4()!="")
-            {
-                adr.addLine(adressEnt.getAddress4());
-            }
-            if (adressEnt.getPostcode() !=null)
-            {
-                adr.setPostalCode(adressEnt.getPostcode());
-            }
-            if (adressEnt.getCity() != null) {
-                adr.setCity(adressEnt.getCity());
-            }
-            if (adressEnt.getCounty() != null) {
-                adr.setDistrict(adressEnt.getCounty());
-            }
-            if (practitionerEntity.getAddresses().get(f).getAddressType() != null) {
-                adr.setType(practitionerEntity.getAddresses().get(f).getAddressType());
-            }
-            if (practitionerEntity.getAddresses().get(f).getAddressUse() != null) {
-                adr.setUse(practitionerEntity.getAddresses().get(f).getAddressUse());
-            }
-            practitioner.addAddress(adr);
+        for (PractitionerAddress practitionerAddress : practitionerEntity.getAddresses()){
+            Address address = addressTransformer.transform(practitionerAddress);
+            practitioner.addAddress(address);
         }
+
         if (practitionerEntity.getGender() !=null)
         {
             switch (practitionerEntity.getGender())

@@ -6,7 +6,9 @@ import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationAddress;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationTelecom;
@@ -14,6 +16,12 @@ import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
 
 @Component
 public class OrganisationEntityToFHIROrganizationTransformer implements Transformer<OrganisationEntity, Organization> {
+
+    private final Transformer<BaseAddress, Address> addressTransformer;
+
+    public OrganisationEntityToFHIROrganizationTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
+        this.addressTransformer = addressTransformer;
+    }
 
     @Override
     public Organization transform(final OrganisationEntity organisationEntity) {
@@ -53,46 +61,11 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
                     .setUse(telecom.getTelecomUse());
         }
 
-
-        for(OrganisationAddress adressEnt : organisationEntity.getAddresses())
-        {
-
-
-            Address adr= new Address();
-            if (adressEnt.getAddress().getAddress1()!="")
-            {
-                adr.addLine(adressEnt.getAddress().getAddress1());
-            }
-            if (adressEnt.getAddress().getAddress2()!="")
-            {
-                adr.addLine(adressEnt.getAddress().getAddress2());
-            }
-            if (adressEnt.getAddress().getAddress3()!="")
-            {
-                adr.addLine(adressEnt.getAddress().getAddress3());
-            }
-            if (adressEnt.getAddress().getAddress4()!="")
-            {
-                adr.addLine(adressEnt.getAddress().getAddress4());
-            }
-            if (adressEnt.getAddress().getPostcode() !=null)
-            {
-                adr.setPostalCode(adressEnt.getAddress().getPostcode());
-            }
-            if (adressEnt.getAddress().getCity() != null) {
-                adr.setCity(adressEnt.getAddress().getCity());
-            }
-            if (adressEnt.getAddress().getCounty() != null) {
-                adr.setDistrict(adressEnt.getAddress().getCounty());
-            }
-            if (adressEnt.getAddressType() != null) {
-                adr.setType(adressEnt.getAddressType());
-            }
-            if (adressEnt.getAddressUse() != null) {
-                adr.setUse(adressEnt.getAddressUse());
-            }
+        for(OrganisationAddress organisationAddress : organisationEntity.getAddresses()) {
+            Address adr = addressTransformer.transform(organisationAddress);
             organisation.addAddress(adr);
         }
+
         if (organisationEntity.getType()!=null) {
             organisation.addType()
                     .addCoding()

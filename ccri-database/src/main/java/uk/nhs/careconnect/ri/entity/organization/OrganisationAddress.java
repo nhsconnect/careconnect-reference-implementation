@@ -37,7 +37,7 @@ public class OrganisationAddress extends BaseAddress {
         this.organisationEntity = organisationEntity;
     }
 
-
+    @Override
     public AddressEntity getAddress() {
         return this.address;
     }

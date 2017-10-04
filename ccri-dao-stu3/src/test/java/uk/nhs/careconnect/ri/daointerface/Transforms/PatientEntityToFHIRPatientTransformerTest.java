@@ -4,6 +4,7 @@ import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.junit.Before;
 import org.junit.Test;
 import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PatientEntityBuilder;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
@@ -17,7 +18,13 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class PatientEntityToFHIRPatientTransformerTest {
 
-    PatientEntityToFHIRPatientTransformer transformer = new PatientEntityToFHIRPatientTransformer();
+    private PatientEntityToFHIRPatientTransformer transformer;
+
+    @Before
+    public void setup(){
+        BaseAddressToFHIRAddressTransformer addressTransformer = new BaseAddressToFHIRAddressTransformer();
+        transformer = new PatientEntityToFHIRPatientTransformer(addressTransformer);
+    }
 
     @Test
     public void testTransformSimplePatientEntity() throws FHIRException {
@@ -45,7 +52,6 @@ public class PatientEntityToFHIRPatientTransformerTest {
         assertThat(patient.getBirthDate(), not(nullValue()));
         LocalDate patientDoB = DateUtils.asLocalDate(patient.getBirthDate());
         assertThat(patientDoB, equalTo(dateOfBirth));
-
     }
 
 }

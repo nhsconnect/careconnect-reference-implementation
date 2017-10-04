@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.daointerface.Transforms;
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.Location;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -17,7 +18,13 @@ import static org.hamcrest.Matchers.equalTo;
 @RunWith(MockitoJUnitRunner.class)
 public class LocationEntityToFHIRLoactionTransformerTest {
 
-    LocationEntityToFHIRLocationTransformer transformer = new LocationEntityToFHIRLocationTransformer();
+    private LocationEntityToFHIRLocationTransformer transformer;
+
+    @Before
+    public void setup(){
+        final BaseAddressToFHIRAddressTransformer addressTransformer = new BaseAddressToFHIRAddressTransformer();
+        transformer = new LocationEntityToFHIRLocationTransformer(addressTransformer);
+    }
 
     @Test
     public void testTransformLocationEntity(){
@@ -53,6 +60,5 @@ public class LocationEntityToFHIRLoactionTransformerTest {
         assertThat(phoneNumber.getValue(), equalTo("0113240998"));
         assertThat(phoneNumber.getUse().getDisplay(), equalTo("Home"));
     }
-
 
 }

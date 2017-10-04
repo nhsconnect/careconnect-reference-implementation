@@ -1,14 +1,25 @@
 package uk.nhs.careconnect.ri.daointerface.Transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.Location;
+import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
+import uk.nhs.careconnect.ri.entity.location.LocationAddress;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectProfile;
 
 @Component
 public class LocationEntityToFHIRLocationTransformer implements Transformer<LocationEntity, Location> {
+
+    private final Transformer<BaseAddress, Address> addressTransformer;
+
+    public LocationEntityToFHIRLocationTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
+        this.addressTransformer = addressTransformer;
+    }
 
     @Override
     public Location transform(final LocationEntity locationEntity) {
@@ -46,47 +57,8 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
                     .setUse(locationEntity.getTelecoms().get(f).getTelecomUse());
         }
 
-
-        location.setId(locationEntity.getId().toString());
-
-
-        for(int f=0;f<locationEntity.getAddresses().size();f++)
-        {
-            AddressEntity adressEnt = locationEntity.getAddresses().get(f).getAddress();
-
-            Address adr= new Address();
-            if (adressEnt.getAddress1()!="")
-            {
-                adr.addLine(adressEnt.getAddress1());
-            }
-            if (adressEnt.getAddress2()!="")
-            {
-                adr.addLine(adressEnt.getAddress2());
-            }
-            if (adressEnt.getAddress3()!="")
-            {
-                adr.addLine(adressEnt.getAddress3());
-            }
-            if (adressEnt.getAddress4()!="")
-            {
-                adr.addLine(adressEnt.getAddress4());
-            }
-            if (adressEnt.getPostcode() !=null)
-            {
-                adr.setPostalCode(adressEnt.getPostcode());
-            }
-            if (adressEnt.getCity() != null) {
-                adr.setCity(adressEnt.getCity());
-            }
-            if (adressEnt.getCounty() != null) {
-                adr.setDistrict(adressEnt.getCounty());
-            }
-            if (locationEntity.getAddresses().get(f).getAddressType() != null) {
-                adr.setType(locationEntity.getAddresses().get(f).getAddressType());
-            }
-            if (locationEntity.getAddresses().get(f).getAddressUse() != null) {
-                adr.setUse(locationEntity.getAddresses().get(f).getAddressUse());
-            }
+        for (LocationAddress locationAddress : locationEntity.getAddresses()){
+            Address adr= addressTransformer.transform(locationAddress);
             location.setAddress(adr);
         }
 

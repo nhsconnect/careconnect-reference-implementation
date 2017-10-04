@@ -35,7 +35,7 @@ public class PatientAddress extends BaseAddress {
         this.patientEntity = patientEntity;
     }
 
-
+    @Override
     public AddressEntity getAddress() {
         return this.address;
     }

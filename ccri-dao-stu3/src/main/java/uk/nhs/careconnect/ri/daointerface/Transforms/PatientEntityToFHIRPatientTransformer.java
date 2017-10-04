@@ -3,8 +3,10 @@ package uk.nhs.careconnect.ri.daointerface.Transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
+import uk.nhs.careconnect.ri.entity.patient.PatientAddress;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientName;
@@ -15,6 +17,12 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 @Component
 public class PatientEntityToFHIRPatientTransformer implements Transformer<PatientEntity, Patient> {
+
+    private final Transformer<BaseAddress, Address> addressTransformer;
+
+    public PatientEntityToFHIRPatientTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
+        this.addressTransformer = addressTransformer;
+    }
 
     @Override
     public Patient transform(final PatientEntity patientEntity) {
@@ -78,46 +86,9 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             patient.setBirthDate(patientEntity.getDateOfBirth());
         }
 
-        for(int f=0;f<patientEntity.getAddresses().size();f++)
-        {
-            AddressEntity adressEnt = patientEntity.getAddresses().get(f).getAddress();
-
-            Address adr= new Address();
-
-            adr.setUse(Address.AddressUse.HOME);
-            if (adressEnt.getAddress1()!="")
-            {
-                adr.addLine(adressEnt.getAddress1());
-            }
-            if (adressEnt.getAddress2()!="")
-            {
-                adr.addLine(adressEnt.getAddress2());
-            }
-            if (adressEnt.getAddress3()!="")
-            {
-                adr.addLine(adressEnt.getAddress3());
-            }
-            if (adressEnt.getAddress4()!="")
-            {
-                adr.addLine(adressEnt.getAddress4());
-            }
-            if (adressEnt.getPostcode() !=null)
-            {
-                adr.setPostalCode(adressEnt.getPostcode());
-            }
-            if (adressEnt.getCity() != null) {
-                adr.setCity(adressEnt.getCity());
-            }
-            if (adressEnt.getCounty() != null) {
-                adr.setDistrict(adressEnt.getCounty());
-            }
-            if (patientEntity.getAddresses().get(f).getAddressType() != null) {
-                adr.setType(patientEntity.getAddresses().get(f).getAddressType());
-            }
-            if (patientEntity.getAddresses().get(f).getAddressUse() != null) {
-                adr.setUse(patientEntity.getAddresses().get(f).getAddressUse());
-            }
-            patient.addAddress(adr);
+        for (PatientAddress patientAddress : patientEntity.getAddresses()){
+            Address address = addressTransformer.transform(patientAddress);
+            patient.addAddress(address);
         }
 
         for(int f=0;f<patientEntity.getTelecoms().size();f++)

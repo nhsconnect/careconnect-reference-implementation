@@ -1,22 +1,30 @@
 package uk.nhs.careconnect.ri.daointerface.Transforms;
 
+import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.junit.Before;
 import org.junit.Test;
 import uk.nhs.careconnect.ri.daointerface.Transforms.builder.PractitionerEntityBuilder;
+import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class PractitionerEntityToFHIRPractitionerTransformerTest {
 
-    PractitionerEntityToFHIRPractitionerTransformer transformer = new PractitionerEntityToFHIRPractitionerTransformer();
+    private PractitionerEntityToFHIRPractitionerTransformer transformer;
+
+    @Before
+    public void setup(){
+        Transformer<BaseAddress, Address> addressTransformer = new BaseAddressToFHIRAddressTransformer();
+        transformer = new PractitionerEntityToFHIRPractitionerTransformer(addressTransformer);
+    }
 
     @Test
     public void testTransformer(){

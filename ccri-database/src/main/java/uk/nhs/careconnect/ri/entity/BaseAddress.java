@@ -8,13 +8,15 @@ import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class BaseAddress extends BaseResource {
+public abstract class BaseAddress extends BaseResource {
 
     @Enumerated(EnumType.ORDINAL)
     Address.AddressUse addressUse;
 
     @Enumerated(EnumType.ORDINAL)
     Address.AddressType addressType;
+
+    public abstract AddressEntity getAddress();
 
     public Address.AddressUse getAddressUse() {
         return addressUse;

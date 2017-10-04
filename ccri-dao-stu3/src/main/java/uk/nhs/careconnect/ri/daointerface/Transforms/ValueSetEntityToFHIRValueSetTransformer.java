@@ -15,7 +15,6 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
 
     private static final Logger log = LoggerFactory.getLogger(ValueSetEntityToFHIRValueSetTransformer.class);
 
-
     @Override
     public ValueSet transform(final ValueSetEntity valueSetEntity) {
         final ValueSet valueSet = new ValueSet();

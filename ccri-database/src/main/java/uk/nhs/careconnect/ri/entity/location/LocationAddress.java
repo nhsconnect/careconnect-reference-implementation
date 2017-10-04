@@ -37,7 +37,7 @@ public class LocationAddress extends BaseAddress {
         this.locationEntity = locationEntity;
     }
 
-
+    @Override
     public AddressEntity getAddress() {
         return this.address;
     }
