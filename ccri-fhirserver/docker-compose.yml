@@ -1,0 +1,38 @@
+version: '3'
+services:
+  ccri:
+    container_name: ccri
+    build: .
+    depends_on:
+      - ccrisql
+    links:
+      - ccrisql
+    environment:
+      - datasource.username=fhirjpa
+      - datasource.password=fhirjpa
+      - datasource.host=//ccrisql
+      - datasource.driver=com.mysql.jdbc.Driver
+      - datasource.path=3306/careconnect
+      - datasource.vendor=mysql
+      - datasource.showSql=true
+      - datasource.showDdl=true
+      - datasource.cleardown.cron=0 19 21 * * *
+      - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
+    ports:
+      - 80:80
+
+  ccrisql:
+    container_name: ccrisql
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_DATABASE=careconnect
+      - MYSQL_USER=fhirjpa
+      - MYSQL_PASSWORD=fhirjpa
+    ports:
+      - 43306:3306
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --innodb_lock_wait_timeout=300 --transaction-isolation=READ-UNCOMMITTED
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
