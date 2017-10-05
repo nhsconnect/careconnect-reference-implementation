@@ -120,12 +120,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             IRecordHandler handler = null;
 
-            System.out.println("GP");
-            handler = new PractitionerHandler();
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
-            uploadPractitioner();
-
-
             System.out.println("National Health Service Trust");
             handler = new OrgHandler("930621000000104","National Health Service Trust");
             uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
@@ -203,11 +197,12 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 docMap.put(practitioner.getIdentifier().get(0).getValue(), practitioner);
             }
         }
+        docs.clear();
         for (PractitionerRole practitionerRole : roles) {
 
 
             if (practitionerRole.getPractitioner() != null) {
-                Practitioner practitioner = docMap.get(practitionerRole.getPractitioner().getId());
+                Practitioner practitioner = docMap.get(practitionerRole.getPractitioner().getReference());
 
                 if (practitioner != null) {
                     practitionerRole.setPractitioner(new Reference("Practitioner/"+practitioner.getId()));
@@ -222,7 +217,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             }
         }
-        orgs.clear();
+        roles.clear();
+
     }
 
 
@@ -439,9 +435,48 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         break;
                 }
             }
-            // TODO Missing addition of specialty field 5 and organisation field 7
+
 
             docs.add(practitioner);
+
+            // TODO Missing addition of specialty field 5 and organisation field 7
+
+            PractitionerRole role = new PractitionerRole();
+
+            if (!theRecord.get(7).isEmpty()) {
+                Organization parentOrg = orgMap.get(theRecord.get(7));
+
+                if (parentOrg != null) {
+                    role.setOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
+                }
+            }
+            role.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get(1));
+            // Make a note of the practitioner. Will need to change to correct code
+            role.setPractitioner(new Reference(theRecord.get(1)));
+
+           /* TODO basic ConceptMapping */
+
+           switch(theRecord.get(5)) {
+               case "101":
+                   CodeableConcept specialty = new CodeableConcept();
+                   specialty.addCoding()
+                           .setSystem(CareConnectSystem.SNOMEDCT)
+                           .setCode("394612005")
+                           .setDisplay("Urology (qualifier value)");
+                   role.getSpecialty().add(specialty);
+                   break;
+               case "320":
+                   CodeableConcept concept = new CodeableConcept();
+                   concept.addCoding()
+                           .setSystem(CareConnectSystem.SNOMEDCT)
+                           .setCode("394579002")
+                           .setDisplay("Cardiology (qualifier value)");
+                   role.getSpecialty().add(concept);
+                   break;
+           }
+            roles.add(role);
         }
 
     }

@@ -21,9 +21,10 @@ public abstract class BaseResource {
 	public Date getUpdated() {
 		return this.resUpdated;
 	}
-    public void setUpdated(Date resUpdated) {
+   /* public void setUpdated(Date resUpdated) {
         this.resUpdated=resUpdated;
     }
+    */
 	
 	@Column(name = "RES_CREATED", nullable = true)
 	@CreationTimestamp
