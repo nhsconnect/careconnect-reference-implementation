@@ -6,17 +6,22 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.gclient.StringClientParam;
 import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.SingleValidationMessage;
+import ca.uhn.fhir.validation.ValidationResult;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.Before;
-import cucumber.api.java.After;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-
+import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
+import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.dstu3.model.*;
-import org.junit.Assert;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.slf4j.Logger;
+import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 
 import java.io.File;
 import java.io.InputStream;
@@ -24,6 +29,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 
 public class FHIRServerResourceRESTfulSteps {
@@ -42,6 +48,8 @@ public class FHIRServerResourceRESTfulSteps {
 
     Observation observation;
 
+    PractitionerRole practitionerRole;
+
     Bundle bundle;
 
     @Given("^Observation resource file$")
@@ -53,6 +61,26 @@ public class FHIRServerResourceRESTfulSteps {
 
         observation = ctxFHIR.newXmlParser().parseResource(Observation.class,reader);
     }
+
+    @Given("^PractitionerRole resource file$")
+    public void practitionerrole_resource_file() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/PractitionerRole.xml");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        practitionerRole = ctxFHIR.newXmlParser().parseResource(PractitionerRole.class,reader);
+    }
+
+    @Then("^save the PractitionerRole$")
+    public void save_the_PractitionerRole() throws Throwable {
+        client
+                .create()
+                .resource(practitionerRole)
+                .prettyPrint()
+                .execute();
+    }
+
 
     @Given("^Observation a Blood Pressure import$")
     public void observation_a_Blood_Pressure_import() throws Throwable {
@@ -124,30 +152,35 @@ public class FHIRServerResourceRESTfulSteps {
     public void the_results_should_be_valid_CareConnect_Profiles() throws Throwable {
 
 
+        for (Bundle.BundleEntryComponent entry  : bundle.getEntry()) {
 
-/* TODO STU3
-        ValidationResult result = validator.validateWithResult(bundle);
+            ValidationResult result = validator.validateWithResult(entry.getResource());
 
-        // Show the issues
-        // Colour values https://github.com/yonchu/shell-color-pallet/blob/master/color16
-        for (SingleValidationMessage next : result.getMessages()) {
-            switch (next.getSeverity())
-            {
-                case ERROR:
-                    fail("FHIR Validation ERROR - "+ next.getMessage());
-                    break;
-                case WARNING:
-                    //fail("FHIR Validation WARNING - "+ next.getMessage());
-                    System.out.println(  (char)27 + "[34mWARNING" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
-                    break;
-                case INFORMATION:
-                    System.out.println( (char)27 + "[34mINFORMATION" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
-                    break;
-                default:
-                    System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+            // Show the issues
+            // Colour values https://github.com/yonchu/shell-color-pallet/blob/master/color16
+            for (SingleValidationMessage next : result.getMessages()) {
+                String msg = "";
+                switch (next.getSeverity()) {
+                    case ERROR:
+                        msg = (char) 27 + "[34mERROR" + (char) 27 + "[0m" + " - " + next.getLocationString() + " - " + next.getMessage();
+                        ourLog.error(msg);
+                        fail(msg);
+                        break;
+                    case WARNING:
+                        //fail("FHIR Validation WARNING - "+ next.getMessage());
+                        msg = (char) 27 + "[34mWARNING" + (char) 27 + "[0m" + " - " + next.getLocationString() + " - " + next.getMessage();
+                        ourLog.warn(msg);
+                        break;
+                    case INFORMATION:
+                        msg = (char) 27 + "[34mINFORMATION" + (char) 27 + "[0m" + " - " + next.getLocationString() + " - " + next.getMessage();
+                        ourLog.info(msg);
+                        break;
+                    default:
+                        msg = "Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage();
+                }
+                System.out.println(msg);
             }
         }
-        */
     }
 
 
@@ -201,15 +234,14 @@ public class FHIRServerResourceRESTfulSteps {
             client = ourCtx.newRestfulGenericClient(ourServerBase);
             client.registerInterceptor(new LoggingInterceptor(true));
 
-/* TODO STU3
+
              FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
              validator.registerValidatorModule(instanceValidator);
 
-             IValidationSupport valSupport = new CareConnectValidation();
-             ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
+             ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), new CareConnectProfileValidationSupport());
              instanceValidator.setValidationSupport(support);
 
-             */
+
         }
         else {
              ourLog.info("START - CALLED NOT Creating Server");

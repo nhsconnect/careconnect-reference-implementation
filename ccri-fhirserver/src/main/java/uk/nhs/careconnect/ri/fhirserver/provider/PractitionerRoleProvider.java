@@ -28,7 +28,22 @@ public class PractitionerRoleProvider implements IResourceProvider {
         return PractitionerRole.class;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam PractitionerRole practitionerRole) {
 
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        PractitionerRole newPractitioner = practitionerRoleDao.create(practitionerRole,null,null);
+        method.setId(newPractitioner.getIdElement());
+        method.setResource(newPractitioner);
+
+        return method;
+    }
     @Update
     public MethodOutcome updatePractitioner(HttpServletRequest theRequest, @ResourceParam PractitionerRole practitionerRole, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 

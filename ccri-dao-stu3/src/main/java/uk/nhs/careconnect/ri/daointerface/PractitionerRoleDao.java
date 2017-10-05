@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRoleIdentifier;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSpecialty;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -19,7 +20,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,20 +67,21 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         if (practitionerRole.hasId()) {
             roleEntity = (PractitionerRole) em.find(PractitionerRole.class, Long.parseLong(practitionerRole.getId()));
         }
-
+        log.trace("theConditionalUrl = "+theConditional);
         if (theConditional != null) {
             try {
-
+                log.trace("Contains is not null");
                 //CareConnectSystem.ODSPractitionerCode
                 if (theConditional.contains("fhir.nhs.uk/Id/sds-user-id")) {
+                    log.trace("Contains "+theConditional);
                     URI uri = new URI(theConditional);
 
                     String scheme = uri.getScheme();
                     String host = uri.getHost();
                     String query = uri.getRawQuery();
-                    log.debug(query);
+                    log.trace(query);
                     String[] spiltStr = query.split("%7C");
-                    log.debug(spiltStr[1]);
+                    log.trace(spiltStr[1]);
 
                     List<PractitionerRole> results = searchEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId), null, null);
                     for (PractitionerRole org : results) {
@@ -88,19 +89,22 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
                         break;
                     }
                 } else {
-                    log.info("NOT SUPPORTED: Conditional Url = " + theConditional);
+                    log.trace("NOT SUPPORTED: Conditional Url = " + theConditional);
                 }
 
             } catch (Exception ex) {
-
+                log.error("Exception "+ex.getMessage());
             }
         }
-        if (practitionerRole.getPractitioner().getReference() != null) {
+        if (roleEntity == null) {
+            roleEntity = new PractitionerRole();
+        }
+        if (practitionerRole.getPractitioner() != null) {
             roleEntity.setPractitioner(practitionerDao.readEntity(new IdType(practitionerRole.getPractitioner().getReference())));
         }
 
-        if (practitionerRole.getOrganization().getReference() != null) {
-            roleEntity.setManaginsOrganisation(organisationDao.readEntity(new IdType(practitionerRole.getOrganization().getReference())));
+        if (practitionerRole.getOrganization() != null) {
+            roleEntity.setOrganisation(organisationDao.readEntity(new IdType(practitionerRole.getOrganization().getReference())));
         }
 
         if (practitionerRole.getCode().size() > 0) {
@@ -108,34 +112,50 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
                 roleEntity.setRole(codeDao.findCode(practitionerRole.getCode().get(0).getCoding().get(0).getSystem(), practitionerRole.getCode().get(0).getCoding().get(0).getCode()));
             }
         }
+        em.persist(roleEntity);
 
         for (CodeableConcept specialty : practitionerRole.getSpecialty()) {
             Boolean found = false;
             ConceptEntity specialtyConcept = codeDao.findCode(specialty.getCoding().get(0).getSystem()
                     , specialty.getCoding().get(0).getCode());
-            for (ConceptEntity searchConcept : roleEntity.getSpecialties()) {
-                if (searchConcept.getId().equals(specialtyConcept.getId())) found = true;
+            for (PractitionerSpecialty searchSpecialty : roleEntity.getSpecialties()) {
+                log.trace("Already has specialty = " + searchSpecialty.getSpecialty().getCode() + " code "+searchSpecialty.getSpecialty().getSystem());
+                if (searchSpecialty.getSpecialty().getCode().equals(specialtyConcept.getCode())
+                        && searchSpecialty.getSpecialty().getSystem().equals(specialtyConcept.getSystem())) found = true;
             }
             try {
-                if (!found) roleEntity.getSpecialties().add(specialtyConcept);
+                if (!found){
+                    log.trace("not found! specialty = " + specialty.getCoding().get(0).getCode() + " code "+specialty.getCoding().get(0).getSystem());
+                    PractitionerSpecialty practitionerSpecialty = new PractitionerSpecialty();
+                    practitionerSpecialty.setPractitionerRole(roleEntity);
+                    practitionerSpecialty.setSpecialty(specialtyConcept);
+                    em.persist(practitionerSpecialty);
+                    roleEntity.getSpecialties().add(practitionerSpecialty);
+                }
             } catch (Exception ex) {
 
             }
         }
-        em.persist(roleEntity);
+
         Boolean found = false;
         for (Identifier identifier : practitionerRole.getIdentifier()) {
+            log.trace("Recieved identifier = " + identifier.getSystem() + " code "+identifier.getValue());
+
             for (PractitionerRoleIdentifier identifierEntity : roleEntity.getIdentifiers()) {
+                log.trace("Existing identifier = " + identifierEntity.getSystemUri() + " code "+identifierEntity.getValue());
+
                 if (identifier.getSystem().equals(identifierEntity.getSystemUri()) && identifier.getValue().equals(identifierEntity.getValue())) {
                     found = true;
                 }
-                if (!found) {
-                    PractitionerRoleIdentifier ident = new PractitionerRoleIdentifier();
-                    ident.setValue(identifier.getValue());
-                    ident.setPractitionerRole(roleEntity);
-                    ident.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
-                    em.persist(ident);
-                }
+            }
+            if (!found) {
+                log.trace("Not found Identifier!");
+                PractitionerRoleIdentifier ident = new PractitionerRoleIdentifier();
+                ident.setValue(identifier.getValue());
+                ident.setPractitionerRole(roleEntity);
+                ident.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
+                em.persist(ident);
+                roleEntity.getIdentifiers().add(ident);
             }
         }
         return practitionerRole; //roleEntity;
@@ -153,12 +173,11 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         CriteriaQuery<PractitionerRole> criteria = builder.createQuery(PractitionerRole.class);
         Root<PractitionerRole> root = criteria.from(PractitionerRole.class);
 
-
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<PractitionerRole> results = new ArrayList<>();
 
         if (identifier !=null)
         {
+            log.trace("Search on value = "+identifier.getValue());
 
             Join<PractitionerRole, PractitionerRoleIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
@@ -183,14 +202,8 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
         qryResults = em.createQuery(criteria).getResultList();
 
-        for (PractitionerRole practitionerRole : qryResults)
-        {
-            // log.trace("HAPI Custom = "+doc.getId());
-            // Practitioner practitioner = practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
-            results.add(practitionerRole);
-        }
 
-        return results;
+        return qryResults;
     }
 
 

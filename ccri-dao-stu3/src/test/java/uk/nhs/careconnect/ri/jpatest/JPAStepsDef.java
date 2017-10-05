@@ -55,6 +55,7 @@ public class JPAStepsDef {
     @Autowired
     ObservationRepository observationRepository;
 
+
     @Autowired
     PractitionerRoleRepository practitionerRoleRepository;
 
@@ -67,6 +68,7 @@ public class JPAStepsDef {
     Resource resource;
 
     Observation observation;
+    PractitionerRole practitionerRole;
 
     CodeSystemEntity cs;
 
@@ -349,6 +351,21 @@ public class JPAStepsDef {
         Reader reader = new InputStreamReader(inputStream);
 
         observation = ctx.newXmlParser().parseResource(Observation.class,reader);
+    }
+
+    @Given("^PractitionerRole resource file$")
+    public void practitionerrole_resource_file() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/PractitionerRole.xml");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        practitionerRole = ctx.newXmlParser().parseResource(PractitionerRole.class,reader);
+    }
+
+    @Then("^save the PractitionerRole$")
+    public void save_the_PractitionerRole() throws Throwable {
+       practitionerRoleRepository.create(practitionerRole,null,null);
     }
 
     @Then("^save the Observation$")

@@ -43,11 +43,15 @@ public class ODSUploader extends BaseCommand {
 
     private ArrayList<Practitioner> docs = new ArrayList<>();
 
+    private ArrayList<PractitionerRole> roles = new ArrayList<>();
+
     private ArrayList<Location> locs = new ArrayList<>();
 
     private Map<String,Organization> orgMap = new HashMap<>();
 
     private Map<String,Practitioner> docMap = new HashMap<>();
+
+    private Map<String,PractitionerRole> roleMap = new HashMap<>();
 
     FhirContext ctx ;
 
@@ -116,7 +120,10 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             IRecordHandler handler = null;
 
-
+            System.out.println("GP");
+            handler = new PractitionerHandler();
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            uploadPractitioner();
 
 
             System.out.println("National Health Service Trust");
@@ -187,14 +194,32 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     private void uploadPractitioner() {
         for (Practitioner practitioner : docs) {
 
-           // System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(practitioner));
             MethodOutcome outcome = client.update().resource(practitioner)
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
                     .execute();
-       //     System.out.println(outcome.getId());
+
             if (outcome.getId() != null ) {
                 practitioner.setId(outcome.getId().getIdPart());
                 docMap.put(practitioner.getIdentifier().get(0).getValue(), practitioner);
+            }
+        }
+        for (PractitionerRole practitionerRole : roles) {
+
+
+            if (practitionerRole.getPractitioner() != null) {
+                Practitioner practitioner = docMap.get(practitionerRole.getPractitioner().getId());
+
+                if (practitioner != null) {
+                    practitionerRole.setPractitioner(new Reference("Practitioner/"+practitioner.getId()));
+                }
+            }
+            MethodOutcome outcome = client.update().resource(practitionerRole)
+                    .conditionalByUrl("PractitionerRole?identifier=" + practitionerRole.getIdentifier().get(0).getSystem() + "%7C" +practitionerRole.getIdentifier().get(0).getValue())
+                    .execute();
+            //     System.out.println(outcome.getId());
+            if (outcome.getId() != null ) {
+                practitionerRole.setId(outcome.getId().getIdPart());
+
             }
         }
         orgs.clear();
@@ -424,7 +449,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     public class PractitionerHandler implements IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
-          // System.out.println(theRecord.toString());
+
             Practitioner practitioner = new Practitioner();
             practitioner.setId("dummy");
             practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
@@ -451,29 +476,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     .setCity(Inicaps(theRecord.get("AddressLine_4")))
                     .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
                     .setPostalCode(theRecord.get("Postcode"));
-            /* STU3
-            Practitioner.PractitionerPractitionerRoleComponent role = practitioner.addPractitionerRole();
 
-            if (!theRecord.get("Commissioner").isEmpty()) {
-             //   System.out.println("Commissioner="+theRecord.get("Commissioner"));
-                Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
-
-                if (parentOrg != null) {
-                  //  System.out.println("Org Id = "+parentOrg.getId());
-                   role.setManagingOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
-                }
-            }
-            if (!theRecord.get("OrganisationSubTypeCode").isEmpty()) {
-                switch (theRecord.get("OrganisationSubTypeCode")) {
-                    case "O":
-                    case "P":
-                        role.getRole().addCoding()
-                                .setSystem(CareConnectSystem.SDSJobRoleName)
-                                .setCode("R0260")
-                                .setDisplay("General Medical Practitioner");
-                }
-            }
-            */
             if (!theRecord.get("Name").isEmpty()) {
                 String[] nameStr = theRecord.get("Name").split(" ");
 
@@ -495,11 +498,43 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                    }
                 }
             }
-
-
-
-
             docs.add(practitioner);
+
+            PractitionerRole role = new PractitionerRole();
+
+            if (!theRecord.get("Commissioner").isEmpty()) {
+                Organization parentOrg = orgMap.get(theRecord.get("Commissioner"));
+
+                if (parentOrg != null) {
+                    role.setOrganization(new Reference("Organization/"+parentOrg.getId()).setDisplay(parentOrg.getName()));
+                }
+            }
+            role.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get("OrganisationCode"));
+            // Make a note of the practitioner. Will need to change to correct code
+            role.setPractitioner(new Reference(theRecord.get("OrganisationCode")));
+            if (!theRecord.get("OrganisationSubTypeCode").isEmpty()) {
+                switch (theRecord.get("OrganisationSubTypeCode")) {
+                    case "O":
+                    case "P":
+                        CodeableConcept concept = new CodeableConcept();
+                        concept.addCoding()
+                                .setSystem(CareConnectSystem.SDSJobRoleName)
+                                .setCode("R0260")
+                                .setDisplay("General Medical Practitioner");
+                        role.getCode().add(concept);
+                }
+            }
+            CodeableConcept specialty = new CodeableConcept();
+            specialty.addCoding()
+                    .setSystem(CareConnectSystem.SNOMEDCT)
+                    .setCode("394814009")
+                    .setDisplay("General practice (specialty) (qualifier value)");
+            role.getSpecialty().add(specialty);
+           // System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(role));
+            roles.add(role);
+
         }
 
     }

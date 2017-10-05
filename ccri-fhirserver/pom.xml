@@ -283,6 +283,15 @@
 			<version>${care-connect-version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>uk.org.hl7.fhir</groupId>
+			<artifactId>cc-core</artifactId>
+			<version>${care-connect-version}</version>
+		</dependency>
+
+
+
+
 
 	</dependencies>
 

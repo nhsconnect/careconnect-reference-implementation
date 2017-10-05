@@ -1,17 +1,16 @@
 package uk.nhs.careconnect.ri.entity.practitioner;
 
+import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "PractitionerRole")
-public class PractitionerRole {
+public class PractitionerRole extends BaseResource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,36 +29,38 @@ public class PractitionerRole {
     @JoinColumn(name="role")
     private ConceptEntity role;
 
-    @ElementCollection
-    @CollectionTable(name = "PractitionerSpecialty", joinColumns = @JoinColumn(name = "PRACTITIONER_ROLE_ID"))
-    private Set<ConceptEntity> specialties = new HashSet<ConceptEntity>();
+    @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerSpecialty.class)
+    private List<PractitionerSpecialty> specialties;
 
     @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerRoleIdentifier.class)
     private List<PractitionerRoleIdentifier> identifiers;
 
-    public Set<ConceptEntity> getSpecialties() {
-        if (specialties == null) {
-            specialties = new HashSet<>();
+    public List<PractitionerSpecialty> getSpecialties() {
+        if (specialties ==null) {
+            specialties = new ArrayList<>();
         }
         return specialties;
     }
-    public void setSpecialties(Set<ConceptEntity> specialties) {
+
+    public void setSpecialties(List<PractitionerSpecialty> specialties) {
         this.specialties = specialties;
     }
 
-    public void setRole(ConceptEntity role) {
+    public PractitionerRole setRole(ConceptEntity role) {
         this.role = role;
+        return this;
     }
 
     public ConceptEntity getRole() {
         return role;
     }
 
-    public OrganisationEntity getManaginsOrganisation() {
+    public OrganisationEntity getOrganisation() {
         return managingOrganisation;
     }
-    public void setManaginsOrganisation(OrganisationEntity managinsOrganisation) {
+    public PractitionerRole setOrganisation(OrganisationEntity managinsOrganisation) {
         this.managingOrganisation = managinsOrganisation;
+        return this;
     }
 
     public Long getId()
@@ -70,12 +71,14 @@ public class PractitionerRole {
     public PractitionerEntity getPractitioner() {
         return this.practitionerEntity;
     }
-    public void setPractitioner(PractitionerEntity practitionerEntity) {
+    public PractitionerRole setPractitioner(PractitionerEntity practitionerEntity) {
         this.practitionerEntity = practitionerEntity;
+        return this;
     }
 
-    public void setIdentifiers(List<PractitionerRoleIdentifier> identifiers) {
+    public PractitionerRole setIdentifiers(List<PractitionerRoleIdentifier> identifiers) {
         this.identifiers = identifiers;
+        return this;
     }
 
     public List<PractitionerRoleIdentifier> getIdentifiers() {
