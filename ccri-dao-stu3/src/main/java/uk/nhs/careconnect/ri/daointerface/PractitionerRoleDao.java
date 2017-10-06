@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerRoleToFHIRPractitionerRoleTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRoleIdentifier;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSpecialty;
@@ -176,7 +178,6 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
-        List<PractitionerRole> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -196,8 +197,16 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
-
-
+        if (practitioner != null) {
+            Join<PractitionerRole,PractitionerEntity> joinPractitioner = root.join("practitionerEntity",JoinType.LEFT);
+            Predicate p = builder.equal(joinPractitioner.get("id"),practitioner.getIdPart());
+            predList.add(p);
+        }
+        if (organisation != null) {
+            Join<PractitionerRole,OrganisationEntity> joinOrganisation = root.join("managingOrganisation",JoinType.LEFT);
+            Predicate p = builder.equal(joinOrganisation.get("id"),organisation.getIdPart());
+            predList.add(p);
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
@@ -210,10 +219,8 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        return em.createQuery(criteria).getResultList();
 
-
-        return qryResults;
     }
 
 
