@@ -1,0 +1,23 @@
+<PractitionerRole xmlns="http://hl7.org/fhir">
+    <practitioner>
+        <reference value="Patient/1"/>
+    </practitioner>
+    <organization>
+        <reference value="Organization/1"/>
+        <display value="The Moir Medical Centre"/>
+    </organization>
+    <code>
+        <coding>
+            <system value="https://fhir.hl7.org.uk/STU3/CareConnect-SDSJobRoleName-1"/>
+            <code value="R0260"/>
+            <display value="General Medical Practitioner"/>
+        </coding>
+    </code>
+    <specialty>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="394814009"/>
+            <display value="General practice (specialty) (qualifier value)"/>
+        </coding>
+    </specialty>
+</PractitionerRole>

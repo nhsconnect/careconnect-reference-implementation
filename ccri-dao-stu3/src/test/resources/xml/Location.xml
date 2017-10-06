@@ -1,0 +1,20 @@
+<Location xmlns="http://hl7.org/fhir">
+    <meta>
+        <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Location-1"/>
+    </meta>
+    <identifier>
+        <system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+        <value value="RL4DX"/>
+    </identifier>
+    <status value="active"/>
+    <name value="Tia Clinic 4"/>
+    <address>
+        <use value="work"/>
+        <line value="New Cross Hospital"/>
+        <line value="Wolverhampton Road"/>
+        <line value="Heath Town"/>
+        <city value="Wolverhampton"/>
+        <district value="West Midlands"/>
+        <postalCode value="WV10 0QP"/>
+    </address>
+</Location>

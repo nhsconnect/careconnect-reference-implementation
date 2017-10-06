@@ -4,16 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.nhs.careconnect.ris</groupId>
+    <groupId>uk.nhs.careconnect.ri</groupId>
     <artifactId>ccri</artifactId>
-    <version>2.6.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
     <properties>
-        <care-connect-version>2.6.0-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>2.5</hapi-fhir-version>
+        <care-connect-version>3.1.0-SNAPSHOT</care-connect-version>
+        <hapi-fhir-version>3.0.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
+        <derby_version>10.13.1.1</derby_version>
+        <slf4j>1.7.25</slf4j>
+        <spring-boot>1.5.7.RELEASE</spring-boot>
+
+        <thymeleaf-version>3.0.7.RELEASE</thymeleaf-version>
+
+        <junit-version>4.12</junit-version>
+        <hamcrest-version>2.0.0.0</hamcrest-version>
+        <mockito-version>1.10.19</mockito-version>
+
+        <camel-version>2.18.4</camel-version>
+        <phloc_commons_version>4.4.11</phloc_commons_version>
 
     </properties>
 
@@ -23,14 +35,88 @@
             <artifactId>cc-core</artifactId>
             <version>${care-connect-version}</version>
         </dependency>
+
+<!-- mvn dependency:tree -Dverbose -Dincludes=org.slf4j -->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+
+        <!--
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
+            <version>${hapi-fhir-version}</version>
+            <scope>test</scope>
+        </dependency>
+        -->
+
+
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-server</artifactId>
+            <version>${hapi-fhir-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu3</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+            <version>${hapi-fhir-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-commons</artifactId>
+            <version>${phloc_commons_version}</version>
+        </dependency>
+
+
+
+
     </dependencies>
 
     <modules>
         <module>cc-core</module>
-        <module>ccri-dbcore</module>
+        <module>cc-cli</module>
+        <module>cc-fhir-validation-resources-stu3</module>
         <module>ccri-database</module>
+        <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver</module>
-        <module>ccri-integrationtest</module>
+        <module>ccri-fhirinterceptor</module>
     </modules>
 
     <distributionManagement>

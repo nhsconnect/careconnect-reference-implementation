@@ -1,4 +1,4 @@
-FROM tomcat:8.5.16-jre8
+FROM tomcat:8.0.46-jre8
 
 RUN rm -rf /usr/local/tomcat/webapps/*;
 
@@ -8,18 +8,10 @@ ADD index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
 ADD logging.properties /usr/local/tomcat/conf/logging.properties
 ADD server.xml /usr/local/tomcat/conf/server.xml
 # ADD hawtio.war /usr/local/tomcat/webapps/
-ADD target/careconnect-ris.war /usr/local/tomcat/webapps/
+ADD target/careconnect-ri.war /usr/local/tomcat/webapps/
 
 
-# Use standard MySQL image from docker :::
-# Configure hostname to be ccsql
-# Environment variables: MYSQL_ROOT_PASSWORD=mypassword , MYSQL_DATABASE=careconnect, MYSQL_USER=fhirjpa, MYSQL_PASSWORD=fhirjpa
-
-# build this project :::
-# docker build -t ccris .
-# docker run --detach --name=ccris -p 80:80 -e datasource.username=fhirjpa -e datasource.password=fhirjpa -e datasource.host=ccsql -e datasource.port=3306 --link mysql ccris
-
-# docker logs ccris
+# See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
 
 CMD ["catalina.sh", "run"]
 
