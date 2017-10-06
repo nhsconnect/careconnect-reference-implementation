@@ -87,7 +87,7 @@ public class PractitionerDao implements PractitionerRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<PractitionerEntity> results = searchPractitioner(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId));
+                    List<PractitionerEntity> results = searchPractitionerEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null);
                     for (PractitionerEntity org : results) {
                         practitionerEntity = org;
                         break;
@@ -199,89 +199,34 @@ public class PractitionerDao implements PractitionerRepository {
         return practitioner;
     }
 
-    public List<PractitionerEntity> searchPractitioner (
-            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier
 
-    )
-    {
-        List<PractitionerEntity> qryResults = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<PractitionerEntity> criteria = builder.createQuery(PractitionerEntity.class);
-        Root<PractitionerEntity> root = criteria.from(PractitionerEntity.class);
-
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<PractitionerEntity> results = new ArrayList<PractitionerEntity>();
-
-        if (identifier !=null)
+    @Override
+    public List<PractitionerEntity> searchPractitionerEntity(TokenParam identifier, StringParam name) {
         {
+            List<PractitionerEntity> qryResults = null;
 
-            Join<PractitionerEntity, PractitionerIdentifier> join = root.join("identifiers", JoinType.LEFT);
+            CriteriaBuilder builder = em.getCriteriaBuilder();
 
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
-            predList.add(p);
-            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
-
-        }
+            CriteriaQuery<PractitionerEntity> criteria = builder.createQuery(PractitionerEntity.class);
+            Root<PractitionerEntity> root = criteria.from(PractitionerEntity.class);
 
 
+            List<Predicate> predList = new LinkedList<Predicate>();
+            List<Practitioner> results = new ArrayList<Practitioner>();
 
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-        if (predList.size()>0)
-        {
-            criteria.select(root).where(predArray);
-        }
-        else
-        {
-            criteria.select(root);
-        }
+            if (identifier != null) {
 
-        qryResults = em.createQuery(criteria).getResultList();
+                Join<PractitionerEntity, PractitionerIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
-        for (PractitionerEntity practitionerEntity : qryResults)
-        {
-            // log.trace("HAPI Custom = "+doc.getId());
-           // Practitioner practitioner = practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
-            results.add(practitionerEntity);
-        }
+                Predicate p = builder.equal(join.get("value"), identifier.getValue());
+                predList.add(p);
+                // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
-        return results;
-    }
+            }
 
+            if ( /*(familyName != null) || (givenName != null) ||*/ (name != null)) {
 
-    public List<Practitioner> searchPractitioner (
-            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
-    )
-    {
-        List<PractitionerEntity> qryResults = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<PractitionerEntity> criteria = builder.createQuery(PractitionerEntity.class);
-        Root<PractitionerEntity> root = criteria.from(PractitionerEntity.class);
-
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<Practitioner> results = new ArrayList<Practitioner>();
-
-        if (identifier !=null)
-        {
-
-            Join<PractitionerEntity, PractitionerIdentifier> join = root.join("identifiers", JoinType.LEFT);
-
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
-            predList.add(p);
-            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
-
-        }
-
-        if ( /*(familyName != null) || (givenName != null) ||*/ (name != null)) {
-
-            Join<PractitionerEntity,PractitionerName> namejoin = root.join("names",JoinType.LEFT);
+                Join<PractitionerEntity, PractitionerName> namejoin = root.join("names", JoinType.LEFT);
            /*
             if (familyName != null) {
                 Predicate p =
@@ -301,44 +246,52 @@ public class PractitionerDao implements PractitionerRepository {
                 predList.add(p);
             }
              */
-            if (name != null) {
-                Predicate pgiven = builder.like(
-                        builder.upper(namejoin.get("givenName").as(String.class)),
-                        builder.upper(builder.literal(name.getValue()+"%"))
-                );
-                Predicate pfamily = builder.like(
-                        builder.upper(namejoin.get("familyName").as(String.class)),
-                        builder.upper(builder.literal(name.getValue()+"%"))
-                );
-                Predicate p = builder.or(pfamily, pgiven);
-                predList.add(p);
+                if (name != null) {
+                    Predicate pgiven = builder.like(
+                            builder.upper(namejoin.get("givenName").as(String.class)),
+                            builder.upper(builder.literal(name.getValue() + "%"))
+                    );
+                    Predicate pfamily = builder.like(
+                            builder.upper(namejoin.get("familyName").as(String.class)),
+                            builder.upper(builder.literal(name.getValue() + "%"))
+                    );
+                    Predicate p = builder.or(pfamily, pgiven);
+                    predList.add(p);
+                }
             }
+
+
+            Predicate[] predArray = new Predicate[predList.size()];
+            predList.toArray(predArray);
+            if (predList.size() > 0) {
+                criteria.select(root).where(predArray);
+            } else {
+                criteria.select(root);
+            }
+
+            return em.createQuery(criteria).getResultList();
+
         }
 
-       
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-        if (predList.size()>0)
-        {
-            criteria.select(root).where(predArray);
-        }
-        else
-        {
-            criteria.select(root);
-        }
-
-        qryResults = em.createQuery(criteria).getResultList();
-
+    }
+    @Override
+    public List<Practitioner> searchPractitioner(
+            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
+            @OptionalParam(name = Location.SP_NAME) StringParam name
+    ) {
+        List<Practitioner> results = new ArrayList<>();
+        List<PractitionerEntity> qryResults = searchPractitionerEntity(identifier, name);
         for (PractitionerEntity practitionerEntity : qryResults)
         {
-           // log.trace("HAPI Custom = "+doc.getId());
+            // log.trace("HAPI Custom = "+doc.getId());
             Practitioner practitioner = practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
             results.add(practitioner);
         }
 
         return results;
     }
+
+
 
 
 }

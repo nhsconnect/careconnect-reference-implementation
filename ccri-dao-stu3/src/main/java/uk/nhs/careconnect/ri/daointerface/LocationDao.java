@@ -194,57 +194,14 @@ public class LocationDao implements LocationRepository {
         return location;
     }
 
-
-       public List<Location> searchLocation (
-
+    @Override
+    public List<Location> searchLocation (
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name
     )
     {
-        List<LocationEntity> qryResults = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<LocationEntity> criteria = builder.createQuery(LocationEntity.class);
-        Root<LocationEntity> root = criteria.from(LocationEntity.class);
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<Location> results = new ArrayList<Location>();
-
-        if (identifier !=null)
-        {
-            Join<LocationEntity, LocationIdentifier> join = root.join("identifiers", JoinType.LEFT);
-
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
-            predList.add(p);
-            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
-
-        }
-        if (name !=null)
-        {
-
-            Predicate p =
-                    builder.like(
-                            builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
-                    );
-
-            predList.add(p);
-        }
-
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-        if (predList.size()>0)
-        {
-            criteria.select(root).where(predArray);
-        }
-        else
-        {
-            criteria.select(root);
-        }
-
-        qryResults = em.createQuery(criteria).getResultList();
+        List<LocationEntity> qryResults = searchLocationEntity(identifier,name);
+        List<Location> results = new ArrayList<>();
 
         for (LocationEntity locationEntity : qryResults)
         {
@@ -255,6 +212,7 @@ public class LocationDao implements LocationRepository {
 
         return results;
     }
+
     public List<LocationEntity> searchLocationEntity (
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
@@ -305,8 +263,6 @@ public class LocationDao implements LocationRepository {
         }
 
         qryResults = em.createQuery(criteria).getResultList();
-
-
         return qryResults;
     }
 

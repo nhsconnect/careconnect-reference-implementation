@@ -27,5 +27,10 @@ public interface PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_NAME) StringParam name
     );
 
+    List<PractitionerEntity> searchPractitionerEntity (
+            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
+            @OptionalParam(name = Practitioner.SP_NAME) StringParam name
+    );
+
 
 }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerRoleToFHIRPractitionerRoleTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRoleIdentifier;
@@ -20,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +31,10 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    private PractitionerRoleToFHIRPractitionerRoleTransformer
+            practitionerRoleToFHIRPractitionerRoleTransformer;
 
     @Autowired
     private OrganisationRepository organisationDao;
@@ -49,12 +55,16 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
     @Override
     public org.hl7.fhir.dstu3.model.PractitionerRole read(IdType theId) {
-        return null;
+
+        PractitionerRole roleEntity = (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
+        return roleEntity == null
+                ? null
+                : practitionerRoleToFHIRPractitionerRoleTransformer.transform(roleEntity);
     }
 
     @Override
     public PractitionerRole readEntity(IdType theId) {
-        return null;
+       return (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
     }
 
     private static final Logger log = LoggerFactory.getLogger(PractitionerRoleDao.class);
@@ -212,7 +222,12 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
-        return null;
+        List<org.hl7.fhir.dstu3.model.PractitionerRole> results = new ArrayList<>();
+        List<PractitionerRole> roles = searchEntity(identifier,practitioner,organisation);
+        for (PractitionerRole role : roles) {
+             results.add(practitionerRoleToFHIRPractitionerRoleTransformer.transform(role));
+        }
+        return results;
     }
 
 }
