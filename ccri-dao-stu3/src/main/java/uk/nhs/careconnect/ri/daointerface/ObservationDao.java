@@ -124,6 +124,8 @@ public class ObservationDao implements ObservationRepository {
         for (Observation.ObservationComponentComponent component :observation.getComponent()) {
             ObservationEntity observationComponent = new ObservationEntity();
             if (patientEntity != null) observationComponent.setPatient(patientEntity);
+            observationComponent.setObservationType(ObservationEntity.ObservationType.component);
+
             if (observation.hasEffectiveDateTimeType()) {
                 try {
                     observationComponent.setEffectiveDateTime(observation.getEffectiveDateTimeType().getValue());
@@ -154,7 +156,73 @@ public class ObservationDao implements ObservationRepository {
 
             observationComponent.setParentObservation(observationEntity);
             em.persist(observationComponent);
+
+            // Store the ValueCodeableConcept which is a child of the component.
+
+            if (component.hasValueCodeableConcept()) {
+
+                ObservationEntity observationComponentValue = new ObservationEntity();
+
+                if (patientEntity != null) observationComponentValue.setPatient(patientEntity);
+                observationComponentValue.setObservationType(ObservationEntity.ObservationType.valueQuantity);
+                observationComponentValue.setParentObservation(observationComponent);
+
+                if (observation.hasEffectiveDateTimeType()) {
+                    try {
+                        observationComponentValue.setEffectiveDateTime(observation.getEffectiveDateTimeType().getValue());
+                    } catch (Exception ex) {
+                        log.error(ex.getMessage());
+                    }
+                }
+
+                // Code
+                try {
+
+                    if (component.getValueCodeableConcept().getCoding().get(0).hasCode()) {
+                        CodeableConcept valueConcept = component.getValueCodeableConcept();
+                        ConceptEntity code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                        if (code != null) observationComponentValue.setCode(code);
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+                em.persist(observationComponentValue);
+
+
+            }
+
             observationEntity.getComponents().add(observationComponent);
+        }
+
+        // Store the valueCodeable Concept - note component has same structure
+
+        if (observation.hasValueCodeableConcept()) {
+
+            ObservationEntity observationValue = new ObservationEntity();
+
+            if (patientEntity != null) observationValue.setPatient(patientEntity);
+            observationValue.setObservationType(ObservationEntity.ObservationType.valueQuantity);
+            observationValue.setParentObservation(observationEntity);
+
+            if (observation.hasEffectiveDateTimeType()) {
+                try {
+                    observationValue.setEffectiveDateTime(observation.getEffectiveDateTimeType().getValue());
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+            // Code
+            try {
+
+                if (observation.getValueCodeableConcept().getCoding().get(0).hasCode()) {
+                    CodeableConcept valueConcept = observation.getValueCodeableConcept();
+                    ConceptEntity code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                    if (code != null) observationValue.setCode(code);
+                }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+            em.persist(observationValue);
         }
         return observation;
     }

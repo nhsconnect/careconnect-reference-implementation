@@ -17,6 +17,9 @@ import java.util.List;
         @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime")
 })
 public class ObservationEntity extends BaseResource {
+
+    public enum ObservationType  { component, valueQuantity }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="OBSERVATION_ID")
@@ -47,6 +50,9 @@ public class ObservationEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="valueUnitOfMeasure")
     private ConceptEntity valueUnitOfMeasure;
+
+    @Enumerated(EnumType.ORDINAL)
+    private ObservationType observationType;
 
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private List<ObservationCategory> categories = new ArrayList<>();
@@ -101,6 +107,15 @@ public class ObservationEntity extends BaseResource {
 
     public Date getEffectiveDateTime() {
         return effectiveDateTime;
+    }
+
+    public ObservationType getObservationType() {
+        return observationType;
+    }
+
+    public ObservationEntity setObservationType(ObservationType observationType) {
+        this.observationType = observationType;
+        return this;
     }
 
     public void setEffectiveDateTime(Date effectiveDateTime) {
