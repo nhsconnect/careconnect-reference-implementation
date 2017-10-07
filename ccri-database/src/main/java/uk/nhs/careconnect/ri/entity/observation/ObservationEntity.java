@@ -40,6 +40,10 @@ public class ObservationEntity extends BaseResource {
     @Column(name = "effectiveDateTime")
     private Date effectiveDateTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "issued")
+    private Date issued;
+
     @ManyToOne
     @JoinColumn(name="parentObservation")
     private ObservationEntity parentObservation;
@@ -140,6 +144,15 @@ public class ObservationEntity extends BaseResource {
     public List<ObservationPerformer> getPerformers() {
         if (performers == null) { performers = new ArrayList<ObservationPerformer>(); }
         return performers;
+    }
+
+    public Date getIssued() {
+        return issued;
+    }
+
+    public ObservationEntity setIssued(Date issued) {
+        this.issued = issued;
+        return this;
     }
 
     public ObservationEntity setCategories(List<ObservationCategory> categories) {

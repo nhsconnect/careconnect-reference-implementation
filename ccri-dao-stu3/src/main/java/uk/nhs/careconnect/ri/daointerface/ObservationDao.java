@@ -70,6 +70,10 @@ public class ObservationDao implements ObservationRepository {
 
             }
         }
+        if (observation.hasIssued()) {
+            observationEntity.setIssued(observation.getIssued());
+        }
+
         PatientEntity patientEntity = null;
         if (observation.hasSubject()) {
             log.info(observation.getSubject().getReference());

@@ -31,7 +31,10 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
         observation.setId(observationEntity.getId().toString());
 
-        observation.setEffective(new DateTimeType(observationEntity.getEffectiveDateTime()));
+        if (observationEntity.getEffectiveDateTime() != null) observation.setEffective(new DateTimeType(observationEntity.getEffectiveDateTime()));
+
+        if (observationEntity.getIssued() != null) observation.setIssued(observationEntity.getIssued());
+
         observation.setSubject(new Reference("Patient/"+observationEntity.getPatient().getId()));
 
         if (observationEntity.getCode() != null) {

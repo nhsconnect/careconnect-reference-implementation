@@ -116,7 +116,7 @@
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver</module>
-        <module>ccri-fhirinterceptor</module>
+        <module>ccri-fhirgateway</module>
     </modules>
 
     <distributionManagement>

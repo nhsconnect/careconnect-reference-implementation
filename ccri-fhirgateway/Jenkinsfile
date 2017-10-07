@@ -1,0 +1,31 @@
+
+node {
+
+    def app
+
+    currentBuild.result = "SUCCESS"
+
+
+    stage('Checkout') {
+
+          checkout scm
+       }
+
+
+
+    stage('Build Docker') {
+
+            app = docker.build("thorlogic/ccrigateway")
+    }
+
+
+    stage('Push Image') {
+
+          docker.withRegistry('https://docker.io','docker-hub-credentials') {
+            app.push("latest")
+            app.push("3.2.${env.BUILD_NUMBER}")
+          }
+    }
+
+}
+
