@@ -24,7 +24,6 @@ services:
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
 
-
   ccrisql:
     container_name: ccrisql
     image: mysql
@@ -42,7 +41,8 @@ services:
       retries: 10
 
   elk:
-    image: sebp/elk
+    build: elk
+    image: thorlogic/ccri-elk
     ports:
       - "5601:5601"
       - "9200:9200"
