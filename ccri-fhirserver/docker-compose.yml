@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
   ccri:
     container_name: ccri
