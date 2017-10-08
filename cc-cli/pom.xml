@@ -223,7 +223,7 @@
   
 
   <build>
-      <finalName>cc-app</finalName>
+      <finalName>cc-cli</finalName>
     <plugins>
     	 <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
