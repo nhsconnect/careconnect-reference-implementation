@@ -41,7 +41,8 @@ public class UIOverlayConfig {
 		TesterConfig retVal = new TesterConfig();
 
 
-		String serverBase = "${ui.serverBase}";
+		String serverBase = "http://localhost/careconnect-ri/STU3";
+
 		if (serverBase == null || serverBase.isEmpty()) {
 			serverBase = "${serverBase}/STU3";
 		}
