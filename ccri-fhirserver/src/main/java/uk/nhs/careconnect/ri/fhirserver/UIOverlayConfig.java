@@ -1,13 +1,13 @@
 package uk.nhs.careconnect.ri.fhirserver;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.to.FhirTesterMvcConfig;
+import ca.uhn.fhir.to.TesterConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import ca.uhn.fhir.context.FhirVersionEnum;
-
-import ca.uhn.fhir.to.FhirTesterMvcConfig;
-import ca.uhn.fhir.to.TesterConfig;
+import org.springframework.context.annotation.PropertySource;
 
 //@formatter:off
 /**
@@ -20,6 +20,7 @@ import ca.uhn.fhir.to.TesterConfig;
  */
 @Configuration
 @Import(FhirTesterMvcConfig.class)
+@PropertySource("classpath:application.properties")
 public class UIOverlayConfig {
 
 	/**
@@ -36,17 +37,21 @@ public class UIOverlayConfig {
 	 * deploying your server to a place with a fully qualified domain name, 
 	 * you might want to use that instead of using the variable.
 	 */
+
+    @Value("${datasource.ui.serverBase}")
+    private String serverBase;
+
+    @Value("${datasource.ui.server}")
+    private String serverUIBase;
+
 	@Bean
 	public TesterConfig testerConfig() {
 		TesterConfig retVal = new TesterConfig();
 
-
-		String serverBase = "http://localhost/careconnect-ri/STU3";
-
 		if (serverBase == null || serverBase.isEmpty()) {
 			serverBase = "${serverBase}/STU3";
 		}
-		//String serverBase = "http://localhost/careconnect-ri/STU3";
+
 
 
 		retVal
