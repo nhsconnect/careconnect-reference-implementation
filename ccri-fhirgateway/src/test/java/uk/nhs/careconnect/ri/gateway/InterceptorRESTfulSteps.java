@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor;
+package uk.nhs.careconnect.ri.gateway;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;

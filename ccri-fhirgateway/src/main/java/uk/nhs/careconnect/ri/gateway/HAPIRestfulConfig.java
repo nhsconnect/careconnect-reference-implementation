@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor;
+package uk.nhs.careconnect.ri.gateway;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.interceptor.provider.PatientResourceProvider;
+import uk.nhs.careconnect.ri.gateway.provider.PatientResourceProvider;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;

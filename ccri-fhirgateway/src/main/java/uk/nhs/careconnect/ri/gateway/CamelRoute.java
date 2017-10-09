@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor;
+package uk.nhs.careconnect.ri.gateway;
 
 
 import org.apache.camel.builder.RouteBuilder;

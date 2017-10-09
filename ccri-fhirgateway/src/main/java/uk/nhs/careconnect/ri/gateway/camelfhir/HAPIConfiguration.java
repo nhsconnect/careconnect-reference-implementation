@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor.camelfhir;
+package uk.nhs.careconnect.ri.gateway.camelfhir;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;

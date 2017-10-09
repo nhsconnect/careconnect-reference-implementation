@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor;
+package uk.nhs.careconnect.ri.gateway;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;

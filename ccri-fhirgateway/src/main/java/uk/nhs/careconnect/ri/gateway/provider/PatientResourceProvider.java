@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.interceptor.provider;
+package uk.nhs.careconnect.ri.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.IdParam;
