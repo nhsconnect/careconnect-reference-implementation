@@ -1,8 +1,9 @@
-version: '2'
+version: '3'
 services:
   ccri:
     container_name: ccri
-    build: .
+    build: ccri-fhirserver
+    image: thorlogic/ccri-fhirserver
     depends_on:
       - ccrisql
     links:
@@ -22,6 +23,8 @@ services:
       - datasource.ui.server=http://194.189.27.194/careconnect-ri/STU3
     ports:
       - 80:80
+    volumes:
+      - tomcat-log-volume:/usr/local/tomcat/logs
 
   ccrisql:
     container_name: ccrisql
@@ -34,3 +37,28 @@ services:
     ports:
       - 43306:3306
     command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --innodb_lock_wait_timeout=300 --transaction-isolation=READ-UNCOMMITTED
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  elk:
+    build: elk
+    image: thorlogic/ccri-elk
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+
+  filebeat:
+    build: filebeat
+    image: thorlogic/ccri-filebeat
+    volumes:
+      - tomcat-log-volume:/var/log/tomcat:ro
+    depends_on:
+      - elk
+    links:
+      - elk
+
+volumes:
+  tomcat-log-volume:

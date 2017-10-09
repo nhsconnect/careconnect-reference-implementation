@@ -1,0 +1,4 @@
+FROM sebp/elk:562
+COPY logstash/conf/20-filter.conf /etc/logstash/conf.d/20-filter.conf
+
+
