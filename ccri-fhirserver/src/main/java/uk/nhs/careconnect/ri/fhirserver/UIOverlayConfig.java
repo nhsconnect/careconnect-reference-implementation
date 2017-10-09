@@ -38,10 +38,10 @@ public class UIOverlayConfig {
 	 * you might want to use that instead of using the variable.
 	 */
 
-    @Value("${datasource.ui.serverBase}")
+    @Value("${datasource.ui.serverBase:}")
     private String serverBase;
 
-    @Value("${datasource.ui.server}")
+    @Value("${datasource.ui.server:}")
     private String serverUIBase;
 
 	@Bean
@@ -51,9 +51,6 @@ public class UIOverlayConfig {
 		if (serverBase == null || serverBase.isEmpty()) {
 			serverBase = "${serverBase}/STU3";
 		}
-
-
-
 		retVal
 			.addServer()
 				.withId("home")

@@ -12,7 +12,7 @@ services:
       - datasource.password=fhirjpa
       - datasource.host=//ccrisql
       - datasource.driver=com.mysql.jdbc.Driver
-      - datasource.path=3306/careconnect
+      - datasource.path=3306/careconnect?autoReconnect=true
       - datasource.vendor=mysql
       - datasource.showSql=true
       - datasource.showDdl=true
