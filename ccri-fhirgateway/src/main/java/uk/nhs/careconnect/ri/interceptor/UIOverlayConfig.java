@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.interceptor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -36,16 +37,21 @@ public class UIOverlayConfig {
 	 * deploying your server to a place with a fully qualified domain name, 
 	 * you might want to use that instead of using the variable.
 	 */
+	@Value("${datasource.ui.serverBase:}")
+	private String serverBase;
+
+	@Value("${datasource.ui.server:}")
+	private String serverUIBase;
+
 	@Bean
 	public TesterConfig testerConfig() {
 		TesterConfig retVal = new TesterConfig();
 
-
-		String serverBase = "${serverBase}/STU3";
-
-
+		if (serverBase == null || serverBase.isEmpty()) {
+			serverBase = "${serverBase}/STU3";
+		}
 		retVal
-			.addServer()
+				.addServer()
 				.withId("home")
 				.withFhirVersion(FhirVersionEnum.DSTU3)
 				.withBaseUrl(serverBase)
