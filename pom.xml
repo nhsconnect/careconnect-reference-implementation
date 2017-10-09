@@ -24,7 +24,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.18.5</camel-version>
+        <camel-version>2.19.3</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
     </properties>

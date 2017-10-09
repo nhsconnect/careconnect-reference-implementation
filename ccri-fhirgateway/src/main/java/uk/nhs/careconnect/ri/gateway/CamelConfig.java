@@ -3,11 +3,11 @@ package uk.nhs.careconnect.ri.gateway;
 
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-//import io.fabric8.insight.log.log4j.Log4jLogQuery;
 
 
 @Configuration
@@ -18,7 +18,7 @@ public class CamelConfig extends CamelConfiguration {
 	@Override
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
-		//camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Gateway"));
+		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Gateway"));
 
 	}
 
