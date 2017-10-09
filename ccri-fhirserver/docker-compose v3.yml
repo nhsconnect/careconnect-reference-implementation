@@ -2,8 +2,7 @@ version: '3'
 services:
   ccri:
     container_name: ccri
-    build: ccri-fhirserver
-    image: thorlogic/ccri-fhirserver
+    build: .
     depends_on:
       - ccrisql
     links:
@@ -13,18 +12,14 @@ services:
       - datasource.password=fhirjpa
       - datasource.host=//ccrisql
       - datasource.driver=com.mysql.jdbc.Driver
-      - datasource.path=3306/careconnect?autoReconnect=true
+      - datasource.path=3306/careconnect
       - datasource.vendor=mysql
       - datasource.showSql=true
       - datasource.showDdl=true
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
-      - datasource.ui.serverBase=http://localhost/careconnect-ri/STU3
-      - datasource.ui.server=http://194.189.27.194/careconnect-ri/STU3
     ports:
       - 80:80
-    volumes:
-      - tomcat-log-volume:/usr/local/tomcat/logs
 
   ccrisql:
     container_name: ccrisql
@@ -41,24 +36,3 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
-
-  elk:
-    build: elk
-    image: thorlogic/ccri-elk
-    ports:
-      - "5601:5601"
-      - "9200:9200"
-      - "5044:5044"
-
-  filebeat:
-    build: filebeat
-    image: thorlogic/ccri-filebeat
-    volumes:
-      - tomcat-log-volume:/var/log/tomcat:ro
-    depends_on:
-      - elk
-    links:
-      - elk
-
-volumes:
-  tomcat-log-volume:

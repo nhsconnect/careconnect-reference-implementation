@@ -386,7 +386,7 @@ CREATE TABLE if NOT EXISTS careconnect.`tempRelationship` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
-CREATE TABLE careconnect.`tempSimple` (
+CREATE TABLE if NOT EXISTS careconnect.`tempSimple` (
   `idSimple` int(11) NOT NULL AUTO_INCREMENT,
   `id` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `effectiveTime` date DEFAULT NULL,
@@ -413,8 +413,8 @@ truncate table `tempRelationship`;</sql>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>512</xloc>
-      <yloc>80</yloc>
+      <xloc>384</xloc>
+      <yloc>96</yloc>
     </entry>
     <entry>
       <name>Load Data Concepts</name>
@@ -449,8 +449,8 @@ truncate table `tempRelationship`;</sql>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>432</xloc>
-      <yloc>224</yloc>
+      <xloc>384</xloc>
+      <yloc>192</yloc>
     </entry>
     <entry>
       <name>populate Concept table</name>
@@ -470,8 +470,8 @@ FROM
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>576</xloc>
-      <yloc>224</yloc>
+      <xloc>544</xloc>
+      <yloc>192</yloc>
     </entry>
     <entry>
       <name>populate Concept Designation</name>
@@ -498,8 +498,8 @@ join careconnect.Concept c on c.CODE = d.conceptId
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>480</xloc>
-      <yloc>336</yloc>
+      <xloc>720</xloc>
+      <yloc>192</yloc>
     </entry>
     <entry>
       <name>Update Concept display term</name>
@@ -517,8 +517,8 @@ where designationUse=0</sql>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>496</xloc>
-      <yloc>432</yloc>
+      <xloc>928</xloc>
+      <yloc>192</yloc>
     </entry>
     <entry>
       <name>Populate Relationship Table (isA only)</name>
@@ -540,8 +540,8 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>272</xloc>
-      <yloc>496</yloc>
+      <xloc>592</xloc>
+      <yloc>288</yloc>
     </entry>
     <entry>
       <name>SubSet</name>
@@ -561,8 +561,80 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>544</xloc>
-      <yloc>560</yloc>
+      <xloc>608</xloc>
+      <yloc>384</yloc>
+    </entry>
+    <entry>
+      <name>Relationship Transform</name>
+      <description />
+      <type>TRANS</type>
+      <specification_method>filename</specification_method>
+      <trans_object_id />
+      <filename>${Internal.Entry.Current.Directory}/SNOMED Relationship transform.ktr</filename>
+      <transname />
+      <arg_from_previous>N</arg_from_previous>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <cluster>N</cluster>
+      <slave_server_name />
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <follow_abort_remote>N</follow_abort_remote>
+      <create_parent_folder>N</create_parent_folder>
+      <logging_remote_work>N</logging_remote_work>
+      <run_configuration>Pentaho local</run_configuration>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>384</xloc>
+      <yloc>288</yloc>
+    </entry>
+    <entry>
+      <name>Subset Transform</name>
+      <description />
+      <type>TRANS</type>
+      <specification_method>filename</specification_method>
+      <trans_object_id />
+      <filename>${Internal.Entry.Current.Directory}/SNOMED Subsets.ktr</filename>
+      <transname />
+      <arg_from_previous>N</arg_from_previous>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <cluster>N</cluster>
+      <slave_server_name />
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <follow_abort_remote>N</follow_abort_remote>
+      <create_parent_folder>N</create_parent_folder>
+      <logging_remote_work>N</logging_remote_work>
+      <run_configuration>Pentaho local</run_configuration>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>384</xloc>
+      <yloc>384</yloc>
     </entry>
   </entries>
   <hops>
@@ -604,6 +676,15 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
     </hop>
     <hop>
       <from>Update Concept display term</from>
+      <to>Relationship Transform</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Relationship Transform</from>
       <to>Populate Relationship Table (isA only)</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -613,6 +694,15 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
     </hop>
     <hop>
       <from>Populate Relationship Table (isA only)</from>
+      <to>Subset Transform</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Subset Transform</from>
       <to>SubSet</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>

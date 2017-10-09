@@ -17,6 +17,9 @@ import java.util.List;
         @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime")
 })
 public class ObservationEntity extends BaseResource {
+
+    public enum ObservationType  { component, valueQuantity }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="OBSERVATION_ID")
@@ -37,6 +40,10 @@ public class ObservationEntity extends BaseResource {
     @Column(name = "effectiveDateTime")
     private Date effectiveDateTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "issued")
+    private Date issued;
+
     @ManyToOne
     @JoinColumn(name="parentObservation")
     private ObservationEntity parentObservation;
@@ -47,6 +54,9 @@ public class ObservationEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="valueUnitOfMeasure")
     private ConceptEntity valueUnitOfMeasure;
+
+    @Enumerated(EnumType.ORDINAL)
+    private ObservationType observationType;
 
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private List<ObservationCategory> categories = new ArrayList<>();
@@ -103,6 +113,15 @@ public class ObservationEntity extends BaseResource {
         return effectiveDateTime;
     }
 
+    public ObservationType getObservationType() {
+        return observationType;
+    }
+
+    public ObservationEntity setObservationType(ObservationType observationType) {
+        this.observationType = observationType;
+        return this;
+    }
+
     public void setEffectiveDateTime(Date effectiveDateTime) {
         this.effectiveDateTime = effectiveDateTime;
     }
@@ -125,6 +144,15 @@ public class ObservationEntity extends BaseResource {
     public List<ObservationPerformer> getPerformers() {
         if (performers == null) { performers = new ArrayList<ObservationPerformer>(); }
         return performers;
+    }
+
+    public Date getIssued() {
+        return issued;
+    }
+
+    public ObservationEntity setIssued(Date issued) {
+        this.issued = issued;
+        return this;
     }
 
     public ObservationEntity setCategories(List<ObservationCategory> categories) {

@@ -106,7 +106,7 @@ public class OrganisationDao implements OrganisationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<OrganisationEntity> results = searchOrganization(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode));
+                    List<OrganisationEntity> results = searchOrganizationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null);
                     for (OrganisationEntity org : results) {
                         organisationEntity = org;
                         break;
@@ -209,59 +209,24 @@ public class OrganisationDao implements OrganisationRepository {
 
         return organisation;
     }
-
-
-    public List<OrganisationEntity> searchOrganization (
-            @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier
-    )
-    {
-        List<OrganisationEntity> qryResults = null;
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<OrganisationEntity> criteria = builder.createQuery(OrganisationEntity.class);
-        Root<OrganisationEntity> root = criteria.from(OrganisationEntity.class);
-
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<OrganisationEntity> results = new ArrayList<OrganisationEntity>();
-
-        if (identifier !=null)
-        {
-            Join<OrganisationEntity, OrganisationIdentifier> join = root.join("identifiers", JoinType.LEFT);
-
-            Predicate p = builder.equal(join.get("value"),identifier.getValue());
-            predList.add(p);
-            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
-
-        }
-
-
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-        if (predList.size()>0)
-        {
-            criteria.select(root).where(predArray);
-        }
-        else
-        {
-            criteria.select(root);
-        }
-
-        qryResults = em.createQuery(criteria).getResultList();
-
+    @Override
+    public List<Organization> searchOrganization (
+            @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
+            @OptionalParam(name = Organization.SP_NAME) StringParam name
+    ) {
+        List<Organization> results = new ArrayList<>();
+        List<OrganisationEntity> qryResults = searchOrganizationEntity(identifier,name);
         for (OrganisationEntity organizationEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
-
-            results.add(organizationEntity);
+            Organization organization = organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
+            results.add(organization);
         }
 
         return results;
     }
 
-    public List<Organization> searchOrganization (
+    public List<OrganisationEntity> searchOrganizationEntity (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name
     )
@@ -314,14 +279,7 @@ public class OrganisationDao implements OrganisationRepository {
 
         qryResults = em.createQuery(criteria).getResultList();
 
-        for (OrganisationEntity organizationEntity : qryResults)
-        {
-           // log.trace("HAPI Custom = "+doc.getId());
-            Organization organization = organizationEntityToFHIROrganizationTransformer.transform(organizationEntity);
-            results.add(organization);
-        }
-
-        return results;
+        return qryResults;
     }
 
 

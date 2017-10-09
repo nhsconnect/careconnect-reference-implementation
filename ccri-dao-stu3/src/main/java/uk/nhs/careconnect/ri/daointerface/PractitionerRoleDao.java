@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerRoleToFHIRPractitionerRoleTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRoleIdentifier;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSpecialty;
@@ -20,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +33,10 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    private PractitionerRoleToFHIRPractitionerRoleTransformer
+            practitionerRoleToFHIRPractitionerRoleTransformer;
 
     @Autowired
     private OrganisationRepository organisationDao;
@@ -49,12 +57,16 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
     @Override
     public org.hl7.fhir.dstu3.model.PractitionerRole read(IdType theId) {
-        return null;
+
+        PractitionerRole roleEntity = (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
+        return roleEntity == null
+                ? null
+                : practitionerRoleToFHIRPractitionerRoleTransformer.transform(roleEntity);
     }
 
     @Override
     public PractitionerRole readEntity(IdType theId) {
-        return null;
+       return (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
     }
 
     private static final Logger log = LoggerFactory.getLogger(PractitionerRoleDao.class);
@@ -166,7 +178,6 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
-        List<PractitionerRole> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -186,8 +197,16 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
-
-
+        if (practitioner != null) {
+            Join<PractitionerRole,PractitionerEntity> joinPractitioner = root.join("practitionerEntity",JoinType.LEFT);
+            Predicate p = builder.equal(joinPractitioner.get("id"),practitioner.getIdPart());
+            predList.add(p);
+        }
+        if (organisation != null) {
+            Join<PractitionerRole,OrganisationEntity> joinOrganisation = root.join("managingOrganisation",JoinType.LEFT);
+            Predicate p = builder.equal(joinOrganisation.get("id"),organisation.getIdPart());
+            predList.add(p);
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
@@ -200,10 +219,8 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        return em.createQuery(criteria).getResultList();
 
-
-        return qryResults;
     }
 
 
@@ -212,7 +229,12 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
-        return null;
+        List<org.hl7.fhir.dstu3.model.PractitionerRole> results = new ArrayList<>();
+        List<PractitionerRole> roles = searchEntity(identifier,practitioner,organisation);
+        for (PractitionerRole role : roles) {
+             results.add(practitionerRoleToFHIRPractitionerRoleTransformer.transform(role));
+        }
+        return results;
     }
 
 }
