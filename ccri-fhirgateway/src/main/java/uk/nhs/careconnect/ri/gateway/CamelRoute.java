@@ -29,7 +29,8 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:HAPIServer")
             .routeId("INT HAPI Server")
 				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
-				.to("http4://ccri:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				// TODO line below needs to be turned into config
+                .to("http4://ccri:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
 				.convertBodyTo(InputStream.class);
 
     }
