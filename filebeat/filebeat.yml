@@ -1,0 +1,19 @@
+filebeat.prospectors:
+# Tomcat Log Files
+- input_type: log
+  paths:
+    - /var/log/tomcat/localhost_access_log*.txt
+    - /var/log/tomcat/*.log
+  tags: ["ccri_tomcat"]
+  fields:
+    service: ccri_tomcat
+
+output:
+  logstash:
+    enabled: true
+    hosts:
+      - elk:5044
+    ssl:
+      certificate_authorities:
+          - /etc/pki/tls/certs/logstash-beats.crt
+    timeout: 15
