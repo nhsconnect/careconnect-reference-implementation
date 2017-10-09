@@ -19,7 +19,7 @@ public class CamelConfig extends CamelConfiguration {
 	@Override
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
-		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Interceptor"));
+		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Gateway"));
 	/*
 		camelContext.addComponent("hl7fhir",new HAPIComponent());
 */
