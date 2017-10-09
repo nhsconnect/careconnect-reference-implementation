@@ -24,7 +24,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.18.4</camel-version>
+        <camel-version>2.18.5</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
     </properties>
@@ -36,7 +36,6 @@
             <version>${care-connect-version}</version>
         </dependency>
 
-<!-- mvn dependency:tree -Dverbose -Dincludes=org.slf4j -->
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -50,15 +49,6 @@
             <version>1.2.3</version>
         </dependency>
 
-
-        <!--
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
-            <version>${hapi-fhir-version}</version>
-            <scope>test</scope>
-        </dependency>
-        -->
 
 
 

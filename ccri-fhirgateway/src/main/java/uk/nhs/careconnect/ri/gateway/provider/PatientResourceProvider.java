@@ -36,11 +36,6 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
-    private static final List<String> MANDATORY_PARAM_NAMES = Arrays.asList("patientNHSNumber", "recordSection");
-    private static final List<String> PERMITTED_PARAM_NAMES = new ArrayList<String>(MANDATORY_PARAM_NAMES) {{
-        add("timePeriod");
-    }};
-
 
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
