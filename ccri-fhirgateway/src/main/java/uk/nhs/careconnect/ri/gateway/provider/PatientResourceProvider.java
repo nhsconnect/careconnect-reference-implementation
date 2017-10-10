@@ -124,7 +124,11 @@ public class PatientResourceProvider implements IResourceProvider {
             bundle = ctx.newJsonParser().parseResource(Bundle.class,reader);
             log.info("Found Entries = "+bundle.getEntry().size());
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                results.add((Patient) entry.getResource());
+                // TODO replace fullUrl": "http://ccri:8080/careconnect-ri/STU3/Patient/1",
+                Patient patient = (Patient) entry.getResource();
+                String newFullUrl = "${serverBase}/STU3/Patient/"+patient.getId();
+                entry.setFullUrl(newFullUrl);
+                results.add(patient);
             }
         }
         catch(Exception ex) {
