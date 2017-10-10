@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManagerFactory;
-import java.sql.Connection;
 import java.util.Properties;
 
 @Configuration
@@ -57,9 +56,9 @@ public class DataSourceConfig {
     @Value("${datasource.driver:org.apache.derby.jdbc.EmbeddedDriver}")
     private String driverName;
 
-    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
 
-   // com.mchange.v2.c3p0.ComboPooledDataSource
+
 
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
@@ -67,13 +66,13 @@ public class DataSourceConfig {
         System.out.println("In Data Source");
         dataSource.setDriverClassName(driverName);
         dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
-    //    log.info(dataSource.getUrl());
+
         System.out.println(dataSource.getUrl());
         dataSource.setUsername(username);
         dataSource.setPassword(password);
 
         dataSource.setValidationQuery("select 1 as dbcp_connection_test");
-        //dataSource.setTestOnBorrow(true);
+
 
 
         return dataSource;
@@ -135,8 +134,17 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.c3p0.timeout","300");
         extraProperties.put("hibernate.c3p0.max_statements","50");
         extraProperties.put("hibernate.c3p0.idle_test_period","3000");
-       extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
-;
+        //extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
+
+        // 2017-10-10 KGM added to resolve mysql wait_timeout issue
+        extraProperties.put("current_session_context_class","thread");
+
+        extraProperties.put("hibernate.connection.driver_class",driverName);
+        extraProperties.put("hibernate.connection.url","jdbc:" + vendor + ":" + host + ":" + path);
+        extraProperties.put("hibernate.connection.username",username);
+        extraProperties.put("hibernate.connection.password",password);
+        extraProperties.put("hibernate.connection.provider_class","org.hibernate.connection.C3P0ConnectionProvider");
+
         return extraProperties;
     }
 
