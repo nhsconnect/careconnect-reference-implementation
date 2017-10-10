@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.fhirserver;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -15,12 +16,14 @@ import uk.nhs.careconnect.ri.fhirserver.provider.*;
 import javax.servlet.ServletException;
 import java.util.Arrays;
 
-
 public class HAPIRestfulConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
 
 	private WebApplicationContext myAppCtx;
+
+
+	private static String serverBase = "http://dev.careconnect.nhs.uk/careconnect";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,6 +36,13 @@ public class HAPIRestfulConfig extends RestfulServer {
 		 *
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
 		 */
+
+		if (serverBase != null && !serverBase.isEmpty()) {
+			setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
+		}
+
+
+
 		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
 		setFhirContext(new FhirContext(fhirVersion));
 

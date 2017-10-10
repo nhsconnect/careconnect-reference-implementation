@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gateway;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -15,12 +16,13 @@ import uk.nhs.careconnect.ri.gateway.provider.PatientResourceProvider;
 import javax.servlet.ServletException;
 import java.util.Arrays;
 
-
 public class HAPIRestfulConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
 
 	private WebApplicationContext myAppCtx;
+
+	private static String serverBase = "http://dev.careconnect.nhs.uk/careconnect";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,12 +35,18 @@ public class HAPIRestfulConfig extends RestfulServer {
 		 *
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
 		 */
+
+
+
 		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
 		setFhirContext(new FhirContext(fhirVersion));
 
 		// Get the spring context from the web container (it's declared in web.xml)
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 
+        if (serverBase != null && !serverBase.isEmpty()) {
+            setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
+        }
 		/* 
 		 * The BaseJavaConfigDstu2.java class is a spring configuration
 		 * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
