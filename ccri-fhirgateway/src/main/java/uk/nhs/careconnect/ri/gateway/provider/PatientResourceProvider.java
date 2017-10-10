@@ -19,6 +19,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,8 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Value("${datasource.serverBase:}")
+    private static String serverBase;
 
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
@@ -126,7 +129,7 @@ public class PatientResourceProvider implements IResourceProvider {
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 // TODO replace fullUrl": "http://ccri:8080/careconnect-ri/STU3/Patient/1",
                 Patient patient = (Patient) entry.getResource();
-                String newFullUrl = "${serverBase}/STU3/Patient/"+patient.getId();
+                String newFullUrl = serverBase+"/STU3/Patient/"+patient.getId();
                 entry.setFullUrl(newFullUrl);
                 results.add(patient);
             }
