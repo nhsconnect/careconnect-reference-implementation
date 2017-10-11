@@ -430,7 +430,7 @@
     <created_date>2017/09/28 11:16:20.502</created_date>
     <modified_user>-</modified_user>
     <modified_date>2017/09/28 11:16:20.502</modified_date>
-    <key_for_session_key />
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -513,7 +513,7 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Relationship_Full_INT_20170131.txt</filename>
+    <filename>/upload/uk_sct2cl_23.0.0_20170401000001/SnomedCT_InternationalRF2_Production_20170131T120000/Full/Terminology/sct2_Relationship_Full_INT_20170131.txt</filename>
     <filename_field />
     <rownum_field />
     <include_filename>N</include_filename>
@@ -745,7 +745,7 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Terminology/sct2_Relationship_Full_GB1000000_20170401.txt</filename>
+    <filename>/upload/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Terminology/sct2_Relationship_Full_GB1000000_20170401.txt</filename>
     <filename_field />
     <rownum_field />
     <include_filename>N</include_filename>
