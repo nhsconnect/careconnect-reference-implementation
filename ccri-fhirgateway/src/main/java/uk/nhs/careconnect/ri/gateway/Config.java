@@ -27,4 +27,5 @@ public class Config {
 
     @Value("${datasource.cleardown.cron:0 19 21 * * *}")
     private String cron;
+
 }

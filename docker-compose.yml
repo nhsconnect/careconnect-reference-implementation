@@ -42,6 +42,17 @@ services:
       timeout: 20s
       retries: 10
 
+  ccrigateway:
+    container_name: ccrigateway
+    build: ccri-fhirgateway
+    image: thorlogic/ccri-gateway
+    depends_on:
+      - ccri
+    ports:
+      - 80:80
+    volumes:
+      - gateway-log-volume:/usr/local/tomcat/logs
+
   elk:
     build: elk
     image: thorlogic/ccri-elk
@@ -55,6 +66,7 @@ services:
     image: thorlogic/ccri-filebeat
     volumes:
       - tomcat-log-volume:/var/log/tomcat:ro
+      - gateway-log-volume:/var/log/gateway:ro
     depends_on:
       - elk
     links:
@@ -62,3 +74,4 @@ services:
 
 volumes:
   tomcat-log-volume:
+  gateway-log-volume:

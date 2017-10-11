@@ -12,8 +12,8 @@ ADD server.xml /usr/local/tomcat/conf/server.xml
 
 ADD target/careconnect.war /usr/local/tomcat/webapps/
 
-
 # See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
+EXPOSE 80
 
 CMD ["catalina.sh", "run"]
 

@@ -37,12 +37,7 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
-    @Value("${datasource.serverBase:}")
-    private static String serverBase;
-
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
-
-
 
     @Override
     public Class<Patient> getResourceType() {
