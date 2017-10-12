@@ -21,8 +21,8 @@ services:
       - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
       - datasource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
-#    ports:
-#      8080:8080
+    ports:
+      - 8080:8080
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
