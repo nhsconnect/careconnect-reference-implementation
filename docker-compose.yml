@@ -45,7 +45,7 @@ services:
   ccrigateway:
     container_name: ccrigateway
     build: ccri-fhirgateway
-    image: thorlogic/ccri-gateway
+    image: thorlogic/ccri-fhirgateway
     depends_on:
       - ccri
     ports:
