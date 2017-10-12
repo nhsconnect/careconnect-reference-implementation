@@ -50,6 +50,7 @@ public class UIOverlayConfig {
 		if (serverBase == null || serverBase.isEmpty()) {
 			serverBase = "${serverBase}/STU3";
 		}
+
 		retVal
 				.addServer()
 				.withId("home")

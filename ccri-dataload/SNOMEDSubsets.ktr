@@ -575,7 +575,7 @@
       <method>none</method>
       <schema_name />
     </partitioning>
-    <filename>/NHSSDS/TRUD/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Refset/Content/der2_Refset_SimpleFull_GB1000000_20170401.txt</filename>
+    <filename>/upload/uk_sct2cl_23.0.0_20170401000001/SnomedCT_UKClinicalRF2_Production_20170401T000001/Full/Refset/Content/der2_Refset_SimpleFull_GB1000000_20170401.txt</filename>
     <filename_field />
     <rownum_field />
     <include_filename>N</include_filename>
