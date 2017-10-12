@@ -311,7 +311,7 @@
 	<build>
 
 		<!-- Tells Maven to name the generated WAR file as hapi-fhir-jpaserver-example.war -->
-		<finalName>careconnect</finalName>
+		<finalName>careconnect-gateway</finalName>
 
 		<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn jetty:run" from the command line. -->
 		<pluginManagement>

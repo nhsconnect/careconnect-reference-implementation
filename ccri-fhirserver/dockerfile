@@ -10,8 +10,6 @@ ADD server.xml /usr/local/tomcat/conf/server.xml
 # ADD hawtio.war /usr/local/tomcat/webapps/
 ADD target/careconnect-ri.war /usr/local/tomcat/webapps/
 
-
 # See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
-
 CMD ["catalina.sh", "run"]
 

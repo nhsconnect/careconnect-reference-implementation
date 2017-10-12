@@ -15,7 +15,7 @@ public class CamelRoute extends RouteBuilder {
 	@Autowired
 	protected Environment env;
 
-	@Value("${fhirserver.connection:}")
+	@Value("${fhir.restserver.serverBase}")
 	private static String serverBase;
 	
     @Override

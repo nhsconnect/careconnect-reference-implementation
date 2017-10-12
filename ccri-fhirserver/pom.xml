@@ -377,7 +377,7 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://127.0.0.1:8080/manager/text</url>
+					<url>http://dev.careconnect.nhs.uk/manager/text</url>
 					<server>TomcatServer</server>
                     <path>/careconnect-ri</path>
 				</configuration>
