@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,7 +24,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 	private WebApplicationContext myAppCtx;
 
 
-	private static String serverBase = "http://dev.careconnect.nhs.uk/careconnect-ri/STU3";
+	@Value("${datasource.serverBase}")
+	private String serverBase;
 
 	@SuppressWarnings("unchecked")
 	@Override

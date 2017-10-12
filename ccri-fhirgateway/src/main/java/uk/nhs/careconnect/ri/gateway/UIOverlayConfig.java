@@ -40,9 +40,6 @@ public class UIOverlayConfig {
 	@Value("${datasource.ui.serverBase:}")
 	private String serverBase;
 
-	@Value("${datasource.ui.server:}")
-	private String serverUIBase;
-
 	@Bean
 	public TesterConfig testerConfig() {
 		TesterConfig retVal = new TesterConfig();

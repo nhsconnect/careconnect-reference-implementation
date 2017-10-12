@@ -24,7 +24,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 	private WebApplicationContext myAppCtx;
 
 	@Value("${fhir.resource.serverBase}")
-	private static String serverBase = "http://dev.careconnect.nhs.uk/careconnect/STU3";
+	private String serverBase;
 
 	@SuppressWarnings("unchecked")
 	@Override
