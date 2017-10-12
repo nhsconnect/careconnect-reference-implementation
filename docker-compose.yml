@@ -19,13 +19,13 @@ services:
       - datasource.showDdl=true
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
-      - datasource.ui.serverBase=http://dev.careconnect.nhs.uk/careconnect-ri/STU3
-      - datasource.ui.server=http://dev.careconnect.nhs.uk/careconnect-ri/STU3
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - datasource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
 #    ports:
-#      - 8080:80
+#      8080:8080
     extra_hosts:
       # Define an alias to loop back for REST Connections
-      - "dev.careconnect.nhs.uk:127.0.0.1"
+      - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
     networks:
@@ -55,15 +55,16 @@ services:
     build: ccri-fhirgateway
     image: thorlogic/ccri-fhirgateway
     environment:
-      - fhir.resource.serverBase=http://dev.careconnect.nhs.uk/careconnect-ri
-      - fhir.restserver.serverBase=http4://dev.careconnect.nhs.uk/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccri
     ports:
       - 80:80
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
-      - "dev.careconnect.nhs.uk:172.168.240.10"
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
     volumes:
       - gateway-log-volume:/usr/local/tomcat/logs
     networks:
