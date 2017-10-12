@@ -15,7 +15,7 @@ public class CamelRoute extends RouteBuilder {
 	@Autowired
 	protected Environment env;
 
-	@Value("${fhir.restserver.serverBase:}")
+	@Value("${fhir.restserver.serverBase}")
 	private static String serverBase;
 	
     @Override
@@ -30,7 +30,7 @@ public class CamelRoute extends RouteBuilder {
             .routeId("INT HAPI Server")
 				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
 				// TODO line below needs to be turned into config
-                .to(serverBase)
+                .to("http4://ccri:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true")
 				.convertBodyTo(InputStream.class);
 
     }

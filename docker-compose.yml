@@ -19,12 +19,18 @@ services:
       - datasource.showDdl=true
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
-      - datasource.ui.serverBase=http://localhost/careconnect-ri/STU3
-      - datasource.ui.server=http://194.189.27.194/careconnect-ri/STU3
-    ports:
-      - 80:80
+      - datasource.ui.serverBase=http://dev.careconnect.nhs.uk/careconnect-ri/STU3
+      - datasource.ui.server=http://dev.careconnect.nhs.uk/careconnect-ri/STU3
+#    ports:
+#      - 8080:80
+    extra_hosts:
+      # Define an alias to loop back for REST Connections
+      - "dev.careconnect.nhs.uk:127.0.0.1"
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.10
 
   ccrisql:
     container_name: ccrisql
@@ -36,6 +42,8 @@ services:
       - MYSQL_PASSWORD=fhirjpa
     ports:
       - 43306:3306
+    networks:
+      - ccri_net
     command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --innodb_lock_wait_timeout=300 --transaction-isolation=READ-UNCOMMITTED
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
@@ -46,12 +54,20 @@ services:
     container_name: ccrigateway
     build: ccri-fhirgateway
     image: thorlogic/ccri-fhirgateway
+    environment:
+      - fhir.resource.serverBase=http://dev.careconnect.nhs.uk/careconnect-ri
+      - fhir.restserver.serverBase=http4://dev.careconnect.nhs.uk/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccri
     ports:
       - 80:80
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "dev.careconnect.nhs.uk:172.168.240.10"
     volumes:
       - gateway-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
 
   elk:
     build: elk
@@ -75,3 +91,11 @@ services:
 volumes:
   tomcat-log-volume:
   gateway-log-volume:
+
+networks:
+  ccri_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.168.240.0/24
