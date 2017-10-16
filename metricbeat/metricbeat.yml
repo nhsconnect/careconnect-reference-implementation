@@ -1,0 +1,16 @@
+metricbeat:
+  modules:
+  - module: docker
+    metricsets: ["container", "cpu", "diskio", "healthcheck", "info", "memory", "network"]
+    hosts: ["unix:///var/run/docker.sock"]
+    enabled: true
+    period: 10s
+
+dashboard:
+  enabled: true
+
+output:
+  elasticsearch:
+    hosts: ['elk:9200']
+    username: ${ES_USER}
+    password: ${ES_PASSWORD}

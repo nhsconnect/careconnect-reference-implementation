@@ -1,8 +1,0 @@
-FROM docker.elastic.co/beats/filebeat:5.6.2
-COPY filebeat.yml /usr/share/filebeat/filebeat.yml
-USER root
-RUN chown filebeat /usr/share/filebeat/filebeat.yml
-USER filebeat
-
-# Add CA Certficate to allow FileBeat to trust Logstash - Cert Downloaded from
-COPY logstash-beats.crt /etc/pki/tls/certs/logstash-beats.crt
