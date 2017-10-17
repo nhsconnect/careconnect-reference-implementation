@@ -27,6 +27,12 @@ public class HAPIRestfulConfig extends RestfulServer {
 	@Value("${fhir.resource.serverBase}")
 	private String serverBase;
 
+    @Value("${fhir.resource.serverName}")
+    private String serverName;
+
+    @Value("${fhir.resource.serverVersion}")
+    private String serverVersion;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initialize() throws ServletException {
@@ -50,6 +56,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 
         // Replace built in conformance provider (CapabilityStatement)
         setServerConformanceProvider(new CareConnectConformanceProvider());
+
+        setServerName(serverName);
+        setServerVersion(serverVersion);
 
 		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 		setDefaultPrettyPrint(true);
