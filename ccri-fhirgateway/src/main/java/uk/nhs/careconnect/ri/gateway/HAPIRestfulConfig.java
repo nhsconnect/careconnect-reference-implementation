@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.gateway.provider.CareConnectConformanceProvider;
-import uk.nhs.careconnect.ri.gateway.provider.PatientResourceProvider;
+import uk.nhs.careconnect.ri.gateway.provider.*;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
@@ -52,6 +51,11 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 		setResourceProviders(Arrays.asList(
 				myAppCtx.getBean(PatientResourceProvider.class)
+               ,myAppCtx.getBean(OrganisationResourceProvider.class)
+                ,myAppCtx.getBean(PractitionerResourceProvider.class)
+                ,myAppCtx.getBean(LocationResourceProvider.class)
+               ,myAppCtx.getBean(PractitionerRoleResourceProvider.class)
+                //    ,myAppCtx.getBean(ObservationProvider.class)
 		));
 
         // Replace built in conformance provider (CapabilityStatement)

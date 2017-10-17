@@ -102,6 +102,18 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Patient":
                         resource.getProfile().setReference(CareConnectProfile.Patient_1);
                         break;
+                    case "Practitioner":
+                        resource.getProfile().setReference(CareConnectProfile.Practitioner_1);
+                        break;
+                    case "PractitionerRole":
+                        resource.getProfile().setReference(CareConnectProfile.PractitionerRole_1);
+                        break;
+                    case "Organization":
+                        resource.getProfile().setReference(CareConnectProfile.Organization_1);
+                        break;
+                    case "Location":
+                        resource.getProfile().setReference(CareConnectProfile.Location_1);
+                        break;
                     default:
                         resource.getProfile().setReference((def.getResourceProfile(serverBase)));
                 }
@@ -194,6 +206,10 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                // Add supported resources here. This is suppressing StructureDefinition which is part of equivalent hapi class
 
                 case "Patient" :
+                case "Practitioner":
+                case "PractitionerRole":
+                case "Organization":
+                case "Location":
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
                     if (resourceToMethods.containsKey(resourceName) == false) {
