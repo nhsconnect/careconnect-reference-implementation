@@ -70,31 +70,6 @@ services:
     networks:
       - ccri_net
 
-  elk:
-    image: sebp/elk:562
-    volumes:
-      - ./elk/logstash/conf/20-filter.conf:/etc/logstash/conf.d/20-filter.conf:ro
-    ports:
-      - "5601:5601"
-      - "9200:9200"
-      - "5044:5044"
-    networks:
-      - elknet
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:5.6.2
-    volumes:
-      - tomcat-log-volume:/var/log/tomcat:ro
-      - gateway-log-volume:/var/log/gateway:ro
-      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./elk/certs/logstash-beats.crt:/etc/pki/tls/certs/logstash-beats.crt:ro
-    depends_on:
-      - elk
-    links:
-      - elk
-    networks:
-      - elknet
-
 volumes:
   tomcat-log-volume:
   gateway-log-volume:
@@ -106,5 +81,3 @@ networks:
       driver: default
       config:
       - subnet: 172.168.240.0/24
-  elknet:
-    driver: bridge
