@@ -94,9 +94,6 @@
             <version>${phloc_commons_version}</version>
         </dependency>
 
-
-
-
     </dependencies>
 
     <modules>
