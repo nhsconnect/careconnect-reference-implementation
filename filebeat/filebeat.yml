@@ -1,13 +1,12 @@
-filebeat:
-  prospectors:
-    # Tomcat Log Files
-    - input_type: log
-    paths:
-      - /var/log/tomcat/localhost_access_log*.txt
-      - /var/log/tomcat/*.log
-    tags: ["ccri_tomcat"]
-    fields:
-      service: ccri_tomcat
+filebeat.prospectors:
+# Tomcat Log Files
+- input_type: log
+  paths:
+    - /var/log/tomcat/localhost_access_log*.txt
+    - /var/log/tomcat/*.log
+  tags: ["ccri_tomcat"]
+  fields:
+    service: ccri_tomcat
 
 output:
   logstash:
