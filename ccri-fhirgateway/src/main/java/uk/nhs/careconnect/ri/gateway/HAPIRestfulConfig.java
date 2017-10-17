@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import uk.nhs.careconnect.ri.gateway.provider.CareConnectConformanceProvider;
 import uk.nhs.careconnect.ri.gateway.provider.PatientResourceProvider;
 
 import javax.servlet.ServletException;
@@ -31,14 +32,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 	protected void initialize() throws ServletException {
 		super.initialize();
 
-		/* 
-		 * We want to support HAPIComponent DSTU2 format. This means that the server
-		 * will use the DSTU2 bundle format and other DSTU2 encoding changes.
-		 *
-		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
-		 */
-
-
 
 		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
 		setFhirContext(new FhirContext(fhirVersion));
@@ -49,14 +42,14 @@ public class HAPIRestfulConfig extends RestfulServer {
         if (serverBase != null && !serverBase.isEmpty()) {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
         }
-		/* 
-		 * The BaseJavaConfigDstu2.java class is a spring configuration
-		 * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
-		 * contains bean definitions for a resource provider for each resource type
-		 */
+
+
 		setResourceProviders(Arrays.asList(
 				myAppCtx.getBean(PatientResourceProvider.class)
 		));
+
+        // Replace built in conformance provider (CapabilityStatement)
+        setServerConformanceProvider(new CareConnectConformanceProvider());
 
 		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 		setDefaultPrettyPrint(true);
