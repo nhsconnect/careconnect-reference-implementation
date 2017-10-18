@@ -70,7 +70,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
         Organization patient = null;
 
         try {
-            InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIROrganization",
+            InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIROrganisation",
                     ExchangePattern.InOut,theRequest.getInputStream(), headerMap);
             log.info("Producer Return :" + inputStream);
 
