@@ -105,7 +105,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
         headerMap.put(Exchange.HTTP_PATH,  theRequest.getPathInfo());
         headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
-        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIROrganization",
+        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIROrganisation",
                 ExchangePattern.InOut,"", headerMap);
 
         Bundle bundle = null;
