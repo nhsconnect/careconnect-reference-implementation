@@ -7,9 +7,9 @@
     <status value="final"/>
     <category>
         <coding>
-            <system value="http://hl7.org/fhir/observation-category"/>
-            <code value="vital-signs"/>
-            <display value="Vital Signs"/>
+            <system value="http://snomed.info/sct"/>
+            <code value="365605003"/>
+            <display value="Body measurement finding"/>
         </coding>
     </category>
     <code>

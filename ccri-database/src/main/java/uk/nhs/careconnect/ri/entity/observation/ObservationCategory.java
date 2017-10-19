@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="ObservationCategory", uniqueConstraints= @UniqueConstraint(name="PK_OBSERVATION_CATEGORY", columnNames={"OBSERVATION_CATEGORY_ID"})
-        ,indexes = {}
+        ,indexes = { @Index(name="IDX_OBSERVATION_CATEGORY", columnList = "category")}
 )
 public class ObservationCategory {
 
