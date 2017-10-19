@@ -459,7 +459,7 @@
     <hop>
       <from>CSV file INT Description</from>
       <to>Description</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>CSV file INT Concept</from>

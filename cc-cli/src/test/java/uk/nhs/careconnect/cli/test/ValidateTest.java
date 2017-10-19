@@ -12,6 +12,13 @@ public class ValidateTest {
 	public void before() {
 		System.setProperty("noexit", "true");
 	}
+
+	@Test
+	public void testExampleUpload() {
+
+		App.main(new String[] {"upload-examples", "-t"
+				,"http://127.0.0.1:8080/careconnect-ri/STU3/" });
+	}
 	
 	@Test
 	public void testValidateLocalProfileGood() {

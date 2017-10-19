@@ -366,6 +366,9 @@ CREATE TABLE IF NOT EXISTS `tempDescription` (
   `typeId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `term` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
   `caseSignificanceId` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `CONCEPT_DESIGNATION_ID` bigint(20),
+  `designationUse` int(11),
+  `CONCEPT_ID` bigint(20),
   PRIMARY KEY (`idDescription`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -477,9 +480,23 @@ FROM
       <name>populate Concept Designation</name>
       <description />
       <type>SQL</type>
-      <sql>insert into careconnect.ConceptDesignation(designationId,term,CONCEPT_ID,designationUse,active)
+      <sql>SET SQL_SAFE_UPDATES = 0;
+
+update
+careconnect.tempDescription d
+join careconnect.Concept c on d.conceptId = c.CODE 
+set d.CONCEPT_ID = c.CONCEPT_ID
+where  c.CODESYSTEM_ID = 9 ;
+
+
+update
+careconnect.tempDescription d
+join careconnect.ConceptDesignation c on d.id = c.designationId 
+set d.CONCEPT_DESIGNATION_ID = c.CONCEPT_DESIGNATION_ID;
+
+insert into careconnect.ConceptDesignation(designationId,term,CONCEPT_ID,designationUse,active)
 SELECT 
-	distinct d.id,d.term,c.CONCEPT_ID,
+	distinct d.id,d.term,d.CONCEPT_ID,
 	case d.typeId 
 	   when '900000000000003001' then 0
 	   when '900000000000013009' then 1
@@ -488,8 +505,7 @@ SELECT
 	,1 	
 FROM
 	careconnect.tempDescription d
-join careconnect.Concept c on c.CODE = d.conceptId
-	where d.active = 1 and idDescription not in (select designationId from careconnect.ConceptDesignation); </sql>
+where d.active = 1 and CONCEPT_DESIGNATION_ID is null; </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
       <sqlfilename />
@@ -508,7 +524,7 @@ join careconnect.Concept c on c.CODE = d.conceptId
       <sql>update Concept c 
 join careconnect.ConceptDesignation d on c.CONCEPT_ID = d.CONCEPT_ID
  set c.DISPLAY = d.term
-where designationUse=0</sql>
+where designationUse=0;</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
       <sqlfilename />
@@ -530,7 +546,7 @@ from careconnect.tempRelationship r
 join Concept s on r.sourceId = s.CODE and s.CODESYSTEM_ID = 9
 join Concept d on r.destinationId = d.CODE and d.CODESYSTEM_ID = 9
 where 
-typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null)
+typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null);
 </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>

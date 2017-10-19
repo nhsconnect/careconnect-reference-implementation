@@ -1,0 +1,42 @@
+{
+  "resourceType": "Observation",
+  "meta": {
+    "versionId": "4171",
+    "lastUpdated": "2016-03-09T15:30:09.143+00:00"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div>1999-07-02: bmi = 16.2 kg/m2</div>"
+  },
+  "status": "final",
+  "category": {
+    "coding": [
+      {
+        "system":"http://snomed.info/sct",
+        "code":"365605003",
+        "display":"Body measurement finding"
+      }
+    ],
+    "text": "Vital Signs"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "301331008",
+        "display": "Observation of body mass index"
+      }
+    ],
+    "text": "bmi"
+  },
+  "subject": {
+    "reference": "Patient/1"
+  },
+  "effectiveDateTime": "1999-07-02",
+  "valueQuantity": {
+    "value": 16.2,
+    "unit": "kg/m2",
+    "system": "http://unitsofmeasure.org",
+    "code": "kg/m2"
+  }
+}
