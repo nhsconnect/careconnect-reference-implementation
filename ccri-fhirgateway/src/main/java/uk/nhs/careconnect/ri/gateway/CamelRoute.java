@@ -23,11 +23,28 @@ public class CamelRoute extends RouteBuilder {
     {
 
 		from("direct:FHIRPatient")
-			.routeId("DMZ Patient")
+			.routeId("Gateway Patient")
 				.to("direct:HAPIServer");
 
-		from("direct:HAPIServer")
-            .routeId("INT HAPI Server")
+		from("direct:FHIRPractitioner")
+				.routeId("Gateway Practitioner")
+				.to("direct:HAPIServer");
+
+        from("direct:FHIRPractitionerRole")
+                .routeId("Gateway PractitionerRole")
+                .to("direct:HAPIServer");
+
+        from("direct:FHIROrganisation")
+                .routeId("Gateway Organisation")
+                .to("direct:HAPIServer");
+
+        from("direct:FHIRLocation")
+                .routeId("Gateway Location")
+                .to("direct:HAPIServer");
+
+
+        from("direct:HAPIServer")
+            .routeId("INT FHIR Server")
 				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
                 .to(serverBase)
 				.convertBodyTo(InputStream.class);

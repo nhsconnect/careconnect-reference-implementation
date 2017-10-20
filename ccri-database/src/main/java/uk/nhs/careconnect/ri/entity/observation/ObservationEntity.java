@@ -14,7 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "Observation", indexes = {
         @Index(name="IDX_OBSERVATION_CODE", columnList = "code"),
-        @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime")
+        @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime"),
+        @Index(name="IDX_PATIENT", columnList = "PATIENT_ID")
 })
 public class ObservationEntity extends BaseResource {
 

@@ -13,6 +13,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
@@ -39,6 +40,9 @@ public class ObservationDao implements ObservationRepository {
 
     @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    OrganisationRepository organisationDao;
 
     private static final Logger log = LoggerFactory.getLogger(Observation.class);
 
@@ -98,17 +102,46 @@ public class ObservationDao implements ObservationRepository {
         em.persist(observationEntity);
 
         for (Reference reference : observation.getPerformer()) {
-            log.info("Reference Type = "+reference.getReferenceElement().getResourceType());
-            if (reference.getReferenceElement().getResourceType().equals("Practitioner") ) {
-                PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(reference.getReference()));
-                if (practitionerEntity != null) {
-                    ObservationPerformer performer = new ObservationPerformer();
-                    performer.setPerformerType(ObservationPerformer.performer.Practitioner);
-                    performer.setPerformerPractitioner(practitionerEntity);
-                    performer.setObservation(observationEntity);
-                    em.persist(performer);
-                    observationEntity.getPerformers().add(performer);
-                }
+
+            log.info("Reference Typez = "+reference.getReferenceElement().getResourceType());
+            switch (reference.getReferenceElement().getResourceType()) {
+                case "Practitioner" :
+                    log.info("Practitioner DAO :"+reference.getReferenceElement().getResourceType());
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(reference.getReference()));
+                    if (practitionerEntity != null) {
+                        ObservationPerformer performer = new ObservationPerformer();
+                        performer.setPerformerType(ObservationPerformer.performer.Practitioner);
+                        performer.setPerformerPractitioner(practitionerEntity);
+                        performer.setObservation(observationEntity);
+                        em.persist(performer);
+                        observationEntity.getPerformers().add(performer);
+                    }
+                    break;
+                case "Patient":
+                    log.info("Patient DAO :"+reference.getReferenceElement().getResourceType());
+                    PatientEntity patientperformerEntity = patientDao.readEntity(new IdType(reference.getReference()));
+                    if (patientEntity != null) {
+                        ObservationPerformer performer = new ObservationPerformer();
+                        performer.setPerformerType(ObservationPerformer.performer.Patient);
+                        performer.setPerformerPatient(patientperformerEntity);
+                        performer.setObservation(observationEntity);
+                        em.persist(performer);
+                        observationEntity.getPerformers().add(performer);
+                    }
+                    break;
+                case "Organization":
+                    OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(reference.getReference()));
+                    if (patientEntity != null) {
+                        ObservationPerformer performer = new ObservationPerformer();
+                        performer.setPerformerType(ObservationPerformer.performer.Organisation);
+                        performer.setPerformerOrganisation(organisationEntity);
+                        performer.setObservation(observationEntity);
+                        em.persist(performer);
+                        observationEntity.getPerformers().add(performer);
+                    }
+                    break;
+                default:
+                    log.info("Not found this :"+reference.getReferenceElement().getResourceType());
             }
         }
 

@@ -50,6 +50,7 @@ public class PatientDao implements PatientRepository {
 
     public Patient read(IdType theId) {
 
+        log.info("Looking for patient = "+theId.getIdPart());
         PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
         return patientEntity == null

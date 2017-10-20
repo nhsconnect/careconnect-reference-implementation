@@ -304,12 +304,12 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         }
                     }
                 } catch (Exception ex) {
-                    System.out.println("Ooops 2 :"+ex.getMessage());
+                    System.out.println(ex.getMessage());
                 }
 
             }
         } catch(Exception ex){
-            System.out.println("Ooops 3 :"+ex.getMessage());
+            System.out.println(ex.getMessage());
         }
 
 	}
