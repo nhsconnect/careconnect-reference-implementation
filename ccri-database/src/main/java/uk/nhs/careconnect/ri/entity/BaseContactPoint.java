@@ -42,9 +42,18 @@ public class BaseContactPoint extends BaseResource {
 
     public void setSystemDstu2(org.hl7.fhir.instance.model.ContactPoint.ContactPointSystem systemEntity) {
         switch (systemEntity) {
-            case EMAIL: this.system = ContactPoint.ContactPointSystem.EMAIL;
-            case PHONE: this.system = ContactPoint.ContactPointSystem.PHONE;
-            case FAX: this.system = ContactPoint.ContactPointSystem.FAX;
+            case EMAIL: {
+                this.system = ContactPoint.ContactPointSystem.EMAIL;
+                break;
+            }
+            case PHONE: {
+                this.system = ContactPoint.ContactPointSystem.PHONE;
+                break;
+            }
+            case FAX: {
+                this.system = ContactPoint.ContactPointSystem.FAX;
+                break;
+            }
         }
     }
 
@@ -56,9 +65,18 @@ public class BaseContactPoint extends BaseResource {
 
     public void setTelecomUseDstu2(org.hl7.fhir.instance.model.ContactPoint.ContactPointUse use) {
         switch (use) {
-            case HOME: this.telecomUse = ContactPoint.ContactPointUse.HOME;
-            case MOBILE: this.telecomUse = ContactPoint.ContactPointUse.MOBILE;
-            case WORK: this.telecomUse = ContactPoint.ContactPointUse.WORK;
+            case HOME: {
+                this.telecomUse = ContactPoint.ContactPointUse.HOME;
+                break;
+            }
+            case MOBILE: {
+                this.telecomUse = ContactPoint.ContactPointUse.MOBILE;
+                break;
+            }
+            case WORK: {
+                this.telecomUse = ContactPoint.ContactPointUse.WORK;
+                break;
+            }
         }
 
     }
