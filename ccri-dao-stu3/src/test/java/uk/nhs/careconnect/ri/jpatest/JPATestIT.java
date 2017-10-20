@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
         glue={"uk.nhs.careconnect","cucumber.api.spring"},
         features = "classpath:cucumber/"
 )
-public class JPATest {
+public class JPATestIT {
 
 
 

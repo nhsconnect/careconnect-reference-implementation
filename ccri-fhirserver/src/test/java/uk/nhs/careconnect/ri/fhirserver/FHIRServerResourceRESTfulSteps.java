@@ -36,7 +36,7 @@ public class FHIRServerResourceRESTfulSteps {
 
     private static IGenericClient client;
     private static final FhirContext ourCtx = FhirContext.forDstu3();
-    private static final Logger ourLog = org.slf4j.LoggerFactory.getLogger(FHIRServerTest.class);
+    private static final Logger ourLog = org.slf4j.LoggerFactory.getLogger(FHIRServerTestIT.class);
 
     private static int ourPort;
 
@@ -207,7 +207,7 @@ public class FHIRServerResourceRESTfulSteps {
 
             ourLog.info("START - CALLED Creating Server");
 
-            String path = FHIRServerTest.class.getClassLoader().getResource(".keep_hapi-fhir-jpaserver-example").getPath();
+            String path = FHIRServerTestIT.class.getClassLoader().getResource(".keep_hapi-fhir-jpaserver-example").getPath();
             ourLog.info("Properties Path = " + path);
 
             path = new File(path).getParent();

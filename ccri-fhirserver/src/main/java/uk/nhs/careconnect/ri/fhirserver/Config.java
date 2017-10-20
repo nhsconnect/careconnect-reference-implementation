@@ -27,8 +27,8 @@ public class Config {
     private String serverBase;
 
     @PostConstruct
-    public void showConfig(){
-        System.out.println("Started with Config: " + toString());
+    private void printConfig(){
+        System.out.println("Started with Config:" +  this.toString());
     }
 
     @Override
