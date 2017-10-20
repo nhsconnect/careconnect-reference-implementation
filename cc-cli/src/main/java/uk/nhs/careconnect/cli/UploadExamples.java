@@ -410,11 +410,11 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         CodeableConcept category = observation.addCategory();
         category.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(categoryCode).setDisplay(categoryDesc);
 
-        observation.setSubject(new Reference("Patient/1"));
+        observation.setSubject(new Reference("Patient/2"));
 
         observation.setEffective(new DateTimeType(date));
 
-        observation.getPerformer().add(new Reference("Patient/1"));
+        observation.getPerformer().add(new Reference("Patient/2"));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -417,6 +417,11 @@ public class JPAStepsDef {
         assertTrue("Expected "+count+" and actual "+ observationList.size(),count<observationList.size());
     }
 
+    @When("^I search on dates less than (\\d+)-(\\d+)-(\\d+)$")
+    public void i_search_on_dates_less_than(String year, String month, String day) throws Throwable {
+        observationList = observationRepository.search(null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null);
+    }
+
 
 
     private void validateResource(Resource resource) {

@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -19,9 +20,12 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -295,7 +299,7 @@ public class ObservationDao implements ObservationRepository {
     public List<Observation> search(TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
 
         log.debug("Observation.search");
-        List<ObservationEntity> qryResults = null;
+
         List<Observation> results = new ArrayList<Observation>();
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -323,6 +327,85 @@ public class ObservationDao implements ObservationRepository {
             Predicate p = builder.equal(joinConcept.get("code"),code.getValue());
             predList.add(p);
         }
+
+        ParameterExpression<java.util.Date> parameterLower = null;
+        ParameterExpression<java.util.Date> parameterUpper = null;
+        Boolean paramLowerPresent = false;
+        Boolean paramUpperPresent = false;
+        Date effectiveFrom = null;
+        Date effectiveTo = null;
+
+        if (effectiveDate !=null)
+        {
+
+            effectiveFrom = effectiveDate.getLowerBoundAsInstant();
+            effectiveTo = effectiveDate.getUpperBoundAsInstant();
+            if (effectiveFrom != null) log.trace("dob lower"+effectiveFrom.toString());
+            if (effectiveTo!= null) log.trace("dob upper"+effectiveTo.toString());
+
+            parameterLower = builder.parameter(java.util.Date.class);
+            parameterUpper = builder.parameter(java.util.Date.class);
+
+            for (DateParam dateParam: effectiveDate.getValuesAsQueryTokens()) {
+
+                log.trace("Date Param - "+dateParam.getValue()+" Prefix - "+dateParam.getPrefix());
+
+                switch (dateParam.getPrefix()) {
+                    case GREATERTHAN: {
+                        Predicate p = builder.greaterThan(root.<Date>get("effectiveDateTime"), parameterLower);
+                        predList.add(p);
+                        paramLowerPresent = true;
+                        break;
+                    }
+                    case GREATERTHAN_OR_EQUALS: {
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("effectiveDateTime"), parameterLower);
+                        predList.add(p);
+                        paramLowerPresent = true;
+                        break;
+                    }
+                    case APPROXIMATE:
+                    case EQUAL: {
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("effectiveDateTime"), parameterLower);
+                        predList.add(plow);
+                        Predicate pupper = builder.lessThanOrEqualTo(root.<Date>get("effectiveDateTime"), parameterUpper);
+                        predList.add(pupper);
+                        paramLowerPresent = true;
+                        paramUpperPresent = true;
+                        break;
+                    }
+
+                    case NOT_EQUAL: {
+                        Predicate p = builder.notEqual(root.<Date>get("effectiveDateTime"), parameterLower);
+                        predList.add(p);
+                        paramLowerPresent = true;
+                        break;
+                    }
+                    case STARTS_AFTER: {
+                        Predicate p = builder.greaterThan(root.<Date>get("effectiveDateTime"), parameterLower);
+                        predList.add(p);
+                        paramLowerPresent = true;
+                        break;
+
+                    }
+                    case LESSTHAN_OR_EQUALS: {
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("effectiveDateTime"), parameterUpper);
+                        predList.add(p);
+                        paramUpperPresent = true;
+                        break;
+                    }
+                    case ENDS_BEFORE:
+                    case LESSTHAN: {
+                        Predicate p = builder.lessThan(root.<Date>get("effectiveDateTime"), parameterUpper);
+                        predList.add(p);
+                        paramUpperPresent = true;
+                        break;
+                    }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + effectiveDate.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+        }
+
         // TODO Date Range
 
         // Ensure we don't search on components
@@ -340,7 +423,17 @@ public class ObservationDao implements ObservationRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+
+        List<ObservationEntity> qryResults = null;
+        TypedQuery<ObservationEntity> typedQuery = em.createQuery(criteria);
+
+        if (paramLowerPresent && effectiveFrom!=null) typedQuery.setParameter(parameterLower,effectiveFrom, TemporalType.DATE);
+        if (paramUpperPresent && effectiveTo!=null) typedQuery.setParameter(parameterUpper,effectiveTo, TemporalType.DATE);
+
+        qryResults = typedQuery.getResultList();
+
+
+       //qryResults = em.createQuery(criteria).getResultList();
         log.trace("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {

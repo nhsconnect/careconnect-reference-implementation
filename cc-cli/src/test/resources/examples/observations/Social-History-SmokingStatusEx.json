@@ -32,13 +32,13 @@
    "subject":{
       "reference":"Patient/2"
    },
-   "effectiveDateTime": "1993-10-12",
+   "effectiveDateTime": "2014-08-02",
    "valueCodeableConcept":{
       "coding":[
          {
             "system":"http://snomed.info/sct",
-            "code":"428041000124106",
-            "display":"Current some day smoker"
+            "code":"160625004",
+            "display":"Date ceased smoking"
          }
       ],
       "text":"Current some day smoker"

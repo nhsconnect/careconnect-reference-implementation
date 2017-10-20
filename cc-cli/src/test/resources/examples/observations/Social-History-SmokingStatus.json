@@ -30,9 +30,9 @@
       "text":"Tobacco smoking status"
    },
    "subject":{
-      "reference":"Patient/1"
+      "reference":"Patient/2"
    },
-   "issued":"2016-03-18T05:27:04Z",
+   "effectiveDateTime": "1993-10-12",
    "valueCodeableConcept":{
       "coding":[
          {
