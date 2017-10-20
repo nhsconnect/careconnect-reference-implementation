@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
         format = { "pretty" },
         features = "classpath:cucumber/"
 )
-public class FHIRServerTest {
+public class FHIRServerTestIT {
 
 
 }

@@ -69,7 +69,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 		));
 
-		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
+		// not fully tested registcat maerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
 

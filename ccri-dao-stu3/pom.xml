@@ -172,6 +172,8 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <!-- This is to run the integration tests
+            This will execute all test classes which have a name which ends in IT -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
