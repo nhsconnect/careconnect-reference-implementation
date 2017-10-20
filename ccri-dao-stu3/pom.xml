@@ -31,8 +31,6 @@
     <packaging>jar</packaging>
 
 
-
-
     <dependencies>
 
         <dependency>
@@ -54,7 +52,6 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>5.2.11.Final</version>
         </dependency>
-
 
 
         <dependency>
@@ -116,81 +113,80 @@
         <!-- TESTING -->
 
 
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>java-hamcrest</artifactId>
+            <version>${hamcrest-version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-               <dependency>
-                   <groupId>info.cukes</groupId>
-                   <artifactId>cucumber-spring</artifactId>
-                   <version>${cucumber-version}</version>
-                   <scope>test</scope>
-               </dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- This is to run the integration tests
+            This will execute all test classes which have a name which ends in IT -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.20.1</version>
+            </plugin>
+        </plugins>
+    </build>
 
-               <dependency>
-                   <groupId>info.cukes</groupId>
-                   <artifactId>cucumber-java</artifactId>
-                   <version>${cucumber-version}</version>
-                   <scope>test</scope>
-               </dependency>
-
-               <dependency>
-                   <groupId>info.cukes</groupId>
-                   <artifactId>cucumber-junit</artifactId>
-                   <version>${cucumber-version}</version>
-                   <scope>test</scope>
-               </dependency>
-
-               <dependency>
-                   <groupId>junit</groupId>
-                   <artifactId>junit</artifactId>
-                   <version>${junit-version}</version>
-                   <exclusions>
-                       <exclusion>
-                           <artifactId>hamcrest-core</artifactId>
-                           <groupId>org.hamcrest</groupId>
-                       </exclusion>
-                   </exclusions>
-                   <scope>test</scope>
-               </dependency>
-
-               <dependency>
-                   <groupId>org.mockito</groupId>
-                   <artifactId>mockito-all</artifactId>
-                   <version>${mockito-version}</version>
-                   <scope>test</scope>
-               </dependency>
-               <dependency>
-                   <groupId>org.hamcrest</groupId>
-                   <artifactId>java-hamcrest</artifactId>
-                   <version>${hamcrest-version}</version>
-                   <scope>test</scope>
-               </dependency>
-           </dependencies>
-
-           <build>
-
-
-               <plugins>
-                   <plugin>
-                       <groupId>org.apache.maven.plugins</groupId>
-                       <artifactId>maven-compiler-plugin</artifactId>
-                       <version>3.5</version>
-                       <configuration>
-                           <source>1.8</source>
-                           <target>1.8</target>
-                       </configuration>
-                   </plugin>
-
-               </plugins>
-           </build>
-
-           <distributionManagement>
-               <repository>
-                   <id>bintray-kevinmayfield-careconnect</id>
-                   <name>kevinmayfield-careconnect</name>
-                   <url>https://api.bintray.com/maven/kevinmayfield/careconnect/ccri-database/;publish=1</url>
-               </repository>
-           </distributionManagement>
-       </project>
+    <distributionManagement>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/ccri-database/;publish=1</url>
+        </repository>
+    </distributionManagement>
+</project>
