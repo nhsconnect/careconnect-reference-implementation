@@ -114,6 +114,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Location":
                         resource.getProfile().setReference(CareConnectProfile.Location_1);
                         break;
+                    case "Observation":
+                        resource.getProfile().setReference(CareConnectProfile.Observation_1);
+                        break;
                     default:
                         resource.getProfile().setReference((def.getResourceProfile(serverBase)));
                 }
@@ -210,6 +213,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "PractitionerRole":
                 case "Organization":
                 case "Location":
+                case "Observation":
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
                     if (resourceToMethods.containsKey(resourceName) == false) {

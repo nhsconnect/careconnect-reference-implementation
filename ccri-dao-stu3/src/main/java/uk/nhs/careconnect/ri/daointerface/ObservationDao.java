@@ -50,9 +50,10 @@ public class ObservationDao implements ObservationRepository {
     private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
 
     @Override
-    public Observation save(Observation observation) {
+    public Observation save(Observation observation) throws IllegalArgumentException {
 
-
+     //   System.out.println("In ObservationDao.save");
+        log.debug("Observation.save");
         ObservationEntity observationEntity = null;
 
         if (observation.hasId()) observationEntity = readEntity(observation.getIdElement());
@@ -65,7 +66,10 @@ public class ObservationDao implements ObservationRepository {
         }
         if (observation.hasCode()) {
           ConceptEntity code = conceptDao.findCode(observation.getCode().getCoding().get(0).getSystem(),observation.getCode().getCoding().get(0).getCode());
-          if (code != null) observationEntity.setCode(code);
+          if (code != null) { observationEntity.setCode(code); }
+          else {
+              throw new IllegalArgumentException("Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
+          }
         }
         if (observation.hasEffectiveDateTimeType()) {
             try {
@@ -80,7 +84,7 @@ public class ObservationDao implements ObservationRepository {
 
         PatientEntity patientEntity = null;
         if (observation.hasSubject()) {
-            log.info(observation.getSubject().getReference());
+            log.trace(observation.getSubject().getReference());
             patientEntity = patientDao.readEntity(new IdType(observation.getSubject().getReference()));
             observationEntity.setPatient(patientEntity);
         }
@@ -97,16 +101,18 @@ public class ObservationDao implements ObservationRepository {
             }
         } catch (Exception ex) { }
 
-
+      //  System.out.println("In ObservationDao.save Pre persist");
 
         em.persist(observationEntity);
 
+     //   System.out.println("In ObservationDao.save Post persist");
+
         for (Reference reference : observation.getPerformer()) {
 
-            log.info("Reference Typez = "+reference.getReferenceElement().getResourceType());
+            log.trace("Reference Typez = "+reference.getReferenceElement().getResourceType());
             switch (reference.getReferenceElement().getResourceType()) {
                 case "Practitioner" :
-                    log.info("Practitioner DAO :"+reference.getReferenceElement().getResourceType());
+                    log.trace("Practitioner DAO :"+reference.getReferenceElement().getResourceType());
                     PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(reference.getReference()));
                     if (practitionerEntity != null) {
                         ObservationPerformer performer = new ObservationPerformer();
@@ -118,7 +124,7 @@ public class ObservationDao implements ObservationRepository {
                     }
                     break;
                 case "Patient":
-                    log.info("Patient DAO :"+reference.getReferenceElement().getResourceType());
+                    log.trace("Patient DAO :"+reference.getReferenceElement().getResourceType());
                     PatientEntity patientperformerEntity = patientDao.readEntity(new IdType(reference.getReference()));
                     if (patientEntity != null) {
                         ObservationPerformer performer = new ObservationPerformer();
@@ -141,7 +147,7 @@ public class ObservationDao implements ObservationRepository {
                     }
                     break;
                 default:
-                    log.info("Not found this :"+reference.getReferenceElement().getResourceType());
+                    log.debug("Not found this :"+reference.getReferenceElement().getResourceType());
             }
         }
 
@@ -261,7 +267,9 @@ public class ObservationDao implements ObservationRepository {
             }
             em.persist(observationValue);
         }
-        return observation;
+        return observationEntity == null
+                ? null
+                : observationEntityToFHIRObservationTransformer.transform(observationEntity);
     }
 
     @Override
@@ -278,13 +286,15 @@ public class ObservationDao implements ObservationRepository {
 
     @Override
     public ObservationEntity readEntity(IdType theId) {
-        log.info("Observation Id = "+theId.getIdPart());
+        log.debug("Observation Id = "+theId.getIdPart());
         return  (ObservationEntity) em.find(ObservationEntity.class,Long.parseLong(theId.getIdPart()));
 
     }
 
     @Override
     public List<Observation> search(TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
+
+        log.debug("Observation.search");
         List<ObservationEntity> qryResults = null;
         List<Observation> results = new ArrayList<Observation>();
 
@@ -300,6 +310,21 @@ public class ObservationDao implements ObservationRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
+        if (category!=null) {
+            log.trace("Search on Observation.category code = "+category.getValue());
+            Join<ObservationEntity, ObservationCategory> join = root.join("categories", JoinType.LEFT);
+            Join<ObservationCategory, ConceptEntity> joinConcept = join.join("category", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),category.getValue());
+            predList.add(p);
+        }
+        if (code!=null) {
+            log.trace("Search on Observation.code code = "+code.getValue());
+            Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),code.getValue());
+            predList.add(p);
+        }
+        // TODO Date Range
+
         // Ensure we don't search on components
         Predicate p = builder.isNull(root.get("parentObservation"));
         predList.add(p);
@@ -316,7 +341,7 @@ public class ObservationDao implements ObservationRepository {
         }
 
         qryResults = em.createQuery(criteria).getResultList();
-
+        log.trace("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
 

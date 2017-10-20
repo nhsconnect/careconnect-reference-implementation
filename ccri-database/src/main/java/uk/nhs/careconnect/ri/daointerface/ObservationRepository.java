@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ObservationRepository {
 
-    Observation save(Observation observation);
+    Observation save(Observation observation) throws IllegalArgumentException;
 
     Observation read(IdType theId);
 

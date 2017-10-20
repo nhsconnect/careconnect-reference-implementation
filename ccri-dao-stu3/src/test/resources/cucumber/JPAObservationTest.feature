@@ -3,9 +3,20 @@ Feature: Observation Integration Test
 
 
          Scenario: Observation Post
-                   Given Observation resource file
-                   Then save the Observation
+               Given Observation resource file
+               Then save the Observation
 
+         Scenario: Observation Search Smoking Status Category
+            Given I have two sample resources loaded
+            When I search Observations on SNOMED category 228272008
+            Then I should get a Bundle of Observations with 1 resource
 
+         Scenario: Observation Search BMI Code
+             Given I have two sample resources loaded
+             When I search Observations on SNOMED code 301331008
+             Then I should get a Bundle of Observations with 1 resource
 
-
+        Scenario: Observation Search Patient
+            Given I have two sample resources loaded
+            When I search on Patient ID = 1
+            Then I should get a Bundle of Observations with more then 2 resources

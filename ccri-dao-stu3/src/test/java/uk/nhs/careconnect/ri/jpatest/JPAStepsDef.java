@@ -9,10 +9,12 @@ import ca.uhn.fhir.validation.ValidationResult;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.nhs.careconnect.ri.daointerface.*;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
@@ -38,10 +40,10 @@ public class JPAStepsDef {
     ValueSetRepository valueSetRepository;
 
     @Autowired
-    CodeSystemRepository myCodeSystemDao;
+    CodeSystemRepository codeSystemDao;
 
     @Autowired
-    ConceptRepository conceptRepository;
+    ConceptRepository conceptDao;
 
     @Autowired
     OrganisationRepository organisationRepository;
@@ -79,9 +81,13 @@ public class JPAStepsDef {
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
 
+    List<Observation> observationList = null;
+
     Transaction tx;
 
-    protected FhirContext ctx = FhirContext.forDstu3();
+    static Boolean initialized = false;
+
+    public  static FhirContext ctx = FhirContext.forDstu3();
     private static final FhirContext ourCtx = FhirContext.forDstu3();
 
     private static final String CS_URL = "http://example.com/my_code_system";
@@ -235,10 +241,10 @@ public class JPAStepsDef {
     public void i_add_a_dummy_codesystem() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
 
-        Session session =  conceptRepository.getSession();
-         tx = conceptRepository.getTransaction(session);
+        Session session =  conceptDao.getSession();
+         tx = conceptDao.getTransaction(session);
       //  conceptRepository.beginTransaction(tx);
-        cs = myCodeSystemDao.findBySystem(CS_URL);
+        cs = codeSystemDao.findBySystem(CS_URL);
 
 
         ConceptEntity parent = new ConceptEntity();
@@ -257,7 +263,7 @@ public class JPAStepsDef {
     @Then("^the CodeSystem should save$")
     public void the_CodeSystem_should_save() throws Throwable {
         try {
-            conceptRepository.storeNewCodeSystemVersion( cs,null);
+            conceptDao.storeNewCodeSystemVersion( cs,null);
            // fail();
         } catch (InvalidRequestException e) {
             assertEquals("CodeSystem contains circular reference around code parent", e.getMessage());
@@ -379,6 +385,39 @@ public class JPAStepsDef {
     }
 
 
+    @Given("^I have two sample resources loaded$")
+    public void i_have_two_sample_resources_loaded() throws Throwable {
+
+    }
+
+    @When("^I search Observations on SNOMED category (\\d+)$")
+    public void i_search_on_SNOMED_category(String category) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        observationList = observationRepository.search(new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null);
+    }
+
+    @Then("^I should get a Bundle of Observations with (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Observations_with_resource(int count) throws Throwable {
+
+        assertEquals(count,observationList.size());
+    }
+
+    @When("^I search Observations on SNOMED code (\\d+)$")
+    public void i_search_on_SNOMED_code(String code) throws Throwable {
+        observationList = observationRepository.search(null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null);
+    }
+
+    @When("^I search on Patient ID = (\\d+)$")
+    public void i_search_on_Patient_ID(String patientId) throws Throwable {
+        observationList = observationRepository.search(null, null, null, new ReferenceParam("Patient/"+patientId));
+    }
+
+    @Then("^I should get a Bundle of Observations with more then (\\d+) resources$")
+    public void i_should_get_a_Bundle_of_Observations_with_more_than_resource(int count) throws Throwable {
+        assertTrue("Expected "+count+" and actual "+ observationList.size(),count<observationList.size());
+    }
+
+
 
     private void validateResource(Resource resource) {
         ValidationResult result = validator.validateWithResult(resource);
@@ -403,13 +442,77 @@ public class JPAStepsDef {
             }
         }
     }
-
+    @BeforeClass
+    public static void beforeClass(){
+        initialized = false;
+    }
 
     @Before
-    public static void beforeClass() throws Exception {
+    public void before() throws Exception {
 		/*
 		 * This runs under maven, and I'm not sure how else to figure out the target directory from code..
 		 */
+
+		if (!initialized) {
+
+            cs = codeSystemDao.findBySystem(CareConnectSystem.SNOMEDCT);
+
+            ConceptEntity concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("228272008");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("229819007");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("365605003");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("301331008");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("162864005");
+            conceptDao.save(concept);
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Vital-Body-Mass-Example.json");
+            assertNotNull(inputStream);
+            Reader reader = new InputStreamReader(inputStream);
+
+            Observation observation = ctx.newJsonParser().parseResource(Observation.class, reader);
+            try {
+                observation = observationRepository.save(observation);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Social-History-SmokingStatus.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            observation = ctx.newJsonParser().parseResource(Observation.class, reader);
+            try {
+                observation = observationRepository.save(observation);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+
+            initialized = true;
+
+        }
+
+
         if (validator == null) {
             /* TODO STU3
             FhirInstanceValidator instanceValidator = new FhirInstanceValidator();

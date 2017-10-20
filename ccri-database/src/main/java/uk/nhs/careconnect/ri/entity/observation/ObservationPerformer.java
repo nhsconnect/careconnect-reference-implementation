@@ -66,16 +66,19 @@ public class ObservationPerformer {
         return performerPractitioner;
     }
 
-    public void setPerformerOrganisation(OrganisationEntity performerOrganisation) {
+    public ObservationPerformer setPerformerOrganisation(OrganisationEntity performerOrganisation) {
         this.performerOrganisation = performerOrganisation;
+        return this;
     }
 
-    public void setPerformerPatient(PatientEntity performerPatient) {
+    public ObservationPerformer setPerformerPatient(PatientEntity performerPatient) {
         this.performerPatient = performerPatient;
+        return this;
     }
 
-    public void setPerformerPractitioner(PractitionerEntity performerPractitioner) {
+    public ObservationPerformer setPerformerPractitioner(PractitionerEntity performerPractitioner) {
         this.performerPractitioner = performerPractitioner;
+        return this;
     }
 
     public performer getPerformerType() {

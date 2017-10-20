@@ -50,12 +50,12 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 
 		setResourceProviders(Arrays.asList(
-				myAppCtx.getBean(PatientResourceProvider.class)
-               ,myAppCtx.getBean(OrganisationResourceProvider.class)
+				 myAppCtx.getBean(PatientResourceProvider.class)
+               	,myAppCtx.getBean(OrganisationResourceProvider.class)
                 ,myAppCtx.getBean(PractitionerResourceProvider.class)
                 ,myAppCtx.getBean(LocationResourceProvider.class)
-               ,myAppCtx.getBean(PractitionerRoleResourceProvider.class)
-                //    ,myAppCtx.getBean(ObservationProvider.class)
+               	,myAppCtx.getBean(PractitionerRoleResourceProvider.class)
+      			,myAppCtx.getBean(ObservationResourceProvider.class) // Spring 4 addition KGM
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
@@ -64,7 +64,6 @@ public class HAPIRestfulConfig extends RestfulServer {
         setServerName(serverName);
         setServerVersion(serverVersion);
 
-		// not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
 
