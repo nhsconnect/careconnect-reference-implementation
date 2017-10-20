@@ -1,0 +1,50 @@
+{
+   "resourceType":"Observation",
+   "meta":{
+      "versionId":"1",
+      "lastUpdated":"2016-03-19T19:48:22Z"
+   },
+   "text":{
+      "status":"generated",
+      "div":"<div xmlns=\"http://www.w3.org/1999/xhtml\">Tobacco smoking status: Current some day smoker</div>"
+   },
+   "status":"final",
+   "category":{
+      "coding":[
+         {
+            "system":"http://snomed.info/sct",
+            "code":"228272008",
+            "display":"Health-related behavior"
+         }
+      ],
+      "text":"Social History"
+   },
+   "code":{
+      "coding":[
+         {
+            "system":"http://snomed.info/sct",
+            "code":"229819007",
+            "display":"Tobacco use and exposure"
+         }
+      ],
+      "text":"Tobacco smoking status"
+   },
+   "subject":{
+      "reference":"Patient/1"
+   },
+   "effectiveDateTime": "1999-08-03",
+   "performer": {
+      "reference": "Patient/1"
+   },
+   "issued":"2016-03-18T05:27:04Z",
+   "valueCodeableConcept":{
+      "coding":[
+         {
+            "system":"http://snomed.info/sct",
+            "code":"428041000124106",
+            "display":"Current some day smoker"
+         }
+      ],
+      "text":"Current some day smoker"
+   }
+}

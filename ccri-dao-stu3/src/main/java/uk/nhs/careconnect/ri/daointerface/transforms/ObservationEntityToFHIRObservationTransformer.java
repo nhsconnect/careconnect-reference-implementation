@@ -63,6 +63,17 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                 case Practitioner:
                     observation.getPerformer().add(new Reference("Practioner/"+performer.getPerformerPractitioner().getId())
                             .setDisplay(performer.getPerformerPractitioner().getNames().get(0).getDisplayName()));
+                    break;
+                case Patient:
+                    if (performer.getPerformerPatient() != null ) {
+                        observation.getPerformer().add(new Reference("Patient/" + performer.getPerformerPatient().getId())
+                                .setDisplay(performer.getPerformerPatient().getNames().get(0).getDisplayName()));
+                    }
+                    break;
+                case Organisation:
+                    observation.getPerformer().add(new Reference("Organization/"+performer.getPerformerOrganisation().getId())
+                            .setDisplay(performer.getPerformerOrganisation().getName()));
+                    break;
             }
         }
 

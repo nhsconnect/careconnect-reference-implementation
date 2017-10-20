@@ -42,6 +42,9 @@ public class CamelRoute extends RouteBuilder {
                 .routeId("Gateway Location")
                 .to("direct:HAPIServer");
 
+		from("direct:FHIRObservation")
+				.routeId("Gateway Observation")
+				.to("direct:HAPIServer");
 
         from("direct:HAPIServer")
             .routeId("INT FHIR Server")

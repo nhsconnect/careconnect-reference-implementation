@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ConceptDao implements ConceptRepository {
 
     @PersistenceContext
@@ -70,8 +71,8 @@ public class ConceptDao implements ConceptRepository {
     @Override
 
     public void save(ConceptParentChildLink conceptParentChildLink) {
-        sessionEntityManager.persist(conceptParentChildLink);
-        sessionEntityManager.flush();
+        em.persist(conceptParentChildLink);
+        //sessionEntityManager.flush();
         /*
         TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
         tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -90,6 +91,16 @@ public class ConceptDao implements ConceptRepository {
     @Override
 
     public ConceptEntity save(ConceptEntity conceptEntity){
+        em.persist(conceptEntity);
+        for (ConceptParentChildLink child: conceptEntity.getChildren()) {
+            child.setParent(conceptEntity);
+        }
+        return conceptEntity;
+    }
+
+    @Override
+
+    public ConceptEntity saveTransactional(ConceptEntity conceptEntity){
         sessionEntityManager.persist(conceptEntity);
         for (ConceptParentChildLink child: conceptEntity.getChildren()) {
             child.setParent(conceptEntity);

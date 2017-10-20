@@ -13,6 +13,8 @@ public interface ConceptRepository {
 
     public ConceptEntity save(ConceptEntity conceptEntity);
 
+    public ConceptEntity saveTransactional(ConceptEntity conceptEntity);
+
     public void save(ConceptParentChildLink conceptParentChildLink);
 
     public void persistLinks(ConceptEntity conceptEntity);
