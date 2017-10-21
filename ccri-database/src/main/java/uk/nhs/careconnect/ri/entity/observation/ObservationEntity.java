@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.entity.observation;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
@@ -81,6 +82,10 @@ public class ObservationEntity extends BaseResource {
 
     @Column(name="valueString")
     private BigDecimal valueString;
+
+    @ManyToOne
+    @JoinColumn(name="ENCOUNTER_ID")
+    private EncounterEntity contextEncounter;
 
     public Long getId() {
         return id;
@@ -231,4 +236,14 @@ public class ObservationEntity extends BaseResource {
         this.valueString = valueString;
         return this;
     }
+
+    public EncounterEntity getContext() {
+        return contextEncounter;
+    }
+
+    public ObservationEntity setContext(EncounterEntity context) {
+        this.contextEncounter = context;
+        return this;
+    }
+
 }
