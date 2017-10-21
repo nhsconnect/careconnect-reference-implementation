@@ -20,7 +20,7 @@ public class MedicationRequestEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn (name = "MEDICATION_CODE_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
+    @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
     private ConceptEntity medicationCode;
 
     @ManyToOne

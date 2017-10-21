@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.episode;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -26,6 +27,10 @@ public class EpisodeOfCareEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="PRACTITIONER_ID")
     private PractitionerEntity careManager;
+
+    @ManyToOne
+    @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_TYPE"))
+    private ConceptEntity type;
 
     public Long getId() {
         return id;
@@ -55,6 +60,15 @@ public class EpisodeOfCareEntity extends BaseResource {
 
     public EpisodeOfCareEntity setManagingOrganisation(OrganisationEntity managingOrganisation) {
         this.managingOrganisation = managingOrganisation;
+        return this;
+    }
+
+    public ConceptEntity getType() {
+        return type;
+    }
+
+    public EpisodeOfCareEntity setType(ConceptEntity type) {
+        this.type = type;
         return this;
     }
 }

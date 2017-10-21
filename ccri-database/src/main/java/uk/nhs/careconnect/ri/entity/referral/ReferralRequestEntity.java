@@ -21,7 +21,7 @@ public class ReferralRequestEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name="specialty")
+    @JoinColumn(name="SPECIALTY_CONCEPT_ID")
     private ConceptEntity specialty;
 
     @ManyToOne

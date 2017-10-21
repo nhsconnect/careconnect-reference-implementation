@@ -3,12 +3,13 @@ package uk.nhs.careconnect.ri.entity.condition;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Condition")
+@Table(name = "Condition_")
 public class ConditionEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +22,14 @@ public class ConditionEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_ENCOUNTER"))
-    private EncounterEntity encounter;
+    private EncounterEntity contextEncounter;
 
     @ManyToOne
-    @JoinColumn (name = "CODE_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
+    @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_CONDITION_EPISODE"))
+    private EpisodeOfCareEntity contextEpisode;
+
+    @ManyToOne
+    @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
     private ConceptEntity code;
 
 
@@ -41,21 +46,30 @@ public class ConditionEntity extends BaseResource {
         return patient;
     }
 
-    public ConditionEntity setEncounter(EncounterEntity encounter) {
-        this.encounter = encounter;
-        return this;
-    }
-
-    public EncounterEntity getEncounter() {
-        return encounter;
-    }
-
     public ConceptEntity getCode() {
         return code;
     }
 
     public ConditionEntity setCode(ConceptEntity code) {
         this.code = code;
+        return this;
+    }
+
+    public ConditionEntity setContextEncounter(EncounterEntity contextEncounter) {
+        this.contextEncounter = contextEncounter;
+        return this;
+    }
+
+    public EncounterEntity getContextEncounter() {
+        return contextEncounter;
+    }
+
+    public EpisodeOfCareEntity getContextEpisode() {
+        return contextEpisode;
+    }
+
+    public ConditionEntity setContextEpisode(EpisodeOfCareEntity contextEpisode) {
+        this.contextEpisode = contextEpisode;
         return this;
     }
 }
