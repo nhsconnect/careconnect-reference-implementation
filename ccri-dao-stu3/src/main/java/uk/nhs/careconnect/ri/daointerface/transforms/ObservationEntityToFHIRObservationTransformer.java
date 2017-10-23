@@ -81,11 +81,13 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
         if (observationEntity.getValueQuantity() != null) {
             Quantity quantity = new Quantity();
-            quantity.setValue(observationEntity.getValueQuantity())
-                .setCode(observationEntity.getValueUnitOfMeasure().getCode())
-                .setSystem(observationEntity.getValueUnitOfMeasure().getSystem())
-                .setUnit(observationEntity.getValueUnitOfMeasure().getCode());
+            quantity.setValue(observationEntity.getValueQuantity());
 
+            if (observationEntity.getValueUnitOfMeasure()!=null) {
+                quantity.setCode(observationEntity.getValueUnitOfMeasure().getCode())
+                        .setSystem(observationEntity.getValueUnitOfMeasure().getSystem())
+                        .setUnit(observationEntity.getValueUnitOfMeasure().getCode());
+            }
             observation.setValue(quantity);
         }
 
@@ -135,12 +137,12 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             // Value Quantity
 
             if (componentEntity.getObservationType() !=null && componentEntity.getObservationType().equals(ObservationEntity.ObservationType.valueQuantity)) {
-                CodeableConcept concept = new CodeableConcept();
-                concept.addCoding()
-                        .setDisplay(componentEntity.getCode().getDisplay())
-                        .setCode(componentEntity.getCode().getCode())
-                        .setSystem(componentEntity.getCode().getSystem());
-                observation.setValue(concept);
+                        CodeableConcept concept = new CodeableConcept();
+                        concept.addCoding()
+                                .setDisplay(componentEntity.getCode().getDisplay())
+                                .setCode(componentEntity.getCode().getCode())
+                                .setSystem(componentEntity.getCode().getSystem());
+                        observation.setValue(concept);
             }
         }
 
