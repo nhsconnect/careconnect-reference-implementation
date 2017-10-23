@@ -7,6 +7,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "EpisodeOfCare")
@@ -31,6 +32,14 @@ public class EpisodeOfCareEntity extends BaseResource {
     @ManyToOne
     @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_TYPE"))
     private ConceptEntity type;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "periodStartDate")
+    private Date periodStartDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "periodEndDate")
+    private Date periodEndDate;
 
     public Long getId() {
         return id;
@@ -70,5 +79,23 @@ public class EpisodeOfCareEntity extends BaseResource {
     public EpisodeOfCareEntity setType(ConceptEntity type) {
         this.type = type;
         return this;
+    }
+
+    public EpisodeOfCareEntity setPeriodStartDate(Date periodStartDate) {
+        this.periodStartDate = periodStartDate;
+        return this;
+    }
+
+    public EpisodeOfCareEntity setPeriodEndDate(Date periodEndDate) {
+        this.periodEndDate = periodEndDate;
+        return this;
+    }
+
+    public Date getPeriodStartDate() {
+        return periodStartDate;
+    }
+
+    public Date getPeriodEndDate() {
+        return periodEndDate;
     }
 }

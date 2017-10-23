@@ -32,6 +32,10 @@ public class ImmunisationEntity extends BaseResource {
     @JoinColumn(name="LOCATION_ID")
     private LocationEntity location;
 
+    @ManyToOne
+    @JoinColumn(name="STATUS_CONCEPT_ID")
+    private ConceptEntity status;
+
     public Long getId() {
         return id;
     }
@@ -69,6 +73,15 @@ public class ImmunisationEntity extends BaseResource {
 
     public ImmunisationEntity setLocation(LocationEntity location) {
         this.location = location;
+        return this;
+    }
+
+    public ConceptEntity getStatus() {
+        return status;
+    }
+
+    public ImmunisationEntity setStatus(ConceptEntity status) {
+        this.status = status;
         return this;
     }
 }

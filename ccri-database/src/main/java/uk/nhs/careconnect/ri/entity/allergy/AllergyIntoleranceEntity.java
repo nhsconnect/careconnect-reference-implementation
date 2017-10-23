@@ -5,6 +5,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "AllergyIntolerance")
@@ -21,6 +22,14 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @ManyToOne
     @JoinColumn (name = "SUBSTANCE_CODE_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_SUBSTANCE"))
     private ConceptEntity substance;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "recordedDate")
+    private Date recordedDate;
+
+    @ManyToOne
+    @JoinColumn(name="status_CONCEPT_ID")
+    private ConceptEntity status;
 
 
     public Long getId() {
@@ -42,6 +51,24 @@ public class AllergyIntoleranceEntity extends BaseResource {
 
     public AllergyIntoleranceEntity setSubstance(ConceptEntity substance) {
         this.substance = substance;
+        return this;
+    }
+
+    public AllergyIntoleranceEntity setStatus(ConceptEntity status) {
+        this.status = status;
+        return this;
+    }
+
+    public ConceptEntity getStatus() {
+        return status;
+    }
+
+    public Date getRecordedDate() {
+        return recordedDate;
+    }
+
+    public AllergyIntoleranceEntity setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
         return this;
     }
 }

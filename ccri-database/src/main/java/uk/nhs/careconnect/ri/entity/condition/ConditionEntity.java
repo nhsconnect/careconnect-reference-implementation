@@ -7,6 +7,9 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Condition_")
@@ -31,6 +34,17 @@ public class ConditionEntity extends BaseResource {
     @ManyToOne
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
     private ConceptEntity code;
+
+    @ManyToOne
+    @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID")
+    private ConceptEntity clinicalStatus;
+
+    @OneToMany(mappedBy="condition", targetEntity=ConditionCategory.class)
+    private List<ConditionCategory> categories = new ArrayList<>();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "recordedDateTime")
+    private Date recordedDateTime;
 
 
     public Long getId() {
@@ -71,5 +85,31 @@ public class ConditionEntity extends BaseResource {
     public ConditionEntity setContextEpisode(EpisodeOfCareEntity contextEpisode) {
         this.contextEpisode = contextEpisode;
         return this;
+    }
+
+    public ConditionEntity setCategories(List<ConditionCategory> categories) {
+        this.categories = categories;
+        return this;
+    }
+
+    public ConceptEntity getClinicalStatus() {
+        return clinicalStatus;
+    }
+
+    public List<ConditionCategory> getCategories() {
+        return categories;
+    }
+
+    public ConditionEntity setClinicalStatus(ConceptEntity clinicalStatus) {
+        this.clinicalStatus = clinicalStatus;
+        return this;
+    }
+
+    public Date getRecordedDateTime() {
+        return recordedDateTime;
+    }
+
+    public void setRecordedDateTime(Date recordedDateTime) {
+        this.recordedDateTime = recordedDateTime;
     }
 }

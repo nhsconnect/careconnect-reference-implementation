@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Observation", indexes = {
-        @Index(name="IDX_OBSERVATION_CODE", columnList = "code"),
+        @Index(name="IDX_OBSERVATION_CODE", columnList = "CODE_CONCEPT_ID"),
         @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime"),
         @Index(name="IDX_PATIENT", columnList = "PATIENT_ID")
 })
@@ -32,7 +32,7 @@ public class ObservationEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name="code")
+    @JoinColumn(name="CODE_CONCEPT_ID")
     private ConceptEntity code;
 
     @Enumerated(EnumType.ORDINAL)

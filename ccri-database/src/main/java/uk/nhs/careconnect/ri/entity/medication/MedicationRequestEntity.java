@@ -6,6 +6,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "MedicationRequest")
@@ -26,6 +27,14 @@ public class MedicationRequestEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="ENCOUNTER_ID")
     private EncounterEntity contextEncounter;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "writtenDate")
+    private Date writtenDate;
+
+    @ManyToOne
+    @JoinColumn(name="STATUS_CONCEPT_ID")
+    private ConceptEntity status;
 
     public Long getId() {
         return id;
@@ -55,6 +64,24 @@ public class MedicationRequestEntity extends BaseResource {
 
     public MedicationRequestEntity setMedicationCode(ConceptEntity medicationCode) {
         this.medicationCode = medicationCode;
+        return this;
+    }
+
+    public ConceptEntity getStatus() {
+        return status;
+    }
+
+    public MedicationRequestEntity setStatus(ConceptEntity status) {
+        this.status = status;
+        return this;
+    }
+
+    public Date getWrittenDate() {
+        return writtenDate;
+    }
+
+    public MedicationRequestEntity setWrittenDate(Date writtenDate) {
+        this.writtenDate = writtenDate;
         return this;
     }
 }

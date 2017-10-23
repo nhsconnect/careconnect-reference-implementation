@@ -6,6 +6,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "Procedure_")
@@ -26,6 +27,10 @@ public class ProcedureEntity extends BaseResource {
     @ManyToOne
     @JoinColumn (name = "CODE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_CODE"))
     private ConceptEntity code;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "performedDate")
+    private Date performedDate;
 
     public Long getId() {
         return id;
@@ -55,6 +60,15 @@ public class ProcedureEntity extends BaseResource {
 
     public ProcedureEntity setCode(ConceptEntity code) {
         this.code = code;
+        return this;
+    }
+
+    public Date getPerformedDate() {
+        return performedDate;
+    }
+
+    public ProcedureEntity setPerformedDate(Date performedDate) {
+        this.performedDate = performedDate;
         return this;
     }
 }
