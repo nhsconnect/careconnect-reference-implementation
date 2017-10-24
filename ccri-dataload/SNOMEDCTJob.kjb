@@ -568,7 +568,7 @@ select r.id,2,d.CONCEPT_ID,s.CONCEPT_ID, 9
 from careconnect.tempSimple r
 join Concept s on r.refsetId = s.CODE and s.CODESYSTEM_ID = 9
 join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
- where r.active = 1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null)</sql>
+ where r.active = 1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null);</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
       <sqlfilename />

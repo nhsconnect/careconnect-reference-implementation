@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -122,7 +123,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 ourLog.error(ex.getMessage());
             }
 
-/*
             try {
                 String path = "/examples/observations/";
                 List<String> files = getResourceFiles(path);
@@ -167,7 +167,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             } catch (Exception ex) {
                 ourLog.error(ex.getMessage());
             }
-  */
         }
 
 	}
@@ -378,7 +377,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         public void accept(CSVRecord theRecord) {
            // System.out.println(theRecord.toString());
 
-            Observation observation = newBasicObservation2(theRecord.get("EffectiveDateTime"), theRecord.get("FHIRCategory"), theRecord.get("FHIRCategory"),"http://hl7.org/fhir/ValueSet/observation-category");
+            Observation observation = newBasicObservation2(theRecord.get("EffectiveDateTime"), theRecord.get("FHIRCategory"), theRecord.get("FHIRCategory"),CareConnectSystem.FHIRObservationCategory);
 
             CodeableConcept code = observation.getCode();
             code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("Code")).setDisplay(theRecord.get("CodeDisplay"));
@@ -405,7 +404,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 observation.getBodySite().addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("BodySite")).setDisplay(theRecord.get("BodySiteDescription"));
             }
             if (!theRecord.get("Interpretation").isEmpty()) {
-                observation.getInterpretation().addCoding().setSystem("http://hl7.org/fhir/v2/0078").setCode(theRecord.get("Interpretation")).setDisplay(theRecord.get("Interpretation"));
+                observation.getInterpretation().addCoding().setSystem(CareConnectSystem.HL7v2Table0078).setCode(theRecord.get("Interpretation")).setDisplay(theRecord.get("Interpretation"));
             }
             if (!theRecord.get("LowRange").isEmpty() || !theRecord.get("HighRange").isEmpty()) {
                 Observation.ObservationReferenceRangeComponent range = observation.addReferenceRange();
@@ -422,8 +421,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
             if (!theRecord.get("PerformerType").isEmpty()) {
-                System.out.println(theRecord.get("PerformerType"));
-                System.out.println(theRecord.get("PerformerIdentifier"));
+             //   System.out.println(theRecord.get("PerformerType"));
+            //    System.out.println(theRecord.get("PerformerIdentifier"));
                 switch (theRecord.get("PerformerType")) {
                     case "practitioner" :
                         String practitioner = docMap.get(theRecord.get("PerformerIdentifier"));
@@ -434,7 +433,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                     .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("PerformerIdentifier")))
                                     .returnBundle(Bundle.class)
                                     .execute();
-                            System.out.println(results.getEntry().size());
+                         //   System.out.println(results.getEntry().size());
                             if (results.getEntry().size() > 0) {
                                 Practitioner prac = (Practitioner) results.getEntry().get(0).getResource();
                                 practitioner = prac.getIdElement().getIdPart();
@@ -457,7 +456,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                     .where(Organization.IDENTIFIER.exactly().code(theRecord.get("PerformerIdentifier")))
                                     .returnBundle(Bundle.class)
                                     .execute();
-                            System.out.println(results.getEntry().size());
+                         //   System.out.println(results.getEntry().size());
                             if (results.getEntry().size() > 0) {
                                 Organization org = (Organization) results.getEntry().get(0).getResource();
                                 organization = org.getIdElement().getIdPart();
@@ -472,7 +471,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
+           // System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
             resources.add(observation);
         }
     }

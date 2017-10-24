@@ -20,4 +20,7 @@ public class CareConnectSystem {
     public static final String UnitOfMeasure = "http://unitsofmeasure.org";
     public static final String SNOMEDCT = "http://snomed.info/sct";
     public static final String OrganisationType ="http://hl7.org/fhir/organization-type";
+
+    public static final String FHIRObservationCategory = "http://hl7.org/fhir/observation-category";
+    public static final String HL7v2Table0078 = "http://hl7.org/fhir/v2/0078";
 }

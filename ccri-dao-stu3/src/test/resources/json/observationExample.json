@@ -10,7 +10,7 @@
     {
       "coding": [
         {
-          "system": "http://hl7.org/fhir/ValueSet/observation-category",
+          "system": "http://hl7.org/fhir/observation-category",
           "code": "vital-signs",
           "display": "vital-signs"
         }

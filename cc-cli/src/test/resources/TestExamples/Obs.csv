@@ -1,14 +1,14 @@
 Observation ID,Patient ID,Effective Date Time,Code,Code Display,Method,Method Display,Body Site,Body Site Description,Value Quantity,Value Code,Value String,Value Unit Of Measure,Low Range,High Range,Interpretation,Age,FHIR Category,Performer Type,Performer Identifier
-10000,1001,28/04/2014,163030003,Systolic BP reading,,,368209003,Right arm,116,,,mmHg,,,N,78,vital-signs,Organization,RR8
-10001,1001,28/04/2014,163031004,Diastolic BP reading,,,368209003,Right arm,74,,,mmHg,,,N,78,vital-signs,Organization,RR8
+10000,1001,28/04/2014,163030003,Systolic BP reading,,,368209003,Right arm,116,,,mm[Hg],,,N,78,vital-signs,Organization,RR8
+10001,1001,28/04/2014,163031004,Diastolic BP reading,,,368209003,Right arm,74,,,mm[Hg],,,N,78,vital-signs,Organization,RR8
 10002,1001,03/12/2015,50373000,Body height,,,,,151,,,cm,,,,80,vital-signs,practitioner,C5201693
 10003,1001,03/12/2015,27113001,Body weight,,,,,81.5,,,kg,,,,80,vital-signs,practitioner,C5201693
 10004,1001,03/12/2015,60621009,Body mass index,,,,,35.7,,,kg/m2,,,,80,vital-signs,practitioner,C5201693
-10005,1001,03/12/2015,163030003,Systolic BP reading,,,368209003,Right arm,106,,,mmHg,,,N,80,vital-signs,practitioner,C5201693
-10006,1001,03/12/2015,163031004,Diastolic BP reading,,,368209003,Right arm,65,,,mmHg,,,N,80,vital-signs,practitioner,C5201693
+10005,1001,03/12/2015,163030003,Systolic BP reading,,,368209003,Right arm,106,,,mm[Hg],,,N,80,vital-signs,practitioner,C5201693
+10006,1001,03/12/2015,163031004,Diastolic BP reading,,,368209003,Right arm,65,,,mm[Hg],,,N,80,vital-signs,practitioner,C5201693
 10007,1001,03/12/2015,86290005,Respiratory rate,,,,,16,,,/min,12,18,,80,vital-signs,practitioner,C5201693
 10008,1001,15/04/2017,56342008,Temperature taking,89003005,Oral temperature taking,74262004,Oral cavity,36.3,,,Cel,,,N,81,vital-signs,Organization,RGD
-10009,1001,15/04/2017,163030003,Systolic BP reading,,,368209003,Right arm,107,,,mmHg,,,N,81,vital-signs,Organization,RGD
-12356,1100,19/10/2017,163030003,Systolic BP reading,,,368209003,Right arm,118,,,mmHg,,,N,6,vital-signs,practitioner,C3556009
-12357,1100,19/10/2017,163031004,Diastolic BP reading,,,368209003,Right arm,73,,,mmHg,,,N,6,vital-signs,practitioner,C3556009
+10009,1001,15/04/2017,163030003,Systolic BP reading,,,368209003,Right arm,107,,,mm[Hg],,,N,81,vital-signs,Organization,RGD
+12356,1100,19/10/2017,163030003,Systolic BP reading,,,368209003,Right arm,118,,,mm[Hg],,,N,6,vital-signs,practitioner,C3556009
+12357,1100,19/10/2017,163031004,Diastolic BP reading,,,368209003,Right arm,73,,,mm[Hg],,,N,6,vital-signs,practitioner,C3556009
 12358,1100,19/10/2017,86290005,Respiratory rate,,,,,15,,,/min,12,18,,6,vital-signs,practitioner,C3556009
