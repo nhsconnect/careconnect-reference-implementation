@@ -34,7 +34,7 @@ services:
 
   ccrisql:
     container_name: ccrisql
-    image: mysql
+    image: mysql:5.7.20
     environment:
       - MYSQL_ROOT_PASSWORD=mypassword
       - MYSQL_DATABASE=careconnect
