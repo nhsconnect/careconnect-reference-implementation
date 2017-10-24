@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
+import uk.nhs.careconnect.ri.entity.observation.ObservationRange;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -56,6 +57,32 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             observation.getCategory().add(concept);
         }
 
+        // Body Site
+
+        if (observationEntity.getBodySite() != null) {
+            observation.getBodySite().addCoding()
+                    .setCode(observationEntity.getBodySite().getCode())
+                    .setSystem(observationEntity.getBodySite().getSystem())
+                    .setDisplay(observationEntity.getBodySite().getDisplay());
+        }
+        // Method
+
+        if (observationEntity.getMethod() != null) {
+            observation.getMethod().addCoding()
+                    .setCode(observationEntity.getMethod().getCode())
+                    .setSystem(observationEntity.getMethod().getSystem())
+                    .setDisplay(observationEntity.getMethod().getDisplay());
+        }
+
+        // Interpretation
+
+        if (observationEntity.getInterpretation() != null) {
+            observation.getInterpretation().addCoding()
+                    .setCode(observationEntity.getInterpretation().getCode())
+                    .setSystem(observationEntity.getInterpretation().getSystem())
+                    .setDisplay(observationEntity.getInterpretation().getDisplay());
+        }
+
         // Performer
 
         for (ObservationPerformer performer :observationEntity.getPerformers()) {
@@ -74,6 +101,47 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                     observation.getPerformer().add(new Reference("Organization/"+performer.getPerformerOrganisation().getId())
                             .setDisplay(performer.getPerformerOrganisation().getName()));
                     break;
+            }
+        }
+
+        /// Referenece Range
+
+        for (ObservationRange rangeEntity : observationEntity.getRanges()) {
+            Observation.ObservationReferenceRangeComponent range =observation.addReferenceRange();
+
+            if (rangeEntity.getLowQuantity() != null) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(rangeEntity.getLowQuantity());
+                range.setLow(qty);
+            }
+            if (rangeEntity.getHighQuantity() != null) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(rangeEntity.getHighQuantity());
+                range.setHigh(qty);
+            }
+
+            if (rangeEntity.getType()!=null) {
+                CodeableConcept code = new CodeableConcept();
+                code.addCoding()
+                        .setCode(rangeEntity.getType().getCode())
+                        .setSystem(rangeEntity.getType().getSystem())
+                        .setDisplay(rangeEntity.getType().getDisplay());
+
+                range.setType(code);
+            }
+            if (rangeEntity.getHighAgeRange()!=null || rangeEntity.getLowAgeRange()!=null) {
+                Range ageRange = range.getAge();
+                if (rangeEntity.getLowAgeRange() != null) {
+                    SimpleQuantity qty = new SimpleQuantity();
+                    qty.setValue(rangeEntity.getLowAgeRange());
+                    ageRange.setLow(qty);
+                }
+                if (rangeEntity.getHighAgeRange() != null)
+                {
+                    SimpleQuantity qty = new SimpleQuantity();
+                    qty.setValue(rangeEntity.getHighAgeRange());
+                    ageRange.setHigh(qty);
+                }
             }
         }
 

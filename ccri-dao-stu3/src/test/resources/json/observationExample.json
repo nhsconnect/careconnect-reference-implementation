@@ -1,0 +1,54 @@
+{
+  "resourceType": "Observation",
+  "meta": {
+    "profile": [
+      "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Observation-1"
+    ]
+  },
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/ValueSet/observation-category",
+          "code": "vital-signs",
+          "display": "vital-signs"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "86290005",
+        "display": "Respiratory rate"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/1"
+  },
+  "effectiveDateTime": "2015-12-03T00:00:00+00:00",
+  "performer": [
+    {
+      "reference": "Practitioner/1"
+    }
+  ],
+  "valueQuantity": {
+    "value": 16,
+    "unit": "/min",
+    "system": "http://unitsofmeasure.org",
+    "code": "/min"
+  },
+  "referenceRange": [
+    {
+      "low": {
+        "value": 12
+      },
+      "high": {
+        "value": 18
+      }
+    }
+  ]
+}

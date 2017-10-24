@@ -72,12 +72,15 @@ public class ObservationEntity extends BaseResource {
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
     private List<ObservationEntity> components = new ArrayList<>();
 
+    @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
+    private List<ObservationRange> ranges = new ArrayList<>();
+
     @ManyToOne
-    @JoinColumn(name="bodySite")
+    @JoinColumn(name="BODY_SITE_CONCEPT_ID")
     private ConceptEntity bodySite;
 
     @ManyToOne
-    @JoinColumn(name="method")
+    @JoinColumn(name="METHOD_CONCEPT_ID")
     private ConceptEntity method;
 
     @Column(name="valueString")
@@ -86,6 +89,10 @@ public class ObservationEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="ENCOUNTER_ID")
     private EncounterEntity contextEncounter;
+
+    @ManyToOne
+    @JoinColumn(name="INTERPRETATION_CONCEPT_ID")
+    private ConceptEntity interpretation;
 
     public Long getId() {
         return id;
@@ -246,4 +253,30 @@ public class ObservationEntity extends BaseResource {
         return this;
     }
 
+    public EncounterEntity getContextEncounter() {
+        return contextEncounter;
+    }
+
+    public ObservationEntity setContextEncounter(EncounterEntity contextEncounter) {
+        this.contextEncounter = contextEncounter;
+        return this;
+    }
+
+    public List<ObservationRange> getRanges() {
+        return ranges;
+    }
+
+    public ObservationEntity setRanges(List<ObservationRange> ranges) {
+        this.ranges = ranges;
+        return this;
+    }
+
+    public ConceptEntity getInterpretation() {
+        return interpretation;
+    }
+
+    public ObservationEntity setInterpretation(ConceptEntity interpretation) {
+        this.interpretation = interpretation;
+        return this;
+    }
 }

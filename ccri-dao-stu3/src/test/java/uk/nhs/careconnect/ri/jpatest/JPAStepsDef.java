@@ -487,6 +487,11 @@ public class JPAStepsDef {
             concept.setCode("162864005");
             conceptDao.save(concept);
 
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("86290005");
+            conceptDao.save(concept);
+
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Vital-Body-Mass-Example.json");
             assertNotNull(inputStream);
@@ -512,6 +517,17 @@ public class JPAStepsDef {
                 System.out.println(ex.getMessage());
             }
 
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/observationExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            observation = ctx.newJsonParser().parseResource(Observation.class, reader);
+            try {
+                observation = observationRepository.save(observation);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
 
             initialized = true;
 

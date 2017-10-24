@@ -407,18 +407,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("Interpretation").isEmpty()) {
                 observation.getInterpretation().addCoding().setSystem("http://hl7.org/fhir/v2/0078").setCode(theRecord.get("Interpretation")).setDisplay(theRecord.get("Interpretation"));
             }
-            if (!theRecord.get("LowRange").isEmpty()) {
-                Observation.ObservationReferenceRangeComponent range = new Observation.ObservationReferenceRangeComponent();
-                SimpleQuantity low = new SimpleQuantity();
-                low.setValue(new BigDecimal(theRecord.get("LowRange")));
-                range.setLow(low);
+            if (!theRecord.get("LowRange").isEmpty() || !theRecord.get("HighRange").isEmpty()) {
+                Observation.ObservationReferenceRangeComponent range = observation.addReferenceRange();
+                if (!theRecord.get("LowRange").isEmpty()) {
+                    SimpleQuantity low = new SimpleQuantity();
+                    low.setValue(new BigDecimal(theRecord.get("LowRange")));
+                    range.setLow(low);
+                }
                 if (!theRecord.get("HighRange").isEmpty()) {
 
                     SimpleQuantity high = new SimpleQuantity();
-                    low.setValue(new BigDecimal(theRecord.get("HighRange")));
-                    range.setLow(high);
+                    high.setValue(new BigDecimal(theRecord.get("HighRange")));
+                    range.setHigh(high);
                 }
-                observation.addReferenceRange(range);
             }
             if (!theRecord.get("PerformerType").isEmpty()) {
                 System.out.println(theRecord.get("PerformerType"));

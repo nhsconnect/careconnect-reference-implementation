@@ -14,6 +14,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
+import uk.nhs.careconnect.ri.entity.observation.ObservationRange;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -105,11 +106,62 @@ public class ObservationDao implements ObservationRepository {
             }
         } catch (Exception ex) { }
 
-      //  System.out.println("In ObservationDao.save Pre persist");
+        // Body Site
+
+        if (observation.hasBodySite()) {
+            ConceptEntity code = conceptDao.findCode(observation.getBodySite().getCoding().get(0).getSystem(),observation.getBodySite().getCoding().get(0).getCode());
+            if (code != null) { observationEntity.setBodySite(code); }
+            else {
+                throw new IllegalArgumentException("Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
+            }
+
+        }
+
+        // Method
+
+        if (observation.hasMethod()) {
+            ConceptEntity code = conceptDao.findCode(observation.getMethod().getCoding().get(0).getSystem(),observation.getMethod().getCoding().get(0).getCode());
+            if (code != null) { observationEntity.setMethod(code); }
+            else {
+                throw new IllegalArgumentException("Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
+            }
+
+        }
+
+        // Interpretation
+
+        if (observation.hasInterpretation()) {
+            ConceptEntity code = conceptDao.findCode(observation.getInterpretation().getCoding().get(0).getSystem(),observation.getInterpretation().getCoding().get(0).getCode());
+            if (code != null) { observationEntity.setInterpretation(code); }
+            else {
+                throw new IllegalArgumentException("Missing System/Code = "+ observation.getInterpretation().getCoding().get(0).getSystem() +" code = "+observation.getInterpretation().getCoding().get(0).getCode());
+            }
+
+        }
 
         em.persist(observationEntity);
 
-     //   System.out.println("In ObservationDao.save Post persist");
+        // Range
+
+        for (Observation.ObservationReferenceRangeComponent range : observation.getReferenceRange()) {
+            log.trace("Observation Range Found");
+            ObservationRange rangeEntity = new ObservationRange();
+            rangeEntity
+                    .setObservation(observationEntity);
+            if (range.hasLow()) rangeEntity.setLowAgeRange(range.getLow().getValue());
+            if (range.hasHigh()) rangeEntity.setHighAgeRange(range.getHigh().getValue());
+            if (range.hasType()) {
+                ConceptEntity code = conceptDao.findCode(range.getType().getCoding().get(0).getSystem(),range.getType().getCoding().get(0).getCode());
+                if (code != null) { rangeEntity.setType(code); }
+                else {
+
+                    throw new IllegalArgumentException("Missing System/Code = "+ range.getType().getCoding().get(0).getSystem() +" code = "+range.getType().getCoding().get(0).getCode());
+                }
+            }
+            log.trace(" ** Range Persist ** ");
+            em.persist(rangeEntity);
+        }
+
 
         for (Reference reference : observation.getPerformer()) {
 
