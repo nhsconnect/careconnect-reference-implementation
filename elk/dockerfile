@@ -1,4 +1,0 @@
-FROM sebp/elk:562
-COPY logstash/conf/20-filter.conf dceex/20-filter.conf
-
-
