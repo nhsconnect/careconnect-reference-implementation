@@ -25,6 +25,17 @@ services:
     networks:
       - elknet
 
+  nginx:
+    image: nginx
+    depends_on:
+      - elk
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - 20001:20001
+    networks:
+      - elknet
+
 volumes:
   tomcat-log-volume:
   gateway-log-volume:
