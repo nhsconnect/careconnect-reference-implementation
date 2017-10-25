@@ -12,8 +12,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -26,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class UploadExamples extends BaseCommand {
 
@@ -88,85 +85,83 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		ctx = getSpecVersionContext(theCommandLine);
 		String exclude = theCommandLine.getOptionValue("e");
 
-		if (isNotBlank(exclude)) {
-			for (String next : exclude.split(",")) {
-				if (isNotBlank(next)) {
-					IIdType id = ctx.getVersion().newIdType();
-					id.setValue(next);
-					myExcludes.add(id);
-				}
-			}
-		}
+        ClassLoader classLoader = getClass().getClassLoader();
 
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+
             client = ctx.newRestfulGenericClient(targetServer);
 
+            // Vic data file
             try {
-                String path = "/examples/";
-                List<String> files = getResourceFiles(path);
-                for (String file : files) {
-                    if (file.equals("Obs.csv")) {
-                        System.out.println(file);
 
-                        IRecordHandler handler = null;
+                //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
 
-                        handler = new ObsHandler();
-                        processObsCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, UploadExamples.class.getResource(path+file).getFile());
-                        for (IBaseResource resource : resources) {
-                            client.create().resource(resource).execute();
-                        }
-                        resources.clear();
+                System.out.println("Obs.csv");
 
-                    }
+                IRecordHandler handler = null;
+
+                handler = new ObsHandler();
+                processObsCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/Obs.csv"));
+                for (IBaseResource resource : resources) {
+                    client.create().resource(resource).execute();
                 }
+                resources.clear();
+
+
+
             } catch (Exception ex) {
                 ourLog.error(ex.getMessage());
             }
 
+            /* Developer loads - remove for now
             try {
-                String path = "/examples/observations/";
-                List<String> files = getResourceFiles(path);
-                for (String file : files) {
-                    System.out.println(file);
-                    String contents = IOUtils.toString(new InputStreamReader(new FileInputStream(UploadExamples.class.getResource(path+file).getFile()), "UTF-8"));
+                File file = new File(classLoader.getResource("Examples/observations").getFile());
+
+                for (File fileD : file.listFiles()) {
+                    System.out.println(fileD.getName());
+                    String contents = IOUtils.toString(new InputStreamReader(new FileInputStream(fileD), "UTF-8"));
                     IBaseResource localProfileResource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(ctx).parseResource(contents);
                     client.create().resource(localProfileResource).execute();
                 }
-
             } catch (Exception ex) {
                 ourLog.error(ex.getMessage());
+
             }
+            */
+
+            // Nokia
+
             try {
-                String path = "/examples/nokia/";
-                List<String> files = getResourceFiles(path);
-                for (String file : files) {
-                    if (file.equals("weight.csv")) {
-                        System.out.println(file);
-                        IRecordHandler handler = null;
 
-                        handler = new WeightHandler();
-                        processWeightCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, UploadExamples.class.getResource(path+file).getFile());
-                        for (IBaseResource resource : resources) {
-                            client.create().resource(resource).execute();
-                        }
-                        resources.clear();
-                    }
-                    if (file.equals("blood_pressure.csv")) {
-                        System.out.println(file);
-                        IRecordHandler handler = null;
+               // File file = new File(classLoader.getResource("Examples/nokia/weight.csv").getFile());
 
-                        handler = new BloodPressureHandler();
-                        processBloodPressureCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, UploadExamples.class.getResource(path+file).getFile());
-                        for (IBaseResource resource : resources) {
-                            client.create().resource(resource).execute();
-                        }
-                        resources.clear();
-                    }
+                System.out.println("weight.csv");
+                IRecordHandler handler = null;
+
+                handler = new WeightHandler();
+                processWeightCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/nokia/weight.csv"));
+                for (IBaseResource resource : resources) {
+                    client.create().resource(resource).execute();
                 }
+                resources.clear();
+
+               // file = new File(classLoader.getResource("Examples/nokia/blood_pressure.csv").getFile());
+
+                System.out.println("blood_pressure.csv");
+                handler = null;
+
+                handler = new BloodPressureHandler();
+                processBloodPressureCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/nokia/blood_pressure.csv"));
+                for (IBaseResource resource : resources) {
+                    client.create().resource(resource).execute();
+                }
+                resources.clear();
+
 
             } catch (Exception ex) {
                 ourLog.error(ex.getMessage());
             }
+
         }
 
 	}
@@ -201,18 +196,18 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     }
 
 
-    private void processObsCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String filename) throws CommandFailureException {
+    private void processObsCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
         Boolean found = false;
         try {
 
-            ourLog.info("Processing file {}", filename);
+          //  ourLog.info("Processing file {}", file.getName());
             found = true;
 
             Reader reader = null;
             CSVParser parsed = null;
             try {
-                reader = new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8);
+                reader = new InputStreamReader(file);
                 CSVFormat format = CSVFormat
                         .newFormat(theDelimiter)
                         .withAllowMissingColumnNames()
@@ -253,7 +248,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler.accept(nextRecord);
                     count++;
                     if (count >= nextLoggedCount) {
-                        ourLog.info(" * Processed {} records in {}", count, filename);
+                        ourLog.info(" * Processed {} records", count);
                     }
                 }
 
@@ -265,19 +260,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
-    private void processWeightCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String filename) throws CommandFailureException {
+    private void processWeightCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
 
         Boolean found = false;
         try {
 
-            ourLog.info("Processing file {}", filename);
+
             found = true;
 
             Reader reader = null;
             CSVParser parsed = null;
             try {
-                reader = new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8);
+                reader = new InputStreamReader(file);
                 CSVFormat format = CSVFormat
                         .newFormat(theDelimiter)
                         .withAllowMissingColumnNames()
@@ -305,7 +300,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler.accept(nextRecord);
                     count++;
                     if (count >= nextLoggedCount) {
-                        ourLog.info(" * Processed {} records in {}", count, filename);
+                        ourLog.info(" * Processed {} records", count);
                     }
                 }
 
@@ -317,19 +312,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
-    private void processBloodPressureCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String filename) throws CommandFailureException {
+    private void processBloodPressureCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
 
         Boolean found = false;
         try {
 
-            ourLog.info("Processing file {}", filename);
+            //ourLog.info("Processing file {}", file.getName());
             found = true;
 
             Reader reader = null;
             CSVParser parsed = null;
             try {
-                reader = new InputStreamReader(new FileInputStream(filename), Charsets.UTF_8);
+                reader = new InputStreamReader(file);
                 CSVFormat format = CSVFormat
                         .newFormat(theDelimiter)
                         .withAllowMissingColumnNames()
@@ -355,7 +350,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler.accept(nextRecord);
                     count++;
                     if (count >= nextLoggedCount) {
-                        ourLog.info(" * Processed {} records in {}", count, filename);
+                        ourLog.info(" * Processed {} records", count, file);
                     }
                 }
 

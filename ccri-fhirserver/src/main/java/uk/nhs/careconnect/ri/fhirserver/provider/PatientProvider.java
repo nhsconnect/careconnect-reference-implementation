@@ -67,8 +67,8 @@ public class PatientProvider implements IResourceProvider {
                                        ) {
 
 
-        return patientDao.searchPatient(addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
 
+        return patientDao.searchPatient(addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
 
     }
 

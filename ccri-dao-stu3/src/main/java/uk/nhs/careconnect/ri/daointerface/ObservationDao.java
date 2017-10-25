@@ -347,6 +347,8 @@ public class ObservationDao implements ObservationRepository {
 
     @Override
     public Observation read(IdType theId) {
+
+        log.info("Looking for Observation = "+theId.getIdPart());
         if (theId.getIdPart() != null) {
             ObservationEntity observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -367,7 +369,7 @@ public class ObservationDao implements ObservationRepository {
     @Override
     public List<Observation> search(TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
 
-        log.debug("Observation.search");
+
 
         List<Observation> results = new ArrayList<Observation>();
 
@@ -503,7 +505,7 @@ public class ObservationDao implements ObservationRepository {
 
 
        //qryResults = em.createQuery(criteria).getResultList();
-        log.trace("Found Observations = "+qryResults.size());
+        log.info("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
 

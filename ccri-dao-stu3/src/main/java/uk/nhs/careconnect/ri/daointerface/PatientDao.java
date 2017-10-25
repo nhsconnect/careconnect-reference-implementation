@@ -282,7 +282,7 @@ public class PatientDao implements PatientRepository {
 
         qryResults = typedQuery.getResultList();
 
-
+        log.info("Found Patients = "+qryResults.size());
         for (PatientEntity patientEntity : qryResults)
         {
             Patient patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
