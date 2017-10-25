@@ -48,8 +48,9 @@ public class CamelRoute extends RouteBuilder {
 
         from("direct:HAPIServer")
             .routeId("INT FHIR Server")
-				.to("log:uk.nhs.careconnect?level=INFO&showHeaders=true&showHeaders=true")
+				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
                 .to(serverBase)
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
 
     }

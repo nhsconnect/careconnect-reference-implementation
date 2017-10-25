@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -8,9 +10,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "Observation", indexes = {
@@ -60,20 +60,25 @@ public class ObservationEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
-    private List<ObservationCategory> categories = new ArrayList<>();
+    private Set<ObservationCategory> categories = new HashSet<>();
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationIdentifier.class)
-    private List<ObservationIdentifier> identifiers = new ArrayList<>();
+    private Set<ObservationIdentifier> identifiers = new HashSet<>();
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationPerformer.class)
-    private List<ObservationPerformer> performers = new ArrayList<>();
+    private Set<ObservationPerformer> performers = new HashSet<>();
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
-    private List<ObservationEntity> components = new ArrayList<>();
+    private Set<ObservationEntity> components = new HashSet<>();
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
-    private List<ObservationRange> ranges = new ArrayList<>();
+    private Set<ObservationRange> ranges = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name="BODY_SITE_CONCEPT_ID")
@@ -144,18 +149,18 @@ public class ObservationEntity extends BaseResource {
         return this;
     }
 
-    public List<ObservationCategory> getCategories() {
-        if (categories == null) { categories = new ArrayList<ObservationCategory>(); }
+    public Set<ObservationCategory> getCategories() {
+        if (categories == null) { categories = new HashSet<ObservationCategory>(); }
         return categories;
     }
 
-    public List<ObservationIdentifier> getIdentifiers() {
-        if (identifiers == null) { identifiers = new ArrayList<ObservationIdentifier>(); }
+    public Set<ObservationIdentifier> getIdentifiers() {
+        if (identifiers == null) { identifiers = new HashSet<ObservationIdentifier>(); }
         return identifiers;
     }
 
-    public List<ObservationPerformer> getPerformers() {
-        if (performers == null) { performers = new ArrayList<ObservationPerformer>(); }
+    public Set<ObservationPerformer> getPerformers() {
+        if (performers == null) { performers = new HashSet<ObservationPerformer>(); }
         return performers;
     }
 
@@ -168,7 +173,7 @@ public class ObservationEntity extends BaseResource {
         return this;
     }
 
-    public ObservationEntity setCategories(List<ObservationCategory> categories) {
+    public ObservationEntity setCategories(Set<ObservationCategory> categories) {
         this.categories = categories;
         return this;
     }
@@ -177,12 +182,12 @@ public class ObservationEntity extends BaseResource {
         return status;
     }
 
-    public ObservationEntity setIdentifiers(List<ObservationIdentifier> identifiers) {
+    public ObservationEntity setIdentifiers(Set<ObservationIdentifier> identifiers) {
         this.identifiers = identifiers;
         return this;
     }
 
-    public ObservationEntity setPerformers(List<ObservationPerformer> performers) {
+    public ObservationEntity setPerformers(Set<ObservationPerformer> performers) {
         this.performers = performers;
         return this;
     }
@@ -200,11 +205,11 @@ public class ObservationEntity extends BaseResource {
         return valueUnitOfMeasure;
     }
 
-    public List<ObservationEntity> getComponents() {
+    public Set<ObservationEntity> getComponents() {
         return components;
     }
 
-    public ObservationEntity setComponents(List<ObservationEntity> components) {
+    public ObservationEntity setComponents(Set<ObservationEntity> components) {
         this.components = components;
         return this;
     }
@@ -262,11 +267,11 @@ public class ObservationEntity extends BaseResource {
         return this;
     }
 
-    public List<ObservationRange> getRanges() {
+    public Set<ObservationRange> getRanges() {
         return ranges;
     }
 
-    public ObservationEntity setRanges(List<ObservationRange> ranges) {
+    public ObservationEntity setRanges(Set<ObservationRange> ranges) {
         this.ranges = ranges;
         return this;
     }

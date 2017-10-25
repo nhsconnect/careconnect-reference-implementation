@@ -4,9 +4,7 @@ import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ObservationEntityBuilder {
 
@@ -21,7 +19,7 @@ public class ObservationEntityBuilder {
         observationEntity.setPatient(patient);
 
         observationEntity.setEffectiveDateTime(new Date());
-        List<ObservationPerformer> performers = new ArrayList<>();
+        Set<ObservationPerformer> performers = new HashSet<>();
         ObservationPerformer performer = new ObservationPerformer();
         performer.setPerformerType(ObservationPerformer.performer.Patient);
         performers.add(performer);
