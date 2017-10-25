@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -8,6 +9,8 @@ import javax.persistence.*;
 		@UniqueConstraint(name="IDX_CS_SYSTEM", columnNames= {"SYSTEM_URI"})
 	})
 @Entity()
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class SystemEntity extends BaseResource {
 
 	@Id()

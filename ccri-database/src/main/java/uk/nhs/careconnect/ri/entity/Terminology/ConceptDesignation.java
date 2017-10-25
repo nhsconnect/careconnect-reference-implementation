@@ -7,7 +7,8 @@ import javax.persistence.*;
 @Entity
 @Table(name="ConceptDesignation", indexes= {
 
-        @Index(columnList = "designationId", name = "IDX_DESIGNATION")
+        @Index(columnList = "designationId", name = "IDX_DESIGNATION"),
+        @Index(columnList = "CONCEPT_ID", name = "IDX_CONCEPT_ID")
 })
 public class ConceptDesignation extends BaseResource {
 

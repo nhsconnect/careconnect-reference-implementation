@@ -1,7 +1,5 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -10,7 +8,9 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Observation", indexes = {
@@ -60,23 +60,23 @@ public class ObservationEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+  //  @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private Set<ObservationCategory> categories = new HashSet<>();
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+   // @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationIdentifier.class)
     private Set<ObservationIdentifier> identifiers = new HashSet<>();
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity=ObservationPerformer.class)
     private Set<ObservationPerformer> performers = new HashSet<>();
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
     private Set<ObservationEntity> components = new HashSet<>();
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+   // @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
     private Set<ObservationRange> ranges = new HashSet<>();
 

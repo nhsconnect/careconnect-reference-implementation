@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hl7.fhir.dstu3.model.Enumerations.PublicationStatus;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
@@ -10,6 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name="ValueSet", uniqueConstraints= @UniqueConstraint(name="PK_VALUESET_MAP", columnNames={"VALUESET_ID"}))
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ValueSetEntity extends BaseResource {
 	
 	

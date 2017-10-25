@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,6 +9,8 @@ import javax.persistence.*;
 		// For data loading
 		@Index(columnList = "relationshipId", name = "IDX_RELATIONSHIP")
 })
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ConceptParentChildLink {
 	
 

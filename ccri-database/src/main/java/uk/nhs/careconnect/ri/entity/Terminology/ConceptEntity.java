@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -22,7 +23,8 @@ import java.util.*;
 		@Index(columnList = "DISPLAY", name = "IDX_DISPLAY")	,
 		@Index(columnList = "CODE,CODESYSTEM_ID", name = "IDX_CODE_CODESYSTEM")
 })
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
 
