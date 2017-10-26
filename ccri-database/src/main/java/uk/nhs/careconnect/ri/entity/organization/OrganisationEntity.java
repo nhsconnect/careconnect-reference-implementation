@@ -26,6 +26,20 @@ public class OrganisationEntity extends BaseResource {
     @Column(name = "name")
     private String name;
 
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne
+    @JoinColumn(name="partOf")
+    private OrganisationEntity partOf;
+
+    @Column(name="active")
+    private Boolean active;
+
+
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne
+    @JoinColumn(name="type",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
+    private ConceptEntity type;
+
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<OrganisationIdentifier> identifiers;
@@ -34,21 +48,11 @@ public class OrganisationEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<OrganisationAddress> addresses;
 
-    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
     @LazyCollection(LazyCollectionOption.TRUE)
+    @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
     private List<OrganisationTelecom> telecoms;
 
-    @ManyToOne
-    @JoinColumn(name="partOf")
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private OrganisationEntity partOf;
 
-    @Column(name="active")
-    private Boolean active;
-
-    @ManyToOne
-    @JoinColumn(name="type")
-    private ConceptEntity type;
 
 
     public Long getId() {

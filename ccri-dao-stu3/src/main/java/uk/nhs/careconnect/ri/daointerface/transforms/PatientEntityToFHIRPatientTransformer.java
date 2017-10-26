@@ -6,10 +6,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.patient.PatientAddress;
-import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
-import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
-import uk.nhs.careconnect.ri.entity.patient.PatientName;
+import uk.nhs.careconnect.ri.entity.patient.*;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerName;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
@@ -92,12 +89,12 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             patient.addAddress(address);
         }
 
-        for(int f=0;f<patientEntity.getTelecoms().size();f++)
+        for(PatientTelecom telecom : patientEntity.getTelecoms())
         {
             patient.addTelecom()
-                    .setSystem(patientEntity.getTelecoms().get(f).getSystem())
-                    .setValue(patientEntity.getTelecoms().get(f).getValue())
-                    .setUse(patientEntity.getTelecoms().get(f).getTelecomUse());
+                    .setSystem(telecom.getSystem())
+                    .setValue(telecom.getValue())
+                    .setUse(telecom.getTelecomUse());
         }
 
 

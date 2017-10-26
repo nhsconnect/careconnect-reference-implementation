@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -22,6 +24,7 @@ public class ConceptDesignation extends BaseResource {
     @Column(name= "CONCEPT_DESIGNATION_ID")
     private Long Id;
 
+    @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
     @JoinColumn (name = "CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONCEPT_CONCEPT_DESIGNATION"))
     private ConceptEntity conceptEntity;
@@ -29,6 +32,7 @@ public class ConceptDesignation extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private DesignationUse designationUse;
 
+    @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
     @JoinColumn(name="language")
     private ConceptEntity language;

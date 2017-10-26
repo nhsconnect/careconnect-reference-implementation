@@ -63,7 +63,7 @@ public class OrganizationProvider implements IResourceProvider {
     public List<Organization> searchOrganisation(HttpServletRequest theRequest,
                                                 @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name,
-                                                 @OptionalParam(name = Organization.SP_NAME) StringParam postCode
+                                                 @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
        return organisationDao.searchOrganization(identifier,name, postCode);
     }

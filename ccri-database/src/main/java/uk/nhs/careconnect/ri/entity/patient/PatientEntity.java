@@ -53,16 +53,18 @@ public class PatientEntity extends BaseResource {
     private OrganisationEntity practice;
 
     @ManyToOne
-    @JoinColumn(name="ethnic")
-
+    @JoinColumn(name="ethnic",foreignKey= @ForeignKey(name="FK_PATIENT_ETHNIC_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity ethnicCode;
 
     @ManyToOne
-    @JoinColumn(name="marital")
+    @JoinColumn(name="marital",foreignKey= @ForeignKey(name="FK_PATIENT_MARITAL_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity maritalCode;
 
     @ManyToOne
-    @JoinColumn(name="NHSverification")
+    @JoinColumn(name="NHSverification",foreignKey= @ForeignKey(name="FK_PATIENT_NHSVERIFICATION_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity NHSVerificationCode;
 
     @Column(name="active")
@@ -119,9 +121,6 @@ public class PatientEntity extends BaseResource {
     public void setNHSVerificationCode(ConceptEntity code) {
         this.NHSVerificationCode = code;
     }
-
-
-
 
     public Date getDateOfBirth() {
         return dateOfBirth;
@@ -232,7 +231,7 @@ public class PatientEntity extends BaseResource {
     public void setTelecoms(List<PatientTelecom> telecoms) {
         this.telecoms = telecoms;
     }
-    public List<PatientTelecom> getTelecoms( ) {
+    public List<PatientTelecom> getTelecoms() {
         if (telecoms == null) {
             telecoms = new ArrayList<PatientTelecom>();
         }

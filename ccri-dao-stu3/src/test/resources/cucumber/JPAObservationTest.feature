@@ -18,10 +18,5 @@ Feature: Observation Integration Test
 
         Scenario: Observation Search Patient
             Given I have two sample resources loaded
-            When I search on Patient ID = 1
-            Then I should get a Bundle of Observations with more then 2 resources
-
-        Scenario: Observation Search Patient
-            Given I have two sample resources loaded
             When I search on dates less than 1999-08-02
             Then I should get a Bundle of Observations with 1 resource

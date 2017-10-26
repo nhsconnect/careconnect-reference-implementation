@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 
 import javax.persistence.*;
@@ -23,7 +25,8 @@ public class ObservationIdentifier extends BaseIdentifier {
     private Long identifierId;
 
     @ManyToOne
-    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_OBSERVATION_IDENTIFIER"))
+    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_IDENTIFIER_OBSERVATION_ID"))
+	@LazyCollection(LazyCollectionOption.TRUE)
     private ObservationEntity observation;
 
 

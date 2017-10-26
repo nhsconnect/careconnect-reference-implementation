@@ -20,7 +20,7 @@ public class PatientName extends BaseHumanName {
 
 
     @ManyToOne
-    @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_NAME"))
+    @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_NAME_PATIENT_ID"))
     private PatientEntity patientEntity;
 
     public Long getId()

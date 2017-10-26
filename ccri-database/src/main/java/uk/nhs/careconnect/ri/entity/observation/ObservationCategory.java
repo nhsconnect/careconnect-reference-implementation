@@ -16,11 +16,11 @@ public class ObservationCategory {
     private Long Id;
 
     @ManyToOne
-    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_OBSERVATION_CATEGORY"))
+    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_CATEGORY_OBSERVATION_ID"))
     private ObservationEntity observation;
 
     @ManyToOne
-    @JoinColumn(name="category")
+    @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_OBSERVATION_CATEGORY_CATEGORY_CONCEPT_ID"))
     private ConceptEntity category;
 
     public void setId(Long id) {
