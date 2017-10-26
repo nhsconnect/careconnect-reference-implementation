@@ -22,12 +22,14 @@ public interface LocationRepository  {
     List<Location> searchLocation(
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
     );
 
     List<LocationEntity> searchLocationEntity (
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
     );
 }

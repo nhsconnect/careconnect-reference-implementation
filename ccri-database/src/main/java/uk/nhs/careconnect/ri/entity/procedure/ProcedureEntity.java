@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.procedure;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -18,10 +20,12 @@ public class ProcedureEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PROCEDURE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_ENCOUNTER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity encounter;
 
     @ManyToOne

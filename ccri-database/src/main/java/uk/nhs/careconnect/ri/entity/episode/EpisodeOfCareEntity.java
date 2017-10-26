@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.episode;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -19,14 +21,17 @@ public class EpisodeOfCareEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_EPISODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn(name="ORGANISATION_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity managingOrganisation;
 
     @ManyToOne
     @JoinColumn(name="PRACTITIONER_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity careManager;
 
     @ManyToOne

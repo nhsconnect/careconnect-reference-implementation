@@ -87,7 +87,7 @@ public class LocationResourceProvider implements IResourceProvider {
     @Search
     public List<Location> searchLocation(HttpServletRequest theRequest,
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
-                                         @OptionalParam(name = Location.SP_NAME) StringParam name
+                                         @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
                                        ) {
 
         List<Location> results = new ArrayList<Location>();

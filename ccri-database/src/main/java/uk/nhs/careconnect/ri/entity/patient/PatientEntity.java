@@ -1,6 +1,8 @@
 
 package uk.nhs.careconnect.ri.entity.patient;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -42,14 +44,17 @@ public class PatientEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "GP_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PRACTITIONER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity gp;
 
     @ManyToOne
     @JoinColumn(name="PRACTICE_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ORGANISATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity practice;
 
     @ManyToOne
     @JoinColumn(name="ethnic")
+
     private ConceptEntity ethnicCode;
 
     @ManyToOne
@@ -65,15 +70,19 @@ public class PatientEntity extends BaseResource {
 
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PatientIdentifier> identifiers = new ArrayList<>();
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PatientAddress> addresses;
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PatientTelecom> telecoms;
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PatientName> names;
 
     public Long getId() {

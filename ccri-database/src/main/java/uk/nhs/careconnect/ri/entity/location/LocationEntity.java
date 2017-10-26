@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.location;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Location;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -27,16 +29,20 @@ public class LocationEntity extends BaseResource {
 	private String name;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<LocationIdentifier> identifiers;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationAddress.class)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<LocationAddress> addresses;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationTelecom.class)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<LocationTelecom> telecoms;
 
 	@ManyToOne
 	@JoinColumn(name="managingOrganisation")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private OrganisationEntity managingOrganisation;
 
 	@ManyToOne
@@ -49,6 +55,7 @@ public class LocationEntity extends BaseResource {
 
 	@ManyToOne
 	@JoinColumn(name="PART_OF_LOCATION_ID")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private LocationEntity partOf;
 
 	@Enumerated(EnumType.ORDINAL)

@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.condition;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -21,14 +23,17 @@ public class ConditionEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_CONDITION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_ENCOUNTER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity contextEncounter;
 
     @ManyToOne
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_CONDITION_EPISODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EpisodeOfCareEntity contextEpisode;
 
     @ManyToOne
@@ -40,6 +45,7 @@ public class ConditionEntity extends BaseResource {
     private ConceptEntity clinicalStatus;
 
     @OneToMany(mappedBy="condition", targetEntity=ConditionCategory.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<ConditionCategory> categories = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)

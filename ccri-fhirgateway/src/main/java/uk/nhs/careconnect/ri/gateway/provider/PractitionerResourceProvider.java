@@ -88,7 +88,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
     public List<Practitioner> searchPractitioner(HttpServletRequest theRequest,
 
                                                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
-                                                 @OptionalParam(name = Practitioner.SP_NAME) StringParam name
+                                                 @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
                                        ) {
 
         List<Practitioner> results = new ArrayList<Practitioner>();

@@ -169,7 +169,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by name (\\w+)$")
     public void i_search_for_Organisations_by_name(String name) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(null,new StringParam(name));
+        organizationList = organisationRepository.searchOrganization(null,new StringParam(name),null);
     }
 
     @Then("^the results should be a list of CareConnect Organisations$")
@@ -181,7 +181,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by SDSCode (\\w+)$")
     public void i_have_search_for_these_Organisations_by_SDSCode(String SDSCode) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null);
+        organizationList = organisationRepository.searchOrganization(new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null,null);
     }
 
     @Then("^the result should be a organisation list with (\\d+) entry$")
@@ -297,12 +297,12 @@ public class JPAStepsDef {
 
     @Given("^I search for Practitioners by SDSId (\\w+)$")
     public void i_search_for_Practitioners_by_SDSId_S(String Id) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null);
+        practitionerList = practitionerRepository.searchPractitioner(new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null,null);
     }
 
     @Given("^I search for Practitioners by name (\\w+)$")
     public void i_search_for_Practitioners_by_name_Bhatia(String name) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(null,new StringParam(name));
+        practitionerList = practitionerRepository.searchPractitioner(null,new StringParam(name),null);
     }
 
 
@@ -310,7 +310,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by SDSCode (\\w+)$")
     public void i_search_for_Locations_by_SDSCode(String code) throws Throwable {
-        locationList = locationRepository.searchLocation(new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null);
+        locationList = locationRepository.searchLocation(new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null,null);
     }
 
     @Then("^the result should be a Location list with (\\d+) entry$")
@@ -336,7 +336,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by name (\\w+)$")
     public void i_search_for_Locations_by_name(String name) throws Throwable {
-        locationList = locationRepository.searchLocation(null,new StringParam(name));
+        locationList = locationRepository.searchLocation(null,new StringParam(name),null);
     }
 
     @Given("^Location resource file$")

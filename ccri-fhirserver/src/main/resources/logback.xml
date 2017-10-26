@@ -13,4 +13,9 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 
+	<logger name="org.hibernate.type" level="ALL" />
+	<logger name="org.hibernate.SQL" level="DEBUG" />
+	<logger name="org.hibernate.type.descriptor.sql" level="trace" />
+
+
 </configuration>

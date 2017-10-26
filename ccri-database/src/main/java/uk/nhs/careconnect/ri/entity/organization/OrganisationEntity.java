@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.organization;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
@@ -25,16 +27,20 @@ public class OrganisationEntity extends BaseResource {
     private String name;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<OrganisationIdentifier> identifiers;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationAddress.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<OrganisationAddress> addresses;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<OrganisationTelecom> telecoms;
 
     @ManyToOne
     @JoinColumn(name="partOf")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity partOf;
 
     @Column(name="active")

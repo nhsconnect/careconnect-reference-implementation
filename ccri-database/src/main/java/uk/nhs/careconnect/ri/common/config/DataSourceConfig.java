@@ -44,10 +44,10 @@ public class DataSourceConfig {
     @Value("${datasource.password:}")
     private String password;
 
-    @Value("${datasource.showSql:false}")
+    @Value("${datasource.showSql:true}")
     private boolean showSql;
 
-    @Value("${datasource.showDdl:false}")
+    @Value("${datasource.showDdl:true}")
     private boolean showDdl;
 
     @Value("${datasource.dialect:org.hibernate.dialect.DerbyTenSevenDialect}")

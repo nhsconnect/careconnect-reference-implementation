@@ -86,7 +86,7 @@ public class LocationDao implements LocationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<LocationEntity> results = searchLocationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null);
+                    List<LocationEntity> results = searchLocationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null, null);
                     for (LocationEntity org : results) {
                         locationEntity = org;
                         break;
@@ -197,10 +197,11 @@ public class LocationDao implements LocationRepository {
     @Override
     public List<Location> searchLocation (
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
     )
     {
-        List<LocationEntity> qryResults = searchLocationEntity(identifier,name);
+        List<LocationEntity> qryResults = searchLocationEntity(identifier,name, postCode);
         List<Location> results = new ArrayList<>();
 
         for (LocationEntity locationEntity : qryResults)
@@ -216,7 +217,8 @@ public class LocationDao implements LocationRepository {
     public List<LocationEntity> searchLocationEntity (
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
     )
     {
         List<LocationEntity> qryResults = null;
@@ -248,6 +250,18 @@ public class LocationDao implements LocationRepository {
                     );
 
             predList.add(p);
+        }
+        if (postCode != null )
+        {
+            Join<LocationEntity, LocationAddress> joinAdr = root.join("addresses", JoinType.LEFT);
+            Join<LocationAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
+            if (postCode!=null) {
+                Predicate p = builder.like(
+                        builder.upper(joinAdrTable.get("postcode").as(String.class)),
+                        builder.upper(builder.literal(postCode.getValue()+"%"))
+                );
+                predList.add(p);
+            }
         }
 
 

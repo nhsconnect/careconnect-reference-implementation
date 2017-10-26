@@ -106,7 +106,7 @@ public class OrganisationDao implements OrganisationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<OrganisationEntity> results = searchOrganizationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null);
+                    List<OrganisationEntity> results = searchOrganizationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null,null);
                     for (OrganisationEntity org : results) {
                         organisationEntity = org;
                         break;
@@ -212,10 +212,11 @@ public class OrganisationDao implements OrganisationRepository {
     @Override
     public List<Organization> searchOrganization (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Organization.SP_NAME) StringParam name
+            @OptionalParam(name = Organization.SP_NAME) StringParam name,
+            @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
         List<Organization> results = new ArrayList<>();
-        List<OrganisationEntity> qryResults = searchOrganizationEntity(identifier,name);
+        List<OrganisationEntity> qryResults = searchOrganizationEntity(identifier,name,postCode);
         for (OrganisationEntity organizationEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
@@ -228,7 +229,8 @@ public class OrganisationDao implements OrganisationRepository {
 
     public List<OrganisationEntity> searchOrganizationEntity (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Organization.SP_NAME) StringParam name
+            @OptionalParam(name = Organization.SP_NAME) StringParam name,
+            @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     )
     {
         List<OrganisationEntity> qryResults = null;
@@ -262,6 +264,18 @@ public class OrganisationDao implements OrganisationRepository {
                     );
 
             predList.add(p);
+        }
+        if (postCode != null )
+        {
+            Join<OrganisationEntity, OrganisationAddress> joinAdr = root.join("addresses", JoinType.LEFT);
+            Join<OrganisationAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
+            if (postCode!=null) {
+                Predicate p = builder.like(
+                        builder.upper(joinAdrTable.get("postcode").as(String.class)),
+                        builder.upper(builder.literal(postCode.getValue()+"%"))
+                );
+                predList.add(p);
+            }
         }
 
        

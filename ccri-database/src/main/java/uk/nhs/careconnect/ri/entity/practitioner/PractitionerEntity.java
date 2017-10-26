@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.practitioner;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -22,15 +24,19 @@ public class PractitionerEntity extends BaseResource {
     private String gender;
 
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PractitionerIdentifier> identifiers;
 
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerAddress.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PractitionerAddress> addresses;
 
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerName.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PractitionerName> names;
 
     @OneToMany(mappedBy="practitionerEntity", targetEntity=PractitionerRole.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<PractitionerRole> roles;
 
     @Column(name="active")

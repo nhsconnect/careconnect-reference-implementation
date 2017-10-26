@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.practitioner;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -23,6 +25,7 @@ public class PractitionerRole extends BaseResource {
 
     @ManyToOne
     @JoinColumn(name="managingOrganisation")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity managingOrganisation;
 
     @ManyToOne

@@ -87,7 +87,7 @@ public class PractitionerDao implements PractitionerRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<PractitionerEntity> results = searchPractitionerEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null);
+                    List<PractitionerEntity> results = searchPractitionerEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null,null);
                     for (PractitionerEntity org : results) {
                         practitionerEntity = org;
                         break;
@@ -201,7 +201,11 @@ public class PractitionerDao implements PractitionerRepository {
 
 
     @Override
-    public List<PractitionerEntity> searchPractitionerEntity(TokenParam identifier, StringParam name) {
+    public List<PractitionerEntity> searchPractitionerEntity(
+            @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+    ) {
         {
             List<PractitionerEntity> qryResults = null;
 
@@ -224,10 +228,23 @@ public class PractitionerDao implements PractitionerRepository {
 
             }
 
-            if ( /*(familyName != null) || (givenName != null) ||*/ (name != null)) {
+            if ( (name != null) /*(familyName != null) || (givenName != null) ||*/ ) {
 
                 Join<PractitionerEntity, PractitionerName> namejoin = root.join("names", JoinType.LEFT);
-           /*
+
+                if (name != null) {
+                    Predicate pgiven = builder.like(
+                            builder.upper(namejoin.get("givenName").as(String.class)),
+                            builder.upper(builder.literal(name.getValue() + "%"))
+                    );
+                    Predicate pfamily = builder.like(
+                            builder.upper(namejoin.get("familyName").as(String.class)),
+                            builder.upper(builder.literal(name.getValue() + "%"))
+                    );
+                    Predicate p = builder.or(pfamily, pgiven);
+                    predList.add(p);
+                }
+                 /*
             if (familyName != null) {
                 Predicate p =
                         builder.like(
@@ -246,16 +263,16 @@ public class PractitionerDao implements PractitionerRepository {
                 predList.add(p);
             }
              */
-                if (name != null) {
-                    Predicate pgiven = builder.like(
-                            builder.upper(namejoin.get("givenName").as(String.class)),
-                            builder.upper(builder.literal(name.getValue() + "%"))
+            }
+            if (postCode != null )
+            {
+                Join<PractitionerEntity, PractitionerAddress> joinAdr = root.join("addresses", JoinType.LEFT);
+                Join<PractitionerAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
+                if (postCode!=null) {
+                    Predicate p = builder.like(
+                            builder.upper(joinAdrTable.get("postcode").as(String.class)),
+                            builder.upper(builder.literal(postCode.getValue()+"%"))
                     );
-                    Predicate pfamily = builder.like(
-                            builder.upper(namejoin.get("familyName").as(String.class)),
-                            builder.upper(builder.literal(name.getValue() + "%"))
-                    );
-                    Predicate p = builder.or(pfamily, pgiven);
                     predList.add(p);
                 }
             }
@@ -277,10 +294,11 @@ public class PractitionerDao implements PractitionerRepository {
     @Override
     public List<Practitioner> searchPractitioner(
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Location.SP_NAME) StringParam name
+            @OptionalParam(name = Location.SP_NAME) StringParam name,
+            @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
         List<Practitioner> results = new ArrayList<>();
-        List<PractitionerEntity> qryResults = searchPractitionerEntity(identifier, name);
+        List<PractitionerEntity> qryResults = searchPractitionerEntity(identifier, name,postCode);
         for (PractitionerEntity practitionerEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());

@@ -23,7 +23,8 @@ public interface OrganisationRepository {
 
    List<Organization> searchOrganization (
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
-            @OptionalParam(name = Organization.SP_NAME) StringParam name
+            @OptionalParam(name = Organization.SP_NAME) StringParam name,
+            @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     );
 
 

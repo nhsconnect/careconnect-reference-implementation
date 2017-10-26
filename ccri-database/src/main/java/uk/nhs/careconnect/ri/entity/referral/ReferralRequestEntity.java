@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.referral;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -18,6 +20,7 @@ public class ReferralRequestEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_REFERRAL"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
@@ -26,10 +29,12 @@ public class ReferralRequestEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn(name="REQUESTOR_ORGANISATION_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity requesterOrganisation;
 
     @ManyToOne
     @JoinColumn(name="REQUESTOR_PRACTITIONER_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity requesterPractitioner;
 
 

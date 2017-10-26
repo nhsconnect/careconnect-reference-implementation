@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -28,7 +30,7 @@ import java.util.*;
 public class ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
 
-
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@OneToMany(mappedBy = "parent", cascade= {})
 	private Collection<ConceptParentChildLink> children;
 
@@ -36,6 +38,7 @@ public class ConceptEntity extends BaseResource {
 	//@Column(name = "CODE", columnDefinition = "varchar(100) COLLATE utf8_bin NOT NULL")
 	private String code;
 
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
 	private CodeSystemEntity codeSystemEntity;
@@ -59,6 +62,7 @@ public class ConceptEntity extends BaseResource {
 	private String myParentPids;
 
 	@OneToMany(cascade = {}, mappedBy = "child")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private Collection<ConceptParentChildLink> parents;
 
 	@Column(name = "active")
@@ -68,10 +72,12 @@ public class ConceptEntity extends BaseResource {
 	private Date effectiveDate;
 
 	@ManyToOne
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@JoinColumn(name = "moduleId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_MODULE"))
 	private ConceptEntity moduleId;
 
 	@ManyToOne
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
 	private ConceptEntity definitionStatusId;
 
@@ -82,6 +88,7 @@ public class ConceptEntity extends BaseResource {
     private Boolean abstractCode;
 
 	@OneToMany(mappedBy="conceptEntity", targetEntity=ConceptDesignation.class)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<ConceptDesignation> designations;
 
 

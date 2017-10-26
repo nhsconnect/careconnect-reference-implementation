@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -16,7 +18,8 @@ import java.util.Set;
 @Table(name = "Observation", indexes = {
         @Index(name="IDX_OBSERVATION_CODE", columnList = "CODE_CONCEPT_ID"),
         @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime"),
-        @Index(name="IDX_PATIENT", columnList = "PATIENT_ID")
+        @Index(name="IDX_PATIENT", columnList = "PATIENT_ID"),
+        @Index(name="IDX_PARENT_OBSERVATION", columnList = "parentObservation")
 })
 public class ObservationEntity extends BaseResource {
 
@@ -28,6 +31,7 @@ public class ObservationEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_OBSERVATION"))
     private PatientEntity patient;
 
@@ -47,7 +51,9 @@ public class ObservationEntity extends BaseResource {
     private Date issued;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn(name="parentObservation")
+
     private ObservationEntity parentObservation;
 
     @Column(name="valueQuantity")
@@ -60,23 +66,24 @@ public class ObservationEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
 
-  //  @LazyCollection(LazyCollectionOption.FALSE)
+
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private Set<ObservationCategory> categories = new HashSet<>();
 
-   // @LazyCollection(LazyCollectionOption.FALSE)
+
     @OneToMany(mappedBy="observation", targetEntity=ObservationIdentifier.class)
     private Set<ObservationIdentifier> identifiers = new HashSet<>();
 
-    //@LazyCollection(LazyCollectionOption.FALSE)
+
     @OneToMany(mappedBy="observation", targetEntity=ObservationPerformer.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<ObservationPerformer> performers = new HashSet<>();
 
-    //@LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<ObservationEntity> components = new HashSet<>();
 
-   // @LazyCollection(LazyCollectionOption.FALSE)
+
     @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
     private Set<ObservationRange> ranges = new HashSet<>();
 
@@ -93,10 +100,12 @@ public class ObservationEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn(name="ENCOUNTER_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity contextEncounter;
 
     @ManyToOne
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity interpretation;
 
     public Long getId() {

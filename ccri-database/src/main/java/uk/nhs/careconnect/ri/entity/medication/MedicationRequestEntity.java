@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.medication;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -18,6 +20,7 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PRESCRIPTION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
@@ -26,6 +29,7 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn(name="ENCOUNTER_ID")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity contextEncounter;
 
     @Temporal(TemporalType.TIMESTAMP)

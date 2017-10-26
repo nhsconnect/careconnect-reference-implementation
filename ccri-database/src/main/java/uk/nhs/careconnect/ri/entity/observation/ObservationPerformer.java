@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -28,14 +30,17 @@ public class ObservationPerformer {
 
     @ManyToOne
     @JoinColumn(name="performerPractitioner")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity performerPractitioner;
 
     @ManyToOne
     @JoinColumn(name="performerPatient")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity performerPatient;
 
     @ManyToOne
     @JoinColumn(name="performerOrganisation")
+    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity performerOrganisation;
 
     public void setId(Long id) {

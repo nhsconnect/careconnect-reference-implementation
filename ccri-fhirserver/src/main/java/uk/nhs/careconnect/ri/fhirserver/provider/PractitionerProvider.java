@@ -65,8 +65,10 @@ public class PractitionerProvider implements IResourceProvider {
     @Search
     public List<Practitioner> searchPractitioner(HttpServletRequest theRequest,
                                                                   @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
-                                                                  @OptionalParam(name = Practitioner.SP_NAME) StringParam name) {
-        return practitionerDao.searchPractitioner(identifier,name);
+                                                                  @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
+                                                 @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+    ) {
+        return practitionerDao.searchPractitioner(identifier, name ,postCode);
     }
 
 

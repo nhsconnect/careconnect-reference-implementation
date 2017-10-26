@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.encounter;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
@@ -18,9 +20,11 @@ public class EncounterEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ENCOUNTER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterEpisode.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
     List<EncounterEpisode> episodes = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
