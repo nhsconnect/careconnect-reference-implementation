@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +64,17 @@ public class HAPIRestfulConfig extends RestfulServer {
 
         setServerName(serverName);
         setServerVersion(serverVersion);
+
+		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+		registerInterceptor(loggingInterceptor);
+
+		loggingInterceptor.setLoggerName("ccri.FHIRGateway");
+
+		// This is the format for each line. A number of substitution variables may
+		// be used here. See the JavaDoc for LoggingInterceptor for information on
+		// what is available.
+		loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
+
 
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
