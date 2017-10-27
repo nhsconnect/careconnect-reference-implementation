@@ -26,6 +26,10 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     private WebApplicationContext myAppCtx;
 
+    private FhirContext ctx;
+
+
+
     @Value("${datasource.serverBase}")
     private String serverBase;
 
@@ -90,7 +94,7 @@ public class HAPIRestfulConfig extends RestfulServer {
         setDefaultPrettyPrint(true);
         setDefaultResponseEncoding(EncodingEnum.JSON);
 
-        FhirContext ctx = getFhirContext();
+        ctx = getFhirContext();
         // Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
     }
 
@@ -102,6 +106,7 @@ public class HAPIRestfulConfig extends RestfulServer {
         ResponseHighlighterInterceptor retVal = new ResponseHighlighterInterceptor();
         return retVal;
     }
+
 
     @Override
     public String toString() {

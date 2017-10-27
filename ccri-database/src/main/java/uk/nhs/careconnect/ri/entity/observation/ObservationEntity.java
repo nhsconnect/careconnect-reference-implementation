@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.entity.observation;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.OptimisticLock;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -21,6 +22,8 @@ import java.util.Set;
 
 })
 public class ObservationEntity extends BaseResource {
+
+    private static final int MAX_PROFILE_LENGTH = 10000;
 
     public enum ObservationType  { component, valueQuantity }
 
@@ -107,6 +110,19 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_INTERPRETATION_CONCEPT_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity interpretation;
+
+    @Column(name = "RESOURCE", length = MAX_PROFILE_LENGTH, nullable = true)
+    @OptimisticLock(
+            excluded = true)
+    private String Resource;
+
+    public String getResource() {
+        return Resource;
+    }
+
+    public void setResource(String resource) {
+        Resource = resource;
+    }
 
     public Long getId() {
         return id;
