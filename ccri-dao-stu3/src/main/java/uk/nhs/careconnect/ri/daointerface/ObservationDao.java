@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -55,13 +56,13 @@ public class ObservationDao implements ObservationRepository {
     private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
 
     @Override
-    public Observation save(Observation observation) throws IllegalArgumentException {
+    public Observation save(FhirContext ctx, Observation observation) throws IllegalArgumentException {
 
      //   System.out.println("In ObservationDao.save");
         log.debug("Observation.save");
         ObservationEntity observationEntity = null;
 
-        if (observation.hasId()) observationEntity = readEntity(observation.getIdElement());
+        if (observation.hasId()) observationEntity = readEntity(ctx, observation.getIdElement());
 
         if (observationEntity == null) observationEntity = new ObservationEntity();
 
@@ -340,34 +341,46 @@ public class ObservationDao implements ObservationRepository {
             }
             em.persist(observationValue);
         }
-        return observationEntity == null
-                ? null
-                : observationEntityToFHIRObservationTransformer.transform(observationEntity);
+        observation = null;
+        if (observationEntity != null) {
+            observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+            observationEntity.setResource(ctx.newJsonParser().encodeResourceToString(observation));
+            em.persist(observationEntity);
+        }
+
+        return observation;
     }
 
     @Override
-    public Observation read(IdType theId) {
+    public Observation read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for Observation = "+theId.getIdPart());
         if (theId.getIdPart() != null) {
             ObservationEntity observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
 
-            return observationEntity == null
-                    ? null
-                    : observationEntityToFHIRObservationTransformer.transform(observationEntity);
+            Observation observation = null;
+            if (observationEntity.getResource() != null) {
+                observation = (Observation) ctx.newJsonParser().parseResource(observationEntity.getResource());
+            } else {
+                observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+                observationEntity.setResource(ctx.newJsonParser().encodeResourceToString(observation));
+                em.persist(observationEntity);
+            }
+            return observation;
+
         }
         else { return null; }
     }
 
     @Override
-    public ObservationEntity readEntity(IdType theId) {
+    public ObservationEntity readEntity(FhirContext ctx, IdType theId) {
         log.debug("Observation Id = "+theId.getIdPart());
         return  (ObservationEntity) em.find(ObservationEntity.class,Long.parseLong(theId.getIdPart()));
 
     }
 
     @Override
-    public List<Observation> search(TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
 
 
 
@@ -508,8 +521,16 @@ public class ObservationDao implements ObservationRepository {
         log.info("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
-
-            Observation observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+            Observation observation = null;
+            if (observationEntity.getResource() != null) {
+                observation = (Observation) ctx.newJsonParser().parseResource(observationEntity.getResource());
+            } else {
+                observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+                String resourceStr = ctx.newJsonParser().encodeResourceToString(observation);
+                log.trace("Length = "+resourceStr.length() +" Data = " +resourceStr);
+                observationEntity.setResource(resourceStr);
+                em.persist(observationEntity);
+            }
             results.add(observation);
         }
         return results;

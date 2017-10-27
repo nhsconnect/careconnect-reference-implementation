@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ConceptParentChildLink {
-	
+
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="CHILD_CONCEPT_ID", nullable=false, referencedColumnName="CONCEPT_ID", foreignKey=@ForeignKey(name="FK_TERM_CONCEPTPC_CHILD"))

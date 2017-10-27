@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.entity.location;
 
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 
@@ -16,15 +18,13 @@ public class LocationAddress extends BaseAddress {
     private Long myId;
 
     @ManyToOne
-    @JoinColumn(name = "ADDRESS_ID")
+    @JoinColumn(name = "ADDRESS_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ADDRESS_ADDRESS_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private AddressEntity address;
 
     @ManyToOne
-    @JoinColumn(name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_LOCATION_ADDRESS"))
+    @JoinColumn(name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ADDRESS_LOCATION_ID"))
     private LocationEntity locationEntity;
-
-
-
     public Long getPID()
     {
         return this.myId;

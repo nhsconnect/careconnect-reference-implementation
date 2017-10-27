@@ -48,13 +48,15 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
         // Category
 
         for (ObservationCategory category : observationEntity.getCategories()) {
-            CodeableConcept concept = new CodeableConcept();
-            concept.addCoding()
-                    .setCode(category.getCategory().getCode())
-                    .setSystem(category.getCategory().getSystem())
-                    .setDisplay(category.getCategory().getDisplay());
+            if (category.getCategory() != null) {
+                CodeableConcept concept = new CodeableConcept();
+                concept.addCoding()
+                        .setCode(category.getCategory().getCode())
+                        .setSystem(category.getCategory().getSystem())
+                        .setDisplay(category.getCategory().getDisplay());
 
-            observation.getCategory().add(concept);
+                observation.getCategory().add(concept);
+            }
         }
 
         // Body Site
@@ -88,8 +90,10 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
         for (ObservationPerformer performer :observationEntity.getPerformers()) {
             switch (performer.getPerformerType()) {
                 case Practitioner:
-                    observation.getPerformer().add(new Reference("Practioner/"+performer.getPerformerPractitioner().getId())
-                            .setDisplay(performer.getPerformerPractitioner().getNames().get(0).getDisplayName()));
+                    if (performer.getPerformerPractitioner() !=null) {
+                        observation.getPerformer().add(new Reference("Practioner/" + performer.getPerformerPractitioner().getId())
+                                .setDisplay(performer.getPerformerPractitioner().getNames().get(0).getDisplayName()));
+                    }
                     break;
                 case Patient:
                     if (performer.getPerformerPatient() != null ) {
@@ -98,6 +102,7 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                     }
                     break;
                 case Organisation:
+                    if (performer.getPerformerOrganisation() !=null)
                     observation.getPerformer().add(new Reference("Organization/"+performer.getPerformerOrganisation().getId())
                             .setDisplay(performer.getPerformerOrganisation().getName()));
                     break;

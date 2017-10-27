@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.entity.practitioner;
 
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
@@ -16,11 +18,12 @@ public class PractitionerSpecialty extends BaseResource {
     private Long myId;
 
     @ManyToOne
-    @JoinColumn(name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_PRACTITIONER_SPECIALTY"))
+    @JoinColumn(name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SPECIALTY_PRACTITIONER_ROLE_ID"))
     private PractitionerRole practitionerRole;
 
     @ManyToOne
-    @JoinColumn(name="specialty")
+    @JoinColumn(name="specialty",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SPECIALTY_SPECIALTY_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity specialty;
 
     public Long getId()

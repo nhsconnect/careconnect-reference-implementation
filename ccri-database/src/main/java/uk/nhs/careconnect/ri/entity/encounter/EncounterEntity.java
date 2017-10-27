@@ -6,9 +6,7 @@ import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "Encounter")
@@ -25,7 +23,7 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterEpisode.class)
     @LazyCollection(LazyCollectionOption.TRUE)
-    List<EncounterEpisode> episodes = new ArrayList<>();
+    Set<EncounterEpisode> episodes = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "periodStartDate")
@@ -48,10 +46,10 @@ public class EncounterEntity extends BaseResource {
         return patient;
     }
 
-    public List<EncounterEpisode> getEpisodes() {
+    public Set<EncounterEpisode> getEpisodes() {
         return episodes;
     }
-    public void setEpisodes(List<EncounterEpisode> episodes) {
+    public void setEpisodes(Set<EncounterEpisode> episodes) {
         this.episodes = episodes;
     }
 

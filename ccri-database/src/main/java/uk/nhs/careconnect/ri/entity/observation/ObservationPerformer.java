@@ -22,24 +22,24 @@ public class ObservationPerformer {
     private Long Id;
 
     @ManyToOne
-    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_OBSERVATION_PERFORMER"))
+    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_OBSERVATION_ID"))
     private ObservationEntity observation;
 
     @Enumerated(EnumType.ORDINAL)
     private performer performerType;
 
     @ManyToOne
-    @JoinColumn(name="performerPractitioner")
+    @JoinColumn(name="performerPractitioner",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_PRACTITIONER_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity performerPractitioner;
 
     @ManyToOne
-    @JoinColumn(name="performerPatient")
+    @JoinColumn(name="performerPatient",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_PATIENT_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity performerPatient;
 
     @ManyToOne
-    @JoinColumn(name="performerOrganisation")
+    @JoinColumn(name="performerOrganisation",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_ORGANISATION_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity performerOrganisation;
 

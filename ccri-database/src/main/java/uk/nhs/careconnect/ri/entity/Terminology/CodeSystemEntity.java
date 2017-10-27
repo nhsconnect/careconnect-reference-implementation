@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 
 import javax.persistence.*;
@@ -46,6 +48,7 @@ public class CodeSystemEntity extends BaseResource {
 	}
 
 	// ValueSet CONTENT
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@OneToMany(mappedBy="codeSystemEntity", targetEntity=ConceptEntity.class)
 	private List<ConceptEntity> conceptEntities;
 

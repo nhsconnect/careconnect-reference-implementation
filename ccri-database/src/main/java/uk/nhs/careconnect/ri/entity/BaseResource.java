@@ -13,6 +13,7 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class BaseResource {
 
+	//private static final int MAX_PROFILE_LENGTH = 1000;
 	
 	
 	@Column(name = "RES_UPDATED",insertable=false, updatable=false)
@@ -36,12 +37,12 @@ public abstract class BaseResource {
 	
 	@Column(name = "RES_DELETED", nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date myDeleted;
+	private Date resDeleted;
 	public Date getDeleted() {
-		return this.myDeleted;
+		return this.resDeleted;
 	}
 	public void setDeleted(Date theDate) {
-		this.myDeleted = theDate;
+		this.resDeleted = theDate;
 	}
 	
 	@Column(name = "RES_MESSAGE_REF", nullable = true)
@@ -55,6 +56,4 @@ public abstract class BaseResource {
 	}
 
 
-	
-	
 }

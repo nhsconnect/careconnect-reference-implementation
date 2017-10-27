@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.entity.observation;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
@@ -16,7 +18,8 @@ public class ObservationRange extends BaseResource {
     private Long Id;
 
     @ManyToOne
-    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_OBSERVATION_RANGE"))
+    @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_OBSERVATION_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ObservationEntity observation;
 
     @Column(name="lowQuantity")
@@ -26,7 +29,8 @@ public class ObservationRange extends BaseResource {
     private BigDecimal highQuantity;
 
     @ManyToOne
-    @JoinColumn(name="TYPE_CONCEPT_ID")
+    @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_TYPE_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity type;
 
     @Column(name="lowAgeRange")

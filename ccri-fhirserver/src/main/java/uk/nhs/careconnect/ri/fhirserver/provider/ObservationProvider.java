@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -28,8 +29,8 @@ public class ObservationProvider implements IResourceProvider {
     @Autowired
     private ObservationRepository observationDao;
 
-
-
+    @Autowired
+    FhirContext ctx;
 
     @Override
     public Class<Observation> getResourceType() {
@@ -47,14 +48,14 @@ public class ObservationProvider implements IResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-        observation = observationDao.save(observation);
+        observation = observationDao.save(ctx,observation);
 
         return method;
     }
 
     @Read
     public Observation getObservationById(@IdParam IdType internalId) {
-        Observation observation = observationDao.read(internalId);
+        Observation observation = observationDao.read(ctx,internalId);
 
         if (observation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -72,7 +73,7 @@ public class ObservationProvider implements IResourceProvider {
                                     @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                                     @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
                                        ) {
-        return observationDao.search(category, code, effectiveDate,patient);
+        return observationDao.search(ctx,category, code, effectiveDate,patient);
     }
 
 

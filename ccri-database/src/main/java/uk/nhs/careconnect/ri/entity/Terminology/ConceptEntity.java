@@ -38,7 +38,7 @@ public class ConceptEntity extends BaseResource {
 	//@Column(name = "CODE", columnDefinition = "varchar(100) COLLATE utf8_bin NOT NULL")
 	private String code;
 
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
 	private CodeSystemEntity codeSystemEntity;
@@ -154,16 +154,7 @@ public class ConceptEntity extends BaseResource {
 
 	public void setEffectiveDate(Date effectiveDate) {   this.effectiveDate = effectiveDate;   }
 	public Date getEffectiveDate() { return this.effectiveDate;  }
-	
 
-	public void setModuleId(ConceptEntity moduleId) {   this.moduleId = moduleId;   }
-	public ConceptEntity getModuleId() { return this.moduleId;  }
-	
-	
-
-	public void setDefinitionStatusId(ConceptEntity definitionStatusId) {    this.definitionStatusId = definitionStatusId;  }
-	public ConceptEntity getDefinitionStatusId() {    return this.definitionStatusId;    }
-    
 	
 	public ConceptEntity addChild(ConceptEntity theChild, ConceptParentChildLink.RelationshipTypeEnum theRelationshipType) {
 		Validate.notNull(theRelationshipType, "theRelationshipType must not be null");
