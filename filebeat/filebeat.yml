@@ -4,7 +4,7 @@ filebeat.prospectors:
   paths:
     - /var/log/tomcat/localhost_access_log*.txt
     - /var/log/tomcat/*.log
-  ignore_older: 15m
+  ignore_older: 16m
   tags: ["ccri_tomcat"]
   fields_under_root: true
   fields:
