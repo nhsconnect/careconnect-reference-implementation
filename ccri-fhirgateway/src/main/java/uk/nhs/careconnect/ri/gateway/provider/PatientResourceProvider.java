@@ -9,24 +9,29 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class PatientResourceProvider implements IResourceProvider {
@@ -67,19 +72,23 @@ public class PatientResourceProvider implements IResourceProvider {
 
 
         Patient patient = null;
-
-        try {
+        IBaseResource resource = null;
+         try {
             InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIRPatient",
                     ExchangePattern.InOut,theRequest.getInputStream(), headerMap);
-            log.info("Producer Return :" + inputStream);
-
             Reader reader = new InputStreamReader(inputStream);
-            patient = ctx.newJsonParser().parseResource(Patient.class,reader);
-
-        }
-        catch(Exception ex) {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
             log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
         }
+        if (resource instanceof Patient) {
+             patient = (Patient) resource;
+        }
+        else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
         return patient;
     }
 
@@ -117,19 +126,24 @@ public class PatientResourceProvider implements IResourceProvider {
 
         Bundle bundle = null;
 
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
         try {
-            Reader reader = new InputStreamReader(inputStream);
-            bundle = ctx.newJsonParser().parseResource(Bundle.class,reader);
-            log.info("Found Entries = "+bundle.getEntry().size());
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+            log.trace("Found Entries = " + bundle.getEntry().size());
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 Patient patient = (Patient) entry.getResource();
                 results.add(patient);
             }
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }
-        catch(Exception ex) {
-            log.error("JSON Parse failed " + ex.getMessage());
-        }
-
         return results;
 
     }

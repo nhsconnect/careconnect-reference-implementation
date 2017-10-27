@@ -8,13 +8,13 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,21 +67,25 @@ public class OrganisationResourceProvider implements IResourceProvider {
         headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
 
-        Organization patient = null;
-
+        Organization organization = null;
+        IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIROrganisation",
                     ExchangePattern.InOut,theRequest.getInputStream(), headerMap);
-            log.info("Producer Return :" + inputStream);
 
             Reader reader = new InputStreamReader(inputStream);
-            patient = ctx.newJsonParser().parseResource(Organization.class,reader);
-
-        }
-        catch(Exception ex) {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
             log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
         }
-        return patient;
+        if (resource instanceof Organization) {
+            organization = (Organization) resource;
+        }
+        else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+        return organization;
     }
 
     @Search
@@ -109,18 +113,23 @@ public class OrganisationResourceProvider implements IResourceProvider {
                 ExchangePattern.InOut,"", headerMap);
 
         Bundle bundle = null;
-
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
         try {
-            Reader reader = new InputStreamReader(inputStream);
-            bundle = ctx.newJsonParser().parseResource(Bundle.class,reader);
-            log.info("Found Entries = "+bundle.getEntry().size());
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 Organization patient = (Organization) entry.getResource();
                 results.add(patient);
             }
         }
-        catch(Exception ex) {
-            log.error("JSON Parse failed " + ex.getMessage());
+        else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }
 
         return results;
