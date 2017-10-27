@@ -44,7 +44,7 @@ public class DataSourceConfig {
     @Value("${datasource.password:}")
     private String password;
 
-    @Value("${datasource.showSql:true}")
+    @Value("${datasource.showSql:false}")
     private boolean showSql;
 
     @Value("${datasource.showDdl:true}")
