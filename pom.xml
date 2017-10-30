@@ -133,6 +133,9 @@
                 <configuration>
                     <alwaysGenerateSurefireReport>false</alwaysGenerateSurefireReport>
                     <showSuccess>false</showSuccess>
+                    <aggregate>true</aggregate>
+                    <!--also set this to link to generated source reports-->
+                    <linkXRef>true</linkXRef>
                 </configuration>
             </plugin>
         </plugins>
