@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import ca.uhn.fhir.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.gateway.provider.*;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 public class HAPIRestfulConfig extends RestfulServer {
@@ -32,6 +34,11 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     @Value("${fhir.resource.serverVersion}")
     private String serverVersion;
+
+    @Override
+	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
+		theHttpResponse.addHeader("X-Powered-By", "HAPI FHIR " + VersionUtil.getVersion() + " RESTful Server (NHS Care Connect STU3)");
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
