@@ -91,7 +91,27 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             client = ctx.newRestfulGenericClient(targetServer);
 
-            // Vic data file
+            // BA Patient data file
+            try {
+
+                System.out.println("Patient.csv");
+
+                IRecordHandler handler = null;
+
+                handler = new PatientHandler(ctx,client);
+                processPatientCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/Patient.csv"));
+                for (IBaseResource resource : resources) {
+                    client.create().resource(resource).execute();
+                }
+                resources.clear();
+
+
+
+            } catch (Exception ex) {
+                ourLog.error(ex.getMessage());
+            }
+
+            // BA Observation data file
             try {
 
                 //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
@@ -195,6 +215,64 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         return Thread.currentThread().getContextClassLoader();
     }
 
+    private void processPatientCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("PATIENT_ID"
+                                ,"RES_DELETED"
+                                ,"RES_CREATED"
+                                ,"RES_MESSAGE_REF"
+                                ,"RES_UPDATED"
+                                ,"active"
+                                ,"date_of_birth"
+                                ,"gender"
+                                ,"registration_end"
+                                ,"registration_start"
+                                ,"NHSverification"
+                                ,"ethnic"
+                                ,"GP_ID"
+                                ,"marital"
+                                ,"PRACTICE_ID"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
 
     private void processObsCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
@@ -470,6 +548,51 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             resources.add(observation);
         }
     }
+
+    public class PatientHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+	    PatientHandler(FhirContext ctx,IGenericClient client) {
+	        this.ctx = ctx;
+	        this.client = client;
+        }
+         @Override
+        public void accept(CSVRecord theRecord) {
+
+	        Patient patient = (Patient) client.read().resource(Patient.class).withId(theRecord.get("PATIENT_ID")).execute();
+
+	        if (theRecord.get("PRACTICE_ID") != null && !theRecord.get("PRACTICE_ID").isEmpty()) {
+                Bundle bundle = client.search().forResource(Organization.class)
+                        .where(Organization.IDENTIFIER.exactly().code(theRecord.get("PRACTICE_ID")))
+                        .returnBundle(Bundle.class).execute();
+
+                if (bundle.getEntry().size()>0) {
+                    Organization org = (Organization) bundle.getEntry().get(0).getResource();
+                    patient.setManagingOrganization(new Reference( "Organization/"+org.getIdElement().getIdPart() ));
+                }
+
+            }
+            if (theRecord.get("GP_ID") != null && !theRecord.get("GP_ID").isEmpty()) {
+                 Bundle bundle = client.search().forResource(Practitioner.class)
+                         .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("GP_ID")))
+                         .returnBundle(Bundle.class).execute();
+
+                 if (bundle.getEntry().size()>0) {
+                     Practitioner gp = (Practitioner) bundle.getEntry().get(0).getResource();
+                     patient.addGeneralPractitioner(new Reference( "Practitioner/"+gp.getIdElement().getIdPart() ));
+                 }
+
+             }
+	        System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
+
+            client.update().resource(patient).execute();
+            //MethodOutcome outcome
+
+        }
+    }
+
     public class BloodPressureHandler implements IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
@@ -584,22 +707,29 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
     private Observation newBasicObservation2(String dateString, String categoryCode, String categoryDesc, String categorySystem) {
         Observation observation = null;
+        Date date = null;
         try {
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = format.parse(dateString);
-
-            observation = new Observation();
-            observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
-            observation.setStatus(Observation.ObservationStatus.FINAL);
-            CodeableConcept category = observation.addCategory();
-            category.addCoding().setSystem(categorySystem).setCode(categoryCode).setDisplay(categoryDesc);
-
-            observation.setEffective(new DateTimeType(date));
-
-
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+            date = format.parse(dateString);
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                System.out.println(dateString);
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                date = format.parse(dateString);
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
         }
+
+        observation = new Observation();
+        observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+        CodeableConcept category = observation.addCategory();
+        category.addCoding().setSystem(categorySystem).setCode(categoryCode).setDisplay(categoryDesc);
+
+        observation.setEffective(new DateTimeType(date));
+
+
         return observation;
 
     }

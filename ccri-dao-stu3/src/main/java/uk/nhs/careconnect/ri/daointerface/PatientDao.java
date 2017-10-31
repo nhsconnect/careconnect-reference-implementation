@@ -1,20 +1,25 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientTransformer;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.*;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,6 +41,15 @@ public class PatientDao implements PatientRepository {
     EntityManager em;
 
     @Autowired
+    ConceptRepository conceptDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
+
+    @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
@@ -43,28 +57,136 @@ public class PatientDao implements PatientRepository {
 
     @Transactional
     @Override
-    public void save(PatientEntity patient)
+    public void save(FhirContext ctx, PatientEntity patient)
     {
+
+
         em.persist(patient);
     }
 
-    public Patient read(IdType theId) {
+    public Patient read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for patient = "+theId.getIdPart());
         PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
-        return patientEntity == null
-                ? null
-                : patientEntityToFHIRPatientTransformer.transform(patientEntity);
-
+        Patient patient = null;
+        if (patientEntity != null) {
+            patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+            patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(patient));
+            em.persist(patientEntity);
+        }
+        return patient;
     }
 
-    public PatientEntity readEntity(IdType theId) {
+    public PatientEntity readEntity(FhirContext ctx,IdType theId) {
 
         return  (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
 
     }
-    public List<Patient> searchPatient (
+
+    @Override
+    public Patient update(FhirContext ctx, Patient patient, IdType theId, String theConditional) {
+
+        PatientEntity patientEntity = null;
+
+        if (theId != null) {
+            log.info("theId.getIdPart()="+theId.getIdPart());
+            patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
+        }
+        if (patientEntity == null)
+            return null;
+
+        if (patient.hasExtension())
+        {
+            for (Extension extension : patient.getExtension()) {
+                switch (extension.getUrl()) {
+                    case CareConnectExtension.UrlEthnicCategory :
+                        CodeableConcept ethnic = (CodeableConcept) extension.getValue();
+                        ConceptEntity code = conceptDao.findCode(ethnic.getCoding().get(0).getSystem(),ethnic.getCoding().get(0).getCode());
+                        if (code != null) { patientEntity.setEthnicCode(code); }
+                        else {
+                            log.error("Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
+                            throw new IllegalArgumentException("Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
+                        }
+                        break;
+                }
+
+            }
+        }
+        if (patient.hasActive()) {
+            patientEntity.setActive(patient.getActive());
+        } else {
+            patientEntity.setActive(null);
+        }
+
+        if (patient.hasGender()) {
+            switch (patient.getGender()) {
+                case MALE:
+                    patientEntity.setGender("MALE");
+                    break;
+                case FEMALE:
+                    patientEntity.setGender("FEMALE");
+                    break;
+                case UNKNOWN:
+                    patientEntity.setGender("UNKNOWN");
+                    break;
+                case OTHER:
+                    patientEntity.setGender("OTHER");
+                    break;
+                case NULL:
+                    patientEntity.setGender(null);
+                    break;
+            }
+        } else {
+            patientEntity.setGender(null);
+        }
+
+        if (patient.hasBirthDate()) {
+            patientEntity.setDateOfBirth(patient.getBirthDate());
+        } else {
+            patientEntity.setDateOfBirth(null);
+        }
+
+        if (patient.hasMaritalStatus()) {
+            CodeableConcept martial = patient.getMaritalStatus();
+            ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0).getSystem(),martial.getCoding().get(0).getCode());
+            if (code != null) { patientEntity.setMaritalCode(code); }
+            else {
+                log.error("Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
+            }
+        }
+        for (Identifier identifer : patient.getIdentifier()) {
+            if (identifer.getSystem().equals(CareConnectSystem.NHSNumber) && identifer.getExtension().size()>0) {
+                CodeableConcept nhsVerification = (CodeableConcept) identifer.getExtension().get(0).getValue();
+                ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0).getSystem(),nhsVerification.getCoding().get(0).getCode());
+                if (code != null) { patientEntity.setNHSVerificationCode(code); }
+                else {
+                    log.error("NHS Verfication: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
+                }
+            }
+        }
+        if (patient.hasManagingOrganization()) {
+            OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(patient.getManagingOrganization().getReference()));
+            if (organisationEntity != null) {
+                patientEntity.setPractice(organisationEntity);
+            }
+        }
+        if (patient.hasGeneralPractitioner()) {
+            PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(patient.getGeneralPractitioner().get(0).getReference()));
+            if (practitionerEntity != null) {
+                patientEntity.setGp(practitionerEntity);
+            }
+        }
+        em.persist(patientEntity);
+
+
+
+        return patient;
+    }
+
+    public List<Patient> searchPatient (FhirContext ctx,
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
@@ -285,7 +407,18 @@ public class PatientDao implements PatientRepository {
         log.info("Found Patients = "+qryResults.size());
         for (PatientEntity patientEntity : qryResults)
         {
-            Patient patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+            Patient patient = null;
+
+            if (patientEntity.getResource() != null) {
+                patient = (Patient) ctx.newJsonParser().parseResource(patientEntity.getResource());
+            } else {
+                patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+                String resourceStr = ctx.newJsonParser().encodeResourceToString(patient);
+                log.trace("Length = "+resourceStr.length() +" Data = " +resourceStr);
+                patientEntity.setResource(resourceStr);
+                em.persist(patientEntity);
+            }
+
             results.add(patient);
         }
 

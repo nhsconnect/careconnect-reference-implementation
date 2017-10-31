@@ -93,7 +93,7 @@ public class ObservationDao implements ObservationRepository {
         PatientEntity patientEntity = null;
         if (observation.hasSubject()) {
             log.trace(observation.getSubject().getReference());
-            patientEntity = patientDao.readEntity(new IdType(observation.getSubject().getReference()));
+            patientEntity = patientDao.readEntity(ctx, new IdType(observation.getSubject().getReference()));
             observationEntity.setPatient(patientEntity);
         }
         try {
@@ -188,7 +188,7 @@ public class ObservationDao implements ObservationRepository {
                     break;
                 case "Patient":
                     log.trace("Patient DAO :"+reference.getReferenceElement().getResourceType());
-                    PatientEntity patientperformerEntity = patientDao.readEntity(new IdType(reference.getReference()));
+                    PatientEntity patientperformerEntity = patientDao.readEntity(ctx, new IdType(reference.getReference()));
                     if (patientEntity != null) {
                         ObservationPerformer performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Patient);

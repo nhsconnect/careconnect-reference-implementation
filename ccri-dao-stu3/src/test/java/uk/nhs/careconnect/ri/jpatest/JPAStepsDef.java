@@ -101,55 +101,55 @@ public class JPAStepsDef {
 
     @Given("^I add a Patient with an Id of (\\d+)$")
     public void i_add_a_Patient_with_an_Id_of(Integer id) throws Throwable {
-        patient = patientRepository.read(new IdType().setValue(id.toString()));
+        patient = patientRepository.read(ctx,new IdType().setValue(id.toString()));
     }
 
     @Given("^I search for a Patient with a family name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_family_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null, new StringParam(name), null, null,null, null,null);
+        patientList = patientRepository.searchPatient(ctx,null,null,null, new StringParam(name), null, null,null, null,null);
     }
 
     @Given("^I search for a Patient with a given name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_given_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null, null, null, new StringParam(name),null, null,null);
+        patientList = patientRepository.searchPatient(ctx,null,null,null, null, null, new StringParam(name),null, null,null);
     }
 
 
 
     @Given("^I search for a Patient with a gender of (\\w+)$")
     public void i_search_for_a_Patient_with_a_gender_of(String gender) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null,null,new StringParam(gender), null,null,null, null);
+        patientList = patientRepository.searchPatient(ctx,null,null,null,null,new StringParam(gender), null,null,null, null);
     }
 
     @Given("^I search for a Patient with a NHSNumber of (\\d+)$")
     public void i_search_for_a_Patient_with_a_NHSNumber_of(String NHSNumber) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
+        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
     }
 
     @Given("^I search for a Patient with a name of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null,null,null,null, null,new StringParam(name),null);
+        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null, null,new StringParam(name),null);
     }
 
     @Given("^I search for a Patient with a birthdate of '(\\w+)-(\\w+)-(\\w+)'$")
     public void i_search_for_a_Patient_with_a_birthdate_of(String year, String month, String day) throws Throwable {
-        patientList = patientRepository.searchPatient(null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
+        patientList = patientRepository.searchPatient(ctx,null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
 
     }
 
     @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,new StringParam(email),null,null,null, null,null,null);
+        patientList = patientRepository.searchPatient(ctx,null,null,new StringParam(email),null,null,null, null,null,null);
 
     }
 
     @Given("^I search for a Patient with a address-postcode of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_address_postcode_of(String postcode) throws Throwable {
-        patientList = patientRepository.searchPatient(new StringParam(postcode),null,null,null,null,null, null,null,null);
+        patientList = patientRepository.searchPatient(ctx,new StringParam(postcode),null,null,null,null,null, null,null,null);
     }
     @Given("^I search for a Patient with a phone of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_phone_of(String phone) throws Throwable {
-        patientList = patientRepository.searchPatient(null,null,null,null,null,null, null,null,new StringParam(phone));
+        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null, null,null,new StringParam(phone));
     }
 
 

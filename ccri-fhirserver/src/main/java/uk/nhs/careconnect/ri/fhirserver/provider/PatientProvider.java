@@ -1,9 +1,9 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -32,6 +32,9 @@ public class PatientProvider implements IResourceProvider {
     @Autowired
     private PatientRepository patientDao;
 
+    @Autowired
+    FhirContext ctx;
+
 
     @Override
     public Class<Patient> getResourceType() {
@@ -41,7 +44,7 @@ public class PatientProvider implements IResourceProvider {
 
     @Read
     public Patient getPatientById(@IdParam IdType internalId) {
-        Patient patient = patientDao.read(internalId);
+        Patient patient = patientDao.read(ctx,internalId);
 
         if (patient == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -50,6 +53,22 @@ public class PatientProvider implements IResourceProvider {
         }
 
         return patient;
+    }
+
+    @Update
+    public MethodOutcome updatePatient(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId, RequestDetails theRequestDetails) {
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        Patient newPatient = patientDao.update(ctx, patient, theId, null);
+        method.setId(newPatient.getIdElement());
+        method.setResource(newPatient);
+
+        return method;
     }
 
     @Search
@@ -68,7 +87,7 @@ public class PatientProvider implements IResourceProvider {
 
 
 
-        return patientDao.searchPatient(addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
+        return patientDao.searchPatient(ctx,addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
 
     }
 
