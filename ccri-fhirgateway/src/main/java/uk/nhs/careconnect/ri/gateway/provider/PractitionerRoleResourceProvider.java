@@ -81,10 +81,17 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
         }
         if (resource instanceof PractitionerRole) {
             practitionerRole = (PractitionerRole) resource;
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
         }
-        else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
-        }
+
         return practitionerRole;
     }
 
@@ -128,8 +135,14 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
                 PractitionerRole patient = (PractitionerRole) entry.getResource();
                 results.add(patient);
             }
-        }
-        else {
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
             throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }
         return results;

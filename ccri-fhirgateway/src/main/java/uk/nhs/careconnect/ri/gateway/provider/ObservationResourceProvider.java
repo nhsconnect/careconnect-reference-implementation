@@ -80,9 +80,15 @@ public class ObservationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Observation) {
             observation = (Observation) resource;
-        }
-        else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
         }
 
         return observation;
@@ -131,7 +137,14 @@ public class ObservationResourceProvider implements IResourceProvider {
                 results.add(observation);
             }
         }
-        else {
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
             throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }
 

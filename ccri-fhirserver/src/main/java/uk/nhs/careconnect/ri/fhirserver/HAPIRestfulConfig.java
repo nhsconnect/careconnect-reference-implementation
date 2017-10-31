@@ -28,8 +28,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     private FhirContext ctx;
 
-
-
     @Value("${datasource.serverBase}")
     private String serverBase;
 

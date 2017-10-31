@@ -82,9 +82,15 @@ public class LocationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Location) {
             location = (Location) resource;
-        }
-        else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
         }
 
         return location;
@@ -130,6 +136,13 @@ public class LocationResourceProvider implements IResourceProvider {
                 Location patient = (Location) entry.getResource();
                 results.add(patient);
             }
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
             throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }

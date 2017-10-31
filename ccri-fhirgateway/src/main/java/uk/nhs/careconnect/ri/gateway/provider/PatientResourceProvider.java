@@ -84,9 +84,15 @@ public class PatientResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Patient) {
              patient = (Patient) resource;
-        }
-        else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+             throw new InternalErrorException("Unknown Error");
         }
 
         return patient;
@@ -141,6 +147,13 @@ public class PatientResourceProvider implements IResourceProvider {
                 Patient patient = (Patient) entry.getResource();
                 results.add(patient);
             }
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
             throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }

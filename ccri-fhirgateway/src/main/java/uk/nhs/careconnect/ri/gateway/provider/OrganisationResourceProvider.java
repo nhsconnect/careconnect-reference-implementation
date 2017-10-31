@@ -82,8 +82,15 @@ public class OrganisationResourceProvider implements IResourceProvider {
         if (resource instanceof Organization) {
             organization = (Organization) resource;
         }
-        else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
         }
         return organization;
     }
@@ -127,8 +134,14 @@ public class OrganisationResourceProvider implements IResourceProvider {
                 Organization patient = (Organization) entry.getResource();
                 results.add(patient);
             }
-        }
-        else {
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
             throw new InternalErrorException("Server Error",(OperationOutcome) resource);
         }
 
