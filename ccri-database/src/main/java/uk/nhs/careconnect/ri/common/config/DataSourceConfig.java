@@ -85,6 +85,7 @@ public class DataSourceConfig {
         flyway.setBaselineOnMigrate(true);
       //  flyway.setLocations("filesystem:/path/to/migrations/");
         flyway.setDataSource(dataSource());
+        flyway.repair();
         return flyway;
     }
 

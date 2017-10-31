@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OptimisticLock;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
@@ -13,9 +14,8 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class BaseResource {
 
-	//private static final int MAX_PROFILE_LENGTH = 1000;
-	
-	
+	private static final int MAX_PROFILE_LENGTH = 10000;
+
 	@Column(name = "RES_UPDATED",insertable=false, updatable=false)
 	@UpdateTimestamp
 	private Date resUpdated;
@@ -55,5 +55,17 @@ public abstract class BaseResource {
 		this.resMessage = resMessage;
 	}
 
+	@Column(name = "RESOURCE", length = MAX_PROFILE_LENGTH, nullable = true)
+	@OptimisticLock(
+			excluded = true)
+	private String Resource;
+
+	public String getResource() {
+		return Resource;
+	}
+
+	public void setResource(String resource) {
+		Resource = resource;
+	}
 
 }
