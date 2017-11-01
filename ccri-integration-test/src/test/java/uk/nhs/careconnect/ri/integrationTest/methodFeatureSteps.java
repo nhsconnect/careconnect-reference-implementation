@@ -1,25 +1,59 @@
 package uk.nhs.careconnect.ri.integrationTest;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.SingleValidationMessage;
+import ca.uhn.fhir.validation.ValidationResult;
 import cucumber.api.DataTable;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.apache.commons.lang3.text.WordUtils;
+import org.fusesource.jansi.Ansi;
 import org.hamcrest.CoreMatchers;
+import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
+import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.junit.Assert;
+import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.leftPad;
+import static org.fusesource.jansi.Ansi.ansi;
+
 public class methodFeatureSteps {
 
+
+    public static final String LINESEP = System.getProperty("line.separator");
+
     private static HttpTestClient client=null;
+
+    private static FhirContext ctx = null;
+
+    private static FhirValidator val = null;
+
+    private static FhirInstanceValidator instanceValidator = null;
 
     @Before
     public static void beforeClass() throws Exception {
 
         if (client == null) {
-            client = new HttpTestClient(FhirContext.forDstu3());
+
+            ctx = FhirContext.forDstu3();
+            client = new HttpTestClient(ctx);
+            val = ctx.newValidator();
+            instanceValidator = new FhirInstanceValidator();
+            val.registerValidatorModule(instanceValidator);
+            ValidationSupportChain validationSupport = new ValidationSupportChain(
+                    new DefaultProfileValidationSupport()
+                    , new CareConnectProfileValidationSupport()
+            );
+
+            instanceValidator.setValidationSupport(validationSupport);
         }
     }
 
@@ -95,6 +129,43 @@ public class methodFeatureSteps {
         for (Map map : data) {
             Assert.assertThat(idArray.toString(), CoreMatchers.containsString(map.get("PatientId").toString()));
         }
+    }
+
+    @Then("^resource is valid$")
+    public void resource_is_valid() throws Throwable {
+       Assert.assertTrue(validateResource(client.bundle));
+    }
+
+    public boolean validateResource(Bundle resource) {
+        Boolean passed = true;
+
+        ValidationResult results = val.validateWithResult(resource);
+
+        StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
+        int count = 0;
+        for (SingleValidationMessage next : results.getMessages()) {
+            count++;
+            b.append(LINESEP);
+            String leftString = "Issue " + count + ": ";
+            int leftWidth = leftString.length();
+            b.append(ansi().fg(Ansi.Color.GREEN)).append(leftString);
+            if (next.getSeverity() != null) {
+                b.append(next.getSeverity()).append(ansi().fg(Ansi.Color.WHITE)).append(" - ");
+            }
+            if (isNotBlank(next.getLocationString())) {
+                b.append(ansi().fg(Ansi.Color.WHITE)).append(next.getLocationString());
+            }
+            String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
+            for (String line : message) {
+                b.append(LINESEP);
+                b.append(ansi().fg(Ansi.Color.WHITE));
+                b.append(leftPad("", leftWidth)).append(line);
+            }
+            System.out.println(message.toString());
+
+            if (next.getSeverity().equals("ERROR")) passed = false;
+        }
+        return passed;
     }
 
 }

@@ -13,6 +13,7 @@ Feature: N.4. Patient Search Tests (version 0.11)
         Then the method response code should be 200
         And have 1 Patient's returned
         And Patient Id = 1003
+        And resource is valid
 
     Scenario: 4.1.3 Search Test
         Given FHIR STU3 Server
@@ -241,18 +242,18 @@ Feature: N.4. Patient Search Tests (version 0.11)
                  | PatientId |
                  | 1002 |
 
-   Scenario: 4.1.30 family=Lëndina
+   Scenario: 4.1.30 given=Lendina (Lëndina)
            Given FHIR STU3 Server
-           When I Get Patient?family=Lëndina
+           When I Get Patient?given=Lendina
            Then the method response code should be 200
            And have 1 Patient's returned
            And contains Ids
                 | PatientId |
                 | 1043 |
 
-   Scenario: 4.1.30a family=Lendina
+   Scenario: 4.1.30a given=Lëndina
               Given FHIR STU3 Server
-              When I Get Patient?family=Lendina
+              When I Get Patient?given=Lëndina
               Then the method response code should be 200
               And have 1 Patient's returned
               And contains Ids
@@ -541,11 +542,11 @@ Feature: N.4. Patient Search Tests (version 0.11)
                      | 1001 |
                      | 1058 |
 
-       Scenario: 4.1.65 given=vic&gender=male
-                    Given FHIR STU3 Server
-                    When I Get Patient?given=vic&gender=male
-                    Then the method response code should be 200
-                    And have 0 Patient's returned
+   Scenario: 4.1.65 given=vic&gender=male
+        Given FHIR STU3 Server
+        When I Get Patient?given=vic&gender=male
+        Then the method response code should be 200
+        And have 0 Patient's returned
 
     Scenario: 4.1.66 Search Test
          Given FHIR STU3 Server
