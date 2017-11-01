@@ -57,7 +57,7 @@ public class methodFeatureSteps {
         client.doPatch(url,data.get(0).get(0));
     }
 
-    @When("^I Get ([A-z0-9/?_\\-=\\s]+)$")
+    @When("^I Get ([A-z0-9/?_\\-=\\s@.:]+)$")
     public void Get_Url(String url) throws Throwable {
      //   System.out.println("Url = "+url);
         client.doGet(url);
