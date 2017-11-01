@@ -1,23 +1,34 @@
 package uk.nhs.careconnect.ri.integrationTest;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hl7.fhir.dstu3.model.Bundle;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class HttpTestClient {
 
-    private String careConnectServer = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
+    //private String careConnectServer = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
 
-    //private String careConnectServer = "http://purple.testlab.nhs.uk/careconnect-ri/STU3/";
+    private String careConnectServer = "http://purple.testlab.nhs.uk/careconnect-ri/STU3/";
 
     HttpClient client;
 
     HttpResponse response;
 
+    FhirContext ctx = null;
+
+    Bundle bundle = null;
+
+    HttpTestClient(FhirContext ctx) {
+        this.ctx = ctx;
+    }
 
     public int getResponseCode() throws IOException
     {
@@ -83,6 +94,40 @@ public class HttpTestClient {
         //System.out.println(request.getURI());
         response = client.execute(request);
 
+    }
+
+    public int countResources() {
+        try {
+
+        return bundle.getEntry().size();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return -1;
+        }
+    }
+
+    public void convertReplytoBundle(){
+        try {
+
+            Reader reader = new InputStreamReader(this.response.getEntity().getContent());
+            bundle = (Bundle) ctx.newJsonParser().parseResource(reader);
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public Boolean checkResourceType(String resource) {
+
+        try {
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                if (!entry.getResource().getResourceType().toString().equals(resource)) return false;
+            }
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
     }
 
 

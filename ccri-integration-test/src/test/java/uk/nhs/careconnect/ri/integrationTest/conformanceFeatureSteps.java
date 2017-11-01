@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.integrationTest;
 
+import ca.uhn.fhir.context.FhirContext;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -8,7 +10,16 @@ import org.junit.Assert;
 
 public class conformanceFeatureSteps {
 
-    private HttpTestClient client =new HttpTestClient();
+    private static HttpTestClient client=null;
+
+    @Before
+    public static void beforeClass() throws Exception {
+
+        if (client == null) {
+            client = new HttpTestClient(FhirContext.forDstu3());
+        }
+    }
+
 
     @Given("^FHIR STU(\\d+) Server$")
     public void fhir_STU_Server(int arg1) throws Throwable {
