@@ -70,7 +70,23 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		opt.setRequired(true);
 		options.addOption(opt);
 
-		return options;
+        opt = new Option("a", "all", false, "All upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("g", "gp", false, "GP upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("p", "phr", false, "PHR Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("o", "obs", false, "Observation Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        return options;
 	}
 
 	@Override
@@ -83,7 +99,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		}
 
 		ctx = getSpecVersionContext(theCommandLine);
-		String exclude = theCommandLine.getOptionValue("e");
 
         ClassLoader classLoader = getClass().getClassLoader();
 
@@ -92,45 +107,46 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             client = ctx.newRestfulGenericClient(targetServer);
 
             // BA Patient data file
-            try {
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("g")) {
+                try {
 
-                System.out.println("Patient.csv");
+                    System.out.println("Patient.csv");
 
-                IRecordHandler handler = null;
+                    IRecordHandler handler = null;
 
-                handler = new PatientHandler(ctx,client);
-                processPatientCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/Patient.csv"));
-                for (IBaseResource resource : resources) {
-                    client.create().resource(resource).execute();
+                    handler = new PatientHandler(ctx, client);
+                    processPatientCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Patient.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
                 }
-                resources.clear();
-
-
-
-            } catch (Exception ex) {
-                ourLog.error(ex.getMessage());
             }
 
-            // BA Observation data file
-            try {
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("o")) {
+                try {
 
-                //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
+                    //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
 
-                System.out.println("Obs.csv");
+                    System.out.println("Obs.csv");
 
-                IRecordHandler handler = null;
+                    IRecordHandler handler = null;
 
-                handler = new ObsHandler();
-                processObsCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/Obs.csv"));
-                for (IBaseResource resource : resources) {
-                    client.create().resource(resource).execute();
+                    handler = new ObsHandler();
+                    processObsCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Obs.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
                 }
-                resources.clear();
-
-
-
-            } catch (Exception ex) {
-                ourLog.error(ex.getMessage());
             }
 
             /* Developer loads - remove for now
@@ -150,36 +166,38 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             */
 
             // Nokia
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("p")) {
 
-            try {
+                try {
 
-               // File file = new File(classLoader.getResource("Examples/nokia/weight.csv").getFile());
+                    // File file = new File(classLoader.getResource("Examples/nokia/weight.csv").getFile());
 
-                System.out.println("weight.csv");
-                IRecordHandler handler = null;
+                    System.out.println("weight.csv");
+                    IRecordHandler handler = null;
 
-                handler = new WeightHandler();
-                processWeightCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/nokia/weight.csv"));
-                for (IBaseResource resource : resources) {
-                    client.create().resource(resource).execute();
+                    handler = new WeightHandler();
+                    processWeightCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/weight.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+                    // file = new File(classLoader.getResource("Examples/nokia/blood_pressure.csv").getFile());
+
+                    System.out.println("blood_pressure.csv");
+                    handler = null;
+
+                    handler = new BloodPressureHandler();
+                    processBloodPressureCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/blood_pressure.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
                 }
-                resources.clear();
-
-               // file = new File(classLoader.getResource("Examples/nokia/blood_pressure.csv").getFile());
-
-                System.out.println("blood_pressure.csv");
-                handler = null;
-
-                handler = new BloodPressureHandler();
-                processBloodPressureCSV(handler,  ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream ("Examples/nokia/blood_pressure.csv"));
-                for (IBaseResource resource : resources) {
-                    client.create().resource(resource).execute();
-                }
-                resources.clear();
-
-
-            } catch (Exception ex) {
-                ourLog.error(ex.getMessage());
             }
 
         }
