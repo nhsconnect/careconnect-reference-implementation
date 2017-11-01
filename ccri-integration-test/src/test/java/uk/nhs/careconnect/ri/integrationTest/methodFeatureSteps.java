@@ -5,9 +5,11 @@ import cucumber.api.DataTable;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 
 import java.util.List;
+import java.util.Map;
 
 public class methodFeatureSteps {
 
@@ -21,8 +23,6 @@ public class methodFeatureSteps {
         }
     }
 
-
-
     @When("^I Delete ([A-z0-9//]+)$")
     public void Delete_Url(String url) throws Throwable {
       //  System.out.println("Url = "+url);
@@ -35,8 +35,6 @@ public class methodFeatureSteps {
      //   System.out.println("Url = "+data.get(0).get(0));
         client.doPatch(url,data.get(0).get(0));
     }
-
-
 
     @When("^I Post (\\w+)/(\\w+)$")
     public void Post_Url(String url1, String url2, DataTable xmlString) throws Throwable {
@@ -59,7 +57,7 @@ public class methodFeatureSteps {
         client.doPatch(url,data.get(0).get(0));
     }
 
-    @When("^I Get ([A-z0-9/?_\\-=]+)$")
+    @When("^I Get ([A-z0-9/?_\\-=\\s]+)$")
     public void Get_Url(String url) throws Throwable {
      //   System.out.println("Url = "+url);
         client.doGet(url);
@@ -79,12 +77,24 @@ public class methodFeatureSteps {
         Assert.assertTrue(client.checkResourceType(resource));
     }
 
-
-
     @Then("^the method response code should be (\\d+)$")
     public void the_method_response_code_should_be(int responseCode) throws Throwable {
         Assert.assertEquals(responseCode,client.getResponseCode());
     }
 
+    @Then("^Patient Id = (\\d+)$")
+    public void patient_Id(String patientId) throws Throwable {
+        Assert.assertEquals(patientId, client.getFirstPatientId());
+    }
+
+
+    @Then("^contains Ids$")
+    public void contain_Ids(DataTable ids) throws Throwable {
+       List<String> idArray= client.getPatientIds(); List<Map<String, String>> data = ids.asMaps(String.class, String.class);
+
+        for (Map map : data) {
+            Assert.assertThat(idArray.toString(), CoreMatchers.containsString(map.get("PatientId").toString()));
+        }
+    }
 
 }

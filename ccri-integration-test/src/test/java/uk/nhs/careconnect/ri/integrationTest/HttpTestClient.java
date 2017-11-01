@@ -7,16 +7,19 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Patient;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HttpTestClient {
 
-    //private String careConnectServer = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
+    private String careConnectServer = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
 
-    private String careConnectServer = "http://purple.testlab.nhs.uk/careconnect-ri/STU3/";
+    //private String careConnectServer = "http://purple.testlab.nhs.uk/careconnect-ri/STU3/";
 
     HttpClient client;
 
@@ -28,6 +31,11 @@ public class HttpTestClient {
 
     HttpTestClient(FhirContext ctx) {
         this.ctx = ctx;
+    }
+
+    public String encodeUrl(String url) {
+        return url.replace(" ","%20");
+
     }
 
     public int getResponseCode() throws IOException
@@ -50,8 +58,10 @@ public class HttpTestClient {
     public void doGet(String httpUrl) throws Exception {
 
         client = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(careConnectServer+httpUrl);
-     //   System.out.println(request.getURI());
+        String query = encodeUrl(careConnectServer+httpUrl);
+
+        HttpGet request = new HttpGet(query);
+        System.out.println(request.getURI());
         response = client.execute(request);
 
     }
@@ -97,13 +107,8 @@ public class HttpTestClient {
     }
 
     public int countResources() {
-        try {
-
+        if (bundle == null) return -1;
         return bundle.getEntry().size();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return -1;
-        }
     }
 
     public void convertReplytoBundle(){
@@ -118,16 +123,34 @@ public class HttpTestClient {
     }
 
     public Boolean checkResourceType(String resource) {
+        if (bundle == null) return null;
 
-        try {
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                if (!entry.getResource().getResourceType().toString().equals(resource)) return false;
-            }
-            return true;
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return false;
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (!entry.getResource().getResourceType().toString().equals(resource)) return false;
         }
+        return true;
+
+    }
+
+    public String getFirstPatientId() {
+        if (bundle == null) return null;
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Patient patient = (Patient) entry.getResource();
+            return patient.getIdElement().getIdPart();
+        }
+        return null;
+    }
+
+    public List<String> getPatientIds() {
+        if (bundle == null) return null;
+
+        List<String> ids = new ArrayList<>();
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Patient patient = (Patient) entry.getResource();
+            ids.add(patient.getIdElement().getIdPart());
+        }
+        return ids;
     }
 
 

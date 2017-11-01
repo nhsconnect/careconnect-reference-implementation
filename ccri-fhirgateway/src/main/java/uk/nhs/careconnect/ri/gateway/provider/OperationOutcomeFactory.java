@@ -1,8 +1,7 @@
 package uk.nhs.careconnect.ri.gateway.provider;
 
 
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
@@ -31,9 +30,39 @@ public class OperationOutcomeFactory {
 
     public static void convertToException (OperationOutcome outcome ) throws BaseServerResponseException {
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+
+            // TODO Revist the mapping here.
+
             switch (issue.getCode()) {
                 case NOTFOUND:
                     throw new ResourceNotFoundException(issue.getDetails().getText(),outcome);
+                case PROCESSING:
+                    throw new UnprocessableEntityException(issue.getDetails().getText(),outcome);
+                case SECURITY:
+                    throw new AuthenticationException();
+                case INVALID:
+                    throw new InvalidRequestException(issue.getDetails().getText(),outcome);
+                case EXCEPTION:
+                    throw new InternalErrorException(issue.getDetails().getText(),outcome);
+                case FORBIDDEN:
+                    throw new ForbiddenOperationException(issue.getDetails().getText(),outcome);
+                case CONFLICT:
+                    throw new ResourceVersionConflictException(issue.getDetails().getText(),outcome);
+                case NOTSUPPORTED:
+                    throw new NotImplementedOperationException(issue.getDetails().getText(),outcome);
+                case DUPLICATE:
+                    throw new PreconditionFailedException(issue.getDetails().getText(),outcome);
+
+                    /*
+                    registerExceptionType(MethodNotAllowedException.STATUS_CODE, MethodNotAllowedException.class);
+                    registerExceptionType(NotImplementedOperationException.STATUS_CODE, NotImplementedOperationException.class);
+                    registerExceptionType(NotModifiedException.STATUS_CODE, NotModifiedException.class);
+
+                    registerExceptionType(ResourceGoneException.STATUS_CODE, ResourceGoneException.class);
+                    registerExceptionType(PreconditionFailedException.STATUS_CODE, PreconditionFailedException.class);
+
+                   */
+
 
             }
         }
