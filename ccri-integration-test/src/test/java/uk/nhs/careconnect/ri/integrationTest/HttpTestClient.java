@@ -34,8 +34,10 @@ public class HttpTestClient {
     }
 
     public String encodeUrl(String url) {
-        return url.replace(" ","%20");
+        url = url.replace(" ","%20");
 
+        url = url.replace("|","%7C");
+        return url;
     }
 
     public int getResponseCode() throws IOException

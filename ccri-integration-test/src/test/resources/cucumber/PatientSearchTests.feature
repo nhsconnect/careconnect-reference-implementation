@@ -1,4 +1,4 @@
-Feature: Patient Search Tests
+Feature: N.4. Patient Search Tests
 
 
     Scenario: 4.1.1 Search Test
@@ -163,7 +163,7 @@ Feature: Patient Search Tests
 
     Scenario: 4.1.20 Search Test
          Given FHIR STU3 Server
-         When I Get Patient?family=
+         When I Get Patient?family=Munoz
          Then the method response code should be 200
          And have 1 Patient's returned
          And contains Ids
@@ -213,3 +213,182 @@ Feature: Patient Search Tests
                 | PatientId |
                 | 1032 |
                 | 1084 |
+
+   Scenario: 4.1.26 Search Test
+           Given FHIR STU3 Server
+           When I Get Patient?gender=MALE
+           Then the method response code should be 200
+           And have 52 Patient's returned
+
+   Scenario: 4.1.27 Search Test
+          Given FHIR STU3 Server
+          When I Get Patient?gender=FEMALE
+          Then the method response code should be 200
+          And have 44 Patient's returned
+
+   Scenario: 4.1.28 Search Test
+          Given FHIR STU3 Server
+          When I Get Patient?gender=OTHER
+          Then the method response code should be 200
+          And have 7 Patient's returned
+
+   Scenario: 4.1.19A Search Test
+          Given FHIR STU3 Server
+          When I Get Patient?gender=male
+          Then the method response code should be 200
+          And have 52 Patient's returned
+
+   Scenario: 4.1.20A Search Test
+             Given FHIR STU3 Server
+             When I Get Patient?given=Kendra
+             Then the method response code should be 200
+             And have 1 Patient's returned
+             And contains Ids
+                 | PatientId |
+                 | 1002 |
+
+   Scenario: 4.1.21A Search Test
+            Given FHIR STU3 Server
+            When I Get Patient?given=John
+            Then the method response code should be 200
+            And have 0 Patient's returned
+
+   Scenario: 4.1.22A Search Test
+            Given FHIR STU3 Server
+            When I Get Patient?given=kendra
+            Then the method response code should be 200
+            And have 1 Patient's returned
+            And contains Ids
+                 | PatientId |
+                 | 1002 |
+
+   Scenario: 4.1.23A Search Test
+           Given FHIR STU3 Server
+           When I Get Patient?family=Lendina
+           Then the method response code should be 200
+           And have 1 Patient's returned
+           And contains Ids
+                | PatientId |
+                | 1043 |
+
+   Scenario: 4.1.24A Search Test
+              Given FHIR STU3 Server
+              When I Get Patient?family=Jet
+              Then the method response code should be 200
+              And have 1 Patient's returned
+              And contains Ids
+                   | PatientId |
+                   | 1090 |
+
+   Scenario: 4.1.25A Search Test
+              Given FHIR STU3 Server
+              When I Get Patient?family=Mo
+              Then the method response code should be 200
+              And have 2 Patient's returned
+              And contains Ids
+                   | PatientId |
+                   | 1001 |
+                   | 1058 |
+
+   Scenario: 4.1.26A Search Test
+                 Given FHIR STU3 Server
+                 When I Get Patient?identifier=9002090358
+                 Then the method response code should be 200
+                 And have 1 Patient's returned
+                 And contains Ids
+                      | PatientId |
+                      | 1011 |
+
+   Scenario: 4.1.27A Search Test
+                Given FHIR STU3 Server
+                When I Get Patient?identifier=8678768768
+                Then the method response code should be 200
+                And have 0 Patient's returned
+
+   Scenario: 4.1.28A Search Test
+               Given FHIR STU3 Server
+               When I Get Patient?identifier=https://fhir.nhs.uk/Id/nhs-number|9002090358
+               Then the method response code should be 200
+               And have 1 Patient's returned
+               And contains Ids
+                    | PatientId |
+                    | 1011 |
+
+   Scenario: 4.1.29A Search Test
+                  Given FHIR STU3 Server
+                  When I Get Patient?identifier=https://fhir.leedsth.nhs.uk/Id/pas-number|9002090358
+                  Then the method response code should be 200
+                  And have 0 Patient's returned
+
+   Scenario: 4.1.30A Search Test
+                     Given FHIR STU3 Server
+                     When I Get Patient?identifier=https://dummy.co.uk/invalidaddress|9002090358
+                     Then the method response code should be 200
+                     And have 0 Patient's returned
+
+   Scenario: 4.1.31A Search Test
+                  Given FHIR STU3 Server
+                  When I Get Patient?identifier=LOCAL1001
+                  Then the method response code should be 200
+                  And have 1 Patient's returned
+                  And contains Ids
+                       | PatientId |
+                       | 1001 |
+
+   Scenario: 4.1.32A Search Test
+                    Given FHIR STU3 Server
+                    When I Get Patient?identifier=local1001
+                    Then the method response code should be 200
+                    And have 1 Patient's returned
+                    And contains Ids
+                         | PatientId |
+                         | 1001 |
+
+   Scenario: 4.1.33A Search Test
+              Given FHIR STU3 Server
+              When I Get Patient?name=Dan
+              Then the method response code should be 200
+              And have 2 Patient's returned
+              And contains Ids
+                   | PatientId |
+                   | 1037 |
+                   | 1040 |
+
+   Scenario: 4.1.34A Search Test
+                 Given FHIR STU3 Server
+                 When I Get Patient?name=John
+                 Then the method response code should be 200
+                 And have 0 Patient's returned
+
+   Scenario: 4.1.35A Search Test
+                 Given FHIR STU3 Server
+                 When I Get Patient?name=kendra
+                 Then the method response code should be 200
+                 And have 1 Patient's returned
+                 And contains Ids
+                      | PatientId |
+                      | 1002 |
+
+   Scenario: 4.1.36A Search Test
+                    Given FHIR STU3 Server
+                    When I Get Patient?name=Jet
+                    Then the method response code should be 200
+                    And have 1 Patient's returned
+                    And contains Ids
+                         | PatientId |
+                         | 1090 |
+
+    Scenario: 4.1.37A Search Test
+                       Given FHIR STU3 Server
+                       When I Get Patient?phone=(0113) 574 3265
+                       Then the method response code should be 200
+                       And have 1 Patient's returned
+                       And contains Ids
+                            | PatientId |
+                            | 1002 |
+
+     Scenario: 4.1.38A Search Test
+                        Given FHIR STU3 Server
+                        When I Get Patient?phone=01135743265
+                        Then the method response code should be 200
+                        And have 0 Patient's returned
