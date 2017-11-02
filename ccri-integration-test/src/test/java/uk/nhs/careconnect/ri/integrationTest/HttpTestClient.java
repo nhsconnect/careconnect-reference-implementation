@@ -88,6 +88,10 @@ public class HttpTestClient {
     }
 
     public void doPatch(String httpUrl, String body) throws Exception {
+<<<<<<< HEAD
+=======
+
+>>>>>>> d1883511c366a912740d17c9264fcfb919439ef5
         final HttpClient client = getHttpClient();
         final HttpPatch request = new HttpPatch(constructFullUrl(httpUrl));
         request.setEntity(new StringEntity(body));
@@ -147,6 +151,7 @@ public class HttpTestClient {
         return ids;
     }
 
+<<<<<<< HEAD
     public List<String> getLocationIds() {
         if (bundle == null) return null;
 
@@ -157,4 +162,6 @@ public class HttpTestClient {
         }
         return ids;
     }
+=======
+>>>>>>> d1883511c366a912740d17c9264fcfb919439ef5
 }
