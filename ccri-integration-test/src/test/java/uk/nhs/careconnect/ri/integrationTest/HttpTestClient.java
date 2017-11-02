@@ -19,7 +19,7 @@ import java.util.List;
 
 public class HttpTestClient {
 
-    private static String DEFAULT_SERVER_BASE_URL = "http://127.0.0.1:8080/careconnect-ri/STU3/";
+    private static String DEFAULT_SERVER_BASE_URL = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
     private final FhirContext ctx;
 
     private HttpResponse response = null;
