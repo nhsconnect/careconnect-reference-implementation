@@ -51,6 +51,7 @@ Feature: N.4. Patient Search Tests
          When I Get Patient?birthdate=191
          Then the method response code should be 500
 
+    @ignore
     Scenario: 4.1.8 Search Test
          Given FHIR STU3 Server
          When I Get Patient?birthdate=eq1918-05-20
@@ -58,6 +59,7 @@ Feature: N.4. Patient Search Tests
          And have 1 Patient's returned
          And Patient Id = 1050
 
+    @ignore
     Scenario: 4.1.9 Search Test
          Given FHIR STU3 Server
          When I Get Patient?birthdate=ne1918-05-20
@@ -109,16 +111,19 @@ Feature: N.4. Patient Search Tests
              | 1053 |
              | 1068 |
 
+    @ignore
     Scenario: 4.1.13 Search Test
          Given FHIR STU3 Server
          When I Get Patient?birthdate=sa2015-05-11
          Then the method response code should be 422
 
+    @ignore
     Scenario: 4.1.14 Search Test
          Given FHIR STU3 Server
          When I Get Patient?birthdate=eb1919-07-13
          Then the method response code should be 422
 
+    @ignore
     Scenario: 4.1.15 Search Test
          Given FHIR STU3 Server
          When I Get Patient?birthdate=ap1917-06-04
@@ -152,6 +157,7 @@ Feature: N.4. Patient Search Tests
              | 1099 |
              | 1055 |
 
+    @ignore
     Scenario: 4.1.19 Search Test
          Given FHIR STU3 Server
          When I Get Patient?email:exists=false
@@ -186,6 +192,7 @@ Feature: N.4. Patient Search Tests
                 | PatientId |
                 | 1001 |
 
+   @ignore
    Scenario: 4.1.23 Search Test Antić
             Given FHIR STU3 Server
             When I Get Patient?family=Antic
