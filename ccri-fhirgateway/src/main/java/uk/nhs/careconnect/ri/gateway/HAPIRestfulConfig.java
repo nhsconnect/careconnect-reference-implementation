@@ -75,6 +75,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 		registerInterceptor(loggingInterceptor);
 
+
+
 		loggingInterceptor.setLoggerName("ccri.FHIRGateway");
 
 		// This is the format for each line. A number of substitution variables may
