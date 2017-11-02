@@ -18,31 +18,42 @@ import java.util.List;
 
 public class HttpTestClient {
 
-    private String careConnectServer = "http://127.0.0.1:8080/careconnect-gateway/STU3/";
+    private static String DEFAULT_SERVER_BASE_URL = "http://127.0.0.1:8080/careconnect-ri/STU3/";
+    private final FhirContext ctx;
 
-    //private String careConnectServer = "http://purple.testlab.nhs.uk/careconnect-ri/STU3/";
+    private HttpResponse response = null;
 
-    HttpClient client;
+    private Bundle bundle = null;
 
-    HttpResponse response;
-
-    FhirContext ctx = null;
-
-    Bundle bundle = null;
+    private String serverBaseUrl = null;
 
     HttpTestClient(FhirContext ctx) {
         this.ctx = ctx;
     }
 
+    private HttpClient getHttpClient(){
+        final HttpClient httpClient = HttpClientBuilder.create().build();
+        return httpClient;
+    }
+
+    private String constructFullUrl(String url){
+        return getServerBaseUrl() + url;
+    }
+
+    private String getServerBaseUrl() {
+        if (serverBaseUrl == null ){
+            serverBaseUrl = System.getProperty("serverBaseUrl", DEFAULT_SERVER_BASE_URL);
+        }
+        return serverBaseUrl;
+    }
+
     public String encodeUrl(String url) {
         url = url.replace(" ","%20");
-
         url = url.replace("|","%7C");
         return url;
     }
 
-    public int getResponseCode() throws IOException
-    {
+    public int getResponseCode() throws IOException {
         return response.getStatusLine().getStatusCode();
     }
 
@@ -55,58 +66,41 @@ public class HttpTestClient {
         }
         */
         return response.getFirstHeader(header).getValue();
-
     }
 
     public void doGet(String httpUrl) throws Exception {
-
-        client = HttpClientBuilder.create().build();
-        String query = encodeUrl(careConnectServer+httpUrl);
-
-        HttpGet request = new HttpGet(query);
-
+        final HttpClient client = getHttpClient();
+        final String query = encodeUrl(constructFullUrl(httpUrl));
+        final HttpGet request = new HttpGet(query);
         response = client.execute(request);
-
     }
 
     public void doDelete(String httpUrl) throws Exception {
-
-        client = HttpClientBuilder.create().build();
-        HttpDelete request = new HttpDelete(careConnectServer+httpUrl);
-     //   System.out.println(request.getURI());
+        final HttpClient client = getHttpClient();
+        final HttpDelete request = new HttpDelete(constructFullUrl(httpUrl));
         response = client.execute(request);
-
     }
 
     public void doHead(String httpUrl) throws Exception {
-
-        client = HttpClientBuilder.create().build();
-        HttpHead request = new HttpHead(careConnectServer+httpUrl);
-       // System.out.println(request.getURI());
+        final HttpClient client = getHttpClient();
+        final HttpHead request = new HttpHead(constructFullUrl(httpUrl));
         response = client.execute(request);
-
     }
 
     public void doPatch(String httpUrl, String body) throws Exception {
-
-        client = HttpClientBuilder.create().build();
-        HttpPatch request = new HttpPatch(careConnectServer+httpUrl);
+        final HttpClient client = getHttpClient();
+        final HttpPatch request = new HttpPatch(constructFullUrl(httpUrl));
         request.setEntity(new StringEntity(body));
-       // System.out.println(request.getURI());
         response = client.execute(request);
-
     }
 
     public void doPost(String httpUrl, String body) throws Exception {
-
-        client = HttpClientBuilder.create().build();
-        HttpPost request = new HttpPost(careConnectServer+httpUrl);
+        final HttpClient client = getHttpClient();
+        final HttpPost request = new HttpPost(constructFullUrl(httpUrl));
         if (body != null && !body.isEmpty()) {
             request.setEntity(new StringEntity(body));
         }
-        //System.out.println(request.getURI());
         response = client.execute(request);
-
     }
 
     public int countResources() {
@@ -116,10 +110,8 @@ public class HttpTestClient {
 
     public void convertReplytoBundle(){
         try {
-
             Reader reader = new InputStreamReader(this.response.getEntity().getContent());
             bundle = (Bundle) ctx.newJsonParser().parseResource(reader);
-
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -132,7 +124,6 @@ public class HttpTestClient {
             if (!entry.getResource().getResourceType().toString().equals(resource)) return false;
         }
         return true;
-
     }
 
     public String getFirstPatientId() {
@@ -166,6 +157,4 @@ public class HttpTestClient {
         }
         return ids;
     }
-
-
 }
