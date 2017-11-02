@@ -23,7 +23,7 @@ public class HttpTestClient {
 
     private HttpResponse response = null;
 
-    private Bundle bundle = null;
+    public Bundle bundle = null;
 
     private String serverBaseUrl = null;
 
