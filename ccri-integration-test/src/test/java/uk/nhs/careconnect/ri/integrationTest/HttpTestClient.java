@@ -94,10 +94,7 @@ public class HttpTestClient {
     }
 
     public void doPatch(String httpUrl, String body) throws Exception {
-<<<<<<< HEAD
-=======
 
->>>>>>> d1883511c366a912740d17c9264fcfb919439ef5
         final HttpClient client = getHttpClient();
         final HttpPatch request = new HttpPatch(constructFullUrl(httpUrl));
         request.setEntity(new StringEntity(body));
