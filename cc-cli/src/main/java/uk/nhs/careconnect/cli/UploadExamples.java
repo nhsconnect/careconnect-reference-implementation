@@ -603,7 +603,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                  }
 
              }
-	        System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
+	      //  System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
 
             client.update().resource(patient).execute();
             //MethodOutcome outcome
@@ -731,7 +731,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             date = format.parse(dateString);
         } catch (Exception e) {
             try {
-                System.out.println(dateString);
+              //  System.out.println(dateString);
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
                 date = format.parse(dateString);
             } catch (Exception e2) {

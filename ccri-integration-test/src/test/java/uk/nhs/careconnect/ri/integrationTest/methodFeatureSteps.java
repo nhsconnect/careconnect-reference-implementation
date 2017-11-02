@@ -104,8 +104,9 @@ public class methodFeatureSteps {
     public void have_Patient_s_returned(int count,String resource) throws Throwable {
         client.convertReplytoBundle();
         Assert.assertEquals(count,client.countResources());
-
-        Assert.assertTrue(client.checkResourceType(resource));
+        if (count>0) {
+            Assert.assertTrue(client.checkResourceType(resource));
+        }
     }
 
     @Then("^the method response code should be (\\d+)$")
@@ -169,44 +170,55 @@ public class methodFeatureSteps {
        Assert.assertNull(validateResource(client.bundle));
     }
 
+    @Then("^PractitionerRole Ids = $")
+    public void practitionerrole_Ids() throws Throwable {
+
+    }
+
+    @Then("^Observation Ids = $")
+    public void observation_Ids() throws Throwable {
+
+    }
+
     public String validateResource(Bundle bundle) {
         String passed = null;
+        if (bundle != null) {
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                Resource resource = entry.getResource();
 
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            Resource resource = entry.getResource();
+                ValidationResult results = val.validateWithResult(resource);
 
-            ValidationResult results = val.validateWithResult(resource);
-
-            StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
-            int count = 0;
-            for (SingleValidationMessage next : results.getMessages()) {
-                count++;
-            /*
-            b.append(LINESEP);
-            String leftString = "Issue " + count + ": ";
-            int leftWidth = leftString.length();
-            b.append(ansi().fg(Ansi.Color.GREEN)).append(leftString);
-            if (next.getSeverity() != null) {
-                b.append(next.getSeverity()).append(ansi().fg(Ansi.Color.WHITE)).append(" - ");
-            }
-            if (isNotBlank(next.getLocationString())) {
-                b.append(ansi().fg(Ansi.Color.WHITE)).append(next.getLocationString());
-            }
-            String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
-            for (String line : message) {
+                StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
+                int count = 0;
+                for (SingleValidationMessage next : results.getMessages()) {
+                    count++;
+                /*
                 b.append(LINESEP);
-                b.append(ansi().fg(Ansi.Color.WHITE));
-                b.append(leftPad("", leftWidth)).append(line);
-            }
-            */
-            String message =next.getSeverity() + " " + next.getMessage()+ " Resource="+resource.getResourceType().toString()+"/"+resource.getIdElement().getIdPart();
-                System.out.println(message);
-                if (passed == null) {
-                    switch (next.getSeverity()) {
-                        case ERROR:
-                        case FATAL:
-                        case WARNING:
-                            passed = message;
+                String leftString = "Issue " + count + ": ";
+                int leftWidth = leftString.length();
+                b.append(ansi().fg(Ansi.Color.GREEN)).append(leftString);
+                if (next.getSeverity() != null) {
+                    b.append(next.getSeverity()).append(ansi().fg(Ansi.Color.WHITE)).append(" - ");
+                }
+                if (isNotBlank(next.getLocationString())) {
+                    b.append(ansi().fg(Ansi.Color.WHITE)).append(next.getLocationString());
+                }
+                String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
+                for (String line : message) {
+                    b.append(LINESEP);
+                    b.append(ansi().fg(Ansi.Color.WHITE));
+                    b.append(leftPad("", leftWidth)).append(line);
+                }
+                */
+                String message =next.getSeverity() + " " + next.getMessage()+ " Resource="+resource.getResourceType().toString()+"/"+resource.getIdElement().getIdPart();
+                    System.out.println(message);
+                    if (passed == null) {
+                        switch (next.getSeverity()) {
+                            case ERROR:
+                            case FATAL:
+                            case WARNING:
+                                passed = message;
+                        }
                     }
                 }
             }

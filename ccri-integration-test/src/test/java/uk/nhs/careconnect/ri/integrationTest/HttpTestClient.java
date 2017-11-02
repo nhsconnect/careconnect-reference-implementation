@@ -111,11 +111,12 @@ public class HttpTestClient {
     }
 
     public int countResources() {
-        if (bundle == null) return -1;
+        if (bundle == null) return 0;
         return bundle.getEntry().size();
     }
 
     public void convertReplytoBundle(){
+        bundle = null;
         try {
 
             Reader reader = new InputStreamReader(this.response.getEntity().getContent());
