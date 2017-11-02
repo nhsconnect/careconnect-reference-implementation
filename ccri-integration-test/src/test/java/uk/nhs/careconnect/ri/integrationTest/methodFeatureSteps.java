@@ -121,10 +121,26 @@ public class methodFeatureSteps {
         Assert.assertEquals(patientId, client.getFirstPatientId());
     }
 
+    @Then("^Location Ids = $")
+    public void location_Ids() throws Throwable {
+
+    }
+
+    @Then("^Location Ids = ([A-zÀ-ÿ0-9ć/?_\\-=\\s@.:()|&]+)$")
+    public void location_Ids(String locations) throws Throwable {
+        String[] locationList = locations.split(" ");
+        List<String> idArray= client.getLocationIds();
+
+        for (String locationId : locationList) {
+            Assert.assertThat(idArray.toString(), CoreMatchers.containsString(locationId));
+        }
+    }
+
 
     @Then("^contains Ids$")
     public void contain_Ids(DataTable ids) throws Throwable {
-       List<String> idArray= client.getPatientIds(); List<Map<String, String>> data = ids.asMaps(String.class, String.class);
+       List<String> idArray= client.getPatientIds();
+       List<Map<String, String>> data = ids.asMaps(String.class, String.class);
 
         for (Map map : data) {
             Assert.assertThat(idArray.toString(), CoreMatchers.containsString(map.get("PatientId").toString()));
@@ -162,8 +178,12 @@ public class methodFeatureSteps {
                 b.append(leftPad("", leftWidth)).append(line);
             }
             System.out.println(message.toString());
-
-            if (next.getSeverity().equals("ERROR")) passed = false;
+            switch (next.getSeverity()) {
+                case ERROR:
+                case FATAL:
+                case WARNING:
+                    passed=false;
+            }
         }
         return passed;
     }

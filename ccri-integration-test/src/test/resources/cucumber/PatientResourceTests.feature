@@ -1,4 +1,4 @@
-Feature: N.4. Patient Search Tests (version 0.11)
+Feature: N.4.1 Patient Tests (version 0.11)
 
 
     Scenario: 4.1.1 Search Test
