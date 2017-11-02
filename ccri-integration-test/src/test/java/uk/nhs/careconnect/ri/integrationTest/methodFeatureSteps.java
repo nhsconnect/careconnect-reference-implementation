@@ -8,8 +8,6 @@ import cucumber.api.DataTable;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.apache.commons.lang3.text.WordUtils;
-import org.fusesource.jansi.Ansi;
 import org.hamcrest.CoreMatchers;
 import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
@@ -21,8 +19,6 @@ import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class methodFeatureSteps {
@@ -149,11 +145,11 @@ public class methodFeatureSteps {
 
     @Then("^resource is valid$")
     public void resource_is_valid() throws Throwable {
-       Assert.assertTrue(validateResource(client.bundle));
+       Assert.assertNull(validateResource(client.bundle));
     }
 
-    public boolean validateResource(Bundle resource) {
-        Boolean passed = true;
+    public String validateResource(Bundle resource) {
+        String passed = null;
 
         ValidationResult results = val.validateWithResult(resource);
 
@@ -161,6 +157,7 @@ public class methodFeatureSteps {
         int count = 0;
         for (SingleValidationMessage next : results.getMessages()) {
             count++;
+            /*
             b.append(LINESEP);
             String leftString = "Issue " + count + ": ";
             int leftWidth = leftString.length();
@@ -177,12 +174,15 @@ public class methodFeatureSteps {
                 b.append(ansi().fg(Ansi.Color.WHITE));
                 b.append(leftPad("", leftWidth)).append(line);
             }
-            System.out.println(message.toString());
-            switch (next.getSeverity()) {
-                case ERROR:
-                case FATAL:
-                case WARNING:
-                    passed=false;
+            */
+            System.out.println(next.getSeverity() + " " +next.getMessage());
+            if (passed == null) {
+                switch (next.getSeverity()) {
+                    case ERROR:
+                    case FATAL:
+                    case WARNING:
+                        passed = next.getSeverity() + " " +next.getMessage();
+                }
             }
         }
         return passed;
