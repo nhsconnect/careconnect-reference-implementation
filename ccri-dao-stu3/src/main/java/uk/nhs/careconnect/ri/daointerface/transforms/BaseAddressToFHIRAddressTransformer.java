@@ -15,21 +15,21 @@ public class BaseAddressToFHIRAddressTransformer implements Transformer<BaseAddr
 
         Address address= new Address();
         AddressEntity addressEntity = baseAddress.getAddress();
-        if (addressEntity.getAddress1()!="")
+        if (addressEntity.getAddress1()!=null && !addressEntity.getAddress1().isEmpty())
         {
-            address.addLine(addressEntity.getAddress1());
+            address.addLine(addressEntity.getAddress1().trim());
         }
-        if (addressEntity.getAddress2()!="")
+        if (addressEntity.getAddress2()!=null && !addressEntity.getAddress2().isEmpty())
         {
-            address.addLine(addressEntity.getAddress2());
+            address.addLine(addressEntity.getAddress2().trim());
         }
-        if (addressEntity.getAddress3()!="")
+        if (addressEntity.getAddress3()!=null && !addressEntity.getAddress3().isEmpty())
         {
-            address.addLine(addressEntity.getAddress3());
+            address.addLine(addressEntity.getAddress3().trim());
         }
-        if (addressEntity.getAddress4()!="")
+        if (addressEntity.getAddress4()!=null && !addressEntity.getAddress4().isEmpty())
         {
-            address.addLine(addressEntity.getAddress4());
+            address.addLine(addressEntity.getAddress4().trim());
         }
         if (addressEntity.getPostcode() !=null)
         {

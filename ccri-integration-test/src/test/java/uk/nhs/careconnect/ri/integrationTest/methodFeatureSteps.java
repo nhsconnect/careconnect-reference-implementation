@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.junit.Assert;
 import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 
@@ -132,6 +133,21 @@ public class methodFeatureSteps {
         }
     }
 
+    @Then("^Organization Ids = $")
+    public void organization_Ids() throws Throwable {
+
+    }
+
+    @Then("^Organization Ids = ([A-zÀ-ÿ0-9ć/?_\\-=\\s@.:()|&]+)$")
+    public void organization_Ids(String organizations) throws Throwable {
+        String[] organizationList = organizations.split(" ");
+        List<String> idArray= client.getOrganizationIds();
+
+        for (String organizationId : organizationList) {
+            Assert.assertThat(idArray.toString(), CoreMatchers.containsString(organizationId));
+        }
+    }
+
 
     @Then("^contains Ids$")
     public void contain_Ids(DataTable ids) throws Throwable {
@@ -143,20 +159,28 @@ public class methodFeatureSteps {
         }
     }
 
+    @Then("^Practitioner Ids = $")
+    public void practitioner_Ids() throws Throwable {
+
+    }
+
     @Then("^resource is valid$")
     public void resource_is_valid() throws Throwable {
        Assert.assertNull(validateResource(client.bundle));
     }
 
-    public String validateResource(Bundle resource) {
+    public String validateResource(Bundle bundle) {
         String passed = null;
 
-        ValidationResult results = val.validateWithResult(resource);
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Resource resource = entry.getResource();
 
-        StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
-        int count = 0;
-        for (SingleValidationMessage next : results.getMessages()) {
-            count++;
+            ValidationResult results = val.validateWithResult(resource);
+
+            StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
+            int count = 0;
+            for (SingleValidationMessage next : results.getMessages()) {
+                count++;
             /*
             b.append(LINESEP);
             String leftString = "Issue " + count + ": ";
@@ -175,13 +199,15 @@ public class methodFeatureSteps {
                 b.append(leftPad("", leftWidth)).append(line);
             }
             */
-            System.out.println(next.getSeverity() + " " +next.getMessage());
-            if (passed == null) {
-                switch (next.getSeverity()) {
-                    case ERROR:
-                    case FATAL:
-                    case WARNING:
-                        passed = next.getSeverity() + " " +next.getMessage();
+            String message =next.getSeverity() + " " + next.getMessage()+ " Resource="+resource.getResourceType().toString()+"/"+resource.getIdElement().getIdPart();
+                System.out.println(message);
+                if (passed == null) {
+                    switch (next.getSeverity()) {
+                        case ERROR:
+                        case FATAL:
+                        case WARNING:
+                            passed = message;
+                    }
                 }
             }
         }

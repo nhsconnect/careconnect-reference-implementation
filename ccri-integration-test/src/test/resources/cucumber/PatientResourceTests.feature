@@ -1,4 +1,4 @@
-Feature: N.4.1 Patient Tests (version 0.11)
+Feature: Patient Tests (version 0.11) .N-4-1
 
 
     Scenario: 4.1.1 Search Test
@@ -157,7 +157,7 @@ Feature: N.4.1 Patient Tests (version 0.11)
                 | PatientId |
                 | 1001 |
 
-   Scenario: 4.1.20 family=Antic (Antić)
+   Scenario: 4.1.20 family=Antic
             Given FHIR STU3 Server
             When I Get Patient?family=Antic
             Then the method response code should be 200
@@ -242,7 +242,7 @@ Feature: N.4.1 Patient Tests (version 0.11)
                  | PatientId |
                  | 1002 |
 
-   Scenario: 4.1.30 given=Lendina (Lëndina)
+   Scenario: 4.1.30 given=Lendina
            Given FHIR STU3 Server
            When I Get Patient?given=Lendina
            Then the method response code should be 200

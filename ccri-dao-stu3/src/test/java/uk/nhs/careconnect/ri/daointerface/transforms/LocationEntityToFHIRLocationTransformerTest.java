@@ -11,9 +11,7 @@ import uk.nhs.careconnect.ri.daointerface.transforms.builder.LocationEntityBuild
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LocationEntityToFHIRLocationTransformerTest {
@@ -47,8 +45,8 @@ public class LocationEntityToFHIRLocationTransformerTest {
         assertThat(address, not(nullValue()));
         assertThat(address.getLine().get(0).getValue(), equalTo("20 High Street"));
         assertThat(address.getLine().get(1).getValue(), equalTo("Holmfirth"));
-        assertThat(address.getLine().get(2).getValue(), nullValue());
-        assertThat(address.getLine().get(3).getValue(), nullValue());
+        assertThat(address.getLine().size(),equalTo(2));
+       // assertThat(address.getLine().get(3), nullValue());
         assertThat(address.getDistrict(), equalTo("West Yorkshire"));
         assertThat(address.getCity(), equalTo("Halifax"));
         assertThat(address.getPostalCode(), equalTo("HX1 2TT"));

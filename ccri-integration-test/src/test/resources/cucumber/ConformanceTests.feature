@@ -1,4 +1,4 @@
-Feature: Http Test
+Feature: Http Test .N-1
 The conformance statement will be used to validate the structure definition of the Patient resource. Additional content is expected as the conformance resources will include resources that are not expected to be accessed directly over the API (such as OperationDefinition, StructureDefinition and ValueSet).
 
 

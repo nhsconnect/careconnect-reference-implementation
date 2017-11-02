@@ -1,4 +1,4 @@
-Feature: N.3. Method Tests
+Feature: Method Tests .N-3
 
 
     Scenario: 3.1.1 Method Test

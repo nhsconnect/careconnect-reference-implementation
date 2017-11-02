@@ -90,28 +90,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
                     break;
             }
         }
-        /* TODO STU3 move to new resource
-        for (PractitionerRole role  : practitionerEntity.getRoles()) {
-            Practitioner.PractitionerPractitionerRoleComponent practitionerRole = practitioner.addPractitionerRole();
-            if (role.getManaginsOrganisation() != null) {
-                practitionerRole.getManagingOrganization()
-                        .setReference("Organization/"+role.getManaginsOrganisation().getId())
-                        .setDisplay(role.getManaginsOrganisation().getName());
-            }
-            if (role.getRole() != null) {
-                practitionerRole.getRole().addCoding()
-                        .setCode(role.getRole().getCode())
-                        .setDisplay(role.getRole().getDisplay())
-                        .setSystem(role.getRole().getSystem());
-            }
-            for (ConceptEntity specialty : role.getSpecialties()) {
-                practitionerRole.addSpecialty().addCoding()
-                        .setCode(specialty.getCode())
-                        .setDisplay(specialty.getDisplay())
-                        .setSystem(specialty.getSystem());
-            }
-        }
-        */
+
         return practitioner;
 
     }

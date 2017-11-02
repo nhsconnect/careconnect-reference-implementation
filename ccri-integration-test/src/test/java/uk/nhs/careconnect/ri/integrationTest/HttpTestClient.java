@@ -8,6 +8,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Location;
+import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Patient;
 
 import java.io.IOException;
@@ -163,6 +164,17 @@ public class HttpTestClient {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             Location location = (Location) entry.getResource();
             ids.add(location.getIdElement().getIdPart());
+        }
+        return ids;
+    }
+
+    public List<String> getOrganizationIds() {
+        if (bundle == null) return null;
+
+        List<String> ids = new ArrayList<>();
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Organization organization = (Organization) entry.getResource();
+            ids.add(organization.getIdElement().getIdPart());
         }
         return ids;
     }

@@ -55,7 +55,7 @@ public class PractitionerEntityToFHIRPractitionerTransformerTest {
         Address address = addresses.get(0);
         assertThat(address.getLine().get(0).getValue(), equalTo("Church Lane Surgery"));
         assertThat(address.getLine().get(1).getValue(), equalTo("Holmfirth"));
-        assertThat(address.getLine().get(2).getValue(), nullValue());
+        assertThat(address.getLine().size(), equalTo(2));
         assertThat(address.getDistrict(), equalTo("West Yorkshire"));
         assertThat(address.getCity(), equalTo("Halifax"));
         assertThat(address.getPostalCode(), equalTo("HX1 2TT"));

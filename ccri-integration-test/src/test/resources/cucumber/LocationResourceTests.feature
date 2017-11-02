@@ -1,4 +1,4 @@
-Feature: N.4.2 Location Tests (version 0.11)
+Feature: Location Tests (version 0.11) .N-4-2
 
 
     Scenario Outline: <reference> Location Test

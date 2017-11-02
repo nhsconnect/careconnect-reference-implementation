@@ -181,9 +181,9 @@ public class PractitionerDao implements PractitionerRepository {
                 addr = practitionerAddress.setAddress(new AddressEntity());
             }
 
-            if (address.getLine().size()>0) addr.setAddress1(address.getLine().get(0).getValue());
-            if (address.getLine().size()>1) addr.setAddress2(address.getLine().get(1).getValue());
-            if (address.getLine().size()>2) addr.setAddress3(address.getLine().get(2).getValue());
+            if (address.getLine().size()>0) addr.setAddress1(address.getLine().get(0).getValue().trim());
+            if (address.getLine().size()>1) addr.setAddress2(address.getLine().get(1).getValue().trim());
+            if (address.getLine().size()>2) addr.setAddress3(address.getLine().get(2).getValue().trim());
             if (address.getCity() != null) addr.setCity(address.getCity());
             if (address.getDistrict() != null) addr.setCounty(address.getDistrict());
             if (address.getPostalCode() != null) addr.setPostcode(address.getPostalCode());
