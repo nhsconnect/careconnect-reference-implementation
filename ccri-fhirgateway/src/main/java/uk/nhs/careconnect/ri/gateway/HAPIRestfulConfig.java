@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import uk.nhs.careconnect.ri.gateway.interceptor.GatewayInterceptor;
 import uk.nhs.careconnect.ri.gateway.provider.*;
 
 import javax.servlet.ServletException;
@@ -72,10 +73,10 @@ public class HAPIRestfulConfig extends RestfulServer {
         setServerName(serverName);
         setServerVersion(serverVersion);
 
+
+
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 		registerInterceptor(loggingInterceptor);
-
-
 
 		loggingInterceptor.setLoggerName("ccri.FHIRGateway");
 
@@ -84,6 +85,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 		// what is available.
 		loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
 
+		GatewayInterceptor gatewayInterceptor = new GatewayInterceptor();
+		registerInterceptor(gatewayInterceptor);
 
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
