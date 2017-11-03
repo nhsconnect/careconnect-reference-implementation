@@ -3,7 +3,17 @@ filebeat.prospectors:
 - input_type: log
   paths:
     - /var/log/tomcat/localhost_access_log*.txt
+    - /var/log/gateway/localhost_access_log*.txt
+  ignore_older: 16m
+  tags: ["ccri_tomcat"]
+  fields_under_root: true
+  fields:
+    service: ccri_tomcat
+
+- input_type: log
+  paths:
     - /var/log/tomcat/*.log
+    - /var/log/gateway/*.log
   ignore_older: 16m
   tags: ["ccri_tomcat"]
   fields_under_root: true
