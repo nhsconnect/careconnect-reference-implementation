@@ -264,76 +264,84 @@ public class PatientDao implements PatientRepository {
                 predList.add(p);
             }
         }
-        ParameterExpression<java.util.Date> parameterLower = null;
-        ParameterExpression<java.util.Date> parameterUpper = null;
-        Boolean paramLowerPresent = false;
-        Boolean paramUpperPresent = false;
-        Date dobFrom = null;
-        Date dobTo = null;
 
+
+
+        ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
+        ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
         if (birthDate !=null)
         {
 
-            dobFrom = birthDate.getLowerBoundAsInstant();
-            dobTo = birthDate.getUpperBoundAsInstant();
-            if (dobFrom != null) log.trace("dob lower"+dobFrom.toString());
-            if (dobTo!= null) log.trace("dob upper"+dobTo.toString());
+            if (birthDate.getLowerBoundAsInstant() != null) log.info("getLowerBoundAsInstant()="+birthDate.getLowerBoundAsInstant().toString());
+            if (birthDate.getUpperBoundAsInstant() != null) log.info("getUpperBoundAsInstant()="+birthDate.getUpperBoundAsInstant().toString());
 
-            parameterLower = builder.parameter(java.util.Date.class);
-            parameterUpper = builder.parameter(java.util.Date.class);
 
-            for (DateParam dateParam: birthDate.getValuesAsQueryTokens()) {
+            if (birthDate.getLowerBound() != null) {
 
-                log.trace("Date Param - "+dateParam.getValue()+" Prefix - "+dateParam.getPrefix());
+                DateParam dateParam = birthDate.getLowerBound();
+                log.info("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
                     case GREATERTHAN: {
                         Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"), parameterLower);
                         predList.add(p);
-                        paramLowerPresent = true;
+
                         break;
                     }
                     case GREATERTHAN_OR_EQUALS: {
                         Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("dateOfBirth"), parameterLower);
                         predList.add(p);
-                        paramLowerPresent = true;
                         break;
                     }
                     case APPROXIMATE:
                     case EQUAL: {
+
                         Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("dateOfBirth"), parameterLower);
                         predList.add(plow);
-                        Predicate pupper = builder.lessThanOrEqualTo(root.<Date>get("dateOfBirth"), parameterUpper);
-                        predList.add(pupper);
-                        paramLowerPresent = true;
-                        paramUpperPresent = true;
                         break;
                     }
-
                     case NOT_EQUAL: {
                         Predicate p = builder.notEqual(root.<Date>get("dateOfBirth"), parameterLower);
                         predList.add(p);
-                        paramLowerPresent = true;
                         break;
                     }
                     case STARTS_AFTER: {
                         Predicate p = builder.greaterThan(root.<Date>get("dateOfBirth"), parameterLower);
                         predList.add(p);
-                        paramLowerPresent = true;
                         break;
 
                     }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + birthDate.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+            if (birthDate.getUpperBound() != null) {
+
+                DateParam dateParam = birthDate.getUpperBound();
+
+                log.info("Upper Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
+
+                switch (dateParam.getPrefix()) {
+                    case APPROXIMATE:
+                    case EQUAL: {
+                        Predicate pupper = builder.lessThan(root.<Date>get("dateOfBirth"), parameterUpper);
+                        predList.add(pupper);
+                        // For Date searh need to correct upper bound
+                        birthDate.setUpperBound(new DateParam().setValue(DateHelper.getTomorrowDate(birthDate.getUpperBoundAsInstant())));
+                        log.info("New upperBound = "+birthDate.getUpperBoundAsInstant().toString());
+                        break;
+                    }
+
                     case LESSTHAN_OR_EQUALS: {
                         Predicate p = builder.lessThanOrEqualTo(root.<Date>get("dateOfBirth"), parameterUpper);
                         predList.add(p);
-                        paramUpperPresent = true;
                         break;
                     }
                     case ENDS_BEFORE:
                     case LESSTHAN: {
                         Predicate p = builder.lessThan(root.<Date>get("dateOfBirth"), parameterUpper);
                         predList.add(p);
-                        paramUpperPresent = true;
+
                         break;
                     }
                     default:
@@ -399,8 +407,12 @@ public class PatientDao implements PatientRepository {
         List<PatientEntity> qryResults = null;
         TypedQuery<PatientEntity> typedQuery = em.createQuery(criteria);
 
-        if (paramLowerPresent && dobFrom!=null) typedQuery.setParameter(parameterLower,dobFrom, TemporalType.DATE);
-        if (paramUpperPresent && dobTo!=null) typedQuery.setParameter(parameterUpper,dobTo, TemporalType.DATE);
+        if (birthDate != null) {
+            if (birthDate.getLowerBound() != null)
+                typedQuery.setParameter(parameterLower, birthDate.getLowerBoundAsInstant(), TemporalType.DATE);
+            if (birthDate.getUpperBound() != null)
+                typedQuery.setParameter(parameterUpper, birthDate.getUpperBoundAsInstant(), TemporalType.DATE);
+        }
 
         qryResults = typedQuery.getResultList();
 

@@ -137,6 +137,7 @@ public class JPAStepsDef {
 
     }
 
+
     @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
         patientList = patientRepository.searchPatient(ctx,null,null,new StringParam(email),null,null,null, null,null,null);
@@ -418,8 +419,23 @@ public class JPAStepsDef {
     }
 
     @When("^I search on dates less than (\\d+)-(\\d+)-(\\d+)$")
-    public void i_search_on_dates_less_than(String year, String month, String day) throws Throwable {
+    public void dates_less_than_yyyymmdd(String year, String month, String day) throws Throwable {
         observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null);
+    }
+
+    @When("^I search on dates equal to (\\d+)-(\\d+)-(\\d+)$")
+    public void dates_equal_yyyymmdd(String year, String month, String day) throws Throwable {
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null);
+    }
+
+    @When("^I search on dates equal to (\\d+)-(\\d+)$")
+    public void dates_equal_yyyymm(String year, String month) throws Throwable {
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null);
+    }
+
+    @When("^I search on dates equal to (\\d+)$")
+    public void dates_equal_yyyy(String year) throws Throwable {
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null);
     }
 
 

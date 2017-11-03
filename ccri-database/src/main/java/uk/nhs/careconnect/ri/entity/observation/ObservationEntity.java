@@ -79,13 +79,12 @@ public class ObservationEntity extends BaseResource {
     @OneToMany(mappedBy="observation", targetEntity=ObservationPerformer.class)
     private Set<ObservationPerformer> performers = new HashSet<>();
 
+    @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
+    private Set<ObservationRange> ranges = new HashSet<>();
+
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<ObservationEntity> components = new HashSet<>();
-
-
-    @OneToMany(mappedBy="observation", targetEntity = ObservationRange.class)
-    private Set<ObservationRange> ranges = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name="BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_BODY_SITE_CONCEPT_ID"))

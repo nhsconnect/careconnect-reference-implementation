@@ -29,7 +29,7 @@
   "subject": {
     "reference": "Patient/1"
   },
-  "effectiveDateTime": "2015-12-03T00:00:00+00:00",
+  "effectiveDateTime": "2015-12-03T13:30:00+00:00",
   "performer": [
     {
       "reference": "Practitioner/1"

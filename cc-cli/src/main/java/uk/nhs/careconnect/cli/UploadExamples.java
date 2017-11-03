@@ -727,12 +727,13 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         Observation observation = null;
         Date date = null;
         try {
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            // turn off set linient
             date = format.parse(dateString);
         } catch (Exception e) {
             try {
               //  System.out.println(dateString);
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
                 date = format.parse(dateString);
             } catch (Exception e2) {
                 e.printStackTrace();

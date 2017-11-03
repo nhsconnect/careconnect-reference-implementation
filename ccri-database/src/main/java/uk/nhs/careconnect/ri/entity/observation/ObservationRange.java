@@ -19,7 +19,6 @@ public class ObservationRange extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_OBSERVATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
     private ObservationEntity observation;
 
     @Column(name="lowQuantity")
