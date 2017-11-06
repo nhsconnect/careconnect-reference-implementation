@@ -28,15 +28,7 @@ public class GatewayInterceptor extends InterceptorAdapter {
     @Override
     public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {
         log.info("CCRI Gateway - Post Procesed Called");
-        /*
-        theResponse.addHeader("X-Forwarded-For","localdemonhost");
 
-        Enumeration<String> headers = theRequest.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = headers.nextElement();
-            log.info("CCRI Gateway Post - Header = "+header);
-        }
-        */
         return true;
     }
 
@@ -46,15 +38,7 @@ public class GatewayInterceptor extends InterceptorAdapter {
     public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
 
         log.info("CCRI Gateway -  Pre Procesed Called");
-        /*
-        theResponse.addHeader("X-Forwarded-For","localdoghost");
 
-        Enumeration<String> headers = theRequest.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = headers.nextElement();
-            log.info("CCRI Gateway Pre - Header = "+header);
-        }
-        */
         return true;
     }
 }

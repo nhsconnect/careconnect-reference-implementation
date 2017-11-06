@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.gateway.interceptor.GatewayCamelProcessor;
 
 import java.io.InputStream;
 
@@ -21,6 +22,9 @@ public class CamelRoute extends RouteBuilder {
     @Override
     public void configure() 
     {
+
+		GatewayCamelProcessor camelProcessor = new GatewayCamelProcessor();
+
 
 		from("direct:FHIRPatient")
 			.routeId("Gateway Patient")
@@ -48,6 +52,7 @@ public class CamelRoute extends RouteBuilder {
 
         from("direct:HAPIServer")
             .routeId("INT FHIR Server")
+				.process(camelProcessor)
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
                 .to(serverBase)
 				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")

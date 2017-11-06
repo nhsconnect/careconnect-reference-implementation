@@ -11,10 +11,12 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ObservationResourceProvider implements IResourceProvider {
@@ -50,26 +53,13 @@ public class ObservationResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        Map<String, Object> headerMap = new HashMap<>();
-
-        headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
-
-        if (theRequest.getQueryString() != null) {
-            headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString().replace("format=xml","format=json"));
-        } else {
-            headerMap.put(Exchange.HTTP_QUERY,null);
-        }
-
-        //headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString());
-        headerMap.put(Exchange.HTTP_PATH, theRequest.getPathInfo());
-        headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
 
         Observation observation = null;
         IBaseResource resource = null;
         try {
-            InputStream inputStream = (InputStream)  template.sendBodyAndHeaders("direct:FHIRObservation",
-                    ExchangePattern.InOut,theRequest.getInputStream(), headerMap);
+            InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRObservation",
+                    ExchangePattern.InOut,theRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -106,19 +96,8 @@ public class ObservationResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        Map<String, Object> headerMap = new HashMap<>();
-        headerMap.put(Exchange.HTTP_METHOD, theRequest.getMethod());
-        if (theRequest.getQueryString() != null) {
-            headerMap.put(Exchange.HTTP_QUERY, theRequest.getQueryString().replace("format=xml","format=json"));
-        } else {
-            headerMap.put(Exchange.HTTP_QUERY,null);
-        }
-
-        headerMap.put(Exchange.HTTP_PATH,  theRequest.getPathInfo());
-        headerMap.put(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
-
-        InputStream inputStream = (InputStream) template.sendBodyAndHeaders("direct:FHIRObservation",
-                ExchangePattern.InOut,"", headerMap);
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRObservation",
+                ExchangePattern.InOut,theRequest);
 
         Bundle bundle = null;
 
