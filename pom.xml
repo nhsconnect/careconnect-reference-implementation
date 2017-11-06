@@ -147,8 +147,10 @@
         <module>cc-fhir-validation-resources-stu3</module>
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
-        <module>ccri-fhirserver</module>
+        <module>ccri-servercommon</module>
         <module>ccri-fhirgateway</module>
+        <module>ccri-fhirserver</module>
+
     </modules>
 
     <distributionManagement>

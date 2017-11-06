@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.gateway.interceptor.GatewayInterceptor;
+import uk.nhs.careconnect.ri.common.ServerInterceptor;
 import uk.nhs.careconnect.ri.gateway.provider.*;
 
 import javax.servlet.ServletException;
@@ -24,6 +23,7 @@ import java.util.Arrays;
 public class HAPIRestfulConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
+	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(HAPIRestfulConfig.class);
 
 	private WebApplicationContext myAppCtx;
 
@@ -74,19 +74,14 @@ public class HAPIRestfulConfig extends RestfulServer {
         setServerVersion(serverVersion);
 
 
-
-		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
-		registerInterceptor(loggingInterceptor);
-
-		loggingInterceptor.setLoggerName("ccri.FHIRGateway");
-
 		// This is the format for each line. A number of substitution variables may
 		// be used here. See the JavaDoc for LoggingInterceptor for information on
 		// what is available.
-		loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
 
-		GatewayInterceptor gatewayInterceptor = new GatewayInterceptor();
+		ServerInterceptor gatewayInterceptor = new ServerInterceptor(ourLog);
 		registerInterceptor(gatewayInterceptor);
+		//gatewayInterceptor.setLoggerName("ccri.FHIRGateway");
+		//gatewayInterceptor.setLogger(ourLog);
 
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.gateway.interceptor.GatewayCamelPostProcessor;
 import uk.nhs.careconnect.ri.gateway.interceptor.GatewayCamelProcessor;
 
 import java.io.InputStream;
@@ -24,6 +25,8 @@ public class CamelRoute extends RouteBuilder {
     {
 
 		GatewayCamelProcessor camelProcessor = new GatewayCamelProcessor();
+
+		GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
 
 
 		from("direct:FHIRPatient")
@@ -56,6 +59,7 @@ public class CamelRoute extends RouteBuilder {
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
                 .to(serverBase)
 				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.process(camelPostProcessor)
 				.convertBodyTo(InputStream.class);
 
     }

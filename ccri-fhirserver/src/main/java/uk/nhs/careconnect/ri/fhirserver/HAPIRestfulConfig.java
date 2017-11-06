@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import uk.nhs.careconnect.ri.common.ServerInterceptor;
 import uk.nhs.careconnect.ri.fhirserver.provider.*;
 
 import javax.servlet.ServletException;
@@ -77,18 +77,15 @@ public class HAPIRestfulConfig extends RestfulServer {
 
         ));
 
-        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        ServerInterceptor loggingInterceptor = new ServerInterceptor(ourLog);
         registerInterceptor(loggingInterceptor);
 
-        loggingInterceptor.setLoggerName("ccri.FHIRServer");
-
-        // This is the format for each line. A number of substitution variables may
-        // be used here. See the JavaDoc for LoggingInterceptor for information on
-        // what is available.
-        loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
+        //loggingInterceptor.setLoggerName("ccri.FHIRServer");
+        //loggingInterceptor.setLogger(ourLog);
 
 
-    // not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
+
+        // not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
         setDefaultPrettyPrint(true);
         setDefaultResponseEncoding(EncodingEnum.JSON);
 

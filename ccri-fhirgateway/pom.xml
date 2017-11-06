@@ -302,6 +302,11 @@
             <version>${phloc_schematron_version}</version>
         </dependency>
 
+		<dependency>
+			<groupId>uk.nhs.careconnect.ri</groupId>
+			<artifactId>ccri-servercommon</artifactId>
+			<version>${care-connect-version}</version>
+		</dependency>
 
 
 
