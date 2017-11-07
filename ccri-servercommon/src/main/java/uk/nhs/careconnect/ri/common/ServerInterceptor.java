@@ -65,7 +65,15 @@ public class ServerInterceptor extends InterceptorAdapter {
 
     @Override
     public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
-        if (theRequest.getMethod().equals("OPTIONS")) throw new MethodNotAllowedException("request must use HTTP GET");
+
+        if (theRequest.getMethod() != null) {
+            if (theRequest.getMethod().equals("OPTIONS"))
+                throw new MethodNotAllowedException("request must use HTTP GET");
+
+            // May need to readd this at a later date (probably in conjunction with a security uplift)
+            if (theRequest.getMethod().equals("POST") && theRequest.getPathInfo() != null && theRequest.getPathInfo().contains("_search"))
+                throw new MethodNotAllowedException("request must use HTTP GET");
+        }
         return true;
     }
 
