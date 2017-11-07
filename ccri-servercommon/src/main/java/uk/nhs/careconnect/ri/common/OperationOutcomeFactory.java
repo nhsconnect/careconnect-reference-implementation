@@ -54,6 +54,9 @@ public class OperationOutcomeFactory {
                     throw new NotImplementedOperationException(issue.getDetails().getText(),outcome);
                 case DUPLICATE:
                     throw new PreconditionFailedException(issue.getDetails().getText(),outcome);
+                case BUSINESSRULE:
+                    /// Check this is 405
+                    throw new MethodNotAllowedException(issue.getDetails().getText(),outcome);
 
 
                     /*

@@ -1,22 +1,27 @@
 package uk.nhs.careconnect.ri.common;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestfulServerUtils;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.MethodNotAllowedException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrLookup;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -39,6 +44,30 @@ public class ServerInterceptor extends InterceptorAdapter {
     }
 
 
+    @Override
+    public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws ServletException, IOException {
+
+
+        if (theException instanceof InternalErrorException) {
+            if (theException.getOperationOutcome() !=null && theException.getOperationOutcome() instanceof OperationOutcome) {
+                FhirContext ctx = FhirContext.forDstu3();
+
+                OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
+                if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
+
+                    theServletResponse.setStatus(400);
+                    // Provide a response ourself
+                    theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
+
+                    theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
+                    theServletResponse.getWriter().close();
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 
 
