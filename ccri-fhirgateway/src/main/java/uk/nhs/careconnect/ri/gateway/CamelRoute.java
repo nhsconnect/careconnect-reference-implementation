@@ -58,8 +58,8 @@ public class CamelRoute extends RouteBuilder {
 				.process(camelProcessor)
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
                 .to(serverBase)
-				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.process(camelPostProcessor)
+                .to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
 
     }

@@ -12,6 +12,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.PractitionerRepository;
 
 import javax.servlet.http.HttpServletRequest;

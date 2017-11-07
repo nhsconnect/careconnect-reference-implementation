@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gateway.provider;
+package uk.nhs.careconnect.ri.common;
 
 
 import ca.uhn.fhir.rest.server.exceptions.*;
@@ -41,6 +41,7 @@ public class OperationOutcomeFactory {
                 case SECURITY:
                     throw new AuthenticationException();
                 case INVALID:
+                    // 400
                     throw new InvalidRequestException(issue.getDetails().getText(),outcome);
                 case EXCEPTION:
                     throw new InternalErrorException(issue.getDetails().getText(),outcome);
@@ -49,9 +50,11 @@ public class OperationOutcomeFactory {
                 case CONFLICT:
                     throw new ResourceVersionConflictException(issue.getDetails().getText(),outcome);
                 case NOTSUPPORTED:
+                    // 501
                     throw new NotImplementedOperationException(issue.getDetails().getText(),outcome);
                 case DUPLICATE:
                     throw new PreconditionFailedException(issue.getDetails().getText(),outcome);
+
 
                     /*
                     registerExceptionType(MethodNotAllowedException.STATUS_CODE, MethodNotAllowedException.class);

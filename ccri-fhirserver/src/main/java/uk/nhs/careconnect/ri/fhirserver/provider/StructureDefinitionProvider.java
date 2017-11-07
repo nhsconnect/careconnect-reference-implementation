@@ -8,6 +8,7 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 

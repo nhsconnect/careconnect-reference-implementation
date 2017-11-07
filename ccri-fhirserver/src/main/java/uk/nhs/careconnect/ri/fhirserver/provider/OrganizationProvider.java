@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.OrganisationRepository;
 
 import javax.servlet.http.HttpServletRequest;

@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestfulServerUtils;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.MethodNotAllowedException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +63,11 @@ public class ServerInterceptor extends InterceptorAdapter {
         return true;
     }
 
-
+    @Override
+    public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
+        if (theRequest.getMethod().equals("OPTIONS")) throw new MethodNotAllowedException("request must use HTTP GET");
+        return true;
+    }
 
 
     @Override

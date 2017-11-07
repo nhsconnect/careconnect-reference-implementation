@@ -14,6 +14,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,7 @@ public class PatientProvider implements IResourceProvider {
         Patient newPatient = patientDao.update(ctx, patient, theId, null);
         method.setId(newPatient.getIdElement());
         method.setResource(newPatient);
+
 
         return method;
     }

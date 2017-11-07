@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ObservationRepository;
 
 import javax.servlet.http.HttpServletRequest;
