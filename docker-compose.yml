@@ -40,6 +40,8 @@ services:
       - MYSQL_DATABASE=careconnect
       - MYSQL_USER=${MYSQL_DB_USER}
       - MYSQL_PASSWORD=${MYSQL_DB_PASSWORD}
+      - timezone=+0:00
+      - default-time-zone=+0:00
     ports:
       - 43306:3306
     networks:
