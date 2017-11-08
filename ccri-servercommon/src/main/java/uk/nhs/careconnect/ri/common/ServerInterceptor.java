@@ -84,7 +84,7 @@ public class ServerInterceptor extends InterceptorAdapter {
         StrSubstitutor subs = new StrSubstitutor(lookup, "${", "}", '\\');
 
         // Actually log the line
-        String myMessageFormat = "httpVerb[${requestVerb}] Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] RequestId[${requestHeader.x-request-id}] ForwardedFor[${requestHeader.x-forwarded-for}] ForwardedHost[${requestHeader.x-forwarded-host}] ";
+        String myMessageFormat = "httpVerb[${requestVerb}] Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] RequestId[${requestHeader.x-request-id}] ForwardedFor[${requestHeader.x-forwarded-for}] ForwardedHost[${requestHeader.x-forwarded-host}] CorrelationId[] ProcessingTime[]  ResponseCode[]";
 
         String line = subs.replace(myMessageFormat);
         ourLog.info(line);
