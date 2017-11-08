@@ -216,6 +216,8 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   private CodeValidationResult testIfConceptIsInListInner(List<ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
     CodeValidationResult retVal = null;
     for (ConceptDefinitionComponent next : conceptList) {
+      // KGM
+      ourLog.debug("code = "+next.getCode());
       String nextCandidate = next.getCode();
       if (theCaseSensitive == false) {
         nextCandidate = nextCandidate.toUpperCase();
@@ -238,6 +240,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
+    ourLog.debug("system = "+ theCodeSystem);
     if (cs != null) {
       boolean caseSensitive = true;
       if (cs.hasCaseSensitive()) {

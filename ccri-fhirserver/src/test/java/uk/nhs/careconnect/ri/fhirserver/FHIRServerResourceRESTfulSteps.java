@@ -154,6 +154,9 @@ public class FHIRServerResourceRESTfulSteps {
 
         for (Bundle.BundleEntryComponent entry  : bundle.getEntry()) {
 
+            ourLog.info(ctxFHIR.newXmlParser().encodeResourceToString(entry.getResource()));
+
+
             ValidationResult result = validator.validateWithResult(entry.getResource());
 
             // Show the issues

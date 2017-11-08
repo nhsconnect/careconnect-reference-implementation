@@ -41,7 +41,7 @@ public class ConditionEntity extends BaseResource {
     private ConceptEntity code;
 
     @ManyToOne
-    @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID")
+    @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_STATUS_CONCEPT"))
     private ConceptEntity clinicalStatus;
 
     @OneToMany(mappedBy="condition", targetEntity=ConditionCategory.class)

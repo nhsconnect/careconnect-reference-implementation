@@ -28,7 +28,7 @@ public class MedicationRequestEntity extends BaseResource {
     private ConceptEntity medicationCode;
 
     @ManyToOne
-    @JoinColumn(name="ENCOUNTER_ID")
+    @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_ENCOUNTER"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity contextEncounter;
 
@@ -37,7 +37,7 @@ public class MedicationRequestEntity extends BaseResource {
     private Date writtenDate;
 
     @ManyToOne
-    @JoinColumn(name="STATUS_CONCEPT_ID")
+    @JoinColumn(name="STATUS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_STATUS_CONCEPT"))
     private ConceptEntity status;
 
     public Long getId() {

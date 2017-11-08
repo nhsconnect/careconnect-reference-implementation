@@ -23,7 +23,7 @@ public class AllergyIntoleranceEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn (name = "SUBSTANCE_CODE_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_SUBSTANCE"))
+    @JoinColumn (name = "SUBSTANCE_CODE_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_SUBSTANCE_CONCEPT"))
     private ConceptEntity substance;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -31,7 +31,7 @@ public class AllergyIntoleranceEntity extends BaseResource {
     private Date recordedDate;
 
     @ManyToOne
-    @JoinColumn(name="status_CONCEPT_ID")
+    @JoinColumn(name="status_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_STATUS_CONCEPT"))
     private ConceptEntity status;
 
 

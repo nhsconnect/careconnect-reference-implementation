@@ -25,17 +25,17 @@ public class EpisodeOfCareEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name="ORGANISATION_ID")
+    @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_EPISODE_ORGANISATION"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity managingOrganisation;
 
     @ManyToOne
-    @JoinColumn(name="PRACTITIONER_ID")
+    @JoinColumn(name="PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_EPISODE_PRACTITIONER"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity careManager;
 
     @ManyToOne
-    @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_TYPE"))
+    @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_TYPE_CONCEPT"))
     private ConceptEntity type;
 
     @Temporal(TemporalType.TIMESTAMP)

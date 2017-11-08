@@ -24,16 +24,16 @@ public class ReferralRequestEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name="SPECIALTY_CONCEPT_ID")
+    @JoinColumn(name="SPECIALTY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_SPECIALTY_CONCEPT"))
     private ConceptEntity specialty;
 
     @ManyToOne
-    @JoinColumn(name="REQUESTOR_ORGANISATION_ID")
+    @JoinColumn(name="REQUESTOR_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ORGANISATION"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity requesterOrganisation;
 
     @ManyToOne
-    @JoinColumn(name="REQUESTOR_PRACTITIONER_ID")
+    @JoinColumn(name="REQUESTOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PRACTITIONER"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity requesterPractitioner;
 

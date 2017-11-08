@@ -28,7 +28,7 @@ public class OrganisationEntity extends BaseResource {
 
     @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
-    @JoinColumn(name="partOf")
+    @JoinColumn(name="partOf",foreignKey= @ForeignKey(name="FK_ORGANISATION_PART_OF_ORGANISATION"))
     private OrganisationEntity partOf;
 
     @Column(name="active")

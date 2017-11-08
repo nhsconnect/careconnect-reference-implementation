@@ -16,11 +16,11 @@ public class PatientAddress extends BaseAddress {
     private Long myId;
 
     @ManyToOne
-    @JoinColumn(name = "ADDRESS_ID")
+    @JoinColumn(name = "ADDRESS_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ADDRESS_ADDRESS"))
     private AddressEntity address;
 
     @ManyToOne
-    @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_ADDRESS"))
+    @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ADDRESS_PATIENT"))
     private PatientEntity patientEntity;
 
     public Long getId()

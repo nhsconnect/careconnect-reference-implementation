@@ -12,9 +12,9 @@ public class CareConnectSystem {
 
 
 
-    public static final String NHSNumberVerificationStatus = "https://fhir.hl7.org.uk/STU3/CareConnect-NHSNumberVerificationStatus-1";
-    public static final String EthnicCategory ="https://fhir.hl7.org.uk/STU3/CareConnect-EthnicCategory-1";
-    public static final String SDSJobRoleName="https://fhir.hl7.org.uk/STU3/CareConnect-SDSJobRoleName-1";
+    public static final String NHSNumberVerificationStatus = "https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1";
+    public static final String EthnicCategory ="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1";
+    public static final String SDSJobRoleName="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1";
 
     // Core FHIR Systems
     public static final String UnitOfMeasure = "http://unitsofmeasure.org";

@@ -34,7 +34,7 @@ public class ConceptDesignation extends BaseResource {
 
     @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
-    @JoinColumn(name="language")
+    @JoinColumn(name="language",foreignKey= @ForeignKey(name="FK_CONCEPTDESIGNATION_LANGUAGE_CONCEPT"))
     private ConceptEntity language;
 
     @Column(name="term")

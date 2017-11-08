@@ -17,7 +17,7 @@ public class ImmunisationEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_IMMUNISATION"))
+    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_PATIENT"))
     private PatientEntity patient;
 
     @ManyToOne
@@ -25,15 +25,15 @@ public class ImmunisationEntity extends BaseResource {
     private ConceptEntity vacinationCode;
 
     @ManyToOne
-    @JoinColumn(name="ENCOUNTER_ID")
+    @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ENCOUNTER"))
     private EncounterEntity encounter;
 
     @ManyToOne
-    @JoinColumn(name="LOCATION_ID")
+    @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_LOCATION"))
     private LocationEntity location;
 
     @ManyToOne
-    @JoinColumn(name="STATUS_CONCEPT_ID")
+    @JoinColumn(name="STATUS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_STATUS_CONCEPT"))
     private ConceptEntity status;
 
     public Long getId() {
