@@ -4,7 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 
 public class GatewayCamelProcessor implements Processor
 {
@@ -13,13 +12,9 @@ public class GatewayCamelProcessor implements Processor
 
         HttpServletRequest theRequest = (HttpServletRequest) exchange.getIn().getBody();
 
-        // Copy over headers from call
+        exchange.getIn().setBody(theRequest.getInputStream());
 
-        Enumeration<String> headers = theRequest.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = headers.nextElement();
-            exchange.getIn().setHeader(header,theRequest.getHeader(header));
-        }
+        exchange.getIn().removeHeaders("*" );
 
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, theRequest.getMethod());
         if (theRequest.getQueryString() != null) {
@@ -42,11 +37,6 @@ public class GatewayCamelProcessor implements Processor
             exchange.getIn().setHeader("X-Forwarded-Host", theRequest.getRemoteHost());
         }
 
-        exchange.getIn().setBody(theRequest.getInputStream());
-
-
-
     }
-
 
 }
