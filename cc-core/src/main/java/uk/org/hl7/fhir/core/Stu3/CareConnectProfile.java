@@ -17,4 +17,7 @@ public class CareConnectProfile {
     public static final String Practitioner_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1";
     public static final String PractitionerRole_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1";
 
+    public static final String Encounter_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1";
+    public static final String Condition_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1";
+    public static final String Procedure_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Procedure-1";
 }
