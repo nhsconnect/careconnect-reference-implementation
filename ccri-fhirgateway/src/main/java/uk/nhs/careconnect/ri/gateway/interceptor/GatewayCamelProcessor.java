@@ -20,6 +20,8 @@ public class GatewayCamelProcessor implements Processor
         }
         */
 
+        exchange.getIn().removeHeaders("*" );
+
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, theRequest.getMethod());
 
         if (theRequest.getQueryString() != null) {
