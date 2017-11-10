@@ -29,7 +29,8 @@ public class GatewayCamelProcessor implements Processor
         }
 
         exchange.getIn().setHeader(Exchange.HTTP_PATH,  theRequest.getPathInfo());
-        exchange.getIn().setHeader("accept", "application/json");
+        exchange.getIn().removeHeader("accept");
+        exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {
             exchange.getIn().setHeader("X-Request-ID",exchange.getExchangeId());
