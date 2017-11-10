@@ -33,6 +33,10 @@ public class EncounterEntity extends BaseResource {
     @Column(name = "periodEndDate")
     private Date periodEndDate;
 
+    @OneToMany(mappedBy="encounter", targetEntity = EncounterIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<EncounterIdentifier> identifiers = new HashSet<>();
+
     public Long getId() {
         return id;
     }
@@ -44,6 +48,13 @@ public class EncounterEntity extends BaseResource {
 
     public PatientEntity getPatient() {
         return patient;
+    }
+
+    public Set<EncounterIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+    public void setIdentifiers(Set<EncounterIdentifier> identifiers) {
+        this.identifiers = identifiers;
     }
 
     public Set<EncounterEpisode> getEpisodes() {

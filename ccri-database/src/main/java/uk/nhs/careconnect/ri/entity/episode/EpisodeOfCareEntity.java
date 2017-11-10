@@ -10,6 +10,8 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "EpisodeOfCare")
@@ -45,6 +47,10 @@ public class EpisodeOfCareEntity extends BaseResource {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "periodEndDate")
     private Date periodEndDate;
+
+    @OneToMany(mappedBy="episode", targetEntity = EpisodeOfCareIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<EpisodeOfCareIdentifier> identifiers = new HashSet<>();
 
     public Long getId() {
         return id;
