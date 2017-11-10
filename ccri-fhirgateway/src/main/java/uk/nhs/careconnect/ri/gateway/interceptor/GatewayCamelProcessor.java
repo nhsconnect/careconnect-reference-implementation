@@ -20,6 +20,8 @@ public class GatewayCamelProcessor implements Processor
         }
         */
 
+        exchange.getIn().setBody(theRequest.getInputStream());
+
         exchange.getIn().removeHeaders("*" );
 
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, theRequest.getMethod());
@@ -32,8 +34,7 @@ public class GatewayCamelProcessor implements Processor
 
         exchange.getIn().setHeader(Exchange.HTTP_PATH,  theRequest.getPathInfo());
 
-        //exchange.getIn().removeHeaders("*", Exchange.HTTP_QUERY, Exchange.HTTP_METHOD, Exchange.HTTP_PATH,"X-Request-ID","X-Forwarded-For","X-Forwarded-Host" );
-        exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
+        exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/json");
 
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {
             exchange.getIn().setHeader("X-Request-ID",exchange.getExchangeId());
@@ -46,7 +47,7 @@ public class GatewayCamelProcessor implements Processor
             exchange.getIn().setHeader("X-Forwarded-Host", theRequest.getRemoteHost());
         }
 
-        exchange.getIn().setBody(theRequest.getInputStream());
+
 
 
 
