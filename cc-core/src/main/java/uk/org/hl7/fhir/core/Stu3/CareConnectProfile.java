@@ -5,7 +5,7 @@ public class CareConnectProfile {
     public static final String Immunization_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Immunization-1";
 
     public static final String MedicationStatement_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-MedicationStatement-1";
-    public static final String MedicationOrder_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-MedicationOrder-1";
+    public static final String MedicationRequest_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-MedicationRequest-1";
     public static final String Medication_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Medication-1";
 
     public static final String Location_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1";
@@ -20,4 +20,5 @@ public class CareConnectProfile {
     public static final String Encounter_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1";
     public static final String Condition_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1";
     public static final String Procedure_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Procedure-1";
+    public static final String AllergyIntolerance_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-AllergyIntolerance-1";
 }
