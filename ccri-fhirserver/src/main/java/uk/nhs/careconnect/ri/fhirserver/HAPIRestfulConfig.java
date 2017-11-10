@@ -74,7 +74,11 @@ public class HAPIRestfulConfig extends RestfulServer {
                 myAppCtx.getBean(CodeSystemProvider.class),
                 myAppCtx.getBean(ObservationProvider.class),
                 myAppCtx.getBean(PractitionerRoleProvider.class)
-
+                ,myAppCtx.getBean(EncounterProvider.class)
+                ,myAppCtx.getBean(EpisodeOfCareProvider.class)
+                ,myAppCtx.getBean(AllergyIntoleranceProvider.class)
+                ,myAppCtx.getBean(ConditionProvider.class)
+                ,myAppCtx.getBean(ProcedureProvider.class)
         ));
 
         ServerInterceptor loggingInterceptor = new ServerInterceptor(ourLog);

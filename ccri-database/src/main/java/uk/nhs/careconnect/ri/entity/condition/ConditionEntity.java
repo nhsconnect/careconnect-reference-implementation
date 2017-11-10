@@ -49,8 +49,8 @@ public class ConditionEntity extends BaseResource {
     private List<ConditionCategory> categories = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "recordedDateTime")
-    private Date recordedDateTime;
+    @Column(name = "assertedDateTime")
+    private Date assertedDateTime;
 
 
     public Long getId() {
@@ -111,11 +111,11 @@ public class ConditionEntity extends BaseResource {
         return this;
     }
 
-    public Date getRecordedDateTime() {
-        return recordedDateTime;
+    public Date getAssertedDateTime() {
+        return assertedDateTime;
     }
 
-    public void setRecordedDateTime(Date recordedDateTime) {
-        this.recordedDateTime = recordedDateTime;
+    public void setAssertedDateTime(Date recordedDateTime) {
+        this.assertedDateTime = recordedDateTime;
     }
 }
