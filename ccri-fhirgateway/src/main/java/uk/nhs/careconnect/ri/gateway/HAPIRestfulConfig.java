@@ -66,6 +66,8 @@ public class HAPIRestfulConfig extends RestfulServer {
                	,myAppCtx.getBean(PractitionerRoleResourceProvider.class)
       			,myAppCtx.getBean(ObservationResourceProvider.class) // Sprint 4 addition KGM
 				,myAppCtx.getBean(EncounterResourceProvider.class) // R3 addition KGM
+				,myAppCtx.getBean(ConditionResourceProvider.class) // R3 addition KGM
+				,myAppCtx.getBean(ProcedureResourceProvider.class) // R3 addition KGM
 		));
 
         // Replace built in conformance provider (CapabilityStatement)

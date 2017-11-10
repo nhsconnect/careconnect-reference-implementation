@@ -57,6 +57,14 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway Encounter")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRCondition")
+				.routeId("Gateway Condition")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRProcedure")
+				.routeId("Gateway Procedure")
+				.to("direct:HAPIServer");
+
         from("direct:HAPIServer")
             .routeId("INT FHIR Server")
 				.process(camelProcessor)

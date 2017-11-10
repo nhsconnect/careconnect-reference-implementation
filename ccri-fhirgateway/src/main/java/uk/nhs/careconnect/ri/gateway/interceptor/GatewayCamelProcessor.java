@@ -4,7 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 
 public class GatewayCamelProcessor implements Processor
 {
@@ -13,15 +12,16 @@ public class GatewayCamelProcessor implements Processor
 
         HttpServletRequest theRequest = (HttpServletRequest) exchange.getIn().getBody();
 
-        // Copy over headers from call
-
+        /*
         Enumeration<String> headers = theRequest.getHeaderNames();
         while (headers.hasMoreElements()) {
             String header = headers.nextElement();
             exchange.getIn().setHeader(header,theRequest.getHeader(header));
         }
+        */
 
         exchange.getIn().setHeader(Exchange.HTTP_METHOD, theRequest.getMethod());
+
         if (theRequest.getQueryString() != null) {
             exchange.getIn().setHeader(Exchange.HTTP_QUERY, theRequest.getQueryString().replace("format=xml","format=json"));
         } else {
@@ -29,7 +29,8 @@ public class GatewayCamelProcessor implements Processor
         }
 
         exchange.getIn().setHeader(Exchange.HTTP_PATH,  theRequest.getPathInfo());
-        exchange.getIn().removeHeader("accept");
+
+        //exchange.getIn().removeHeaders("*", Exchange.HTTP_QUERY, Exchange.HTTP_METHOD, Exchange.HTTP_PATH,"X-Request-ID","X-Forwarded-For","X-Forwarded-Host" );
         exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {

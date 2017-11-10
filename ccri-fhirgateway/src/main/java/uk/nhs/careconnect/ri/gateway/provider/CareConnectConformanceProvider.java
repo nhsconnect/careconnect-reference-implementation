@@ -120,6 +120,12 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Encounter":
                         resource.getProfile().setReference(CareConnectProfile.Encounter_1);
                         break;
+                    case "Condition":
+                        resource.getProfile().setReference(CareConnectProfile.Condition_1);
+                        break;
+                    case "Procedure":
+                        resource.getProfile().setReference(CareConnectProfile.Procedure_1);
+                        break;
                     default:
                         resource.getProfile().setReference((def.getResourceProfile(serverBase)));
                 }
