@@ -65,7 +65,28 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway Procedure")
 				.to("direct:HAPIServer");
 
-        from("direct:HAPIServer")
+		from("direct:FHIRMedicationRequest")
+				.routeId("Gateway MedicationRequest")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRMedicationStatement")
+				.routeId("Gateway MedicationStatement")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRImmunization")
+				.routeId("Gateway Immunization")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIREpisodeOfCare")
+				.routeId("Gateway Procedure")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRAllergyIntolerance")
+				.routeId("Gateway AllergyIntolerance")
+				.to("direct:HAPIServer");
+
+
+		from("direct:HAPIServer")
             .routeId("INT FHIR Server")
 				.process(camelProcessor)
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
