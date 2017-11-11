@@ -19,7 +19,7 @@ Scenario: Patient Read
         And the results should be a list of CareConnect Patients
 
    Scenario: Patient first name Search NOT Found
-         Given I search for a Patient with a family name of Smith
+         Given I search for a Patient with a family name of Schmidt
          Then the result should be a list with 0 entry
 
    Scenario: Patient first name Search Found
