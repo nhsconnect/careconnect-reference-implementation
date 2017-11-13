@@ -42,11 +42,19 @@ public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transf
                     .setSystem(identifier.getSystem().getUri())
                     .setValue(identifier.getValue());
         }
+        if (episodeEntity.getCareManager() != null) {
+            episode.setCareManager(new Reference("Practitioner/"+episodeEntity.getCareManager().getId()));
+            episode.getCareManager().setDisplay(episodeEntity.getCareManager().getNames().get(0).getDisplayName());
+        }
         if (episodeEntity.getPatient() != null) {
-            episode.setPatient(new Reference("Patient/"+episodeEntity.getPatient().getId()));
+            episode
+                    .setPatient(new Reference("Patient/"+episodeEntity.getPatient().getId())
+                    .setDisplay(episodeEntity.getPatient().getNames().get(0).getDisplayName()));
         }
         if (episodeEntity.getManagingOrganisation() != null) {
-            episode.setManagingOrganization(new Reference("Organization/"+episodeEntity.getManagingOrganisation().getId()));
+            episode
+                    .setManagingOrganization(new Reference("Organization/"+episodeEntity.getManagingOrganisation().getId())
+                    .setDisplay(episodeEntity.getManagingOrganisation().getName()));
         }
         if (episodeEntity.getType() != null) {
             episode.addType().addCoding()
@@ -67,10 +75,6 @@ public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transf
             episode.setPeriod(period);
         }
 
-
-
-
-       
 
         return episode;
 

@@ -16,9 +16,9 @@ VALUES(200001,'MALE');
 
 
 INSERT INTO PractitionerName(`PRACTITIONER_ID`,`PRACTITIONER_NAME_ID`,`family_name`,`given_name`,`prefix`)
-VALUES(200000,200000,'Gregory','Townley','Dr.');
+VALUES(200000,200000,'Townley','Gregory','Dr.');
 INSERT INTO PractitionerName(`PRACTITIONER_ID`,`PRACTITIONER_NAME_ID`,`family_name`,`given_name`,`prefix`)
-VALUES(200001,200001,'Samuel','Darwin','Dr.');
+VALUES(200001,200001,'Darwin','Samuel','Dr.');
 
 INSERT INTO PractitionerIdentifier(`PRACTITIONER_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PRACTITIONER_ID`)
 VALUES (200000,'G5612908', 5, 200000);

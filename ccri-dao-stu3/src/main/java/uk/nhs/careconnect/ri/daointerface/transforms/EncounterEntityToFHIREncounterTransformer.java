@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEpisode;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -43,11 +44,21 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
                     .setValue(identifier.getValue());
         }
 
+        for(EncounterEpisode episode : encounterEntity.getEpisodes())
+        {
+            encounter.addEpisodeOfCare()
+                    .setReference("EpisodeOfCare/"+episode.getEpisode().getId());
+        }
+
         if (encounterEntity.getPatient() != null) {
-            encounter.setSubject(new Reference("Patient/"+encounterEntity.getPatient().getId()));
+            encounter
+                    .setSubject(new Reference("Patient/"+encounterEntity.getPatient().getId())
+                    .setDisplay(encounterEntity.getPatient().getNames().get(0).getDisplayName()));
         }
         if (encounterEntity.getServiceProvider() != null) {
-            encounter.setServiceProvider(new Reference("Organization/"+encounterEntity.getServiceProvider().getId()));
+            encounter
+                    .setServiceProvider(new Reference("Organization/"+encounterEntity.getServiceProvider().getId())
+                    .setDisplay(encounterEntity.getServiceProvider().getName()));
         }
         if (encounterEntity.getType() != null) {
             encounter.addType().addCoding()
@@ -76,13 +87,23 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
             encounter.setPeriod(period);
         }
         if (encounterEntity.getLocation()!=null) {
-            encounter.addLocation().setLocation(new Reference("Location/"+encounterEntity.getLocation().getId()));
+            encounter.addLocation()
+                    .setLocation(new Reference("Location/"+encounterEntity.getLocation().getId())
+                    .setDisplay(encounterEntity.getLocation().getName()));
         }
 
-
-
-
-
+        if (encounterEntity.getParticipant() != null) {
+            encounter.addParticipant()
+                    .setIndividual(new Reference("Practioner/"+encounterEntity.getParticipant().getId()))
+                    .getIndividual().setDisplay(encounterEntity.getParticipant().getNames().get(0).getDisplayName());
+        }
+        if (encounterEntity.getPriority() != null) {
+            encounter.getPriority()
+                    .addCoding()
+                        .setCode(encounterEntity.getPriority().getCode())
+                        .setSystem(encounterEntity.getPriority().getSystem())
+                        .setDisplay(encounterEntity.getPriority().getDisplay());
+        }
 
         return encounter;
 
