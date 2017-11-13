@@ -78,7 +78,7 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:HAPIServer");
 
 		from("direct:FHIREpisodeOfCare")
-				.routeId("Gateway Procedure")
+				.routeId("Gateway EpisodeOfCare")
 				.to("direct:HAPIServer");
 
 		from("direct:FHIRAllergyIntolerance")

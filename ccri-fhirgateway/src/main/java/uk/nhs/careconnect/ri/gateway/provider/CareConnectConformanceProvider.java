@@ -236,6 +236,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Location":
                 case "Observation":
                 case "Encounter":
+                case "EpisodeOfCare":
                 case "Condition":
                 case "Procedure":
                 case "Immunization":

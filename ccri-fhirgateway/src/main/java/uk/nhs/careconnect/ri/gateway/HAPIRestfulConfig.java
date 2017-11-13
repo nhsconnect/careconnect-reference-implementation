@@ -72,6 +72,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationRequestResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(MedicationStatementResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(ImmunizationResourceProvider.class) // R3 addition KGM
+				,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
