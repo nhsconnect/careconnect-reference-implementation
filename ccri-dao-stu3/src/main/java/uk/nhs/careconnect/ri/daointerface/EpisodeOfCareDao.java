@@ -4,7 +4,9 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.daointerface.transforms.EpisodeOfCareEntityToFHIREpisodeOfCareTransformer;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import javax.persistence.EntityManager;
@@ -19,6 +21,9 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     @PersistenceContext
     EntityManager em;
 
+    @Autowired
+    private EpisodeOfCareEntityToFHIREpisodeOfCareTransformer episodeOfCareEntityToFHIREpisodeOfCareTransformer;
+
 
     @Override
     public void save(EpisodeOfCare episode) {
@@ -27,7 +32,13 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
 
     @Override
     public EpisodeOfCare read(IdType theId) {
-        return null;
+
+        EpisodeOfCareEntity episode = (EpisodeOfCareEntity ) em.find(EpisodeOfCareEntity.class,Long.parseLong(theId.getIdPart()));
+
+        return episode == null
+                ? null
+                : episodeOfCareEntityToFHIREpisodeOfCareTransformer.transform(episode);
+
     }
 
     @Override

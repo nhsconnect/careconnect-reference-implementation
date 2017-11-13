@@ -78,6 +78,10 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
                     .setDisplay(locationEntity.getPhysicalType().getDisplay())
                     .setSystem(locationEntity.getPhysicalType().getSystem());
         }
+        if (locationEntity.getPartOf() !=null) {
+            location.setPartOf(new Reference("Location/"+locationEntity.getPartOf().getId()));
+        }
+
 
         return location;
 

@@ -139,16 +139,18 @@ public class LocationEntity extends BaseResource {
 		this.managingOrganisation = managingOrganisation;
 	}
 
-	public void setType(ConceptEntity type) {
+	public LocationEntity setType(ConceptEntity type) {
 		this.type = type;
+		return this;
 	}
 
 	public ConceptEntity getType() {
 		return type;
 	}
 
-	public void setPhysicalType(ConceptEntity physicalType) {
+	public LocationEntity setPhysicalType(ConceptEntity physicalType) {
 		this.physicalType = physicalType;
+		return this;
 	}
 
 	public ConceptEntity getPhysicalType() {
@@ -158,7 +160,17 @@ public class LocationEntity extends BaseResource {
 	public Location.LocationStatus getStatus() {
 		return status;
 	}
-	public void setStatus(Location.LocationStatus status) {
+	public LocationEntity setStatus(Location.LocationStatus status) {
 		this.status = status;
+		return this;
+	}
+
+	public LocationEntity setPartOf(LocationEntity partOf) {
+		this.partOf = partOf;
+		return this;
+	}
+
+	public LocationEntity getPartOf() {
+		return partOf;
 	}
 }

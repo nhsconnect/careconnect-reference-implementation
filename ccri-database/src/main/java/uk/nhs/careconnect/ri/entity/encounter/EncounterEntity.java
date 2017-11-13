@@ -86,7 +86,7 @@ public class EncounterEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_ORGANISATION_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
-    private OrganisationEntity organisation;
+    private OrganisationEntity serviceProvider;
 
     public Long getId() {
         return id;
@@ -156,8 +156,8 @@ public class EncounterEntity extends BaseResource {
         return priority;
     }
 
-    public OrganisationEntity getOrganisation() {
-        return organisation;
+    public OrganisationEntity getServiceProvider() {
+        return serviceProvider;
     }
 
     public PractitionerEntity getParticipant() {
@@ -207,8 +207,8 @@ public class EncounterEntity extends BaseResource {
         return this;
     }
 
-    public EncounterEntity setOrganisation(OrganisationEntity organisation) {
-        this.organisation = organisation;
+    public EncounterEntity setServiceProvider(OrganisationEntity serviceProvider) {
+        this.serviceProvider = serviceProvider;
         return this;
     }
 
