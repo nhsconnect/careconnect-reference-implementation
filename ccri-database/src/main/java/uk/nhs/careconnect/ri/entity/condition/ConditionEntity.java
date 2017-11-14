@@ -2,11 +2,13 @@ package uk.nhs.careconnect.ri.entity.condition;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hl7.fhir.dstu3.model.Condition;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -51,6 +53,18 @@ public class ConditionEntity extends BaseResource {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "assertedDateTime")
     private Date assertedDateTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "onsetDateTime")
+    private Date onsetDateTime;
+
+    @ManyToOne
+    @JoinColumn(name="ASSERTER_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_PRACTITIONER_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private PractitionerEntity asserterPractitioner;
+
+    @Enumerated(EnumType.ORDINAL)
+    private Condition.ConditionVerificationStatus verificationStatus;
 
 
     public Long getId() {
@@ -115,7 +129,35 @@ public class ConditionEntity extends BaseResource {
         return assertedDateTime;
     }
 
-    public void setAssertedDateTime(Date recordedDateTime) {
+    public ConditionEntity setAssertedDateTime(Date recordedDateTime) {
         this.assertedDateTime = recordedDateTime;
+        return this;
+    }
+
+    public Date getOnsetDateTime() {
+        return onsetDateTime;
+    }
+
+    public ConditionEntity setOnsetDateTime(Date onsetDateTime) {
+        this.onsetDateTime = onsetDateTime;
+        return this;
+    }
+
+    public PractitionerEntity getAsserterPractitioner() {
+        return asserterPractitioner;
+    }
+
+    public Condition.ConditionVerificationStatus getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public ConditionEntity setAsserterPractitioner(PractitionerEntity asserterPractitioner) {
+        this.asserterPractitioner = asserterPractitioner;
+        return this;
+    }
+
+    public ConditionEntity setVerificationStatus(Condition.ConditionVerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
+        return this;
     }
 }

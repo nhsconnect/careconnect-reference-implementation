@@ -62,6 +62,9 @@ public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transf
                     .setSystem(episodeEntity.getType().getSystem())
                     .setDisplay(episodeEntity.getType().getDisplay());
         }
+        if (episodeEntity.getStatus() != null) {
+            episode.setStatus(episodeEntity.getStatus());
+        }
 
         if (episodeEntity.getPeriodStartDate() != null || episodeEntity.getPeriodEndDate() != null)
         {
