@@ -5,7 +5,6 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
-import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -87,7 +86,7 @@ public class EncounterResourceProvider implements IResourceProvider {
     @Search
     public List<Encounter> searchEncounter(HttpServletRequest theRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
-            ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
+           // ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
                                        ) {
 
