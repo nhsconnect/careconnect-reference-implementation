@@ -42,9 +42,9 @@ public class ConditionEntity extends BaseResource {
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
     private ConceptEntity code;
 
-    @ManyToOne
-    @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_STATUS_CONCEPT"))
-    private ConceptEntity clinicalStatus;
+    @Enumerated(EnumType.ORDINAL)
+    @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID")
+    private Condition.ConditionClinicalStatus clinicalStatus;
 
     @OneToMany(mappedBy="condition", targetEntity=ConditionCategory.class)
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -112,7 +112,7 @@ public class ConditionEntity extends BaseResource {
         return this;
     }
 
-    public ConceptEntity getClinicalStatus() {
+    public Condition.ConditionClinicalStatus getClinicalStatus() {
         return clinicalStatus;
     }
 
@@ -120,7 +120,7 @@ public class ConditionEntity extends BaseResource {
         return categories;
     }
 
-    public ConditionEntity setClinicalStatus(ConceptEntity clinicalStatus) {
+    public ConditionEntity setClinicalStatus(Condition.ConditionClinicalStatus clinicalStatus) {
         this.clinicalStatus = clinicalStatus;
         return this;
     }

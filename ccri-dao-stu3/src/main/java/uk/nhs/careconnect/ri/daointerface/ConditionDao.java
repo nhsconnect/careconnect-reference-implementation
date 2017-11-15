@@ -5,9 +5,13 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ConditionEntityToFHIRConditionTransformer;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
@@ -28,6 +32,8 @@ public class ConditionDao implements ConditionRepository {
 
     @Autowired
     ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    private static final Logger log = LoggerFactory.getLogger(ConditionDao.class);
 
     @Override
     public void save(ConditionEntity condition) {
@@ -82,7 +88,39 @@ public class ConditionDao implements ConditionRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
+        if (clinicalstatus != null) {
+            Integer status = null;
+            switch (clinicalstatus.getValue().toLowerCase()) {
+                case "active":
+                    status = 0;
+                    break;
+                case "recurrence":
 
+                    status = 1;
+                    break;
+                case "inactive":
+                    status = 2;
+                    break;
+                case "remission":
+                    status = 3;
+                    break;
+                case "resolved":
+                    status = 4;
+                    break;
+                default:
+                    status=-1;
+            }
+
+            Predicate p = builder.equal(root.get("clinicalStatus"), status);
+            predList.add(p);
+
+        }
+        if (category != null) {
+            Join<ConditionEntity, ConditionCategory> join = root.join("categories", JoinType.LEFT);
+            Join<ConditionCategory, ConceptEntity> joinConcept = join.join("category", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),category.getValue());
+            predList.add(p);
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);

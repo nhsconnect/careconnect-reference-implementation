@@ -48,6 +48,9 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
         if (conditionEntity.getAsserterPractitioner() != null) {
             condition.setAsserter(new Reference("Practitioner/"+conditionEntity.getAsserterPractitioner().getId()));
         }
+        if (conditionEntity.getClinicalStatus() != null) {
+            condition.setClinicalStatus(conditionEntity.getClinicalStatus());
+        }
         if (conditionEntity.getCode() != null) {
             condition.getCode().addCoding()
                     .setCode(conditionEntity.getCode().getCode())
