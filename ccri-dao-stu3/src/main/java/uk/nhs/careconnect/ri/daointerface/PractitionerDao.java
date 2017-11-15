@@ -42,6 +42,9 @@ public class PractitionerDao implements PractitionerRepository {
     @Autowired
     private ConceptRepository codeSvc;
 
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
     private static final Logger log = LoggerFactory.getLogger(PractitionerDao.class);
 
     public void save(PractitionerEntity practitioner)
@@ -50,13 +53,16 @@ public class PractitionerDao implements PractitionerRepository {
     }
 
     public Practitioner read(IdType theId) {
+        if (isNumeric(theId.getIdPart())) {
+            PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class, Long.parseLong(theId.getIdPart()));
 
-        PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Long.parseLong(theId.getIdPart()));
+            return practitionerEntity == null
+                    ? null
+                    : practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
 
-        return practitionerEntity == null
-                ? null
-                : practitionerEntityToFHIRPractitionerTransformer.transform(practitionerEntity);
-
+        } else {
+            return null;
+        }
     }
 
     public PractitionerEntity readEntity(IdType theId) {

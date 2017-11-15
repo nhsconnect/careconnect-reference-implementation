@@ -99,9 +99,11 @@ public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer impleme
             if (reactionEntity.getOnsetDateTime() != null) {
                 reaction.setOnset(reactionEntity.getOnsetDateTime());
             }
+            /* Not in CareConnect
             if (reactionEntity.getSeverity() != null) {
                 reaction.setSeverity(reactionEntity.getSeverity());
             }
+            */
             if (reactionEntity.getSubstance() != null) {
                 reaction.getSubstance().addCoding()
                         .setCode(reactionEntity.getSubstance().getCode())

@@ -46,7 +46,9 @@ public class LocationDao implements LocationRepository {
     @Autowired
     private ConceptRepository codeSvc;
 
-
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
     private static final Logger log = LoggerFactory.getLogger(LocationDao.class);
 
     public void save(LocationEntity location)
@@ -55,13 +57,16 @@ public class LocationDao implements LocationRepository {
     }
 
     public Location read(IdType theId) {
+        if (isNumeric(theId.getIdPart())) {
+            LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class, Long.parseLong(theId.getIdPart()));
 
-        LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class,Long.parseLong(theId.getIdPart()));
+            return locationEntity == null
+                    ? null
+                    : locationEntityToFHIRLocationTransformer.transform(locationEntity);
 
-        return locationEntity == null
-                ? null
-                : locationEntityToFHIRLocationTransformer.transform(locationEntity);
-
+        } else {
+            return null;
+        }
     }
 
     @Override

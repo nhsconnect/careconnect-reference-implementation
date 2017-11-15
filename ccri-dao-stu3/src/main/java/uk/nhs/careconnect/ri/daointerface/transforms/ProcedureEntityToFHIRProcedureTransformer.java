@@ -97,6 +97,9 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
         if (procedureEntity.getPerformedDate() != null) {
             procedure.setPerformed(new DateTimeType().setValue(procedureEntity.getPerformedDate()));
         }
+        if (procedureEntity.getStatus() != null) {
+            procedure.setStatus(procedureEntity.getStatus());
+        }
 
         for (ProcedurePerformer performer : procedureEntity.getPerformers()) {
             Reference actor = null;

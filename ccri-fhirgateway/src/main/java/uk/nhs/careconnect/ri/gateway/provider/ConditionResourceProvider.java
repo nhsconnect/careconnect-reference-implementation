@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -89,7 +90,7 @@ public class ConditionResourceProvider implements IResourceProvider {
                                            @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_CATEGORY) TokenParam category
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
-          //  , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
+            , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
                                        ) {
 
         List<Condition> results = new ArrayList<Condition>();

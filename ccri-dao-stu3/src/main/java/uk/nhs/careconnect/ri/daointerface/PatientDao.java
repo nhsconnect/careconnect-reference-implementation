@@ -54,6 +54,9 @@ public class PatientDao implements PatientRepository {
 
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
 
     @Transactional
     @Override
@@ -67,15 +70,19 @@ public class PatientDao implements PatientRepository {
     public Patient read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for patient = "+theId.getIdPart());
-        PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
+        if (isNumeric(theId.getIdPart())) {
+            PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
 
-        Patient patient = null;
-        if (patientEntity != null) {
-            patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
-            patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(patient));
-            em.persist(patientEntity);
+            Patient patient = null;
+            if (patientEntity != null) {
+                patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+                patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(patient));
+                em.persist(patientEntity);
+            }
+            return patient;
+        } else {
+            return null;
         }
-        return patient;
     }
 
     public PatientEntity readEntity(FhirContext ctx,IdType theId) {

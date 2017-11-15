@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -17,9 +18,12 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +39,10 @@ public class ConditionDao implements ConditionRepository {
 
     private static final Logger log = LoggerFactory.getLogger(ConditionDao.class);
 
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
+
     @Override
     public void save(ConditionEntity condition) {
 
@@ -42,11 +50,16 @@ public class ConditionDao implements ConditionRepository {
 
     @Override
     public Condition read(IdType theId) {
-        ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class,Long.parseLong(theId.getIdPart()));
 
-        return condition == null
-                ? null
-                : conditionEntityToFHIRConditionTransformer.transform(condition);
+        if (isNumeric(theId.getIdPart())) {
+            ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
+
+            return condition == null
+                    ? null
+                    : conditionEntityToFHIRConditionTransformer.transform(condition);
+        } else  {
+            return null;
+        }
     }
 
     @Override
@@ -122,6 +135,91 @@ public class ConditionDao implements ConditionRepository {
             predList.add(p);
         }
 
+        ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
+        ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
+
+        if (asserted !=null)
+        {
+
+
+            if (asserted.getLowerBoundAsInstant() != null) log.debug("getLowerBoundAsInstant()="+asserted.getLowerBoundAsInstant().toString());
+            if (asserted.getUpperBoundAsInstant() != null) log.debug("getUpperBoundAsInstant()="+asserted.getUpperBoundAsInstant().toString());
+
+
+            if (asserted.getLowerBound() != null) {
+
+                DateParam dateParam = asserted.getLowerBound();
+                log.debug("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
+
+                switch (dateParam.getPrefix()) {
+                    case GREATERTHAN: {
+                        Predicate p = builder.greaterThan(root.<Date>get("assertedDateTime"), parameterLower);
+                        predList.add(p);
+
+                        break;
+                    }
+                    case GREATERTHAN_OR_EQUALS: {
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterLower);
+                        predList.add(p);
+                        break;
+                    }
+                    case APPROXIMATE:
+                    case EQUAL: {
+
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterLower);
+                        predList.add(plow);
+                        break;
+                    }
+                    case NOT_EQUAL: {
+                        Predicate p = builder.notEqual(root.<Date>get("assertedDateTime"), parameterLower);
+                        predList.add(p);
+                        break;
+                    }
+                    case STARTS_AFTER: {
+                        Predicate p = builder.greaterThan(root.<Date>get("assertedDateTime"), parameterLower);
+                        predList.add(p);
+                        break;
+
+                    }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + asserted.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+            if (asserted.getUpperBound() != null) {
+
+                DateParam dateParam = asserted.getUpperBound();
+
+                log.debug("Upper Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
+
+                switch (dateParam.getPrefix()) {
+                    case APPROXIMATE:
+                    case EQUAL: {
+                        Predicate pupper = builder.lessThan(root.<Date>get("assertedDateTime"), parameterUpper);
+                        predList.add(pupper);
+                        break;
+                    }
+
+                    case LESSTHAN_OR_EQUALS: {
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterUpper);
+                        predList.add(p);
+                        break;
+                    }
+                    case ENDS_BEFORE:
+                    case LESSTHAN: {
+                        Predicate p = builder.lessThan(root.<Date>get("assertedDateTime"), parameterUpper);
+                        predList.add(p);
+
+                        break;
+                    }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + asserted.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+
+        }
+
+
+
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
         if (predList.size()>0)
@@ -133,7 +231,15 @@ public class ConditionDao implements ConditionRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        TypedQuery<ConditionEntity> typedQuery = em.createQuery(criteria);
+
+        if (asserted != null) {
+            if (asserted.getLowerBound() != null)
+                typedQuery.setParameter(parameterLower, asserted.getLowerBoundAsInstant(), TemporalType.TIMESTAMP);
+            if (asserted.getUpperBound() != null)
+                typedQuery.setParameter(parameterUpper, asserted.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
+        }
+        qryResults = typedQuery.getResultList();
         return qryResults;
     }
 }
