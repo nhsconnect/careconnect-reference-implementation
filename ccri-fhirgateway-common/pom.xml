@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>uk.nhs.careconnect.ri</groupId>
-            <artifactId>ccri-servercommon</artifactId>
+            <artifactId>ccri-fhirserver-common</artifactId>
             <version>${care-connect-version}</version>
         </dependency>
 
