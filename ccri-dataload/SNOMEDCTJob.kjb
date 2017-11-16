@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
   <name>SNOMEDCT Job</name>
-  <description />
-  <extended_description />
-  <job_version />
+  <description/>
+  <extended_description/>
+  <job_version/>
   <directory>/</directory>
   <created_user>-</created_user>
   <created_date>2017/09/27 15:58:59.062</created_date>
@@ -20,9 +20,9 @@
     <port>3306</port>
     <username>fhirjpa</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1fa679cc98bfdb</password>
-    <servername />
-    <data_tablespace />
-    <index_tablespace />
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
     <attributes>
       <attribute>
         <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
@@ -69,12 +69,12 @@
   <slaveservers>
     </slaveservers>
   <job-log-table>
-    <connection />
-    <schema />
-    <table />
-    <size_limit_lines />
-    <interval />
-    <timeout_days />
+    <connection/>
+    <schema/>
+    <table/>
+    <size_limit_lines/>
+    <interval/>
+    <timeout_days/>
     <field>
       <id>ID_JOB</id>
       <enabled>Y</enabled>
@@ -182,10 +182,10 @@
     </field>
   </job-log-table>
   <jobentry-log-table>
-    <connection />
-    <schema />
-    <table />
-    <timeout_days />
+    <connection/>
+    <schema/>
+    <table/>
+    <timeout_days/>
     <field>
       <id>ID_BATCH</id>
       <enabled>Y</enabled>
@@ -273,10 +273,10 @@
     </field>
   </jobentry-log-table>
   <channel-log-table>
-    <connection />
-    <schema />
-    <table />
-    <timeout_days />
+    <connection/>
+    <schema/>
+    <table/>
+    <timeout_days/>
     <field>
       <id>ID_BATCH</id>
       <enabled>Y</enabled>
@@ -339,11 +339,11 @@
     </field>
   </channel-log-table>
   <pass_batchid>N</pass_batchid>
-  <shared_objects_file />
+  <shared_objects_file/>
   <entries>
     <entry>
       <name>Populate Temp tables</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>CREATE TABLE if NOT EXISTS `tempConcept` (
   `idConcept` int(11) NOT NULL AUTO_INCREMENT,
@@ -410,7 +410,7 @@ truncate table `tempConcept`;
 truncate table `tempRelationship`;</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>F</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -421,25 +421,25 @@ truncate table `tempRelationship`;</sql>
     </entry>
     <entry>
       <name>Load Data Concepts</name>
-      <description />
+      <description/>
       <type>TRANS</type>
       <specification_method>filename</specification_method>
-      <trans_object_id />
+      <trans_object_id/>
       <filename>/Development/NHSD/careconnect-reference-implementation/ccri-dataload/SNOMEDCT.ktr</filename>
-      <transname />
+      <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>N</clear_rows>
       <clear_files>N</clear_files>
       <set_logfile>N</set_logfile>
-      <logfile />
-      <logext />
+      <logfile/>
+      <logext/>
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Basic</loglevel>
       <cluster>N</cluster>
-      <slave_server_name />
+      <slave_server_name/>
       <set_append_logfile>N</set_append_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <follow_abort_remote>N</follow_abort_remote>
@@ -457,7 +457,7 @@ truncate table `tempRelationship`;</sql>
     </entry>
     <entry>
       <name>populate Concept table</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>insert into Concept (CODE, CODESYSTEM_ID, active)
 SELECT 
@@ -467,7 +467,7 @@ FROM
 	where active = 1 and id not in (select code from careconnect.Concept where CODESYSTEM_ID=9); </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>T</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -478,7 +478,7 @@ FROM
     </entry>
     <entry>
       <name>populate Concept Designation</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>SET SQL_SAFE_UPDATES = 0;
 
@@ -508,7 +508,7 @@ FROM
 where d.active = 1 and CONCEPT_DESIGNATION_ID is null; </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>F</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -519,7 +519,7 @@ where d.active = 1 and CONCEPT_DESIGNATION_ID is null; </sql>
     </entry>
     <entry>
       <name>Update Concept display term</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>update Concept c 
 join careconnect.ConceptDesignation d on c.CONCEPT_ID = d.CONCEPT_ID
@@ -527,7 +527,7 @@ join careconnect.ConceptDesignation d on c.CONCEPT_ID = d.CONCEPT_ID
 where designationUse=0;</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>F</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -538,7 +538,7 @@ where designationUse=0;</sql>
     </entry>
     <entry>
       <name>Populate Relationship Table (isA only)</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
 select r.id,0,s.CONCEPT_ID,d.CONCEPT_ID, 9 
@@ -550,7 +550,7 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
 </sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>F</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -561,7 +561,7 @@ typeId = '116680003' and r.active=1 and r.id not in (select relationshipId from 
     </entry>
     <entry>
       <name>SubSet</name>
-      <description />
+      <description/>
       <type>SQL</type>
       <sql>insert into ConceptParentChildLink(relationshipId,REL_TYPE,CHILD_CONCEPT_ID,PARENT_CONCEPT_ID,CODESYSTEM_ID)
 select r.id,2,d.CONCEPT_ID,s.CONCEPT_ID, 9 
@@ -571,7 +571,7 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
  where r.active = 1 and r.id not in (select relationshipId from ConceptParentChildLink where relationshipId is not null);</sql>
       <useVariableSubstitution>F</useVariableSubstitution>
       <sqlfromfile>F</sqlfromfile>
-      <sqlfilename />
+      <sqlfilename/>
       <sendOneStatement>F</sendOneStatement>
       <connection>ccri</connection>
       <parallel>N</parallel>
@@ -582,25 +582,25 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
     </entry>
     <entry>
       <name>Relationship Transform</name>
-      <description />
+      <description/>
       <type>TRANS</type>
       <specification_method>filename</specification_method>
-      <trans_object_id />
-      <filename>${Internal.Entry.Current.Directory}/SNOMED Relationship transform.ktr</filename>
-      <transname />
+      <trans_object_id/>
+      <filename>${Internal.Entry.Current.Directory}/SNOMEDRelationship.ktr</filename>
+      <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>N</clear_rows>
       <clear_files>N</clear_files>
       <set_logfile>N</set_logfile>
-      <logfile />
-      <logext />
+      <logfile/>
+      <logext/>
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Basic</loglevel>
       <cluster>N</cluster>
-      <slave_server_name />
+      <slave_server_name/>
       <set_append_logfile>N</set_append_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <follow_abort_remote>N</follow_abort_remote>
@@ -613,30 +613,30 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>384</xloc>
-      <yloc>288</yloc>
+      <xloc>368</xloc>
+      <yloc>272</yloc>
     </entry>
     <entry>
       <name>Subset Transform</name>
-      <description />
+      <description/>
       <type>TRANS</type>
       <specification_method>filename</specification_method>
-      <trans_object_id />
-      <filename>${Internal.Entry.Current.Directory}/SNOMED Subsets.ktr</filename>
-      <transname />
+      <trans_object_id/>
+      <filename>${Internal.Entry.Current.Directory}/SNOMEDSubsets.ktr</filename>
+      <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>N</params_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>N</clear_rows>
       <clear_files>N</clear_files>
       <set_logfile>N</set_logfile>
-      <logfile />
-      <logext />
+      <logfile/>
+      <logext/>
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Basic</loglevel>
       <cluster>N</cluster>
-      <slave_server_name />
+      <slave_server_name/>
       <set_append_logfile>N</set_append_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <follow_abort_remote>N</follow_abort_remote>
@@ -654,7 +654,7 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
     </entry>
     <entry>
       <name>START</name>
-      <description />
+      <description/>
       <type>SPECIAL</type>
       <start>Y</start>
       <dummy>N</dummy>
@@ -770,7 +770,7 @@ join Concept d on r.referencedComponentId = d.CODE and d.CODESYSTEM_ID = 9
       <name>{"_":"Embedded MetaStore Elements","namespace":"pentaho","type":"Default Run Configuration"}</name>
       <attribute>
         <key>Pentaho local</key>
-        <value>{"children":[{"children":[],"id":"server","value":null},{"children":[],"id":"clustered","value":"N"},{"children":[],"id":"name","value":"Pentaho local"},{"children":[],"id":"description","value":null},{"children":[],"id":"readOnly","value":"Y"},{"children":[],"id":"sendResources","value":"N"},{"children":[],"id":"logRemoteExecutionLocally","value":"N"},{"children":[],"id":"remote","value":"N"},{"children":[],"id":"local","value":"Y"},{"children":[],"id":"showTransformations","value":"N"}],"id":"Pentaho local","value":null,"name":"Pentaho local","owner":null,"ownerPermissionsList":[]}</value>
+        <value>{"children":[{"children":[],"id":"server","value":null},{"children":[],"id":"clustered","value":"N"},{"children":[],"id":"name","value":"Pentaho local"},{"children":[],"id":"description","value":null},{"children":[],"id":"pentaho","value":"N"},{"children":[],"id":"readOnly","value":"Y"},{"children":[],"id":"sendResources","value":"N"},{"children":[],"id":"logRemoteExecutionLocally","value":"N"},{"children":[],"id":"remote","value":"N"},{"children":[],"id":"local","value":"Y"},{"children":[],"id":"showTransformations","value":"N"}],"id":"Pentaho local","value":null,"name":"Pentaho local","owner":null,"ownerPermissionsList":[]}</value>
       </attribute>
     </group>
   </attributes>

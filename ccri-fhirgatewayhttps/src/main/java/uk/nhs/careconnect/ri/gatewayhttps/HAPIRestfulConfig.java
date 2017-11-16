@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gateway;
+package uk.nhs.careconnect.ri.gatewayhttps;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.common.ServerInterceptor;
-
 import uk.nhs.careconnect.ri.gatewaylib.provider.*;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
