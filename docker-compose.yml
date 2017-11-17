@@ -72,9 +72,31 @@ services:
     networks:
       - ccri_net
 
+  ccrigatewayhttps:
+    container_name: ccrigatewayhttps
+    build: ccri-fhirgatewayhttps
+    image: thorlogic/ccri-fhirgatewayhttps:${CRRI_VERSION}
+    environment:
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccri
+    ports:
+      - 443:8443
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+    volumes:
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+
 volumes:
   tomcat-log-volume:
   gateway-log-volume:
+  gatewayssl-log-volume:
 
 networks:
   ccri_net:

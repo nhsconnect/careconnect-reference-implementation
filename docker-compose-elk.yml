@@ -16,6 +16,7 @@ services:
     volumes:
       - tomcat-log-volume:/var/log/tomcat:ro
       - gateway-log-volume:/var/log/gateway:ro
+      - gatewayssl-log-volume:/var/log/gatewayssl:ro
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - ./elk/certs/logstash-beats.crt:/etc/pki/tls/certs/logstash-beats.crt:ro
     depends_on:
@@ -40,6 +41,7 @@ services:
 volumes:
   tomcat-log-volume:
   gateway-log-volume:
+  gatewayssl-log-volume:
 
 networks:
   elknet:
