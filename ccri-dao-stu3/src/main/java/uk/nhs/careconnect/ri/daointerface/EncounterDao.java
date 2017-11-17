@@ -5,10 +5,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +99,7 @@ public class  EncounterDao implements EncounterRepository {
     @Override
     public Encounter create(FhirContext ctx,Encounter encounter, IdType theId, String theConditional) {
         log.debug("Encounter.save");
+      //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
         EncounterEntity encounterEntity = null;
 
         if (encounter.hasId()) encounterEntity = readEntity(ctx, encounter.getIdElement());
@@ -136,9 +134,7 @@ public class  EncounterDao implements EncounterRepository {
 
         if (encounterEntity == null) encounterEntity = new EncounterEntity();
 
-        if (encounter.hasLocation()) {
 
-        }
         PatientEntity patientEntity = null;
         if (encounter.hasSubject()) {
             log.trace(encounter.getSubject().getReference());
@@ -166,14 +162,15 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity( new IdType(encounter.getLocation().get(0).getLocation().getId()));
+            LocationEntity locationEntity = locationDao.readEntity(new IdType(encounter.getLocation().get(0).getLocation().getReference()));
             encounterEntity.setLocation(locationEntity);
         }
 
         if (encounter.hasParticipant()) {
             for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
-                if (participant.getIndividualTarget() instanceof Practitioner) {
-                    PractitionerEntity practitionerEntity = practitionerDao.readEntity( new IdType(participant.getIndividualTarget().getId()));
+                if (participant.getIndividual().getReference().contains("Practitioner")) {
+
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType("Practitioner/"+participant.getIndividual().getReference()));
                     if (practitionerEntity != null ) encounterEntity.setParticipant(practitionerEntity);
                 }
 
@@ -192,6 +189,16 @@ public class  EncounterDao implements EncounterRepository {
             }
         }
 
+        if (encounter.hasPeriod()) {
+
+            if (encounter.getPeriod().hasStart()) {
+                encounterEntity.setPeriodStartDate(encounter.getPeriod().getStart());
+            }
+            if (encounter.getPeriod().hasEnd()) {
+                encounterEntity.setPeriodEndDate(encounter.getPeriod().getEnd());
+            }
+        }
+
         if (encounter.hasPriority()) {
             ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0).getSystem(),encounter.getPriority().getCoding().get(0).getCode());
             if (code != null) { encounterEntity.setPriority(code); }
@@ -203,7 +210,10 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasServiceProvider()) {
-            OrganisationEntity organisationEntity = organisationDao.readEntity( new IdType(encounter.getServiceProvider().getId()));
+
+            log.debug("encounter.getServiceProvider().getReference=" + (encounter.getServiceProvider().getReference()));
+
+            OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(encounter.getServiceProvider().getReference()));
             if (organisationEntity != null) encounterEntity.setServiceProvider(organisationEntity);
         }
 

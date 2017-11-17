@@ -448,6 +448,23 @@ public class JPAStepsDef {
 
     }
 
+    @When("^I update this Encounter$")
+    public void i_update_this_Encounter() throws Throwable {
+
+
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/EncounterExample.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        Encounter encounter = ctx.newJsonParser().parseResource(Encounter.class, reader);
+        try {
+            encounter = encounterRepository.create(ctx,encounter,null,"Encounter?identifier=" + encounter.getIdentifier().get(0).getSystem() + "%7C" +encounter.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     @When("^I search Encounter on Patient ID = (\\d+)$")
     public void i_search_Encounter_on_Patient_ID(int patient) throws Throwable {
         encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);

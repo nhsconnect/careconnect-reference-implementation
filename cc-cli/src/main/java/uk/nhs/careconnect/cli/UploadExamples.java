@@ -2,6 +2,7 @@ package uk.nhs.careconnect.cli;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.commons.cli.CommandLine;
@@ -166,7 +167,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new EncounterHandler();
                     processEncounterCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Encounter.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Encounter encounter = (Encounter) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Encounter?identifier=" + encounter.getIdentifier().get(0).getSystem() + "%7C" +encounter.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            encounter.setId(outcome.getId().getIdPart());
+                        }
                     }
                     resources.clear();
 
@@ -847,8 +855,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
-            // resources.add(encounter);
+            //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
+            resources.add(encounter);
         }
     }
 

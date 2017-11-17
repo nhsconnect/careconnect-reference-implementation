@@ -93,9 +93,18 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
         }
 
         if (encounterEntity.getParticipant() != null) {
-            encounter.addParticipant()
+            Encounter.EncounterParticipantComponent participantComponent = encounter.addParticipant();
+
+            participantComponent
                     .setIndividual(new Reference("Practioner/"+encounterEntity.getParticipant().getId()))
                     .getIndividual().setDisplay(encounterEntity.getParticipant().getNames().get(0).getDisplayName());
+
+            if (encounterEntity.getParticipantType() != null) {
+                participantComponent.addType().addCoding()
+                        .setCode(encounterEntity.getParticipantType().getCode())
+                        .setSystem(encounterEntity.getParticipantType().getSystem())
+                        .setDisplay(encounterEntity.getParticipantType().getDisplay());
+            }
         }
         if (encounterEntity.getPriority() != null) {
             encounter.getPriority()
