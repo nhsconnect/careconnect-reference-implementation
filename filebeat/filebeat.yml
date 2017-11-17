@@ -4,6 +4,7 @@ filebeat.prospectors:
   paths:
     - /var/log/tomcat/localhost_access_log*.txt
     - /var/log/gateway/localhost_access_log*.txt
+    - /var/log/gatewayssl/localhost_access_log*.txt
   ignore_older: 16m
   tags: ["ccri_tomcat"]
   fields_under_root: true
@@ -14,6 +15,7 @@ filebeat.prospectors:
   paths:
     - /var/log/tomcat/*.log
     - /var/log/gateway/*.log
+    - /var/log/gatewayssl/*.log
   ignore_older: 16m
   tags: ["ccri_tomcat"]
   fields_under_root: true
