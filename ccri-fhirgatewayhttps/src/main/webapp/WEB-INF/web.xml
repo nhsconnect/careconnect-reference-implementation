@@ -20,20 +20,6 @@
 	<!-- Servlets -->
 
 	<servlet>
-		<servlet-name>spring</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextClass</param-name>
-			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-		</init-param>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>uk.nhs.careconnect.ri.gatewayhttps.UIOverlayConfig</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
-
-	<servlet>
 		<servlet-name>fhirServlet</servlet-name>
 		<servlet-class>uk.nhs.careconnect.ri.gatewayhttps.HAPIRestfulConfig</servlet-class>
 		<init-param>
@@ -51,13 +37,6 @@
 		<servlet-name>fhirServlet</servlet-name>
 		<url-pattern>/STU3/*</url-pattern>
 	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>spring</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-
-
 
 	<!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->
 	<filter>
