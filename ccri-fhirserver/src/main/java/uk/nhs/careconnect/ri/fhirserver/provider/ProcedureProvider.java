@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -27,6 +28,9 @@ public class ProcedureProvider implements IResourceProvider {
     @Autowired
     private ProcedureRepository procedureDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return Procedure.class;
@@ -44,7 +48,7 @@ public class ProcedureProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Procedure newProcedure = procedureDao.create(procedure, theId, theConditional);
+        Procedure newProcedure = procedureDao.create(ctx,procedure, theId, theConditional);
         method.setId(newProcedure.getIdElement());
         method.setResource(newProcedure);
 
@@ -59,13 +63,13 @@ public class ProcedureProvider implements IResourceProvider {
             , @OptionalParam(name = Procedure.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
                                   ) {
-        return procedureDao.search(patient, date, subject);
+        return procedureDao.search(ctx, patient, date, subject);
     }
 
     @Read()
     public Procedure get(@IdParam IdType procedureId) {
 
-        Procedure procedure = procedureDao.read(procedureId);
+        Procedure procedure = procedureDao.read(ctx, procedureId);
 
         if ( procedure == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

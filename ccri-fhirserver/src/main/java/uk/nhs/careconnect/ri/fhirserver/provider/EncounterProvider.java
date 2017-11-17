@@ -1,13 +1,16 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -27,6 +30,9 @@ public class EncounterProvider implements IResourceProvider {
     @Autowired
     private EncounterRepository encounterDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return Encounter.class;
@@ -44,7 +50,7 @@ public class EncounterProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Encounter newEncounter = encounterDao.create(encounter, theId, theConditional);
+        Encounter newEncounter = encounterDao.create(ctx, encounter, theId, theConditional);
         method.setId(newEncounter.getIdElement());
         method.setResource(newEncounter);
 
@@ -57,14 +63,16 @@ public class EncounterProvider implements IResourceProvider {
     public List<Encounter> search(HttpServletRequest theRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
-            ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode) {
-        return encounterDao.search(patient,date,episode);
+            ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
+            , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
+    ) {
+        return encounterDao.search(ctx,patient,date,episode,identifier);
     }
 
     @Read()
     public Encounter get(@IdParam IdType encounterId) {
 
-        Encounter encounter = encounterDao.read(encounterId);
+        Encounter encounter = encounterDao.read(ctx,encounterId);
 
         if ( encounter == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

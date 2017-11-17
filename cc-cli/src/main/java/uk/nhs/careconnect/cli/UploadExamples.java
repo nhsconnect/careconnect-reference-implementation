@@ -25,7 +25,7 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class UploadExamples extends BaseCommand {
+public class   UploadExamples extends BaseCommand {
 
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(UploadExamples.class);
 
@@ -86,6 +86,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         opt.setRequired(false);
         options.addOption(opt);
 
+        opt = new Option("e", "encounter", false, "Encounter Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("c", "condition", false, "Condition Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
         return options;
 	}
 
@@ -138,6 +146,44 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                     handler = new ObsHandler();
                     processObsCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Obs.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
+
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("e")) {
+                try {
+                    System.out.println("Encounter.csv");
+
+                    IRecordHandler handler = null;
+
+                    handler = new EncounterHandler();
+                    processEncounterCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Encounter.csv"));
+                    for (IBaseResource resource : resources) {
+                        client.create().resource(resource).execute();
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
+
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("c")) {
+                try {
+                    System.out.println("Condition.csv");
+
+                    IRecordHandler handler = null;
+
+                    handler = new ConditionHandler();
+                    processConditionCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Condition.csv"));
                     for (IBaseResource resource : resources) {
                         client.create().resource(resource).execute();
                     }
@@ -356,6 +402,115 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
+    private void processEncounterCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("encounterID"
+                                ,"period.startDate"
+                                ,"period.startTime"
+                                ,"period.endDate"
+                                ,"period.endTime"
+                                ,"patientID"
+                                ,"participant.type"
+                                ,"resource.type"
+                                ,"participent.individual"
+                                ,"serviceProvider"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processConditionCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("identifier"
+                                ,"patient ID"
+                                ,"encounter"
+                                ,"asserter"
+                                ,"dateRecorded"
+                                ,"code.coding.code"
+                                ,"code.coding.display"
+                                ,"category.code"
+                                ,"category.description"
+                                ,"clinicalStatus"
+                                ,"verificationStatus"
+                                ,"severity.code.coding.code"
+                                ,"serverity.code.coding.description"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
     private void processWeightCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
 
@@ -567,6 +722,143 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
+    public class EncounterHandler implements  IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Encounter encounter = new Encounter();
+
+
+            encounter.setMeta(new Meta().addProfile(CareConnectProfile.Encounter_1));
+
+            encounter.addIdentifier()
+                    .setSystem("https://fhir.leedsth.nhs.uk/Id/encounter")
+                    .setValue(theRecord.get("encounterID"));
+
+            Period period = new Period();
+
+            String dateString = theRecord.get("period.startDate");
+            if (!dateString.isEmpty()) {
+                if (!theRecord.get("period.startTime").isEmpty())
+                    dateString = dateString + " " + theRecord.get("period.startTime");
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // turn off set linient
+                    period.setStart(format.parse(dateString));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        period.setStart(format.parse(dateString));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            dateString = theRecord.get("period.endDate");
+            if (!dateString.isEmpty()) {
+                if (!theRecord.get("period.endTime").isEmpty())
+                    dateString = dateString + " " + theRecord.get("period.endTime");
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // turn off set linient
+                    period.setEnd(format.parse(dateString));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        period.setEnd(format.parse(dateString));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            encounter.setPeriod(period);
+            encounter.setSubject(new Reference("Patient/"+theRecord.get("patientID")));
+
+
+
+            if (!theRecord.get("resource.type").isEmpty() && !theRecord.get("participent.individual").isEmpty()) {
+
+
+                if (theRecord.get("resource.type").equals("Practitioner")) {
+                    String practitioner = docMap.get(theRecord.get("participent.individual"));
+                    if (practitioner == null) {
+                        Bundle results = client
+                                .search()
+                                .forResource(Practitioner.class)
+                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("participent.individual")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+                        //   System.out.println(results.getEntry().size());
+                        if (results.getEntry().size() > 0) {
+                            Practitioner prac = (Practitioner) results.getEntry().get(0).getResource();
+                            practitioner = prac.getIdElement().getIdPart();
+                            docMap.put(theRecord.get("participent.individual"), practitioner);
+                        }
+                    }
+                    if (practitioner != null) {
+                        Encounter.EncounterParticipantComponent participant = encounter.addParticipant()
+                                .setIndividual(new Reference("Practitioner/" + practitioner));
+                        if (!theRecord.get("participant.type").isEmpty()) {
+                            CodeableConcept type = new CodeableConcept();
+                            switch (theRecord.get("participant.type")) {
+                                case "PRF":
+                                    type.addCoding().setSystem("http://hl7.org/fhir/ValueSet/encounter-participant-type").setCode("PPRF");
+                                    break;
+                                default:
+                                    System.out.println("participant.type=" + theRecord.get("participant.type"));
+
+                            }
+                            if (type.getCoding().size()>0) {
+                                participant.addType(type);
+                            }
+
+                        }
+                    }
+                }
+            }
+/*
+            System.out.println("participant.type=" + theRecord.get("participant.type"));
+            System.out.println("resource.type="+theRecord.get("resource.type"));
+            System.out.println("participent.individual="+theRecord.get("participent.individual"));
+            System.out.println("serviceProvider="+theRecord.get("serviceProvider"));
+*/
+            if (!theRecord.get("serviceProvider").isEmpty()) {
+                String organization= orgMap.get(theRecord.get("serviceProvider"));
+                if (organization == null) {
+                    Bundle results = client
+                            .search()
+                            .forResource(Organization.class)
+                            .where(Organization.IDENTIFIER.exactly().code(theRecord.get("serviceProvider")))
+                            .returnBundle(Bundle.class)
+                            .execute();
+                    //   System.out.println(results.getEntry().size());
+                    if (results.getEntry().size() > 0) {
+                        Organization org = (Organization) results.getEntry().get(0).getResource();
+                        organization = org.getIdElement().getIdPart();
+                        orgMap.put(theRecord.get("serviceProvider"), organization);
+                    }
+                }
+                if (organization != null) {
+                    encounter
+                            .setServiceProvider(new Reference("Organization/"+organization));
+
+                }
+            }
+
+            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
+            // resources.add(encounter);
+        }
+    }
+
+    public class ConditionHandler implements  IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+           Condition condition = new Condition();
+            resources.add(condition);
+        }
+    }
     public class PatientHandler implements  IRecordHandler {
 
         FhirContext ctx;

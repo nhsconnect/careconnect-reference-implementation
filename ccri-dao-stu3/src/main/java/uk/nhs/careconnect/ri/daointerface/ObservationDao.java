@@ -73,7 +73,7 @@ public class ObservationDao implements ObservationRepository {
 
         observationEntity.setStatus(observation.getStatus());
         for (Identifier identifier : observation.getIdentifier()) {
-            //
+            // TODO
         }
         if (observation.hasCode()) {
           ConceptEntity code = conceptDao.findCode(observation.getCode().getCoding().get(0).getSystem(),observation.getCode().getCoding().get(0).getCode());

@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -29,6 +30,9 @@ public class ImmunizationProvider implements IResourceProvider {
     @Autowired
     private ImmunizationRepository immunisationDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return Immunization.class;
@@ -46,7 +50,7 @@ public class ImmunizationProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Immunization newImmunisation = immunisationDao.create(immunisation, theId, theConditional);
+        Immunization newImmunisation = immunisationDao.create(ctx,immunisation, theId, theConditional);
         method.setId(newImmunisation.getIdElement());
         method.setResource(newImmunisation);
 
@@ -61,13 +65,13 @@ public class ImmunizationProvider implements IResourceProvider {
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
     ){
-        return immunisationDao.search(patient,date, status);
+        return immunisationDao.search(ctx,patient,date, status);
     }
 
     @Read()
     public Immunization get(@IdParam IdType immunisationId) {
 
-        Immunization immunisation = immunisationDao.read(immunisationId);
+        Immunization immunisation = immunisationDao.read(ctx,immunisationId);
 
         if ( immunisation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

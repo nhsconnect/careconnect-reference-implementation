@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,14 +14,14 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import java.util.List;
 
 public interface MedicationRequestRepository {
-    void save(MedicationRequestEntity prescription);
+    void save(FhirContext ctx,MedicationRequestEntity prescription);
 
-    MedicationRequest read(IdType theId);
+    MedicationRequest read(FhirContext ctx, IdType theId);
 
-    MedicationRequest create(MedicationRequest prescription, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    MedicationRequest create(FhirContext ctx,MedicationRequest prescription, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
-    List<MedicationRequest> search(
+    List<MedicationRequest> search(FhirContext ctx,
 
             @OptionalParam(name = MedicationRequest.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
@@ -29,7 +30,7 @@ public interface MedicationRequestRepository {
 
     );
 
-    List<MedicationRequestEntity> searchEntity(
+    List<MedicationRequestEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = MedicationRequest.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten

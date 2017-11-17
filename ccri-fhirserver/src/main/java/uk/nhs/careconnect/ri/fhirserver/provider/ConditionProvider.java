@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -28,6 +29,9 @@ public class ConditionProvider implements IResourceProvider {
     @Autowired
     private ConditionRepository conditionDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return Condition.class;
@@ -45,7 +49,7 @@ public class ConditionProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Condition newCondition = conditionDao.create(condition, theId, theConditional);
+        Condition newCondition = conditionDao.create(ctx,condition, theId, theConditional);
         method.setId(newCondition.getIdElement());
         method.setResource(newCondition);
 
@@ -60,14 +64,15 @@ public class ConditionProvider implements IResourceProvider {
             , @OptionalParam(name = Condition.SP_CATEGORY) TokenParam category
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
+            , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
                                   ) {
-        return conditionDao.search(patient, category, clinicalstatus, asserted);
+        return conditionDao.search(ctx,patient, category, clinicalstatus, asserted, identifier);
     }
 
     @Read()
     public Condition get(@IdParam IdType conditionId) {
 
-        Condition condition = conditionDao.read(conditionId);
+        Condition condition = conditionDao.read(ctx,conditionId);
 
         if ( condition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

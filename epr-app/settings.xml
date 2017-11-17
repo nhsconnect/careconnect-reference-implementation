@@ -1,0 +1,72 @@
+<settings>
+  <mirrors>
+    <mirror>
+      <id>hspc-nexus</id>
+      <name>HSPC Nexus</name>
+      <mirrorOf>*</mirrorOf>
+      <url>https://nexus.hspconsortium.org/repository/maven-all/</url>
+    </mirror>
+  </mirrors>
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <properties>
+        <gpg.keyname>${env.GPG_KEY}</gpg.keyname>
+        <gpg.passphrase>${env.GPG_PWD}</gpg.passphrase>
+      </properties>
+    </profile>
+    <profile>
+      <id>hspc-nexus</id>
+      <repositories>
+        <repository>
+          <name>HSPC Releases</name>
+          <id>hspc-releases</id>
+          <url>https://nexus.hspconsortium.org/repository/maven-releases/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <name>HSPC Snapshots</name>
+          <id>hspc-snapshots</id>
+          <url>https://nexus.hspconsortium.org/repository/maven-snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <!--make the profile active all the time -->
+    <activeProfile>hspc-nexus</activeProfile>
+  </activeProfiles>
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <username>${env.OSSRH_USER_TOKEN}</username>
+      <password>${env.OSSRH_PWD_TOKEN}</password>
+    </server>
+    <server>
+      <id>hspc-nexus</id>
+      <username>${env.NEXUS_USR}</username>
+      <password>${env.NEXUS_PWD}</password>
+    </server>
+    <server>
+      <id>hspc-releases</id>
+      <username>${env.NEXUS_USR}</username>
+      <password>${env.NEXUS_PWD}</password>
+    </server>
+    <server>
+      <id>hspc-snapshots</id>
+      <username>${env.NEXUS_USR}</username>
+      <password>${env.NEXUS_PWD}</password>
+    </server>
+  </servers>
+</settings>

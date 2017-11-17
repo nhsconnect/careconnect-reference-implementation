@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -21,27 +22,27 @@ public class ImmunizationDao implements ImmunizationRepository {
     EntityManager em;
 
     @Override
-    public void save(ImmunisationEntity immunisation) {
+    public void save(FhirContext ctx, ImmunisationEntity immunisation) {
 
     }
 
     @Override
-    public Immunization read(IdType theId) {
+    public Immunization read(FhirContext ctx,IdType theId) {
         return null;
     }
 
     @Override
-    public Immunization create(Immunization immunisation, IdType theId, String theImmunizational) {
+    public Immunization create(FhirContext ctx,Immunization immunisation, IdType theId, String theImmunizational) {
         return null;
     }
 
     @Override
-    public List<Immunization> search(ReferenceParam patient, DateRangeParam date, TokenParam status) {
+    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status) {
         return null;
     }
 
     @Override
-    public List<ImmunisationEntity> searchEntity(ReferenceParam patient, DateRangeParam date, TokenParam status) {
+    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status) {
         return null;
     }
 }

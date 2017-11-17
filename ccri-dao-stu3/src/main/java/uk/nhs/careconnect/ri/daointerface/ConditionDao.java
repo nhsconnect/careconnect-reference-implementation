@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -14,6 +15,9 @@ import uk.nhs.careconnect.ri.daointerface.transforms.ConditionEntityToFHIRCondit
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.EntityManager;
@@ -44,12 +48,12 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public void save(ConditionEntity condition) {
+    public void save(FhirContext ctx, ConditionEntity condition) {
 
     }
 
     @Override
-    public Condition read(IdType theId) {
+    public Condition read(FhirContext ctx,IdType theId) {
 
         if (isNumeric(theId.getIdPart())) {
             ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
@@ -63,14 +67,14 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public Condition create(Condition condition, IdType theId, String theConditional) {
+    public Condition create(FhirContext ctx,Condition condition, IdType theId, String theConditional) {
         return null;
     }
 
 
     @Override
-    public List<Condition> search(ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted) {
-        List<ConditionEntity> qryResults = searchEntity(patient, category, clinicalstatus, asserted);
+    public List<Condition> search(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier) {
+        List<ConditionEntity> qryResults = searchEntity(ctx,patient, category, clinicalstatus, asserted,identifier);
         List<Condition> results = new ArrayList<>();
 
         for (ConditionEntity conditionEntity : qryResults)
@@ -84,7 +88,7 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public List<ConditionEntity> searchEntity(ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted) {
+    public List<ConditionEntity> searchEntity(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier) {
         List<ConditionEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -100,6 +104,16 @@ public class ConditionDao implements ConditionRepository {
 
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
+        }
+
+        if (identifier !=null)
+        {
+            Join<ConditionEntity, ConditionIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
         }
         if (clinicalstatus != null) {
             Integer status = null;

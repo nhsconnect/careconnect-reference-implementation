@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -39,12 +40,12 @@ public class ProcedureDao implements ProcedureRepository {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
     @Override
-    public void save(ProcedureEntity procedure) {
+    public void save(FhirContext ctx, ProcedureEntity procedure) {
 
     }
 
     @Override
-    public Procedure read(IdType theId) {
+    public Procedure read(FhirContext ctx,IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             ProcedureEntity procedure = (ProcedureEntity) em.find(ProcedureEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -57,14 +58,14 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public Procedure create(Procedure procedure, IdType theId, String theProcedureal) {
+    public Procedure create(FhirContext ctx,Procedure procedure, IdType theId, String theProcedureal) {
         return null;
     }
 
     @Override
-    public List<Procedure> search(ReferenceParam patient, DateRangeParam date,  ReferenceParam subject) {
+    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject) {
 
-        List<ProcedureEntity> qryResults = searchEntity(patient, date, subject);
+        List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject);
         List<Procedure> results = new ArrayList<>();
 
         for (ProcedureEntity procedureEntity : qryResults)
@@ -78,7 +79,7 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public List<ProcedureEntity> searchEntity(ReferenceParam patient,DateRangeParam date,  ReferenceParam subject) {
+    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject) {
         List<ProcedureEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

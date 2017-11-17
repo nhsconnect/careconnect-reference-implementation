@@ -1,0 +1,10 @@
+{
+  "name": "sandbox-manager",
+  "version": "2.4.0",
+  "scripts": {
+    "serve": "node Server.js"
+  },
+  "dependencies": {
+    "express": "^4.11.0"
+  }
+}

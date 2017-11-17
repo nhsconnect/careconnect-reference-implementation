@@ -54,6 +54,19 @@ public class EncounterEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity participant;
 
+    public ConceptEntity getParticipantType() {
+        return participantType;
+    }
+
+    public void setParticipantType(ConceptEntity participantType) {
+        this.participantType = participantType;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="PARTICIPANT_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PARTICIPANT_TYPE_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private ConceptEntity participantType;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "periodStartDate")
     private Date periodStartDate;

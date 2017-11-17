@@ -16,6 +16,8 @@ public interface LocationRepository  {
 
     Location read(IdType theId);
 
+    LocationEntity readEntity(IdType theId);
+
     Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
@@ -24,6 +26,7 @@ public interface LocationRepository  {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+
     );
 
     List<LocationEntity> searchLocationEntity (
@@ -31,5 +34,6 @@ public interface LocationRepository  {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+
     );
 }

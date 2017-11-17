@@ -6,14 +6,13 @@ import org.hl7.fhir.dstu3.model.Condition;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "Condition_")
@@ -66,6 +65,18 @@ public class ConditionEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private Condition.ConditionVerificationStatus verificationStatus;
 
+    @OneToMany(mappedBy="condition", targetEntity = ConditionIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ConditionIdentifier> identifiers = new HashSet<>();
+
+    public Set<ConditionIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public ConditionEntity setIdentifiers(Set<ConditionIdentifier> identifiers) {
+        this.identifiers = identifiers;
+        return this;
+    }
 
     public Long getId() {
         return id;

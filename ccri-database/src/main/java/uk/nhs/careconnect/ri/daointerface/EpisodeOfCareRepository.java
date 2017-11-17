@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -12,21 +13,21 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import java.util.List;
 
 public interface EpisodeOfCareRepository {
-    void save(EpisodeOfCare episode);
+    void save(FhirContext ctx,EpisodeOfCare episode);
 
-    EpisodeOfCare read(IdType theId);
+    EpisodeOfCare read(FhirContext ctx, IdType theId);
 
-    EpisodeOfCare create(EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    EpisodeOfCare create(FhirContext ctx,EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
-    List<EpisodeOfCare> search(
+    List<EpisodeOfCare> search(FhirContext ctx,
 
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
 
             );
 
-    List<EpisodeOfCareEntity> searchEntity(
+    List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
 

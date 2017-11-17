@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,14 +14,14 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationStatementEntity;
 import java.util.List;
 
 public interface MedicationStatementRepository {
-    void save(MedicationStatementEntity statement);
+    void save(FhirContext ctx,MedicationStatementEntity statement);
 
-    MedicationStatement read(IdType theId);
+    MedicationStatement read(FhirContext ctx, IdType theId);
 
-    MedicationStatement create(MedicationStatement statement, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    MedicationStatement create(FhirContext ctx,MedicationStatement statement, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
-    List<MedicationStatement> search(
+    List<MedicationStatement> search(FhirContext ctx,
 
             @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
@@ -28,7 +29,7 @@ public interface MedicationStatementRepository {
 
     );
 
-    List<MedicationStatementEntity> searchEntity(
+    List<MedicationStatementEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status

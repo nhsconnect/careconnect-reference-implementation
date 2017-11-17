@@ -70,6 +70,18 @@ public class LocationDao implements LocationRepository {
     }
 
     @Override
+    public LocationEntity readEntity(IdType theId) {
+        if (isNumeric(theId.getIdPart())) {
+            LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class, Long.parseLong(theId.getIdPart()));
+
+            return locationEntity;
+
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
 
         LocationEntity locationEntity = null;

@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -27,6 +28,8 @@ public class EpisodeOfCareProvider implements IResourceProvider {
     @Autowired
     private EpisodeOfCareRepository episodeDao;
 
+    @Autowired
+    FhirContext ctx;
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return EpisodeOfCare.class;
@@ -44,7 +47,7 @@ public class EpisodeOfCareProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        EpisodeOfCare newEpisodeOfCare = episodeDao.create(episode, theId, theConditional);
+        EpisodeOfCare newEpisodeOfCare = episodeDao.create(ctx,episode, theId, theConditional);
         method.setId(newEpisodeOfCare.getIdElement());
         method.setResource(newEpisodeOfCare);
 
@@ -57,13 +60,13 @@ public class EpisodeOfCareProvider implements IResourceProvider {
     public List<EpisodeOfCare> searchEpisodeOfCare(HttpServletRequest theRequest,
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date) {
-        return episodeDao.search(patient, date);
+        return episodeDao.search(ctx,patient, date);
     }
 
     @Read()
     public EpisodeOfCare getEpisodeOfCare(@IdParam IdType episodeId) {
 
-        EpisodeOfCare episode = episodeDao.read(episodeId);
+        EpisodeOfCare episode = episodeDao.read(ctx,episodeId);
 
         if ( episode == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

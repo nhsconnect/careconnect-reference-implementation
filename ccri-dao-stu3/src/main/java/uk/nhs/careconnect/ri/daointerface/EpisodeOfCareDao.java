@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
@@ -32,14 +33,14 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
 
 
     @Override
-    public void save(EpisodeOfCare episode) {
+    public void save(FhirContext ctx, EpisodeOfCare episode) {
 
     }
     public boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
     @Override
-    public EpisodeOfCare read(IdType theId) {
+    public EpisodeOfCare read(FhirContext ctx,IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             EpisodeOfCareEntity episode = (EpisodeOfCareEntity) em.find(EpisodeOfCareEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -53,14 +54,14 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     }
 
     @Override
-    public EpisodeOfCare create(EpisodeOfCare episode, IdType theId, String theConditional) {
+    public EpisodeOfCare create(FhirContext ctx,EpisodeOfCare episode, IdType theId, String theConditional) {
         return null;
     }
 
     @Override
-    public List<EpisodeOfCare> search(ReferenceParam patient, DateRangeParam date) {
+    public List<EpisodeOfCare> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date) {
 
-        List<EpisodeOfCareEntity> qryResults = searchEntity(patient, date);
+        List<EpisodeOfCareEntity> qryResults = searchEntity(ctx,patient, date);
         List<EpisodeOfCare> results = new ArrayList<>();
 
         for (EpisodeOfCareEntity episodeEntity : qryResults)
@@ -73,7 +74,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
         return results;
     }
     @Override
-    public List<EpisodeOfCareEntity> searchEntity(ReferenceParam patient, DateRangeParam date) {
+    public List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date) {
         List<EpisodeOfCareEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

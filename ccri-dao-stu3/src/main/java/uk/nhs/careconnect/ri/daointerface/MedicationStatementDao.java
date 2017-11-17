@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -21,27 +22,27 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     EntityManager em;
 
     @Override
-    public void save(MedicationStatementEntity statement) {
+    public void save(FhirContext ctx, MedicationStatementEntity statement) {
 
     }
 
     @Override
-    public MedicationStatement read(IdType theId) {
+    public MedicationStatement read(FhirContext ctx,IdType theId) {
         return null;
     }
 
     @Override
-    public MedicationStatement create(MedicationStatement statement, IdType theId, String theConditional) {
+    public MedicationStatement create(FhirContext ctx,MedicationStatement statement, IdType theId, String theConditional) {
         return null;
     }
 
     @Override
-    public List<MedicationStatement> search(ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
+    public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
         return null;
     }
 
     @Override
-    public List<MedicationStatementEntity> searchEntity(ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
+    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
         return null;
     }
 }

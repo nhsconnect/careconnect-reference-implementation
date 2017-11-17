@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -28,6 +29,9 @@ public class AllergyIntoleranceProvider implements IResourceProvider {
     @Autowired
     private AllergyIntoleranceRepository allergyDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return AllergyIntolerance.class;
@@ -45,7 +49,7 @@ public class AllergyIntoleranceProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        AllergyIntolerance newAllergyIntolerance = allergyDao.create(allergy, theId, theConditional);
+        AllergyIntolerance newAllergyIntolerance = allergyDao.create(ctx,allergy, theId, theConditional);
         method.setId(newAllergyIntolerance.getIdElement());
         method.setResource(newAllergyIntolerance);
 
@@ -60,13 +64,13 @@ public class AllergyIntoleranceProvider implements IResourceProvider {
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
     ) {
-        return allergyDao.search(patient, date, clinicalStatus);
+        return allergyDao.search(ctx,patient, date, clinicalStatus);
     }
 
     @Read()
     public AllergyIntolerance get(@IdParam IdType allergyId) {
 
-        AllergyIntolerance allergy = allergyDao.read(allergyId);
+        AllergyIntolerance allergy = allergyDao.read(ctx,allergyId);
 
         if ( allergy == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

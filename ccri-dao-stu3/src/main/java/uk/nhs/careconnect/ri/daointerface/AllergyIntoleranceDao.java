@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -35,9 +36,11 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     private static final Logger log = LoggerFactory.getLogger(AllergyIntoleranceDao.class);
 
     @Override
-    public void save(AllergyIntoleranceEntity allergy) {
+    public void save(FhirContext ctx,AllergyIntoleranceEntity allergy) {
 
     }
+
+
 
     @Autowired
     AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
@@ -46,7 +49,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
     @Override
-    public AllergyIntolerance read(IdType theId) {
+    public AllergyIntolerance read(FhirContext ctx,IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             AllergyIntoleranceEntity allergyIntolerance = (AllergyIntoleranceEntity) em.find(AllergyIntoleranceEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -59,13 +62,13 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public AllergyIntolerance create(AllergyIntolerance allergy, IdType theId, String theConditional) {
+    public AllergyIntolerance create(FhirContext ctx, AllergyIntolerance allergy, IdType theId, String theConditional) {
         return null;
     }
 
     @Override
-    public List<AllergyIntolerance> search(ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus) {
-        List<AllergyIntoleranceEntity> qryResults = searchEntity(patient, date, clinicalStatus);
+    public List<AllergyIntolerance> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus) {
+        List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus);
         List<AllergyIntolerance> results = new ArrayList<>();
 
         for (AllergyIntoleranceEntity allergyIntoleranceEntity : qryResults)
@@ -79,7 +82,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntoleranceEntity> searchEntity(ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus) {
+    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus) {
 
 
         List<AllergyIntoleranceEntity> qryResults = null;

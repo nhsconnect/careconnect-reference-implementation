@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -28,6 +29,9 @@ public class MedicationRequestProvider implements IResourceProvider {
     @Autowired
     private MedicationRequestRepository prescriptionDao;
 
+    @Autowired
+    FhirContext ctx;
+
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return MedicationRequest.class;
@@ -45,7 +49,7 @@ public class MedicationRequestProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        MedicationRequest newMedicationRequest = prescriptionDao.create(prescription, theId, theConditional);
+        MedicationRequest newMedicationRequest = prescriptionDao.create(ctx,prescription, theId, theConditional);
         method.setId(newMedicationRequest.getIdElement());
         method.setResource(newMedicationRequest);
 
@@ -61,13 +65,13 @@ public class MedicationRequestProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
                                           ) {
-        return prescriptionDao.search(patient, code, dateWritten, status);
+        return prescriptionDao.search(ctx,patient, code, dateWritten, status);
     }
 
     @Read()
     public MedicationRequest get(@IdParam IdType prescriptionId) {
 
-        MedicationRequest prescription = prescriptionDao.read(prescriptionId);
+        MedicationRequest prescription = prescriptionDao.read(ctx,prescriptionId);
 
         if ( prescription == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

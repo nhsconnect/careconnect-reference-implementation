@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,14 +14,14 @@ import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 import java.util.List;
 
 public interface ImmunizationRepository {
-    void save(ImmunisationEntity immunisation);
+    void save(FhirContext ctx,ImmunisationEntity immunisation);
 
-    Immunization read(IdType theId);
+    Immunization read(FhirContext ctx, IdType theId);
 
-    Immunization create(Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theImmunizational);
+    Immunization create(FhirContext ctx,Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theImmunizational);
 
 
-    List<Immunization> search(
+    List<Immunization> search(FhirContext ctx,
 
             @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
@@ -28,7 +29,7 @@ public interface ImmunizationRepository {
 
     );
 
-    List<ImmunisationEntity> searchEntity(
+    List<ImmunisationEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status

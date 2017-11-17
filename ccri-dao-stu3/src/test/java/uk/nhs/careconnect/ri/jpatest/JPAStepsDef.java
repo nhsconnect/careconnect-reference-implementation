@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -57,6 +58,8 @@ public class JPAStepsDef {
     @Autowired
     ObservationRepository observationRepository;
 
+    @Autowired
+    EncounterRepository encounterRepository;
 
     @Autowired
     PractitionerRoleRepository practitionerRoleRepository;
@@ -77,6 +80,8 @@ public class JPAStepsDef {
     List<Patient> patientList = null;
 
     List<Organization> organizationList = null;
+
+    List<Encounter> encounterList = null;
 
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
@@ -438,6 +443,20 @@ public class JPAStepsDef {
         observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null);
     }
 
+    @Given("^I have one Encounter resource loaded$")
+    public void i_have_one_Encounter_resource_loaded() throws Throwable {
+
+    }
+
+    @When("^I search Encounter on Patient ID = (\\d+)$")
+    public void i_search_Encounter_on_Patient_ID(int patient) throws Throwable {
+        encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+    }
+
+    @Then("^I should get a Bundle of Encounter (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Encounter_resource(int arg1) throws Throwable {
+        assertEquals(1,encounterList.size());
+    }
 
 
     private void validateResource(Resource resource) {
@@ -541,6 +560,18 @@ public class JPAStepsDef {
             observation = ctx.newJsonParser().parseResource(Observation.class, reader);
             try {
                 observation = observationRepository.save(ctx,observation);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/EncounterExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            Encounter encounter = ctx.newJsonParser().parseResource(Encounter.class, reader);
+            try {
+                encounter = encounterRepository.create(ctx,encounter,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

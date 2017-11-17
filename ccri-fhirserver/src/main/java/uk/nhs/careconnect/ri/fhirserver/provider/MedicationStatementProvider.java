@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -28,6 +29,8 @@ public class MedicationStatementProvider implements IResourceProvider {
     @Autowired
     private MedicationStatementRepository statementDao;
 
+    @Autowired
+    FhirContext ctx;
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return MedicationStatement.class;
@@ -45,7 +48,7 @@ public class MedicationStatementProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        MedicationStatement newMedicationStatement = statementDao.create(statement, theId, theConditional);
+        MedicationStatement newMedicationStatement = statementDao.create(ctx,statement, theId, theConditional);
         method.setId(newMedicationStatement.getIdElement());
         method.setResource(newMedicationStatement);
 
@@ -60,13 +63,13 @@ public class MedicationStatementProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
     ) {
-        return statementDao.search(patient, effectiveDate, status);
+        return statementDao.search(ctx,patient, effectiveDate, status);
     }
 
     @Read()
     public MedicationStatement get(@IdParam IdType statementId) {
 
-        MedicationStatement statement = statementDao.read(statementId);
+        MedicationStatement statement = statementDao.read(ctx,statementId);
 
         if ( statement == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

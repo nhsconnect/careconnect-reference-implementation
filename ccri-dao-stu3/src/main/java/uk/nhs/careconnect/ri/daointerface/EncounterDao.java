@@ -1,17 +1,30 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.EncounterEntityToFHIREncounterTransformer;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.entity.location.LocationIdentifier;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +32,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -26,7 +40,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class EncounterDao implements EncounterRepository {
+public class  EncounterDao implements EncounterRepository {
 
     @PersistenceContext
     EntityManager em;
@@ -34,18 +48,36 @@ public class EncounterDao implements EncounterRepository {
     @Autowired
     private EncounterEntityToFHIREncounterTransformer encounterEntityToFHIREncounterTransformer;
 
+    @Autowired
+    ConceptRepository conceptDao;
+
+    @Autowired
+    PatientRepository patientDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
+
+    @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
+    LocationRepository locationDao;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
+
     private static final Logger log = LoggerFactory.getLogger(EncounterDao.class);
 
     public boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
     @Override
-    public void save(EncounterEntity encounter) {
+    public void save(FhirContext ctx, EncounterEntity encounter) {
 
     }
 
     @Override
-    public Encounter read(IdType theId) {
+    public Encounter read(FhirContext ctx,IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -57,14 +89,149 @@ public class EncounterDao implements EncounterRepository {
         }
     }
 
-    @Override
-    public Encounter create(Encounter encounter, IdType theId, String theConditional) {
-        return null;
+    public EncounterEntity readEntity(FhirContext ctx,IdType theId) {
+        if (isNumeric(theId.getIdPart())) {
+            EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
+
+            return encounter;
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<Encounter> search(ReferenceParam patient, DateRangeParam date, ReferenceParam episode) {
-        List<EncounterEntity> qryResults = searchEntity(patient, date, episode);
+    public Encounter create(FhirContext ctx,Encounter encounter, IdType theId, String theConditional) {
+        log.debug("Encounter.save");
+        EncounterEntity encounterEntity = null;
+
+        if (encounter.hasId()) encounterEntity = readEntity(ctx, encounter.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+                //CareConnectSystem.ODSOrganisationCode
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/encounter")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"));
+                    for (EncounterEntity enc : results) {
+                        encounterEntity = enc;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (encounterEntity == null) encounterEntity = new EncounterEntity();
+
+        if (encounter.hasLocation()) {
+
+        }
+        PatientEntity patientEntity = null;
+        if (encounter.hasSubject()) {
+            log.trace(encounter.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(encounter.getSubject().getReference()));
+            encounterEntity.setPatient(patientEntity);
+        }
+        if (encounter.hasClass_()) {
+            ConceptEntity code = conceptDao.findCode(encounter.getClass_().getSystem(),encounter.getClass_().getCode());
+            if (code != null) { encounterEntity._setClass(code); }
+            else {
+                log.error("Code: Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
+            }
+        }
+
+        if (encounter.hasType()) {
+            ConceptEntity code = conceptDao.findCode(encounter.getType().get(0).getCoding().get(0).getSystem(),encounter.getType().get(0).getCoding().get(0).getCode());
+            if (code != null) { encounterEntity.setType(code); }
+            else {
+                log.error("Code: Missing System/Code = "+encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
+            }
+        }
+
+        if (encounter.hasLocation()) {
+            LocationEntity locationEntity = locationDao.readEntity( new IdType(encounter.getLocation().get(0).getLocation().getId()));
+            encounterEntity.setLocation(locationEntity);
+        }
+
+        if (encounter.hasParticipant()) {
+            for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
+                if (participant.getIndividualTarget() instanceof Practitioner) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity( new IdType(participant.getIndividualTarget().getId()));
+                    if (practitionerEntity != null ) encounterEntity.setParticipant(practitionerEntity);
+                }
+
+                if (participant.hasType()) {
+                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0).getSystem(),participant.getType().get(0).getCoding().get(0).getCode());
+                    if (code != null) {
+                        encounterEntity.setParticipantType(code);
+                    } else {
+                        log.error("Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
+
+                        throw new IllegalArgumentException("Missing System/Code = "+ participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
+                    }
+
+                }
+
+            }
+        }
+
+        if (encounter.hasPriority()) {
+            ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0).getSystem(),encounter.getPriority().getCoding().get(0).getCode());
+            if (code != null) { encounterEntity.setPriority(code); }
+            else {
+                log.error("Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
+            }
+        }
+
+        if (encounter.hasServiceProvider()) {
+            OrganisationEntity organisationEntity = organisationDao.readEntity( new IdType(encounter.getServiceProvider().getId()));
+            if (organisationEntity != null) encounterEntity.setServiceProvider(organisationEntity);
+        }
+
+        em.persist(encounterEntity);
+
+        for (Identifier identifier : encounter.getIdentifier()) {
+            EncounterIdentifier encounterIdentifier = null;
+
+            for (EncounterIdentifier orgSearch : encounterEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    encounterIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (encounterIdentifier == null)  encounterIdentifier = new EncounterIdentifier();
+
+            encounterIdentifier.setValue(identifier.getValue());
+            encounterIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            encounterIdentifier.setEncounter(encounterEntity);
+            em.persist(encounterIdentifier);
+        }
+
+        return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
+    }
+
+    @Override
+    public List<Encounter> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier) {
+        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier);
         List<Encounter> results = new ArrayList<>();
 
         for (EncounterEntity encounterEntity : qryResults)
@@ -78,7 +245,7 @@ public class EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(ReferenceParam patient, DateRangeParam date, ReferenceParam episode) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -89,6 +256,16 @@ public class EncounterDao implements EncounterRepository {
         List<Predicate> predList = new LinkedList<Predicate>();
         List<Encounter> results = new ArrayList<Encounter>();
 
+
+        if (identifier !=null)
+        {
+            Join<EncounterEntity, EncounterIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
+        }
         if (patient != null) {
             Join<EncounterEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 

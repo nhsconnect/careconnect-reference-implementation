@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,22 +14,22 @@ import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import java.util.List;
 
 public interface AllergyIntoleranceRepository {
-    void save(AllergyIntoleranceEntity allergy);
+    void save(FhirContext ctx,AllergyIntoleranceEntity allergy);
 
-    AllergyIntolerance read(IdType theId);
+    AllergyIntolerance read(FhirContext ctx, IdType theId);
 
-    AllergyIntolerance create(AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    AllergyIntolerance create(FhirContext ctx,AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
     List<AllergyIntolerance> search(
-
+            FhirContext ctx,
             @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
 
     );
 
-    List<AllergyIntoleranceEntity> searchEntity(
+    List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
