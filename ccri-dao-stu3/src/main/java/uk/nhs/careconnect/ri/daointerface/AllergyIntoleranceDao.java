@@ -17,6 +17,8 @@ import uk.nhs.careconnect.ri.daointerface.transforms.AllergyIntoleranceEntityToF
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceIdentifier;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceManifestation;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceReaction;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
@@ -191,6 +193,35 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             allergyIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             allergyIdentifier.setAllergyIntolerance(allergyEntity);
             em.persist(allergyIdentifier);
+        }
+        for (AllergyIntolerance.AllergyIntoleranceReactionComponent reaction : allergy.getReaction()) {
+            AllergyIntoleranceReaction allergyReaction = null;
+
+            for (AllergyIntoleranceReaction orgSearch : allergyEntity.getReactions()) {
+                if (reaction.getManifestationFirstRep().getCoding().get(0).getSystem().equals(orgSearch.getManifestations().get(0).getManifestation().getSystem())
+                        && reaction.getManifestationFirstRep().getCoding().get(0).getCode().equals(orgSearch.getManifestations().get(0).getManifestation().getCode())) {
+                    allergyReaction = orgSearch;
+                    break;
+                }
+            }
+            if (allergyReaction == null)  allergyReaction = new AllergyIntoleranceReaction();
+
+            ConceptEntity code = conceptDao.findCode(reaction.getManifestationFirstRep().getCoding().get(0).getSystem(),reaction.getManifestationFirstRep().getCoding().get(0).getCode());
+            if (code != null) {
+                AllergyIntoleranceManifestation man = new AllergyIntoleranceManifestation();
+                man.setManifestation(code);
+                man.setAllergyReaction(allergyReaction);
+                em.persist(man);
+
+                allergyReaction.setAllergy(allergyEntity);
+                em.persist(allergyReaction);
+            }
+            else {
+                log.error("Code: Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem() +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem()
+                        +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
+            }
         }
 
 

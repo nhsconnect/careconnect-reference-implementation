@@ -39,6 +39,7 @@ public class   UploadExamples extends BaseCommand {
 
     private Map<String,String> docMap = new HashMap<>();
 
+
     FhirContext ctx ;
 
     IGenericClient client;
@@ -222,6 +223,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                     handler = new AllergyHandler();
                     processAllergyCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/AllergyIntolerance.csv"));
+
+                    handler = new AllergyReactionsHandler();
+                    processAllergyReactionsCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/AllergyIntolerance.reactions.csv"));
                     for (IBaseResource resource : resources) {
                         AllergyIntolerance allergy = (AllergyIntolerance) resource;
                         MethodOutcome outcome = client.update().resource(resource)
@@ -527,6 +531,53 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 ,"recorder"
                                 ,"lastOccurrence"
 
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processAllergyReactionsCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("identifier"
+                                ,"allergy.identifier"
+                                ,"reaction.manifestation"
+                                ,"reaction.manifestation.display"
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -1205,8 +1256,29 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
+         //   System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
             resources.add(allergy);
+        }
+    }
+
+    public class AllergyReactionsHandler implements  IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+            for (IBaseResource resource : resources) {
+                if (resource instanceof AllergyIntolerance) {
+                    AllergyIntolerance allergy = (AllergyIntolerance) resource;
+                    if (allergy.getIdentifier().size()>0 && theRecord.get("allergy.identifier").equals(allergy.getIdentifier().get(0).getValue())) {
+                        AllergyIntolerance.AllergyIntoleranceReactionComponent reaction = allergy.addReaction();
+                        reaction.addManifestation().addCoding()
+                                .setSystem(CareConnectSystem.SNOMEDCT)
+                                .setDisplay(theRecord.get("reaction.manifestation.display"))
+                                .setCode(theRecord.get("reaction.manifestation"));
+                        System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
+                    }
+                }
+            }
+
         }
     }
     public class PatientHandler implements  IRecordHandler {
