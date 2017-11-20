@@ -193,7 +193,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new ConditionHandler();
                     processConditionCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Condition.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Condition condition = (Condition) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" +condition.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            condition.setId(outcome.getId().getIdPart());
+                        }
                     }
                     resources.clear();
 
@@ -864,6 +871,126 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         @Override
         public void accept(CSVRecord theRecord) {
            Condition condition = new Condition();
+
+           condition.addIdentifier()
+                   .setSystem("https://fhir.leedsth.nhs.uk/Id/condition")
+                   .setValue(theRecord.get("identifier"));
+
+           condition.setSubject(new Reference("Patient/" + theRecord.get("patient ID")));
+
+            if (!theRecord.get("encounter").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Encounter.class)
+                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+                //   System.out.println(results.getEntry().size());
+                if (results.getEntry().size() > 0) {
+                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+
+                    condition.setContext(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
+                }
+            }
+            if (!theRecord.get("asserter").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Practitioner.class)
+                        .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("asserter")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+                //   System.out.println(results.getEntry().size());
+                if (results.getEntry().size() > 0) {
+                    Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
+
+                    condition.setAsserter(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                }
+            }
+
+            String dateString = theRecord.get("dateRecorded");
+
+            if (!dateString.isEmpty()) {
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // turn off set linient
+                    condition.setAssertedDate(format.parse(dateString));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        condition.setAssertedDate(format.parse(dateString));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (!theRecord.get("code.coding.code").isEmpty()) {
+                condition.getCode().addCoding()
+                        .setCode(theRecord.get("code.coding.code"))
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setDisplay(theRecord.get("code.coding.display"));
+            }
+
+            if (!theRecord.get("category.code").isEmpty()) {
+                switch (theRecord.get("category.code")) {
+                    case "diagnosis":
+                        condition.addCategory().addCoding()
+                            .setSystem("http://hl7.org/fhir/condition-category")
+                                .setCode("encounter-diagnosis")
+                                .setDisplay("Encounter Diagnosis");
+                        break;
+
+                }
+            }
+            if (!theRecord.get("clinicalStatus").isEmpty()) {
+                switch (theRecord.get("clinicalStatus")) {
+                    case "Resolved":
+                        condition.setClinicalStatus(Condition.ConditionClinicalStatus.RESOLVED);
+                        break;
+                    case "Active":
+                        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+                        break;
+                    case "Remission":
+                        condition.setClinicalStatus(Condition.ConditionClinicalStatus.REMISSION);
+                        break;
+                    case "Relapse":
+                        condition.setClinicalStatus(Condition.ConditionClinicalStatus.RECURRENCE);
+                        break;
+                    case "Inactive":
+                        condition.setClinicalStatus(Condition.ConditionClinicalStatus.INACTIVE);
+                        break;
+                        default:
+                            System.out.println("****** = "+theRecord.get("clinicalStatus"));
+
+                }
+            }
+            if (!theRecord.get("verificationStatus").isEmpty()) {
+                switch (theRecord.get("verificationStatus")) {
+                    case "Confirmed" :
+                        condition.setVerificationStatus(Condition.ConditionVerificationStatus.CONFIRMED);
+                        break;
+                    case "Provisional" :
+                        condition.setVerificationStatus(Condition.ConditionVerificationStatus.PROVISIONAL);
+                        break;
+                    case "Entered-In-Error" :
+                        condition.setVerificationStatus(Condition.ConditionVerificationStatus.ENTEREDINERROR);
+                        break;
+                    default:
+                        System.out.println("****** verificationStatus = " + theRecord.get("verificationStatus"));
+
+                }
+
+            }
+            if (!theRecord.get("severity.code.coding.code").isEmpty()) {
+                condition.getSeverity().addCoding()
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setCode(theRecord.get("severity.code.coding.code"))
+                        .setDisplay(theRecord.get("serverity.code.coding.description"));
+                //System.out.println("****** severity.code.coding.code = " + theRecord.get("severity.code.coding.code"));
+            }
+
+            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(condition));
             resources.add(condition);
         }
     }

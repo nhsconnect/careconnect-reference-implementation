@@ -86,6 +86,7 @@ public class  EncounterDao implements EncounterRepository {
         }
     }
 
+    @Override
     public EncounterEntity readEntity(FhirContext ctx,IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
@@ -170,7 +171,7 @@ public class  EncounterDao implements EncounterRepository {
             for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
                 if (participant.getIndividual().getReference().contains("Practitioner")) {
 
-                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType("Practitioner/"+participant.getIndividual().getReference()));
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx,new IdType("Practitioner/"+participant.getIndividual().getReference()));
                     if (practitionerEntity != null ) encounterEntity.setParticipant(practitionerEntity);
                 }
 

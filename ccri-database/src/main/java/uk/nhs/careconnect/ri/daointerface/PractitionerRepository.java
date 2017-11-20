@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,22 +14,22 @@ import java.util.List;
 
 public interface PractitionerRepository {
 
-    void save(PractitionerEntity practitioner);
+    void save(FhirContext ctx,PractitionerEntity practitioner);
 
-    Practitioner read(IdType theId);
+    Practitioner read(FhirContext ctx, IdType theId);
 
-    PractitionerEntity readEntity(IdType theId);
+    PractitionerEntity readEntity(FhirContext ctx, IdType theId);
 
-    Practitioner create(Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
-    List<Practitioner> searchPractitioner (
+    List<Practitioner> searchPractitioner (FhirContext ctx,
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
 
     );
 
-    List<PractitionerEntity> searchPractitionerEntity (
+    List<PractitionerEntity> searchPractitionerEntity (FhirContext ctx,
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode

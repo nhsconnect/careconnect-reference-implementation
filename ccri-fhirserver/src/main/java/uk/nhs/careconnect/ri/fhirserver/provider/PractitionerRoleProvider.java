@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -23,6 +24,11 @@ public class PractitionerRoleProvider implements IResourceProvider {
     @Autowired
     private PractitionerRoleRepository practitionerRoleDao;
 
+    @Autowired
+    FhirContext ctx;
+
+
+
     @Override
     public Class<PractitionerRole> getResourceType() {
         return PractitionerRole.class;
@@ -38,7 +44,7 @@ public class PractitionerRoleProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        PractitionerRole newPractitioner = practitionerRoleDao.create(practitionerRole,null,null);
+        PractitionerRole newPractitioner = practitionerRoleDao.create(ctx, practitionerRole,null,null);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);
 
@@ -55,7 +61,7 @@ public class PractitionerRoleProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        PractitionerRole newPractitioner = practitionerRoleDao.create(practitionerRole, theId, theConditional);
+        PractitionerRole newPractitioner = practitionerRoleDao.create(ctx, practitionerRole, theId, theConditional);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);
 
@@ -66,7 +72,7 @@ public class PractitionerRoleProvider implements IResourceProvider {
     @Read
     public PractitionerRole getPractitionerRole
             (@IdParam IdType internalId) {
-        PractitionerRole practitionerRole = practitionerRoleDao.read(internalId);
+        PractitionerRole practitionerRole = practitionerRoleDao.read(ctx, internalId);
 
         if ( practitionerRole == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -83,7 +89,7 @@ public class PractitionerRoleProvider implements IResourceProvider {
                                                      @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
                                                      @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation) {
 
-        return practitionerRoleDao.search(
+        return practitionerRoleDao.search(ctx,
                 null
                 ,practitioner
                 ,organisation

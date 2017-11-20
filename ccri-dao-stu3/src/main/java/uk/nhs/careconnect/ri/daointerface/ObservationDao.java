@@ -182,7 +182,7 @@ public class ObservationDao implements ObservationRepository {
             switch (reference.getReferenceElement().getResourceType()) {
                 case "Practitioner" :
                     log.trace("Practitioner DAO :"+reference.getReferenceElement().getResourceType());
-                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(reference.getReference()));
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
                     if (practitionerEntity != null) {
                         ObservationPerformer performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Practitioner);

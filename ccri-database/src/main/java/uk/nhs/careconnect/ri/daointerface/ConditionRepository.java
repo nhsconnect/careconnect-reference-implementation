@@ -18,6 +18,8 @@ public interface ConditionRepository {
 
     Condition read(FhirContext ctx, IdType theId);
 
+    ConditionEntity readEntity(FhirContext ctx, IdType theId);
+
     Condition create(FhirContext ctx,Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 

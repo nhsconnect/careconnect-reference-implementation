@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -54,12 +55,12 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
     @Override
-    public void save(PractitionerRole practitioner) {
+    public void save(FhirContext ctx, PractitionerRole practitioner) {
 
     }
 
     @Override
-    public org.hl7.fhir.dstu3.model.PractitionerRole read(IdType theId) {
+    public org.hl7.fhir.dstu3.model.PractitionerRole read(FhirContext ctx, IdType theId) {
 
         if (isNumeric(theId.getIdPart())) {
             PractitionerRole roleEntity = (PractitionerRole) em.find(PractitionerRole.class, Long.parseLong(theId.getIdPart()));
@@ -73,7 +74,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     }
 
     @Override
-    public PractitionerRole readEntity(IdType theId) {
+    public PractitionerRole readEntity(FhirContext ctx, IdType theId) {
        return (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
     }
 
@@ -81,7 +82,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
 
     @Override
-    public org.hl7.fhir.dstu3.model.PractitionerRole create(org.hl7.fhir.dstu3.model.PractitionerRole practitionerRole, IdType theId, String theConditional) {
+    public org.hl7.fhir.dstu3.model.PractitionerRole create(FhirContext ctx, org.hl7.fhir.dstu3.model.PractitionerRole practitionerRole, IdType theId, String theConditional) {
 
         PractitionerRole roleEntity = null;
         if (practitionerRole.hasId()) {
@@ -103,7 +104,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
                     String[] spiltStr = query.split("%7C");
                     log.trace(spiltStr[1]);
 
-                    List<PractitionerRole> results = searchEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId), null, null);
+                    List<PractitionerRole> results = searchEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId), null, null);
                     for (PractitionerRole org : results) {
                         roleEntity = org;
                         break;
@@ -120,7 +121,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             roleEntity = new PractitionerRole();
         }
         if (practitionerRole.getPractitioner() != null) {
-            roleEntity.setPractitioner(practitionerDao.readEntity(new IdType(practitionerRole.getPractitioner().getReference())));
+            roleEntity.setPractitioner(practitionerDao.readEntity(ctx, new IdType(practitionerRole.getPractitioner().getReference())));
         }
 
         if (practitionerRole.getOrganization() != null) {
@@ -182,7 +183,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     }
 
     @Override
-    public List<PractitionerRole> searchEntity(
+    public List<PractitionerRole> searchEntity(FhirContext ctx,
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
@@ -244,12 +245,12 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
 
     @Override
-    public List<org.hl7.fhir.dstu3.model.PractitionerRole> search(
+    public List<org.hl7.fhir.dstu3.model.PractitionerRole> search(FhirContext ctx,
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation) {
         List<org.hl7.fhir.dstu3.model.PractitionerRole> results = new ArrayList<>();
-        List<PractitionerRole> roles = searchEntity(identifier,practitioner,organisation);
+        List<PractitionerRole> roles = searchEntity(ctx, identifier,practitioner,organisation);
         for (PractitionerRole role : roles) {
              results.add(practitionerRoleToFHIRPractitionerRoleTransformer.transform(role));
         }

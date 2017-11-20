@@ -1,0 +1,50 @@
+{
+  "resourceType": "Condition",
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/condition",
+      "value": "10025"
+    }
+  ],
+  "clinicalStatus": "remission",
+  "verificationStatus": "confirmed",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        }
+      ]
+    }
+  ],
+  "severity": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "24484000",
+        "display": "Severe"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "73430006",
+        "display": "Sleep Apnea"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/2"
+  },
+  "context": {
+    "reference": "Encounter/1"
+  },
+  "assertedDate": "2017-06-27T00:00:00+01:00",
+  "asserter": {
+    "reference": "Practitioner/3"
+  }
+}

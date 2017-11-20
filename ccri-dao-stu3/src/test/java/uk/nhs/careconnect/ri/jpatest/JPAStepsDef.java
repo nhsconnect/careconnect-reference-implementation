@@ -62,6 +62,9 @@ public class JPAStepsDef {
     EncounterRepository encounterRepository;
 
     @Autowired
+    ConditionRepository conditionRepository;
+
+    @Autowired
     PractitionerRoleRepository practitionerRoleRepository;
 
     @Autowired
@@ -82,6 +85,8 @@ public class JPAStepsDef {
     List<Organization> organizationList = null;
 
     List<Encounter> encounterList = null;
+
+    List<Condition> conditionList = null;
 
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
@@ -303,12 +308,12 @@ public class JPAStepsDef {
 
     @Given("^I search for Practitioners by SDSId (\\w+)$")
     public void i_search_for_Practitioners_by_SDSId_S(String Id) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null,null);
+        practitionerList = practitionerRepository.searchPractitioner(ctx, new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null,null);
     }
 
     @Given("^I search for Practitioners by name (\\w+)$")
     public void i_search_for_Practitioners_by_name_Bhatia(String name) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(null,new StringParam(name),null);
+        practitionerList = practitionerRepository.searchPractitioner(ctx,null,new StringParam(name),null);
     }
 
 
@@ -377,7 +382,7 @@ public class JPAStepsDef {
 
     @Then("^save the PractitionerRole$")
     public void save_the_PractitionerRole() throws Throwable {
-       practitionerRoleRepository.create(practitionerRole,null,null);
+       practitionerRoleRepository.create(ctx, practitionerRole,null,null);
     }
 
     @Then("^save the Observation$")
@@ -445,7 +450,7 @@ public class JPAStepsDef {
 
     @Given("^I have one Encounter resource loaded$")
     public void i_have_one_Encounter_resource_loaded() throws Throwable {
-
+        assertNotNull(encounterRepository.read(ctx,new IdType(1)));
     }
 
     @When("^I update this Encounter$")
@@ -453,7 +458,7 @@ public class JPAStepsDef {
 
 
         InputStream inputStream =
-                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/EncounterExample.json");
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/EncounterExampleTwo.json");
         assertNotNull(inputStream);
         Reader reader = new InputStreamReader(inputStream);
 
@@ -471,9 +476,47 @@ public class JPAStepsDef {
     }
 
     @Then("^I should get a Bundle of Encounter (\\d+) resource$")
-    public void i_should_get_a_Bundle_of_Encounter_resource(int arg1) throws Throwable {
-        assertEquals(1,encounterList.size());
+    public void i_should_get_a_Bundle_of_Encounter_resource(int count) throws Throwable {
+        assertEquals(count,encounterList.size());
     }
+
+    @Given("^I have one Condition resource loaded$")
+    public void i_have_one_Condition_resource_loaded() throws Throwable {
+        assertNotNull(conditionRepository.read(ctx,new IdType(1)));
+    }
+
+    @When("^I search Condition on Patient ID = (\\d+)$")
+    public void i_search_Condition_on_Patient_ID(int patient) throws Throwable {
+        conditionList = conditionRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null);
+    }
+
+    @Then("^I should get a Bundle of Condition (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Condition_resource(int count) throws Throwable {
+        assertEquals(count,conditionList.size());
+    }
+
+    @When("^I update this Condition$")
+    public void i_update_this_Condition() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ConditionExampleTwo.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        Condition condition = ctx.newJsonParser().parseResource(Condition.class, reader);
+        try {
+            condition = conditionRepository.create(ctx,condition,null,"Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" +condition.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Then("^the results should be a list of CareConnect Conditions$")
+    public void the_results_should_be_a_list_of_CareConnect_Conditions() throws Throwable {
+        for (Condition condition: conditionList) {
+            validateResource(condition);
+        }
+    }
+
 
 
     private void validateResource(Resource resource) {
@@ -543,6 +586,19 @@ public class JPAStepsDef {
             concept.setCodeSystem(cs);
             concept.setCode("86290005");
             conceptDao.save(concept);
+/*
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("24484000");
+            conceptDao.save(concept);
+*/
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("73430006");
+            conceptDao.save(concept);
+
+
+
 
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Vital-Body-Mass-Example.json");
@@ -589,6 +645,18 @@ public class JPAStepsDef {
             Encounter encounter = ctx.newJsonParser().parseResource(Encounter.class, reader);
             try {
                 encounter = encounterRepository.create(ctx,encounter,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ConditionExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            Condition condition = ctx.newJsonParser().parseResource(Condition.class, reader);
+            try {
+                condition = conditionRepository.create(ctx,condition,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

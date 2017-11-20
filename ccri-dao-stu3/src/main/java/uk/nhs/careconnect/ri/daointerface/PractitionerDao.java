@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -47,12 +48,12 @@ public class PractitionerDao implements PractitionerRepository {
     }
     private static final Logger log = LoggerFactory.getLogger(PractitionerDao.class);
 
-    public void save(PractitionerEntity practitioner)
+    public void save(FhirContext ctx, PractitionerEntity practitioner)
     {
         em.persist(practitioner);
     }
 
-    public Practitioner read(IdType theId) {
+    public Practitioner read(FhirContext ctx, IdType theId) {
         if (isNumeric(theId.getIdPart())) {
             PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -65,7 +66,7 @@ public class PractitionerDao implements PractitionerRepository {
         }
     }
 
-    public PractitionerEntity readEntity(IdType theId) {
+    public PractitionerEntity readEntity(FhirContext ctx, IdType theId) {
 
         PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Long.parseLong(theId.getIdPart()));
 
@@ -73,7 +74,7 @@ public class PractitionerDao implements PractitionerRepository {
     }
 
     @Override
-    public Practitioner create(Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional){
+    public Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional){
         PractitionerEntity practitionerEntity = null;
 
         if (practitioner.hasId()) {
@@ -93,7 +94,7 @@ public class PractitionerDao implements PractitionerRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<PractitionerEntity> results = searchPractitionerEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null,null);
+                    List<PractitionerEntity> results = searchPractitionerEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null,null);
                     for (PractitionerEntity org : results) {
                         practitionerEntity = org;
                         break;
@@ -207,7 +208,7 @@ public class PractitionerDao implements PractitionerRepository {
 
 
     @Override
-    public List<PractitionerEntity> searchPractitionerEntity(
+    public List<PractitionerEntity> searchPractitionerEntity(FhirContext ctx,
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
@@ -298,13 +299,13 @@ public class PractitionerDao implements PractitionerRepository {
 
     }
     @Override
-    public List<Practitioner> searchPractitioner(
+    public List<Practitioner> searchPractitioner(FhirContext ctx,
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
         List<Practitioner> results = new ArrayList<>();
-        List<PractitionerEntity> qryResults = searchPractitionerEntity(identifier, name,postCode);
+        List<PractitionerEntity> qryResults = searchPractitionerEntity(ctx, identifier, name,postCode);
         for (PractitionerEntity practitionerEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());

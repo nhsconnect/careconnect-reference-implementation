@@ -19,6 +19,8 @@ public interface EncounterRepository {
 
     Encounter read(FhirContext ctx, IdType theId);
 
+    EncounterEntity readEntity(FhirContext ctx, IdType theId);
+
     Encounter create(FhirContext ctx,Encounter encounter, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 

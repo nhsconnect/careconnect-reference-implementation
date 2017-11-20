@@ -181,7 +181,7 @@ public class PatientDao implements PatientRepository {
             }
         }
         if (patient.hasGeneralPractitioner()) {
-            PractitionerEntity practitionerEntity = practitionerDao.readEntity(new IdType(patient.getGeneralPractitioner().get(0).getReference()));
+            PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(patient.getGeneralPractitioner().get(0).getReference()));
             if (practitionerEntity != null) {
                 patientEntity.setGp(practitionerEntity);
             }

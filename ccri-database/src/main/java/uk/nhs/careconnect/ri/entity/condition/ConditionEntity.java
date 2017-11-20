@@ -41,6 +41,10 @@ public class ConditionEntity extends BaseResource {
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
     private ConceptEntity code;
 
+    @ManyToOne
+    @JoinColumn (name = "SEVERITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_SEVERITY_CODE"))
+    private ConceptEntity severity;
+
     @Enumerated(EnumType.ORDINAL)
     @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID")
     private Condition.ConditionClinicalStatus clinicalStatus;
@@ -169,6 +173,15 @@ public class ConditionEntity extends BaseResource {
 
     public ConditionEntity setVerificationStatus(Condition.ConditionVerificationStatus verificationStatus) {
         this.verificationStatus = verificationStatus;
+        return this;
+    }
+
+    public ConceptEntity getSeverity() {
+        return severity;
+    }
+
+    public ConditionEntity setSeverity(ConceptEntity severity) {
+        this.severity = severity;
         return this;
     }
 }

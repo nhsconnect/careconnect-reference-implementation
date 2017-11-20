@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -24,6 +25,10 @@ public class PractitionerProvider implements IResourceProvider {
     @Autowired
     private PractitionerRepository practitionerDao;
 
+    @Autowired
+    FhirContext ctx;
+
+
     @Override
     public Class<Practitioner> getResourceType() {
         return Practitioner.class;
@@ -41,7 +46,7 @@ public class PractitionerProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Practitioner newPractitioner = practitionerDao.create(practitioner, theId, theConditional);
+        Practitioner newPractitioner = practitionerDao.create(ctx,practitioner, theId, theConditional);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);
 
@@ -52,7 +57,7 @@ public class PractitionerProvider implements IResourceProvider {
     @Read
     public Practitioner getPractitioner
             (@IdParam IdType internalId) {
-        Practitioner practitioner = practitionerDao.read(internalId);
+        Practitioner practitioner = practitionerDao.read(ctx, internalId);
 
         if ( practitioner == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -69,7 +74,7 @@ public class PractitionerProvider implements IResourceProvider {
                                                                   @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
-        return practitionerDao.searchPractitioner(identifier, name ,postCode);
+        return practitionerDao.searchPractitioner(ctx, identifier, name ,postCode);
     }
 
 

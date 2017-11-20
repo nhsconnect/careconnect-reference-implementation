@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -12,20 +13,20 @@ import java.util.List;
 
 public interface PractitionerRoleRepository {
 
-    void save(uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole practitioner);
+    void save(FhirContext ctx, uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole practitioner);
 
-    PractitionerRole read(IdType theId);
+    PractitionerRole read(FhirContext ctx, IdType theId);
 
-    uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole readEntity(IdType theId);
+    uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole readEntity(FhirContext ctx, IdType theId);
 
-    PractitionerRole create(PractitionerRole practitionerRole, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    PractitionerRole create(FhirContext ctx, PractitionerRole practitionerRole, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
-    List<PractitionerRole> search(
+    List<PractitionerRole> search(FhirContext ctx,
             @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
             @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
     );
-    List<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole> searchEntity(
+    List<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole> searchEntity(FhirContext ctx,
             @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
             @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation

@@ -71,6 +71,12 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
         if (conditionEntity.getAssertedDateTime() != null) {
             condition.setAssertedDate(conditionEntity.getAssertedDateTime());
         }
+        if (conditionEntity.getSeverity() != null) {
+            condition.getSeverity().addCoding()
+                    .setCode(conditionEntity.getSeverity().getCode())
+                    .setDisplay(conditionEntity.getSeverity().getDisplay())
+                    .setSystem(conditionEntity.getSeverity().getSystem());
+        }
         for (ConditionCategory category : conditionEntity.getCategories()) {
             condition.addCategory().addCoding()
                     .setCode(category.getCategory().getCode())

@@ -5,8 +5,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +26,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -37,6 +38,21 @@ public class ConditionDao implements ConditionRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    ConceptRepository conceptDao;
+
+    @Autowired
+    PatientRepository patientDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
+
+    @Autowired
+    EncounterRepository encounterDao;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
 
     @Autowired
     ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
@@ -65,10 +81,145 @@ public class ConditionDao implements ConditionRepository {
             return null;
         }
     }
+    @Override
+    public ConditionEntity readEntity(FhirContext ctx,IdType theId) {
+        if (isNumeric(theId.getIdPart())) {
+            ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
+
+            return condition;
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public Condition create(FhirContext ctx,Condition condition, IdType theId, String theConditional) {
-        return null;
+
+        log.debug("Condition.save");
+        //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
+        ConditionEntity conditionEntity = null;
+
+        if (condition.hasId()) conditionEntity = readEntity(ctx, condition.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/condition")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<ConditionEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/condition"));
+                    for (ConditionEntity con : results) {
+                        conditionEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (conditionEntity == null) conditionEntity = new ConditionEntity();
+
+
+        PatientEntity patientEntity = null;
+        if (condition.hasSubject()) {
+            log.trace(condition.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(condition.getSubject().getReference()));
+            conditionEntity.setPatient(patientEntity);
+        }
+        if (condition.hasClinicalStatus()) {
+            conditionEntity.setClinicalStatus(condition.getClinicalStatus());
+        }
+        if (condition.hasVerificationStatus()) {
+            conditionEntity.setVerificationStatus(condition.getVerificationStatus());
+        }
+        if (condition.hasSeverity()) {
+            ConceptEntity code = conceptDao.findCode(condition.getSeverity().getCoding().get(0).getSystem(),condition.getSeverity().getCoding().get(0).getCode());
+            if (code != null) { conditionEntity.setSeverity(code); }
+            else {
+                log.error("Severity Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing Severity System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+            }
+        }
+        if (condition.hasCode()) {
+            ConceptEntity code = conceptDao.findCode(condition.getCode().getCoding().get(0).getSystem(),condition.getCode().getCoding().get(0).getCode());
+            if (code != null) { conditionEntity.setCode(code); }
+            else {
+                log.error("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
+            }
+        }
+        if (condition.hasAssertedDate()) {
+            conditionEntity.setAssertedDateTime(condition.getAssertedDate());
+        }
+        if (condition.hasContext() && condition.getContext().getReference().contains("Encounter")) {
+            EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(condition.getContext().getReference()));
+            conditionEntity.setContextEncounter(encounterEntity);
+        }
+        if (condition.hasAsserter() && condition.getAsserter().getReference().contains("Practitioner")) {
+            PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(condition.getAsserter().getReference()));
+            conditionEntity.setAsserterPractitioner(practitionerEntity);
+        }
+
+
+
+
+        em.persist(conditionEntity);
+
+        for (Identifier identifier : condition.getIdentifier()) {
+            ConditionIdentifier conditionIdentifier = null;
+
+            for (ConditionIdentifier orgSearch : conditionEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    conditionIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (conditionIdentifier == null)  conditionIdentifier = new ConditionIdentifier();
+
+            conditionIdentifier.setValue(identifier.getValue());
+            conditionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            conditionIdentifier.setCondition(conditionEntity);
+            em.persist(conditionIdentifier);
+        }
+
+        for (CodeableConcept concept :condition.getCategory()) {
+            ConditionCategory conditionCategory = null;
+
+            for (ConditionCategory catSearch : conditionEntity.getCategories()) {
+                if (catSearch.getCategory().getCode().equals(catSearch.getCategory().getCode()) && catSearch.getCategory().getSystem().equals(catSearch.getCategory().getSystem())) {
+                    conditionCategory = catSearch;
+                    break;
+                }
+            }
+            if (conditionCategory == null)  conditionCategory = new ConditionCategory();
+
+            ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0).getSystem(),concept.getCoding().get(0).getCode());
+            if (code != null) {
+                conditionCategory.setCategory(code);
+                conditionCategory.setCondition(conditionEntity);
+                em.persist(conditionCategory);
+            }
+            else {
+                log.error("Category Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing Category System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+            }
+        }
+
+        return conditionEntityToFHIRConditionTransformer.transform(conditionEntity);
     }
 
 
