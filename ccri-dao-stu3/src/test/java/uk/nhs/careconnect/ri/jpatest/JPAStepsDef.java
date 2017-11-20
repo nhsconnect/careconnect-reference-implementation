@@ -68,6 +68,10 @@ public class JPAStepsDef {
     PractitionerRoleRepository practitionerRoleRepository;
 
     @Autowired
+    AllergyIntoleranceRepository allergyIntoleranceRepository;
+
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -92,6 +96,8 @@ public class JPAStepsDef {
     List<Location> locationList = null;
 
     List<Observation> observationList = null;
+
+    List<AllergyIntolerance> allergyList = null;
 
     Transaction tx;
 
@@ -448,6 +454,12 @@ public class JPAStepsDef {
         observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null);
     }
 
+    /*
+
+    ENCOUNTER
+
+     */
+
     @Given("^I have one Encounter resource loaded$")
     public void i_have_one_Encounter_resource_loaded() throws Throwable {
         assertNotNull(encounterRepository.read(ctx,new IdType(1)));
@@ -480,6 +492,12 @@ public class JPAStepsDef {
         assertEquals(count,encounterList.size());
     }
 
+
+    /*
+
+    CONDITION
+
+     */
     @Given("^I have one Condition resource loaded$")
     public void i_have_one_Condition_resource_loaded() throws Throwable {
         assertNotNull(conditionRepository.read(ctx,new IdType(1)));
@@ -516,6 +534,49 @@ public class JPAStepsDef {
             validateResource(condition);
         }
     }
+
+    /*
+
+    ALLERGY INTOLERANCE
+
+     */
+
+    @Given("^I have one AllergyIntolerance resource loaded$")
+    public void i_have_one_AllergyIntolerance_resource_loaded() throws Throwable {
+        assertNotNull(allergyIntoleranceRepository.read(ctx,new IdType(1)));
+    }
+
+    @When("^I search AllergyIntolerance on Patient ID = (\\d+)$")
+    public void i_search_AllergyIntolerance_on_Patient_ID(int patient) throws Throwable {
+        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+    }
+    @Then("^I should get a Bundle of AllergyIntolerance (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_AllergyIntolerance_resource(int count) throws Throwable {
+        assertEquals(count,allergyList.size());
+    }
+
+    @Then("^the results should be a list of CareConnect AllergyIntolerance resources$")
+    public void the_results_should_be_a_list_of_CareConnect_AllergyIntolerance_resources() throws Throwable {
+        for (AllergyIntolerance allergy: allergyList) {
+            validateResource(allergy);
+        }
+    }
+
+    @When("^I update this AllergyIntolerance$")
+    public void i_update_this_AllergyIntolerance() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/AllergyIntoleranceExampleTwo.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        AllergyIntolerance allergy = ctx.newJsonParser().parseResource(AllergyIntolerance.class, reader);
+        try {
+            allergy = allergyIntoleranceRepository.create(ctx,allergy,null,"AllergyIntolerance?identifier=" + allergy.getIdentifier().get(0).getSystem() + "%7C" +allergy.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
 
 
 
@@ -586,12 +647,12 @@ public class JPAStepsDef {
             concept.setCodeSystem(cs);
             concept.setCode("86290005");
             conceptDao.save(concept);
-/*
+
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
-            concept.setCode("24484000");
+            concept.setCode("722071008");
             conceptDao.save(concept);
-*/
+
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
             concept.setCode("73430006");
@@ -657,6 +718,18 @@ public class JPAStepsDef {
             Condition condition = ctx.newJsonParser().parseResource(Condition.class, reader);
             try {
                 condition = conditionRepository.create(ctx,condition,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/AllergyIntoleranceExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            AllergyIntolerance allergy = ctx.newJsonParser().parseResource(AllergyIntolerance.class, reader);
+            try {
+                allergy = allergyIntoleranceRepository.create(ctx,allergy,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

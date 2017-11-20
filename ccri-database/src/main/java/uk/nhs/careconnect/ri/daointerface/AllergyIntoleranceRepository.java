@@ -18,6 +18,8 @@ public interface AllergyIntoleranceRepository {
 
     AllergyIntolerance read(FhirContext ctx, IdType theId);
 
+    AllergyIntoleranceEntity readEntity(FhirContext ctx, IdType theId);
+
     AllergyIntolerance create(FhirContext ctx,AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
@@ -26,6 +28,7 @@ public interface AllergyIntoleranceRepository {
             @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
+            , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
 
     );
 
@@ -33,5 +36,6 @@ public interface AllergyIntoleranceRepository {
             @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
+            , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
     );
 }

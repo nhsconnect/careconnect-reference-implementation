@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class   UploadExamples extends BaseCommand {
@@ -92,6 +93,10 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         options.addOption(opt);
 
         opt = new Option("c", "condition", false, "Condition Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("allergy", "allergyintolerance", false, "AllergyIntolerance Examples upload files");
         opt.setRequired(false);
         options.addOption(opt);
 
@@ -209,7 +214,31 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     ourLog.error(ex.getMessage());
                 }
             }
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("allergy")) {
+                try {
+                    System.out.println("AllergyIntolerance.csv");
 
+                    IRecordHandler handler = null;
+
+                    handler = new AllergyHandler();
+                    processAllergyCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/AllergyIntolerance.csv"));
+                    for (IBaseResource resource : resources) {
+                        AllergyIntolerance allergy = (AllergyIntolerance) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("AllergyIntolerance?identifier=" + allergy.getIdentifier().get(0).getSystem() + "%7C" +allergy.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            allergy.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
             /* Developer loads - remove for now
             try {
                 File file = new File(classLoader.getResource("Examples/observations").getFile());
@@ -443,6 +472,61 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 ,"resource.type"
                                 ,"participent.individual"
                                 ,"serviceProvider"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processAllergyCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("identifier"
+                                ,"encounter"
+                                ,"patient"
+                                ,"substance.coding.code"
+                                ,"substance.coding.display"
+                                ,"clinicalStatus"
+                                ,"verificationStatus"
+                                ,"onset.DateTime"
+                                ,"assertedDate"
+                                ,"recorder"
+                                ,"lastOccurrence"
+
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -990,8 +1074,139 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 //System.out.println("****** severity.code.coding.code = " + theRecord.get("severity.code.coding.code"));
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(condition));
+            //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(condition));
             resources.add(condition);
+        }
+    }
+
+    public class AllergyHandler implements  IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            AllergyIntolerance allergy = new AllergyIntolerance();
+
+            allergy.addIdentifier()
+                    .setSystem("https://fhir.leedsth.nhs.uk/Id/allergy")
+                    .setValue(theRecord.get("identifier"));
+
+            allergy.setPatient(new Reference("Patient/" + theRecord.get("patient")));
+
+          //  AllergyIntolerance.AllergyIntoleranceReactionComponent reaction = allergy.addReaction();
+            if (!theRecord.get("substance.coding.code").isEmpty()) {
+                allergy.getCode().addCoding()
+                        .setCode(theRecord.get("substance.coding.code"))
+                        .setDisplay(theRecord.get("substance.coding.display"))
+                        .setSystem(CareConnectSystem.SNOMEDCT);
+            }
+
+            if (!theRecord.get("clinicalStatus").isEmpty()) {
+                switch (theRecord.get("clinicalStatus")) {
+                    case "Active":
+                        allergy.setClinicalStatus(AllergyIntolerance.AllergyIntoleranceClinicalStatus.ACTIVE);
+                        break;
+                    case "Inactive" :
+                        allergy.setClinicalStatus(AllergyIntolerance.AllergyIntoleranceClinicalStatus.INACTIVE);
+                        break;
+                    case "Resolved" :
+                        allergy.setClinicalStatus(AllergyIntolerance.AllergyIntoleranceClinicalStatus.RESOLVED);
+                        break;
+                    default :
+                        System.out.println("***** clinicalStatus = "+theRecord.get("clinicalStatus"));
+
+                }
+            }
+
+            if (!theRecord.get("verificationStatus").isEmpty()) {
+                switch (theRecord.get("verificationStatus")) {
+                    case "Unconfirmed":
+                        allergy.setVerificationStatus(AllergyIntolerance.AllergyIntoleranceVerificationStatus.UNCONFIRMED);
+                        break;
+                    case "Confirmed" :
+                        allergy.setVerificationStatus(AllergyIntolerance.AllergyIntoleranceVerificationStatus.CONFIRMED);
+                        break;
+                    case "Refuted" :
+                        allergy.setVerificationStatus(AllergyIntolerance.AllergyIntoleranceVerificationStatus.REFUTED);
+                        break;
+                    case "Entered-In-Error" :
+                        allergy.setVerificationStatus(AllergyIntolerance.AllergyIntoleranceVerificationStatus.ENTEREDINERROR);
+                        break;
+                    default :
+                        System.out.println("***** verificationStatus = "+theRecord.get("verificationStatus"));
+
+                }
+            }
+
+            if (!theRecord.get("onset.DateTime").isEmpty()) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+                    allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
+                } catch (Exception e) {
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+
+                        allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
+                    } catch (Exception e1) {
+                        try {
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy");
+
+                            allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
+                        } catch (Exception e2) {
+
+                        }
+                    }
+
+                }
+            }
+
+            if (!theRecord.get("assertedDate").isEmpty()) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+                    allergy.setAssertedDate(format.parse(theRecord.get("assertedDate")));
+                } catch (Exception e) {
+
+
+                }
+            }
+
+            if (!theRecord.get("lastOccurrence").isEmpty()) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+                    allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
+                } catch (Exception e) {
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+
+                        allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
+                    } catch (Exception e1) {
+                        try {
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy");
+
+                            allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
+                        } catch (Exception e2) {
+
+                        }
+                    }
+                }
+            }
+            if (!theRecord.get("recorder").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Practitioner.class)
+                        .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("recorder")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+                //   System.out.println(results.getEntry().size());
+                if (results.getEntry().size() > 0) {
+                    Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
+
+                    allergy.setAsserter(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                }
+            }
+
+            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
+            resources.add(allergy);
         }
     }
     public class PatientHandler implements  IRecordHandler {

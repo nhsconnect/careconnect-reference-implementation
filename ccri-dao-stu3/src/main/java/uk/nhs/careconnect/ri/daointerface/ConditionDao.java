@@ -159,7 +159,8 @@ public class ConditionDao implements ConditionRepository {
             else {
                 log.error("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem()
+                        +" code = "+condition.getCode().getCoding().get(0).getCode());
             }
         }
         if (condition.hasAssertedDate()) {

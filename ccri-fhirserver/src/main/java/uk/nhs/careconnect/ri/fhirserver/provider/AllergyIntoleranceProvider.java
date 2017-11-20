@@ -63,8 +63,9 @@ public class AllergyIntoleranceProvider implements IResourceProvider {
                                            @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
+            , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
     ) {
-        return allergyDao.search(ctx,patient, date, clinicalStatus);
+        return allergyDao.search(ctx,patient, date, clinicalStatus,identifier);
     }
 
     @Read()

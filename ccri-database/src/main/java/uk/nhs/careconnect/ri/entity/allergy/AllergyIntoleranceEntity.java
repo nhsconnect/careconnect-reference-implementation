@@ -90,6 +90,12 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceReaction.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<AllergyIntoleranceReaction> reactions = new ArrayList<>();
+
+
+
+    @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private List<AllergyIntoleranceIdentifier> identifiers = new ArrayList<>();
     
     public Long getId() {
         return id;
@@ -240,5 +246,14 @@ public class AllergyIntoleranceEntity extends BaseResource {
     public AllergyIntoleranceEntity setReactions(List<AllergyIntoleranceReaction> reactions) {
         this.reactions = reactions;
         return this;
+    }
+
+    public List<AllergyIntoleranceIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public AllergyIntoleranceEntity setIdentifiers(List<AllergyIntoleranceIdentifier> identifiers) {
+        this.identifiers = identifiers;
+        return  this;
     }
 }
