@@ -12,11 +12,6 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 @Component
 public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<ProcedureEntity, Procedure> {
 
-    private final Transformer<BaseAddress, Address> addressTransformer;
-
-    public ProcedureEntityToFHIRProcedureTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
-        this.addressTransformer = addressTransformer;
-    }
 
     @Override
     public Procedure transform(final ProcedureEntity procedureEntity) {

@@ -53,5 +53,9 @@ SET @CONCEPT = null;
 SELECT CONCEPT_ID INTO @CONCEPT FROM careconnect.Concept where CODE = '91175000' ;
 update `AllergyIntoleranceManifestation` set `MANIFESTATION_CONCEPT_ID`= @CONCEPT where ALLERGY_MANIFESTATION_ID = 2;
 
+SET @CONCEPT = null;
+SELECT CONCEPT_ID INTO @CONCEPT FROM careconnect.Concept where CODE = '396429000' ;
+update `Immunisation` set `MEDICATION_CODE_ID`= @CONCEPT where IMMUNISATION_ID = 1;
+
 
 

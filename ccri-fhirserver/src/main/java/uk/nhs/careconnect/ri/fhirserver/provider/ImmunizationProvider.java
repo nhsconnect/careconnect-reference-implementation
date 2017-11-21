@@ -64,8 +64,9 @@ public class ImmunizationProvider implements IResourceProvider {
                                           @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
     ){
-        return immunisationDao.search(ctx,patient,date, status);
+        return immunisationDao.search(ctx,patient,date, status, identifier);
     }
 
     @Read()

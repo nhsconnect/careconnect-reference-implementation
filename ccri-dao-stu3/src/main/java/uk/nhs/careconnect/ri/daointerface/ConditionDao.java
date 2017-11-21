@@ -59,9 +59,6 @@ public class ConditionDao implements ConditionRepository {
 
     private static final Logger log = LoggerFactory.getLogger(ConditionDao.class);
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
 
     @Override
     public void save(FhirContext ctx, ConditionEntity condition) {
@@ -71,7 +68,7 @@ public class ConditionDao implements ConditionRepository {
     @Override
     public Condition read(FhirContext ctx,IdType theId) {
 
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
 
             return condition == null
@@ -83,7 +80,7 @@ public class ConditionDao implements ConditionRepository {
     }
     @Override
     public ConditionEntity readEntity(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
 
             return condition;

@@ -13,11 +13,7 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 @Component
 public class EncounterEntityToFHIREncounterTransformer implements Transformer<EncounterEntity, Encounter> {
 
-    private final Transformer<BaseAddress, Address> addressTransformer;
 
-    public EncounterEntityToFHIREncounterTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
-        this.addressTransformer = addressTransformer;
-    }
 
     @Override
     public Encounter transform(final EncounterEntity encounterEntity) {

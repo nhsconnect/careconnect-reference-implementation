@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Immunization;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
@@ -18,6 +19,8 @@ public interface ImmunizationRepository {
 
     Immunization read(FhirContext ctx, IdType theId);
 
+    ImmunisationEntity readEntity(FhirContext ctx, IdType theId);
+
     Immunization create(FhirContext ctx,Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theImmunizational);
 
 
@@ -26,6 +29,7 @@ public interface ImmunizationRepository {
             @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
 
     );
 
@@ -33,5 +37,6 @@ public interface ImmunizationRepository {
             @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
     );
 }

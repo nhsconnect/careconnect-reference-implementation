@@ -54,9 +54,7 @@ public class PatientDao implements PatientRepository {
 
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
 
     @Transactional
     @Override
@@ -70,7 +68,7 @@ public class PatientDao implements PatientRepository {
     public Patient read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for patient = "+theId.getIdPart());
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             PatientEntity patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
 
             Patient patient = null;

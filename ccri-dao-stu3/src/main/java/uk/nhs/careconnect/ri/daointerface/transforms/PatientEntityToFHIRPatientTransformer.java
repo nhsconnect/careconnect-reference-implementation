@@ -5,6 +5,7 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.daointerface.daoutils;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.patient.*;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerName;
@@ -103,24 +104,10 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
         }
 
 
-        if (patientEntity.getGender() !=null)
-        {
-            switch (patientEntity.getGender())
-            {
-                case "MALE":
-                    patient.setGender(Enumerations.AdministrativeGender.MALE);
-                    break;
-                case "FEMALE":
-                    patient.setGender(Enumerations.AdministrativeGender.FEMALE);
-                    break;
-                case "OTHER":
-                    patient.setGender(Enumerations.AdministrativeGender.OTHER);
-                    break;
-                case "UNKNOWN":
-                    patient.setGender(Enumerations.AdministrativeGender.UNKNOWN);
-                    break;
-            }
+        if (patientEntity.getGender() !=null) {
+           patient.setGender(daoutils.getGender((patientEntity.getGender())));
         }
+
         if (patientEntity.getGP() != null && patientEntity.getGP().getNames().size() > 0) {
             PractitionerName gpName = patientEntity.getGP().getNames().get(0);
             patient.addGeneralPractitioner()

@@ -13,11 +13,6 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 @Component
 public class ConditionEntityToFHIRConditionTransformer implements Transformer<ConditionEntity, Condition> {
 
-    private final Transformer<BaseAddress, Address> addressTransformer;
-
-    public ConditionEntityToFHIRConditionTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
-        this.addressTransformer = addressTransformer;
-    }
 
     @Override
     public Condition transform(final ConditionEntity conditionEntity) {

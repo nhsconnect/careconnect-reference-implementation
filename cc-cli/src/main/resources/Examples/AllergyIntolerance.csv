@@ -1,37 +1,34 @@
-identifier,encounter,patient,substance.coding.code,substance.coding.display,clinicalStatus,verificationStatus,onset.DateTime,assertedDate,recorder,lastOccurrence
-100001,100B,1003,264299001,Detergent ,Active,Confirmed,1941-03,2017-10-17,C6094282,
-100002,1011,1006,264299001,Detergent ,Inactive,Confirmed,2000-01,2016-04-06,,
-100003,1018,1008,256349002,Peanut - dietary ,Active,Confirmed,2009-02,2015-05-04,C4328847,
-100004,101B,1008,227146005,Shellfish - dietary,Inactive,Confirmed,1979-03,2017-09-30,,
-100005,1035,1017,720687003,Dust mite protein ,Resolved,Confirmed,2015,2017-10-16,,
-100006,103B,1018,410986002,Grass pollen allergen,Active,Confirmed,2010,2017-09-28,,2014
-100007,103D,1018,256349002,Peanut - dietary ,Active,Unconfirmed,1998,2017-10-16,C3124774,
-100008,1048,1023,160244002,No known allergies,,Entered-In-Error,,2015-09-07,,
-100009,104F,1026,720687003,Dust mite protein ,Active,Confirmed,1983-05,2017-10-16,C2650407,
-10000A,1056,1028,722071008,Mould antigen,Active,Confirmed,1982,2017-09-13,,
-10000B,1067,1032,410986002,Grass pollen allergen,Active,Confirmed,2010,2017-10-12,,2012
-10000C,1082,1039,387207008,Ibuprofen,Resolved,Unconfirmed,2017,2017-10-19,C4105215,
-10000D,1085,1041,227146005,Shellfish - dietary,Active,Confirmed,2011,2017-08-27,,
-10000E,1089,1041,3718001,Cow's Milk,Active,Confirmed,2013,2017-10-19,,
-10000F,108A,1042,160244002,No known allergies,,Entered-In-Error,,2015-06-01,,
-100010,1094,1044,3718001,Cow's Milk,Active,Confirmed,1968-07,2015-03-09,,1974-05-04
-100011,109B,1044,264287008,Animal dander ,Inactive,Confirmed,1966-06,2017-10-19,,
-100012,10A0,1046,255774009,Latex protein,Active,Unconfirmed,2017-09,2017-10-17,C3310906,2017
-100013,10A4,1047,160244002,No known allergies,,Entered-In-Error,,2014-10-10,C5205660,
-100014,10AC,1048,160244002,No known allergies,,Confirmed,,2014-03-02,,
-100015,10C4,1053,160244002,No known allergies,,Confirmed,,2017-10-09,,
-100016,10CD,1057,255774009,Latex protein,Active,Confirmed,2014,2017-09-26,C6056662,
-100017,10EE,1064,387207008,Ibuprofen,Active,Confirmed,1996,2017-10-16,,2000-01
-100018,10F0,1064,125579000,Hymenoptera venom ,,Confirmed,1981,2017-10-19,,
-100019,10F1,1066,160244002,No known allergies,,Confirmed,,2015-10-17,,
-10001A,10FF,1073,410986002,Grass pollen allergen,Active,Unconfirmed,2000,2017-10-13,,2002-07
-10001B,1108,1076,227146005,Shellfish - dietary,Active,Confirmed,1980,2016-04-12,C2575946,1987-04
-10001C,1118,1080,125579000,Hymenoptera venom ,Active,Confirmed,2011-08-10,2017-08-17,C4543055,
-10001D,111D,1081,264299001,Detergent ,Active,Confirmed,1992-11-19,2017-09-20,C6128434,
-10001E,111F,1083,410986002,Grass pollen allergen,Active,Confirmed,2012,2016-10-21,,2015
-10001F,1123,1083,722071008,Mould antigen,Inactive,Entered-In-Error,2009,2017-10-12,,2015
-100020,1126,1084,160244002,No known allergies,,Confirmed,,2016-05-07,C3587654,
-100021,1132,1086,722071008,Mould antigen,Active,Confirmed,2016,2017-04-13,C4640952,
-100022,114D,1096,160244002,No known allergies,,Confirmed,,2017-09-11,C4576444,
-100023,114F,1097,160244002,No known allergies,,Unconfirmed,,2017-08-15,,
-100024,115A,1098,160244002,No known allergies,,Confirmed,,2017-10-17,,
+identifier,encounter,patient,code,,clinicalStatus,verificationStatus,onset.DateTime,assertedDate,recorder,lastOccurrence
+100001,1007,1002,722071008,Mould antigen,Inactive,Confirmed,2007,2017-10-13,,
+100002,100A,1003,3718001,Cow's Milk,Active,Confirmed,1928,2017-09-16,C4767389,
+100003,101D,1008,720687003,Dust mite protein ,Active,Unconfirmed,1975-03,2017-10-17,C2338433,
+100004,102E,1013,160244002,No known allergies,Active,Confirmed,,2017-10-17,,
+100005,1035,1017,373270004,Penicillin -class of antibiotic-,Active,Confirmed,2014,2017-10-16,,
+100006,103E,1018,160244002,No known allergies,Inactive,Confirmed,,2017-10-18,,
+100007,1051,1026,160244002,No known allergies,,Entered-In-Error,,2017-10-19,C4328847,
+100008,1053,1027,373270004,Penicillin -class of antibiotic-,Active,Confirmed,1970-09,2017-01-02,C3296675,
+100009,105A,1029,102263004,Eggs (edible),Active,Confirmed,1955-07,2013-06-26,,1979-04
+10000A,105C,1030,256349002,Peanut - dietary ,Active,Confirmed,1961,2015-12-26,,
+10000B,105D,1031,160244002,No known allergies,Active,Confirmed,,2017-03-10,C4755713,
+10000C,106C,1035,102263004,Eggs (edible),Inactive,Confirmed,2012-05,2017-06-28,C4094984,2015-01
+10000D,106F,1035,125579000,Hymenoptera venom ,Active,Confirmed,2009,2017-10-16,,
+10000E,1096,1044,160244002,No known allergies,Active,Confirmed,,2017-08-31,C3330027,
+10000F,10A6,1047,255774009,Latex protein,Active,Unconfirmed,1999,2017-03-19,C5208977,
+100010,10B3,1048,160244002,No known allergies,Active,Confirmed,,2017-10-16,C3564585,
+100011,10C2,1052,255774009,Latex protein,Resolved,Confirmed,2002-08-06,2014-02-09,,
+100012,10D1,1057,160244002,No known allergies,Active,Unconfirmed,,2017-10-19,C3076376,
+100013,10ED,1064,264299001,Detergent ,Active,Confirmed,1962,2017-10-15,,
+100014,10EF,1064,3718001,Cow's Milk,Active,Confirmed,1999-03-07,2017-10-18,,
+100015,10FB,1073,255774009,Latex protein,Active,Unconfirmed,2003-08,2017-04-26,C1508925,
+100016,10FD,1073,720687003,Dust mite protein ,Active,Confirmed,1995,2017-09-27,,
+100017,1108,1076,160244002,No known allergies,Active,Confirmed,,2016-04-12,C2575946,
+100018,1114,1079,160244002,No known allergies,Inactive,Confirmed,,2017-10-17,C3003336,
+100019,111A,1081,722071008,Mould antigen,Active,Confirmed,1989,2016-12-31,,
+10001A,1124,1083,264287008,Animal dander ,Active,Confirmed,2017,2017-10-18,C3003336,
+10001B,112A,1084,373270004,Penicillin -class of antibiotic-,,Entered-In-Error,2012,2017-10-18,,
+10001C,1142,1093,160244002,No known allergies,Active,Confirmed,,2017-10-08,C3253337,
+10001D,1148,1094,102263004,Eggs (edible),Active,Unconfirmed,1996-01,2017-10-18,,
+10001E,114D,1096,160244002,No known allergies,Resolved,Confirmed,,2017-09-11,C4576444,
+10001F,1151,1097,410986002,Grass pollen allergen,Active,Confirmed,1973,2017-09-21,,
+100020,1157,1097,227146005,Shellfish - dietary,Active,Unconfirmed,2012,2017-10-19,,2014
+100021,1158,1098,410986002,Grass pollen allergen,Active,Confirmed,2006-11-06,2017-09-24,,2011-08

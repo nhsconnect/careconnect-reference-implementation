@@ -45,9 +45,7 @@ public class OrganisationDao implements OrganisationRepository {
     @Autowired
     private OrganisationEntityToFHIROrganizationTransformer organizationEntityToFHIROrganizationTransformer;
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
 
     private static final Logger log = LoggerFactory.getLogger(OrganisationDao.class);
 
@@ -57,7 +55,7 @@ public class OrganisationDao implements OrganisationRepository {
     }
 
     public Organization read(IdType theId) {
-        if (theId.getIdPart() != null && isNumeric(theId.getIdPart())) {
+        if (theId.getIdPart() != null && daoutils.isNumeric(theId.getIdPart())) {
             OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
 
             return organizationEntity == null

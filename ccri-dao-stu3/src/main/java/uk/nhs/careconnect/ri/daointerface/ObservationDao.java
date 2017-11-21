@@ -56,9 +56,7 @@ public class ObservationDao implements ObservationRepository {
     private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
 
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
 
     @Override
     public Observation save(FhirContext ctx, Observation observation) throws IllegalArgumentException {
@@ -361,7 +359,7 @@ public class ObservationDao implements ObservationRepository {
     public Observation read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for Observation = "+theId.getIdPart());
-        if (theId.getIdPart() != null && (isNumeric(theId.getIdPart()))) {
+        if (theId.getIdPart() != null && (daoutils.isNumeric(theId.getIdPart()))) {
             ObservationEntity observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
 
             Observation observation = null;

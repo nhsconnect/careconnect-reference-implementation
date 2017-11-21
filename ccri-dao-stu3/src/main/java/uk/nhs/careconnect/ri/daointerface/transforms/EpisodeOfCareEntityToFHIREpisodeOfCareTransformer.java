@@ -11,11 +11,6 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareIdentifier;
 @Component
 public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transformer<EpisodeOfCareEntity, EpisodeOfCare> {
 
-    private final Transformer<BaseAddress, Address> addressTransformer;
-
-    public EpisodeOfCareEntityToFHIREpisodeOfCareTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
-        this.addressTransformer = addressTransformer;
-    }
 
     @Override
     public EpisodeOfCare transform(final EpisodeOfCareEntity episodeEntity) {

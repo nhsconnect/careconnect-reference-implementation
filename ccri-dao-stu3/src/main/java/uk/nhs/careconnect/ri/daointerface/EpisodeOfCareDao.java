@@ -36,12 +36,9 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     public void save(FhirContext ctx, EpisodeOfCare episode) {
 
     }
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
     @Override
     public EpisodeOfCare read(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             EpisodeOfCareEntity episode = (EpisodeOfCareEntity) em.find(EpisodeOfCareEntity.class, Long.parseLong(theId.getIdPart()));
 
             return episode == null

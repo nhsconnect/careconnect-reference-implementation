@@ -51,9 +51,6 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     @Autowired
     private ConceptRepository codeDao;
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
     @Override
     public void save(FhirContext ctx, PractitionerRole practitioner) {
 
@@ -62,7 +59,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     @Override
     public org.hl7.fhir.dstu3.model.PractitionerRole read(FhirContext ctx, IdType theId) {
 
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             PractitionerRole roleEntity = (PractitionerRole) em.find(PractitionerRole.class, Long.parseLong(theId.getIdPart()));
             return roleEntity == null
                     ? null
@@ -209,7 +206,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         if (practitioner != null) {
             Join<PractitionerRole,PractitionerEntity> joinPractitioner = root.join("practitionerEntity",JoinType.LEFT);
             Predicate p = null;
-            if (isNumeric(practitioner.getIdPart())) {
+            if (daoutils.isNumeric(practitioner.getIdPart())) {
                 p = builder.equal(joinPractitioner.get("id"),practitioner.getIdPart());
             } else {
                 p = builder.equal(joinPractitioner.get("id"),-1);
@@ -220,7 +217,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         if (organisation != null) {
             Join<PractitionerRole,OrganisationEntity> joinOrganisation = root.join("managingOrganisation",JoinType.LEFT);
             Predicate p = null;
-            if (isNumeric(organisation.getIdPart())) {
+            if (daoutils.isNumeric(organisation.getIdPart())) {
                 p = builder.equal(joinOrganisation.get("id"), organisation.getIdPart());
             } else {
                 p = builder.equal(joinOrganisation.get("id"), -1);

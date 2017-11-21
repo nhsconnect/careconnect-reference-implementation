@@ -6,7 +6,6 @@ import org.hl7.fhir.dstu3.model.Condition;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -39,10 +38,12 @@ public class ConditionEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity code;
 
     @ManyToOne
     @JoinColumn (name = "SEVERITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_SEVERITY_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity severity;
 
     @Enumerated(EnumType.ORDINAL)

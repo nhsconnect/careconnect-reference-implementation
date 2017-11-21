@@ -71,12 +71,10 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     @Autowired
     AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
     @Override
     public AllergyIntolerance read(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             AllergyIntoleranceEntity allergyIntolerance = (AllergyIntoleranceEntity) em.find(AllergyIntoleranceEntity.class, Long.parseLong(theId.getIdPart()));
 
             return allergyIntolerance == null
@@ -89,7 +87,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
 
     @Override
     public AllergyIntoleranceEntity readEntity(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             AllergyIntoleranceEntity allergyIntolerance = (AllergyIntoleranceEntity) em.find(AllergyIntoleranceEntity.class, Long.parseLong(theId.getIdPart()));
             return allergyIntolerance;
         }

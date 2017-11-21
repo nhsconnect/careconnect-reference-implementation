@@ -42,9 +42,7 @@ public class RIValueSetRepository implements ValueSetRepository {
         em.persist(valueset);
     }
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
 
     ValueSet valueSet;
 
@@ -197,7 +195,7 @@ public class RIValueSetRepository implements ValueSetRepository {
 
         ValueSetEntity valueSetEntity = null;
         // Only look up if the id is numeric else need to do a search
-        if (isNumeric(theId.getValue())) {
+        if (daoutils.isNumeric(theId.getValue())) {
             valueSetEntity =(ValueSetEntity) em.find(ValueSetEntity.class, theId.getValue());
         }
 

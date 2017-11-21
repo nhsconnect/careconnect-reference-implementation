@@ -45,6 +45,7 @@ public class AllergyIntoleranceEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity code;
 
     @ManyToOne

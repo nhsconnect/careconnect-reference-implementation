@@ -8,6 +8,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.daointerface.daoutils;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -74,21 +75,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
 
         if (practitionerEntity.getGender() !=null)
         {
-            switch (practitionerEntity.getGender())
-            {
-                case "MALE":
-                    practitioner.setGender(Enumerations.AdministrativeGender.MALE);
-                    break;
-                case "FEMALE":
-                    practitioner.setGender(Enumerations.AdministrativeGender.FEMALE);
-                    break;
-                case "OTHER":
-                    practitioner.setGender(Enumerations.AdministrativeGender.OTHER);
-                    break;
-                case "UNKNOWN":
-                    practitioner.setGender(Enumerations.AdministrativeGender.UNKNOWN);
-                    break;
-            }
+            practitioner.setGender(daoutils.getGender(practitionerEntity.getGender()));
         }
 
         return practitioner;

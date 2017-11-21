@@ -5,20 +5,13 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceCategory;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceManifestation;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceReaction;
+import uk.nhs.careconnect.ri.entity.allergy.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer implements Transformer<AllergyIntoleranceEntity, AllergyIntolerance> {
 
-    private final Transformer<BaseAddress, Address> addressTransformer;
 
-    public AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
-        this.addressTransformer = addressTransformer;
-    }
 
     @Override
     public AllergyIntolerance transform(final AllergyIntoleranceEntity allergyEntity) {
@@ -122,6 +115,12 @@ public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer impleme
         }
         for (AllergyIntoleranceCategory categoryEntity : allergyEntity.getCategories()) {
             allergy.addCategory(categoryEntity.getCategory());
+        }
+
+        for (AllergyIntoleranceIdentifier identifier : allergyEntity.getIdentifiers()) {
+            allergy.addIdentifier()
+                .setSystem(identifier.getSystem().getUri())
+                .setValue(identifier.getValue());
         }
 
 

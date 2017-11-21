@@ -16,7 +16,6 @@ public interface ValueSetRepository {
 
     void save(ValueSetEntity valueset);
 
-    boolean isNumeric(String s);
 
     ValueSet create(ValueSet valueSet);
 

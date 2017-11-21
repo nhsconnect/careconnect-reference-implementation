@@ -36,9 +36,8 @@ public class ProcedureDao implements ProcedureRepository {
     ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(ProcedureDao.class);
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
+
     @Override
     public void save(FhirContext ctx, ProcedureEntity procedure) {
 
@@ -46,7 +45,7 @@ public class ProcedureDao implements ProcedureRepository {
 
     @Override
     public Procedure read(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             ProcedureEntity procedure = (ProcedureEntity) em.find(ProcedureEntity.class, Long.parseLong(theId.getIdPart()));
 
             return procedure == null

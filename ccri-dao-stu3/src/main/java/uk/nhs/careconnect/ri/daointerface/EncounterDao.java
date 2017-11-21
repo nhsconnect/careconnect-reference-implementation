@@ -65,9 +65,7 @@ public class  EncounterDao implements EncounterRepository {
 
     private static final Logger log = LoggerFactory.getLogger(EncounterDao.class);
 
-    public boolean isNumeric(String s) {
-        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
-    }
+
     @Override
     public void save(FhirContext ctx, EncounterEntity encounter) {
 
@@ -75,7 +73,7 @@ public class  EncounterDao implements EncounterRepository {
 
     @Override
     public Encounter read(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
 
             return encounter == null
@@ -88,7 +86,7 @@ public class  EncounterDao implements EncounterRepository {
 
     @Override
     public EncounterEntity readEntity(FhirContext ctx,IdType theId) {
-        if (isNumeric(theId.getIdPart())) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
             EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
 
             return encounter;
