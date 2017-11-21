@@ -169,30 +169,30 @@ public class ImmunizationDao implements ImmunizationRepository {
 
                 switch (dateParam.getPrefix()) {
                     case GREATERTHAN: {
-                        Predicate p = builder.greaterThan(root.<Date>get("administrationDateTime"), parameterLower);
+                        Predicate p = builder.greaterThan(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);
 
                         break;
                     }
                     case GREATERTHAN_OR_EQUALS: {
-                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("administrationDateTime"), parameterLower);
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case APPROXIMATE:
                     case EQUAL: {
 
-                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("administrationDateTime"), parameterLower);
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(plow);
                         break;
                     }
                     case NOT_EQUAL: {
-                        Predicate p = builder.notEqual(root.<Date>get("administrationDateTime"), parameterLower);
+                        Predicate p = builder.notEqual(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case STARTS_AFTER: {
-                        Predicate p = builder.greaterThan(root.<Date>get("administrationDateTime"), parameterLower);
+                        Predicate p = builder.greaterThan(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);
                         break;
 
@@ -210,19 +210,19 @@ public class ImmunizationDao implements ImmunizationRepository {
                 switch (dateParam.getPrefix()) {
                     case APPROXIMATE:
                     case EQUAL: {
-                        Predicate pupper = builder.lessThan(root.<Date>get("administrationDateTime"), parameterUpper);
+                        Predicate pupper = builder.lessThan(root.<Date>get("administrationDate"), parameterUpper);
                         predList.add(pupper);
                         break;
                     }
 
                     case LESSTHAN_OR_EQUALS: {
-                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("administrationDateTime"), parameterUpper);
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("administrationDate"), parameterUpper);
                         predList.add(p);
                         break;
                     }
                     case ENDS_BEFORE:
                     case LESSTHAN: {
-                        Predicate p = builder.lessThan(root.<Date>get("administrationDateTime"), parameterUpper);
+                        Predicate p = builder.lessThan(root.<Date>get("administrationDate"), parameterUpper);
                         predList.add(p);
 
                         break;

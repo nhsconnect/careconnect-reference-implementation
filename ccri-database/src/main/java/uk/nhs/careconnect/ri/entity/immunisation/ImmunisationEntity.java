@@ -26,6 +26,7 @@ public class ImmunisationEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_PATIENT"))
     private PatientEntity patient;
 
@@ -35,6 +36,7 @@ public class ImmunisationEntity extends BaseResource {
     private ConceptEntity vacinationCode;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ENCOUNTER"))
     private EncounterEntity encounter;
 

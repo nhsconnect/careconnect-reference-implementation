@@ -30,10 +30,12 @@ public class ProcedureEntity extends BaseResource {
 
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "BASED_ON_REFERRAL_REQUEST_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_REFERRAL_ID"))
     private ReferralRequestEntity basedOnReferral;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "PART_OF_PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_PROCEDURE"))
     private ProcedureEntity partOfProcedure;
 
@@ -46,14 +48,17 @@ public class ProcedureEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "NOT_DONE_REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_NOT_DONE_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity notDoneReason;
 
     @ManyToOne
     @JoinColumn (name = "CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_CATEGORY_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity category;
 
     @ManyToOne
     @JoinColumn (name = "CODE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity code;
 
     @ManyToOne
@@ -86,22 +91,27 @@ public class ProcedureEntity extends BaseResource {
     private LocationEntity location;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_CONCEPT"))
     private ConceptEntity reason;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "REASON_OBSERVATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_OBSERVATION"))
     private ObservationEntity reasonObservation;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "REASON_CONDITION",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_CONDITION"))
     private ConditionEntity reasonCondition;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_BODY_SITE_CONCEPT"))
     private ConceptEntity bodySite;
 
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "OUTCOME_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_OUTCOME_CONCEPT"))
     private ConceptEntity outcome;
 
