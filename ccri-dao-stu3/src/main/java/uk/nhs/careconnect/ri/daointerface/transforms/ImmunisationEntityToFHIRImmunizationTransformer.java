@@ -68,7 +68,7 @@ public class ImmunisationEntityToFHIRImmunizationTransformer implements Transfor
                     .getManufacturer().setDisplay(immunisationEntity.getOrganisation().getName());
         }
         if (immunisationEntity.getStatus() != null) {
-            immunisation.setStatus(immunisation.getStatus());
+            immunisation.setStatus(immunisationEntity.getStatus());
         }
         if (immunisationEntity.getValueQuantity() != null) {
             SimpleQuantity qty = new SimpleQuantity();
