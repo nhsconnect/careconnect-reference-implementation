@@ -48,6 +48,8 @@ public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer impleme
             .getAsserter().setDisplay(allergyEntity.getAsserterPractitioner().getNames().get(0).getDisplayName());
         }
         if (allergyEntity.getClinicalStatus() != null) {
+            // FHIR condition ait-2
+            if (allergyEntity.getVerificationStatus() == null || !allergyEntity.getVerificationStatus().equals(AllergyIntolerance.AllergyIntoleranceVerificationStatus.ENTEREDINERROR))
             allergy.setClinicalStatus(allergyEntity.getClinicalStatus());
         }
         if (allergyEntity.getCode() != null) {
