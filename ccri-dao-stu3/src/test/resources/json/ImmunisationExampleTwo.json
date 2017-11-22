@@ -1,0 +1,46 @@
+{
+  "resourceType": "Immunization",
+  "extension": [
+    {
+      "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-DateRecorded-1",
+      "valueDateTime": "1998-01-06T00:00:00+00:00"
+    },
+    {
+      "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-ParentPresent-1",
+      "valueBoolean": false
+    }
+  ],
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/immunisation",
+      "value": "268435496"
+    }
+  ],
+  "status": "completed",
+  "notGiven": false,
+  "vaccineCode": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "308081000000105",
+        "display": "MMR"
+      }
+    ]
+  },
+  "patient": {
+    "reference": "Patient/3"
+  },
+  "primarySource": true,
+  "reportOrigin": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/immunization-origin",
+        "code": "provider",
+        "display": "Provider"
+      }
+    ]
+  },
+  "location": {
+    "reference": "Location/1"
+  }
+}

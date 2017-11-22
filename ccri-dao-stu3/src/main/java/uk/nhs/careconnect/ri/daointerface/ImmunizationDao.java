@@ -5,7 +5,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.AllergyIntolerance;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.slf4j.Logger;
@@ -15,9 +15,12 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ImmunisationEntityToFHIRImmunizationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationIdentifier;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,6 +28,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -48,6 +52,9 @@ public class ImmunizationDao implements ImmunizationRepository {
 
     @Autowired
     EncounterRepository encounterDao;
+
+    @Autowired
+    LocationRepository locationDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -91,8 +98,120 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public Immunization create(FhirContext ctx,Immunization immunisation, IdType theId, String theImmunizational) {
-        return null;
+    public Immunization create(FhirContext ctx,Immunization immunisation, IdType theId, String theConditional) {
+        log.debug("Immunisation.save");
+        //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
+        ImmunisationEntity immunisationEntity = null;
+
+        if (immunisation.hasId()) immunisationEntity = readEntity(ctx, immunisation.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/immunisation")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<ImmunisationEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation"));
+                    for (ImmunisationEntity con : results) {
+                        immunisationEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (immunisationEntity == null) immunisationEntity = new ImmunisationEntity();
+
+
+        PatientEntity patientEntity = null;
+        if (immunisation.hasPatient()) {
+            log.trace(immunisation.getPatient().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(immunisation.getPatient().getReference()));
+            immunisationEntity.setPatient(patientEntity);
+        }
+        if (immunisation.hasStatus()) {
+            immunisationEntity.setStatus(immunisation.getStatus());
+        }
+        if (immunisation.hasNotGiven()) {
+            immunisationEntity.setNotGiven(immunisation.getNotGiven());
+        }
+        if (immunisation.hasPrimarySource()) {
+            immunisationEntity.setPrimarySource(immunisation.getPrimarySource());
+        }
+
+        if (immunisation.hasVaccineCode()) {
+            ConceptEntity code = conceptDao.findCode(immunisation.getVaccineCode().getCoding().get(0).getSystem(),immunisation.getVaccineCode().getCoding().get(0).getCode());
+            if (code != null) { immunisationEntity.setVacinationCode(code); }
+            else {
+                log.error("Code: Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
+                        +" code = "+immunisation.getVaccineCode().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
+                        +" code = "+immunisation.getVaccineCode().getCoding().get(0).getCode());
+            }
+        }
+        if (immunisation.hasReportOrigin()) {
+            ConceptEntity code = conceptDao.findCode(immunisation.getReportOrigin().getCoding().get(0).getSystem(),immunisation.getReportOrigin().getCoding().get(0).getCode());
+            if (code != null) { immunisationEntity.setReportOrigin(code); }
+            else {
+                log.error("Code: Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
+                        +" code = "+immunisation.getReportOrigin().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
+                        +" code = "+immunisation.getReportOrigin().getCoding().get(0).getCode());
+            }
+        }
+        if (immunisation.hasDate()) {
+            immunisationEntity.setAdministrationDate(immunisation.getDate());
+        }
+        if (immunisation.hasExpirationDate()) {
+            immunisationEntity.setExpirationDate(immunisation.getExpirationDate());
+        }
+        if (immunisation.hasLocation()) {
+                LocationEntity locationEntity = locationDao.readEntity(new IdType(immunisation.getLocation().getReference()));
+                immunisationEntity.setLocation(locationEntity);
+        }
+        if (immunisation.hasEncounter()) {
+            EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(immunisation.getEncounter().getReference()));
+            immunisationEntity.setEncounter(encounterEntity);
+        }
+
+
+        em.persist(immunisationEntity);
+
+        for (Identifier identifier : immunisation.getIdentifier()) {
+            ImmunisationIdentifier immunisationIdentifier = null;
+
+            for (ImmunisationIdentifier orgSearch : immunisationEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    immunisationIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (immunisationIdentifier == null)  immunisationIdentifier = new ImmunisationIdentifier();
+
+            immunisationIdentifier.setValue(identifier.getValue());
+            immunisationIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            immunisationIdentifier.setImmunisation(immunisationEntity);
+            em.persist(immunisationIdentifier);
+        }
+
+
+
+        return immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity);
     }
 
     @Override

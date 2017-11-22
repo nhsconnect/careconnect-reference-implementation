@@ -70,6 +70,8 @@ public class JPAStepsDef {
     @Autowired
     AllergyIntoleranceRepository allergyIntoleranceRepository;
 
+    @Autowired
+    ImmunizationRepository immunizationRepository;
 
     @Autowired
     TerminologyLoader myTermSvc;
@@ -98,6 +100,8 @@ public class JPAStepsDef {
     List<Observation> observationList = null;
 
     List<AllergyIntolerance> allergyList = null;
+
+    List<Immunization> immunisationList = null;
 
     Transaction tx;
 
@@ -578,6 +582,52 @@ public class JPAStepsDef {
     }
 
 
+    /*
+
+    IMMUNISATION
+
+    */
+
+
+    @Given("^I have one Immunisation resource loaded$")
+    public void i_have_one_Immunisation_resource_loaded() throws Throwable {
+        assertNotNull(immunizationRepository.read(ctx,new IdType(1)));
+    }
+
+    @When("^I search Immunisation on Patient ID = (\\d+)$")
+    public void i_search_Immunisation_on_Patient_ID(int patient) throws Throwable {
+        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+    }
+
+    @Then("^I should get a Bundle of Immunisation (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Immunisation_resource(int count) throws Throwable {
+        assertEquals(count,immunisationList.size());
+    }
+
+    @When("^I update this Immunisation$")
+    public void i_update_this_Immunisation() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ImmunisationExampleTwo.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        Immunization immunization = ctx.newJsonParser().parseResource(Immunization.class, reader);
+        try {
+            immunization = immunizationRepository.create(ctx,immunization,null,"Immunization?identifier=" + immunization.getIdentifier().get(0).getSystem() + "%7C" +immunization.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Then("^the results should be a list of CareConnect Immunizations$")
+    public void the_results_should_be_a_list_of_CareConnect_Immunizations() throws Throwable {
+        for (Immunization immunization : immunisationList) {
+            validateResource(immunization);
+        }
+    }
+
+
+
 
 
     private void validateResource(Resource resource) {
@@ -658,6 +708,10 @@ public class JPAStepsDef {
             concept.setCode("73430006");
             conceptDao.save(concept);
 
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("308081000000105");
+            conceptDao.save(concept);
 
 
 
@@ -730,6 +784,18 @@ public class JPAStepsDef {
             AllergyIntolerance allergy = ctx.newJsonParser().parseResource(AllergyIntolerance.class, reader);
             try {
                 allergy = allergyIntoleranceRepository.create(ctx,allergy,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ImmunisationExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            Immunization immunization = ctx.newJsonParser().parseResource(Immunization.class, reader);
+            try {
+                immunization = immunizationRepository.create(ctx,immunization,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
