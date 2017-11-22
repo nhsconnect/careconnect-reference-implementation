@@ -2,13 +2,20 @@ package uk.nhs.careconnect.ri.entity.medication;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "MedicationRequest")
@@ -25,6 +32,7 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity medicationCode;
 
     @ManyToOne
@@ -32,13 +40,76 @@ public class MedicationRequestEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity contextEncounter;
 
+    @ManyToOne
+    @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_EPISODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private EncounterEntity contextEpisodeOfCare;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "writtenDate")
     private Date writtenDate;
 
+    @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<MedicationRequestIdentifier> identifiers = new HashSet<>();
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status")
+    MedicationRequest.MedicationRequestStatus status;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "intent")
+    MedicationRequest.MedicationRequestIntent intent;
+
     @ManyToOne
-    @JoinColumn(name="STATUS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_STATUS_CONCEPT"))
-    private ConceptEntity status;
+    @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_CATEGORY_CONCEPT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ConceptEntity categoryCode;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "priority")
+    MedicationRequest.MedicationRequestPriority priority;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "authoredDate")
+    private Date authoredDate;
+
+    @ManyToOne
+    @JoinColumn(name = "RECORDER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_RECORDER_PRACTITIONER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    PractitionerEntity recorderPractitioner;
+
+    @ManyToOne
+    @JoinColumn(name = "REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONCEPT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ConceptEntity reasonCode;
+
+    @ManyToOne
+    @JoinColumn(name = "REASON_OBSERVATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_OBSERVATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ObservationEntity reasonObservation;
+
+    @ManyToOne
+    @JoinColumn(name = "REASON_CONDITION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONDITION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ConditionEntity reasonCondition;
+
+    @Column(name = "substitutionAllowed")
+    Boolean substitutionAllowed;
+
+    @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestDosage.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<MedicationRequestDosage> dosages = new HashSet<>();
+
+
+    public Set<MedicationRequestIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public MedicationRequestEntity setIdentifiers(Set<MedicationRequestIdentifier> identifiers) {
+        this.identifiers = identifiers;
+        return this;
+    }
 
     public Long getId() {
         return id;
@@ -70,22 +141,121 @@ public class MedicationRequestEntity extends BaseResource {
         this.medicationCode = medicationCode;
         return this;
     }
-
-    public ConceptEntity getStatus() {
-        return status;
-    }
-
-    public MedicationRequestEntity setStatus(ConceptEntity status) {
-        this.status = status;
-        return this;
-    }
-
+ 
     public Date getWrittenDate() {
         return writtenDate;
     }
 
     public MedicationRequestEntity setWrittenDate(Date writtenDate) {
         this.writtenDate = writtenDate;
+        return this;
+    }
+
+    public EncounterEntity getContextEpisodeOfCare() {
+        return contextEpisodeOfCare;
+    }
+
+    public MedicationRequestEntity setContextEpisodeOfCare(EncounterEntity contextEpisodeOfCare) {
+        this.contextEpisodeOfCare = contextEpisodeOfCare;
+        return this;
+    }
+
+    public MedicationRequest.MedicationRequestStatus getStatus() {
+        return status;
+    }
+
+    public MedicationRequestEntity setStatus(MedicationRequest.MedicationRequestStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    public MedicationRequest.MedicationRequestIntent getIntent() {
+        return intent;
+    }
+
+    public MedicationRequestEntity setIntent(MedicationRequest.MedicationRequestIntent intent) {
+        this.intent = intent;
+        return this;
+    }
+
+    public ConceptEntity getCategoryCode() {
+        return categoryCode;
+    }
+
+    public MedicationRequestEntity setCategoryCode(ConceptEntity categoryCode) {
+        this.categoryCode = categoryCode;
+        return this;
+    }
+
+    public MedicationRequest.MedicationRequestPriority getPriority() {
+        return priority;
+    }
+
+    public MedicationRequestEntity setPriority(MedicationRequest.MedicationRequestPriority priority) {
+        this.priority = priority;
+        return this;
+    }
+
+    public Date getAuthoredDate() {
+        return authoredDate;
+    }
+
+    public MedicationRequestEntity setAuthoredDate(Date authoredDate) {
+        this.authoredDate = authoredDate;
+        return this;
+    }
+
+    public PractitionerEntity getRecorderPractitioner() {
+        return recorderPractitioner;
+    }
+
+    public MedicationRequestEntity setRecorderPractitioner(PractitionerEntity recorderPractitioner) {
+        this.recorderPractitioner = recorderPractitioner;
+        return this;
+    }
+
+    public ConceptEntity getReasonCode() {
+        return reasonCode;
+    }
+
+    public MedicationRequestEntity setReasonCode(ConceptEntity reasonCode) {
+        this.reasonCode = reasonCode;
+        return this;
+    }
+
+    public ObservationEntity getReasonObservation() {
+        return reasonObservation;
+    }
+
+    public MedicationRequestEntity setReasonObservation(ObservationEntity reasonObservation) {
+        this.reasonObservation = reasonObservation;
+        return this;
+    }
+
+    public ConditionEntity getReasonCondition() {
+        return reasonCondition;
+    }
+
+    public MedicationRequestEntity setReasonCondition(ConditionEntity reasonCondition) {
+        this.reasonCondition = reasonCondition;
+        return this;
+    }
+
+    public Boolean getSubstitutionAllowed() {
+        return substitutionAllowed;
+    }
+
+    public MedicationRequestEntity setSubstitutionAllowed(Boolean substitutionAllowed) {
+        this.substitutionAllowed = substitutionAllowed;
+        return this;
+    }
+
+    public Set<MedicationRequestDosage> getDosages() {
+        return dosages;
+    }
+
+    public MedicationRequestEntity setDosages(Set<MedicationRequestDosage> dosages) {
+        this.dosages = dosages;
         return this;
     }
 }
