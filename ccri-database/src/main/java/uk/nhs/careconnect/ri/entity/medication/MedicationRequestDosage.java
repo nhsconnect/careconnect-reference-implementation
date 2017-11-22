@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 
 @Entity
-@Table(name="MedicationRequestIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_PRESCRIPTION_DOSAGE", columnNames={"PRESCRIPTION_DOSAGE_ID"})
+@Table(name="MedicationRequestDosage", uniqueConstraints= @UniqueConstraint(name="PK_PRESCRIPTION_DOSAGE", columnNames={"PRESCRIPTION_DOSAGE_ID"})
 		,indexes =
 		{
 				@Index(name = "IDX_PRESCRIPTION_IDENTIFER", columnList="value,SYSTEM_ID")
