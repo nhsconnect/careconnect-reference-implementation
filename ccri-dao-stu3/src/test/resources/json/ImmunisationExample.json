@@ -34,7 +34,7 @@
   "reportOrigin": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/immunization-origin",
+        "system": "http://hl7.org/fhir/immunization-origin",
         "code": "provider",
         "display": "Provider"
       }

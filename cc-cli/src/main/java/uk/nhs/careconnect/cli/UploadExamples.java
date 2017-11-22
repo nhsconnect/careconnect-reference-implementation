@@ -1492,7 +1492,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     case "provider":
                         immunisation.getReportOrigin().addCoding()
                                 .setCode("provider")
-                                .setSystem("http://hl7.org/fhir/ValueSet/immunization-origin")
+                                .setSystem("http://hl7.org/fhir/immunization-origin")
                                 .setDisplay("Provider");
                         break;
 
