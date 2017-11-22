@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Table(name="MedicationRequestDosage", uniqueConstraints= @UniqueConstraint(name="PK_PRESCRIPTION_DOSAGE", columnNames={"PRESCRIPTION_DOSAGE_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_PRESCRIPTION_IDENTIFER", columnList="value,SYSTEM_ID")
+				@Index(name = "IDX_PRESCRIPTION_DOSAGE", columnList="value,SYSTEM_ID")
 
 		})
 public class MedicationRequestDosage extends BaseIdentifier {
