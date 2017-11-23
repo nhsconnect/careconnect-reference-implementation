@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.OrganisationEntityToFHIROrganizationTransformer;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationAddress;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
@@ -49,12 +51,12 @@ public class OrganisationDao implements OrganisationRepository {
 
     private static final Logger log = LoggerFactory.getLogger(OrganisationDao.class);
 
-    public void save(OrganisationEntity organization)
+    public void save(FhirContext ctx, OrganisationEntity organization)
     {
         em.persist(organization);
     }
 
-    public Organization read(IdType theId) {
+    public Organization read(FhirContext ctx, IdType theId) {
         if (theId.getIdPart() != null && daoutils.isNumeric(theId.getIdPart())) {
             OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -66,7 +68,18 @@ public class OrganisationDao implements OrganisationRepository {
 
     }
 
-    public OrganisationEntity readEntity(IdType theId) {
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(OrganisationEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
+
+    public OrganisationEntity readEntity(FhirContext ctx,IdType theId) {
 
     if (theId.getIdPart() != null) {
         OrganisationEntity organizationEntity = (OrganisationEntity) em.find(OrganisationEntity.class, Long.parseLong(theId.getIdPart()));
@@ -86,7 +99,7 @@ public class OrganisationDao implements OrganisationRepository {
     }
 
     @Override
-    public Organization create(Organization organisation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
+    public Organization create(FhirContext ctx,Organization organisation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
 
 
         OrganisationEntity organisationEntity = null;
@@ -108,7 +121,7 @@ public class OrganisationDao implements OrganisationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<OrganisationEntity> results = searchOrganizationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null,null);
+                    List<OrganisationEntity> results = searchOrganizationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null,null);
                     for (OrganisationEntity org : results) {
                         organisationEntity = org;
                         break;
@@ -138,7 +151,7 @@ public class OrganisationDao implements OrganisationRepository {
 
         if (organisation.getPartOf() != null) {
             log.debug("Ref="+organisation.getPartOf().getReference());
-            organisationEntity.setPartOf(readEntity(new IdType().setValue(organisation.getPartOf().getReference())));
+            organisationEntity.setPartOf(readEntity(ctx, new IdType().setValue(organisation.getPartOf().getReference())));
         }
 
         em.persist(organisationEntity);
@@ -212,13 +225,13 @@ public class OrganisationDao implements OrganisationRepository {
         return organisation;
     }
     @Override
-    public List<Organization> searchOrganization (
+    public List<Organization> searchOrganization (FhirContext ctx,
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
         List<Organization> results = new ArrayList<>();
-        List<OrganisationEntity> qryResults = searchOrganizationEntity(identifier,name,postCode);
+        List<OrganisationEntity> qryResults = searchOrganizationEntity(ctx, identifier,name,postCode);
         for (OrganisationEntity organizationEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
@@ -229,7 +242,7 @@ public class OrganisationDao implements OrganisationRepository {
         return results;
     }
 
-    public List<OrganisationEntity> searchOrganizationEntity (
+    public List<OrganisationEntity> searchOrganizationEntity (FhirContext ctx,
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode

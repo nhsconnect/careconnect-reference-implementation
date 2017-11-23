@@ -13,7 +13,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.common.ServerInterceptor;
+import uk.nhs.careconnect.ri.lib.ServerInterceptor;
 import uk.nhs.careconnect.ri.fhirserver.provider.*;
 
 import javax.servlet.ServletException;
@@ -85,12 +85,11 @@ public class HAPIRestfulConfig extends RestfulServer {
 
         ));
 
+        // Replace built in conformance provider (CapabilityStatement)
+        setServerConformanceProvider(new CareConnectServerConformanceProvider());
+
         ServerInterceptor loggingInterceptor = new ServerInterceptor(ourLog);
         registerInterceptor(loggingInterceptor);
-
-        //loggingInterceptor.setLoggerName("ccri.FHIRServer");
-        //loggingInterceptor.setLogger(ourLog);
-
 
 
         // not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));

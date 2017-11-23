@@ -11,13 +11,14 @@ import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import java.util.List;
 
-public interface ObservationRepository {
+public interface ObservationRepository extends BaseInterface {
 
     Observation save(FhirContext ctx, Observation observation) throws IllegalArgumentException;
 
     Observation read(FhirContext ctx, IdType theId);
 
     ObservationEntity readEntity(FhirContext ctx, IdType theId );
+
 
     List<Observation> search (FhirContext ctx,
             @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,

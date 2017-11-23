@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ProcedureEntityToFHIRProcedureTransformer;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
@@ -42,7 +43,15 @@ public class ProcedureDao implements ProcedureRepository {
     public void save(FhirContext ctx, ProcedureEntity procedure) {
 
     }
+    @Override
+    public Long count() {
 
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(ProcedureEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
     @Override
     public Procedure read(FhirContext ctx,IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {

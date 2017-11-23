@@ -71,6 +71,16 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     }
 
     @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(PractitionerRole.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    @Override
     public PractitionerRole readEntity(FhirContext ctx, IdType theId) {
        return (PractitionerRole) em.find(PractitionerRole.class,Long.parseLong(theId.getIdPart()));
     }
@@ -122,7 +132,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
         }
 
         if (practitionerRole.getOrganization() != null) {
-            roleEntity.setOrganisation(organisationDao.readEntity(new IdType(practitionerRole.getOrganization().getReference())));
+            roleEntity.setOrganisation(organisationDao.readEntity(ctx, new IdType(practitionerRole.getOrganization().getReference())));
         }
 
         if (practitionerRole.getCode().size() > 0) {

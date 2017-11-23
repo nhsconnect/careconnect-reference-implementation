@@ -14,14 +14,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class PatientProvider implements IResourceProvider {
+public class PatientProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -36,6 +36,10 @@ public class PatientProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Override
+    public Long count() {
+        return patientDao.count();
+    }
 
     @Override
     public Class<Patient> getResourceType() {

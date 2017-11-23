@@ -37,7 +37,7 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	private MedicationRequestEntity prescription;
 
 	@ManyToOne
-	@JoinColumn(name = "ADDITIONAL_INSTRUCTION_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSAGE_ADDITIONAL_INSTRUCTION_CONCEPT"))
+	@JoinColumn(name = "ADDITIONAL_INSTRUCTION_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ADDITIONAL_INSTRUCTION_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity additionalInstructionCode;
 
@@ -53,7 +53,7 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	// TODO TIMING
 
 	@ManyToOne
-	@JoinColumn(name = "ASNEEDED_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSAGE_ASNEEDED_CONCEPT"))
+	@JoinColumn(name = "ASNEEDED_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_AS_NEEDED_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity asNeededCode;
 
@@ -61,17 +61,17 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	Boolean asNeededBoolean;
 
 	@ManyToOne
-	@JoinColumn(name = "SITE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSAGE_SITE_CONCEPT"))
+	@JoinColumn(name = "SITE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_SITE_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity siteCode;
 
 	@ManyToOne
-	@JoinColumn(name = "ROUTE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSAGE_ROUTE_CONCEPT"))
+	@JoinColumn(name = "ROUTE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ROUTE_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity routeCode;
 
 	@ManyToOne
-	@JoinColumn(name = "METHOD_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSAGE_METHOD_CONCEPT"))
+	@JoinColumn(name = "METHOD_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_METHOD_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity methodCode;
 

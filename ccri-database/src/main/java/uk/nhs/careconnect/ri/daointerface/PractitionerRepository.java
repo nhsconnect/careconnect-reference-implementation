@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import java.util.List;
 
-public interface PractitionerRepository {
+public interface PractitionerRepository extends BaseInterface {
 
     void save(FhirContext ctx,PractitionerEntity practitioner);
 
@@ -21,6 +21,7 @@ public interface PractitionerRepository {
     PractitionerEntity readEntity(FhirContext ctx, IdType theId);
 
     Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+
 
     List<Practitioner> searchPractitioner (FhirContext ctx,
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,

@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
-public interface ConditionRepository {
+public interface ConditionRepository extends BaseInterface {
     void save(FhirContext ctx,ConditionEntity condition);
 
     Condition read(FhirContext ctx, IdType theId);
@@ -21,7 +21,6 @@ public interface ConditionRepository {
     ConditionEntity readEntity(FhirContext ctx, IdType theId);
 
     Condition create(FhirContext ctx,Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
-
 
     List<Condition> search(FhirContext ctx,
 

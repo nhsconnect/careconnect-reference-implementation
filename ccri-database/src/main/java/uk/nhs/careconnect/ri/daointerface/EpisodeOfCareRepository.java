@@ -12,12 +12,13 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import java.util.List;
 
-public interface EpisodeOfCareRepository {
+public interface EpisodeOfCareRepository extends BaseInterface {
     void save(FhirContext ctx,EpisodeOfCare episode);
 
     EpisodeOfCare read(FhirContext ctx, IdType theId);
 
     EpisodeOfCare create(FhirContext ctx,EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+
 
 
     List<EpisodeOfCare> search(FhirContext ctx,

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerEntityToFHIRPractitionerTransformer;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
@@ -62,6 +63,16 @@ public class PractitionerDao implements PractitionerRepository {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(PractitionerEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
     }
 
     public PractitionerEntity readEntity(FhirContext ctx, IdType theId) {

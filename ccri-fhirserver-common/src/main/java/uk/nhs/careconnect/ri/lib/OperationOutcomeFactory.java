@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.common;
+package uk.nhs.careconnect.ri.lib;
 
 
 import ca.uhn.fhir.rest.server.exceptions.*;

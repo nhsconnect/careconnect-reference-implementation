@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -11,17 +12,18 @@ import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import java.util.List;
 
-public interface LocationRepository  {
-    void save(LocationEntity location);
+public interface LocationRepository extends BaseInterface  {
+    void save(FhirContext ctx,LocationEntity location);
 
-    Location read(IdType theId);
+    Location read(FhirContext ctx, IdType theId);
 
-    LocationEntity readEntity(IdType theId);
+    LocationEntity readEntity(FhirContext ctx,IdType theId);
 
-    Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Location create(FhirContext ctx,Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
 
-    List<Location> searchLocation(
+
+    List<Location> searchLocation(FhirContext ctx,
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
@@ -29,7 +31,7 @@ public interface LocationRepository  {
 
     );
 
-    List<LocationEntity> searchLocationEntity (
+    List<LocationEntity> searchLocationEntity (FhirContext ctx,
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,

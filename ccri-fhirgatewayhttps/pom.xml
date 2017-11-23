@@ -408,7 +408,7 @@
 				<configuration>
 					<url>http://127.0.0.1:8080/manager/text</url>
 					<server>TomcatServer</server>
-                    <path>/careconnect-gatewayhttps</path>
+                    <path>/careconnect-gateway-secure</path>
 				</configuration>
 			</plugin>
 

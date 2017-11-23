@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -65,6 +66,15 @@ public class ImmunizationDao implements ImmunizationRepository {
     @Autowired
     ImmunisationEntityToFHIRImmunizationTransformer immunisationEntityToFHIRImmunizationTransformer;
 
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(ImmunisationEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
 
 
     @Override
@@ -181,7 +191,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             immunisationEntity.setExpirationDate(immunisation.getExpirationDate());
         }
         if (immunisation.hasLocation()) {
-                LocationEntity locationEntity = locationDao.readEntity(new IdType(immunisation.getLocation().getReference()));
+                LocationEntity locationEntity = locationDao.readEntity(ctx,new IdType(immunisation.getLocation().getReference()));
                 immunisationEntity.setLocation(locationEntity);
         }
         if (immunisation.hasEncounter()) {

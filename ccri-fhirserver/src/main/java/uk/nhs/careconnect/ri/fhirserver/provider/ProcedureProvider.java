@@ -15,14 +15,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ProcedureRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class ProcedureProvider implements IResourceProvider {
+public class ProcedureProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -36,6 +36,10 @@ public class ProcedureProvider implements IResourceProvider {
         return Procedure.class;
     }
 
+    @Override
+    public Long count() {
+        return procedureDao.count();
+    }
 
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Procedure procedure, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {

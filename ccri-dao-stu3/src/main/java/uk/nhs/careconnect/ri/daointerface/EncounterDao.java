@@ -72,6 +72,17 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(EncounterEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
+
+    @Override
     public Encounter read(FhirContext ctx,IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
             EncounterEntity encounter = (EncounterEntity) em.find(EncounterEntity.class, Long.parseLong(theId.getIdPart()));
@@ -161,7 +172,7 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity(new IdType(encounter.getLocation().get(0).getLocation().getReference()));
+            LocationEntity locationEntity = locationDao.readEntity(ctx,new IdType(encounter.getLocation().get(0).getLocation().getReference()));
             encounterEntity.setLocation(locationEntity);
         }
 
@@ -212,7 +223,7 @@ public class  EncounterDao implements EncounterRepository {
 
             log.debug("encounter.getServiceProvider().getReference=" + (encounter.getServiceProvider().getReference()));
 
-            OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(encounter.getServiceProvider().getReference()));
+            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(encounter.getServiceProvider().getReference()));
             if (organisationEntity != null) encounterEntity.setServiceProvider(organisationEntity);
         }
 

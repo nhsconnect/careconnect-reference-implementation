@@ -12,14 +12,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.PractitionerRoleRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class PractitionerRoleProvider implements IResourceProvider {
+public class PractitionerRoleProvider implements ICCResourceProvider {
 
     @Autowired
     private PractitionerRoleRepository practitionerRoleDao;
@@ -27,7 +27,10 @@ public class PractitionerRoleProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
-
+    @Override
+    public Long count() {
+        return practitionerRoleDao.count();
+    }
 
     @Override
     public Class<PractitionerRole> getResourceType() {

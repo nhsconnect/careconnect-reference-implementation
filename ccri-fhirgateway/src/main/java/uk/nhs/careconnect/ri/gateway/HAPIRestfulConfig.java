@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.common.ServerInterceptor;
+import uk.nhs.careconnect.ri.lib.ServerInterceptor;
 
 import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 
@@ -36,6 +36,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     @Value("${fhir.resource.serverVersion}")
     private String serverVersion;
+
+
 
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {

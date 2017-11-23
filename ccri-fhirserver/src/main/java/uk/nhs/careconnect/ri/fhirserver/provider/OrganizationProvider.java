@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -10,14 +11,14 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.OrganisationRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class OrganizationProvider implements IResourceProvider {
+public class OrganizationProvider implements ICCResourceProvider {
 
     @Autowired
     private OrganisationRepository organisationDao;
@@ -27,6 +28,13 @@ public class OrganizationProvider implements IResourceProvider {
         return Organization.class;
     }
 
+    @Autowired
+    FhirContext ctx;
+
+    @Override
+    public Long count() {
+        return organisationDao.count();
+    }
 
     @Update
     public MethodOutcome updateOrganization(HttpServletRequest theRequest,@ResourceParam Organization organization, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
@@ -39,7 +47,7 @@ public class OrganizationProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Organization newOrganization = organisationDao.create(organization, theId, theConditional);
+        Organization newOrganization = organisationDao.create(ctx, organization, theId, theConditional);
         method.setId(newOrganization.getIdElement());
         method.setResource(newOrganization);
 
@@ -50,7 +58,7 @@ public class OrganizationProvider implements IResourceProvider {
 
     @Read()
     public Organization getOrganizationById(@IdParam IdType organisationId) {
-        Organization organisation = organisationDao.read(organisationId);
+        Organization organisation = organisationDao.read(ctx, organisationId);
 
         if ( organisation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -66,7 +74,7 @@ public class OrganizationProvider implements IResourceProvider {
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name,
                                                  @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
     ) {
-       return organisationDao.searchOrganization(identifier,name, postCode);
+       return organisationDao.searchOrganization(ctx, identifier,name, postCode);
     }
 
 

@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationStatementEntity;
 
 import java.util.List;
 
-public interface MedicationStatementRepository {
+public interface MedicationStatementRepository  extends BaseInterface{
     void save(FhirContext ctx,MedicationStatementEntity statement);
 
     MedicationStatement read(FhirContext ctx, IdType theId);

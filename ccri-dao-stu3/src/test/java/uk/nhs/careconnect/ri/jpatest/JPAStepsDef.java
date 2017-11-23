@@ -190,7 +190,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by name (\\w+)$")
     public void i_search_for_Organisations_by_name(String name) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(null,new StringParam(name),null);
+        organizationList = organisationRepository.searchOrganization(ctx,null,new StringParam(name),null);
     }
 
     @Then("^the results should be a list of CareConnect Organisations$")
@@ -202,7 +202,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by SDSCode (\\w+)$")
     public void i_have_search_for_these_Organisations_by_SDSCode(String SDSCode) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null,null);
+        organizationList = organisationRepository.searchOrganization(ctx,new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null,null);
     }
 
     @Then("^the result should be a organisation list with (\\d+) entry$")
@@ -331,7 +331,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by SDSCode (\\w+)$")
     public void i_search_for_Locations_by_SDSCode(String code) throws Throwable {
-        locationList = locationRepository.searchLocation(new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null,null);
+        locationList = locationRepository.searchLocation(ctx,new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null,null);
     }
 
     @Then("^the result should be a Location list with (\\d+) entry$")
@@ -357,7 +357,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by name (\\w+)$")
     public void i_search_for_Locations_by_name(String name) throws Throwable {
-        locationList = locationRepository.searchLocation(null,new StringParam(name),null);
+        locationList = locationRepository.searchLocation(ctx,null,new StringParam(name),null);
     }
 
     @Given("^Location resource file$")
@@ -402,7 +402,7 @@ public class JPAStepsDef {
 
     @Then("^save the location$")
     public void save_the_location() throws Throwable {
-        locationRepository.create(location,null,"Location?identifier="+location.getIdentifier().get(0).getSystem()+"%7C"+location.getIdentifier().get(0).getValue());
+        locationRepository.create(ctx,location,null,"Location?identifier="+location.getIdentifier().get(0).getSystem()+"%7C"+location.getIdentifier().get(0).getValue());
     }
 
 

@@ -11,7 +11,7 @@ import org.hl7.fhir.dstu3.model.PractitionerRole;
 
 import java.util.List;
 
-public interface PractitionerRoleRepository {
+public interface PractitionerRoleRepository extends BaseInterface{
 
     void save(FhirContext ctx, uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole practitioner);
 
@@ -20,6 +20,7 @@ public interface PractitionerRoleRepository {
     uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole readEntity(FhirContext ctx, IdType theId);
 
     PractitionerRole create(FhirContext ctx, PractitionerRole practitionerRole, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+
 
     List<PractitionerRole> search(FhirContext ctx,
             @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,

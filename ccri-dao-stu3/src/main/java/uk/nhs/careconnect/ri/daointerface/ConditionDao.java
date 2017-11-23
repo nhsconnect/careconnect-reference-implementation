@@ -59,6 +59,16 @@ public class ConditionDao implements ConditionRepository {
 
     private static final Logger log = LoggerFactory.getLogger(ConditionDao.class);
 
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(ConditionEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
 
     @Override
     public void save(FhirContext ctx, ConditionEntity condition) {

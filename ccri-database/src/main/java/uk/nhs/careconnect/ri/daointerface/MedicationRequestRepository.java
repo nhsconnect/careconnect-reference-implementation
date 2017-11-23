@@ -13,12 +13,13 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 
 import java.util.List;
 
-public interface MedicationRequestRepository {
+public interface MedicationRequestRepository extends BaseInterface {
     void save(FhirContext ctx,MedicationRequestEntity prescription);
 
     MedicationRequest read(FhirContext ctx, IdType theId);
 
     MedicationRequest create(FhirContext ctx,MedicationRequest prescription, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+
 
 
     List<MedicationRequest> search(FhirContext ctx,

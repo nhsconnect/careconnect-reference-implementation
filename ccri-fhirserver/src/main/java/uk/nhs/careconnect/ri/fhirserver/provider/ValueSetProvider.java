@@ -10,7 +10,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ValueSetRepository;
 
 import javax.servlet.http.HttpServletRequest;

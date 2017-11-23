@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.common;
+package uk.nhs.careconnect.ri.lib;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -96,7 +96,7 @@ public class ServerInterceptor extends InterceptorAdapter {
     public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
 
         if (theRequest.getMethod() != null) {
-            if (theRequest.getMethod().equals("OPTIONS"))
+           if (theRequest.getMethod().equals("OPTIONS"))
                 throw new MethodNotAllowedException("request must use HTTP GET");
 
             // May need to readd this at a later date (probably in conjunction with a security uplift)

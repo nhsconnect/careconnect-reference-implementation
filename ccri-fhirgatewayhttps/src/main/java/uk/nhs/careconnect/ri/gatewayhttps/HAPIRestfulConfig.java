@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.common.ServerInterceptor;
+import uk.nhs.careconnect.ri.lib.ServerInterceptor;
 import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 
 
@@ -36,6 +36,15 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     @Value("${fhir.resource.serverVersion}")
     private String serverVersion;
+
+	@Value("${fhir.oauth2.authorize:https://auth.hspconsortium.org/authorize}")
+	private String oauth2authorize = "https://auth.hspconsortium.org/authorize";
+
+	@Value("${fhir.oauth2.token:https://auth.hspconsortium.org/token}")
+	private String oauth2token = "https://auth.hspconsortium.org/token";
+
+	@Value("${fhir.oauth2.register:https://auth.hspconsortium.org/register}")
+	private String oauth2register = "https://auth.hspconsortium.org/register";
 
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
@@ -77,7 +86,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
-        setServerConformanceProvider(new CareConnectConformanceProvider());
+        setServerConformanceProvider(new CareConnectConformanceProvider(oauth2authorize
+				,oauth2token
+				,oauth2register));
 
         setServerName(serverName);
         setServerVersion(serverVersion);

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
@@ -55,6 +56,15 @@ public class ObservationDao implements ObservationRepository {
     @Autowired
     private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
 
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(ObservationEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
 
 
 
@@ -203,7 +213,7 @@ public class ObservationDao implements ObservationRepository {
                     }
                     break;
                 case "Organization":
-                    OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(reference.getReference()));
+                    OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(reference.getReference()));
                     if (patientEntity != null) {
                         ObservationPerformer performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Organisation);

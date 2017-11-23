@@ -13,7 +13,7 @@ import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ObservationRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class ObservationProvider implements IResourceProvider {
+public class ObservationProvider implements ICCResourceProvider {
 
 
     private static final List<String> MANDATORY_PARAM_NAMES = Arrays.asList("patientNHSNumber", "recordSection");
@@ -32,6 +32,11 @@ public class ObservationProvider implements IResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    @Override
+    public Long count() {
+        return observationDao.count();
+    }
 
     @Override
     public Class<Observation> getResourceType() {

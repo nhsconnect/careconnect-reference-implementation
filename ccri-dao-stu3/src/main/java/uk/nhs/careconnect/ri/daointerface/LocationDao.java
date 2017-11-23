@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -49,12 +50,14 @@ public class LocationDao implements LocationRepository {
 
     private static final Logger log = LoggerFactory.getLogger(LocationDao.class);
 
-    public void save(LocationEntity location)
+    @Override
+    public void save(FhirContext ctx,LocationEntity location)
     {
         em.persist(location);
     }
 
-    public Location read(IdType theId) {
+    @Override
+    public Location read(FhirContext ctx,IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
             LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -66,9 +69,19 @@ public class LocationDao implements LocationRepository {
             return null;
         }
     }
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(LocationEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
 
     @Override
-    public LocationEntity readEntity(IdType theId) {
+    public LocationEntity readEntity(FhirContext ctx, IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
             LocationEntity locationEntity = (LocationEntity) em.find(LocationEntity.class, Long.parseLong(theId.getIdPart()));
 
@@ -80,7 +93,7 @@ public class LocationDao implements LocationRepository {
     }
 
     @Override
-    public Location create(Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
+    public Location create(FhirContext ctx,Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) {
 
         LocationEntity locationEntity = null;
         log.debug("Called Location Create Condition Url: "+theConditional);
@@ -101,7 +114,7 @@ public class LocationDao implements LocationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<LocationEntity> results = searchLocationEntity(new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null, null);
+                    List<LocationEntity> results = searchLocationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null, null);
                     for (LocationEntity org : results) {
                         locationEntity = org;
                         break;
@@ -127,7 +140,7 @@ public class LocationDao implements LocationRepository {
       
         if (location.getManagingOrganization() != null) {
             log.debug("Location Org Ref="+location.getManagingOrganization().getReference());
-            locationEntity.setManagingOrganisation(organisationRepository.readEntity(new IdType().setValue(location.getManagingOrganization().getReference())));
+            locationEntity.setManagingOrganisation(organisationRepository.readEntity(ctx, new IdType().setValue(location.getManagingOrganization().getReference())));
         }
 
         em.persist(locationEntity);
@@ -210,13 +223,13 @@ public class LocationDao implements LocationRepository {
     }
 
     @Override
-    public List<Location> searchLocation (
+    public List<Location> searchLocation (FhirContext ctx,
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
     )
     {
-        List<LocationEntity> qryResults = searchLocationEntity(identifier,name, postCode);
+        List<LocationEntity> qryResults = searchLocationEntity(ctx, identifier,name, postCode);
         List<Location> results = new ArrayList<>();
 
         for (LocationEntity locationEntity : qryResults)
@@ -229,7 +242,8 @@ public class LocationDao implements LocationRepository {
         return results;
     }
 
-    public List<LocationEntity> searchLocationEntity (
+    @Override
+    public List<LocationEntity> searchLocationEntity (FhirContext ctx,
 
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,

@@ -17,14 +17,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ImmunizationRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class ImmunizationProvider implements IResourceProvider {
+public class ImmunizationProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -38,6 +38,10 @@ public class ImmunizationProvider implements IResourceProvider {
         return Immunization.class;
     }
 
+    @Override
+    public Long count() {
+        return immunisationDao.count();
+    }
 
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {

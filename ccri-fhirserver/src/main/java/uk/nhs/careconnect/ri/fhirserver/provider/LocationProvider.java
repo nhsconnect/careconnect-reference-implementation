@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 
@@ -16,14 +17,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.LocationRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class LocationProvider implements IResourceProvider {
+public class LocationProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -34,6 +35,13 @@ public class LocationProvider implements IResourceProvider {
         return Location.class;
     }
 
+    @Autowired
+    FhirContext ctx;
+
+    @Override
+    public Long count() {
+        return locationDao.count();
+    }
 
     @Update
     public MethodOutcome updateLocation(HttpServletRequest theRequest, @ResourceParam Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
@@ -46,7 +54,7 @@ public class LocationProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        Location newLocation = locationDao.create(location, theId, theConditional);
+        Location newLocation = locationDao.create(ctx, location, theId, theConditional);
         method.setId(newLocation.getIdElement());
         method.setResource(newLocation);
 
@@ -60,13 +68,13 @@ public class LocationProvider implements IResourceProvider {
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_NAME) StringParam name,
                                          @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode) {
-        return locationDao.searchLocation(identifierCode,name,postCode);
+        return locationDao.searchLocation(ctx, identifierCode,name,postCode);
     }
 
     @Read()
     public Location getLocation(@IdParam IdType locationId) {
 
-        Location location = locationDao.read(locationId);
+        Location location = locationDao.read(ctx,locationId);
 
         if ( location == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(

@@ -55,6 +55,15 @@ public class PatientDao implements PatientRepository {
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
 
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(OrganisationEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
 
     @Transactional
     @Override
@@ -173,7 +182,7 @@ public class PatientDao implements PatientRepository {
             }
         }
         if (patient.hasManagingOrganization()) {
-            OrganisationEntity organisationEntity = organisationDao.readEntity(new IdType(patient.getManagingOrganization().getReference()));
+            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(patient.getManagingOrganization().getReference()));
             if (organisationEntity != null) {
                 patientEntity.setPractice(organisationEntity);
             }

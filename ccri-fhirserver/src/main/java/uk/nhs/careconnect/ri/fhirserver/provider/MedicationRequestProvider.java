@@ -16,14 +16,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.MedicationRequestRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class MedicationRequestProvider implements IResourceProvider {
+public class MedicationRequestProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -31,6 +31,11 @@ public class MedicationRequestProvider implements IResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    @Override
+    public Long count() {
+        return prescriptionDao.count();
+    }
 
     @Override
     public Class<? extends IBaseResource> getResourceType() {

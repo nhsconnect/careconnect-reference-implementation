@@ -14,11 +14,8 @@ import ca.uhn.fhir.rest.server.method.BaseMethodBinding;
 import ca.uhn.fhir.rest.server.method.IParameter;
 import ca.uhn.fhir.rest.server.method.SearchMethodBinding;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.dstu3.model.*;
 import ca.uhn.fhir.rest.server.method.SearchParameter;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -43,11 +40,36 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
      */
 
+    public CareConnectConformanceProvider(String oauth2authorize
+            ,String oauth2token
+            ,String oauth2register) {
+        log.info("oauth2authorize = "+oauth2authorize);
+        log.info("oauth2register = "+oauth2register);
+        log.info("oauth2token = "+oauth2token);
+        this.oauth2authorize = oauth2authorize;
+        this.oauth2register = oauth2register;
+        this.oauth2token = oauth2token;
+    }
+
+    public CareConnectConformanceProvider() {
+        this.oauth2authorize = null;
+        this.oauth2register = null;
+        this.oauth2token = null;
+    }
+
+    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectConformanceProvider.class);
+
     private RestulfulServerConfiguration serverConfiguration;
 
     private volatile CapabilityStatement capabilityStatement;
 
     private static final Logger log = LoggerFactory.getLogger(CareConnectConformanceProvider.class);
+
+    private String oauth2authorize;
+
+    private String oauth2token;
+
+    private String oauth2register;
 
     @Value("${fhir.resource.serverName}")
     private String serverName;
@@ -86,6 +108,28 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         CapabilityStatement.CapabilityStatementRestComponent rest = retVal.addRest();
 
         rest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
+
+        if (oauth2token != null && oauth2register !=null && oauth2authorize != null) {
+            rest.getSecurity()
+                    .addService().addCoding()
+                    .setSystem("http://hl7.org/fhir/restful-security-service")
+                    .setDisplay("SMART-on-FHIR")
+                    .setSystem("SMART-on-FHIR");
+            Extension securityExtension = rest.getSecurity().addExtension()
+                    .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+
+            securityExtension.addExtension()
+                    .setUrl("authorize")
+                    .setValue(new UriType(oauth2authorize));
+
+            securityExtension.addExtension()
+                    .setUrl("register")
+                    .setValue(new UriType(oauth2register));
+
+            securityExtension.addExtension()
+                    .setUrl("token")
+                    .setValue(new UriType(oauth2token));
+        }
 
         Map<String, List<BaseMethodBinding<?>>> resourceToMethods = collectMethodBindings();
         for (Map.Entry<String, List<BaseMethodBinding<?>>> nextEntry : resourceToMethods.entrySet()) {

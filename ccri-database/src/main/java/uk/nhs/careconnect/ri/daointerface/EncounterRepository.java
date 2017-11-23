@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 
 import java.util.List;
 
-public interface EncounterRepository {
+public interface EncounterRepository  extends BaseInterface {
     void save(FhirContext ctx,EncounterEntity encounter);
 
     Encounter read(FhirContext ctx, IdType theId);
@@ -22,7 +22,6 @@ public interface EncounterRepository {
     EncounterEntity readEntity(FhirContext ctx, IdType theId);
 
     Encounter create(FhirContext ctx,Encounter encounter, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
-
 
     List<Encounter> search(FhirContext ctx,
 

@@ -16,15 +16,14 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.AllergyIntoleranceRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class AllergyIntoleranceProvider implements IResourceProvider {
-
+public class AllergyIntoleranceProvider implements ICCResourceProvider {
 
     @Autowired
     private AllergyIntoleranceRepository allergyDao;
@@ -37,7 +36,10 @@ public class AllergyIntoleranceProvider implements IResourceProvider {
         return AllergyIntolerance.class;
     }
 
-
+        @Override
+        public Long count() {
+        return allergyDao.count();
+    }
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 

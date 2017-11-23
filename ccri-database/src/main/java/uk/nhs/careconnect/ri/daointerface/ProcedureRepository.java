@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import java.util.List;
 
-public interface ProcedureRepository {
+public interface ProcedureRepository extends BaseInterface {
     void save(FhirContext ctx,ProcedureEntity procedure);
 
     Procedure read(FhirContext ctx, IdType theId);

@@ -16,14 +16,15 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.common.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.daointerface.ConditionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class ConditionProvider implements IResourceProvider {
+public class ConditionProvider implements ICCResourceProvider {
+
 
 
     @Autowired
@@ -31,6 +32,11 @@ public class ConditionProvider implements IResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    @Override
+    public Long count() {
+        return conditionDao.count();
+    }
 
     @Override
     public Class<? extends IBaseResource> getResourceType() {
