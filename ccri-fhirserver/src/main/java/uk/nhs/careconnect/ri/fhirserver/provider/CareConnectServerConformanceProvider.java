@@ -61,8 +61,12 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
                             if (provider instanceof ICCResourceProvider) {
                                 log.trace("ICCResourceProvider - " + provider.getClass());
                                 ICCResourceProvider resourceProvider = (ICCResourceProvider) provider;
-                                restResourceComponent.addExtension()
-                                        .setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
+
+                                Extension extension = restResourceComponent.getExtensionFirstRep();
+                                if (extension == null) {
+                                    extension = restResourceComponent.addExtension();
+                                }
+                                extension.setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
                                         .setValue(new DecimalType(resourceProvider.count()));
                             }
                     }

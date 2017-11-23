@@ -1,18 +1,19 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.RuntimeResourceDefinition;
 import ca.uhn.fhir.context.RuntimeSearchParam;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.Constants;
-import ca.uhn.fhir.rest.server.IServerConformanceProvider;
-import ca.uhn.fhir.rest.server.ResourceBinding;
-import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
+import ca.uhn.fhir.rest.server.*;
 import ca.uhn.fhir.rest.server.method.BaseMethodBinding;
 import ca.uhn.fhir.rest.server.method.IParameter;
 import ca.uhn.fhir.rest.server.method.SearchMethodBinding;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.*;
 import ca.uhn.fhir.rest.server.method.SearchParameter;
@@ -20,11 +21,18 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.*;
 
 
@@ -40,9 +48,14 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
      */
 
+
+    private CamelContext context;
+
+
     public CareConnectConformanceProvider(String oauth2authorize
             ,String oauth2token
-            ,String oauth2register) {
+            ,String oauth2register
+          ) {
         log.info("oauth2authorize = "+oauth2authorize);
         log.info("oauth2register = "+oauth2register);
         log.info("oauth2token = "+oauth2token);
@@ -55,13 +68,16 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         this.oauth2authorize = null;
         this.oauth2register = null;
         this.oauth2token = null;
+
     }
 
-    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectConformanceProvider.class);
+
 
     private RestulfulServerConfiguration serverConfiguration;
 
     private volatile CapabilityStatement capabilityStatement;
+
+    private volatile CapabilityStatement serverCapabilityStatement;
 
     private static final Logger log = LoggerFactory.getLogger(CareConnectConformanceProvider.class);
 
@@ -80,11 +96,36 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
     @Override
     @Metadata
     public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
+
+        // TODO maybe remove this or put on a refresh timer
+        /*
         if (capabilityStatement != null ) {
             return capabilityStatement;
         }
+        */
 
         CapabilityStatement retVal = new CapabilityStatement();
+
+        if (context == null) {
+            WebApplicationContext myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
+            context = myAppCtx.getBean(CamelContext.class);
+        }
+        if (context != null) {
+            ProducerTemplate template = context.createProducerTemplate();
+
+            try {
+                InputStream inputStream = (InputStream) template.sendBody("direct:FHIRCapabilityStatement",
+                        ExchangePattern.InOut, theRequest);
+
+                Reader reader = new InputStreamReader(inputStream);
+                FhirContext ctx = serverConfiguration.getFhirContext();
+                serverCapabilityStatement = ctx
+                        .newJsonParser()
+                        .parseResource(CapabilityStatement.class, reader);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+        }
 
         capabilityStatement = retVal;
 
@@ -244,6 +285,29 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 }
 
             }
+        }
+        // Add resource counts from server
+        if (serverCapabilityStatement != null) {
+            log.trace("Server CS not null");
+            for (CapabilityStatement.CapabilityStatementRestComponent nextRest : retVal.getRest()) {
+                for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
+                    log.info("restResourceComponent.getType - " + restResourceComponent.getType());
+                    for (CapabilityStatement.CapabilityStatementRestComponent nextRestServer : serverCapabilityStatement.getRest()) {
+                        for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponentServer : nextRestServer.getResource()) {
+                            if (restResourceComponent.getType().equals(restResourceComponentServer.getType())
+                                    && restResourceComponentServer.getExtensionFirstRep() !=null)
+
+                                    restResourceComponent.addExtension()
+                                            .setUrl(restResourceComponentServer.getExtensionFirstRep().getUrl())
+                                            .setValue(restResourceComponentServer.getExtensionFirstRep().getValue());
+                        }
+
+                    }
+                }
+            }
+
+        } else {
+            log.trace("Server CS IS NULL");
         }
         return retVal;
     }

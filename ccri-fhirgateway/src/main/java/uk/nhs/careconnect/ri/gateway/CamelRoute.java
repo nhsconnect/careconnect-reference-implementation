@@ -85,6 +85,10 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway AllergyIntolerance")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRCapabilityStatement")
+				.routeId("Gateway CapabilityStatement")
+				.to("direct:HAPIServer");
+
 
 		from("direct:HAPIServer")
             .routeId("INT FHIR Server")

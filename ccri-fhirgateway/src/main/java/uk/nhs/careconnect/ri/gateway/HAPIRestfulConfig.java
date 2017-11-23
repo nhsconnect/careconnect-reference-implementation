@@ -8,7 +8,9 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
+import org.apache.camel.CamelContext;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
@@ -36,7 +38,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 
     @Value("${fhir.resource.serverVersion}")
     private String serverVersion;
-
 
 
     @Override
@@ -79,7 +80,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
-        setServerConformanceProvider(new CareConnectConformanceProvider());
+        setServerConformanceProvider(new CareConnectConformanceProvider( ));
 
         setServerName(serverName);
         setServerVersion(serverVersion);
