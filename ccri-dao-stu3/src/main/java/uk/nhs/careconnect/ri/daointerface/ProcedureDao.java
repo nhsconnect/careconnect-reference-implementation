@@ -1,19 +1,31 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ProcedureEntityToFHIRProcedureTransformer;
-import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedurePerformer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +33,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -32,6 +45,24 @@ public class ProcedureDao implements ProcedureRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    ConceptRepository conceptDao;
+
+    @Autowired
+    PatientRepository patientDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
+
+    @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
+    EncounterRepository encounterDao;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
     
     @Autowired
     ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
@@ -66,14 +97,168 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public Procedure create(FhirContext ctx,Procedure procedure, IdType theId, String theProcedureal) {
-        return null;
+    public ProcedureEntity readEntity(FhirContext ctx, IdType theId) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
+            ProcedureEntity procedure = (ProcedureEntity) em.find(ProcedureEntity.class, Long.parseLong(theId.getIdPart()));
+
+            return procedure ;
+        } else {
+            return null;
+        }
     }
 
-    @Override
-    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject) {
 
-        List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject);
+    @Override
+    public Procedure create(FhirContext ctx,Procedure procedure, IdType theId, String theConditional) {
+
+        log.debug("Condition.save");
+        //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
+        ProcedureEntity procedureEntity = null;
+
+        if (procedure.hasId()) procedureEntity = readEntity(ctx, procedure.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/procedure")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<ProcedureEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/procedure"));
+                    for (ProcedureEntity con : results) {
+                        procedureEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (procedureEntity == null) procedureEntity = new ProcedureEntity();
+
+
+        PatientEntity patientEntity = null;
+        if (procedure.hasSubject()) {
+            log.trace(procedure.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(procedure.getSubject().getReference()));
+            procedureEntity.setPatient(patientEntity);
+        }
+        if (procedure.hasStatus()) {
+            procedureEntity.setStatus(procedure.getStatus());
+        }
+        if (procedure.hasNotDone()) {
+            procedureEntity.setNotDone(procedure.getNotDone());
+        }
+
+        if (procedure.hasCode()) {
+            ConceptEntity code = conceptDao.findCode(procedure.getCode().getCoding().get(0).getSystem(),procedure.getCode().getCoding().get(0).getCode());
+            if (code != null) {
+                procedureEntity.setCode(code);
+            }
+            else {
+                log.error("Code: Missing System/Code = "+ procedure.getCode().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getCode().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ procedure.getCode().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getCode().getCoding().get(0).getCode());
+            }
+        }
+        if (procedure.hasCategory()) {
+            ConceptEntity code = conceptDao.findCode(procedure.getCategory().getCoding().get(0).getSystem(),procedure.getCategory().getCoding().get(0).getCode());
+            if (code != null) {
+                procedureEntity.setCategory(code); }
+            else {
+                log.error("Category: Missing System/Code = "+ procedure.getCategory().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getCategory().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing Category System/Code = "+ procedure.getCategory().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getCategory().getCoding().get(0).getCode());
+            }
+        }
+        if (procedure.hasOutcome()) {
+            ConceptEntity code = conceptDao.findCode(procedure.getOutcome().getCoding().get(0).getSystem(),procedure.getOutcome().getCoding().get(0).getCode());
+            if (code != null) {
+                procedureEntity.setOutcome(code); }
+            else {
+                log.error("Outcome: Missing System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getOutcome().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing Outcome System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()
+                        +" code = "+procedure.getOutcome().getCoding().get(0).getCode());
+            }
+        }
+        if (procedure.hasPerformed()) {
+            try {
+                procedureEntity.setPerformedDate(procedure.getPerformedDateTimeType().getValue());
+            } catch (Exception ex) {
+                throw new IllegalArgumentException("Invalid Date Time");
+            }
+        }
+        if (procedure.hasContext() && procedure.getContext().getReference().contains("Encounter")) {
+            EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(procedure.getContext().getReference()));
+            procedureEntity.setContextEncounter(encounterEntity);
+        }
+        em.persist(procedureEntity);
+
+        for (Identifier identifier : procedure.getIdentifier()) {
+            ProcedureIdentifier procedureIdentifier = null;
+
+            for (ProcedureIdentifier orgSearch : procedureEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    procedureIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (procedureIdentifier == null)  procedureIdentifier = new ProcedureIdentifier();
+
+            procedureIdentifier.setValue(identifier.getValue());
+            procedureIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            procedureIdentifier.setProcedure(procedureEntity);
+            em.persist(procedureIdentifier);
+        }
+
+         for (Procedure.ProcedurePerformerComponent performer : procedure.getPerformer()) {
+            ProcedurePerformer
+                    procedurePerformer = null;
+
+            for (ProcedurePerformer perSearch : procedureEntity.getPerformers()) {
+                if (performer.getActor().getReference().equals(performer.getActor().getReference()) ) {
+                    procedurePerformer = perSearch;
+                    break;
+                }
+            }
+            if (procedurePerformer == null)  procedurePerformer = new ProcedurePerformer();
+
+            if (performer.getActor().getReference().contains("Organization")) {
+                procedurePerformer.setActorOrganisation(organisationDao.readEntity(ctx, new IdType(performer.getActor().getReference())));
+            }
+             if (performer.getActor().getReference().contains("Practitioner")) {
+                 procedurePerformer.setActorPractioner(practitionerDao.readEntity(ctx, new IdType(performer.getActor().getReference())));
+             }
+
+            procedurePerformer.setProcedure(procedureEntity);
+            em.persist(procedurePerformer);
+        }
+
+        return procedureEntityToFHIRProcedureTransformer.transform(procedureEntity);
+    }
+
+
+    @Override
+    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject, TokenParam identifier) {
+
+        List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject,identifier);
         List<Procedure> results = new ArrayList<>();
 
         for (ProcedureEntity procedureEntity : qryResults)
@@ -87,7 +272,7 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject) {
+    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject, TokenParam identifier) {
         List<ProcedureEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -107,7 +292,15 @@ public class ProcedureDao implements ProcedureRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
+        if (identifier !=null)
+        {
+            Join<ProcedureEntity, ProcedureIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
+        }
 
         ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
         ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);

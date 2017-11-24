@@ -14,9 +14,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.referral.ReferralRequestEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "Procedure_")
@@ -115,6 +113,9 @@ public class ProcedureEntity extends BaseResource {
     @JoinColumn (name = "OUTCOME_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_OUTCOME_CONCEPT"))
     private ConceptEntity outcome;
 
+    @OneToMany(mappedBy="procedure", targetEntity=ProcedureIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<ProcedureIdentifier> identifiers = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -289,5 +290,13 @@ public class ProcedureEntity extends BaseResource {
     public ProcedureEntity setOutcome(ConceptEntity outcome) {
         this.outcome = outcome;
         return this;
+    }
+
+    public Set<ProcedureIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(Set<ProcedureIdentifier> identifiers) {
+        this.identifiers = identifiers;
     }
 }
