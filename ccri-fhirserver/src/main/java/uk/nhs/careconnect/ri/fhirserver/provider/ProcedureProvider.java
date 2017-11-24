@@ -67,7 +67,7 @@ public class ProcedureProvider implements ICCResourceProvider {
             , @OptionalParam(name = Procedure.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
                                   ) {
-        return procedureDao.search(ctx, patient, date, subject);
+        return procedureDao.search(ctx, patient, date, subject,null);
     }
 
     @Read()

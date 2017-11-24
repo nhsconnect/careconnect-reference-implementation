@@ -106,6 +106,10 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         opt.setRequired(false);
         options.addOption(opt);
 
+        opt = new Option("proc", "procedures", false, "Procedure Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
         return options;
 	}
 
@@ -265,6 +269,32 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                         if (outcome.getId() != null ) {
                             immunization.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
+            if (theCommandLine.hasOption("proc") ||theCommandLine.hasOption("a")) {
+                try {
+                    System.out.println("Procedure.csv");
+
+                    IRecordHandler handler = null;
+
+                    handler = new ProcedureHandler();
+                    processProcedureCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Procedure.csv"));
+
+                    for (IBaseResource resource : resources) {
+                        Procedure procedure = (Procedure) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" +procedure.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            procedure.setId(outcome.getId().getIdPart());
                         }
                     }
                     resources.clear();
@@ -535,7 +565,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
-    private void processAllergyCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+
+    private void processProcedureCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
         Boolean found = false;
         try {
@@ -551,17 +583,20 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .withAllowMissingColumnNames()
                         .withSkipHeaderRecord(true)
                         .withHeader("identifier"
+                                ,"subject"
+                                ,"status"
+                                ,"code.coding.code"
+                                ,"code.coding.display"
+                                ,"performed date"
+                                ,"performed time"
+                                ,"category.code.coding.code"
+                                ,"category.code.coding.display"
+                                ,"notPerformed"
+                                ,"Performer Type"
+                                ,"performer"
                                 ,"encounter"
-                                ,"patient"
-                                ,"substance.coding.code"
-                                ,"substance.coding.display"
-                                ,"clinicalStatus"
-                                ,"verificationStatus"
-                                ,"onset.DateTime"
-                                ,"assertedDate"
-                                ,"recorder"
-                                ,"lastOccurrence"
-
+                                ,"outcome.coding.code"
+                                ,"ouctome.coding.display"
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -621,6 +656,61 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 ,"lotNumber"
                                 ,"expirationDate"
                                 ,"vaccineCode.coding.display"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processAllergyCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("identifier"
+                                ,"encounter"
+                                ,"patient"
+                                ,"substance.coding.code"
+                                ,"substance.coding.display"
+                                ,"clinicalStatus"
+                                ,"verificationStatus"
+                                ,"onset.DateTime"
+                                ,"assertedDate"
+                                ,"recorder"
+                                ,"lastOccurrence"
+
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -1348,6 +1438,123 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
          //   System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
             resources.add(allergy);
+        }
+    }
+
+    public class ProcedureHandler implements  IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Procedure procedure = new Procedure();
+
+            procedure.addIdentifier()
+                    .setSystem("https://fhir.leedsth.nhs.uk/Id/procedure")
+                    .setValue(theRecord.get("identifier"));
+
+            procedure.setSubject(new Reference("Patient/" + theRecord.get("subject")));
+            if (!theRecord.get("status").isEmpty()) {
+                switch (theRecord.get("status")) {
+                    case "Completed" :
+                        procedure.setStatus(Procedure.ProcedureStatus.COMPLETED);
+                        break;
+                }
+            }
+            if (!theRecord.get("code.coding.code").isEmpty()) {
+                procedure.getCode().addCoding()
+                        .setCode(theRecord.get("code.coding.code"))
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setDisplay(theRecord.get("code.coding.display"));
+            }
+            if (!theRecord.get("category.code.coding.code").isEmpty()) {
+                procedure.getCategory().addCoding()
+                        .setCode(theRecord.get("category.code.coding.code"))
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setDisplay(theRecord.get("category.code.coding.display"));
+            }
+
+            String dateString = theRecord.get("performed date");
+            if (!theRecord.get("performed time").isEmpty()) dateString = dateString + " " +"performed time";
+
+            if (!dateString.isEmpty()) {
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // turn off set linient
+                    procedure.setPerformed(new DateTimeType(format.parse(dateString)));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        procedure.setPerformed(new DateTimeType(format.parse(dateString)));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (!theRecord.get("notPerformed").isEmpty()) {
+                switch (theRecord.get("notPerformed")) {
+                    case "FALSE" :
+                        procedure.setNotDone(false);
+                        break;
+                    case "TRUE" :
+                        procedure.setNotDone(true);
+                        break;
+                }
+            }
+            if (!theRecord.get("Performer Type").isEmpty()) {
+                switch (theRecord.get("Performer Type")) {
+                    case "Practitioner":
+                        Bundle results = client
+                                .search()
+                                .forResource(Practitioner.class)
+                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("performer")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+                        //   System.out.println(results.getEntry().size());
+                        if (results.getEntry().size() > 0) {
+                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
+
+                            Procedure.ProcedurePerformerComponent performer = procedure.addPerformer();
+                            performer.setActor(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                        }
+                        break;
+                    case "Organization":
+                        results = client
+                                .search()
+                                .forResource(Organization.class)
+                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("performer")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+                        //   System.out.println(results.getEntry().size());
+                        if (results.getEntry().size() > 0) {
+                            Organization organization = (Organization) results.getEntry().get(0).getResource();
+
+                            Procedure.ProcedurePerformerComponent performer = procedure.addPerformer();
+                            performer.setActor(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                        }
+                }
+            }
+            if (!theRecord.get("encounter").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Encounter.class)
+                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+                //   System.out.println(results.getEntry().size());
+                if (results.getEntry().size() > 0) {
+                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+              procedure.setContext(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
+                }
+            }
+            if (!theRecord.get("outcome.coding.code").isEmpty()) {
+                procedure.getOutcome().addCoding()
+                        .setCode(theRecord.get("outcome.coding.code"))
+                        .setSystem(CareConnectSystem.SNOMEDCT)
+                        .setDisplay(theRecord.get("ouctome.coding.display"));
+            }
+
+            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(procedure));
+            resources.add(procedure);
         }
     }
 

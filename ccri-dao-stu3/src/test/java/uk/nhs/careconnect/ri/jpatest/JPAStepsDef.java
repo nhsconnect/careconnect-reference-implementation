@@ -74,6 +74,9 @@ public class JPAStepsDef {
     ImmunizationRepository immunizationRepository;
 
     @Autowired
+    ProcedureRepository procedureRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -102,6 +105,8 @@ public class JPAStepsDef {
     List<AllergyIntolerance> allergyList = null;
 
     List<Immunization> immunisationList = null;
+
+    List<Procedure> procedureList = null;
 
     Transaction tx;
 
@@ -627,6 +632,42 @@ public class JPAStepsDef {
     }
 
 
+/*
+
+PROCEDURE
+
+ */
+    @Given("^I have one Procedure resource loaded$")
+    public void i_have_one_Procedure_resource_loaded() throws Throwable {
+        assertNotNull(procedureRepository.read(ctx,new IdType(1)));
+    }
+
+    @When("^I search Procedure on Patient ID = (\\d+)$")
+    public void i_search_Procedure_on_Patient_ID(int patient) throws Throwable {
+        procedureList = procedureRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+    }
+
+    @Then("^I should get a Bundle of Procedure (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Procedure_resource(int count) throws Throwable {
+        assertEquals(count,procedureList.size());
+    }
+
+    @When("^I update this Procedure$")
+    public void i_update_this_Procedure() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ProcedureExampleTwo.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        Procedure procedure = ctx.newJsonParser().parseResource(Procedure.class, reader);
+        try {
+            procedure = procedureRepository.create(ctx,procedure,null,"Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" +procedure.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+
 
 
 
@@ -668,7 +709,14 @@ public class JPAStepsDef {
 
             cs = codeSystemDao.findBySystem(CareConnectSystem.SNOMEDCT);
 
-            ConceptEntity concept = new ConceptEntity();
+            ConceptEntity concept = null;
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("162864005");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
             concept.setCodeSystem(cs);
             concept.setCode("228272008");
             conceptDao.save(concept);
@@ -680,8 +728,9 @@ public class JPAStepsDef {
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
-            concept.setCode("365605003");
+            concept.setCode("284350006");
             conceptDao.save(concept);
+
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
@@ -690,14 +739,20 @@ public class JPAStepsDef {
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
-            concept.setCode("162864005");
+            concept.setCode("365605003");
             conceptDao.save(concept);
-
+/*
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
-            concept.setCode("86290005");
+            concept.setCode("385669000");
             conceptDao.save(concept);
-
+*/
+/*
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("409073007");
+            conceptDao.save(concept);
+*/
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
             concept.setCode("722071008");
@@ -710,10 +765,13 @@ public class JPAStepsDef {
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
-            concept.setCode("308081000000105");
+            concept.setCode("86290005");
             conceptDao.save(concept);
 
-
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("308081000000105");
+            conceptDao.save(concept);
 
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Vital-Body-Mass-Example.json");
@@ -796,6 +854,18 @@ public class JPAStepsDef {
             Immunization immunization = ctx.newJsonParser().parseResource(Immunization.class, reader);
             try {
                 immunization = immunizationRepository.create(ctx,immunization,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ProcedureExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            Procedure procedure = ctx.newJsonParser().parseResource(Procedure.class, reader);
+            try {
+                procedure = procedureRepository.create(ctx,procedure,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

@@ -1,0 +1,52 @@
+{
+  "resourceType": "Procedure",
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/procedure",
+      "value": "100012"
+    }
+  ],
+  "status": "completed",
+  "notDone": false,
+  "category": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "409073007",
+        "display": "Education"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "284350006",
+        "display": "Diabetes mellitus diet education "
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/2"
+  },
+  "context": {
+    "reference": "Encounter/2"
+  },
+  "performedDateTime": "2017-03-19T00:00:00+00:00",
+  "performer": [
+    {
+      "actor": {
+        "reference": "Practitioner/2"
+      }
+    }
+  ],
+  "outcome": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "385669000",
+        "display": "successful"
+      }
+    ]
+  }
+}
