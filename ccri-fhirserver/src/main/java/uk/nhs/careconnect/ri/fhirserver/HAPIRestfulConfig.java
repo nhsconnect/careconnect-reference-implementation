@@ -91,6 +91,8 @@ public class HAPIRestfulConfig extends RestfulServer {
         ServerInterceptor loggingInterceptor = new ServerInterceptor(ourLog);
         registerInterceptor(loggingInterceptor);
 
+       // KGM 24/11/2017
+        // Mocked for exploration only setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
 
         // not fully tested registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
         setDefaultPrettyPrint(true);

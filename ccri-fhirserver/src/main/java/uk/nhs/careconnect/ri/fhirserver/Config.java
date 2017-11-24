@@ -1,12 +1,14 @@
 package uk.nhs.careconnect.ri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import uk.nhs.careconnect.ri.fhirserver.provider.DatabaseBackedPagingProvider;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +28,12 @@ public class Config {
     public FhirContext getServerFhirContext() {
         return FhirContext.forDstu3();
     }
+
+    @Bean(autowire = Autowire.BY_TYPE)
+		public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
+        			DatabaseBackedPagingProvider retVal = new DatabaseBackedPagingProvider();
+        			return retVal;
+        }
 
     @Value("${datasource.cleardown.cron:0 19 21 * * *}")
     private String cron;

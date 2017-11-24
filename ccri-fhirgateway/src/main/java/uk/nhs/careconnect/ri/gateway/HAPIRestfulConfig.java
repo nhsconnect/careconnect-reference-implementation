@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gateway;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
@@ -94,6 +95,15 @@ public class HAPIRestfulConfig extends RestfulServer {
 		registerInterceptor(gatewayInterceptor);
 		//gatewayInterceptor.setLoggerName("ccri.FHIRGateway");
 		//gatewayInterceptor.setLogger(ourLog);
+
+		// This paging provider is not robust KGM 24/11/2017
+
+		// Mocking of a database Paging Provider is in server
+
+		FifoMemoryPagingProvider pp = new FifoMemoryPagingProvider(10);
+		pp.setDefaultPageSize(10);
+		pp.setMaximumPageSize(100);
+		setPagingProvider(pp);
 
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
