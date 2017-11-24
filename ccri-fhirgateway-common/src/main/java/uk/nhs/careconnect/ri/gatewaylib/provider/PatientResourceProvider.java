@@ -80,6 +80,52 @@ public class PatientResourceProvider implements IResourceProvider {
 
         return patient;
     }
+/*
+    @Search(type=Patient.class)
+    public Bundle searchPatient(HttpServletRequest theRequest,
+
+                                       @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
+                                       @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
+                                       @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
+                                       @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
+                                       @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
+                                       @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
+                                       @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+                                       @OptionalParam(name= Patient.SP_NAME) StringParam name,
+                                       @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+    ) {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRPatient",
+                ExchangePattern.InOut,theRequest);
+
+        Bundle bundle = null;
+
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
+        try {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            return bundle;
+        } else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+        return bundle;
+
+    }
+*/
 
     @Search
     public List<Patient> searchPatient(HttpServletRequest theRequest,
@@ -132,7 +178,5 @@ public class PatientResourceProvider implements IResourceProvider {
         return results;
 
     }
-
-
 
 }
