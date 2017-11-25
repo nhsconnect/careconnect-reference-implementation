@@ -5,15 +5,13 @@
     <parent>
         <artifactId>ccri</artifactId>
         <groupId>uk.nhs.careconnect.ri</groupId>
-        <version>3.3.6-SNAPSHOT</version>
+        <version>3.3.7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ccri-fhirserver-common</artifactId>
 
-    <properties>
-        <spring_version>4.3.10.RELEASE</spring_version>
-    </properties>
+
 
     <dependencies>
 

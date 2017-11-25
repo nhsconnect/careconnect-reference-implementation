@@ -6,17 +6,18 @@
 
     <groupId>uk.nhs.careconnect.ri</groupId>
     <artifactId>ccri</artifactId>
-    <version>3.3.6-SNAPSHOT</version>
+    <version>3.3.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
     <properties>
-        <care-connect-version>3.3.6-SNAPSHOT</care-connect-version>
+        <care-connect-version>3.3.7-SNAPSHOT</care-connect-version>
         <hapi-fhir-version>3.0.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <derby_version>10.13.1.1</derby_version>
         <slf4j>1.7.25</slf4j>
         <spring-boot>1.5.7.RELEASE</spring-boot>
+        <spring_version>4.3.10.RELEASE</spring_version>
 
         <thymeleaf-version>3.0.7.RELEASE</thymeleaf-version>
 
@@ -24,7 +25,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.19.3</camel-version>
+        <camel-version>2.20.1</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->
