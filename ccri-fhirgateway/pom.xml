@@ -19,7 +19,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri</artifactId>
-        <version>3.3.6-SNAPSHOT</version>
+        <version>3.3.7-SNAPSHOT</version>
     </parent>
 
 	<properties>
@@ -38,8 +38,8 @@
         <maven_source_plugin_version>2.4</maven_source_plugin_version>
         <phloc_schematron_version>2.7.1</phloc_schematron_version>
         <phloc_commons_version>4.4.6</phloc_commons_version>
-        <spring_version>4.3.10.RELEASE</spring_version>
 
+		<hapi-fhir-version>3.0.0</hapi-fhir-version>
         <xmlunit_version>1.6</xmlunit_version>
 
 
