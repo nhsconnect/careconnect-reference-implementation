@@ -12,7 +12,7 @@ import java.util.Date;
 
 
 @MappedSuperclass
-public abstract class BaseResource {
+public abstract class BaseResource implements IBaseResource {
 
 	private static final int MAX_PROFILE_LENGTH = 10000;
 

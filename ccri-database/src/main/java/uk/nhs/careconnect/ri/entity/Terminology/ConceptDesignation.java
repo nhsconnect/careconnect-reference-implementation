@@ -98,9 +98,9 @@ public class ConceptDesignation extends BaseResource {
         this.conceptEntity = conceptEntity;
     }
 
-    public Long setId(Long id) {
+    public ConceptDesignation setId(Long id) {
         this.Id = id;
-        return this.Id;
+        return this;
     }
 
     public ConceptEntity setLanguage(ConceptEntity language) {

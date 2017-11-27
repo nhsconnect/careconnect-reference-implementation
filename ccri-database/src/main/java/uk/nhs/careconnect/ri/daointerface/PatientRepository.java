@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import java.util.List;
 
 
-public interface PatientRepository extends BaseInterface {
+public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
 
     void save(FhirContext ctx, PatientEntity patient);
 

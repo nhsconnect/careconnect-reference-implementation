@@ -24,9 +24,6 @@ public class ProcedureEntity extends BaseResource {
     @Column(name="PROCEDURE_ID")
     private Long id;
 
-
-
-
     @ManyToOne
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn (name = "BASED_ON_REFERRAL_REQUEST_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_REFERRAL_ID"))

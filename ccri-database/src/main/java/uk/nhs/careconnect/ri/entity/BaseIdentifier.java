@@ -42,4 +42,9 @@ public class BaseIdentifier extends BaseResource {
 
     public void setUse(org.hl7.fhir.instance.model.Identifier.IdentifierUse use) { this.identifierUse = use; }
     public org.hl7.fhir.instance.model.Identifier.IdentifierUse getUse() { 	return this.identifierUse; }
+
+    @Override
+    public Long getId() {
+        return null;
+    }
 }

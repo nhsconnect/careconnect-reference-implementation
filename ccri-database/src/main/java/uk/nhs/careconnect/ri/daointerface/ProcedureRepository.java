@@ -9,12 +9,11 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Procedure;
-import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import java.util.List;
 
-public interface ProcedureRepository extends BaseInterface {
+public interface ProcedureRepository extends BaseDao<ProcedureEntity,Procedure> {
     void save(FhirContext ctx,ProcedureEntity procedure);
 
     Procedure read(FhirContext ctx, IdType theId);

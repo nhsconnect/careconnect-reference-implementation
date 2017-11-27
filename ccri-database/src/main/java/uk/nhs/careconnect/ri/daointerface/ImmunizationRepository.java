@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 
 import java.util.List;
 
-public interface ImmunizationRepository  extends BaseInterface {
+public interface ImmunizationRepository extends BaseDao<ImmunisationEntity, Immunization>  {
     void save(FhirContext ctx,ImmunisationEntity immunisation);
 
     Immunization read(FhirContext ctx, IdType theId);

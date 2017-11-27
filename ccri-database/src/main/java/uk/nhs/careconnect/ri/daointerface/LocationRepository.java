@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import java.util.List;
 
-public interface LocationRepository extends BaseInterface  {
+public interface LocationRepository extends BaseDao<LocationEntity,Location> {
     void save(FhirContext ctx,LocationEntity location);
 
     Location read(FhirContext ctx, IdType theId);

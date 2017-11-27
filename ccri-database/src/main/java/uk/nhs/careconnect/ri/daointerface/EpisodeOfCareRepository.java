@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import java.util.List;
 
-public interface EpisodeOfCareRepository extends BaseInterface {
+public interface EpisodeOfCareRepository extends BaseDao<EpisodeOfCareEntity,EpisodeOfCare> {
     void save(FhirContext ctx,EpisodeOfCare episode);
 
     EpisodeOfCare read(FhirContext ctx, IdType theId);

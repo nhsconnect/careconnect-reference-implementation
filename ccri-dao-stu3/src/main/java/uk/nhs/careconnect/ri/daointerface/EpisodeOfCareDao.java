@@ -42,6 +42,16 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
         return em.createQuery(cq).getSingleResult();
     }
 
+    @Override
+    public EpisodeOfCareEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
+    @Override
+    public void save(FhirContext ctx, EpisodeOfCareEntity resource) {
+
+    }
+
 
     @Override
     public void save(FhirContext ctx, EpisodeOfCare episode) {

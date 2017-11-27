@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
+import uk.nhs.careconnect.ri.entity.IBaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceIdentifier;
@@ -81,6 +82,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
         //cq.where(/*your stuff*/);
         return em.createQuery(cq).getSingleResult();
     }
+
 
 
     @Override

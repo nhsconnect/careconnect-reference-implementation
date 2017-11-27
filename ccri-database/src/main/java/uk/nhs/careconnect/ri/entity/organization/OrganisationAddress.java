@@ -51,5 +51,8 @@ public class OrganisationAddress extends BaseAddress {
     }
 
 
-
+    @Override
+    public Long getId() {
+        return this.myId;
+    }
 }

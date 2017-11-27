@@ -39,6 +39,11 @@ public class MedicationStatementDao implements MedicationStatementRepository {
         return em.createQuery(cq).getSingleResult();
     }
 
+    @Override
+    public MedicationStatementEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
 
     @Override
     public MedicationStatement read(FhirContext ctx,IdType theId) {

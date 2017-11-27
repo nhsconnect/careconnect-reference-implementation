@@ -22,7 +22,8 @@ public class ValueSetEntity extends BaseResource {
 	@Column(name="VALUESET_ID")
 	private Integer id;
 	public void setId(Integer id) { this.id = id; }
-	public Integer getId() { return id; }
+	//public Integer getId() { return id; }
+	public Long getId() { return id.longValue(); }
 	
 	@Column(name="VALUESET_STRID")
 	private String strId;	

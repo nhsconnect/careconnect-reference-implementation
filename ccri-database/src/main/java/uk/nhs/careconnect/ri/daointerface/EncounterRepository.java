@@ -7,14 +7,13 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 
 import java.util.List;
 
-public interface EncounterRepository  extends BaseInterface {
+public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter> {
     void save(FhirContext ctx,EncounterEntity encounter);
 
     Encounter read(FhirContext ctx, IdType theId);

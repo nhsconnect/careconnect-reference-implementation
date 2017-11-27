@@ -8,12 +8,13 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Medication;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 
 import java.util.List;
 
-public interface MedicationRequestRepository extends BaseInterface {
+public interface MedicationRequestRepository extends BaseDao<MedicationRequestEntity, MedicationRequest> {
     void save(FhirContext ctx,MedicationRequestEntity prescription);
 
     MedicationRequest read(FhirContext ctx, IdType theId);
@@ -28,6 +29,7 @@ public interface MedicationRequestRepository extends BaseInterface {
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
+            , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER) TokenParam identifier
 
     );
 
@@ -36,5 +38,6 @@ public interface MedicationRequestRepository extends BaseInterface {
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
+            , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER) TokenParam identifier
     );
 }

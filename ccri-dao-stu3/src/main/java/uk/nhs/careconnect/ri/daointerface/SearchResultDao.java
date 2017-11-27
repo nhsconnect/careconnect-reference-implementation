@@ -21,7 +21,7 @@ public class SearchResultDao implements ISearchResultDao {
     public String save(IBundleProvider searchResults) {
         SearchResults search = new SearchResults();
         em.persist(search);
-        return search.getID().toString();
+        return search.getId().toString();
     }
 
     @Override

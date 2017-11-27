@@ -16,7 +16,7 @@ public class AddressEntity extends BaseResource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ADDRESS_ID")
     private Long addressId;
-    public Long getID() { return this.addressId; }
+    public Long getId() { return this.addressId; }
 
     @Column(name = "address_1")
     private String address1;

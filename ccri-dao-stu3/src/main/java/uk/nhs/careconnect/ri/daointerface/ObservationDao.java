@@ -394,6 +394,11 @@ public class ObservationDao implements ObservationRepository {
     }
 
     @Override
+    public void save(FhirContext ctx, ObservationEntity resource) {
+        em.persist(resource);
+    }
+
+    @Override
     public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
 
 

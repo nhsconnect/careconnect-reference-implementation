@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
-public interface ConditionRepository extends BaseInterface {
+public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> {
     void save(FhirContext ctx,ConditionEntity condition);
 
     Condition read(FhirContext ctx, IdType theId);

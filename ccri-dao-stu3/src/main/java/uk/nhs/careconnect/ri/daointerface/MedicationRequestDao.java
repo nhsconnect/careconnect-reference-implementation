@@ -7,7 +7,8 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+
+
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 
 import javax.persistence.EntityManager;
@@ -39,6 +40,11 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         return em.createQuery(cq).getSingleResult();
     }
 
+    @Override
+    public MedicationRequestEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
 
     @Override
     public MedicationRequest read(FhirContext ctx,IdType theId) {
@@ -51,12 +57,14 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequest> search(FhirContext ctx,ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status) {
+    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status, TokenParam identifier) {
         return null;
     }
 
     @Override
-    public List<MedicationRequestEntity> searchEntity(FhirContext ctx,ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status) {
+    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status, TokenParam identifier) {
         return null;
     }
+
+
 }

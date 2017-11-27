@@ -13,7 +13,7 @@ public class SearchResults  extends BaseResource {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name="SEARCH_ID")
         private Long searchId;
-        public Long getID() {
+        public Long getId() {
             return this.searchId;
         }
 }

@@ -54,6 +54,10 @@ public class ConceptEntity extends BaseResource {
 	public Long getId() {
 		return conceptId;
 	}
+	public ConceptEntity setId(Long id) {
+		this.conceptId = id;
+		return this;
+	}
 
 	@Column(name = "INDEX_STATUS", nullable = true)
 	private Long myIndexStatus;

@@ -18,7 +18,7 @@ public class SystemEntity extends BaseResource {
 	@Column(name = "SYSTEM_ID")
 	private Long myPid;
 
-	public Long getPID()
+	public Long getId()
 	{
 		return this.myPid;
 	}

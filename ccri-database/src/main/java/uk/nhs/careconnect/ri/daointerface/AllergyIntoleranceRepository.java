@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 
 import java.util.List;
 
-public interface AllergyIntoleranceRepository extends BaseInterface {
+public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntoleranceEntity,AllergyIntolerance> {
     void save(FhirContext ctx,AllergyIntoleranceEntity allergy);
 
     AllergyIntolerance read(FhirContext ctx, IdType theId);

@@ -12,7 +12,7 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import java.util.List;
 
-public interface PractitionerRepository extends BaseInterface {
+public interface PractitionerRepository extends BaseDao<PractitionerEntity,Practitioner> {
 
     void save(FhirContext ctx,PractitionerEntity practitioner);
 

@@ -84,4 +84,8 @@ public class BaseHumanName extends BaseResource {
         return names.stream().filter(Objects::nonNull).collect(Collectors.joining(" "));
     }
 
+    @Override
+    public Long getId() {
+        return null;
+    }
 }

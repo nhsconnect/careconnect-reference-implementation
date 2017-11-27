@@ -93,4 +93,9 @@ public class BaseContactPoint extends BaseResource {
                 return null;
         }
     }
+
+    @Override
+    public Long getId() {
+        return null;
+    }
 }

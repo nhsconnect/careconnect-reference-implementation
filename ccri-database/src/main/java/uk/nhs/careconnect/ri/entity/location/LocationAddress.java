@@ -25,7 +25,7 @@ public class LocationAddress extends BaseAddress {
     @ManyToOne
     @JoinColumn(name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ADDRESS_LOCATION_ID"))
     private LocationEntity locationEntity;
-    public Long getPID()
+    public Long getId()
     {
         return this.myId;
     }

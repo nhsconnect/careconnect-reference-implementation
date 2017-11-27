@@ -7,11 +7,12 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 
 import java.util.List;
 
-public interface PractitionerRoleRepository extends BaseInterface{
+public interface PractitionerRoleRepository extends BaseDao<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole,PractitionerRole> {
 
     void save(FhirContext ctx, uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole practitioner);
 
