@@ -9,6 +9,10 @@ delete from AllergyIntoleranceCategory;
 delete from AllergyIntoleranceReaction;
 DELETE FROM AllergyIntolerance;
 
+delete from MedicationRequestDosage;
+delete from MedicationRequestIdentifier;
+delete from MedicationRequest;
+
 
 
 

@@ -9,6 +9,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
@@ -101,6 +102,40 @@ public class MedicationRequestEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<MedicationRequestDosage> dosages = new HashSet<>();
 
+    public ConceptEntity getSupplyTypeCode() {
+        return supplyTypeCode;
+    }
+
+    public void setSupplyTypeCode(ConceptEntity supplyTypeCode) {
+        this.supplyTypeCode = supplyTypeCode;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "SUPPLY_TYPE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_SUPPLY_TYPE_CONCEPT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ConceptEntity supplyTypeCode;
+
+    @ManyToOne
+    @JoinColumn(name = "REQUESTER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PRACTITIONER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    PractitionerEntity requesterPractitioner;
+
+    @ManyToOne
+    @JoinColumn(name = "REQUESTER_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ORGANISATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    OrganisationEntity requesterOrganisation;
+
+    @ManyToOne
+    @JoinColumn(name = "REQUESTER_PATIENT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PATIENT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    PatientEntity requesterPatient;
+
+
+    @ManyToOne
+    @JoinColumn(name = "REQUESTER_ONBEHALF_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ONBEHALF_ORGANISATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    OrganisationEntity requesterOnBehalfOfOrganisation;
+
 
     public Set<MedicationRequestIdentifier> getIdentifiers() {
         return identifiers;
@@ -108,6 +143,42 @@ public class MedicationRequestEntity extends BaseResource {
 
     public MedicationRequestEntity setIdentifiers(Set<MedicationRequestIdentifier> identifiers) {
         this.identifiers = identifiers;
+        return this;
+    }
+
+    public PractitionerEntity getRequesterPractitioner() {
+        return requesterPractitioner;
+    }
+
+    public MedicationRequestEntity setRequesterPractitioner(PractitionerEntity requesterPractitioner) {
+        this.requesterPractitioner = requesterPractitioner;
+        return this;
+    }
+
+    public OrganisationEntity getRequesterOrganisation() {
+        return requesterOrganisation;
+    }
+
+    public MedicationRequestEntity setRequesterOrganisation(OrganisationEntity requesterOrganisation) {
+        this.requesterOrganisation = requesterOrganisation;
+        return this;
+    }
+
+    public PatientEntity getRequesterPatient() {
+        return requesterPatient;
+    }
+
+    public MedicationRequestEntity setRequesterPatient(PatientEntity requesterPatient) {
+        this.requesterPatient = requesterPatient;
+        return this;
+    }
+
+    public OrganisationEntity getRequesterOnBehalfOfOrganisation() {
+        return requesterOnBehalfOfOrganisation;
+    }
+
+    public MedicationRequestEntity setRequesterOnBehalfOfOrganisation(OrganisationEntity requesterOnBehalfOfOrganisation) {
+        this.requesterOnBehalfOfOrganisation = requesterOnBehalfOfOrganisation;
         return this;
     }
 

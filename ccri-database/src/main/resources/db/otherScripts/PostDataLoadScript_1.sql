@@ -57,5 +57,17 @@ SET @CONCEPT = null;
 SELECT CONCEPT_ID INTO @CONCEPT FROM careconnect.Concept where CODE = '396429000' ;
 update `Immunisation` set `MEDICATION_CODE_ID`= @CONCEPT where IMMUNISATION_ID = 1;
 
+/* MEDICATIONS */
+
+SET @CONCEPT = null;
+SELECT CONCEPT_ID INTO @CONCEPT FROM careconnect.Concept where CODE = '10097211000001102' ;
+update `MedicationRequest` set `MEDICATION_CODE_CONCEPT_ID`= @CONCEPT where PRESCRIPTION_ID = 1;
+
+SET @CONCEPT = null;
+SELECT CONCEPT_ID INTO @CONCEPT FROM careconnect.Concept where CODE = '1521000175104' ;
+update `MedicationRequestDosage` set `ADDITIONAL_INSTRUCTION_CONCEPT`= @CONCEPT where PRESCRIPTION_DOSAGE_ID = 1;
+
+
+
 
 
