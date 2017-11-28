@@ -33,7 +33,11 @@ public class ObservationIdentifier extends BaseIdentifier {
 	public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
+	public ObservationEntity getObservation() {
+		return observation;
+	}
 
-
-
+	public void setObservation(ObservationEntity observation) {
+		this.observation = observation;
+	}
 }

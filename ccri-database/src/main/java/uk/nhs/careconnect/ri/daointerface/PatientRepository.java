@@ -24,7 +24,7 @@ public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
 
     Patient update(FhirContext ctx, Patient patient, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
 
-    List<Patient> searchPatient (FhirContext ctx,
+    List<Patient> search (FhirContext ctx,
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
@@ -34,5 +34,16 @@ public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
             @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name= Patient.SP_NAME) StringParam name,
             @OptionalParam(name= Patient.SP_PHONE) StringParam phone);
+
+    List<PatientEntity> searchEntity (FhirContext ctx,
+                          @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
+                          @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+                          @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
+                          @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
+                          @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
+                          @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
+                          @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+                          @OptionalParam(name= Patient.SP_NAME) StringParam name,
+                          @OptionalParam(name= Patient.SP_PHONE) StringParam phone);
 
 }

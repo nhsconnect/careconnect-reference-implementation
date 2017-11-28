@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public interface ObservationRepository extends BaseDao<ObservationEntity,Observation> {
 
-    Observation save(FhirContext ctx, Observation observation) throws IllegalArgumentException;
+    Observation save(FhirContext ctx, Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws IllegalArgumentException;
 
     Observation read(FhirContext ctx, IdType theId);
 
@@ -25,6 +27,14 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
             @OptionalParam(name= Observation.SP_CODE) TokenParam code,
             @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
             @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
+            ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
             );
 
+    List<ObservationEntity> searchEntity (FhirContext ctx,
+                              @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
+                              @OptionalParam(name= Observation.SP_CODE) TokenParam code,
+                              @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
+                              @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
+            ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
+    );
 }

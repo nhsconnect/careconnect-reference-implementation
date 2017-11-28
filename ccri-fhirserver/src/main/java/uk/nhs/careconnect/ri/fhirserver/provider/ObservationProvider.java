@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -44,8 +45,8 @@ public class ObservationProvider implements ICCResourceProvider {
     }
 
 
-    @Create
-    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Observation observation) {
+    @Update
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
 
         MethodOutcome method = new MethodOutcome();
@@ -54,7 +55,9 @@ public class ObservationProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-        observation = observationDao.save(ctx,observation);
+        Observation newObservation = observationDao.save(ctx,observation,theId,theConditional);
+        method.setId(newObservation.getIdElement());
+        method.setResource(newObservation);
 
         return method;
     }
@@ -77,9 +80,10 @@ public class ObservationProvider implements ICCResourceProvider {
                                     @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
                                     @OptionalParam(name= Observation.SP_CODE) TokenParam code,
                                     @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
-                                    @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
+                                    @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient,
+                                    @OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
                                        ) {
-        return observationDao.search(ctx,category, code, effectiveDate,patient);
+        return observationDao.search(ctx,category, code, effectiveDate,patient, identifier);
     }
 
 

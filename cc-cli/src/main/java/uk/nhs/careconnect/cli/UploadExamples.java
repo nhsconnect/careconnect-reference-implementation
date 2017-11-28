@@ -40,6 +40,7 @@ public class   UploadExamples extends BaseCommand {
 
     private Map<String,String> docMap = new HashMap<>();
 
+    private static String nokiaObs = "https://fhir.health.phr.example.com/Id/observation";
 
     FhirContext ctx ;
 
@@ -63,6 +64,13 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		return "upload-examples";
 	}
 
+	public String stripChar(String string) {
+	    string =string.replace(" ","");
+        string =string.replace(":","");
+        string =string.replace("-","");
+        return string;
+    }
+
 	@Override
 	public Options getOptions() {
 		Options options = new Options();
@@ -82,7 +90,11 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         opt.setRequired(false);
         options.addOption(opt);
 
-        opt = new Option("p", "phr", false, "PHR Examples upload files");
+        opt = new Option("phr", "phr", false, "PHR Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
+        opt = new Option("pat", "patient", false, "Patient Examples upload files");
         opt.setRequired(false);
         options.addOption(opt);
 
@@ -131,7 +143,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             client = ctx.newRestfulGenericClient(targetServer);
 
             // BA Patient data file
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("g")) {
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("pat")) {
                 try {
 
                     System.out.println("Patient.csv");
@@ -141,7 +153,20 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new PatientHandler(ctx, client);
                     processPatientCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Patient.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Patient patient = (Patient) resource;
+                        Identifier identifier = null;
+                        for (Identifier ident : patient.getIdentifier()) {
+                            if (ident.getSystem().contains("PPMIdentifier")) identifier = ident;
+                        }
+                        if (identifier != null) {
+                            MethodOutcome outcome = client.update().resource(resource)
+                                    .conditionalByUrl("Patient?identifier=" + identifier.getSystem() + "%7C" + identifier.getValue())
+                                    .execute();
+
+                            if (outcome.getId() != null) {
+                                patient.setId(outcome.getId().getIdPart());
+                            }
+                        }
                     }
                     resources.clear();
 
@@ -163,7 +188,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new ObsHandler();
                     processObsCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Obs.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Observation observation = (Observation) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" +observation.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            observation.setId(outcome.getId().getIdPart());
+                        }
                     }
                     resources.clear();
 
@@ -321,19 +353,43 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             */
 
             // Nokia
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("p")) {
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("phr")) {
 
                 try {
 
                     // File file = new File(classLoader.getResource("Examples/nokia/weight.csv").getFile());
 
-                    System.out.println("weight.csv");
+                    System.out.println("activities.csv");
                     IRecordHandler handler = null;
+
+                    handler = new ActivitiesHandler();
+                    processActivitiesCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/activities.csv"));
+                    for (IBaseResource resource : resources) {
+                        Observation observation = (Observation) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" +observation.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            observation.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
+                    System.out.println("weight.csv");
+
 
                     handler = new WeightHandler();
                     processWeightCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/weight.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Observation observation = (Observation) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" +observation.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            observation.setId(outcome.getId().getIdPart());
+                        }
                     }
                     resources.clear();
 
@@ -345,7 +401,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new BloodPressureHandler();
                     processBloodPressureCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/blood_pressure.csv"));
                     for (IBaseResource resource : resources) {
-                        client.create().resource(resource).execute();
+                        Observation observation = (Observation) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" +observation.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            observation.setId(outcome.getId().getIdPart());
+                        }
                     }
                     resources.clear();
 
@@ -893,6 +956,56 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
+    private void processActivitiesCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+
+        Boolean found = false;
+        try {
+
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("Date"
+                                ,"Steps"
+                                ,"Distance (m)"
+                                ,"Elevation (m)"
+                                ,"Active calories"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     private void processBloodPressureCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
 
@@ -955,6 +1068,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             Observation observation = newBasicObservation2(theRecord.get("EffectiveDateTime"), theRecord.get("FHIRCategory"), theRecord.get("FHIRCategory"),CareConnectSystem.FHIRObservationCategory);
 
+            observation.addIdentifier()
+                    .setSystem("https://fhir.leedsth.nhs.uk/Id/observation")
+                    .setValue(theRecord.get("ObservationID"));
             CodeableConcept code = observation.getCode();
             code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("Code")).setDisplay(theRecord.get("CodeDisplay"));
 
@@ -1047,8 +1163,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
 
-           // System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
-            resources.add(observation);
+            //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
+           resources.add(observation);
         }
     }
 
@@ -1788,10 +1904,21 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                  }
 
              }
-	      //  System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
 
-            client.update().resource(patient).execute();
-            //MethodOutcome outcome
+             Boolean found = false;
+	        for (Identifier identifier : patient.getIdentifier()) {
+	            if (identifier.getSystem().contains("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")) {
+	                found = true;
+                }
+            }
+            if (!found) {
+	            patient.addIdentifier()
+                        .setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")
+                        .setValue(theRecord.get("PATIENT_ID"));
+            }
+	        //System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
+
+	        resources.add(patient);
 
         }
     }
@@ -1804,7 +1931,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 try {
 
                     Observation observation = newBasicObservation(theRecord.get("Date"), "364066008", "Cardiovascular observable",CareConnectSystem.SNOMEDCT);
-
+                    observation.addIdentifier()
+                            .setSystem(nokiaObs)
+                            .setValue("CD"+stripChar(theRecord.get("Date")));
                     CodeableConcept code = observation.getCode();
                     code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("364075005").setDisplay("Heart rate");
 
@@ -1828,7 +1957,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 try {
 
                     Observation observation = newBasicObservation(theRecord.get("Date"), "364066008", "Cardiovascular observable",CareConnectSystem.SNOMEDCT);
-
+                    observation.addIdentifier()
+                            .setSystem(nokiaObs)
+                            .setValue("BP"+stripChar(theRecord.get("Date")));
                     CodeableConcept code = observation.getCode();
                     code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("75367002").setDisplay("Blood pressure");
 
@@ -1871,7 +2002,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("Weight").isEmpty()) {
 
                 Observation observation = newBasicObservation(theRecord.get("Date"), "248326004", "Body measure",CareConnectSystem.SNOMEDCT);
-
+                observation.addIdentifier()
+                        .setSystem(nokiaObs)
+                        .setValue("WT"+stripChar(theRecord.get("Date")));
                 CodeableConcept code = observation.getCode();
                 code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("27113001").setDisplay("Body Weight");
 
@@ -1889,6 +2022,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("FatMass").isEmpty()) {
                 Observation  fatMassobservation = newBasicObservation(theRecord.get("Date"),"365605003","Body measurement finding",CareConnectSystem.SNOMEDCT);
 
+                fatMassobservation.addIdentifier()
+                        .setSystem(nokiaObs)
+                        .setValue("LD"+stripChar(theRecord.get("Date")));
                 CodeableConcept code =fatMassobservation.getCode();
 
                 code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("248363008").setDisplay("Fat-free mass");
@@ -1907,6 +2043,55 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
 
     }
+
+    public class ActivitiesHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            if (!theRecord.get("Active calories").isEmpty()) {
+
+                Observation observation = newBasicObservation(theRecord.get("Date"), "therapy","Therapy","http://hl7.org/fhir/observation-category");
+                observation.addIdentifier()
+                        .setSystem(nokiaObs)
+                        .setValue("AT"+stripChar(theRecord.get("Date")));
+                CodeableConcept code = observation.getCode();
+                code.addCoding().setSystem(CareConnectSystem.LOINC).setCode("41981-2").setDisplay("Calories burned");
+
+                Quantity quantity = new Quantity();
+                quantity
+                        .setValue(new BigDecimal(theRecord.get("Active calories")))
+                        .setUnit("cal")
+                        .setCode("cal")
+                        .setSystem(CareConnectSystem.UnitOfMeasure);
+                observation.setValue(quantity);
+                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
+                resources.add(observation);
+
+            }
+            if (!theRecord.get("Steps").isEmpty()) {
+                Observation stepobservation = newBasicObservation(theRecord.get("Date"), "therapy","Therapy","http://hl7.org/fhir/observation-category");
+
+                stepobservation.addIdentifier()
+                        .setSystem(nokiaObs)
+                        .setValue("SP"+stripChar(theRecord.get("Date")));
+                CodeableConcept code =stepobservation.getCode();
+
+                code.addCoding().setSystem(CareConnectSystem.LOINC).setCode("41950-7").setDisplay("Number of steps in 24 hour Measured");
+
+                Quantity quantity= new Quantity();
+                quantity
+                        .setValue(new BigDecimal(theRecord.get("Steps")))
+                        .setUnit("/d")
+                        .setCode("/d")
+                        .setSystem(CareConnectSystem.UnitOfMeasure);
+                stepobservation.setValue(quantity);
+                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(stepobservation));
+                resources.add(stepobservation);
+            }
+
+        }
+
+    }
+
 
     private Observation newBasicObservation2(String dateString, String categoryCode, String categoryDesc, String categorySystem) {
         Observation observation = null;
@@ -1940,11 +2125,24 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
     private Observation newBasicObservation(String dateString, String categoryCode, String categoryDesc, String categorySystem) {
         Observation observation = null;
-        try {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Date date = format.parse(dateString);
 
         observation = new Observation();
+        Date date = null;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            date = format.parse(dateString);
+        }
+        catch (Exception e) {
+                try {
+                    //  System.out.println(dateString);
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    date = format.parse(dateString);
+                } catch (Exception e2) {
+                    e.printStackTrace();
+                }
+            }
+
+
         observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
         observation.setStatus(Observation.ObservationStatus.FINAL);
         CodeableConcept category = observation.addCategory();
@@ -1955,9 +2153,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         observation.setEffective(new DateTimeType(date));
 
         observation.getPerformer().add(new Reference("Patient/2"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         return observation;
 
     }

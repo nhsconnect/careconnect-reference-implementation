@@ -61,7 +61,7 @@ public class PatientProvider implements ICCResourceProvider {
     }
 
     @Update
-    public MethodOutcome updatePatient(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId, RequestDetails theRequestDetails) {
+    public MethodOutcome updatePatient(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
@@ -69,7 +69,7 @@ public class PatientProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-        Patient newPatient = patientDao.update(ctx, patient, theId, null);
+        Patient newPatient = patientDao.update(ctx, patient, theId, theConditional);
         method.setId(newPatient.getIdElement());
         method.setResource(newPatient);
 
@@ -93,7 +93,7 @@ public class PatientProvider implements ICCResourceProvider {
 
 
 
-        return patientDao.searchPatient(ctx,addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
+        return patientDao.search(ctx,addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
 
     }
 

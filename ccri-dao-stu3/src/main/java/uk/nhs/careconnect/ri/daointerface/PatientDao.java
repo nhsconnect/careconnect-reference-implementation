@@ -15,7 +15,9 @@ import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientT
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.*;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
@@ -27,6 +29,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -48,6 +51,9 @@ public class PatientDao implements PatientRepository {
 
     @Autowired
     OrganisationRepository organisationDao;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
 
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
@@ -107,6 +113,40 @@ public class PatientDao implements PatientRepository {
             log.info("theId.getIdPart()="+theId.getIdPart());
             patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
         }
+
+        if (theConditional != null) {
+            try {
+
+                //CareConnectSystem.ODSOrganisationCode
+                if (theConditional.contains("PPMIdentifier")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"), null,null);
+                    for (PatientEntity pat : results) {
+                        patientEntity = pat;
+                        break;
+                    }
+                    // This copes with the new identifier being added.
+                    if (patientEntity == null && daoutils.isNumeric(spiltStr[1])) {
+                        patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(spiltStr[1]));
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+
         if (patientEntity == null)
             return null;
 
@@ -170,9 +210,9 @@ public class PatientDao implements PatientRepository {
                 throw new IllegalArgumentException("Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
             }
         }
-        for (Identifier identifer : patient.getIdentifier()) {
-            if (identifer.getSystem().equals(CareConnectSystem.NHSNumber) && identifer.getExtension().size()>0) {
-                CodeableConcept nhsVerification = (CodeableConcept) identifer.getExtension().get(0).getValue();
+        for (Identifier identifier : patient.getIdentifier()) {
+            if (identifier.getSystem().equals(CareConnectSystem.NHSNumber) && identifier.getExtension().size()>0) {
+                CodeableConcept nhsVerification = (CodeableConcept) identifier.getExtension().get(0).getValue();
                 ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0).getSystem(),nhsVerification.getCoding().get(0).getCode());
                 if (code != null) { patientEntity.setNHSVerificationCode(code); }
                 else {
@@ -180,6 +220,19 @@ public class PatientDao implements PatientRepository {
                     throw new IllegalArgumentException("Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
                 }
             }
+            PatientIdentifier patientIdentifier = null;
+            for (PatientIdentifier orgSearch : patientEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    patientIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (patientIdentifier == null)  patientIdentifier = new PatientIdentifier();
+
+            patientIdentifier.setValue(identifier.getValue());
+            patientIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            patientIdentifier.setPatient(patientEntity);
+            em.persist(patientIdentifier);
         }
         if (patient.hasManagingOrganization()) {
             OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(patient.getManagingOrganization().getReference()));
@@ -200,7 +253,38 @@ public class PatientDao implements PatientRepository {
         return patient;
     }
 
-    public List<Patient> searchPatient (FhirContext ctx,
+    public List<Patient> search (FhirContext ctx,
+                                             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
+                                             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
+                                             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
+                                             @OptionalParam(name = Patient.SP_FAMILY) StringParam familyName,
+                                             @OptionalParam(name= Patient.SP_GENDER) StringParam gender ,
+                                             @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
+                                             @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+                                             @OptionalParam(name= Patient.SP_NAME) StringParam name,
+                                             @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+    ) {
+        List<PatientEntity> qryResults = searchEntity(ctx, addressPostcode, birthDate, email, familyName, gender, givenName, identifier, name, phone);
+        List<Patient> results = new ArrayList<>();
+
+        for (PatientEntity patientEntity : qryResults)
+        {
+            Patient patient = null;
+            if (patientEntity.getResource() != null) {
+                patient = (Patient) ctx.newJsonParser().parseResource(patientEntity.getResource());
+            } else {
+                    patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+                    String resourceStr = ctx.newJsonParser().encodeResourceToString(patient);
+                    patientEntity.setResource(resourceStr);
+                    em.persist(patientEntity);
+            }
+            results.add(patient);
+        }
+        return results;
+    }
+
+
+    public List<PatientEntity> searchEntity (FhirContext ctx,
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
             @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
@@ -221,7 +305,7 @@ public class PatientDao implements PatientRepository {
 
 
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<Patient> results = new ArrayList<Patient>();
+        List<PatientEntity> results = new ArrayList<PatientEntity>();
 
         if (identifier !=null)
         {
@@ -431,24 +515,8 @@ public class PatientDao implements PatientRepository {
         qryResults = typedQuery.getResultList();
 
         log.info("Found Patients = "+qryResults.size());
-        for (PatientEntity patientEntity : qryResults)
-        {
-            Patient patient = null;
 
-            if (patientEntity.getResource() != null) {
-                patient = (Patient) ctx.newJsonParser().parseResource(patientEntity.getResource());
-            } else {
-                patient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
-                String resourceStr = ctx.newJsonParser().encodeResourceToString(patient);
-                log.trace("Length = "+resourceStr.length() +" Data = " +resourceStr);
-                patientEntity.setResource(resourceStr);
-                em.persist(patientEntity);
-            }
-
-            results.add(patient);
-        }
-
-        return results;
+        return qryResults;
     }
 
 

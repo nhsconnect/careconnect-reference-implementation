@@ -14,13 +14,13 @@
     </parameters>
   <connection>
     <name>ccri</name>
-    <server>localhost</server>
+    <server>purple.testlab.nhs.uk</server>
     <type>MYSQL</type>
     <access>Native</access>
     <database>careconnect</database>
-    <port>3306</port>
-    <username>fhirjpa</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb1fa679cc98bfdb</password>
+    <port>20002</port>
+    <username>jeffrey</username>
+    <password>Encrypted 2bed0c0bc28cb9387a03dab63d793bbd5</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -39,7 +39,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>3306</attribute>
+        <attribute>20002</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>

@@ -131,51 +131,51 @@ public class JPAStepsDef {
 
     @Given("^I search for a Patient with a family name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_family_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null, new StringParam(name), null, null,null, null,null);
+        patientList = patientRepository.search(ctx,null,null,null, new StringParam(name), null, null,null, null,null);
     }
 
     @Given("^I search for a Patient with a given name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_given_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null, null, null, new StringParam(name),null, null,null);
+        patientList = patientRepository.search(ctx,null,null,null, null, null, new StringParam(name),null, null,null);
     }
 
 
 
     @Given("^I search for a Patient with a gender of (\\w+)$")
     public void i_search_for_a_Patient_with_a_gender_of(String gender) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null,null,new StringParam(gender), null,null,null, null);
+        patientList = patientRepository.search(ctx,null,null,null,null,new StringParam(gender), null,null,null, null);
     }
 
     @Given("^I search for a Patient with a NHSNumber of (\\d+)$")
     public void i_search_for_a_Patient_with_a_NHSNumber_of(String NHSNumber) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
     }
 
     @Given("^I search for a Patient with a name of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_name_of(String name) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null, null,new StringParam(name),null);
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,new StringParam(name),null);
     }
 
     @Given("^I search for a Patient with a birthdate of '(\\w+)-(\\w+)-(\\w+)'$")
     public void i_search_for_a_Patient_with_a_birthdate_of(String year, String month, String day) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
 
     }
 
 
     @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,new StringParam(email),null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,null,null,new StringParam(email),null,null,null, null,null,null);
 
     }
 
     @Given("^I search for a Patient with a address-postcode of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_address_postcode_of(String postcode) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,new StringParam(postcode),null,null,null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,new StringParam(postcode),null,null,null,null,null, null,null,null);
     }
     @Given("^I search for a Patient with a phone of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_phone_of(String phone) throws Throwable {
-        patientList = patientRepository.searchPatient(ctx,null,null,null,null,null,null, null,null,new StringParam(phone));
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,null,new StringParam(phone));
     }
 
 
@@ -402,7 +402,7 @@ public class JPAStepsDef {
 
     @Then("^save the Observation$")
     public void save_the_Observation() throws Throwable {
-        observationRepository.save(ctx,observation);
+        observationRepository.save(ctx,observation,null,null);
     }
 
     @Then("^save the location$")
@@ -419,7 +419,7 @@ public class JPAStepsDef {
     @When("^I search Observations on SNOMED category (\\d+)$")
     public void i_search_on_SNOMED_category(String category) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null);
+        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null,null);
     }
 
     @Then("^I should get a Bundle of Observations with (\\d+) resource$")
@@ -430,12 +430,12 @@ public class JPAStepsDef {
 
     @When("^I search Observations on SNOMED code (\\d+)$")
     public void i_search_on_SNOMED_code(String code) throws Throwable {
-        observationList = observationRepository.search(ctx,null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null);
+        observationList = observationRepository.search(ctx,null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null, null);
     }
 
     @When("^I search on Patient ID = (\\d+)$")
     public void i_search_on_Patient_ID(String patientId) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId));
+        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId),null);
     }
 
     @Then("^I should get a Bundle of Observations with more then (\\d+) resources$")
@@ -445,22 +445,22 @@ public class JPAStepsDef {
 
     @When("^I search on dates less than (\\d+)-(\\d+)-(\\d+)$")
     public void dates_less_than_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null,null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)-(\\d+)$")
     public void dates_equal_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null,null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)$")
     public void dates_equal_yyyymm(String year, String month) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null, null);
     }
 
     @When("^I search on dates equal to (\\d+)$")
     public void dates_equal_yyyy(String year) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null, null);
     }
 
     /*
@@ -780,7 +780,7 @@ PROCEDURE
 
             Observation observation = ctx.newJsonParser().parseResource(Observation.class, reader);
             try {
-                observation = observationRepository.save(ctx,observation);
+                observation = observationRepository.save(ctx,observation, null, null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
@@ -793,7 +793,7 @@ PROCEDURE
 
             observation = ctx.newJsonParser().parseResource(Observation.class, reader);
             try {
-                observation = observationRepository.save(ctx,observation);
+                observation = observationRepository.save(ctx,observation,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
@@ -805,7 +805,7 @@ PROCEDURE
 
             observation = ctx.newJsonParser().parseResource(Observation.class, reader);
             try {
-                observation = observationRepository.save(ctx,observation);
+                observation = observationRepository.save(ctx,observation,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

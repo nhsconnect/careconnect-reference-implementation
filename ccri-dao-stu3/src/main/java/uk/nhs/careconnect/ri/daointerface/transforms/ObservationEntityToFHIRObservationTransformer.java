@@ -3,10 +3,8 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
-import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
-import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
-import uk.nhs.careconnect.ri.entity.observation.ObservationRange;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationIdentifier;
+import uk.nhs.careconnect.ri.entity.observation.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -220,6 +218,12 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
         }
 
         observation.setStatus(observationEntity.getStatus());
+
+        for (ObservationIdentifier identifier : observationEntity.getIdentifiers()) {
+            observation.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
+        }
         return observation;
     }
 }

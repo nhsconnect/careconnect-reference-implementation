@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -12,14 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
-import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
-import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
-import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
-import uk.nhs.careconnect.ri.entity.observation.ObservationRange;
+import uk.nhs.careconnect.ri.entity.observation.*;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,10 +32,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.net.URI;
+import java.util.*;
 
 @Repository
 @Transactional
@@ -51,6 +54,9 @@ public class ObservationDao implements ObservationRepository {
     @Autowired
     OrganisationRepository organisationDao;
 
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
+
     private static final Logger log = LoggerFactory.getLogger(Observation.class);
 
     @Autowired
@@ -60,29 +66,90 @@ public class ObservationDao implements ObservationRepository {
     public Long count() {
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
+
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(ObservationEntity.class)));
-        //cq.where(/*your stuff*/);
+        Root<ObservationEntity> root = cq.from(ObservationEntity.class);
+        cq.select(qb.count(root));
+        cq.where(qb.isNull(root.get("parentObservation")));
         return em.createQuery(cq).getSingleResult();
     }
 
+    private ObservationEntity searchAndCreateComponentObservation(ObservationEntity parentEntity, ConceptEntity code) {
+        // Look for previous entries with this code.
+        ObservationEntity observationComponent = null;
+        for (ObservationEntity observationEntityComponent : parentEntity.getComponents()) {
+            if (code.getCode().equals(observationEntityComponent.getCode().getCode())
+                    && code.getSystem().equals(observationEntityComponent.getCode().getSystem())) {
+                observationComponent = observationEntityComponent;
+            }
+        }
 
+        if (observationComponent==null) observationComponent = new ObservationEntity();
+
+        return observationComponent;
+    }
 
     @Override
-    public Observation save(FhirContext ctx, Observation observation) throws IllegalArgumentException {
+    public Observation save(FhirContext ctx, Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws IllegalArgumentException {
 
      //   System.out.println("In ObservationDao.save");
         log.debug("Observation.save");
         ObservationEntity observationEntity = null;
 
-        if (observation.hasId()) observationEntity = readEntity(ctx, observation.getIdElement());
+        if (theId != null && daoutils.isNumeric(theId.getIdPart())) {
+            log.info("theId.getIdPart()="+theId.getIdPart());
+            observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
+        }
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/observation")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"));
+                    for (ObservationEntity con : results) {
+                        observationEntity = con;
+                        break;
+                    }
+                } else {
+                    if (theConditional.contains("fhir.health.phr.example.com/Id/observation")) {
+                        URI uri = new URI(theConditional);
+
+                        String scheme = uri.getScheme();
+                        String host = uri.getHost();
+                        String query = uri.getRawQuery();
+                        log.debug(query);
+                        String[] spiltStr = query.split("%7C");
+                        log.debug(spiltStr[1]);
+
+                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"));
+                        for (ObservationEntity con : results) {
+                            observationEntity = con;
+                            break;
+                        }
+                    } else {
+                        log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                    }
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
 
         if (observationEntity == null) observationEntity = new ObservationEntity();
 
         observationEntity.setStatus(observation.getStatus());
-        for (Identifier identifier : observation.getIdentifier()) {
-            // TODO
-        }
+
         if (observation.hasCode()) {
           ConceptEntity code = conceptDao.findCode(observation.getCode().getCoding().get(0).getSystem(),observation.getCode().getCoding().get(0).getCode());
           if (code != null) { observationEntity.setCode(code); }
@@ -91,6 +158,7 @@ public class ObservationDao implements ObservationRepository {
 
               throw new IllegalArgumentException("Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
           }
+
         }
         if (observation.hasEffectiveDateTimeType()) {
             try {
@@ -161,7 +229,30 @@ public class ObservationDao implements ObservationRepository {
 
         em.persist(observationEntity);
 
+        /* Identity */
+
+        for (Identifier identifier : observation.getIdentifier()) {
+
+
+            ObservationIdentifier observationIdentifier = null;
+            for (ObservationIdentifier orgSearch : observationEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    observationIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (observationIdentifier == null)  observationIdentifier = new ObservationIdentifier();
+
+            observationIdentifier.setValue(identifier.getValue());
+            observationIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            observationIdentifier.setObservation(observationEntity);
+            em.persist(observationIdentifier);
+
+        }
+
         // Range
+
+
 
         for (Observation.ObservationReferenceRangeComponent range : observation.getReferenceRange()) {
             log.trace("Observation Range Found");
@@ -192,7 +283,13 @@ public class ObservationDao implements ObservationRepository {
                     log.trace("Practitioner DAO :"+reference.getReferenceElement().getResourceType());
                     PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
                     if (practitionerEntity != null) {
-                        ObservationPerformer performer = new ObservationPerformer();
+                        ObservationPerformer performer = null;
+                        for (ObservationPerformer performerSearch : observationEntity.getPerformers()) {
+                            if (performerSearch.getPerformerPractitioner().getId().equals(practitionerEntity.getId())) {
+                                performer = performerSearch;
+                            }
+                        }
+                        if (performer == null) performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Practitioner);
                         performer.setPerformerPractitioner(practitionerEntity);
                         performer.setObservation(observationEntity);
@@ -202,11 +299,17 @@ public class ObservationDao implements ObservationRepository {
                     break;
                 case "Patient":
                     log.trace("Patient DAO :"+reference.getReferenceElement().getResourceType());
-                    PatientEntity patientperformerEntity = patientDao.readEntity(ctx, new IdType(reference.getReference()));
+                    PatientEntity patientPerformerEntity = patientDao.readEntity(ctx, new IdType(reference.getReference()));
                     if (patientEntity != null) {
-                        ObservationPerformer performer = new ObservationPerformer();
+                        ObservationPerformer performer = null;
+                        for (ObservationPerformer performerSearch : observationEntity.getPerformers()) {
+                            if (performerSearch.getPerformerPatient().getId().equals(patientPerformerEntity.getId())) {
+                                performer = performerSearch;
+                            }
+                        }
+                        if (performer == null) performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Patient);
-                        performer.setPerformerPatient(patientperformerEntity);
+                        performer.setPerformerPatient(patientPerformerEntity);
                         performer.setObservation(observationEntity);
                         em.persist(performer);
                         observationEntity.getPerformers().add(performer);
@@ -214,8 +317,14 @@ public class ObservationDao implements ObservationRepository {
                     break;
                 case "Organization":
                     OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(reference.getReference()));
-                    if (patientEntity != null) {
-                        ObservationPerformer performer = new ObservationPerformer();
+                    if (organisationEntity != null) {
+                        ObservationPerformer performer = null;
+                        for (ObservationPerformer performerSearch : observationEntity.getPerformers()) {
+                            if (performerSearch.getPerformerOrganisation().getId().equals(organisationEntity.getId())) {
+                                performer = performerSearch;
+                            }
+                        }
+                        if (performer == null) performer = new ObservationPerformer();
                         performer.setPerformerType(ObservationPerformer.performer.Organisation);
                         performer.setPerformerOrganisation(organisationEntity);
                         performer.setObservation(observationEntity);
@@ -232,7 +341,13 @@ public class ObservationDao implements ObservationRepository {
             if (concept.getCoding().size() > 0) {
                 ConceptEntity conceptEntity = conceptDao.findCode(concept.getCoding().get(0).getSystem(), concept.getCoding().get(0).getCode());
                 if (conceptEntity != null) {
-                    ObservationCategory category = new ObservationCategory();
+                    ObservationCategory category = null;
+                    // Look for existing categories
+                    for (ObservationCategory cat :observationEntity.getCategories()) {
+                        category= cat;
+                    }
+                    if (category == null) category = new ObservationCategory();
+
                     category.setCategory(conceptEntity);
                     category.setObservation(observationEntity);
                     em.persist(category);
@@ -246,7 +361,13 @@ public class ObservationDao implements ObservationRepository {
         }
 
         for (Observation.ObservationComponentComponent component :observation.getComponent()) {
-            ObservationEntity observationComponent = new ObservationEntity();
+            ConceptEntity codeComponent = null;
+            if (component.hasCode()) {
+                codeComponent = conceptDao.findCode(component.getCode().getCoding().get(0).getSystem(),component.getCode().getCoding().get(0).getCode());
+            }
+
+            ObservationEntity observationComponent = searchAndCreateComponentObservation(observationEntity,codeComponent);
+
             if (patientEntity != null) observationComponent.setPatient(patientEntity);
             observationComponent.setObservationType(ObservationEntity.ObservationType.component);
 
@@ -259,8 +380,8 @@ public class ObservationDao implements ObservationRepository {
             }
             // Code
             if (component.hasCode()) {
-                ConceptEntity code = conceptDao.findCode(component.getCode().getCoding().get(0).getSystem(),component.getCode().getCoding().get(0).getCode());
-                if (code != null) observationComponent.setCode(code);
+                // ConceptEntity code = conceptDao.findCode(component.getCode().getCoding().get(0).getSystem(),component.getCode().getCoding().get(0).getCode());
+                if (codeComponent != null) observationComponent.setCode(codeComponent);
             }
             // Value
 
@@ -292,7 +413,23 @@ public class ObservationDao implements ObservationRepository {
 
             if (component.hasValueCodeableConcept()) {
 
-                ObservationEntity observationComponentValue = new ObservationEntity();
+                // Code
+
+
+                ConceptEntity codeValue = null;
+                try {
+
+                    if (component.getValueCodeableConcept().getCoding().get(0).hasCode()) {
+                        CodeableConcept valueConcept = component.getValueCodeableConcept();
+                        codeValue = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+
+                ObservationEntity observationComponentValue = searchAndCreateComponentObservation(observationEntity,codeComponent);
+
+                if (codeValue != null) observationComponentValue.setCode(codeValue);
 
                 if (patientEntity != null) observationComponentValue.setPatient(patientEntity);
                 observationComponentValue.setObservationType(ObservationEntity.ObservationType.valueQuantity);
@@ -306,17 +443,8 @@ public class ObservationDao implements ObservationRepository {
                     }
                 }
 
-                // Code
-                try {
 
-                    if (component.getValueCodeableConcept().getCoding().get(0).hasCode()) {
-                        CodeableConcept valueConcept = component.getValueCodeableConcept();
-                        ConceptEntity code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
-                        if (code != null) observationComponentValue.setCode(code);
-                    }
-                } catch (Exception ex) {
-                    log.error(ex.getMessage());
-                }
+
                 em.persist(observationComponentValue);
 
 
@@ -329,9 +457,26 @@ public class ObservationDao implements ObservationRepository {
 
         if (observation.hasValueCodeableConcept()) {
 
-            ObservationEntity observationValue = new ObservationEntity();
+            // Code
+
+            ConceptEntity code = null;
+            try {
+
+                if (observation.getValueCodeableConcept().getCoding().get(0).hasCode()) {
+                    CodeableConcept valueConcept = observation.getValueCodeableConcept();
+                     code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+            ObservationEntity observationValue = searchAndCreateComponentObservation(observationEntity,code);
+
+            if (code != null) observationValue.setCode(code);
 
             if (patientEntity != null) observationValue.setPatient(patientEntity);
+
+            // Check code TODO
+
             observationValue.setObservationType(ObservationEntity.ObservationType.valueQuantity);
             observationValue.setParentObservation(observationEntity);
 
@@ -342,17 +487,7 @@ public class ObservationDao implements ObservationRepository {
                     log.error(ex.getMessage());
                 }
             }
-            // Code
-            try {
 
-                if (observation.getValueCodeableConcept().getCoding().get(0).hasCode()) {
-                    CodeableConcept valueConcept = observation.getValueCodeableConcept();
-                    ConceptEntity code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
-                    if (code != null) observationValue.setCode(code);
-                }
-            } catch (Exception ex) {
-                log.error(ex.getMessage());
-            }
             em.persist(observationValue);
         }
         observation = null;
@@ -398,12 +533,31 @@ public class ObservationDao implements ObservationRepository {
         em.persist(resource);
     }
 
+
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient) {
-
-
-
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier) {
         List<Observation> results = new ArrayList<Observation>();
+        List<ObservationEntity> qryResults = searchEntity(ctx, category, code, effectiveDate, patient, identifier);
+        log.info("Found Observations = "+qryResults.size());
+        for (ObservationEntity observationEntity : qryResults)
+        {
+            Observation observation = null;
+            if (observationEntity.getResource() != null) {
+                observation = (Observation) ctx.newJsonParser().parseResource(observationEntity.getResource());
+            } else {
+                observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
+                String resourceStr = ctx.newJsonParser().encodeResourceToString(observation);
+                log.trace("Length = "+resourceStr.length() +" Data = " +resourceStr);
+                observationEntity.setResource(resourceStr);
+                em.persist(observationEntity);
+            }
+            results.add(observation);
+        }
+        return results;
+    }
+
+    @Override
+    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -429,6 +583,15 @@ public class ObservationDao implements ObservationRepository {
             Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
             Predicate p = builder.equal(joinConcept.get("code"),code.getValue());
             predList.add(p);
+        }
+        if (identifier !=null)
+        {
+            Join<ObservationEntity, ObservationIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
         }
         ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
         ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
@@ -537,25 +700,10 @@ public class ObservationDao implements ObservationRepository {
             if (effectiveDate.getUpperBound() != null)
                 typedQuery.setParameter(parameterUpper, effectiveDate.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
         }
+
         qryResults = typedQuery.getResultList();
+        return qryResults;
 
 
-       //qryResults = em.createQuery(criteria).getResultList();
-        log.info("Found Observations = "+qryResults.size());
-        for (ObservationEntity observationEntity : qryResults)
-        {
-            Observation observation = null;
-            if (observationEntity.getResource() != null) {
-                observation = (Observation) ctx.newJsonParser().parseResource(observationEntity.getResource());
-            } else {
-                observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
-                String resourceStr = ctx.newJsonParser().encodeResourceToString(observation);
-                log.trace("Length = "+resourceStr.length() +" Data = " +resourceStr);
-                observationEntity.setResource(resourceStr);
-                em.persist(observationEntity);
-            }
-            results.add(observation);
-        }
-        return results;
     }
 }
