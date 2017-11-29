@@ -141,7 +141,7 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             concept.addCoding()
                     .setDisplay("NHS Prescription")
                     .setSystem(CareConnectSystem.SNOMEDCT)
-                    .setCode("394823007");
+                    .setCode("930811000000109");
             medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
         }
 
