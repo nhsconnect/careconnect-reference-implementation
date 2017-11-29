@@ -122,6 +122,10 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         opt.setRequired(false);
         options.addOption(opt);
 
+        opt = new Option("pres", "prescriptions", false, "MedciationRequest Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
         return options;
 	}
 
@@ -327,6 +331,35 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                         if (outcome.getId() != null ) {
                             procedure.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
+
+            if (theCommandLine.hasOption("pres") ||theCommandLine.hasOption("a")) {
+                try {
+                    System.out.println("MedicationRequest.csv");
+
+                    IRecordHandler handler = null;
+
+                    handler = new PrescriptionHandler();
+
+                    processPrescriptionCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/MedicationRequest.csv"));
+
+                    for (IBaseResource resource : resources) {
+
+                        MedicationRequest prescription = (MedicationRequest) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("MedicationRequest?identifier=" + prescription.getIdentifier().get(0).getSystem() + "%7C" +prescription.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            prescription.setId(outcome.getId().getIdPart());
                         }
                     }
                     resources.clear();
@@ -955,6 +988,85 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             System.out.println(ex.getMessage());
         }
     }
+
+    private void processPrescriptionCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+
+        Boolean found = false;
+        try {
+
+
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("identifier"
+                                ,"subject (patientID)"
+                                ,"status"
+                                ,"intent"
+                                ,"priority"
+                                ,"medication"
+                                ,"context"
+                                ,"authoredOn Date"
+                                ,"authoredOn Time"
+                                ,"requester.agent type"
+                                ,"requester.agent"
+                                ,"reasonCode Type"
+                                ,"reasonCode"
+                                ,"dosage.text"
+                                ,"dosage.additionalInstruction"
+                                ,"dosage.timing"
+                                ,"dosage.asNeeded.asNeededBoolean"
+                                ,"dosage.asNeeded.asNeededCodableConcept"
+                                ,"dosage.route"
+                                ,"dosage.dose.doseRange.low.value"
+                                ,"dosage.dose.doseRange.low.units"
+                                ,"dosage.dose.doseRange.high.value"
+                                ,"dosage.dose.doseRange.high.units"
+                                ,"dosage.dose.doseQuantity.value"
+                                ,"dosage.dose.doseQuantity.units"
+                                ,"dispenseRequest.validityPeriod.start"
+                                ,"dispenseRequest.validityPeriod.end"
+                                ,"dispenseRequest.numberOfRepeatsAllowed"
+                                ,"dispenseRequest.quantity.value"
+                                ,"dispenseRequest.quantity.units"
+                                ,"dispenseRequest.expectedSupplyDuration.value"
+                                ,"dispenseRequest.expectedSupplyDuration.units"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    System.out.println("On nextRecord");
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
 
     private void processActivitiesCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
@@ -1853,16 +1965,6 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             // TODO
 
 
-/*
-
-
-
-
-
-
-                    ,""
-
-*/
             System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(immunisation));
             resources.add(immunisation);
         }
@@ -1919,6 +2021,187 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 	        //System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
 
 	        resources.add(patient);
+
+        }
+    }
+
+    public class PrescriptionHandler implements  IRecordHandler {
+
+
+
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+
+            MedicationRequest prescription = new MedicationRequest();
+
+            if (!theRecord.get("identifier").isEmpty()) {
+
+                prescription.addIdentifier()
+                        .setSystem("https://fhir.leedsth.nhs.uk/Id/prescription")
+                        .setValue(theRecord.get("identifier"));
+            }
+            if (!theRecord.get("subject (patientID)").isEmpty()) {
+
+                prescription.setSubject(new Reference("Patient/" + theRecord.get("subject (patientID)")));
+            }
+            if (!theRecord.get("status").isEmpty()) {
+                switch (theRecord.get("status")) {
+                    case "completed" :
+                        prescription.setStatus(MedicationRequest.MedicationRequestStatus.COMPLETED);
+                }
+
+            }
+            if (!theRecord.get("intent").isEmpty()) {
+                switch (theRecord.get("intent")) {
+                    case "order" :
+                        prescription.setIntent(MedicationRequest.MedicationRequestIntent.ORDER);
+                }
+
+            }
+            if (!theRecord.get("priority").isEmpty()) {
+                switch (theRecord.get("priority")) {
+                    case "routine" :
+                        prescription.setPriority(MedicationRequest.MedicationRequestPriority.ROUTINE);
+                }
+
+            }
+            if (!theRecord.get("medication").isEmpty()) {
+                CodeableConcept med = new CodeableConcept();
+                med.addCoding().setCode(theRecord.get("medication")).setSystem(CareConnectSystem.SNOMEDCT);
+
+                prescription.setMedication(med);
+            }
+            if (!theRecord.get("context").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Encounter.class)
+                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("context")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+
+                if (results.getEntry().size() > 0) {
+                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+
+                    prescription.setContext(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
+                }
+            }
+
+            String dateString = theRecord.get("authoredOn Date");
+            if (!theRecord.get("authoredOn Time").isEmpty()) dateString = dateString + " " +"authoredOn Time";
+
+            if (!dateString.isEmpty()) {
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // turn off set linient
+                    prescription.setAuthoredOn(format.parse(dateString));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        prescription.setAuthoredOn(format.parse(dateString));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (!theRecord.get("requester.agent type").isEmpty() && !theRecord.get("requester.agent").isEmpty()) {
+                switch (theRecord.get("requester.agent type")) {
+                    case "Practitioner":
+                        Bundle results = client
+                                .search()
+                                .forResource(Practitioner.class)
+                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
+
+                            prescription.getRequester().setAgent(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                        }
+                        break;
+
+                    case "Organization":
+                        results = client
+                                .search()
+                                .forResource(Organization.class)
+                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Organization organization = (Organization) results.getEntry().get(0).getResource();
+
+                            prescription.getRequester().setAgent(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                        }
+                        break;
+
+                }
+            }
+            if (!theRecord.get("reasonCode Type").isEmpty() && !theRecord.get("reasonCode").isEmpty()) {
+                switch (theRecord.get("reasonCode Type")) {
+                    case "Condition":
+                        Bundle results = client
+                                .search()
+                                .forResource(Condition.class)
+                                .where(Condition.IDENTIFIER.exactly().code(theRecord.get("reasonCode")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Condition condition = (Condition) results.getEntry().get(0).getResource();
+
+                            prescription.addReasonReference(new Reference("Condition/" + condition.getIdElement().getIdPart()));
+                        }
+                        break;
+                }
+            }
+            Dosage dosage= prescription.addDosageInstruction();
+
+            if (!theRecord.get("dosage.text").isEmpty()) {
+                dosage.setText(theRecord.get("dosage.text"));
+            }
+            if (!theRecord.get("dosage.additionalInstruction").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("dosage.additionalInstruction");
+                dosage.getAdditionalInstruction().add(additional);
+            }
+
+
+
+
+            /*
+
+
+
+
+
+                                ,"dosage.additionalInstruction"
+                                ,"dosage.timing"
+                                ,"dosage.asNeeded.asNeededBoolean"
+                                ,"dosage.asNeeded.asNeededCodableConcept"
+                                ,"dosage.route"
+                                ,"dosage.dose.doseRange.low.value"
+                                ,"dosage.dose.doseRange.low.units"
+                                ,"dosage.dose.doseRange.high.value"
+                                ,"dosage.dose.doseRange.high.units"
+                                ,"dosage.dose.doseQuantity.value"
+                                ,"dosage.dose.doseQuantity.units"
+                                ,"dispenseRequest.validityPeriod.start"
+                                ,"dispenseRequest.validityPeriod.end"
+                                ,"dispenseRequest.numberOfRepeatsAllowed"
+                                ,"dispenseRequest.quantity.value"
+                                ,"dispenseRequest.quantity.units"
+                                ,"dispenseRequest.expectedSupplyDuration.value"
+                                ,"dispenseRequest.expectedSupplyDuration.units"
+
+             */
+
+            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(prescription));
+
+            resources.add(prescription);
 
         }
     }
@@ -2063,7 +2346,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .setCode("cal")
                         .setSystem(CareConnectSystem.UnitOfMeasure);
                 observation.setValue(quantity);
-                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
+               // System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
                 resources.add(observation);
 
             }
@@ -2084,7 +2367,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .setCode("/d")
                         .setSystem(CareConnectSystem.UnitOfMeasure);
                 stepobservation.setValue(quantity);
-                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(stepobservation));
+             //   System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(stepobservation));
                 resources.add(stepobservation);
             }
 

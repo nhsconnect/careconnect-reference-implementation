@@ -252,10 +252,15 @@ public class ObservationDao implements ObservationRepository {
 
         // Range
 
-
+        // Clear down existing ranges, no suitable (simple) identifier to check if already exists
+        for (ObservationRange rangeEntity :observationEntity.getRanges() ) {
+            em.remove(rangeEntity);
+        }
+        observationEntity.setRanges(new HashSet<>());
 
         for (Observation.ObservationReferenceRangeComponent range : observation.getReferenceRange()) {
             log.trace("Observation Range Found");
+
             ObservationRange rangeEntity = new ObservationRange();
             rangeEntity
                     .setObservation(observationEntity);
