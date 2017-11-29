@@ -5,9 +5,8 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
+import org.hl7.fhir.dstu3.model.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,12 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationRequestTransformer;
 
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
-import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,10 +28,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.net.URI;
+import java.util.*;
 
 @Repository
 @Transactional
@@ -45,19 +43,35 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
     @Autowired
-    private OrganisationRepository organisationRepository;
+    private OrganisationRepository organisationDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+
     @Autowired
-    private ConceptRepository codeSvc;
+    ConceptRepository conceptDao;
+
+    @Autowired
+    PatientRepository patientDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
+
+    @Autowired
+    EncounterRepository encounterDao;
+
+    @Autowired
+    LocationRepository locationDao;
+
 
 
     private static final Logger log = LoggerFactory.getLogger(MedicationRequestDao.class);
 
     @Override
     public void save(FhirContext ctx, MedicationRequestEntity prescription) {
+
+
 
     }
 
@@ -74,7 +88,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     @Override
     public MedicationRequestEntity readEntity(FhirContext ctx, IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
-            MedicationRequestEntity medicationRequestEntity = (MedicationRequestEntity) em.find(MedicationRequestEntity.class, Long.parseLong(theId.getIdPart()));
+            MedicationRequestEntity medicationRequestEntity = em.find(MedicationRequestEntity.class, Long.parseLong(theId.getIdPart()));
 
             return medicationRequestEntity ;
         } else {
@@ -87,7 +101,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     public MedicationRequest read(FhirContext ctx,IdType theId) {
 
         if (daoutils.isNumeric(theId.getIdPart())) {
-            MedicationRequestEntity medicationRequestEntity = (MedicationRequestEntity) em.find(MedicationRequestEntity.class, Long.parseLong(theId.getIdPart()));
+            MedicationRequestEntity medicationRequestEntity = em.find(MedicationRequestEntity.class, Long.parseLong(theId.getIdPart()));
 
             return medicationRequestEntity == null
                     ? null
@@ -99,7 +113,205 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
     @Override
     public MedicationRequest create(FhirContext ctx,MedicationRequest prescription, IdType theId, String theConditional) {
-        return null;
+
+        log.debug("MedicationRequest.save");
+
+        MedicationRequestEntity prescriptionEntity = null;
+
+        if (prescription.hasId()) prescriptionEntity = readEntity(ctx, prescription.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/prescription")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<MedicationRequestEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/prescription"));
+                    for (MedicationRequestEntity con : results) {
+                        prescriptionEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (prescriptionEntity == null) prescriptionEntity = new MedicationRequestEntity();
+
+
+        PatientEntity patientEntity = null;
+        if (prescription.hasSubject()) {
+            log.trace(prescription.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(prescription.getSubject().getReference()));
+            prescriptionEntity.setPatient(patientEntity);
+        }
+
+        if (prescription.hasStatus()) {
+            prescriptionEntity.setStatus(prescription.getStatus());
+        }
+        if (prescription.hasIntent()) {
+            prescriptionEntity.setIntent(prescription.getIntent());
+        }
+        if (prescription.hasPriority()) {
+            prescriptionEntity.setPriority(prescription.getPriority());
+        }
+
+        if (prescription.hasMedicationCodeableConcept()) {
+            try {
+                ConceptEntity code = conceptDao.findCode(prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem(), prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                if (code != null) {
+                    prescriptionEntity.setMedicationCode(code);
+                } else {
+                    log.error("Code: Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                }
+            } catch (Exception ex) {}
+        }
+
+        if (prescription.hasAuthoredOn()) {
+            prescriptionEntity.setAuthoredDate(prescription.getAuthoredOn());
+        }
+
+        if (prescription.getRequester()!=null) {
+            if (prescription.getRequester().getAgent().getReference().contains("Practitioner")) {
+                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(prescription.getRequester().getAgent().getReference()));
+                prescriptionEntity.setRequesterPractitioner(practitionerEntity);
+            }
+            if (prescription.getRequester().getAgent().getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(prescription.getRequester().getAgent().getReference()));
+                prescriptionEntity.setRequesterOrganisation(organisationEntity);
+            }
+        }
+        em.persist(prescriptionEntity);
+
+        for (Identifier identifier : prescription.getIdentifier()) {
+            MedicationRequestIdentifier prescriptionIdentifier = null;
+
+            for (MedicationRequestIdentifier orgSearch : prescriptionEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    prescriptionIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (prescriptionIdentifier == null)  prescriptionIdentifier = new MedicationRequestIdentifier();
+
+            prescriptionIdentifier.setValue(identifier.getValue());
+            prescriptionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            prescriptionIdentifier.setMedicationRequest(prescriptionEntity);
+            em.persist(prescriptionIdentifier);
+        }
+
+        // Don't attempt to rebuild dosages
+        for ( MedicationRequestDosage dosageEntity : prescriptionEntity.getDosages()) {
+            em.remove(dosageEntity);
+        }
+        prescriptionEntity.setDosages(new HashSet<>());
+        em.persist(prescriptionEntity);
+
+        for (Dosage dosage : prescription.getDosageInstruction()) {
+
+            MedicationRequestDosage dosageEntity = new MedicationRequestDosage();
+            dosageEntity.setMedicationRequest(prescriptionEntity);
+
+            if (dosage.hasAdditionalInstruction()) {
+                ConceptEntity code = conceptDao.findCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                        , dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+                if (code != null) {
+                    dosageEntity.setAdditionalInstructionCode(code);
+                } else {
+                    log.error("Code: Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+                }
+            }
+            if (dosage.hasRoute()) {
+                ConceptEntity code = conceptDao.findCode(dosage.getRoute().getCoding().get(0).getSystem()
+                        , dosage.getRoute().getCoding().get(0).getCode());
+                if (code != null) {
+                    dosageEntity.setRouteCode(code);
+                } else {
+                    log.error("Code: Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getRoute().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getRoute().getCoding().get(0).getCode());
+                }
+            }
+            if (dosage.hasAsNeededBooleanType()) {
+                try {
+                    dosageEntity.setAsNeededBoolean(dosage.getAsNeededBooleanType().booleanValue());
+                } catch (Exception ex) {}
+            }
+            if (dosage.hasText()) {
+                dosageEntity.setOtherText(dosage.getText());
+            }
+            if (dosage.hasPatientInstruction()) {
+                dosageEntity.setPatientInstruction(dosage.getPatientInstruction());
+            }
+            if (dosage.hasDoseRange()) {
+                log.info("has DosageRange ***");
+                try {
+                    SimpleQuantity qty = dosage.getDoseRange().getLow();
+                    dosageEntity.setDoseRangeHigh(qty.getValue());
+                    log.info("has DosageRange high ***");
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
+                                , qty.getCode());
+                        if (code != null) {
+                            dosageEntity.setDoseHighUnitOfMeasure(code);
+                        } else {
+                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+                try {
+                    SimpleQuantity qty = dosage.getDoseRange().getLow();
+                    dosageEntity.setDoseRangeLow(qty.getValue());
+                    log.info("has DosageRange LOW ***");
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
+                                , qty.getCode());
+                        if (code != null) {
+                            dosageEntity.setDoseLowUnitOfMeasure(code);
+                        } else {
+                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+            em.persist(dosageEntity);
+        }
+
+        return medicationRequestEntityToFHIRMedicationRequestTransformer.transform(prescriptionEntity);
     }
 
     @Override

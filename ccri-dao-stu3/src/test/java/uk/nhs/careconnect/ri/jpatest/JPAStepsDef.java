@@ -790,14 +790,25 @@ PROCEDURE
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
+            concept.setCode("320141001");
+            conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
             concept.setCode("365605003");
             conceptDao.save(concept);
+
 /*
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
             concept.setCode("385669000");
             conceptDao.save(concept);
-*/
+           */
+              concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("394899003");
+            conceptDao.save(concept);
+
 /*
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);
@@ -818,6 +829,12 @@ PROCEDURE
             concept.setCodeSystem(cs);
             concept.setCode("86290005");
             conceptDao.save(concept);
+
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("1871000175100");
+            conceptDao.save(concept);
+
 
             concept = new ConceptEntity();
             concept.setCodeSystem(cs);

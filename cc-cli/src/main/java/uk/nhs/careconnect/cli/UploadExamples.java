@@ -2196,6 +2196,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 SimpleQuantity qty = new SimpleQuantity();
                 qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseRange.low.value")));
                 qty.setCode(theRecord.get("dosage.dose.doseRange.low.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
                 range.setLow(qty);
             }
 

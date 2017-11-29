@@ -1,13 +1,11 @@
 package uk.nhs.careconnect.ri.daointerface.transforms;
 
-import com.sun.rmi.rmid.ExecPermission;
+
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.location.LocationAddress;
-import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
@@ -15,7 +13,6 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
-import java.lang.reflect.Executable;
 
 @Component
 public class MedicationRequestEntityToFHIRMedicationRequestTransformer implements Transformer<MedicationRequestEntity, MedicationRequest> {
@@ -188,7 +185,31 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             if (dosageEntity.getPatientInstruction() != null) {
                 dosage.setPatientInstruction(dosageEntity.getPatientInstruction());
             }
-
+            if (dosageEntity.getOtherText() != null) {
+                dosage.setText(dosageEntity.getOtherText());
+            }
+            Range range = new Range();
+            if (dosageEntity.getDoseRangeLow() != null) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(dosageEntity.getDoseRangeLow());
+                if (dosageEntity.getDoseLowUnitOfMeasure()!=null) {
+                    qty.setCode(dosageEntity.getDoseLowUnitOfMeasure().getCode());
+                    qty.setSystem(dosageEntity.getDoseLowUnitOfMeasure().getSystem());
+                    qty.setUnit(dosageEntity.getDoseLowUnitOfMeasure().getDisplay());
+                }
+                range.setLow(qty);
+            }
+            if (dosageEntity.getDoseRangeHigh() != null) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(dosageEntity.getDoseRangeHigh());
+                if (dosageEntity.getDoseHighUnitOfMeasure()!=null) {
+                    qty.setCode(dosageEntity.getDoseHighUnitOfMeasure().getCode());
+                    qty.setSystem(dosageEntity.getDoseHighUnitOfMeasure().getSystem());
+                    qty.setUnit(dosageEntity.getDoseHighUnitOfMeasure().getDisplay());
+                }
+                range.setHigh(qty);
+            }
+            dosage.setDose(range);
         }
 
         medicationRequest.setId(medicationRequestEntity.getId().toString());

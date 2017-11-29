@@ -48,6 +48,7 @@
       "rateRange": {
         "low": {
           "value": 1,
+          "system": "http://snomed.info/sct",
           "code": "415215001"
         },
         "high": {

@@ -8,7 +8,6 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Medication;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 

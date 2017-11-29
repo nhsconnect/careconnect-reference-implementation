@@ -5,7 +5,6 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ImmunisationEntityToFHIRImmunizationTransformer;
-import uk.nhs.careconnect.ri.entity.IBaseResource;
+
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -22,7 +21,6 @@ import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationIdentifier;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

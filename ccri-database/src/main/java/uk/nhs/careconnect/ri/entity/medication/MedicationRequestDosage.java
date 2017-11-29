@@ -47,7 +47,9 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	@Column(name="patientInstruction")
 	String patientInstruction;
 
-    @Column(name="otherText")
+
+
+	@Column(name="otherText")
     String otherText;
 
 	// TODO TIMING
@@ -88,6 +90,18 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	@JoinColumn(name="DOSE_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_UNITS_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private ConceptEntity doseUnitOfMeasure;
+
+	@ManyToOne
+	@JoinColumn(name="DOSE_LOW_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_LOW_UNITS_CONCEPT"))
+	@LazyCollection(LazyCollectionOption.TRUE)
+	private ConceptEntity doseLowUnitOfMeasure;
+
+
+
+	@ManyToOne
+	@JoinColumn(name="DOSE_HIGH_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_HIGH_UNITS_CONCEPT"))
+	@LazyCollection(LazyCollectionOption.TRUE)
+	private ConceptEntity doseHighUnitOfMeasure;
 
     public Long getIdentifierId() { return dosageId; }
 
@@ -229,5 +243,29 @@ public class MedicationRequestDosage extends BaseIdentifier {
 	public MedicationRequestDosage setDoseUnitOfMeasure(ConceptEntity doseUnitOfMeasure) {
 		this.doseUnitOfMeasure = doseUnitOfMeasure;
         return this;
+	}
+
+	public String getOtherText() {
+		return otherText;
+	}
+
+	public void setOtherText(String otherText) {
+		this.otherText = otherText;
+	}
+
+	public ConceptEntity getDoseLowUnitOfMeasure() {
+		return doseLowUnitOfMeasure;
+	}
+
+	public void setDoseLowUnitOfMeasure(ConceptEntity doseLowUnitOfMeasure) {
+		this.doseLowUnitOfMeasure = doseLowUnitOfMeasure;
+	}
+
+	public ConceptEntity getDoseHighUnitOfMeasure() {
+		return doseHighUnitOfMeasure;
+	}
+
+	public void setDoseHighUnitOfMeasure(ConceptEntity doseHighUnitOfMeasure) {
+		this.doseHighUnitOfMeasure = doseHighUnitOfMeasure;
 	}
 }
