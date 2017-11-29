@@ -77,6 +77,9 @@ public class JPAStepsDef {
     ProcedureRepository procedureRepository;
 
     @Autowired
+    MedicationRequestRepository prescribingRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -107,6 +110,8 @@ public class JPAStepsDef {
     List<Immunization> immunisationList = null;
 
     List<Procedure> procedureList = null;
+
+    List<MedicationRequest> prescribingList;
 
     Transaction tx;
 
@@ -631,8 +636,54 @@ public class JPAStepsDef {
         }
     }
 
+      /*
 
-/*
+    MEDICATION REQUEST
+
+    */
+
+
+    @Given("^I have one MedicationRequest resource loaded$")
+    public void i_have_one_MedicationRequest_resource_loaded() throws Throwable {
+        assertNotNull(prescribingRepository.read(ctx,new IdType(1)));
+    }
+
+    @When("^I search MedicationRequest on Patient ID = (\\d+)$")
+    public void i_search_MedicationRequest_on_Patient_ID(int patient) throws Throwable {
+        prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null);
+    }
+
+    @Then("^I should get a Bundle of MedicationRequest (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_MedicationRequest_resource(int count) throws Throwable {
+        assertEquals(count,prescribingList.size());
+    }
+
+    @When("^I update this MedicationRequest$")
+    public void i_update_this_MedicationRequest() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/MedicationRequestExampleTwo.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
+
+        MedicationRequest prescribing = ctx.newJsonParser().parseResource(MedicationRequest.class, reader);
+        try {
+            prescribing = prescribingRepository.create(ctx,prescribing,null,"MedicationRequest?identifier=" + prescribing.getIdentifier().get(0).getSystem()
+                    + "%7C" +prescribing.getIdentifier().get(0).getValue());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Then("^the results should be a list of CareConnect MedicationRequests$")
+    public void the_results_should_be_a_list_of_CareConnect_MedicationRequests() throws Throwable {
+        for (MedicationRequest prescribing : prescribingList) {
+            validateResource(prescribing);
+        }
+    }
+
+
+
+    /*
 
 PROCEDURE
 
@@ -866,6 +917,18 @@ PROCEDURE
             Procedure procedure = ctx.newJsonParser().parseResource(Procedure.class, reader);
             try {
                 procedure = procedureRepository.create(ctx,procedure,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/MedicationRequestExample.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            MedicationRequest prescription = ctx.newJsonParser().parseResource(MedicationRequest.class, reader);
+            try {
+                prescription = prescribingRepository.create(ctx,prescription,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

@@ -1,0 +1,73 @@
+{
+  "resourceType": "MedicationRequest",
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/prescription",
+      "value": "4294967304"
+    }
+  ],
+  "status": "completed",
+  "intent": "order",
+  "priority": "routine",
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "320141001"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/2"
+  },
+  "authoredOn": "2017-10-18T00:00:00+01:00",
+  "requester": {
+    "agent": {
+      "reference": "Organization/1"
+    }
+  },
+  "dosageInstruction": [
+    {
+      "text": "1 or 2 puffs - as required",
+      "asNeededCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "1871000175100"
+          }
+        ]
+      },
+      "route": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "394899003"
+          }
+        ]
+      },
+      "rateRange": {
+        "low": {
+          "value": 1,
+          "code": "415215001"
+        },
+        "high": {
+          "value": 2,
+          "system": "http://snomed.info/sct",
+          "code": "415215001"
+        }
+      }
+    }
+  ],
+  "dispenseRequest": {
+    "validityPeriod": {
+      "start": "2017-10-18T00:00:00+01:00",
+      "end": "2017-12-17T00:00:00+00:00"
+    },
+    "numberOfRepeatsAllowed": 2,
+    "expectedSupplyDuration": {
+      "value": 1,
+      "system": "http://unitsofmeasure.org",
+      "code": "mo"
+    }
+  }
+}

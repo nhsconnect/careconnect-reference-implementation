@@ -2165,38 +2165,100 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             }
             if (!theRecord.get("dosage.additionalInstruction").isEmpty()) {
                 CodeableConcept additional  = new CodeableConcept();
-                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("dosage.additionalInstruction");
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.additionalInstruction"));
                 dosage.getAdditionalInstruction().add(additional);
             }
 
+            if (!theRecord.get("dosage.asNeeded.asNeededBoolean").isEmpty()) {
+                switch (theRecord.get("dosage.asNeeded.asNeededBoolean")) {
+                    case "FALSE":
+                        dosage.setAsNeeded(new BooleanType(false));
+                        break;
+                    case "TRUE":
+                        dosage.setAsNeeded(new BooleanType(true));
+                        break;
+                }
+            }
+            if (!theRecord.get("dosage.asNeeded.asNeededCodableConcept").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.asNeeded.asNeededCodableConcept"));
+                dosage.setAsNeeded(additional);
+            }
+            if (!theRecord.get("dosage.route").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.route"));
+                dosage.setRoute(additional);
+            }
+            Range range = new Range();
+            dosage.setRate(range);
 
+            if (!theRecord.get("dosage.dose.doseRange.low.value").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseRange.low.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseRange.low.units"));
+                range.setLow(qty);
+            }
 
+            if (!theRecord.get("dosage.dose.doseRange.high.value").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseRange.high.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseRange.high.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                range.setHigh(qty);
+            }
+            if (!theRecord.get("dosage.dose.doseQuantity.value").isEmpty() && !theRecord.get("dosage.dose.doseQuantity.units").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseQuantity.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseQuantity.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                dosage.setDose(qty);
+            }
+            MedicationRequest.MedicationRequestDispenseRequestComponent dispense =  prescription.getDispenseRequest();
 
+            Period period = dispense.getValidityPeriod();
+
+            dateString = theRecord.get("dispenseRequest.validityPeriod.start");
+            if (!dateString.isEmpty()) {
+                try {
+                    //  System.out.println(dateString);
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    period.setStart(format.parse(dateString));
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+
+            }
+            dateString = theRecord.get("dispenseRequest.validityPeriod.end");
+            if (!dateString.isEmpty()) {
+                try {
+                    //  System.out.println(dateString);
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    period.setEnd(format.parse(dateString));
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+
+            }
+            if (!theRecord.get("dispenseRequest.numberOfRepeatsAllowed").isEmpty() ) {
+
+                dispense.setNumberOfRepeatsAllowed(Integer.parseInt(theRecord.get("dispenseRequest.numberOfRepeatsAllowed")));
+            }
+            if (!theRecord.get("dispenseRequest.quantity.value").isEmpty() && !theRecord.get("dispenseRequest.quantity.units").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dispenseRequest.quantity.value")));
+                qty.setCode(theRecord.get("dispenseRequest.quantity.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                dispense.setQuantity(qty);
+            }
+            if (!theRecord.get("dispenseRequest.expectedSupplyDuration.value").isEmpty() && !theRecord.get("dispenseRequest.expectedSupplyDuration.units").isEmpty()) {
+                Duration duration = new Duration();
+                duration.setValue(new BigDecimal(theRecord.get("dispenseRequest.expectedSupplyDuration.value")));
+                duration.setCode(theRecord.get("dispenseRequest.expectedSupplyDuration.units"));
+                duration.setSystem(CareConnectSystem.UnitOfMeasure);
+                dispense.setExpectedSupplyDuration(duration);
+            }
             /*
-
-
-
-
-
-                                ,"dosage.additionalInstruction"
-                                ,"dosage.timing"
-                                ,"dosage.asNeeded.asNeededBoolean"
-                                ,"dosage.asNeeded.asNeededCodableConcept"
-                                ,"dosage.route"
-                                ,"dosage.dose.doseRange.low.value"
-                                ,"dosage.dose.doseRange.low.units"
-                                ,"dosage.dose.doseRange.high.value"
-                                ,"dosage.dose.doseRange.high.units"
-                                ,"dosage.dose.doseQuantity.value"
-                                ,"dosage.dose.doseQuantity.units"
-                                ,"dispenseRequest.validityPeriod.start"
-                                ,"dispenseRequest.validityPeriod.end"
-                                ,"dispenseRequest.numberOfRepeatsAllowed"
-                                ,"dispenseRequest.quantity.value"
-                                ,"dispenseRequest.quantity.units"
-                                ,"dispenseRequest.expectedSupplyDuration.value"
-                                ,"dispenseRequest.expectedSupplyDuration.units"
-
+    TODO                              ,"dosage.timing"
              */
 
             System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(prescription));

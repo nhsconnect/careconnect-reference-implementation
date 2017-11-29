@@ -13,6 +13,7 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.lang.reflect.Executable;
 
@@ -125,6 +126,8 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             requestor.setOnBehalfOf(new Reference("Organization/"+medicationRequestEntity.getRequesterOnBehalfOfOrganisation().getId())
                     .setDisplay(medicationRequestEntity.getRequesterOnBehalfOfOrganisation().getName()));
         }
+
+        // Default to NHS Prescription - this is a mandatory field.
         if (medicationRequestEntity.getSupplyTypeCode() != null) {
             CodeableConcept concept = new CodeableConcept();
             concept.addCoding()
@@ -133,7 +136,15 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
                     .setCode(medicationRequestEntity.getSupplyTypeCode().getCode());
 
             meta.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
+        } else {
+            CodeableConcept concept = new CodeableConcept();
+            concept.addCoding()
+                    .setDisplay("NHS Prescription")
+                    .setSystem(CareConnectSystem.SNOMEDCT)
+                    .setCode("394823007");
+            meta.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
         }
+
         if (medicationRequestEntity.getWrittenDate() != null) {
             medicationRequestEntity.setWrittenDate(medicationRequestEntity.getWrittenDate());
         }
