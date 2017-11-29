@@ -135,14 +135,14 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
                     .setSystem(medicationRequestEntity.getSupplyTypeCode().getSystem())
                     .setCode(medicationRequestEntity.getSupplyTypeCode().getCode());
 
-            meta.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
+            medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
         } else {
             CodeableConcept concept = new CodeableConcept();
             concept.addCoding()
                     .setDisplay("NHS Prescription")
                     .setSystem(CareConnectSystem.SNOMEDCT)
                     .setCode("394823007");
-            meta.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
+            medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
         }
 
         if (medicationRequestEntity.getWrittenDate() != null) {

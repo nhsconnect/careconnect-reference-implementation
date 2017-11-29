@@ -10,6 +10,7 @@ public class CareConnectExtension {
     public static final String UrlMedicationStatementLastIssueDate = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationStatementLastIssueDate-1";
     public static final String UrlMedicationSupplyType = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationSupplyType-1";
 
+
     public static final String UrlImmunizationDateRecorded = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-DateRecorded-1";
     public static final String UrlImmunizationParentPresent = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-ParentPresent-1";
 
