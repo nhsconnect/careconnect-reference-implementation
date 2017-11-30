@@ -2190,7 +2190,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 dosage.setRoute(additional);
             }
             Range range = new Range();
-            dosage.setRate(range);
+            dosage.setDose(range);
 
             if (!theRecord.get("dosage.dose.doseRange.low.value").isEmpty()) {
                 SimpleQuantity qty = new SimpleQuantity();

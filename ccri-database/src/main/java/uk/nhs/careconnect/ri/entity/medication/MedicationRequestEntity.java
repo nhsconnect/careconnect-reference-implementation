@@ -14,6 +14,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -136,6 +137,70 @@ public class MedicationRequestEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     OrganisationEntity requesterOnBehalfOfOrganisation;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "dispenseRequestStart")
+    private Date dispenseRequestStart;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "dispenseRequestEnd")
+    private Date dispenseRequestEnd;
+
+    @Column(name="numberOfRepeatsAllowed")
+    private Integer numberOfRepeatsAllowed;
+
+
+    @Column(name="expectedSupplyDuration")
+    private BigDecimal expectedSupplyDuration;
+
+    @ManyToOne
+    @JoinColumn(name = "DURATION_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DURATION_UNITS_CONCEPT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    ConceptEntity durationUnitsCode;
+
+    public Date getDispenseRequestStart() {
+        return dispenseRequestStart;
+    }
+
+    public MedicationRequestEntity setDispenseRequestStart(Date dispenseRequestStart) {
+        this.dispenseRequestStart = dispenseRequestStart;
+        return this;
+    }
+
+    public Date getDispenseRequestEnd() {
+        return dispenseRequestEnd;
+    }
+
+    public MedicationRequestEntity setDispenseRequestEnd(Date dispenseRequestEnd) {
+        this.dispenseRequestEnd = dispenseRequestEnd;
+        return this;
+    }
+
+    public Integer getNumberOfRepeatsAllowed() {
+        return numberOfRepeatsAllowed;
+    }
+
+    public MedicationRequestEntity setNumberOfRepeatsAllowed(Integer numberOfRepeatsAllowed) {
+        this.numberOfRepeatsAllowed = numberOfRepeatsAllowed;
+        return this;
+    }
+
+    public BigDecimal getExpectedSupplyDuration() {
+        return expectedSupplyDuration;
+    }
+
+    public MedicationRequestEntity setExpectedSupplyDuration(BigDecimal expectedSupplyDuration) {
+        this.expectedSupplyDuration = expectedSupplyDuration;
+        return this;
+    }
+
+    public ConceptEntity getDurationUnitsCode() {
+        return durationUnitsCode;
+    }
+
+    public MedicationRequestEntity setDurationUnitsCode(ConceptEntity durationUnitsCode) {
+        this.durationUnitsCode = durationUnitsCode;
+        return this;
+    }
 
     public Set<MedicationRequestIdentifier> getIdentifiers() {
         return identifiers;

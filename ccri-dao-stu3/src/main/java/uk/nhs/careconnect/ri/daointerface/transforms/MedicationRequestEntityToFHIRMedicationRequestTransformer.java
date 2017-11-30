@@ -142,8 +142,29 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
         }
 
-        if (medicationRequestEntity.getWrittenDate() != null) {
-            medicationRequestEntity.setWrittenDate(medicationRequestEntity.getWrittenDate());
+
+        MedicationRequest.MedicationRequestDispenseRequestComponent dispense = medicationRequest.getDispenseRequest();
+        Period period = new Period();
+        dispense.setValidityPeriod(period);
+
+        if (medicationRequestEntity.getDispenseRequestEnd() !=null) {
+            period.setEnd(medicationRequestEntity.getDispenseRequestEnd());
+        }
+        if (medicationRequestEntity.getDispenseRequestStart() !=null) {
+            period.setEnd(medicationRequestEntity.getDispenseRequestStart());
+        }
+        if (medicationRequestEntity.getNumberOfRepeatsAllowed() != null) {
+            dispense.setNumberOfRepeatsAllowed(medicationRequestEntity.getNumberOfRepeatsAllowed());
+        }
+        Duration duration = new Duration();
+        if (medicationRequestEntity.getExpectedSupplyDuration() != null) {
+            duration.setValue(medicationRequestEntity.getExpectedSupplyDuration());
+            if (medicationRequestEntity.getDurationUnitsCode()!=null) {
+                duration.setCode(medicationRequestEntity.getDurationUnitsCode().getCode())
+                        .setSystem(medicationRequestEntity.getDurationUnitsCode().getSystem())
+                        .setUnit(medicationRequestEntity.getDurationUnitsCode().getDisplay());
+            }
+            dispense.setExpectedSupplyDuration(duration);
         }
 
         for (MedicationRequestDosage dosageEntity : medicationRequestEntity.getDosages()) {
@@ -188,28 +209,42 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             if (dosageEntity.getOtherText() != null) {
                 dosage.setText(dosageEntity.getOtherText());
             }
-            Range range = new Range();
-            if (dosageEntity.getDoseRangeLow() != null) {
-                SimpleQuantity qty = new SimpleQuantity();
-                qty.setValue(dosageEntity.getDoseRangeLow());
-                if (dosageEntity.getDoseLowUnitOfMeasure()!=null) {
-                    qty.setCode(dosageEntity.getDoseLowUnitOfMeasure().getCode());
-                    qty.setSystem(dosageEntity.getDoseLowUnitOfMeasure().getSystem());
-                    qty.setUnit(dosageEntity.getDoseLowUnitOfMeasure().getDisplay());
+            if (dosageEntity.getDoseRangeLow() != null || dosageEntity.getDoseRangeHigh() != null) {
+                Range range = new Range();
+                if (dosageEntity.getDoseRangeLow() != null) {
+                    SimpleQuantity qty = new SimpleQuantity();
+                    qty.setValue(dosageEntity.getDoseRangeLow());
+                    if (dosageEntity.getDoseLowUnitOfMeasure() != null) {
+                        qty.setCode(dosageEntity.getDoseLowUnitOfMeasure().getCode());
+                        qty.setSystem(dosageEntity.getDoseLowUnitOfMeasure().getSystem());
+                        qty.setUnit(dosageEntity.getDoseLowUnitOfMeasure().getDisplay());
+                    }
+                    range.setLow(qty);
                 }
-                range.setLow(qty);
-            }
-            if (dosageEntity.getDoseRangeHigh() != null) {
-                SimpleQuantity qty = new SimpleQuantity();
-                qty.setValue(dosageEntity.getDoseRangeHigh());
-                if (dosageEntity.getDoseHighUnitOfMeasure()!=null) {
-                    qty.setCode(dosageEntity.getDoseHighUnitOfMeasure().getCode());
-                    qty.setSystem(dosageEntity.getDoseHighUnitOfMeasure().getSystem());
-                    qty.setUnit(dosageEntity.getDoseHighUnitOfMeasure().getDisplay());
+                if (dosageEntity.getDoseRangeHigh() != null) {
+                    SimpleQuantity qty = new SimpleQuantity();
+                    qty.setValue(dosageEntity.getDoseRangeHigh());
+                    if (dosageEntity.getDoseHighUnitOfMeasure() != null) {
+                        qty.setCode(dosageEntity.getDoseHighUnitOfMeasure().getCode());
+                        qty.setSystem(dosageEntity.getDoseHighUnitOfMeasure().getSystem());
+                        qty.setUnit(dosageEntity.getDoseHighUnitOfMeasure().getDisplay());
+                    }
+                    range.setHigh(qty);
                 }
-                range.setHigh(qty);
+                dosage.setDose(range);
+            } else {
+                if (dosageEntity.getDoseQuantity() != null) {
+                    SimpleQuantity qty = new SimpleQuantity();
+                    qty.setValue(dosageEntity.getDoseQuantity());
+                    if (dosageEntity.getDoseUnitOfMeasure() != null) {
+                        qty.setCode(dosageEntity.getDoseUnitOfMeasure().getCode());
+                        qty.setSystem(dosageEntity.getDoseUnitOfMeasure().getSystem());
+                        qty.setUnit(dosageEntity.getDoseUnitOfMeasure().getDisplay());
+                    }
+                    dosage.setDose(qty);
+                }
             }
-            dosage.setDose(range);
+
         }
 
         medicationRequest.setId(medicationRequestEntity.getId().toString());

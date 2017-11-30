@@ -197,6 +197,35 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 prescriptionEntity.setRequesterOrganisation(organisationEntity);
             }
         }
+        MedicationRequest.MedicationRequestDispenseRequestComponent dispense = prescription.getDispenseRequest();
+
+        if (dispense.hasExpectedSupplyDuration()) {
+            prescriptionEntity.setExpectedSupplyDuration(dispense.getExpectedSupplyDuration().getValue());
+
+            ConceptEntity code = conceptDao.findCode(dispense.getExpectedSupplyDuration().getSystem()
+                    , dispense.getExpectedSupplyDuration().getCode());
+            if (code != null) {
+                prescriptionEntity.setDurationUnitsCode(code);
+            } else {
+                log.error("Duration Code: Missing System/Code = " +dispense.getExpectedSupplyDuration().getSystem()
+                        + " code = " + dispense.getExpectedSupplyDuration().getCode());
+
+                throw new IllegalArgumentException("Missing Duration System/Code = " +dispense.getExpectedSupplyDuration().getSystem()
+                        + " code = " + dispense.getExpectedSupplyDuration().getCode());
+            }
+        }
+        if (dispense.hasNumberOfRepeatsAllowed()) {
+            prescriptionEntity.setNumberOfRepeatsAllowed(dispense.getNumberOfRepeatsAllowed());
+        }
+        if (dispense.hasValidityPeriod()) {
+            if (dispense.getValidityPeriod().hasStart()) {
+                prescriptionEntity.setDispenseRequestStart(dispense.getValidityPeriod().getStart());
+            }
+            if (dispense.getValidityPeriod().hasEnd()) {
+                prescriptionEntity.setDispenseRequestEnd(dispense.getValidityPeriod().getEnd());
+            }
+        }
+
         em.persist(prescriptionEntity);
 
         for (Identifier identifier : prescription.getIdentifier()) {
@@ -223,12 +252,15 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         prescriptionEntity.setDosages(new HashSet<>());
         em.persist(prescriptionEntity);
 
+        Integer cnt = 0;
         for (Dosage dosage : prescription.getDosageInstruction()) {
-
+            log.debug("Iteration "+cnt);
+            cnt++;
             MedicationRequestDosage dosageEntity = new MedicationRequestDosage();
             dosageEntity.setMedicationRequest(prescriptionEntity);
 
             if (dosage.hasAdditionalInstruction()) {
+
                 ConceptEntity code = conceptDao.findCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
                         , dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
                 if (code != null) {
@@ -241,7 +273,26 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                             + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
                 }
             }
+            if (dosage.hasAsNeededCodeableConcept()) {
+
+                try {
+                ConceptEntity code = conceptDao.findCode(dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                        , dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+                if (code != null) {
+                    dosageEntity.setAdditionalInstructionCode(code);
+                } else {
+                    log.error("Code: Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+                }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
             if (dosage.hasRoute()) {
+
                 ConceptEntity code = conceptDao.findCode(dosage.getRoute().getCoding().get(0).getSystem()
                         , dosage.getRoute().getCoding().get(0).getCode());
                 if (code != null) {
@@ -257,7 +308,9 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             if (dosage.hasAsNeededBooleanType()) {
                 try {
                     dosageEntity.setAsNeededBoolean(dosage.getAsNeededBooleanType().booleanValue());
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
             }
             if (dosage.hasText()) {
                 dosageEntity.setOtherText(dosage.getText());
@@ -265,12 +318,36 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             if (dosage.hasPatientInstruction()) {
                 dosageEntity.setPatientInstruction(dosage.getPatientInstruction());
             }
-            if (dosage.hasDoseRange()) {
-                log.info("has DosageRange ***");
+            if (dosage.hasDoseSimpleQuantity() ) {
                 try {
-                    SimpleQuantity qty = dosage.getDoseRange().getLow();
+                    SimpleQuantity qty = dosage.getDoseSimpleQuantity();
+
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
+                                , qty.getCode());
+                        if (code != null) {
+                            dosageEntity.setDoseUnitOfMeasure(code);
+                        } else {
+                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                    dosageEntity.setDoseQuantity(qty.getValue());
+                }
+                 catch (Exception ex) {
+                    log.error(ex.getMessage());
+                 }
+            }
+
+            if (dosage.hasDoseRange()) {
+
+                try {
+                    SimpleQuantity qty = dosage.getDoseRange().getHigh();
                     dosageEntity.setDoseRangeHigh(qty.getValue());
-                    log.info("has DosageRange high ***");
+
                     if (qty.hasCode()) {
                         ConceptEntity code = conceptDao.findCode(qty.getSystem()
                                 , qty.getCode());
@@ -290,7 +367,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 try {
                     SimpleQuantity qty = dosage.getDoseRange().getLow();
                     dosageEntity.setDoseRangeLow(qty.getValue());
-                    log.info("has DosageRange LOW ***");
+
                     if (qty.hasCode()) {
                         ConceptEntity code = conceptDao.findCode(qty.getSystem()
                                 , qty.getCode());
