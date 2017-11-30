@@ -1,10 +1,6 @@
-identifier,allergy.identifier,reaction.manifestation,reaction.manifestation.display
-16777217,100006,162397003,Pain in throat
-16777218,10000B,162402004,Blocked sinus
-16777219,10001A,68235000,Nasal Congestion
-16777220,10001A,64531003,Nasal discharge
-16777221,10001A,420103007,Watery eye
-16777222,10001A,56018004,Wheezing
-16777223,10001E,64531003,Nasal discharge
-16777224,10001E,420103007,Watery eye
-16777225,10001E,49727002,Cough
+identifier,allergy.identifier,reaction.manifestation,
+16777217,100003,49727002,Cough
+16777218,100010,267041004,Swelling around the eyes
+16777219,100026,56018004,Wheezing
+16777220,100026,49727002,Cough
+1,100044,162402004,Blocked sinus

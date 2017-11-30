@@ -1,5 +1,5 @@
 identifier,encounter,patient,code,,clinicalStatus,verificationStatus,onset.DateTime,assertedDate,recorder,lastOccurrence
-100001,4103,1002,722071008,Mould antigen,Inactive,Confirmed,2007,2017-10-13,,
+100001,4103,1001,722071008,Mould antigen,Inactive,Confirmed,2007,2017-10-13,,
 100002,4106,1003,3718001,Cow's Milk,Active,Confirmed,1928,2017-09-16,C4767389,
 100003,4125,1008,720687003,Dust mite protein ,Active,Unconfirmed,1975-03,2017-10-17,C2338433,
 100004,4142,1013,160244002,No known allergies,Active,Confirmed,,2017-10-17,,
