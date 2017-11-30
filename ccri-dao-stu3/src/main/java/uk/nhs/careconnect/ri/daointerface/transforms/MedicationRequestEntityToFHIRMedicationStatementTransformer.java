@@ -66,6 +66,39 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
 
         medicationStatement.setTaken(MedicationStatement.MedicationStatementTaken.Y);
 
+        if (medicationRequestEntity.getStatus() != null) {
+            switch (medicationRequestEntity.getStatus()) {
+
+
+                case ACTIVE:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.ACTIVE);
+                    break;
+                case ONHOLD:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.ONHOLD);
+                    break;
+                case STOPPED:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.STOPPED);
+                    break;
+
+                case COMPLETED:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.COMPLETED);
+                    break;
+
+                case DRAFT:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.INTENDED);
+                    break;
+                case NULL:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.NULL);
+                    break;
+                case UNKNOWN:
+                case CANCELLED:
+                case ENTEREDINERROR:
+                    medicationStatement.setStatus(MedicationStatement.MedicationStatementStatus.ENTEREDINERROR);
+                    break;
+            }
+        }
+
+
 
         if (medicationRequestEntity.getMedicationCode() != null) {
 
