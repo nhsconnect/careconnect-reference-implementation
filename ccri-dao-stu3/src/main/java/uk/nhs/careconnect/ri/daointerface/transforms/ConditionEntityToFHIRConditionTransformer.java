@@ -5,9 +5,11 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceIdentifier;
 import uk.nhs.careconnect.ri.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
+import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -78,7 +80,11 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
                     .setSystem(category.getCategory().getSystem())
                     .setDisplay(category.getCategory().getDisplay());
         }
-
+        for (ConditionIdentifier identifier : conditionEntity.getIdentifiers()) {
+            condition.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
+        }
 
         return condition;
 
