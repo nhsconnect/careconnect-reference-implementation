@@ -1,8 +1,16 @@
-delete from `careconnect`.`ProcedurePerformer`;
-delete from `careconnect`.`Procedure_`;
+use careconnect;
+
+SET SQL_SAFE_UPDATES = 0;
+
+
+delete from `ProcedureIdentifier`;
+delete from `ProcedurePerformer`;
+delete from `Procedure_`;
 
 delete from ConditionCategory;
-delete from Condition_;
+delete from ConditionIdentifier;
+
+delete from Condition_ ;
 
 delete from AllergyIntoleranceManifestation;
 delete from AllergyIntoleranceCategory;
