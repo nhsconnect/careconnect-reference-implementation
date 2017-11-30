@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class MedicationStatementProvider implements IResourceProvider {
+public class MedicationStatementProvider implements ICCResourceProvider {
 
 
     @Autowired
@@ -36,6 +36,10 @@ public class MedicationStatementProvider implements IResourceProvider {
         return MedicationStatement.class;
     }
 
+    @Override
+    public Long count() {
+        return statementDao.count();
+    }
 
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam MedicationStatement statement, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
