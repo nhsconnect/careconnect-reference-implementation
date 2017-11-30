@@ -2,22 +2,17 @@ package uk.nhs.careconnect.ri.entity.medication;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import uk.nhs.careconnect.ri.entity.BaseIdentifier;
+
+import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 
 @Entity
-@Table(name="MedicationRequestDosage", uniqueConstraints= @UniqueConstraint(name="PK_PRESCRIPTION_DOSAGE", columnNames={"PRESCRIPTION_DOSAGE_ID"})
-		,indexes =
-		{
-				@Index(name = "IDX_PRESCRIPTION_DOSAGE", columnList="value,SYSTEM_ID")
-
-		})
-public class MedicationRequestDosage extends BaseIdentifier {
+@Table(name="MedicationRequestDosage")
+public class MedicationRequestDosage extends BaseResource {
 
 	public MedicationRequestDosage() {
 
@@ -267,5 +262,10 @@ public class MedicationRequestDosage extends BaseIdentifier {
 
 	public void setDoseHighUnitOfMeasure(ConceptEntity doseHighUnitOfMeasure) {
 		this.doseHighUnitOfMeasure = doseHighUnitOfMeasure;
+	}
+
+	@Override
+	public Long getId() {
+		return this.dosageId;
 	}
 }
