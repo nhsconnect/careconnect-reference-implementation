@@ -98,12 +98,7 @@ public class MedicationRequestDosage extends BaseResource {
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private ConceptEntity doseHighUnitOfMeasure;
 
-    public Long getIdentifierId() { return dosageId; }
 
-	public MedicationRequestDosage setIdentifierId(Long dosageId) {
-        this.dosageId = dosageId;
-        return this;
-    }
 
 	public MedicationRequestEntity getMedicationRequest() {
 	        return this.prescription;
