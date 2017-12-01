@@ -23,6 +23,7 @@ import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 public class HAPIRestfulConfig extends RestfulServer {
 
@@ -50,6 +51,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 	@Override
 	protected void initialize() throws ServletException {
 		super.initialize();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
 
 		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;

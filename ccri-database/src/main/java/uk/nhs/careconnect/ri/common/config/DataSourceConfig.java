@@ -125,6 +125,7 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.show_sql", showSql);
         extraProperties.put("hibernate.hbm2ddl.auto", "update");
         extraProperties.put("hibernate.jdbc.batch_size", "20");
+        extraProperties.put("hibernate.jdbc.time_zone","UTC");
         extraProperties.put("hibernate.cache.use_query_cache", "false");
         extraProperties.put("hibernate.cache.use_second_level_cache", "false");
         extraProperties.put("hibernate.cache.use_structured_entries", "false");

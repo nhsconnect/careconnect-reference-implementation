@@ -16,16 +16,13 @@ public abstract class BaseResource implements IBaseResource {
 
 	private static final int MAX_PROFILE_LENGTH = 10000;
 
-	@Column(name = "RES_UPDATED",insertable=false, updatable=false)
+	@Column(name = "RES_UPDATED")
 	@UpdateTimestamp
 	private Date resUpdated;
 	public Date getUpdated() {
 		return this.resUpdated;
 	}
-   /* public void setUpdated(Date resUpdated) {
-        this.resUpdated=resUpdated;
-    }
-    */
+
 	
 	@Column(name = "RES_CREATED", nullable = true)
 	@CreationTimestamp

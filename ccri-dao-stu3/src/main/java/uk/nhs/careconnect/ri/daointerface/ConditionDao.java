@@ -136,7 +136,9 @@ public class ConditionDao implements ConditionRepository {
             }
         }
 
-        if (conditionEntity == null) conditionEntity = new ConditionEntity();
+        if (conditionEntity == null) {
+            conditionEntity = new ConditionEntity();
+        }
 
 
         PatientEntity patientEntity = null;

@@ -18,6 +18,7 @@ import uk.nhs.careconnect.ri.fhirserver.provider.*;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 public class HAPIRestfulConfig extends RestfulServer {
 
@@ -36,6 +37,7 @@ public class HAPIRestfulConfig extends RestfulServer {
     @Override
     protected void initialize() throws ServletException {
         super.initialize();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         // Get the spring context from the web container (it's declared in web.xml)
         myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();

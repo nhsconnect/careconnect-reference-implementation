@@ -132,6 +132,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 	@Override
 	public void run(CommandLine theCommandLine) throws ParseException {
 		String targetServer = theCommandLine.getOptionValue("t");
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		if (isBlank(targetServer)) {
 			throw new ParseException("No target server (-t) specified");
 		} else if (targetServer.startsWith("http") == false) {
@@ -1300,12 +1301,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     dateString = dateString + " " + theRecord.get("period.startTime");
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     // turn off set linient
                     period.setStart(format.parse(dateString));
                 } catch (Exception e) {
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
                         period.setStart(format.parse(dateString));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -1319,12 +1322,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     dateString = dateString + " " + theRecord.get("period.endTime");
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     // turn off set linient
                     period.setEnd(format.parse(dateString));
                 } catch (Exception e) {
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
                         period.setEnd(format.parse(dateString));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -1462,6 +1467,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        //System.out.println(format.parse(dateString).toString());
                         condition.setAssertedDate(format.parse(dateString));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -1597,16 +1604,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("onset.DateTime").isEmpty()) {
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
                 } catch (Exception e) {
                     try {
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                         allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
                     } catch (Exception e1) {
                         try {
                             SimpleDateFormat format = new SimpleDateFormat("yyyy");
+                            format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                             allergy.setOnset(new DateTimeType(format.parse(theRecord.get("onset.DateTime"))));
                         } catch (Exception e2) {
@@ -1620,6 +1630,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("assertedDate").isEmpty()) {
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     allergy.setAssertedDate(format.parse(theRecord.get("assertedDate")));
                 } catch (Exception e) {
@@ -1631,16 +1642,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("lastOccurrence").isEmpty()) {
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
                 } catch (Exception e) {
                     try {
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                         allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
                     } catch (Exception e1) {
                         try {
                             SimpleDateFormat format = new SimpleDateFormat("yyyy");
+                            format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                             allergy.setLastOccurrence(format.parse(theRecord.get("lastOccurrence")));
                         } catch (Exception e2) {
@@ -1706,12 +1720,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     // turn off set linient
                     procedure.setPerformed(new DateTimeType(format.parse(dateString)));
                 } catch (Exception e) {
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
                         procedure.setPerformed(new DateTimeType(format.parse(dateString)));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -1822,6 +1838,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("dateRecorded").isEmpty()) {
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                    immunisation.addExtension()
                         .setUrl(CareConnectExtension.UrlImmunizationDateRecorded)
@@ -1862,12 +1879,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     // turn off set linient
                     immunisation.setDate(format.parse(dateString));
                 } catch (Exception e) {
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
                         immunisation.setDate(format.parse(dateString));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -1956,6 +1975,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("expirationDate").isEmpty()) {
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                 immunisation.setExpirationDate(format.parse(theRecord.get("expirationDate")));
             } catch (Exception e) {
@@ -2094,12 +2114,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     // turn off set linient
                     prescription.setAuthoredOn(format.parse(dateString));
                 } catch (Exception e) {
                     try {
                         //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
                         prescription.setAuthoredOn(format.parse(dateString));
                     } catch (Exception e2) {
                         e.printStackTrace();
@@ -2223,6 +2245,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 try {
                     //  System.out.println(dateString);
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     period.setStart(format.parse(dateString));
                 } catch (Exception e2) {
                     e2.printStackTrace();
@@ -2234,6 +2257,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 try {
                     //  System.out.println(dateString);
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     period.setEnd(format.parse(dateString));
                 } catch (Exception e2) {
                     e2.printStackTrace();
@@ -2444,12 +2468,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         Date date = null;
         try {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
             // turn off set linient
             date = format.parse(dateString);
         } catch (Exception e) {
             try {
               //  System.out.println(dateString);
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                format.setTimeZone(TimeZone.getTimeZone("UTC"));
                 date = format.parse(dateString);
             } catch (Exception e2) {
                 e.printStackTrace();
@@ -2476,12 +2502,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         Date date = null;
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
             date = format.parse(dateString);
         }
         catch (Exception e) {
                 try {
                     //  System.out.println(dateString);
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
                     date = format.parse(dateString);
                 } catch (Exception e2) {
                     e.printStackTrace();

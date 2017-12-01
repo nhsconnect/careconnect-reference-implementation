@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 public class HAPIRestfulConfig extends RestfulServer {
 
@@ -38,13 +39,13 @@ public class HAPIRestfulConfig extends RestfulServer {
     private String serverVersion;
 
 	@Value("${fhir.oauth2.authorize:https://auth.hspconsortium.org/authorize}")
-	private String oauth2authorize = "https://auth.hspconsortium.org/authorize";
+	private String oauth2authorize = "http://purple.testlab.nhs.uk:20080/authorize";
 
 	@Value("${fhir.oauth2.token:https://auth.hspconsortium.org/token}")
-	private String oauth2token = "https://auth.hspconsortium.org/token";
+	private String oauth2token = "http://purple.testlab.nhs.uk:20080/token";
 
 	@Value("${fhir.oauth2.register:https://auth.hspconsortium.org/register}")
-	private String oauth2register = "https://auth.hspconsortium.org/register";
+	private String oauth2register = "http://purple.testlab.nhs.uk:20080/register";
 
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
@@ -55,6 +56,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 	@Override
 	protected void initialize() throws ServletException {
 		super.initialize();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
 
 		FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
