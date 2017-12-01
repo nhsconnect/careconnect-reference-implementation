@@ -1797,7 +1797,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .setDisplay(theRecord.get("ouctome.coding.display"));
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(procedure));
+           // System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(procedure));
             resources.add(procedure);
         }
     }
@@ -1815,7 +1815,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 .setSystem(CareConnectSystem.SNOMEDCT)
                                 .setDisplay(theRecord.get("reaction.manifestation.display"))
                                 .setCode(theRecord.get("reaction.manifestation"));
-                        System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
+                   //     System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(allergy));
                     }
                 }
             }
@@ -1919,7 +1919,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
                         .returnBundle(Bundle.class)
                         .execute();
-                System.out.println("***** Encounter ID = "+theRecord.get("encounter")+ " Results = "+results.getEntry().size());
+            //    System.out.println("***** Encounter ID = "+theRecord.get("encounter")+ " Results = "+results.getEntry().size());
                 if (results.getEntry().size() > 0) {
                     Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
 
@@ -1985,7 +1985,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             // TODO
 
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(immunisation));
+        //    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(immunisation));
             resources.add(immunisation);
         }
     }
@@ -2286,7 +2286,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     TODO                              ,"dosage.timing"
              */
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(prescription));
+       //     System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(prescription));
 
             resources.add(prescription);
 

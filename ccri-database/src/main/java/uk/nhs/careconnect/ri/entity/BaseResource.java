@@ -18,14 +18,19 @@ public abstract class BaseResource implements IBaseResource {
 
 	@Column(name = "RES_UPDATED")
 	@UpdateTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date resUpdated;
 	public Date getUpdated() {
 		return this.resUpdated;
 	}
 
-	
+	public void setResUpdated(Date resUpdated) {
+		this.resUpdated = resUpdated;
+	}
+
 	@Column(name = "RES_CREATED", nullable = true)
 	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date resCreated;
 	public Date getCreated() {
 		return this.resCreated;

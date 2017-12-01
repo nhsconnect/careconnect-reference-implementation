@@ -2,15 +2,14 @@ use careconnect;
 
 SET SQL_SAFE_UPDATES = 0;
 
+delete from `ProcedureIdentifier` WHERE PROCEDURE_ID > 2;
+delete from `ProcedurePerformer` WHERE PROCEDURE_ID > 2;
+delete from `Procedure_` WHERE PROCEDURE_ID > 2;
 
-delete from `ProcedureIdentifier`;
-delete from `ProcedurePerformer`;
-delete from `Procedure_`;
+delete from ConditionCategory WHERE CONDITION_ID > 2;
+delete from ConditionIdentifier WHERE CONDITION_ID > 2;
 
-delete from ConditionCategory;
-delete from ConditionIdentifier;
-
-delete from Condition_ ;
+delete from Condition_ WHERE CONDITION_ID > 2;
 
 delete from AllergyIntoleranceManifestation;
 delete from AllergyIntoleranceCategory;
