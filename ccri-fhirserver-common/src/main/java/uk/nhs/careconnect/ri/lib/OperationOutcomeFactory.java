@@ -37,7 +37,12 @@ public class OperationOutcomeFactory {
                 case NOTFOUND:
                     throw new ResourceNotFoundException(issue.getDetails().getText(),outcome);
                 case PROCESSING:
-                    throw new UnprocessableEntityException(issue.getDetails().getText(),outcome);
+
+                    if (issue.getDiagnostics().contains("The FHIR endpoint on this server does not know how to handle")) {
+                        throw new NotImplementedOperationException(issue.getDetails().getText(),outcome);
+                    } else {
+                        throw new UnprocessableEntityException(issue.getDetails().getText(), outcome);
+                    }
                 case SECURITY:
                     throw new AuthenticationException();
                 case INVALID:

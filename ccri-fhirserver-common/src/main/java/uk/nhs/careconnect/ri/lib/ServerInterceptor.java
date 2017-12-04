@@ -5,10 +5,7 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestfulServerUtils;
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import ca.uhn.fhir.rest.server.exceptions.MethodNotAllowedException;
+import ca.uhn.fhir.rest.server.exceptions.*;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
@@ -33,13 +30,13 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class ServerInterceptor extends InterceptorAdapter {
 
     // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Field_names
-    private Logger ourLog = null; //LoggerFactory.getLogger(ServerInterceptor.class);
+    private Logger log = null; //LoggerFactory.getLogger(ServerInterceptor.class);
     private String myErrorMessageFormat = "ERROR - ${operationType} - ${idOrResourceName}";
 
 
     public ServerInterceptor(Logger ourLog) {
         super();
-        this.ourLog = ourLog;
+        this.log = ourLog;
 
     }
 
@@ -47,15 +44,54 @@ public class ServerInterceptor extends InterceptorAdapter {
     @Override
     public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws ServletException, IOException {
 
+        // Return false when overriding hapi behaviour.
 
+        // tickets #41 #43 #44 #45
+
+        log.debug("Exception = "+theException.getClass().getCanonicalName());
+        if (theException instanceof InvalidRequestException) {
+            if (theException.getOperationOutcome() !=null && theException.getOperationOutcome() instanceof OperationOutcome) {
+                FhirContext ctx = FhirContext.forDstu3();
+
+                OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
+                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
+                if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING) && outcome.getIssueFirstRep().getDiagnostics().contains("The FHIR endpoint on this server does not know how to handle") ) {
+
+                    if (outcome.getIssueFirstRep().getDiagnostics().contains("handle GET")) {
+                        if (outcome.getIssueFirstRep().getDiagnostics().contains("[coffee]")) theServletResponse.setStatus(418);
+                        else theServletResponse.setStatus(404);
+                    } else {
+                        theServletResponse.setStatus(501);
+                    }
+                    if (outcome.getIssueFirstRep().getDiagnostics() != null){
+                        log.debug("Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics());
+
+                    }
+
+                    // Provide a response ourself
+                    theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
+
+                    theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
+                    theServletResponse.getWriter().close();
+                    return false;
+                }
+            }
+
+        }
         if (theException instanceof InternalErrorException) {
             if (theException.getOperationOutcome() !=null && theException.getOperationOutcome() instanceof OperationOutcome) {
                 FhirContext ctx = FhirContext.forDstu3();
 
                 OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
+                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
                 if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
 
                     theServletResponse.setStatus(400);
+                    if (outcome.getIssueFirstRep().getDiagnostics() != null){
+                        log.debug("Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics());
+
+                    }
+
                     // Provide a response ourself
                     theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
 
@@ -77,7 +113,7 @@ public class ServerInterceptor extends InterceptorAdapter {
         Enumeration<String> headers = theRequest.getHeaderNames();
         while (headers.hasMoreElements()) {
             String header = headers.nextElement();
-            ourLog.debug("Header  = "+ header + "="+ theRequest.getHeader(header));
+            log.debug("Header  = "+ header + "="+ theRequest.getHeader(header));
         }
         // Perform any string substitutions from the message format
         StrLookup<?> lookup = new MyLookup(theRequest, theRequestDetails);
@@ -87,7 +123,7 @@ public class ServerInterceptor extends InterceptorAdapter {
         String myMessageFormat = "httpVerb[${requestVerb}] Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] RequestId[${requestHeader.x-request-id}] ForwardedFor[${requestHeader.x-forwarded-for}] ForwardedHost[${requestHeader.x-forwarded-host}] CorrelationId[] ProcessingTime[]  ResponseCode[]";
 
         String line = subs.replace(myMessageFormat);
-        ourLog.info(line);
+        log.info(line);
 
         return true;
     }
@@ -110,13 +146,15 @@ public class ServerInterceptor extends InterceptorAdapter {
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
         ServletRequestDetails details = (ServletRequestDetails) theRequestDetails;
-       // ourLog.info("outgoingResponse2");
+        log.debug("outgoingResponse2 = ");
         return outgoingResponse(details, theResponseObject, details.getServletRequest(), details.getServletResponse());
     }
 
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse)
             throws AuthenticationException {
+
+        log.info("Outgoing object class = "+theResponseObject.getClass().getCanonicalName());
 
         String val = theRequestDetails.getHeader("x-request-id");
 
@@ -136,13 +174,13 @@ public class ServerInterceptor extends InterceptorAdapter {
         StrSubstitutor subs = new StrSubstitutor(lookup, "${", "}", '\\');
 
         for (String header : theRequestDetails.getServletResponse().getHeaderNames()) {
-            ourLog.debug("Header  = " + header + "=" + theRequestDetails.getServletResponse().getHeader(header));
+            log.debug("Header  = " + header + "=" + theRequestDetails.getServletResponse().getHeader(header));
         }
 
         String myMessageFormat = "httpVerb[${requestVerb}] Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] RequestId[${requestHeader.x-request-id}] ForwardedFor[${requestHeader.x-forwarded-for}] ForwardedHost[${requestHeader.x-forwarded-host}] CorrelationId[${requestHeader.x-request-id}] ProcessingTime[${processingTimeMillis}]";
 
         String line = subs.replace(myMessageFormat);
-        ourLog.info(line+" ResponseCode["+theRequestDetails.getServletResponse().getStatus()+"]");
+        log.info(line+" ResponseCode["+theRequestDetails.getServletResponse().getStatus()+"]");
     }
 
 
