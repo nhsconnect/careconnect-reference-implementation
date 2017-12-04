@@ -297,12 +297,12 @@ public class ImmunizationDao implements ImmunizationRepository {
 
 
                 switch (dateParam.getPrefix()) {
-                    case GREATERTHAN: {
+                    case GREATERTHAN: /*{
                         Predicate p = builder.greaterThan(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);
 
                         break;
-                    }
+                    }*/
                     case GREATERTHAN_OR_EQUALS: {
                         Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("administrationDate"), parameterLower);
                         predList.add(p);

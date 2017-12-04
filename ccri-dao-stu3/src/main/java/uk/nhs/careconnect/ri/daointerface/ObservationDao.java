@@ -615,12 +615,12 @@ public class ObservationDao implements ObservationRepository {
                 log.debug("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
-                    case GREATERTHAN: {
+                    case GREATERTHAN: /* {
                         Predicate p = builder.greaterThan(root.<Date>get("effectiveDateTime"), parameterLower);
                         predList.add(p);
 
                         break;
-                    }
+                    } */
                     case GREATERTHAN_OR_EQUALS: {
                         Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("effectiveDateTime"), parameterLower);
                         predList.add(p);

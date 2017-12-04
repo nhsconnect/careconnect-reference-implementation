@@ -311,12 +311,13 @@ public class  EncounterDao implements EncounterRepository {
                 log.debug("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
-                    case GREATERTHAN: {
+                    case GREATERTHAN:
+                        /*{
                         Predicate p = builder.greaterThan(root.<Date>get("periodStartDate"), parameterLower);
                         predList.add(p);
 
                         break;
-                    }
+                    }*/
                     case GREATERTHAN_OR_EQUALS: {
                         Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("periodStartDate"), parameterLower);
                         predList.add(p);
