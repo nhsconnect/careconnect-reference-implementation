@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.gclient.StringClientParam;
+import ca.uhn.fhir.rest.gclient.DateClientParam;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
@@ -140,6 +141,21 @@ public class FHIRServerResourceRESTfulSteps {
             .prettyPrint()
             .execute();
     }
+
+    @Given("^Condition Search by gt(\\d+)-(\\d+)-(\\d+)$")
+    public void condition_Search_by_gt(String yyyy, String mm, String dd) throws Throwable {
+        bundle = client.search().forResource(Condition.class)
+                .where(new DateClientParam("asserted-date").afterOrEquals().day(yyyy+"-"+mm+"-"+dd))
+                .returnBundle(Bundle.class).execute();
+    }
+
+    @Given("^Condition Search by ge(\\d+)-(\\d+)-(\\d+)$")
+    public void condition_Search_by_ge(String yyyy, String mm, String dd) throws Throwable {
+        bundle = client.search().forResource(Condition.class)
+                .where(new DateClientParam("asserted-date").after().day(yyyy+"-"+mm+"-"+dd))
+                .returnBundle(Bundle.class).execute();
+    }
+
 
     @Then("^the result should be a valid FHIR Bundle$")
     public void the_result_should_be_a_valid_FHIR_Bundle() throws Throwable {

@@ -327,12 +327,15 @@ public class ConditionDao implements ConditionRepository {
                 log.debug("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
+                    /* HAPI slips the dates forward
                     case GREATERTHAN: {
                         Predicate p = builder.greaterThan(root.<Date>get("assertedDateTime"), parameterLower);
                         predList.add(p);
 
                         break;
                     }
+                    */
+                    case GREATERTHAN:
                     case GREATERTHAN_OR_EQUALS: {
                         Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterLower);
                         predList.add(p);
@@ -409,10 +412,14 @@ public class ConditionDao implements ConditionRepository {
         TypedQuery<ConditionEntity> typedQuery = em.createQuery(criteria);
 
         if (asserted != null) {
-            if (asserted.getLowerBound() != null)
+            if (asserted.getLowerBound() != null) {
+                log.debug("asserted.getLowerBoundAsInstant() = "+asserted.getLowerBoundAsInstant());
                 typedQuery.setParameter(parameterLower, asserted.getLowerBoundAsInstant(), TemporalType.TIMESTAMP);
-            if (asserted.getUpperBound() != null)
+            }
+            if (asserted.getUpperBound() != null) {
+                log.debug("asserted.getUpperBoundAsInstant() = "+asserted.getUpperBoundAsInstant());
                 typedQuery.setParameter(parameterUpper, asserted.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
+            }
         }
         qryResults = typedQuery.getResultList();
         return qryResults;
