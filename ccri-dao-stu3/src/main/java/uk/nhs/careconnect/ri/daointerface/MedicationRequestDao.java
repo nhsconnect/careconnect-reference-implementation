@@ -392,8 +392,8 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status, TokenParam identifier) {
-        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, dateWritten, status, identifier);
+    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier) {
+        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier);
         List<MedicationRequest> results = new ArrayList<>();
 
         for (MedicationRequestEntity medicationRequestEntity : qryResults)
@@ -406,7 +406,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam dateWritten, TokenParam status, TokenParam identifier) {
+    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier) {
         List<MedicationRequestEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -479,77 +479,77 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
         ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
 
-        if (dateWritten !=null)
+        if (authoredDate !=null)
         {
 
 
-            if (dateWritten.getLowerBound() != null) {
+            if (authoredDate.getLowerBound() != null) {
 
-                DateParam dateParam = dateWritten.getLowerBound();
+                DateParam dateParam = authoredDate.getLowerBound();
 
 
                 switch (dateParam.getPrefix()) {
                     case GREATERTHAN: /*{
-                        Predicate p = builder.greaterThan(root.<Date>get("dateWritten"), parameterLower);
+                        Predicate p = builder.greaterThan(root.<Date>get("authoredDate"), parameterLower);
                         predList.add(p);
 
                         break;
                     }*/
                     case GREATERTHAN_OR_EQUALS: {
-                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("dateWritten"), parameterLower);
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("authoredDate"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case APPROXIMATE:
                     case EQUAL: {
 
-                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("dateWritten"), parameterLower);
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("authoredDate"), parameterLower);
                         predList.add(plow);
                         break;
                     }
                     case NOT_EQUAL: {
-                        Predicate p = builder.notEqual(root.<Date>get("dateWritten"), parameterLower);
+                        Predicate p = builder.notEqual(root.<Date>get("authoredDate"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case STARTS_AFTER: {
-                        Predicate p = builder.greaterThan(root.<Date>get("dateWritten"), parameterLower);
+                        Predicate p = builder.greaterThan(root.<Date>get("authoredDate"), parameterLower);
                         predList.add(p);
                         break;
 
                     }
                     default:
-                        log.trace("DEFAULT DATE(0) Prefix = " + dateWritten.getValuesAsQueryTokens().get(0).getPrefix());
+                        log.trace("DEFAULT DATE(0) Prefix = " + authoredDate.getValuesAsQueryTokens().get(0).getPrefix());
                 }
             }
-            if (dateWritten.getUpperBound() != null) {
+            if (authoredDate.getUpperBound() != null) {
 
-                DateParam dateParam = dateWritten.getUpperBound();
+                DateParam dateParam = authoredDate.getUpperBound();
 
                 log.debug("Upper Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
                     case APPROXIMATE:
                     case EQUAL: {
-                        Predicate pupper = builder.lessThan(root.<Date>get("dateWritten"), parameterUpper);
+                        Predicate pupper = builder.lessThan(root.<Date>get("authoredDate"), parameterUpper);
                         predList.add(pupper);
                         break;
                     }
 
                     case LESSTHAN_OR_EQUALS: {
-                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("dateWritten"), parameterUpper);
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("authoredDate"), parameterUpper);
                         predList.add(p);
                         break;
                     }
                     case ENDS_BEFORE:
                     case LESSTHAN: {
-                        Predicate p = builder.lessThan(root.<Date>get("dateWritten"), parameterUpper);
+                        Predicate p = builder.lessThan(root.<Date>get("authoredDate"), parameterUpper);
                         predList.add(p);
 
                         break;
                     }
                     default:
-                        log.trace("DEFAULT DATE(0) Prefix = " + dateWritten.getValuesAsQueryTokens().get(0).getPrefix());
+                        log.trace("DEFAULT DATE(0) Prefix = " + authoredDate.getValuesAsQueryTokens().get(0).getPrefix());
                 }
             }
 
@@ -569,11 +569,11 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
         TypedQuery<MedicationRequestEntity> typedQuery = em.createQuery(criteria);
 
-        if (dateWritten != null) {
-            if (dateWritten.getLowerBound() != null)
-                typedQuery.setParameter(parameterLower, dateWritten.getLowerBoundAsInstant(), TemporalType.TIMESTAMP);
-            if (dateWritten.getUpperBound() != null)
-                typedQuery.setParameter(parameterUpper, dateWritten.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
+        if (authoredDate != null) {
+            if (authoredDate.getLowerBound() != null)
+                typedQuery.setParameter(parameterLower, authoredDate.getLowerBoundAsInstant(), TemporalType.TIMESTAMP);
+            if (authoredDate.getUpperBound() != null)
+                typedQuery.setParameter(parameterUpper, authoredDate.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
         }
         qryResults = typedQuery.getResultList();
         return qryResults;

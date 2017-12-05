@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
@@ -85,6 +86,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
     public List<PractitionerRole> searchPractitionerRole(HttpServletRequest theRequest,
                                                          @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
                                                          @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
+                                                         ,@OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier
                                        ) {
 
         List<PractitionerRole> results = new ArrayList<PractitionerRole>();

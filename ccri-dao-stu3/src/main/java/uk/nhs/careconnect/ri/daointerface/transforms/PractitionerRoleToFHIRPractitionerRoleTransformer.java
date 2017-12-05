@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRoleIdentifier;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerSpecialty;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -71,6 +72,13 @@ public class PractitionerRoleToFHIRPractitionerRoleTransformer implements Transf
                     .setDisplay(specialty.getSpecialty().getDisplay())
                     .setSystem(specialty.getSpecialty().getSystem());
             practitionerRole.addSpecialty(concept);
+        }
+
+        for(PractitionerRoleIdentifier identifier : roleEntity.getIdentifiers())
+        {
+            practitionerRole.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
         }
 
 

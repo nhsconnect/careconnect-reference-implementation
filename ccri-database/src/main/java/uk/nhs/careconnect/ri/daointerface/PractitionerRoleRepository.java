@@ -27,6 +27,7 @@ public interface PractitionerRoleRepository extends BaseDao<uk.nhs.careconnect.r
             @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
             @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
+
     );
     List<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole> searchEntity(FhirContext ctx,
             @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
