@@ -5,7 +5,9 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
+import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedurePerformer;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -111,6 +113,11 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
             if (performer.getOnBehalfOrganisation() != null) {
                 performerComponent.setOnBehalfOf(new Reference("Organisation/"+performer.getOnBehalfOrganisation().getId()));
             }
+        }
+        for (ProcedureIdentifier identifier : procedureEntity.getIdentifiers()) {
+            procedure.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
         }
 
         return procedure;
