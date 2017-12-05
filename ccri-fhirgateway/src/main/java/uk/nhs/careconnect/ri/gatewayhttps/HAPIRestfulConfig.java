@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gatewayhttps;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
@@ -13,10 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.gatewayhttps.oauth2.OAuth2Interceptor;
 import uk.nhs.careconnect.ri.lib.ServerInterceptor;
-import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 
+import uk.nhs.careconnect.ri.gatewaylib.provider.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -39,14 +39,6 @@ public class HAPIRestfulConfig extends RestfulServer {
     @Value("${fhir.resource.serverVersion}")
     private String serverVersion;
 
-	@Value("${fhir.oauth2.authorize:https://auth.hspconsortium.org/authorize}")
-	private String oauth2authorize = "http://purple.testlab.nhs.uk:20080/authorize";
-
-	@Value("${fhir.oauth2.token:https://auth.hspconsortium.org/token}")
-	private String oauth2token = "http://purple.testlab.nhs.uk:20080/token";
-
-	@Value("${fhir.oauth2.register:https://auth.hspconsortium.org/register}")
-	private String oauth2register = "http://purple.testlab.nhs.uk:20080/register";
 
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
@@ -85,13 +77,12 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationRequestResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(MedicationStatementResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(ImmunizationResourceProvider.class) // R3 addition KGM
-				,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
+
+				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
-        setServerConformanceProvider(new CareConnectConformanceProvider(oauth2authorize
-				,oauth2token
-				,oauth2register));
+        setServerConformanceProvider(new CareConnectConformanceProvider( ));
 
         setServerName(serverName);
         setServerVersion(serverVersion);
@@ -102,11 +93,18 @@ public class HAPIRestfulConfig extends RestfulServer {
 		// what is available.
 
 		ServerInterceptor gatewayInterceptor = new ServerInterceptor(ourLog);
-		registerInterceptor(new OAuth2Interceptor(serverName));  // Add OAuth2 Security Filter
 		registerInterceptor(gatewayInterceptor);
-
 		//gatewayInterceptor.setLoggerName("ccri.FHIRGateway");
 		//gatewayInterceptor.setLogger(ourLog);
+
+		// This paging provider is not robust KGM 24/11/2017
+
+		// Mocking of a database Paging Provider is in server
+
+		FifoMemoryPagingProvider pp = new FifoMemoryPagingProvider(10);
+		pp.setDefaultPageSize(10);
+		pp.setMaximumPageSize(100);
+		setPagingProvider(pp);
 
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);

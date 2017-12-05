@@ -95,12 +95,6 @@
 		</dependency>
 
 
-
-
-
-
-
-
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-server</artifactId>
@@ -200,7 +194,18 @@
 			<version>${slf4j}</version>
 		</dependency>
 
+		<!-- Spring OAuth2 Dependencies -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+			<version>${spring_security_version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.8.10</version>
+		</dependency>
 
 		<!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
 		<dependency>
@@ -310,6 +315,11 @@
 			<groupId>uk.nhs.careconnect.ri</groupId>
 			<artifactId>ccri-fhirgateway-common</artifactId>
 			<version>${care-connect-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+			<version>1.0.8.RELEASE</version>
 		</dependency>
 
 
