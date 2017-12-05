@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps.oauth2;
+package uk.nhs.careconnect.ri.gateway.https.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

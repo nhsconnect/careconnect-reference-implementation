@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps;
+package uk.nhs.careconnect.ri.gateway.https;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

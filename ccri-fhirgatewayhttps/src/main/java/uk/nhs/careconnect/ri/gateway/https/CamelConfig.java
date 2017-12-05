@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps;
+package uk.nhs.careconnect.ri.gateway.https;
 
 
 

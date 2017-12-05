@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps;
+package uk.nhs.careconnect.ri.gateway.http;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.springframework.beans.factory.annotation.Value;

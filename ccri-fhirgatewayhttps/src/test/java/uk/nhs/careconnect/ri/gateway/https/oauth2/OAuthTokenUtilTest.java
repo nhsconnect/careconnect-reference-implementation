@@ -1,11 +1,9 @@
-package uk.nhs.careconnect.ri.gatewayhttps.oauth2;
+package uk.nhs.careconnect.ri.gateway.https.oauth2;
 
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.io.IOException;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;

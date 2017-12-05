@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps;
+package uk.nhs.careconnect.ri.gateway.https;
 
 
 import org.apache.camel.builder.RouteBuilder;
@@ -83,10 +83,6 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:FHIRAllergyIntolerance")
 				.routeId("Gateway AllergyIntolerance")
-				.to("direct:HAPIServer");
-
-		from("direct:FHIRCapabilityStatement")
-				.routeId("Gateway CapabilityStatement")
 				.to("direct:HAPIServer");
 
 

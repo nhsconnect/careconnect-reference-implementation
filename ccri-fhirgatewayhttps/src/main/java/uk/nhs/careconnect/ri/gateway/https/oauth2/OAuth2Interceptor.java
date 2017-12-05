@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewayhttps.oauth2;
+package uk.nhs.careconnect.ri.gateway.https.oauth2;
 
 
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
@@ -6,8 +6,6 @@ import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

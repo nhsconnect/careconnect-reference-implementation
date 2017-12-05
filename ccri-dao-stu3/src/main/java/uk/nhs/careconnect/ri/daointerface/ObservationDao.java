@@ -502,6 +502,7 @@ public class ObservationDao implements ObservationRepository {
             em.persist(observationEntity);
         }
 
+
         return observation;
     }
 
