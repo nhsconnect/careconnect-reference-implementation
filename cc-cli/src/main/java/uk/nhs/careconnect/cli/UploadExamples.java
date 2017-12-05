@@ -1540,7 +1540,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 //System.out.println("****** severity.code.coding.code = " + theRecord.get("severity.code.coding.code"));
             }
 
-            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(condition));
+            //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(condition));
             resources.add(condition);
         }
     }
