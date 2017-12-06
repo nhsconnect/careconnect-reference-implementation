@@ -40,6 +40,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
     public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
 
         String contextPath = theRequest.getContextPath();
+        logger.info("Accessing Resource" + contextPath);
         if (excludedPaths.contains(contextPath)){
             logger.info("Accessing unprotected resource" + contextPath);
             return true;
