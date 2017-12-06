@@ -6,7 +6,7 @@ SET SQL_SAFE_UPDATES = 0;
 delete from ImmunizationIdentifier where IMMUNISATION_ID > 1;
 delete from Immunisation where IMMUNISATION_ID > 1;
 
-delete from `Encounter` WHERE ENCOUNTER_ID > 3;
+
 delete from `EncounterIdentifier` WHERE ENCOUNTER_ID > 3;
 delete from `Encounter` WHERE ENCOUNTER_ID > 3;
 
