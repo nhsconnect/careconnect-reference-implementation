@@ -1556,7 +1556,25 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             allergy.setPatient(new Reference("Patient/" + theRecord.get("patient")));
 
-          //  AllergyIntolerance.AllergyIntoleranceReactionComponent reaction = allergy.addReaction();
+            if (!theRecord.get("encounter").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Encounter.class)
+                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+
+                if (results.getEntry().size() > 0) {
+                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+                    allergy.addExtension()
+                            .setUrl(CareConnectExtension.UrlAssociatedEncounter)
+                            .setValue(new Reference("Encounter/"+encounter.getIdElement().getIdPart()));
+
+                }
+
+            }
+
+            //  AllergyIntolerance.AllergyIntoleranceReactionComponent reaction = allergy.addReaction();
             if (!theRecord.get("substance.coding.code").isEmpty()) {
                 allergy.getCode().addCoding()
                         .setCode(theRecord.get("substance.coding.code"))
@@ -1827,166 +1845,171 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     public class ImmunisationHandler implements  IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
-            Immunization immunisation = new Immunization();
+            if (!theRecord.get("patientID").isEmpty()) {
+                Immunization immunisation = new Immunization();
 
-            immunisation.addIdentifier()
-                    .setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation")
-                    .setValue(theRecord.get("identifier"));
+                immunisation.addIdentifier()
+                        .setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation")
+                        .setValue(theRecord.get("identifier"));
 
-            immunisation.setPatient(new Reference("Patient/" + theRecord.get("patientID")));
+                immunisation.setPatient(new Reference("Patient/" + theRecord.get("patientID")));
 
-            if (!theRecord.get("dateRecorded").isEmpty()) {
-                try {
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                   immunisation.addExtension()
-                        .setUrl(CareConnectExtension.UrlImmunizationDateRecorded)
-                        .setValue(new DateTimeType(format.parse(theRecord.get("dateRecorded"))));
-                } catch (Exception e) {
 
-                }
-            }
-            if (!theRecord.get("parentPresent").isEmpty()) {
-
-                switch (theRecord.get("parentPresent")) {
-                    case "FALSE":
-                        immunisation.addExtension()
-                                .setUrl(CareConnectExtension.UrlImmunizationParentPresent)
-                                .setValue(new BooleanType(false));
-                        break;
-                    case "TRUE":
-                        immunisation.addExtension()
-                                .setUrl(CareConnectExtension.UrlImmunizationParentPresent)
-                                .setValue(new BooleanType(true));
-                        break;
-                }
-            }
-            if (!theRecord.get("status").isEmpty()) {
-                switch (theRecord.get("status")) {
-                    case "Completed":
-                        immunisation.setStatus(Immunization.ImmunizationStatus.COMPLETED);
-                        break;
-                }
-            }
-
-            String dateString = theRecord.get("dateAdministered");
-            if (!dateString.isEmpty() && !theRecord.get("timeAdministered").isEmpty()) {
-                dateString = dateString + " " +theRecord.get("timeAdministered");
-            }
-
-            if (!dateString.isEmpty()) {
-
-                try {
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    // turn off set linient
-                    immunisation.setDate(format.parse(dateString));
-                } catch (Exception e) {
+                if (!theRecord.get("dateRecorded").isEmpty()) {
                     try {
-                        //  System.out.println(dateString);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                         format.setTimeZone(TimeZone.getTimeZone("UTC"));
-                        immunisation.setDate(format.parse(dateString));
-                    } catch (Exception e2) {
-                        e.printStackTrace();
+
+                        immunisation.addExtension()
+                                .setUrl(CareConnectExtension.UrlImmunizationDateRecorded)
+                                .setValue(new DateTimeType(format.parse(theRecord.get("dateRecorded"))));
+                    } catch (Exception e) {
+
                     }
                 }
-            }
-            if (!theRecord.get("vaccineCode.coding").isEmpty()) {
-                immunisation.getVaccineCode().addCoding()
-                        .setSystem(CareConnectSystem.SNOMEDCT)
-                        .setCode(theRecord.get("vaccineCode.coding"))
-                        .setDisplay(theRecord.get("vaccineCode.coding.display"));
+                if (!theRecord.get("parentPresent").isEmpty()) {
 
-            }
-            if (!theRecord.get("notGiven").isEmpty()) {
-
-                switch (theRecord.get("notGiven")) {
-                    case "FALSE":
-                        immunisation.setNotGiven(false);
-                        break;
-                    case "TRUE":
-                        immunisation.setNotGiven(true);
-                        break;
+                    switch (theRecord.get("parentPresent")) {
+                        case "FALSE":
+                            immunisation.addExtension()
+                                    .setUrl(CareConnectExtension.UrlImmunizationParentPresent)
+                                    .setValue(new BooleanType(false));
+                            break;
+                        case "TRUE":
+                            immunisation.addExtension()
+                                    .setUrl(CareConnectExtension.UrlImmunizationParentPresent)
+                                    .setValue(new BooleanType(true));
+                            break;
+                    }
                 }
-            }
-
-            if (!theRecord.get("encounter").isEmpty()) {
-                Bundle results = client
-                        .search()
-                        .forResource(Encounter.class)
-                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
-                        .returnBundle(Bundle.class)
-                        .execute();
-            //    System.out.println("***** Encounter ID = "+theRecord.get("encounter")+ " Results = "+results.getEntry().size());
-                if (results.getEntry().size() > 0) {
-                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
-
-                    immunisation.setEncounter(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
-                }
-            }
-
-
-            if (!theRecord.get("primarySource").isEmpty()) {
-
-                switch (theRecord.get("primarySource")) {
-                    case "FALSE":
-                        immunisation.setPrimarySource(false);
-                        break;
-                    case "TRUE":
-                        immunisation.setPrimarySource(true);
-                        break;
-                }
-            }
-
-            if (!theRecord.get("reportOrigin").isEmpty()) {
-
-                switch (theRecord.get("reportOrigin")) {
-                    case "provider":
-                        immunisation.getReportOrigin().addCoding()
-                                .setCode("provider")
-                                .setSystem("http://hl7.org/fhir/immunization-origin")
-                                .setDisplay("Provider");
-                        break;
-
-                }
-            }
-
-            if (!theRecord.get("location").isEmpty()) {
-                Bundle results = client
-                        .search()
-                        .forResource(Location.class)
-                        .where(Location.IDENTIFIER.exactly().code(theRecord.get("location")))
-                        .returnBundle(Bundle.class)
-                        .execute();
-                if (results.getEntry().size() > 0) {
-                    Location location = (Location) results.getEntry().get(0).getResource();
-
-                    immunisation.setLocation(new Reference("Location" +
-                            "/" + location.getIdElement().getIdPart()));
-                }
-            }
-            if (!theRecord.get("lotNumber").isEmpty()) {
-                   immunisation.setLotNumber(theRecord.get("lotNumber"));
+                if (!theRecord.get("status").isEmpty()) {
+                    switch (theRecord.get("status")) {
+                        case "Completed":
+                            immunisation.setStatus(Immunization.ImmunizationStatus.COMPLETED);
+                            break;
+                    }
                 }
 
+                String dateString = theRecord.get("dateAdministered");
+                if (!dateString.isEmpty() && !theRecord.get("timeAdministered").isEmpty()) {
+                    dateString = dateString + " " + theRecord.get("timeAdministered");
+                }
 
-            if (!theRecord.get("expirationDate").isEmpty()) {
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                if (!dateString.isEmpty()) {
 
-                immunisation.setExpirationDate(format.parse(theRecord.get("expirationDate")));
-            } catch (Exception e) {
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        // turn off set linient
+                        immunisation.setDate(format.parse(dateString));
+                    } catch (Exception e) {
+                        try {
+                            //  System.out.println(dateString);
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            immunisation.setDate(format.parse(dateString));
+                        } catch (Exception e2) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                if (!theRecord.get("vaccineCode.coding").isEmpty()) {
+                    immunisation.getVaccineCode().addCoding()
+                            .setSystem(CareConnectSystem.SNOMEDCT)
+                            .setCode(theRecord.get("vaccineCode.coding"))
+                            .setDisplay(theRecord.get("vaccineCode.coding.display"));
 
+                }
+                if (!theRecord.get("notGiven").isEmpty()) {
+
+                    switch (theRecord.get("notGiven")) {
+                        case "FALSE":
+                            immunisation.setNotGiven(false);
+                            break;
+                        case "TRUE":
+                            immunisation.setNotGiven(true);
+                            break;
+                    }
+                }
+
+                if (!theRecord.get("encounter").isEmpty()) {
+                    Bundle results = client
+                            .search()
+                            .forResource(Encounter.class)
+                            .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("encounter")))
+                            .returnBundle(Bundle.class)
+                            .execute();
+                    //    System.out.println("***** Encounter ID = "+theRecord.get("encounter")+ " Results = "+results.getEntry().size());
+                    if (results.getEntry().size() > 0) {
+                        Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+
+                        immunisation.setEncounter(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
+                    }
+                }
+
+
+                if (!theRecord.get("primarySource").isEmpty()) {
+
+                    switch (theRecord.get("primarySource")) {
+                        case "FALSE":
+                            immunisation.setPrimarySource(false);
+                            break;
+                        case "TRUE":
+                            immunisation.setPrimarySource(true);
+                            break;
+                    }
+                }
+
+                if (!theRecord.get("reportOrigin").isEmpty()) {
+
+                    switch (theRecord.get("reportOrigin")) {
+                        case "provider":
+                            immunisation.getReportOrigin().addCoding()
+                                    .setCode("provider")
+                                    .setSystem("http://hl7.org/fhir/immunization-origin")
+                                    .setDisplay("Provider");
+                            break;
+
+                    }
+                }
+
+                if (!theRecord.get("location").isEmpty()) {
+                    Bundle results = client
+                            .search()
+                            .forResource(Location.class)
+                            .where(Location.IDENTIFIER.exactly().code(theRecord.get("location")))
+                            .returnBundle(Bundle.class)
+                            .execute();
+                    if (results.getEntry().size() > 0) {
+                        Location location = (Location) results.getEntry().get(0).getResource();
+
+                        immunisation.setLocation(new Reference("Location" +
+                                "/" + location.getIdElement().getIdPart()));
+                    }
+                }
+                if (!theRecord.get("lotNumber").isEmpty()) {
+                    immunisation.setLotNumber(theRecord.get("lotNumber"));
+                }
+
+
+                if (!theRecord.get("expirationDate").isEmpty()) {
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                        immunisation.setExpirationDate(format.parse(theRecord.get("expirationDate")));
+                    } catch (Exception e) {
+
+                    }
+                }
+                // TODO
+
+
+                //    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(immunisation));
+
+                resources.add(immunisation);
             }
-        }
-            // TODO
-
-
-        //    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(immunisation));
-            resources.add(immunisation);
         }
     }
 

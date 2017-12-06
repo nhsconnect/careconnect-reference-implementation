@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.allergy.*;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -31,6 +32,11 @@ public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer impleme
 
         allergy.setId(allergyEntity.getId().toString());
 
+        if (allergyEntity.getAssociatedEncounter() != null) {
+            allergy.addExtension()
+                    .setUrl(CareConnectExtension.UrlAssociatedEncounter)
+                    .setValue(new Reference("Encounter/"+allergyEntity.getAssociatedEncounter().getId()));
+        }
 
         if (allergyEntity.getPatient() != null) {
             allergy

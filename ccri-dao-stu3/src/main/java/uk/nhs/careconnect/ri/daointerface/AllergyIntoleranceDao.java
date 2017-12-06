@@ -6,10 +6,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import jdk.nashorn.internal.parser.Token;
-import org.hl7.fhir.dstu3.model.AllergyIntolerance;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +20,10 @@ import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceManifestation;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceReaction;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -152,6 +151,14 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             log.trace(allergy.getPatient().getReference());
             patientEntity = patientDao.readEntity(ctx, new IdType(allergy.getPatient().getReference()));
             allergyEntity.setPatient(patientEntity);
+        }
+        for (Extension extension : allergy.getExtension()) {
+            switch (extension.getUrl()) {
+                case CareConnectExtension.UrlAssociatedEncounter :
+                    Reference encounterReference = (Reference) extension.getValue();
+                    EncounterEntity encounter = encounterDao.readEntity(ctx,new IdType(encounterReference.getReference()));
+                    allergyEntity.setAssociatedEncounter(encounter);
+            }
         }
         if (allergy.hasClinicalStatus()) {
             allergyEntity.setClinicalStatus(allergy.getClinicalStatus());

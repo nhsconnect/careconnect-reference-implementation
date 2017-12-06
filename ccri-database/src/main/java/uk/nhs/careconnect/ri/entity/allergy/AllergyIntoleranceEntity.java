@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.IBaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
@@ -98,6 +99,19 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceIdentifier.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<AllergyIntoleranceIdentifier> identifiers = new ArrayList<>();
+
+    public EncounterEntity getAssociatedEncounter() {
+        return associatedEncounter;
+    }
+
+    public void setAssociatedEncounter(EncounterEntity associatedEncounter) {
+        this.associatedEncounter = associatedEncounter;
+    }
+
+    @ManyToOne
+    @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_ENCOUNTER"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private EncounterEntity associatedEncounter;
     
     public Long getId() {
         return id;

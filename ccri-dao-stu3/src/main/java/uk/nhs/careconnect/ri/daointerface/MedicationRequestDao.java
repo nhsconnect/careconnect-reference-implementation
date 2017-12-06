@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationRequestTransformer;
 
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
@@ -60,6 +62,9 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
     @Autowired
     EncounterRepository encounterDao;
+
+    @Autowired
+    EpisodeOfCareRepository episodeDao;
 
     @Autowired
     LocationRepository locationDao;
@@ -166,6 +171,18 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         }
         if (prescription.hasPriority()) {
             prescriptionEntity.setPriority(prescription.getPriority());
+        }
+        if (prescription.hasContext()) {
+            if (prescription.getContext().getReference().contains("Encounter")) {
+
+                EncounterEntity encounter = encounterDao.readEntity(ctx,new IdType(prescription.getContext().getReference()));
+                prescriptionEntity.setContextEncounter(encounter);
+            }
+            if (prescription.getContext().getReference().contains("EpisodeOfCare")) {
+                EpisodeOfCareEntity episode = episodeDao.readEntity(ctx,new IdType(prescription.getContext().getReference()));
+                prescriptionEntity.setContextEpisodeOfCare(episode);
+
+            }
         }
 
         if (prescription.hasMedicationCodeableConcept()) {

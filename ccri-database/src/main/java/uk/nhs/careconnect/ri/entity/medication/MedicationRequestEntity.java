@@ -8,6 +8,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
@@ -45,7 +46,7 @@ public class MedicationRequestEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_EPISODE"))
     @LazyCollection(LazyCollectionOption.TRUE)
-    private EncounterEntity contextEpisodeOfCare;
+    private EpisodeOfCareEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "writtenDate")
@@ -287,11 +288,11 @@ public class MedicationRequestEntity extends BaseResource {
         return this;
     }
 
-    public EncounterEntity getContextEpisodeOfCare() {
+    public EpisodeOfCareEntity getContextEpisodeOfCare() {
         return contextEpisodeOfCare;
     }
 
-    public MedicationRequestEntity setContextEpisodeOfCare(EncounterEntity contextEpisodeOfCare) {
+    public MedicationRequestEntity setContextEpisodeOfCare(EpisodeOfCareEntity contextEpisodeOfCare) {
         this.contextEpisodeOfCare = contextEpisodeOfCare;
         return this;
     }
