@@ -55,7 +55,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
 
         // Check that the OAuth Token is for the correct server
         if (oAuthToken.issuer != serverName){
-            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %1 not %2", oAuthToken, serverName));
+            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %s not %s", oAuthToken.issuer, serverName));
             throw new AuthenticationException("Unauthorised access to protected resource");
         }
 
