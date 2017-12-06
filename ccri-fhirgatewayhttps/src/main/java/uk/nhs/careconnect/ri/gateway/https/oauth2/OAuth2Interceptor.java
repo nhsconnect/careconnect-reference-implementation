@@ -33,7 +33,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
     public OAuth2Interceptor(String serverName) {
         this.serverName = serverName;
         this.excludedPaths = new ArrayList<>();
-        excludedPaths.add("/STU3/metadata");
+        excludedPaths.add("/metadata");
     }
 
     @Override
