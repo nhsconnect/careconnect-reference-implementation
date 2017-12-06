@@ -39,9 +39,10 @@ public class OAuth2Interceptor extends InterceptorAdapter {
     @Override
     public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
 
-        String contextPath = theRequest.getContextPath();
-        if (excludedPaths.contains(contextPath)){
-            logger.info("Accessing unprotected resource" + contextPath);
+        String resourcePath = theRequest.getPathInfo();
+        logger.info("Accessing Resource" + resourcePath);
+        if (excludedPaths.contains(resourcePath)){
+            logger.info("Accessing unprotected resource" + resourcePath);
             return true;
         }
 
@@ -54,7 +55,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
 
         // Check that the OAuth Token is for the correct server
         if (oAuthToken.issuer != serverName){
-            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %1 not %2", oAuthToken, serverName));
+            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %s not %s", oAuthToken.issuer, serverName));
             throw new AuthenticationException("Unauthorised access to protected resource");
         }
 
@@ -63,7 +64,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
             logger.warn("OAuth2 Authentication failure due to expired token");
             throw new AuthenticationException();
         }
-        logger.debug("Authenticated Access to " + contextPath);
+        logger.debug("Authenticated Access to " + resourcePath);
         return true;
     }
 
