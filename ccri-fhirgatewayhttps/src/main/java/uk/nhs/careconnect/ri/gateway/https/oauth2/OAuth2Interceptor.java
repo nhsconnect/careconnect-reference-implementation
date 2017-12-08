@@ -53,17 +53,18 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         }
         OAuthToken oAuthToken = OAuthTokenUtil.parseOAuthToken(authorizationHeader);
 
-        // Check that the OAuth Token is for the correct server
-        if (oAuthToken.issuer != serverName){
-            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %s not %s", oAuthToken.issuer, serverName));
-            throw new AuthenticationException("Unauthorised access to protected resource");
+        // Check that the OAuth Token is for the correct Audience
+        if (oAuthToken.audience != "ccri"){
+            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %s not %s", oAuthToken.audience, "ccri"));
+//            throw new AuthenticationException("Unauthorised access to protected resource");
         }
 
         // Check that the OAuth Token has not expired
         if (oAuthToken.isExpired()){
             logger.warn("OAuth2 Authentication failure due to expired token");
-            throw new AuthenticationException();
+            throw new AuthenticationException("OAuth2 Authentication Token has expired.");
         }
+
         logger.debug("Authenticated Access to " + resourcePath);
         return true;
     }
