@@ -10,7 +10,11 @@ import org.springframework.http.HttpHeaders;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Interceptor which checks that a valid OAuth2 Token has been supplied.
@@ -25,15 +29,28 @@ import java.util.List;
  */
 public class OAuth2Interceptor extends InterceptorAdapter {
 
-    private final String serverName;
     private final List<String> excludedPaths;
 
     Logger logger = LoggerFactory.getLogger(OAuth2Interceptor.class);
 
-    public OAuth2Interceptor(String serverName) {
-        this.serverName = serverName;
+    private final Map<String,String> accessRights = new HashMap();
+
+    private static final Pattern RESOURCE_PATTERN = Pattern.compile("^/");
+
+    public OAuth2Interceptor() {
         this.excludedPaths = new ArrayList<>();
         excludedPaths.add("/metadata");
+
+        accessRights.put("Patient","Patient");
+        accessRights.put("Observation","Observation");
+        accessRights.put("Encounter","Encounter");
+        accessRights.put("Condition","Condition");
+        accessRights.put("Procedure","Observation");
+        accessRights.put("AllergyIntolerance","AllergyIntolerance");
+        accessRights.put("MedicationRequest","MedicationPrescription");
+        accessRights.put("MedicationStatement","MedicationStatement");
+        accessRights.put("Immunization","Immunization");
+
     }
 
     @Override
@@ -53,20 +70,47 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         }
         OAuthToken oAuthToken = OAuthTokenUtil.parseOAuthToken(authorizationHeader);
 
-        // Check that the OAuth Token is for the correct Audience
-        if (oAuthToken.audience != "ccri"){
-            logger.warn(String.format("OAuth2 Authentication failure.  Token issued for %s not %s", oAuthToken.audience, "ccri"));
-//            throw new AuthenticationException("Unauthorised access to protected resource");
-        }
-
         // Check that the OAuth Token has not expired
         if (oAuthToken.isExpired()){
             logger.warn("OAuth2 Authentication failure due to expired token");
             throw new AuthenticationException("OAuth2 Authentication Token has expired.");
         }
 
+        // Check that the Scopes on the Token allow access to the specified resource
+        String resourceName = extractResourceName(resourcePath);
+        if (!allowedAccess(resourceName, theRequest.getMethod(), oAuthToken)){
+            logger.warn("OAuth2 Authentication failed due to insufficient access rights: ");
+            throw new AuthenticationException(String.format("Insufficient Access Rights to access %1s.", resourceName));
+        }
+
         logger.debug("Authenticated Access to " + resourcePath);
         return true;
+    }
+
+    /**
+     * Check if the Scopes on the OAuth Token allow access to the specified Resource
+     *
+     * @param resourceName
+     * @param method
+     * @param oAuthToken
+     * @return
+     */
+    private boolean allowedAccess(String resourceName, String method, OAuthToken oAuthToken) {
+        if (accessRights.containsKey(resourceName)){
+            String requiredAccess = accessRights.get("resourceName");
+            return oAuthToken.allowsAccess(requiredAccess, method);
+        }
+        logger.info(String.format("Access to %1s is unrestricted.", resourceName));
+        return true;
+    }
+
+    private String extractResourceName(String resourcePath) {
+        Matcher match = RESOURCE_PATTERN.matcher(resourcePath);
+        if (!match.matches()){
+            logger.warn(String.format("%1s does not match secured pattern"));
+            return "";
+        }
+        return match.group(1);
     }
 
 }
