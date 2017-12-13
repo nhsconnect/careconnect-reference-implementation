@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
@@ -102,7 +103,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		// what is available.
 
 		ServerInterceptor gatewayInterceptor = new ServerInterceptor(ourLog);
-		registerInterceptor(new OAuth2Interceptor(serverName));  // Add OAuth2 Security Filter
+		registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter
 		registerInterceptor(gatewayInterceptor);
 
 		//gatewayInterceptor.setLoggerName("ccri.FHIRGateway");

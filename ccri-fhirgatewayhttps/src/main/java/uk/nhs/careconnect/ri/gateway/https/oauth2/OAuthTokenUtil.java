@@ -11,13 +11,9 @@ public class OAuthTokenUtil {
 
     private static final String TOKEN_PREFIX = "bearer ";
 
-    public static OAuthToken parseOAuthToken(String oauthToken){
-        assert oauthToken != null:"OAuth Token should not be null";
-        if (oauthToken.toLowerCase().startsWith(TOKEN_PREFIX)){
-            return parseJwtToken(oauthToken.substring(TOKEN_PREFIX.length()));
-        } else {
-            throw new AuthenticationException("Invalid OAuth Token.  Missing Bearer prefix");
-        }
+    public static OAuthToken parseOAuthToken(String oauthHeader){
+        assert oauthHeader != null:"OAuth Token should not be null";
+        return parseJwtToken(extractTokenFromHeader(oauthHeader));
     }
 
     private static OAuthToken parseJwtToken(String jwtToken) {
@@ -27,6 +23,14 @@ public class OAuthTokenUtil {
             return mapper.readValue(jwt.getClaims().getBytes(), OAuthToken.class);
         } catch (IOException e) {
             throw new AuthenticationException("Invalid OAuth2 Token", e);
+        }
+    }
+
+    public static String extractTokenFromHeader(String authHeader) {
+        if (authHeader.toLowerCase().startsWith(TOKEN_PREFIX)) {
+            return authHeader.substring(TOKEN_PREFIX.length());
+        } else {
+            throw new AuthenticationException("Invalid OAuth Header.  Missing Bearer prefix");
         }
     }
 
