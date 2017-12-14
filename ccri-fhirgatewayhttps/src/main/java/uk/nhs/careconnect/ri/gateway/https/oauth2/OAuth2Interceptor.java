@@ -35,7 +35,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
 
     private final Map<String,String> accessRights = new HashMap();
 
-    private static final Pattern RESOURCE_PATTERN = Pattern.compile("^/");
+    private static final Pattern RESOURCE_PATTERN = Pattern.compile("^/(\\w+)[//|\\?]?.*$");
 
     public OAuth2Interceptor() {
         this.excludedPaths = new ArrayList<>();
@@ -104,7 +104,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         return true;
     }
 
-    private String extractResourceName(String resourcePath) {
+    public String extractResourceName(String resourcePath) {
         Matcher match = RESOURCE_PATTERN.matcher(resourcePath);
         if (!match.matches()){
             logger.warn(String.format("%s does not match secured pattern", resourcePath));
