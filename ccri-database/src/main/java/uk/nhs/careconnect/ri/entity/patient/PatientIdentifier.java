@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.patient;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
+
 import javax.persistence.*;
 
 @Entity

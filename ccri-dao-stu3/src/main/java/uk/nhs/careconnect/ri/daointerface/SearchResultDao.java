@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.hl7.fhir.dstu3.model.Location;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.entity.search.SearchResults;
 

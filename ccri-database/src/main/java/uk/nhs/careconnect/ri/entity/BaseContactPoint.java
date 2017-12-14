@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.entity;
 
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.ContactPoint;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;

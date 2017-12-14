@@ -7,7 +7,6 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
-
 import static org.junit.Assert.assertThat;
 
 public class OAuthTokenUtilTest {

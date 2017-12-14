@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ri.entity.medication;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 
-
 import javax.persistence.*;
 
 

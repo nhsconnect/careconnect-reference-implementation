@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.entity.procedure;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
-import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import javax.persistence.*;
 

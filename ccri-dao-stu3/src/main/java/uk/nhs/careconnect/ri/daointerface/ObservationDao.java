@@ -14,17 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
-import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.observation.*;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
-import uk.nhs.careconnect.ri.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
-import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
