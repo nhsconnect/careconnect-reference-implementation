@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationIdentifier;
 import uk.nhs.careconnect.ri.entity.observation.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 

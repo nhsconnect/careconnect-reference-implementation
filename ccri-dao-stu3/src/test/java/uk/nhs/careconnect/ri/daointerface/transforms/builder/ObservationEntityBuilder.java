@@ -4,7 +4,9 @@ import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationPerformer;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ObservationEntityBuilder {
 

@@ -5,10 +5,8 @@ import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.server.BasePagingProvider;
 import ca.uhn.fhir.rest.server.IPagingProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.nhs.careconnect.ri.daointerface.ISearchResultDao;
-
 
 import javax.persistence.EntityManager;
 

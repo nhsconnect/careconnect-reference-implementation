@@ -15,9 +15,7 @@ import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientT
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.entity.organization.OrganisationIdentifier;
 import uk.nhs.careconnect.ri.entity.patient.*;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;

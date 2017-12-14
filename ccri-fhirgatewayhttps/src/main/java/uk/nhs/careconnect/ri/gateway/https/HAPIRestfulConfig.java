@@ -9,15 +9,13 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.gateway.https.oauth2.OAuth2Interceptor;
-import uk.nhs.careconnect.ri.lib.ServerInterceptor;
 import uk.nhs.careconnect.ri.gatewaylib.provider.*;
-
+import uk.nhs.careconnect.ri.lib.ServerInterceptor;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;

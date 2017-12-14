@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class OAuthTokenTest {
 

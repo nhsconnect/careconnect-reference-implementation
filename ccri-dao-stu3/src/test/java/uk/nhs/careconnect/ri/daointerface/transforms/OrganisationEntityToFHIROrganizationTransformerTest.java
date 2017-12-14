@@ -8,7 +8,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class OrganisationEntityToFHIROrganizationTransformerTest {
 

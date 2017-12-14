@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
