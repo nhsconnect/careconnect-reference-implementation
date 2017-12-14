@@ -7,9 +7,7 @@ import uk.nhs.careconnect.ri.daointerface.transforms.builder.PatientAddressBuild
 import uk.nhs.careconnect.ri.entity.BaseAddress;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 
 public class BaseAddressToFHIRAddressTransformerTest {

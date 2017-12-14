@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
-
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;

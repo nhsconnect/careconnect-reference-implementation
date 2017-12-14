@@ -1,12 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
-import ca.uhn.fhir.rest.param.DateParam;
 import org.hl7.fhir.dstu3.model.Enumerations;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import java.util.Date;
 
 public final class daoutils {
 

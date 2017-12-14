@@ -2,10 +2,7 @@ package uk.nhs.careconnect.ri.entity.documentReference;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hl7.fhir.dstu3.model.DocumentReference;
-import org.hl7.fhir.dstu3.model.Enumerations;
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
 import javax.persistence.*;
 

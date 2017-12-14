@@ -2,12 +2,14 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
-
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.Terminology.*;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetInclude;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetIncludeConcept;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetIncludeFilter;
 
 
 @Component

@@ -1,9 +1,14 @@
 package uk.nhs.careconnect.ri.fhirserver.provider;
 
 import ca.uhn.fhir.rest.annotation.Metadata;
-import ca.uhn.fhir.rest.server.*;
+import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
 import org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.DecimalType;
+import org.hl7.fhir.dstu3.model.Extension;
+
 import javax.servlet.http.HttpServletRequest;
 
 

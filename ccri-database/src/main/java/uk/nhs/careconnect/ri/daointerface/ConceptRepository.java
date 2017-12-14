@@ -3,7 +3,10 @@ package uk.nhs.careconnect.ri.daointerface;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import uk.nhs.careconnect.ri.entity.Terminology.*;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 
 public interface ConceptRepository {
 

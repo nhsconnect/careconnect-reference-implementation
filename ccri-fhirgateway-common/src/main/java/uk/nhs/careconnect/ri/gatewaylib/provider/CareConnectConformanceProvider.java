@@ -7,22 +7,22 @@ import ca.uhn.fhir.context.RuntimeSearchParam;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.Constants;
-import ca.uhn.fhir.rest.server.*;
+import ca.uhn.fhir.rest.server.IServerConformanceProvider;
+import ca.uhn.fhir.rest.server.ResourceBinding;
+import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
 import ca.uhn.fhir.rest.server.method.BaseMethodBinding;
 import ca.uhn.fhir.rest.server.method.IParameter;
 import ca.uhn.fhir.rest.server.method.SearchMethodBinding;
+import ca.uhn.fhir.rest.server.method.SearchParameter;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.*;
-import ca.uhn.fhir.rest.server.method.SearchParameter;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -34,6 +34,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
+
+import static org.apache.http.util.TextUtils.isBlank;
 
 
 public class CareConnectConformanceProvider implements IServerConformanceProvider<CapabilityStatement> {
@@ -433,7 +435,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 				/*
 				 * If the parameter has no description, default to the one from the resource
 				 */
-                if (StringUtils.isBlank(nextParamDescription)) {
+                if (isBlank(nextParamDescription)) {
                     RuntimeSearchParam paramDef = def.getSearchParam(nextParamUnchainedName);
                     if (paramDef != null) {
                         nextParamDescription = paramDef.getDescription();

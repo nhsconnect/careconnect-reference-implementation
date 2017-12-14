@@ -1,7 +1,8 @@
 package uk.nhs.careconnect.ri.entity.Terminology;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity

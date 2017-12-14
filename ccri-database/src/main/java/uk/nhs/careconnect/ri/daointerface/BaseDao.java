@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.daointerface;
 import ca.uhn.fhir.context.FhirContext;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.IdType;
-import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.IBaseResource;
 
 

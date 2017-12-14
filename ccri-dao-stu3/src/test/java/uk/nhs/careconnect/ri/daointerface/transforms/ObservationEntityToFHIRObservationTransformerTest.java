@@ -8,9 +8,7 @@ import uk.nhs.careconnect.ri.daointerface.transforms.builder.ObservationEntityBu
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ObservationEntityToFHIRObservationTransformerTest {

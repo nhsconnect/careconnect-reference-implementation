@@ -9,9 +9,7 @@ import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
-import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
-import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 
 @Component

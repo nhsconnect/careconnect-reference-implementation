@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.entity.allergy;
 
 import uk.nhs.careconnect.ri.entity.BaseIdentifier;
-import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 
 import javax.persistence.*;
 
