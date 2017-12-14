@@ -1339,13 +1339,15 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             encounter.setPeriod(period);
             encounter.setSubject(new Reference("Patient/"+theRecord.get("patientID")));
 
-
+            /* TODO
             if (!theRecord.get("status").isEmpty()) {
                 // TODO
             } else {
                 // Mandatory field default to finished
-                encounter.setStatus(Encounter.EncounterStatus.FINISHED);
-            }
+
+            } */
+
+            encounter.setStatus(Encounter.EncounterStatus.FINISHED);
 
 
             if (!theRecord.get("resource.type").isEmpty() && !theRecord.get("participent.individual").isEmpty()) {
@@ -1374,7 +1376,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                             CodeableConcept type = new CodeableConcept();
                             switch (theRecord.get("participant.type")) {
                                 case "PRF":
-                                    type.addCoding().setSystem("http://hl7.org/fhir/ValueSet/encounter-participant-type").setCode("PPRF");
+                                    type.addCoding().setSystem("http://hl7.org/fhir/v3/ParticipationType").setCode("PPRF");
                                     break;
                                 default:
                                     System.out.println("participant.type=" + theRecord.get("participant.type"));
