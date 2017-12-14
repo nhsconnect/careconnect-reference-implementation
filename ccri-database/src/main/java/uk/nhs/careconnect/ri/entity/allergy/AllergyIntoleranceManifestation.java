@@ -20,7 +20,7 @@ public class AllergyIntoleranceManifestation {
     private AllergyIntoleranceReaction allergyReaction;
 
     @ManyToOne
-    @JoinColumn(name="MANIFESTATION_CONCEPT_ID")
+    @JoinColumn(name="MANIFESTATION_CONCEPT_ID", nullable = false)
     private ConceptEntity manifestation;
 
     public void setId(Long id) {

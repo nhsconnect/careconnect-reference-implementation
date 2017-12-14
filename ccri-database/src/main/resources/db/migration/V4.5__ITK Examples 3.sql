@@ -5,11 +5,13 @@ update Concept set RES_DELETED = '2017-11-14'  WHERE CONCEPT_ID = 16702  ;
 update Concept set RES_UPDATED = '2017-11-14',`CODE`='encounter-diagnosis', DISPLAY='Encounter Diagnosis'  WHERE CONCEPT_ID = 16701 ;
 update Concept set RES_UPDATED = '2017-11-14',`CODE`='problem-list-item', DISPLAY='Problem List Item' WHERE CONCEPT_ID = 16700 ;
 
-INSERT INTO Condition_ (`CONDITION_ID`,`ENCOUNTER_ID`,`EPISODE_ID`,`PATIENT_ID`,`onsetDateTime`,`clinicalStatus`,`CODE_CONCEPT_ID`,`assertedDateTime`,`ASSERTER_PRACTITIONER_ID`,`verificationStatus`)
-VALUES (1,null,null,4,'2010-10-09 09:00:00',0,null,'2010-10-09 09:00:00',200001,2);
+
 
 INSERT INTO Condition_ (`CONDITION_ID`,`ENCOUNTER_ID`,`EPISODE_ID`,`PATIENT_ID`,`onsetDateTime`,`clinicalStatus`,`CODE_CONCEPT_ID`,`assertedDateTime`,`ASSERTER_PRACTITIONER_ID`,`verificationStatus`)
-VALUES (2,null,null,1,'2010-10-09 09:00:00',0,null,'2010-10-09 09:00:00',1,2);
+SELECT 1,null,null,4,'2010-10-09 09:00:00',0,CONCEPT_ID,'2010-10-09 09:00:00',200001,2 FROM Concept where CODE = '44054006';
+
+INSERT INTO Condition_ (`CONDITION_ID`,`ENCOUNTER_ID`,`EPISODE_ID`,`PATIENT_ID`,`onsetDateTime`,`clinicalStatus`,`CODE_CONCEPT_ID`,`assertedDateTime`,`ASSERTER_PRACTITIONER_ID`,`verificationStatus`)
+SELECT 2,null,null,1,'2010-10-09 09:00:00',0,CONCEPT_ID,'2010-10-09 09:00:00',1,2 FROM Concept where CODE = '22220005';
 
 INSERT INTO ConditionCategory (`CONDITION_CATEGORY_ID`,`CONDITION_ID`,`CATEGORY_CONCEPT_ID`)
 VALUES(1,1,709);
@@ -18,10 +20,10 @@ INSERT INTO ConditionCategory (`CONDITION_CATEGORY_ID`,`CONDITION_ID`,`CATEGORY_
 VALUES(2,2,709);
 
 INSERT INTO `Procedure_` (`PROCEDURE_ID`,`CODE_ID`,`ENCOUNTER_ID`,`PATIENT_ID`,`performedDate`,`notDone`,`status`,`BASED_ON_REFERRAL_REQUEST_ID`,`BODY_SITE_CONCEPT_ID`,`CATEGORY_CONCEPT_ID`,`EPISODE_OF_CARE_ID`,`PROCEDURE_LOCATION_ID`,`NOT_DONE_REASON_CONCEPT_ID`,`OUTCOME_CONCEPT_ID`,`PART_OF_PROCEDURE_ID`,`REASON_CONCEPT_ID`,`REASON_CONDITION`,`REASON_OBSERVATION`)
-VALUES (1,null,null,4,'2010-10-20 20:56:00', null,4,null,null,null,1,null,null,null,null,null,1,null);
+SELECT 1,null,null,4,'2010-10-20 20:56:00', CONCEPT_ID,4,null,null,null,1,null,null,null,null,null,1,null FROM Concept where CODE = '174184006';
 
 INSERT INTO `Procedure_` (`PROCEDURE_ID`,`CODE_ID`,`ENCOUNTER_ID`,`PATIENT_ID`,`performedDate`,`notDone`,`status`,`BASED_ON_REFERRAL_REQUEST_ID`,`BODY_SITE_CONCEPT_ID`,`CATEGORY_CONCEPT_ID`,`EPISODE_OF_CARE_ID`,`PROCEDURE_LOCATION_ID`,`NOT_DONE_REASON_CONCEPT_ID`,`OUTCOME_CONCEPT_ID`,`PART_OF_PROCEDURE_ID`,`REASON_CONCEPT_ID`,`REASON_CONDITION`,`REASON_OBSERVATION`)
-VALUES (2,null,null,1,'2017-03-22T09:30:10', null,4,null,null,null,null,null,null,null,null,null,2,null);
+SELECT 2,null,null,1,'2017-03-22T09:30:10', CONCEPT_ID,4,null,null,null,null,null,null,null,null,null,2,null FROM Concept where CODE = '923461000000103';
 
 
 INSERT INTO `ProcedurePerformer` (`PROCEDURE_PERFORMER_ID`,`ACTOR_ORGNANISATION`,`ACTOR_PRACTITIONER`,`ON_BEHALF_OF_ORGANISATION`,`PROCEDURE_ID`,`ROLE_CONCEPT_ID`)
@@ -31,13 +33,11 @@ VALUES (2,200001,null,null,2,null);
 
 INSERT INTO `AllergyIntolerance`
 (`ALLERGY_ID`,`PATIENT_ID`,`assertedDateTime`,`clinicalStatus`,`criticality`,`lastOccurenceDateTime`,`note`,`onsetDateTime`,`type`,`verificationStatus`,`ASSERTER_PATIENT_ID`,`ASSERTER_PRACTITIONER_ID`,`CODE_CONCEPT_ID`,`RECORDER_PATIENT_ID`,`RECORDER_PRACTITIONER_ID`)
-VALUES
-(1,1,'2014-10-09T14:58:00',0,1,'2012-06-01',null,'2012-06-12',0,1,null,1,null,null,1);
+select 1,1,'2014-10-09T14:58:00',0,1,'2012-06-01',null,'2012-06-12',0,1,null,1,CONCEPT_ID,null,1  FROM Concept where CODE = '1660001' ;
 
 INSERT INTO `AllergyIntolerance`
 (`ALLERGY_ID`,`PATIENT_ID`,`assertedDateTime`,`clinicalStatus`,`criticality`,`lastOccurenceDateTime`,`note`,`onsetDateTime`,`type`,`verificationStatus`,`ASSERTER_PATIENT_ID`,`ASSERTER_PRACTITIONER_ID`,`CODE_CONCEPT_ID`,`RECORDER_PATIENT_ID`,`RECORDER_PRACTITIONER_ID`)
-VALUES
-(2,4,'1998-07-01 17:55:00',0,1,'1998-07-01 17:55:00',null,'1998-07-01 17:55:00',0,1,4,null,null,null,200000);
+select 2,4,'1998-07-01 17:55:00',0,1,'1998-07-01 17:55:00',null,'1998-07-01 17:55:00',0,1,4,null,CONCEPT_ID,null,200000 FROM Concept where CODE = '441321000000103' ;
 
 
 INSERT INTO `AllergyIntoleranceCategory`(`ALLERGY_CATEGORY_ID`,`CATEGORY_CONCEPT_ID`,`ALLERGY_ID`)
@@ -46,11 +46,13 @@ INSERT INTO `AllergyIntoleranceCategory`(`ALLERGY_CATEGORY_ID`,`CATEGORY_CONCEPT
 VALUES(2,1,2);
 
 INSERT INTO `AllergyIntoleranceReaction`(`ALLERGY_REACTION_ID`,`description`,`note`,`onset`,`severity`,`ALLERGY_ID`,`EXPOSURE_ROUTE_CONCEPT_ID`,`SUBSTANCE_CONCEPT_ID`)
-VALUES(1,NULL,null,'2012-06-01',2,1,null,null);
+select 1,NULL,null,'2012-06-01',2,1,null,CONCEPT_ID FROM Concept where CODE = '226017009' ;
+
 INSERT INTO `AllergyIntoleranceReaction`(`ALLERGY_REACTION_ID`,`description`,`note`,`onset`,`severity`,`ALLERGY_ID`,`EXPOSURE_ROUTE_CONCEPT_ID`,`SUBSTANCE_CONCEPT_ID`)
-VALUES(2,NULL,null,'1998-07-01',2,2,null,null);
+select 2,NULL,null,'1998-07-01',2,2,null,CONCEPT_ID FROM Concept where CODE = '414058001' ;
+
 
 INSERT INTO `AllergyIntoleranceManifestation`(`ALLERGY_MANIFESTATION_ID`,`ALLERGY_REACTION_ID`,`MANIFESTATION_CONCEPT_ID`)
-VALUES(1,1,null);
+select 1,1, CONCEPT_ID FROM Concept where CODE = '39579001';
 INSERT INTO `AllergyIntoleranceManifestation`(`ALLERGY_MANIFESTATION_ID`,`ALLERGY_REACTION_ID`,`MANIFESTATION_CONCEPT_ID`)
-VALUES(2,2,null);
+select 2,2, CONCEPT_ID FROM Concept where CODE = '91175000';

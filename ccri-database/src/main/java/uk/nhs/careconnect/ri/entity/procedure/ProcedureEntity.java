@@ -35,6 +35,7 @@ public class ProcedureEntity extends BaseResource {
     private ProcedureEntity partOfProcedure;
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(name="status", nullable = false)
     private Procedure.ProcedureStatus status;
 
 
@@ -57,7 +58,7 @@ public class ProcedureEntity extends BaseResource {
     private ConceptEntity code;
 
     @ManyToOne
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PROCEDURE"))
+    @JoinColumn (name = "PATIENT_ID",nullable=false,foreignKey= @ForeignKey(name="FK_PATIENT_PROCEDURE"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 

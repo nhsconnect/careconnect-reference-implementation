@@ -37,11 +37,13 @@ public class ObservationEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name="CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_CODE_CONCEPT_ID"))
+    @JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_OBSERVATION_CODE_CONCEPT_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity code;
 
+    // The parent should not be null but child observations don't have a status.
     @Enumerated(EnumType.ORDINAL)
+    @Column(name="status")
     private Observation.ObservationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)

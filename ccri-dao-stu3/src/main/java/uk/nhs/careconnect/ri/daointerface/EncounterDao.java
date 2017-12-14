@@ -176,6 +176,10 @@ public class  EncounterDao implements EncounterRepository {
             encounterEntity.setLocation(locationEntity);
         }
 
+        if (encounter.hasStatus()) {
+            encounterEntity.setStatus(encounter.getStatus());
+        }
+
         if (encounter.hasParticipant()) {
             for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
                 if (participant.getIndividual().getReference().contains("Practitioner")) {

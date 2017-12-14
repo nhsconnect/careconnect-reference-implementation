@@ -29,12 +29,12 @@ public class MedicationRequestEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PRESCRIPTION"))
+    @JoinColumn (name = "PATIENT_ID",nullable =false, foreignKey= @ForeignKey(name="FK_PATIENT_PRESCRIPTION"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
+    @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity medicationCode;
 
@@ -61,7 +61,7 @@ public class MedicationRequestEntity extends BaseResource {
     MedicationRequest.MedicationRequestStatus status;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "intent")
+    @Column(name = "intent", nullable = false)
     MedicationRequest.MedicationRequestIntent intent;
 
     @ManyToOne

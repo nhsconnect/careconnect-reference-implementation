@@ -1340,6 +1340,13 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             encounter.setSubject(new Reference("Patient/"+theRecord.get("patientID")));
 
 
+            if (!theRecord.get("status").isEmpty()) {
+                // TODO
+            } else {
+                // Mandatory field default to finished
+                encounter.setStatus(Encounter.EncounterStatus.FINISHED);
+            }
+
 
             if (!theRecord.get("resource.type").isEmpty() && !theRecord.get("participent.individual").isEmpty()) {
 
@@ -1384,7 +1391,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 /*
             System.out.println("participant.type=" + theRecord.get("participant.type"));
             System.out.println("resource.type="+theRecord.get("resource.type"));
-            System.out.println("participent.individual="+theRecord.get("participent.individual"));
+            System.out.println("participant.individual="+theRecord.get("participent.individual"));
             System.out.println("serviceProvider="+theRecord.get("serviceProvider"));
 */
             if (!theRecord.get("serviceProvider").isEmpty()) {

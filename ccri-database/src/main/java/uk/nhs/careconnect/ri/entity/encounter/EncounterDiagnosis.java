@@ -21,7 +21,7 @@ public class EncounterDiagnosis {
 
 
     @ManyToOne
-    @JoinColumn (name = "DIAGNOSIS_CONDITION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_CONDITION_ID"))
+    @JoinColumn (name = "DIAGNOSIS_CONDITION_ID", nullable = false, foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_CONDITION_ID"))
     private ConditionEntity condition;
 
 

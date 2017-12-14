@@ -22,7 +22,7 @@ public class EncounterReason {
     private EncounterEntity encounter;
 
     @ManyToOne
-    @JoinColumn(name="REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_REASON_CONCEPT_ID"))
+    @JoinColumn(name="REASON_CONCEPT_ID", nullable = false, foreignKey= @ForeignKey(name="FK_ENCOUNTER_REASON_CONCEPT_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity reason;
 

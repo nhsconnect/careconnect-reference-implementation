@@ -24,7 +24,7 @@ public class EncounterEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PATIENT"))
+    @JoinColumn (name = "PATIENT_ID", nullable = false,foreignKey= @ForeignKey(name="FK_ENCOUNTER_PATIENT"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
@@ -47,6 +47,7 @@ public class EncounterEntity extends BaseResource {
 
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(name="status", nullable = false)
     Encounter.EncounterStatus status;
 
     @ManyToOne

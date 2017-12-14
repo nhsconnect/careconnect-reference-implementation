@@ -27,11 +27,11 @@ public class ImmunisationEntity extends BaseResource {
 
     @ManyToOne
     @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_PATIENT"))
+    @JoinColumn (name = "PATIENT_ID", nullable = false, foreignKey= @ForeignKey(name="FK_IMMUNISATION_PATIENT"))
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn (name = "MEDICATION_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_VACCINE_CODE"))
+    @JoinColumn (name = "MEDICATION_CODE_ID",nullable = false, foreignKey= @ForeignKey(name="FK_IMMUNISATION_VACCINE_CODE"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity vacinationCode;
 
@@ -48,7 +48,7 @@ public class ImmunisationEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<ImmunisationIdentifier> identifiers = new HashSet<>();
 
-    @Column(name="notGiven")
+    @Column(name="notGiven", nullable = false)
     Boolean notGiven;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -59,7 +59,7 @@ public class ImmunisationEntity extends BaseResource {
     @Column(name = "expirationDateTime")
     private Date expirationDate;
 
-    @Column(name="primarySource")
+    @Column(name="primarySource", nullable = false)
     Boolean primarySource;
 
     @ManyToOne

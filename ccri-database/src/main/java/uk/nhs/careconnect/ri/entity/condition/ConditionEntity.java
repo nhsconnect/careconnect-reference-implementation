@@ -23,7 +23,7 @@ public class ConditionEntity extends BaseResource {
     private Long id;
 
     @ManyToOne
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_CONDITION"))
+    @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_CONDITION"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
