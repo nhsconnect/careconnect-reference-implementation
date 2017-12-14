@@ -80,7 +80,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         String resourceName = extractResourceName(resourcePath);
         if (!allowedAccess(resourceName, theRequest.getMethod(), oAuthToken)){
             logger.warn("OAuth2 Authentication failed due to insufficient access rights: ");
-            throw new AuthenticationException(String.format("Insufficient Access Rights to access %1s.", resourceName));
+            throw new AuthenticationException(String.format("Insufficient Access Rights to access %s.", resourceName));
         }
 
         logger.debug("Authenticated Access to " + resourcePath);
@@ -100,14 +100,14 @@ public class OAuth2Interceptor extends InterceptorAdapter {
             String requiredAccess = accessRights.get("resourceName");
             return oAuthToken.allowsAccess(requiredAccess, method);
         }
-        logger.info(String.format("Access to %1s is unrestricted.", resourceName));
+        logger.info(String.format("Access to %s is unrestricted.", resourceName));
         return true;
     }
 
     private String extractResourceName(String resourcePath) {
         Matcher match = RESOURCE_PATTERN.matcher(resourcePath);
         if (!match.matches()){
-            logger.warn(String.format("%1s does not match secured pattern"));
+            logger.warn(String.format("%s does not match secured pattern", resourcePath));
             return "";
         }
         return match.group(1);
