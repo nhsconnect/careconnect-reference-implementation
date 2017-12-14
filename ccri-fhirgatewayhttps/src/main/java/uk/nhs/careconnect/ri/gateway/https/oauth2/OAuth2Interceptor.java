@@ -34,7 +34,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
 
     Logger logger = LoggerFactory.getLogger(OAuth2Interceptor.class);
 
-    private final Map<String,String> accessRights = new HashMap();
+    private final Map<String,String> accessRights = getAccessRights();
 
     private static final Pattern RESOURCE_PATTERN = Pattern.compile("^/(\\w+)[//|\\?]?.*$");
 
@@ -42,6 +42,12 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         this.excludedPaths = new ArrayList<>();
         excludedPaths.add("/metadata");
 
+        getAccessRights();
+
+    }
+
+    protected Map<String, String> getAccessRights() {
+        Map<String, String> accessRights = new HashMap();
         accessRights.put("Patient","Patient");
         accessRights.put("Observation","Observation");
         accessRights.put("Encounter","Encounter");
@@ -51,7 +57,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         accessRights.put("MedicationRequest","MedicationPrescription");
         accessRights.put("MedicationStatement","MedicationStatement");
         accessRights.put("Immunization","Immunization");
-
+        return accessRights;
     }
 
     @Override
@@ -96,9 +102,9 @@ public class OAuth2Interceptor extends InterceptorAdapter {
      * @param oAuthToken
      * @return
      */
-    private boolean allowedAccess(String resourceName, String method, OAuthToken oAuthToken) {
+    public boolean allowedAccess(String resourceName, String method, OAuthToken oAuthToken) {
         if (accessRights.containsKey(resourceName)){
-            String requiredAccess = accessRights.get("resourceName");
+            String requiredAccess = accessRights.get(resourceName);
             return oAuthToken.allowsAccess(requiredAccess, method);
         }
         logger.info(String.format("Access to %s is unrestricted.", resourceName));
