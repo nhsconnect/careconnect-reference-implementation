@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.gateway.https.oauth2;
 
 
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         String resourceName = extractResourceName(resourcePath);
         if (!allowedAccess(resourceName, theRequest.getMethod(), oAuthToken)){
             logger.warn("OAuth2 Authentication failed due to insufficient access rights: ");
-            throw new AuthenticationException(String.format("Insufficient Access Rights to access %s.", resourceName));
+            throw new ForbiddenOperationException(String.format("Insufficient Access Rights to access %s.", resourceName));
         }
 
         logger.debug("Authenticated Access to " + resourcePath);
