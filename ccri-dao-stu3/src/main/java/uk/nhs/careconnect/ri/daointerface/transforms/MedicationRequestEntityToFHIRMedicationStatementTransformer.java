@@ -60,7 +60,8 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
             medicationStatement.setContext(new Reference("Encounter/"+medicationRequestEntity.getContextEncounter().getId()));
         }
 
-        medicationStatement.addDerivedFrom().setReference("MedicationOrder/"+medicationRequestEntity.getId());
+        // Typo 15/12/2017 KGM Was MedicationOrder
+        medicationStatement.addDerivedFrom().setReference("MedicationRequest/"+medicationRequestEntity.getId());
 
         medicationStatement.setTaken(MedicationStatement.MedicationStatementTaken.Y);
 
