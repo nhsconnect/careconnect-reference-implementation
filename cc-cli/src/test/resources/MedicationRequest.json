@@ -1,0 +1,67 @@
+{
+  "resourceType": "MedicationRequest",
+  "id": "1",
+  "meta": {
+    "profile": [
+      "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-MedicationRequest-1"
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationSupplyType-1",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "930811000000109",
+            "display": "NHS Prescription"
+          }
+        ]
+      }
+    }
+  ],
+  "status": "completed",
+  "intent": "order",
+  "priority": "routine",
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10097211000001102",
+        "display": "Insulin glulisine 100units/ml solution for injection 3ml pre-filled disposable devices (product)"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/1"
+  },
+  "context": {
+    "reference": "Encounter/1"
+  },
+  "authoredOn": "2017-05-25T00:00:00+00:00",
+  "recorder": {
+    "reference": "Practitioner/1",
+    "display": "Dr AA Bhatia"
+  },
+  "dosageInstruction": [
+    {
+      "text": "Please explain to Bernie how to use injector.",
+      "additionalInstruction": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "1521000175104",
+              "display": "After dinner (qualifier value)"
+            }
+          ]
+        }
+      ],
+      "patientInstruction": "Three times a day",
+      "asNeededBoolean": false
+    }
+  ],
+  "substitution": {
+    "allowed": true
+  }
+}

@@ -13,7 +13,9 @@ import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
+import uk.org.hl7.fhir.validation.stu3.SNOMEDUKMockValidationSupport;
 
 import java.io.*;
 
@@ -105,7 +107,8 @@ public class ValidateCommand extends BaseCommand {
 				val.registerValidatorModule(instanceValidator);
 				ValidationSupportChain validationSupport = new ValidationSupportChain(
 				        new DefaultProfileValidationSupport()
-                        , new CareConnectProfileValidationSupport()
+                        ,new CareConnectProfileValidationSupport()
+						,new SNOMEDUKMockValidationSupport() // This is to disable SNOMED CT Warnings. Mock validation to return ok for SNOMED Concepts
                 );
 				if (localProfileResource != null) {
 					instanceValidator.setStructureDefintion((StructureDefinition) localProfileResource);
@@ -114,6 +117,7 @@ public class ValidateCommand extends BaseCommand {
 				if (theCommandLine.hasOption("r")) {
 					validationSupport.addValidationSupport(new LoadingValidationSupportDstu3());
 				}
+                val.setValidateAgainstStandardSchema(true);
 
 				instanceValidator.setValidationSupport(validationSupport);
 				break;
@@ -131,25 +135,34 @@ public class ValidateCommand extends BaseCommand {
 		StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
 		int count = 0;
 		for (SingleValidationMessage next : results.getMessages()) {
-			count++;
-			b.append(App.LINESEP);
-			String leftString = "Issue " + count + ": ";
-			int leftWidth = leftString.length();
-			b.append(ansi().fg(Color.GREEN)).append(leftString);
-			if (next.getSeverity() != null) {
-				b.append(next.getSeverity()).append(ansi().fg(Color.WHITE)).append(" - ");
-			}
-			if (isNotBlank(next.getLocationString())) {
-				b.append(ansi().fg(Color.WHITE)).append(next.getLocationString());
-			}
-			String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
-			for (String line : message) {
+
+			if (next.getMessage().contains("and a code from this value set is required") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
+			//	System.out.println("match **");
+			} else if (next.getMessage().contains("a code is required from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
+			//	System.out.println("match ** ** ");
+			} else if (next.getMessage().contains("and a code is recommended to come from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
+			//	System.out.println("match ** ** **" );
+			}else {
+
+				count++;
 				b.append(App.LINESEP);
-				b.append(ansi().fg(Color.WHITE));
-				b.append(leftPad("", leftWidth)).append(line);
+				String leftString = "Issue " + count + ": ";
+				int leftWidth = leftString.length();
+				b.append(ansi().fg(Color.GREEN)).append(leftString);
+				if (next.getSeverity() != null) {
+					b.append(next.getSeverity()).append(ansi().fg(Color.WHITE)).append(" - ");
+				}
+				if (isNotBlank(next.getLocationString())) {
+					b.append(ansi().fg(Color.WHITE)).append(next.getLocationString());
+				}
+				String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
+				for (String line : message) {
+					b.append(App.LINESEP);
+					b.append(ansi().fg(Color.WHITE));
+					b.append(leftPad("", leftWidth)).append(line);
+				}
+				ourLog.info(message.toString());
 			}
-			ourLog.info(message.toString());
-			ourLog.info(message.toString());
 
 		}
 		b.append(App.LINESEP);

@@ -1,0 +1,29 @@
+{
+  "resourceType": "Encounter",
+  "id": "479",
+  "meta": {
+    "lastUpdated": "2017-12-06T11:29:09.311+00:00",
+    "profile": [
+      "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/encounter",
+      "value": "4122"
+    }
+  ],
+  "status": "finished",
+  "subject": {
+    "reference": "Patient/1007",
+    "display": "Mrs Adrienne Howell"
+  },
+  "period": {
+    "start": "2017-08-25T11:43:41+00:00",
+    "end": "2017-08-25"
+  },
+  "serviceProvider": {
+    "reference": "Organization/200061",
+    "display": "Leeds And York Partnership Nhs Foundation Trust"
+  }
+}

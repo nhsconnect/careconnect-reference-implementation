@@ -205,9 +205,13 @@ public class  EncounterDao implements EncounterRepository {
 
             if (encounter.getPeriod().hasStart()) {
                 encounterEntity.setPeriodStartDate(encounter.getPeriod().getStart());
-            }
+
             if (encounter.getPeriod().hasEnd()) {
+                if (encounter.getPeriod().getEnd().after(encounter.getPeriod().getStart()))
                 encounterEntity.setPeriodEndDate(encounter.getPeriod().getEnd());
+                else
+                    encounterEntity.setPeriodEndDate(null); // KGM 15/12/2017 Ensure end date is after start date , if not set end date to null
+            }
             }
         }
 

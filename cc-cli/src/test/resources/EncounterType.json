@@ -1,0 +1,67 @@
+{
+  "resourceType": "Encounter",
+  "id": "3",
+  "meta": {
+    "profile": [
+      "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1"
+    ]
+  },
+  "status": "finished",
+  "class": {
+    "system": "http://hl7.org/fhir/v3/ActCode",
+    "code": "IMP",
+    "display": "inpatient encounter"
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "25241000000106",
+          "display": "Discharge from care (procedure)"
+        }
+      ]
+    }
+  ],
+  "priority": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/v3/ActPriority",
+        "code": "R",
+        "display": "routine"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/4",
+    "display": "Mrs Fredrica Smith"
+  },
+  "episodeOfCare": [
+    {
+      "reference": "EpisodeOfCare/1"
+    }
+  ],
+  "participant": [
+    {
+      "individual": {
+        "reference": "Practioner/200001",
+        "display": "Dr. Samuel Darwin"
+      }
+    }
+  ],
+  "period": {
+    "start": "2010-10-21T17:35:00+00:00"
+  },
+  "location": [
+    {
+      "location": {
+        "reference": "Location/200001",
+        "display": "Observation Ward"
+      }
+    }
+  ],
+  "serviceProvider": {
+    "reference": "Organization/200001",
+    "display": "North Riding NHS Trust"
+  }
+}

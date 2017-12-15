@@ -25,7 +25,7 @@ public class ValidateTest {
 		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Good.xml").getFile();
 		ourLog.info(resourcePath);
 		
-		App.main(new String[] {"validate", "-p"
+		App.main(new String[] {"validate", "-p", "-x"
 				,"-n",resourcePath});
 	}
 
@@ -34,7 +34,7 @@ public class ValidateTest {
 		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Bad.xml").getFile();
 		ourLog.info(resourcePath);
 
-		App.main(new String[] {"validate", "-p"
+		App.main(new String[] {"validate", "-p", "-x"
 				,"-n",resourcePath});
 	}
 	@Test
@@ -42,7 +42,7 @@ public class ValidateTest {
 		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
 		ourLog.info(resourcePath);
 
-		App.main(new String[] {"validate", "-p"
+		App.main(new String[] {"validate", "-p", "-x"
 				,"-n",resourcePath});
 	}
 
@@ -51,8 +51,40 @@ public class ValidateTest {
 		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
 		ourLog.info(resourcePath);
 
-		App.main(new String[] {"validate", "-p"
+		App.main(new String[] {"validate", "-p", "-x"
 				,"-n",resourcePath});
 	}
 
+    @Test
+    public void testValidateCondition() {
+        String resourcePath = ValidateTest.class.getResource("/Condition.json").getFile();
+        ourLog.info(resourcePath);
+
+        App.main(new String[] {"validate", "-p", "-x"
+                ,"-n",resourcePath});
+    }
+	@Test
+	public void testValidateEncounter() {
+		String resourcePath = ValidateTest.class.getResource("/EncounterDates.json").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p", "-x"
+				,"-n",resourcePath});
+	}
+	@Test
+	public void testValidateEncounterType() {
+		String resourcePath = ValidateTest.class.getResource("/EncounterType.json").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p", "-x"
+				,"-n",resourcePath});
+	}
+	@Test
+	public void testValidateMedicationRequest() {
+		String resourcePath = ValidateTest.class.getResource("/MedicationRequest.json").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p", "-x"
+				,"-n",resourcePath});
+	}
 }

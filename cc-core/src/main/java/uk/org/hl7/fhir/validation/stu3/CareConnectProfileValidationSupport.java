@@ -14,6 +14,7 @@ import org.hl7.fhir.dstu3.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,25 +28,37 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   private static final String URL_PREFIX_STRUCTURE_DEFINITION = "https://fhir.hl7.org.uk/STU3/StructureDefinition/";
   private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "https://fhir.hl7.org.uk/STU3/";
 
-  private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport .class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport .class);
 
   private Map<String, CodeSystem> myCodeSystems;
   private Map<String, StructureDefinition> myStructureDefinitions;
   private Map<String, ValueSet> myValueSets;
 
+  private void logD(String message) {
+      log.debug(message);
+    //    System.out.println(message);
+  }
+
+    private void logW(String message) {
+        log.warn(message);
+      //  System.out.println(message);
+    }
   @Override
   public ValueSetExpansionComponent expandValueSet(FhirContext theContext, ConceptSetComponent theInclude) {
+    logD("CareConnect expandValueSet System="+theInclude.getSystem());
     ValueSetExpansionComponent retVal = new ValueSetExpansionComponent();
 
     Set<String> wantCodes = new HashSet<String>();
     for (ConceptReferenceComponent next : theInclude.getConcept()) {
       wantCodes.add(next.getCode());
+      logD("CareConnect expandValueSet System="+theInclude.getSystem()+" wantCodes.add "+next.getCode());
     }
 
     CodeSystem system = fetchCodeSystem(theContext, theInclude.getSystem());
     for (ConceptDefinitionComponent next : system.getConcept()) {
       if (wantCodes.isEmpty() || wantCodes.contains(next.getCode())) {
         retVal.addContains().setSystem(theInclude.getSystem()).setCode(next.getCode()).setDisplay(next.getDisplay());
+
       }
     }
 
@@ -68,11 +81,14 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
+    logD("CareConnect fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
+      logD("CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
+
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
       if (codeSystems == null || valueSets == null) {
@@ -80,12 +96,11 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
         valueSets = new HashMap<String, ValueSet>();
 
         loadCodeSystems(theContext, codeSystems, valueSets, "/uk/org/hl7/fhir/stu3/model/valueset/valuesets.xml");
-       // loadCodeSystems(theContext, codeSystems, valueSets, "/org/hl7/fhir/dstu3/model/valueset/v2-tables.xml");
-       // loadCodeSystems(theContext, codeSystems, valueSets, "/org/hl7/fhir/dstu3/model/valueset/v3-codesystems.xml");
 
         myCodeSystems = codeSystems;
         myValueSets = valueSets;
       }
+
 
       if (codeSystem) {
         return codeSystems.get(theSystem);
@@ -140,7 +155,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
   private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    ourLog.info("Loading CodeSystem/ValueSet from classpath: {}", theClasspath);
+    logD("CareConnect Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
     InputStream valuesetText = CareConnectProfileValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
@@ -164,12 +179,13 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
         }
       }
     } else {
-      ourLog.warn("Unable to load resource: {}", theClasspath);
+      logW("Unable to load resource: "+ theClasspath);
+
     }
   }
 
   private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    ourLog.info("Loading structure definitions from classpath: {}", theClasspath);
+    logD("CareConnect Loading structure definitions from classpath: "+ theClasspath);
     InputStream valuesetText = CareConnectProfileValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
@@ -186,7 +202,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
         }
       }
     } else {
-      ourLog.warn("Unable to load resource: {}", theClasspath);
+      log.warn("Unable to load resource: {}", theClasspath);
     }
   }
 
@@ -205,6 +221,8 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
+    logD("CareConnect testIfConceptIsInList: {} code="+ theCode);
+
     String code = theCode;
     if (theCaseSensitive == false) {
       code = code.toUpperCase();
@@ -214,10 +232,11 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInListInner(List<ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
+    logD("CareConnect testIfConceptIsInListInner: code=" + code);
     CodeValidationResult retVal = null;
     for (ConceptDefinitionComponent next : conceptList) {
       // KGM
-      ourLog.debug("code = "+next.getCode());
+      logD("CareConnect testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
       if (theCaseSensitive == false) {
         nextCandidate = nextCandidate.toUpperCase();
@@ -240,7 +259,8 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
-    ourLog.debug("system = "+ theCodeSystem);
+    logD("CareConnect validateCode system = "+ theCodeSystem);
+
     if (cs != null) {
       boolean caseSensitive = true;
       if (cs.hasCaseSensitive()) {
@@ -254,7 +274,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
       }
     }
 
-    return new CodeValidationResult(IssueSeverity.WARNING, "Unknown code: " + theCodeSystem + " / " + theCode);
+    return new CodeValidationResult(IssueSeverity.WARNING, "CareConnect Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
 }

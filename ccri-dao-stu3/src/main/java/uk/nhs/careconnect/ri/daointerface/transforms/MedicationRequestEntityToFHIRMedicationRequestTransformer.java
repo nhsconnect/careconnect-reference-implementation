@@ -151,9 +151,10 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             period.setEnd(medicationRequestEntity.getDispenseRequestEnd());
         }
         if (medicationRequestEntity.getDispenseRequestStart() !=null) {
-            period.setEnd(medicationRequestEntity.getDispenseRequestStart());
+            // KGM 15/12/2017 Corrected to setup Start date (was showing end)
+            period.setStart(medicationRequestEntity.getDispenseRequestStart());
         }
-        if (medicationRequestEntity.getNumberOfRepeatsAllowed() != null) {
+        if (medicationRequestEntity.getNumberOfRepeatsAllowed() != null && medicationRequestEntity.getNumberOfRepeatsAllowed()>0) {
             dispense.setNumberOfRepeatsAllowed(medicationRequestEntity.getNumberOfRepeatsAllowed());
         }
         Duration duration = new Duration();

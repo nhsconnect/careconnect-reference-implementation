@@ -70,7 +70,7 @@ public class LocationEntity extends BaseResource {
 	}
 
 	public String getName() {
-		return name;
+		return name.trim();
 	}
 
 	public void setName(String name) {

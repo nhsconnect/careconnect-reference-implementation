@@ -28,6 +28,8 @@ public class BaseHumanName extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private HumanName.NameUse nameUse;
 
+    // KGM 15/12/2017 Added trim calls to remove trailing and leading spaces from values.
+
     public HumanName.NameUse getNameUse() {
         return this.nameUse;
     }
@@ -47,35 +49,50 @@ public class BaseHumanName extends BaseResource {
     }
 
     public String getPrefix() {
-        return prefix;
+
+        if (prefix!=null && !prefix.isEmpty()) return prefix.trim();
+        else return null;
     }
 
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
+
+        if (prefix !=null) this.prefix = prefix.trim();
+        else this.prefix=prefix;
     }
 
     public String getGivenName() {
-        return givenName;
+
+        if (givenName != null && !givenName.isEmpty()) return givenName.trim();
+        else return null;
     }
 
     public void setGivenName(String givenName) {
-        this.givenName = givenName;
+
+        if (givenName != null) this.givenName = givenName.trim();
+        else this.givenName = givenName;
     }
 
     public String getFamilyName() {
-        return familyName;
+
+        if (familyName != null && !familyName.isEmpty()) return familyName.trim();
+        else return null;
     }
 
     public void setFamilyName(String familyName) {
-        this.familyName = familyName;
+
+        if (familyName != null) this.familyName = familyName.trim();
+        else this.familyName = familyName;
     }
 
     public String getSuffix() {
-        return suffix;
+        if (suffix != null && !suffix.isEmpty()) return suffix.trim();
+        else return null;
+
     }
 
     public void setSuffix(String suffix) {
-        this.suffix = suffix;
+        if (suffix!=null) this.suffix = suffix.trim();
+        else this.suffix = suffix;
     }
 
     public String getDisplayName(){
