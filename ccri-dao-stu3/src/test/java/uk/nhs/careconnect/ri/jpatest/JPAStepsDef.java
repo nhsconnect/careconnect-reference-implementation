@@ -79,6 +79,9 @@ public class JPAStepsDef {
     MedicationRequestRepository prescribingRepository;
 
     @Autowired
+    MedicationStatementRepository statementRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -715,6 +718,17 @@ PROCEDURE
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+
+    @When("^I get MedicationStatement ID = (\\d+)$")
+    public void i_get_MedicationStatement_ID(String id) throws Throwable {
+        resource = statementRepository.read(ctx,new IdType().setValue(id));
+    }
+
+    @Then("^I should get a MedicationRequest resource$")
+    public void i_should_get_a_MedicationRequest_resource() throws Throwable {
+        Assert.assertThat(resource,instanceOf(MedicationStatement.class));
     }
 
 

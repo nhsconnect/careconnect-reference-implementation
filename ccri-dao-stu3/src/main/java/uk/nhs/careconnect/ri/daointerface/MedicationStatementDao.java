@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.dstu3.model.MedicationStatement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -47,12 +48,16 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     @Override
     public MedicationStatementEntity readEntity(FhirContext ctx, IdType theId) {
         return null;
+
     }
 
 
     @Override
     public MedicationStatement read(FhirContext ctx,IdType theId) {
-        return null;
+
+        MedicationRequestEntity prescriptionEntity = prescriptionDao.readEntity(ctx, theId);
+
+        return (prescriptionEntity == null) ? null : medicationRequestEntityToFHIRMedicationStatementTransformer.transform(prescriptionEntity);
     }
 
     @Override
