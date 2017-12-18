@@ -175,13 +175,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     handler = new PatientAddressHandler(ctx, client);
                     processPatientAddressCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/PatientAddress.csv"));
 
+                    handler = new PatientTelecomHandler(ctx, client);
+                    processPatientTelecom(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/PatientTelecom.csv"));
+
                     for (IBaseResource resource : resources) {
                         Patient patient = (Patient) resource;
                         Identifier identifier = null;
                         for (Identifier ident : patient.getIdentifier()) {
                             if (ident.getSystem().contains("PPMIdentifier")) identifier = ident;
                         }
-                        System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient));
+                        //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient));
+
+                        //System.out.println("Patient?identifier=" + identifier.getSystem() + "%7C" + identifier.getValue());
+
                         if (identifier != null) {
                             MethodOutcome outcome = client.update().resource(resource)
                                     .conditionalByUrl("Patient?identifier=" + identifier.getSystem() + "%7C" + identifier.getValue())
@@ -593,6 +599,55 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 ,"suffix"
                                 ,"PATIENT_ID"
 
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processPatientTelecom(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("PATIENT_TELECOM_ID"
+                                ,"system"
+                                ,"telecomUse"
+                                ,"value"
+                                ,"PATIENT_ID"
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -2577,6 +2632,65 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
         }
     }
+
+    public class PatientTelecomHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+        PatientTelecomHandler(FhirContext ctx,IGenericClient client) {
+            this.ctx = ctx;
+            this.client = client;
+        }
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+
+            Patient patient = patientMap.get(theRecord.get("PATIENT_ID"));
+
+            if (patient == null) {
+                patient = new Patient();
+                patient.setId(theRecord.get("PATIENT_ID"));
+                patientMap.put(patient.getId(),patient);
+                resources.add(patient);
+            }
+            ContactPoint contact = patient.addTelecom();
+            if (!theRecord.get("value").isEmpty()) {
+                contact.setValue(theRecord.get("value"));
+            }
+            if (!theRecord.get("system").isEmpty()) {
+                switch (theRecord.get("system")) {
+                    case "0" :
+                        contact.setSystem(ContactPoint.ContactPointSystem.PHONE);
+                        break;
+                    case "2" :
+                        contact.setSystem(ContactPoint.ContactPointSystem.EMAIL);
+                        break;
+                }
+            }
+            if (!theRecord.get("telecomUse").isEmpty()) {
+                switch (theRecord.get("telecomUse")) {
+                    case "0" :
+                        contact.setUse(ContactPoint.ContactPointUse.HOME);
+                        break;
+                    case "1" :
+                        contact.setUse(ContactPoint.ContactPointUse.WORK);
+                        break;
+                    case "2" :
+                        contact.setUse(ContactPoint.ContactPointUse.TEMP
+                        );
+                        break;
+                    case "3" :
+                        contact.setUse(ContactPoint.ContactPointUse.OLD);
+                        break;
+                    case "4" :
+                        contact.setUse(ContactPoint.ContactPointUse.MOBILE);
+                        break;
+                }
+            }
+        }
+    }
+
 
     public class PatientAddressHandler implements  IRecordHandler {
 

@@ -1,0 +1,89 @@
+{
+  "resourceType": "Patient",
+  "id": "1101",
+  "extension": [
+    {
+      "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-EthnicCategory-1",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.nhs.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1",
+            "code": "A"
+          }
+        ]
+      }
+    }
+  ],
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/pas-number",
+      "value": "LOCAL1101"
+    },
+    {
+      "extension": [
+        {
+          "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1",
+                "code": "01"
+              }
+            ]
+          }
+        }
+      ],
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "9014017642"
+    },
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/PPMIdentifier",
+      "value": "1101"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "usual",
+      "family": "Schultz",
+      "given": [
+        "Opal"
+      ],
+      "prefix": [
+        "Ms"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1992-08-06",
+  "address": [
+    {
+      "id": "4072",
+      "use": "temp",
+      "type": "both",
+      "line": [
+        " Leeds Road",
+        "Garforth"
+      ],
+      "city": "Leeds",
+      "district": "West Yorkshire",
+      "postalCode": "LS25 2AB"
+    }
+  ],
+  "maritalStatus": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/v3/MaritalStatus",
+        "code": "L"
+      }
+    ]
+  },
+  "generalPractitioner": [
+    {
+      "reference": "Practitioner/1"
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/1"
+  }
+}

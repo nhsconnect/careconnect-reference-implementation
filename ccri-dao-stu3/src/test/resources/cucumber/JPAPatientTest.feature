@@ -113,3 +113,9 @@ Scenario: Patient Read
     Scenario: Patient PHONE Search NOT Found
                   Given I search for a Patient with a phone of "0113 9737320"
                   Then the result should be a list with 0 entry
+
+  Scenario:  Patient Conditional
+
+    When I Conditional add a Patient
+    Then I search Patient on Patient PPMID = 1101
+    Then I should get a Bundle of Patient 1 resource

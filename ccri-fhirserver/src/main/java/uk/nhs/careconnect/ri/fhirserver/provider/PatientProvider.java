@@ -11,8 +11,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.daointerface.PatientDao;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -45,6 +48,7 @@ public class PatientProvider implements ICCResourceProvider {
         return Patient.class;
     }
 
+    private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
     @Read
     public Patient getPatientById(@IdParam IdType internalId) {
@@ -62,16 +66,23 @@ public class PatientProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updatePatient(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
+        log.debug("Update Patient Provider called");
+
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
 
         method.setOperationOutcome(opOutcome);
+        Patient newPatient = null;
+        try {
+            newPatient = patientDao.update(ctx, patient, theId, theConditional);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            method.setId(newPatient.getIdElement());
+            method.setResource(newPatient);
+        }
 
-        Patient newPatient = patientDao.update(ctx, patient, theId, theConditional);
-        method.setId(newPatient.getIdElement());
-        method.setResource(newPatient);
-
+        log.debug("called update Patient method");
 
         return method;
     }

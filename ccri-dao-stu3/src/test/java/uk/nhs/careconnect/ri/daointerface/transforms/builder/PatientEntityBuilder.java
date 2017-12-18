@@ -34,7 +34,8 @@ public class PatientEntityBuilder {
         name.setGivenName("John");
         name.setFamilyName("Smith");
         name.setPrefix("Mr");
-        patientEntity.getNames().add(name);
+        // KGM 18/12/2017 Removed following line. Add name does this functionality
+       // patientEntity.getNames().add(name);
         return patientEntity;
     }
 }

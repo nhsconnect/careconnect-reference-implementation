@@ -193,6 +193,7 @@ public class PatientEntity extends BaseResource {
 
     public PatientName addName() {
         PatientName name = new PatientName();
+        this.getNames().add(name);
         return name;
     }
 

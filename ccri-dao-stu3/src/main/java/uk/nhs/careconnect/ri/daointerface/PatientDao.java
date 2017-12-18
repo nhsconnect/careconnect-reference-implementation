@@ -78,6 +78,7 @@ public class PatientDao implements PatientRepository {
         em.persist(patient);
     }
 
+    @Override
     public Patient read(FhirContext ctx, IdType theId) {
 
         log.info("Looking for patient = "+theId.getIdPart());
@@ -96,6 +97,7 @@ public class PatientDao implements PatientRepository {
         }
     }
 
+    @Override
     public PatientEntity readEntity(FhirContext ctx,IdType theId) {
 
         return  (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
@@ -106,7 +108,7 @@ public class PatientDao implements PatientRepository {
     public Patient update(FhirContext ctx, Patient patient, IdType theId, String theConditional) {
 
         PatientEntity patientEntity = null;
-
+        log.info("Started patient updated");
         if (theId != null) {
             log.info("theId.getIdPart()="+theId.getIdPart());
             patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
@@ -114,25 +116,28 @@ public class PatientDao implements PatientRepository {
 
         if (theConditional != null) {
             try {
+                log.info("Conditional Url = "+theConditional);
 
                 //CareConnectSystem.ODSOrganisationCode
                 if (theConditional.contains("PPMIdentifier")) {
                     URI uri = new URI(theConditional);
 
-                    String scheme = uri.getScheme();
-                    String host = uri.getHost();
+                    //String scheme = uri.getScheme();
+                    //String host = uri.getHost();
                     String query = uri.getRawQuery();
-                    log.debug(query);
+                    log.info(query);
                     String[] spiltStr = query.split("%7C");
-                    log.debug(spiltStr[1]);
+                    log.info(spiltStr[1]);
 
-                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"), null,null);
+                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null);
+                    log.info("Loop over results");
                     for (PatientEntity pat : results) {
                         patientEntity = pat;
                         break;
                     }
                     // This copes with the new identifier being added.
                     if (patientEntity == null && daoutils.isNumeric(spiltStr[1])) {
+                        log.info("Looking for patient with id of "+spiltStr[1]);
                         patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(spiltStr[1]));
                     }
                 } else {
@@ -140,13 +145,15 @@ public class PatientDao implements PatientRepository {
                 }
 
             } catch (Exception ex) {
-
+                log.error(ex.getMessage());
             }
         }
+        log.info("Finished searching for Patient");
 
-
-        if (patientEntity == null)
-            return null;
+        if (patientEntity == null) {
+            log.info("Adding new Patient");
+            patientEntity = new PatientEntity();
+        }
 
         if (patient.hasExtension())
         {
@@ -208,6 +215,22 @@ public class PatientDao implements PatientRepository {
                 throw new IllegalArgumentException("Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
             }
         }
+
+        if (patient.hasManagingOrganization()) {
+            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(patient.getManagingOrganization().getReference()));
+            if (organisationEntity != null) {
+                patientEntity.setPractice(organisationEntity);
+            }
+        }
+        if (patient.hasGeneralPractitioner()) {
+            PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(patient.getGeneralPractitioner().get(0).getReference()));
+            if (practitionerEntity != null) {
+                patientEntity.setGp(practitionerEntity);
+            }
+        }
+
+        em.persist(patientEntity);
+
         for (Identifier identifier : patient.getIdentifier()) {
             if (identifier.getSystem().equals(CareConnectSystem.NHSNumber) && identifier.getExtension().size()>0) {
                 CodeableConcept nhsVerification = (CodeableConcept) identifier.getExtension().get(0).getValue();
@@ -232,25 +255,107 @@ public class PatientDao implements PatientRepository {
             patientIdentifier.setPatient(patientEntity);
             em.persist(patientIdentifier);
         }
-        if (patient.hasManagingOrganization()) {
-            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(patient.getManagingOrganization().getReference()));
-            if (organisationEntity != null) {
-                patientEntity.setPractice(organisationEntity);
-            }
-        }
-        if (patient.hasGeneralPractitioner()) {
-            PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(patient.getGeneralPractitioner().get(0).getReference()));
-            if (practitionerEntity != null) {
-                patientEntity.setGp(practitionerEntity);
-            }
-        }
         em.persist(patientEntity);
 
+        for (HumanName name : patient.getName()) {
+            PatientName patientName = null;
+            for (PatientName nameSearch : patientEntity.getNames()) {
+                // look for matching surname and also if the have matching given name
+                if (nameSearch.getFamilyName().equals(name.getFamily())) {
+                    if (name.getGiven().size()> 0) {
+                        if (nameSearch.getGivenName().equals(name.getGiven().get(0).getValue())) {
+                            patientName = nameSearch;
+                            break;
+                        }
+                    } else {
+                        patientName = nameSearch;
+                        break;
+                    }
+                    break;
+                }
+            }
+            if (patientName == null)  {
+                patientName = patientEntity.addName();
+                patientName.setPatientEntity(patientEntity);
+            }
 
+            patientName.setFamilyName(name.getFamily());
+            if (name.getGiven().size()>0)
+                patientName.setGivenName(name.getGiven().get(0).getValue());
+            if (name.getPrefix().size()>0)
+                patientName.setPrefix(name.getPrefix().get(0).getValue());
+            if (name.getUse() != null) {
+                patientName.setNameUse(name.getUse());
+            }
+            em.persist(patientName);
+        }
+        for (Address address : patient.getAddress()) {
+            PatientAddress patientAdr = null;
+            for (PatientAddress adrSearch : patientEntity.getAddresses()) {
+                // look for matching postcode - this is not robust TODO
+                if (adrSearch.getAddress().getPostcode().equals(address.getPostalCode())) {
+                    if (address.getLine().size()> 0) {
+                        if (address.getLine().get(0).equals(adrSearch.getAddress().getAddress1())) {
+                            patientAdr = adrSearch;
+                            break;
+                        }
+                    } else {
+                        patientAdr = adrSearch;
+                        break;
+                    }
+                    break;
+                }
+            }
+            if (patientAdr == null) {
+                patientAdr = new PatientAddress();
+                patientAdr.setPatientEntity(patientEntity);
+                patientEntity.addAddress(patientAdr);
+            }
 
-        return patient;
+            AddressEntity addr = patientAdr .getAddress();
+            if (addr == null) {
+                addr = patientAdr.setAddress(new AddressEntity());
+
+            }
+
+            if (address.getLine().size()>0) addr.setAddress1(address.getLine().get(0).getValue().trim());
+            if (address.getLine().size()>1) addr.setAddress2(address.getLine().get(1).getValue().trim());
+            if (address.getLine().size()>2) addr.setAddress3(address.getLine().get(2).getValue().trim());
+            if (address.getCity() != null) addr.setCity(address.getCity());
+            if (address.getDistrict() != null) addr.setCounty(address.getDistrict());
+            if (address.getPostalCode() != null) addr.setPostcode(address.getPostalCode());
+            if (address.getUse() != null) patientAdr.setAddressUse(address.getUse());
+            if (address.getType() != null) patientAdr.setAddressType(address.getType());
+
+            em.persist(addr);
+            em.persist(patientAdr);
+        }
+        for (ContactPoint contact : patient.getTelecom()) {
+            PatientTelecom patientTel = null;
+            for (PatientTelecom telSearch : patientEntity.getTelecoms()) {
+
+                if (telSearch.getValue().equals(contact.getValue())) {
+                        patientTel = telSearch;
+                        break;
+                }
+            }
+            if (patientTel == null) {
+                patientTel = new PatientTelecom();
+                patientTel.setPatientEntity(patientEntity);
+                patientEntity.addTelecom(patientTel);
+                patientTel.setValue(contact.getValue());
+            }
+            if (contact.hasSystem())
+                patientTel.setSystem(contact.getSystem());
+            if (contact.hasUse())
+                patientTel.setTelecomUse(contact.getUse());
+            em.persist(patientTel);
+        }
+
+        return patientEntityToFHIRPatientTransformer.transform(patientEntity);
     }
 
+    @Override
     public List<Patient> search (FhirContext ctx,
                                              @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
                                              @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
@@ -281,7 +386,7 @@ public class PatientDao implements PatientRepository {
         return results;
     }
 
-
+    @Override
     public List<PatientEntity> searchEntity (FhirContext ctx,
             @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
             @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,

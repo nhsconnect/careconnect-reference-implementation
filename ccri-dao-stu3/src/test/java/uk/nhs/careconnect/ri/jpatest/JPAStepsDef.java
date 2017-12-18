@@ -731,7 +731,32 @@ PROCEDURE
         Assert.assertThat(resource,instanceOf(MedicationStatement.class));
     }
 
+    @When("^I Conditional add a Patient$")
+    public void i_Conditional_add_a_Patient() throws Throwable {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Patient.json");
+        assertNotNull(inputStream);
+        Reader reader = new InputStreamReader(inputStream);
 
+        patient = ctx.newJsonParser().parseResource(Patient.class, reader);
+        try {
+            patient = patientRepository.update(ctx,patient,null,"Patient?identifier=https://fhir.leedsth.nhs.uk/Id/PPMIdentifier%7C1101");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
+    @Then("^I search Patient on Patient PPMID = (\\d+)$")
+    public void i_search_Patient_on_Patient_PPMID(String ident) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setValue(ident),null,null);
+    }
+
+    @Then("^I should get a Bundle of Patient (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_Patient_resource(int count) throws Throwable {
+        assertEquals(count,patientList.size());
+    }
 
 
 
