@@ -267,11 +267,11 @@ public class PatientDao implements PatientRepository {
                             patientName = nameSearch;
                             break;
                         }
-                    } else {
+                    }
+                    else {
                         patientName = nameSearch;
                         break;
                     }
-                    break;
                 }
             }
             if (patientName == null)  {
@@ -404,8 +404,8 @@ public class PatientDao implements PatientRepository {
 
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<PatientEntity> criteria = builder.createQuery(PatientEntity.class);
+        // KGM 18/12/2017 Added distinct
+        CriteriaQuery<PatientEntity> criteria = builder.createQuery(PatientEntity.class).distinct(true);
         Root<PatientEntity> root = criteria.from(PatientEntity.class);
 
 
