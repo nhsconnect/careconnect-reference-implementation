@@ -27,6 +27,7 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.swapCase;
 
 public class   UploadExamples extends BaseCommand {
 
@@ -39,6 +40,10 @@ public class   UploadExamples extends BaseCommand {
     private Map<String,String> orgMap = new HashMap<>();
 
     private Map<String,String> docMap = new HashMap<>();
+
+    private Map<String,Patient> patientMap = new HashMap<>();
+
+    private Map<String, Address> addressMap = new HashMap<>();
 
     private static String nokiaObs = "https://fhir.health.phr.example.com/Id/observation";
 
@@ -155,14 +160,28 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                     IRecordHandler handler = null;
 
+                    handler = new PatientIdentifierHandler(ctx, client);
+                    processPatientIdentifierCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/PatientIdentifier.csv"));
+
                     handler = new PatientHandler(ctx, client);
                     processPatientCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Patient.csv"));
+
+                    handler = new PatientNameHandler(ctx, client);
+                    processPatientNameCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/PatientName.csv"));
+
+                    handler = new AddressHandler(ctx, client);
+                    processAddressCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Address.csv"));
+
+                    handler = new PatientAddressHandler(ctx, client);
+                    processPatientAddressCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/PatientAddress.csv"));
+
                     for (IBaseResource resource : resources) {
                         Patient patient = (Patient) resource;
                         Identifier identifier = null;
                         for (Identifier ident : patient.getIdentifier()) {
                             if (ident.getSystem().contains("PPMIdentifier")) identifier = ident;
                         }
+                        System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient));
                         if (identifier != null) {
                             MethodOutcome outcome = client.update().resource(resource)
                                     .conditionalByUrl("Patient?identifier=" + identifier.getSystem() + "%7C" + identifier.getValue())
@@ -173,6 +192,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                             }
                         }
                     }
+
+
                     resources.clear();
 
 
@@ -516,6 +537,216 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                                 ,"GP_ID"
                                 ,"marital"
                                 ,"PRACTICE_ID"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processPatientNameCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("PATIENT_NAME_ID"
+                                ,"RES_DELETED"
+                                ,"RES_CREATED"
+                                ,"RES_MESSAGE_REF"
+                                ,"RES_UPDATED"
+                                ,"family_name"
+                                ,"given_name"
+                                ,"nameUse"
+                                ,"prefix"
+                                ,"suffix"
+                                ,"PATIENT_ID"
+
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processPatientAddressCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("PATIENT_ADDRESS_ID"
+                                ,"AddressType"
+                                ,"addressUse"
+                                ,"ADDRESS_ID"
+                                ,"PATIENT_ID"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void processAddressCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("ADDRESS_ID"
+                                ,"RES_DELETED"
+                                ,"RES_CREATED"
+                                ,"RES_MESSAGE_REF"
+                                ,"RES_UPDATED"
+                                ,"address_1"
+                                ,"address_2"
+                                ,"address_3"
+                                ,"address_4"
+                                ,"address_5"
+                                ,"city"
+                                ,"county"
+                                ,"postcode"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    private void processPatientIdentifierCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("PATIENT_IDENTIFIER_ID"
+                                ,"identifierUse"
+                                ,"listOrder"
+                                ,"value","SYSTEM_ID"
+                                ,"PATIENT_ID"
                         );
                 if (theQuoteMode != null) {
                     format = format.withQuote('"').withQuoteMode(theQuoteMode);
@@ -2034,9 +2265,19 @@ http://127.0.0.1:8080/careconnect-ri/STU3
          @Override
         public void accept(CSVRecord theRecord) {
 
-	        Patient patient = (Patient) client.read().resource(Patient.class).withId(theRecord.get("PATIENT_ID")).execute();
+	        //Patient patient = (Patient) client.read().resource(Patient.class).withId(theRecord.get("PATIENT_ID")).execute();
+            // KGM 18/12/2017 Removed the old update existing patient to move to bulk upload format.
+             Patient patient = patientMap.get(theRecord.get("PATIENT_ID"));
 
-	        if (theRecord.get("PRACTICE_ID") != null && !theRecord.get("PRACTICE_ID").isEmpty()) {
+             if (patient == null) {
+                 patient = new Patient();
+                 patient.setId(theRecord.get("PATIENT_ID"));
+                 patientMap.put(patient.getId(),patient);
+                 resources.add(patient);
+             }
+
+
+             if (theRecord.get("PRACTICE_ID") != null && !theRecord.get("PRACTICE_ID").isEmpty()) {
                 Bundle bundle = client.search().forResource(Organization.class)
                         .where(Organization.IDENTIFIER.exactly().code(theRecord.get("PRACTICE_ID")))
                         .returnBundle(Bundle.class).execute();
@@ -2059,7 +2300,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
              }
 
-             Boolean found = false;
+            Boolean found = false;
 	        for (Identifier identifier : patient.getIdentifier()) {
 	            if (identifier.getSystem().contains("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")) {
 	                found = true;
@@ -2070,9 +2311,404 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")
                         .setValue(theRecord.get("PATIENT_ID"));
             }
-	        //System.out.println(ctx.newJsonParser().encodeResourceToString(patient));
+            if (!theRecord.get("active").isEmpty() ) {
+	            switch(theRecord.get("active")) {
+                    case "1" :
+                        patient.setActive(true);
+                        break;
+                    default:
+                        patient.setActive(false);
+                }
+            }
 
-	        resources.add(patient);
+            String dateString = theRecord.get("date_of_birth");
+             if (!dateString.isEmpty()) {
+
+                 try {
+                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                     format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                     // turn off set linient
+                     patient.setBirthDate(format.parse(dateString));
+                 } catch (Exception e) {
+                         e.printStackTrace();
+                 }
+             }
+             if (!theRecord.get("gender").isEmpty() ) {
+                 switch(theRecord.get("gender")) {
+                     case "FEMALE" :
+                         patient.setGender(Enumerations.AdministrativeGender.FEMALE);
+                         break;
+                     case "MALE" :
+                         patient.setGender(Enumerations.AdministrativeGender.MALE);
+                         break;
+                     case "OTHER" :
+                         patient.setGender(Enumerations.AdministrativeGender.OTHER);
+                         break;
+                 }
+             }
+             // TODO registration_end,
+             // TODO registration_start,
+
+             if (!theRecord.get("NHSverification").isEmpty()) {
+                 String NHSverification = theRecord.get("NHSverification");
+                 switch (theRecord.get("NHSverification")) {
+                     case "79" :
+                         NHSverification = "01";
+                         break;
+                     case "80" :
+                         NHSverification = "02";
+                         break;
+                     case "81" :
+                         NHSverification = "03";
+                         break;
+                     case "82" :
+                         NHSverification = "04";
+                         break;
+                     case "83" :
+                         NHSverification = "05";
+                         break;
+                     case "84" :
+                         NHSverification = "06";
+                         break;
+                     case "85":
+                         NHSverification = "07";
+                         break;
+                 }
+                 for (Identifier identifier: patient.getIdentifier()) {
+                     if (identifier.getSystem().equals(CareConnectSystem.NHSNumber)) {
+                         CodeableConcept verificationStatusCode = new CodeableConcept();
+                         verificationStatusCode
+                                 .addCoding()
+                                 .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
+                                 .setCode(NHSverification);
+                         Extension verificationStatus = new Extension()
+                                 .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
+                                 .setValue(verificationStatusCode);
+                         identifier.addExtension(verificationStatus);
+                     }
+                 }
+             }
+             if (!theRecord.get("ethnic").isEmpty() ) {
+                 String ethnic= theRecord.get("ethnic");
+                 switch (theRecord.get("ethnic")) {
+                     case "11":
+                         ethnic = "A";
+                         break;
+                     case "45":
+                         ethnic = "GC";
+                         break;
+                     case "75":
+                         ethnic = "SC";
+                         break;
+                     case "67":
+                         ethnic = "PB";
+                         break;
+                     case "76":
+                         ethnic = "SD";
+                         break;
+                     case "77":
+                         ethnic = "SE";
+                         break;
+                     case "35":
+                         ethnic = "CV";
+                         break;
+                     case "69":
+                         ethnic = "PD";
+                         break;
+                     case "78":
+                         ethnic = "Z";
+                         break;
+                     case "27":
+                         ethnic = "CM";
+                         break;
+                     case "74":
+                         ethnic = "SB";
+                         break;
+                     case "31":
+                         ethnic = "CR";
+                         break;
+                     case "25":
+                         ethnic = "CK";
+                         break;
+                     case "57":
+                         ethnic = "LE";
+                         break;
+                     case "13":
+                         ethnic = "C";
+                         break;
+                     case "68":
+                         ethnic = "PC";
+                         break;
+                     case "15":
+                         ethnic = "C3";
+                         break;
+                     case "23":
+                         ethnic = "CH";
+                         break;
+                     case "30":
+                         ethnic = "CQ";
+                         break;
+                     case "29":
+                         ethnic = "CP";
+                         break;
+                     case "71":
+                         ethnic = "R";
+                         break;
+                     case "22":
+                         ethnic = "CG";
+                         break;
+                     case "58":
+                         ethnic = "LF";
+                         break;
+                     case "49":
+                         ethnic = "H";
+                         break;
+                     case "54":
+                         ethnic = "LB";
+                         break;
+                     case "19":
+                         ethnic = "CD";
+                         break;
+
+
+
+                 }
+                 CodeableConcept ethnicCode = new CodeableConcept();
+                 ethnicCode
+                         .addCoding()
+                         .setSystem(CareConnectSystem.EthnicCategory)
+                         .setCode(ethnic);
+                 Extension ethnicExtension = new Extension()
+                         .setUrl(CareConnectExtension.UrlEthnicCategory)
+                         .setValue(ethnicCode);
+                 patient.addExtension(ethnicExtension);
+             }
+             if (!theRecord.get("marital").isEmpty() ) {
+                 String maritalCode = theRecord.get("marital");
+                 switch (theRecord.get("marital")) {
+                     case "1":
+                         maritalCode = "A";
+                         break;
+                     case "2":
+                         maritalCode = "D";
+                         break;
+                     case "3":
+                         maritalCode = "I";
+                         break;
+                     case "4":
+                         maritalCode = "L";
+                         break;
+                     case "5":
+                         maritalCode = "M";
+                         break;
+                     case "6":
+                         maritalCode = "P";
+                         break;
+                     case "7":
+                         maritalCode = "S";
+                         break;
+                     case "8":
+                         maritalCode = "T";
+                         break;
+                     case "9":
+                         maritalCode = "U";
+                         break;
+                     case "10":
+                         maritalCode = "W";
+                         break;
+                 }
+                 CodeableConcept marital = new CodeableConcept();
+                 marital.addCoding()
+                         .setSystem(CareConnectSystem.HL7v3MaritalStatus)
+                         .setCode(maritalCode);
+                 patient.setMaritalStatus(marital);
+             }
+
+
+
+        }
+    }
+
+    public class PatientNameHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+        PatientNameHandler(FhirContext ctx,IGenericClient client) {
+            this.ctx = ctx;
+            this.client = client;
+        }
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+
+            Patient patient = patientMap.get(theRecord.get("PATIENT_ID"));
+
+            if (patient == null) {
+                patient = new Patient();
+                patient.setId(theRecord.get("PATIENT_ID"));
+                patientMap.put(patient.getId(),patient);
+                resources.add(patient);
+            }
+            HumanName name = patient.addName();
+            if (!theRecord.get("family_name").isEmpty()) {
+                name.setFamily(theRecord.get("family_name"));
+            }
+            if (!theRecord.get("given_name").isEmpty()) {
+                name.addGiven(theRecord.get("given_name"));
+            }
+            if (!theRecord.get("prefix").isEmpty()) {
+                name.addPrefix(theRecord.get("prefix"));
+            }
+            if (!theRecord.get("nameUse").isEmpty()) {
+                switch (theRecord.get("nameUse")) {
+                    case "0" :
+                        name.setUse(HumanName.NameUse.USUAL);
+                        break;
+                    case "3" :
+                        name.setUse(HumanName.NameUse.NICKNAME);
+                        break;
+                }
+
+            }
+            // TODO
+        //                    ,"suffix"
+
+
+        }
+    }
+
+    public class PatientAddressHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+        PatientAddressHandler(FhirContext ctx,IGenericClient client) {
+            this.ctx = ctx;
+            this.client = client;
+        }
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Patient patient = patientMap.get(theRecord.get("PATIENT_ID"));
+
+            Address adr = addressMap.get(theRecord.get("ADDRESS_ID"));
+
+            if (!theRecord.get("AddressType").isEmpty()) {
+                switch (theRecord.get("AddressType")) {
+                    case "0":
+                        adr.setType(Address.AddressType.POSTAL);
+                        break;
+                    case "1":
+                        adr.setType(Address.AddressType.PHYSICAL);
+                        break;
+                    case "2":
+                        adr.setType(Address.AddressType.BOTH);
+                        break;
+                }
+            }
+            if (!theRecord.get("addressUse").isEmpty()) {
+                switch (theRecord.get("addressUse")) {
+                    case "0":
+                        adr.setUse(Address.AddressUse.HOME);
+                        break;
+                    case "1":
+                        adr.setUse(Address.AddressUse.WORK);
+                        break;
+                    case "2":
+                        adr.setUse(Address.AddressUse.TEMP);
+                        break;
+                }
+            }
+
+            patient.addAddress(adr);
+
+
+        }
+    }
+
+    public class PatientIdentifierHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+        PatientIdentifierHandler(FhirContext ctx,IGenericClient client) {
+            this.ctx = ctx;
+            this.client = client;
+        }
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+            Patient patient = patientMap.get(theRecord.get("PATIENT_ID"));
+
+            if (patient == null) {
+                patient = new Patient();
+                patient.setId(theRecord.get("PATIENT_ID"));
+                patientMap.put(patient.getId(),patient);
+                resources.add(patient);
+            }
+
+
+            if (!theRecord.get("SYSTEM_ID").isEmpty() && !theRecord.get("value").isEmpty()) {
+                switch (theRecord.get("SYSTEM_ID")) {
+                    case "1001":
+                        patient.addIdentifier()
+                                .setSystem("https://fhir.leedsth.nhs.uk/Id/pas-number")
+                                .setValue(theRecord.get("value"));
+                        break;
+
+                    case "1":
+                        patient.addIdentifier()
+                                .setSystem(CareConnectSystem.NHSNumber)
+                                .setValue(theRecord.get("value"));
+                        break;
+                }
+            }
+
+
+            // PATIENT_IDENTIFIER_ID,identifierUse,listOrder,,,
+        }
+    }
+
+    public class AddressHandler implements  IRecordHandler {
+
+        FhirContext ctx;
+        IGenericClient client;
+
+        AddressHandler(FhirContext ctx,IGenericClient client) {
+            this.ctx = ctx;
+            this.client = client;
+        }
+        @Override
+        public void accept(CSVRecord theRecord) {
+            Address adr = new Address();
+            addressMap.put(theRecord.get("ADDRESS_ID"),adr);
+            // TODO
+
+            adr.setId(theRecord.get("ADDRESS_ID"));
+            if (!theRecord.get("address_1").isEmpty()) {
+                adr.addLine(theRecord.get("address_1"));
+            }
+            if (!theRecord.get("address_2").isEmpty()) {
+                adr.addLine(theRecord.get("address_2"));
+            }
+            if (!theRecord.get("address_3").isEmpty()) {
+                adr.addLine(theRecord.get("address_3"));
+            }
+            if (!theRecord.get("address_4").isEmpty()) {
+                adr.addLine(theRecord.get("address_4"));
+            }
+            if (!theRecord.get("address_5").isEmpty()) {
+                adr.addLine(theRecord.get("address_5"));
+            }
+            if (!theRecord.get("city").isEmpty()) {
+                adr.setCity(theRecord.get("city"));
+            }
+            if (!theRecord.get("county").isEmpty()) {
+                adr.setDistrict(theRecord.get("county"));
+            }
+            if (!theRecord.get("postcode").isEmpty()) {
+                adr.setPostalCode(theRecord.get("postcode"));
+            }
 
         }
     }

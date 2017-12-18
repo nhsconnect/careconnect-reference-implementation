@@ -22,7 +22,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri</artifactId>
-        <version>3.3.7-SNAPSHOT</version>
+        <version>3.4.8-SNAPSHOT</version>
     </parent>
 
 

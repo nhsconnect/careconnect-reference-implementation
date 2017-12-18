@@ -13,7 +13,7 @@ public class CareConnectSystem {
 
 
     public static final String NHSNumberVerificationStatus = "https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1";
-    public static final String EthnicCategory ="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1";
+    public static final String EthnicCategory ="https://fhir.nhs.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1";
     public static final String SDSJobRoleName="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1";
 
     // Core FHIR Systems
@@ -24,4 +24,6 @@ public class CareConnectSystem {
 
     public static final String FHIRObservationCategory = "http://hl7.org/fhir/observation-category";
     public static final String HL7v2Table0078 = "http://hl7.org/fhir/v2/0078";
+
+    public static final String HL7v3MaritalStatus = "http://hl7.org/fhir/v3/MaritalStatus";
 }
