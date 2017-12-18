@@ -292,8 +292,11 @@ public class PatientDao implements PatientRepository {
         for (Address address : patient.getAddress()) {
             PatientAddress patientAdr = null;
             for (PatientAddress adrSearch : patientEntity.getAddresses()) {
-                // look for matching postcode - this is not robust TODO
+                // look for matching postcode
                 if (adrSearch.getAddress().getPostcode().equals(address.getPostalCode())) {
+                    patientAdr = adrSearch;
+                    break;
+                    /* TODO increase address match
                     if (address.getLine().size()> 0) {
                         if (address.getLine().get(0).equals(adrSearch.getAddress().getAddress1())) {
                             patientAdr = adrSearch;
@@ -303,7 +306,7 @@ public class PatientDao implements PatientRepository {
                         patientAdr = adrSearch;
                         break;
                     }
-                    break;
+                    */
                 }
             }
             if (patientAdr == null) {
@@ -312,10 +315,9 @@ public class PatientDao implements PatientRepository {
                 patientEntity.addAddress(patientAdr);
             }
 
-            AddressEntity addr = patientAdr .getAddress();
+            AddressEntity addr = patientAdr.getAddress();
             if (addr == null) {
                 addr = patientAdr.setAddress(new AddressEntity());
-
             }
 
             if (address.getLine().size()>0) addr.setAddress1(address.getLine().get(0).getValue().trim());
