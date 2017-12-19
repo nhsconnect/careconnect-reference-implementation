@@ -42,7 +42,10 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
             condition.setAssertedDate(conditionEntity.getAssertedDateTime());
         }
         if (conditionEntity.getAsserterPractitioner() != null) {
-            condition.setAsserter(new Reference("Practitioner/"+conditionEntity.getAsserterPractitioner().getId()));
+            condition.setAsserter(
+                    new Reference("Practitioner/"+conditionEntity.getAsserterPractitioner().getId())
+                    .setDisplay(conditionEntity.getAsserterPractitioner().getNames().get(0).getDisplayName())
+            );
         }
         if (conditionEntity.getClinicalStatus() != null) {
             condition.setClinicalStatus(conditionEntity.getClinicalStatus());
