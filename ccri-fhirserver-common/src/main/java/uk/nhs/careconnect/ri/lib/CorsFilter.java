@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewaylib;
+package uk.nhs.careconnect.ri.lib;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
