@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class EpisodeOfCareDao implements EpisodeOfCareRepository {
@@ -119,7 +121,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        qryResults = em.createQuery(criteria).setMaxResults(MAXROWS).getResultList();
         return qryResults;
     }
 }

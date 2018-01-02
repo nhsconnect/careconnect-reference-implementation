@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class ProcedureDao implements ProcedureRepository {
@@ -392,7 +394,7 @@ public class ProcedureDao implements ProcedureRepository {
         }
 
 
-        TypedQuery<ProcedureEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<ProcedureEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (date != null) {
             if (date.getLowerBound() != null)

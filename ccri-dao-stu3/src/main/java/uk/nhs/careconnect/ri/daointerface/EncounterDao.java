@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class  EncounterDao implements EncounterRepository {
@@ -398,7 +400,7 @@ public class  EncounterDao implements EncounterRepository {
         }
 
 
-        TypedQuery<EncounterEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<EncounterEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (date != null) {
             if (date.getLowerBound() != null)

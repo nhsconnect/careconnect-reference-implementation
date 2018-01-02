@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class ConditionDao implements ConditionRepository {
@@ -411,7 +413,7 @@ public class ConditionDao implements ConditionRepository {
             criteria.select(root);
         }
 
-        TypedQuery<ConditionEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<ConditionEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (asserted != null) {
             if (asserted.getLowerBound() != null) {

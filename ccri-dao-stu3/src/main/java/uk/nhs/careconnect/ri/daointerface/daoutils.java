@@ -4,6 +4,7 @@ import org.hl7.fhir.dstu3.model.Enumerations;
 
 public final class daoutils {
 
+    public static final int MAXROWS = 500;
     public static boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }

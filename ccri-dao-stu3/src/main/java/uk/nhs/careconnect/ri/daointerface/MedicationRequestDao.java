@@ -30,6 +30,8 @@ import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.*;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class MedicationRequestDao implements MedicationRequestRepository {
@@ -581,7 +583,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             criteria.select(root);
         }
 
-        TypedQuery<MedicationRequestEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<MedicationRequestEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (authoredDate != null) {
             if (authoredDate.getLowerBound() != null)

@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class ImmunizationDao implements ImmunizationRepository {
@@ -374,7 +376,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             criteria.select(root);
         }
 
-        TypedQuery<ImmunisationEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<ImmunisationEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (date != null) {
             if (date.getLowerBound() != null)

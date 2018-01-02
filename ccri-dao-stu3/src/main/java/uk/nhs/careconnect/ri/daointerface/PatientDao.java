@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class PatientDao implements PatientRepository {
@@ -404,6 +406,7 @@ public class PatientDao implements PatientRepository {
 
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
+
         // KGM 18/12/2017 Added distinct
         CriteriaQuery<PatientEntity> criteria = builder.createQuery(PatientEntity.class).distinct(true);
         Root<PatientEntity> root = criteria.from(PatientEntity.class);
@@ -608,7 +611,7 @@ public class PatientDao implements PatientRepository {
             criteria.select(root);
         }
         List<PatientEntity> qryResults = null;
-        TypedQuery<PatientEntity> typedQuery = em.createQuery(criteria);
+        TypedQuery<PatientEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (birthDate != null) {
             if (birthDate.getLowerBound() != null)

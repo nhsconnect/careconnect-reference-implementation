@@ -28,6 +28,8 @@ import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.*;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class ObservationDao implements ObservationRepository {
@@ -700,7 +702,7 @@ public class ObservationDao implements ObservationRepository {
                 typedQuery.setParameter(parameterUpper, effectiveDate.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
         }
 
-        qryResults = typedQuery.getResultList();
+        qryResults = typedQuery.setMaxResults(MAXROWS).getResultList();
         return qryResults;
 
 
