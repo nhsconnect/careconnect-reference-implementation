@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
+
 @Repository
 @Transactional
 public class PractitionerRoleDao implements PractitionerRoleRepository {
@@ -246,7 +248,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             criteria.select(root);
         }
 
-        return em.createQuery(criteria).getResultList();
+        return em.createQuery(criteria).setMaxResults(MAXROWS).getResultList();
 
     }
 

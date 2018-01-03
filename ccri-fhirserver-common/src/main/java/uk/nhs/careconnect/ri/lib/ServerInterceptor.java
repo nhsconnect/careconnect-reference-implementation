@@ -14,6 +14,8 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
+import org.springframework.http.InvalidMediaTypeException;
+import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -129,15 +131,32 @@ public class ServerInterceptor extends InterceptorAdapter {
     }
 
     @Override
-    public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
+    public boolean incomingRequestPreProcessed(HttpServletRequest request, HttpServletResponse theResponse) {
 
-        if (theRequest.getMethod() != null) {
+        if (request.getMethod() != null) {
+
+            /* KGM 3/1/2018 This is now handled by CORS headers
+
            if (theRequest.getMethod().equals("OPTIONS"))
                 throw new MethodNotAllowedException("request must use HTTP GET");
+            */
+            try {
+                if (request.getContentType() != null) {
+                    MediaType.parseMediaType(request.getContentType());
+                }
+
+            } catch (InvalidMediaTypeException e) {
+                log.error("Unsupported media type: " + request.getContentType());
+                throw new InvalidRequestException("Unsupported media type: " + request.getContentType());
+            }
 
             // May need to readd this at a later date (probably in conjunction with a security uplift)
-            if (theRequest.getMethod().equals("POST") && theRequest.getPathInfo() != null && theRequest.getPathInfo().contains("_search"))
+            /*
+            KGM 3/1/2018 disabled for crucible testing
+
+            if (request.getMethod().equals("POST") && request.getPathInfo() != null && request.getPathInfo().contains("_search"))
                 throw new MethodNotAllowedException("request must use HTTP GET");
+                */
         }
         return true;
     }
@@ -305,4 +324,6 @@ public class ServerInterceptor extends InterceptorAdapter {
             return "!VAL!";
         }
     }
+
+
 }
