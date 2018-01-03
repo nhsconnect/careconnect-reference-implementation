@@ -573,7 +573,7 @@ public class ObservationDao implements ObservationRepository {
             predList.add(p);
         }
         if (resid != null) {
-            Predicate p = builder.equal(root.get("id"),resid);
+            Predicate p = builder.equal(root.get("id"),resid.getValue());
             predList.add(p);
         }
         if (category!=null) {

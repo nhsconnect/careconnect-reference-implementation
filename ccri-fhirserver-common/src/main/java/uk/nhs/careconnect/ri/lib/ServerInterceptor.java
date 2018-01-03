@@ -22,10 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Map;
+import java.util.*;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -56,26 +58,36 @@ public class ServerInterceptor extends InterceptorAdapter {
                 FhirContext ctx = FhirContext.forDstu3();
 
                 OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
-                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
-                if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING) && outcome.getIssueFirstRep().getDiagnostics().contains("The FHIR endpoint on this server does not know how to handle") ) {
+                log.info("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
+                if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
+                    if (outcome.getIssueFirstRep().getDiagnostics().contains("The FHIR endpoint on this server does not know how to handle")) {
 
-                    if (outcome.getIssueFirstRep().getDiagnostics().contains("handle GET")) {
-                        if (outcome.getIssueFirstRep().getDiagnostics().contains("[coffee]")) theServletResponse.setStatus(418);
-                        else theServletResponse.setStatus(404);
-                    } else {
-                        theServletResponse.setStatus(501);
+                        if (outcome.getIssueFirstRep().getDiagnostics().contains("handle GET")) {
+                            if (outcome.getIssueFirstRep().getDiagnostics().contains("[coffee]"))
+                                theServletResponse.setStatus(418);
+                            else theServletResponse.setStatus(404);
+                        } else {
+                            theServletResponse.setStatus(501);
+                        }
+                        if (outcome.getIssueFirstRep().getDiagnostics() != null) {
+                            log.debug("Diagnostic Response = " + outcome.getIssueFirstRep().getDiagnostics());
+
+                        }
+
+                        // Provide a response yourself
+                        theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
+
+                        theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
+                        theServletResponse.getWriter().close();
+                        return false;
                     }
-                    if (outcome.getIssueFirstRep().getDiagnostics() != null){
-                        log.debug("Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics());
-
+                    if (outcome.getIssueFirstRep().getDiagnostics().contains("Unsupported media type:")) {
+                        theServletResponse.setStatus(415);
+                        theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
+                        theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
+                        theServletResponse.getWriter().close();
+                        return false;
                     }
-
-                    // Provide a response ourself
-                    theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
-
-                    theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
-                    theServletResponse.getWriter().close();
-                    return false;
                 }
             }
 
@@ -85,7 +97,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 FhirContext ctx = FhirContext.forDstu3();
 
                 OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
-                log.info("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
+                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
                 if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
 
                     theServletResponse.setStatus(400);
@@ -140,17 +152,31 @@ public class ServerInterceptor extends InterceptorAdapter {
            if (theRequest.getMethod().equals("OPTIONS"))
                 throw new MethodNotAllowedException("request must use HTTP GET");
             */
-            try {
-                if (request.getContentType() != null) {
-                    MediaType.parseMediaType(request.getContentType());
-                }
 
-            } catch (InvalidMediaTypeException e) {
-                log.error("Unsupported media type: " + request.getContentType());
-                throw new InvalidRequestException("Unsupported media type: " + request.getContentType());
+            if (request.getContentType() != null) {
+               checkContentType(request.getContentType());
             }
 
-            // May need to readd this at a later date (probably in conjunction with a security uplift)
+            if (request.getQueryString() != null) {
+
+
+                List<NameValuePair> params = null;
+                try {
+                    params = URLEncodedUtils.parse(new URI("http://dummy?" + request.getQueryString()), "UTF-8");
+                } catch (Exception ex) {
+                }
+
+                ListIterator paramlist = params.listIterator();
+                while (paramlist.hasNext()) {
+                    NameValuePair param = (NameValuePair) paramlist.next();
+                    if (param.getName().equals("_format"))
+                        checkContentType(param.getValue());
+
+                }
+            }
+
+
+            // May need to re-add this at a later date (probably in conjunction with a security uplift)
             /*
             KGM 3/1/2018 disabled for crucible testing
 
@@ -159,6 +185,25 @@ public class ServerInterceptor extends InterceptorAdapter {
                 */
         }
         return true;
+    }
+    public void checkContentType(String contentType) {
+        try {
+                MediaType media = MediaType.parseMediaType(contentType);
+                // TODO improve the logic here
+                if (media.getSubtype() != null && !media.getSubtype().contains("xml") && !media.getSubtype().contains("fhir") && !media.getSubtype().contains("json") && !media.getSubtype().contains("plain")) {
+                    log.error("Unsupported media type: " + contentType);
+                    throw new InvalidRequestException("Unsupported media type: sub " + contentType);
+                } else {
+                    if (!contentType.contains("xml") && !contentType.contains("json")) {
+                        log.error("Unsupported media type: " + contentType);
+                        throw new InvalidRequestException("Unsupported media type: content " + contentType);
+                    }
+                }
+
+        } catch (InvalidMediaTypeException e) {
+            log.error("Unsupported media type: " + contentType);
+            throw new InvalidRequestException("Unsupported media type: mime " + contentType);
+        }
     }
 
 
@@ -173,7 +218,7 @@ public class ServerInterceptor extends InterceptorAdapter {
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse)
             throws AuthenticationException {
 
-        log.info("Outgoing object class = "+theResponseObject.getClass().getCanonicalName());
+        //log.info("Outgoing object class = "+theResponseObject.getClass().getCanonicalName());
 
         String val = theRequestDetails.getHeader("x-request-id");
 

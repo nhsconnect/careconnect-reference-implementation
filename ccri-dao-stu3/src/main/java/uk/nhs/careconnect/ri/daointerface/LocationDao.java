@@ -274,7 +274,7 @@ public class LocationDao implements LocationRepository {
 
         }
         if (resid != null) {
-            Predicate p = builder.equal(root.get("id"),resid);
+            Predicate p = builder.equal(root.get("id"),resid.getValue());
             predList.add(p);
         }
         if (name !=null)

@@ -258,7 +258,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             predList.add(p);
         }
         if (resid != null) {
-            Predicate p = builder.equal(root.get("id"),resid);
+            Predicate p = builder.equal(root.get("id"),resid.getValue());
             predList.add(p);
         }
         if (identifier !=null)
