@@ -138,7 +138,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<MedicationRequestEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/prescription"));
+                    List<MedicationRequestEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/prescription"),null);
                     for (MedicationRequestEntity con : results) {
                         prescriptionEntity = con;
                         break;
@@ -408,8 +408,8 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier) {
-        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier);
+    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier, TokenParam resid) {
+        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier,resid);
         List<MedicationRequest> results = new ArrayList<>();
 
         for (MedicationRequestEntity medicationRequestEntity : qryResults)
@@ -422,7 +422,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier) {
+    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier, TokenParam resid) {
         List<MedicationRequestEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -439,7 +439,10 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
-
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
+        }
         if (identifier !=null)
         {
             Join<MedicationRequestEntity, MedicationRequestIdentifier> join = root.join("identifiers", JoinType.LEFT);

@@ -7,9 +7,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.daointerface.PractitionerRepository;
@@ -76,8 +74,9 @@ public class PractitionerProvider implements ICCResourceProvider {
                                                                   @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                                   @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , @OptionalParam(name = Procedure.SP_RES_ID) TokenParam resid
     ) {
-        return practitionerDao.searchPractitioner(ctx, identifier, name ,postCode);
+        return practitionerDao.searchPractitioner(ctx, identifier, name ,postCode,resid);
     }
 
 

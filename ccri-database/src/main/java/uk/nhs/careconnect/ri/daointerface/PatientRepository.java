@@ -33,7 +33,8 @@ public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
             @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
             @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name= Patient.SP_NAME) StringParam name,
-            @OptionalParam(name= Patient.SP_PHONE) StringParam phone);
+            @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+     ,@OptionalParam(name= Patient.SP_RES_ID) TokenParam id);
 
     List<PatientEntity> searchEntity (FhirContext ctx,
                           @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
@@ -44,6 +45,7 @@ public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
                           @OptionalParam(name= Patient.SP_GIVEN) StringParam givenName ,
                           @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                           @OptionalParam(name= Patient.SP_NAME) StringParam name,
-                          @OptionalParam(name= Patient.SP_PHONE) StringParam phone);
+                          @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+            ,@OptionalParam(name= Patient.SP_RES_ID) TokenParam id);
 
 }

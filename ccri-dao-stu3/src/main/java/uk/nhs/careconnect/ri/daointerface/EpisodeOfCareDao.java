@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.daointerface;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,9 +77,9 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     }
 
     @Override
-    public List<EpisodeOfCare> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date) {
+    public List<EpisodeOfCare> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam resid) {
 
-        List<EpisodeOfCareEntity> qryResults = searchEntity(ctx,patient, date);
+        List<EpisodeOfCareEntity> qryResults = searchEntity(ctx,patient, date,resid);
         List<EpisodeOfCare> results = new ArrayList<>();
 
         for (EpisodeOfCareEntity episodeEntity : qryResults)
@@ -91,7 +92,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
         return results;
     }
     @Override
-    public List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date) {
+    public List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam resid) {
         List<EpisodeOfCareEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -108,7 +109,10 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
-
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);

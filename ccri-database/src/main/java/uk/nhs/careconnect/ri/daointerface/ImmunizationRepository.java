@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Immunization;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public interface ImmunizationRepository extends BaseDao<ImmunisationEntity, Immu
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Immunization.SP_RES_ID) TokenParam id
 
     );
 
@@ -37,5 +39,6 @@ public interface ImmunizationRepository extends BaseDao<ImmunisationEntity, Immu
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Immunization.SP_RES_ID) TokenParam id
     );
 }

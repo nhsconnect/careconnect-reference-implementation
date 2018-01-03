@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -64,8 +65,10 @@ public class LocationProvider implements ICCResourceProvider {
     public List<Location> searchLocation(HttpServletRequest theRequest,
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_NAME) StringParam name,
-                                         @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode) {
-        return locationDao.searchLocation(ctx, identifierCode,name,postCode);
+                                         @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , @OptionalParam(name = Location.SP_RES_ID) TokenParam resid
+    ) {
+        return locationDao.searchLocation(ctx, identifierCode,name,postCode,resid);
     }
 
     @Read()

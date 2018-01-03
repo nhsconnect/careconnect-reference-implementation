@@ -90,6 +90,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
                                                              @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
+            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<AllergyIntolerance> results = new ArrayList<AllergyIntolerance>();

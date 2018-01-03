@@ -50,7 +50,7 @@ public class ServerInterceptor extends InterceptorAdapter {
 
         // tickets #41 #43 #44 #45
 
-        log.debug("Exception = "+theException.getClass().getCanonicalName());
+        log.info("Exception = "+theException.getClass().getCanonicalName());
         if (theException instanceof InvalidRequestException) {
             if (theException.getOperationOutcome() !=null && theException.getOperationOutcome() instanceof OperationOutcome) {
                 FhirContext ctx = FhirContext.forDstu3();
@@ -85,7 +85,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 FhirContext ctx = FhirContext.forDstu3();
 
                 OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
-                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
+                log.info("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
                 if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
 
                     theServletResponse.setStatus(400);

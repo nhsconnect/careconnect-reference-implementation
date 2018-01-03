@@ -129,7 +129,7 @@ public class ImmunizationDao implements ImmunizationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ImmunisationEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation"));
+                    List<ImmunisationEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation"),null);
                     for (ImmunisationEntity con : results) {
                         immunisationEntity = con;
                         break;
@@ -225,8 +225,8 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier) {
-        List<ImmunisationEntity> qryResults = searchEntity(ctx, patient, date, status,identifier);
+    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, TokenParam resid) {
+        List<ImmunisationEntity> qryResults = searchEntity(ctx, patient, date, status,identifier,resid);
         List<Immunization> results = new ArrayList<>();
 
         for (ImmunisationEntity immunisationEntity : qryResults)
@@ -240,7 +240,7 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier) {
+    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, TokenParam resid) {
         List<ImmunisationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -257,7 +257,10 @@ public class ImmunizationDao implements ImmunizationRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
-
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
+        }
         if (identifier !=null)
         {
             Join<ImmunisationEntity, ImmunisationIdentifier> join = root.join("identifiers", JoinType.LEFT);

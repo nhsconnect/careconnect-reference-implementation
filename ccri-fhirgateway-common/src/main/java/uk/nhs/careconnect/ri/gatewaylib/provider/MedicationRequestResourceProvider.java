@@ -13,10 +13,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +88,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
+            , @OptionalParam(name = MedicationRequest.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<MedicationRequest> results = new ArrayList<MedicationRequest>();

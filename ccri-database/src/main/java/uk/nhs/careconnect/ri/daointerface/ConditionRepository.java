@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> 
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Condition.SP_RES_ID) TokenParam id
 
     );
 
@@ -38,5 +40,6 @@ public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> 
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Condition.SP_RES_ID) TokenParam id
     );
 }

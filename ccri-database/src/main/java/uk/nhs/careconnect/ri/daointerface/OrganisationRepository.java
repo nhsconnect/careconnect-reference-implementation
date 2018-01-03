@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public interface OrganisationRepository extends BaseDao<OrganisationEntity,Organ
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
+           ,@OptionalParam(name= Organization.SP_RES_ID) TokenParam id
     );
 
 

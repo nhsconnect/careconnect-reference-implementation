@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -63,8 +64,9 @@ public class EncounterProvider implements ICCResourceProvider {
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
     ) {
-        return encounterDao.search(ctx,patient,date,episode,identifier);
+        return encounterDao.search(ctx,patient,date,episode,identifier,resid);
     }
 
     @Read()

@@ -104,7 +104,7 @@ public class PractitionerDao implements PractitionerRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<PractitionerEntity> results = searchPractitionerEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null,null);
+                    List<PractitionerEntity> results = searchPractitionerEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId),null,null,null);
                     for (PractitionerEntity org : results) {
                         practitionerEntity = org;
                         break;
@@ -222,6 +222,7 @@ public class PractitionerDao implements PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     ) {
         {
             List<PractitionerEntity> qryResults = null;
@@ -244,7 +245,10 @@ public class PractitionerDao implements PractitionerRepository {
                 // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
             }
-
+            if (resid != null) {
+                Predicate p = builder.equal(root.get("id"),resid);
+                predList.add(p);
+            }
             if ( (name != null) /*(familyName != null) || (givenName != null) ||*/ ) {
 
                 Join<PractitionerEntity, PractitionerName> namejoin = root.join("names", JoinType.LEFT);
@@ -313,9 +317,10 @@ public class PractitionerDao implements PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     ) {
         List<Practitioner> results = new ArrayList<>();
-        List<PractitionerEntity> qryResults = searchPractitionerEntity(ctx, identifier, name,postCode);
+        List<PractitionerEntity> qryResults = searchPractitionerEntity(ctx, identifier, name,postCode,resid);
         for (PractitionerEntity practitionerEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());

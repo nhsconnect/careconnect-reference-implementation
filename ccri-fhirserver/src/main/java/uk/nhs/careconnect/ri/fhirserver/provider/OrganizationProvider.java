@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Organization;
@@ -74,8 +75,9 @@ public class OrganizationProvider implements ICCResourceProvider {
                                                 @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name,
                                                  @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , @OptionalParam(name = Organization.SP_RES_ID) TokenParam resid
     ) {
-       return organisationDao.searchOrganization(ctx, identifier,name, postCode);
+       return organisationDao.searchOrganization(ctx, identifier,name, postCode,resid);
     }
 
 

@@ -110,7 +110,7 @@ public class ObservationDao implements ObservationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"));
+                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"),null);
                     for (ObservationEntity con : results) {
                         observationEntity = con;
                         break;
@@ -126,7 +126,7 @@ public class ObservationDao implements ObservationRepository {
                         String[] spiltStr = query.split("%7C");
                         log.debug(spiltStr[1]);
 
-                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"));
+                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"),null);
                         for (ObservationEntity con : results) {
                             observationEntity = con;
                             break;
@@ -536,9 +536,9 @@ public class ObservationDao implements ObservationRepository {
 
 
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier) {
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
         List<Observation> results = new ArrayList<Observation>();
-        List<ObservationEntity> qryResults = searchEntity(ctx, category, code, effectiveDate, patient, identifier);
+        List<ObservationEntity> qryResults = searchEntity(ctx, category, code, effectiveDate, patient, identifier,resid);
         log.info("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
@@ -558,7 +558,7 @@ public class ObservationDao implements ObservationRepository {
     }
 
     @Override
-    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier) {
+    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -570,6 +570,10 @@ public class ObservationDao implements ObservationRepository {
             Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
+            predList.add(p);
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
             predList.add(p);
         }
         if (category!=null) {

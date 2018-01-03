@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
@@ -90,12 +91,14 @@ public class PractitionerRoleProvider implements ICCResourceProvider {
     public List<PractitionerRole> searchPractitioner(HttpServletRequest theRequest,
                                                      @OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier,
                                                      @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
-                                                     @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation) {
+                                                     @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
+            , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid) {
 
         return practitionerRoleDao.search(ctx,
                 identifier
                 ,practitioner
                 ,organisation
+                ,resid
         );
     }
 

@@ -12,10 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +83,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
 
                                                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Practitioner> results = new ArrayList<Practitioner>();

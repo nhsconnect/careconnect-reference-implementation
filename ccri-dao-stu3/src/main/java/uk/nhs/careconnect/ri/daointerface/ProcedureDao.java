@@ -126,7 +126,7 @@ public class ProcedureDao implements ProcedureRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ProcedureEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/procedure"));
+                    List<ProcedureEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/procedure"),null);
                     for (ProcedureEntity con : results) {
                         procedureEntity = con;
                         break;
@@ -251,9 +251,9 @@ public class ProcedureDao implements ProcedureRepository {
 
 
     @Override
-    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject, TokenParam identifier) {
+    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject, TokenParam identifier, TokenParam resid) {
 
-        List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject,identifier);
+        List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject,identifier,resid);
         List<Procedure> results = new ArrayList<>();
 
         for (ProcedureEntity procedureEntity : qryResults)
@@ -267,7 +267,7 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject, TokenParam identifier) {
+    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject, TokenParam identifier, TokenParam resid) {
         List<ProcedureEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -285,6 +285,10 @@ public class ProcedureDao implements ProcedureRepository {
             Join<ProcedureEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
+            predList.add(p);
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
             predList.add(p);
         }
         if (identifier !=null)

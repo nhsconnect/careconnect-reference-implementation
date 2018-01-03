@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntolerance
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) TokenParam id
 
     );
 
@@ -38,5 +40,6 @@ public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntolerance
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) TokenParam id
     );
 }

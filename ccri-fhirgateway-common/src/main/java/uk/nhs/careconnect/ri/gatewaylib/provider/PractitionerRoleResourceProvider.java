@@ -12,10 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.PractitionerRole;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +85,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
                                                          @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
                                                          @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
                                                          ,@OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<PractitionerRole> results = new ArrayList<PractitionerRole>();

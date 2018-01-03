@@ -12,10 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Location;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +84,7 @@ public class LocationResourceProvider implements IResourceProvider {
     public List<Location> searchLocation(HttpServletRequest theRequest,
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , @OptionalParam(name = Location.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Location> results = new ArrayList<Location>();

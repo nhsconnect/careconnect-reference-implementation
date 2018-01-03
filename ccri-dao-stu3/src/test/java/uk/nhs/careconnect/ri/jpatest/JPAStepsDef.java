@@ -138,51 +138,51 @@ public class JPAStepsDef {
 
     @Given("^I search for a Patient with a family name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_family_name_of(String name) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null, new StringParam(name), null, null,null, null,null);
+        patientList = patientRepository.search(ctx,null,null,null, new StringParam(name), null, null,null, null,null,null);
     }
 
     @Given("^I search for a Patient with a given name of (\\w+)$")
     public void i_search_for_a_Patient_with_a_given_name_of(String name) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null, null, null, new StringParam(name),null, null,null);
+        patientList = patientRepository.search(ctx,null,null,null, null, null, new StringParam(name),null, null,null,null);
     }
 
 
 
     @Given("^I search for a Patient with a gender of (\\w+)$")
     public void i_search_for_a_Patient_with_a_gender_of(String gender) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null,null,new StringParam(gender), null,null,null, null);
+        patientList = patientRepository.search(ctx,null,null,null,null,new StringParam(gender), null,null,null, null,null);
     }
 
     @Given("^I search for a Patient with a NHSNumber of (\\d+)$")
     public void i_search_for_a_Patient_with_a_NHSNumber_of(String NHSNumber) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null);
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setSystem(CareConnectSystem.NHSNumber).setValue(NHSNumber),null,null,null);
     }
 
     @Given("^I search for a Patient with a name of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_name_of(String name) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,new StringParam(name),null);
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,new StringParam(name),null,null);
     }
 
     @Given("^I search for a Patient with a birthdate of '(\\w+)-(\\w+)-(\\w+)'$")
     public void i_search_for_a_Patient_with_a_birthdate_of(String year, String month, String day) throws Throwable {
-        patientList = patientRepository.search(ctx,null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)),null,null,null,null, null,null,null,null);
 
     }
 
 
     @Given("^I search for a Patient with a email of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_email_of(String email) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,new StringParam(email),null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,null,null,new StringParam(email),null,null,null, null,null,null,null);
 
     }
 
     @Given("^I search for a Patient with a address-postcode of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_address_postcode_of(String postcode) throws Throwable {
-        patientList = patientRepository.search(ctx,new StringParam(postcode),null,null,null,null,null, null,null,null);
+        patientList = patientRepository.search(ctx,new StringParam(postcode),null,null,null,null,null, null,null,null,null);
     }
     @Given("^I search for a Patient with a phone of \"([^\"]*)\"$")
     public void i_search_for_a_Patient_with_a_phone_of(String phone) throws Throwable {
-        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,null,new StringParam(phone));
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null, null,null,new StringParam(phone),null);
     }
 
 
@@ -202,7 +202,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by name (\\w+)$")
     public void i_search_for_Organisations_by_name(String name) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(ctx,null,new StringParam(name),null);
+        organizationList = organisationRepository.searchOrganization(ctx,null,new StringParam(name),null,null);
     }
 
     @Then("^the results should be a list of CareConnect Organisations$")
@@ -214,7 +214,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Organisations by SDSCode (\\w+)$")
     public void i_have_search_for_these_Organisations_by_SDSCode(String SDSCode) throws Throwable {
-        organizationList = organisationRepository.searchOrganization(ctx,new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null,null);
+        organizationList = organisationRepository.searchOrganization(ctx,new TokenParam().setSystem(CareConnectSystem.ODSOrganisationCode).setValue(SDSCode),null,null,null);
     }
 
     @Then("^the result should be a organisation list with (\\d+) entry$")
@@ -330,12 +330,12 @@ public class JPAStepsDef {
 
     @Given("^I search for Practitioners by SDSId (\\w+)$")
     public void i_search_for_Practitioners_by_SDSId_S(String Id) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(ctx, new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null,null);
+        practitionerList = practitionerRepository.searchPractitioner(ctx, new TokenParam().setSystem(CareConnectSystem.SDSUserId).setValue(Id),null,null,null);
     }
 
     @Given("^I search for Practitioners by name (\\w+)$")
     public void i_search_for_Practitioners_by_name_Bhatia(String name) throws Throwable {
-        practitionerList = practitionerRepository.searchPractitioner(ctx,null,new StringParam(name),null);
+        practitionerList = practitionerRepository.searchPractitioner(ctx,null,new StringParam(name),null,null);
     }
 
 
@@ -343,7 +343,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by SDSCode (\\w+)$")
     public void i_search_for_Locations_by_SDSCode(String code) throws Throwable {
-        locationList = locationRepository.searchLocation(ctx,new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null,null);
+        locationList = locationRepository.searchLocation(ctx,new TokenParam().setSystem(CareConnectSystem.ODSSiteCode).setValue(code),null,null,null);
     }
 
     @Then("^the result should be a Location list with (\\d+) entry$")
@@ -369,7 +369,7 @@ public class JPAStepsDef {
 
     @Given("^I search for Locations by name (\\w+)$")
     public void i_search_for_Locations_by_name(String name) throws Throwable {
-        locationList = locationRepository.searchLocation(ctx,null,new StringParam(name),null);
+        locationList = locationRepository.searchLocation(ctx,null,new StringParam(name),null,null);
     }
 
     @Given("^Location resource file$")
@@ -426,7 +426,7 @@ public class JPAStepsDef {
     @When("^I search Observations on SNOMED category (\\d+)$")
     public void i_search_on_SNOMED_category(String category) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null,null);
+        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null,null,null);
     }
 
     @Then("^I should get a Bundle of Observations with (\\d+) resource$")
@@ -437,12 +437,12 @@ public class JPAStepsDef {
 
     @When("^I search Observations on SNOMED code (\\d+)$")
     public void i_search_on_SNOMED_code(String code) throws Throwable {
-        observationList = observationRepository.search(ctx,null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null, null);
+        observationList = observationRepository.search(ctx,null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null, null,null);
     }
 
     @When("^I search on Patient ID = (\\d+)$")
     public void i_search_on_Patient_ID(String patientId) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId),null);
+        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId),null,null);
     }
 
     @Then("^I should get a Bundle of Observations with more then (\\d+) resources$")
@@ -452,22 +452,22 @@ public class JPAStepsDef {
 
     @When("^I search on dates less than (\\d+)-(\\d+)-(\\d+)$")
     public void dates_less_than_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null,null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null,null,null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)-(\\d+)$")
     public void dates_equal_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null,null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null,null,null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)$")
     public void dates_equal_yyyymm(String year, String month) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null, null,null);
     }
 
     @When("^I search on dates equal to (\\d+)$")
     public void dates_equal_yyyy(String year) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null, null,null);
     }
 
     /*
@@ -500,7 +500,7 @@ public class JPAStepsDef {
 
     @When("^I search Encounter on Patient ID = (\\d+)$")
     public void i_search_Encounter_on_Patient_ID(int patient) throws Throwable {
-        encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+        encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
     }
 
     @Then("^I should get a Bundle of Encounter (\\d+) resource$")
@@ -521,7 +521,7 @@ public class JPAStepsDef {
 
     @When("^I search Condition on Patient ID = (\\d+)$")
     public void i_search_Condition_on_Patient_ID(int patient) throws Throwable {
-        conditionList = conditionRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null);
+        conditionList = conditionRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null,null);
     }
 
     @Then("^I should get a Bundle of Condition (\\d+) resource$")
@@ -564,7 +564,7 @@ public class JPAStepsDef {
 
     @When("^I search AllergyIntolerance on Patient ID = (\\d+)$")
     public void i_search_AllergyIntolerance_on_Patient_ID(int patient) throws Throwable {
-        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
     }
     @Then("^I should get a Bundle of AllergyIntolerance (\\d+) resource$")
     public void i_should_get_a_Bundle_of_AllergyIntolerance_resource(int count) throws Throwable {
@@ -608,7 +608,7 @@ public class JPAStepsDef {
 
     @When("^I search Immunisation on Patient ID = (\\d+)$")
     public void i_search_Immunisation_on_Patient_ID(int patient) throws Throwable {
-        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
     }
 
     @Then("^I should get a Bundle of Immunisation (\\d+) resource$")
@@ -652,7 +652,7 @@ public class JPAStepsDef {
 
     @When("^I search MedicationRequest on Patient ID = (\\d+)$")
     public void i_search_MedicationRequest_on_Patient_ID(int patient) throws Throwable {
-        prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null);
+        prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null,null);
     }
 
     @Then("^I should get a Bundle of MedicationRequest (\\d+) resource$")
@@ -697,7 +697,7 @@ PROCEDURE
 
     @When("^I search Procedure on Patient ID = (\\d+)$")
     public void i_search_Procedure_on_Patient_ID(int patient) throws Throwable {
-        procedureList = procedureRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null);
+        procedureList = procedureRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
     }
 
     @Then("^I should get a Bundle of Procedure (\\d+) resource$")
@@ -750,7 +750,7 @@ PROCEDURE
     @Then("^I search Patient on Patient PPMID = (\\d+)$")
     public void i_search_Patient_on_Patient_PPMID(String ident) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setValue(ident),null,null);
+        patientList = patientRepository.search(ctx,null,null,null,null,null,null,new TokenParam().setValue(ident),null,null,null);
     }
 
     @Then("^I should get a Bundle of Patient (\\d+) resource$")

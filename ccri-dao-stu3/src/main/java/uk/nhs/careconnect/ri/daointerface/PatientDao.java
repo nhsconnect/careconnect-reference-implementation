@@ -131,7 +131,7 @@ public class PatientDao implements PatientRepository {
                     String[] spiltStr = query.split("%7C");
                     log.info(spiltStr[1]);
 
-                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null);
+                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null,null);
                     log.info("Loop over results");
                     for (PatientEntity pat : results) {
                         patientEntity = pat;
@@ -370,8 +370,9 @@ public class PatientDao implements PatientRepository {
                                              @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                                              @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                              @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+            , TokenParam resid
     ) {
-        List<PatientEntity> qryResults = searchEntity(ctx, addressPostcode, birthDate, email, familyName, gender, givenName, identifier, name, phone);
+        List<PatientEntity> qryResults = searchEntity(ctx, addressPostcode, birthDate, email, familyName, gender, givenName, identifier, name, phone,resid);
         List<Patient> results = new ArrayList<>();
 
         for (PatientEntity patientEntity : qryResults)
@@ -401,6 +402,7 @@ public class PatientDao implements PatientRepository {
             @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name= Patient.SP_NAME) StringParam name,
             @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+            , TokenParam resid
     )
     {
 
@@ -436,6 +438,10 @@ public class PatientDao implements PatientRepository {
             }
 
 
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
         }
         if ((familyName != null) || (givenName != null) || (name != null)) {
 

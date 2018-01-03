@@ -13,10 +13,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +91,7 @@ public class PatientResourceProvider implements IResourceProvider {
                                        @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                                        @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+            , @OptionalParam(name = Patient.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Patient> results = new ArrayList<Patient>();

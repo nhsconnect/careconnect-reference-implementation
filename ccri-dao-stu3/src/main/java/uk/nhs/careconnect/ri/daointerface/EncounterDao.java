@@ -128,7 +128,7 @@ public class  EncounterDao implements EncounterRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"));
+                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null);
                     for (EncounterEntity enc : results) {
                         encounterEntity = enc;
                         break;
@@ -258,8 +258,8 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<Encounter> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier) {
-        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier);
+    public List<Encounter> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid) {
+        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid);
         List<Encounter> results = new ArrayList<>();
 
         for (EncounterEntity encounterEntity : qryResults)
@@ -273,7 +273,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -293,6 +293,10 @@ public class  EncounterDao implements EncounterRepository {
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
         }
         if (patient != null) {
             Join<EncounterEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);

@@ -7,7 +7,9 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -63,8 +65,9 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     @Search
     public List<EpisodeOfCare> searchEpisodeOfCare(HttpServletRequest theRequest,
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
-            , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date) {
-        return episodeDao.search(ctx,patient, date);
+            , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) TokenParam resid) {
+        return episodeDao.search(ctx,patient, date,resid);
     }
 
     @Read()

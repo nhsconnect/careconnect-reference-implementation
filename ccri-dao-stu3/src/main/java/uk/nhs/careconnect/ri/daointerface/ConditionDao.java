@@ -126,7 +126,7 @@ public class ConditionDao implements ConditionRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ConditionEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/condition"));
+                    List<ConditionEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/condition"),null);
                     for (ConditionEntity con : results) {
                         conditionEntity = con;
                         break;
@@ -238,8 +238,8 @@ public class ConditionDao implements ConditionRepository {
 
 
     @Override
-    public List<Condition> search(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier) {
-        List<ConditionEntity> qryResults = searchEntity(ctx,patient, category, clinicalstatus, asserted,identifier);
+    public List<Condition> search(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, TokenParam resid) {
+        List<ConditionEntity> qryResults = searchEntity(ctx,patient, category, clinicalstatus, asserted,identifier,resid);
         List<Condition> results = new ArrayList<>();
 
         for (ConditionEntity conditionEntity : qryResults)
@@ -253,7 +253,7 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public List<ConditionEntity> searchEntity(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier) {
+    public List<ConditionEntity> searchEntity(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, TokenParam resid) {
         List<ConditionEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -270,7 +270,10 @@ public class ConditionDao implements ConditionRepository {
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
             predList.add(p);
         }
-
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
+        }
         if (identifier !=null)
         {
             Join<ConditionEntity, ConditionIdentifier> join = root.join("identifiers", JoinType.LEFT);

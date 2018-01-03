@@ -113,7 +113,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
                     String[] spiltStr = query.split("%7C");
                     log.trace(spiltStr[1]);
 
-                    List<PractitionerRole> results = searchEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId), null, null);
+                    List<PractitionerRole> results = searchEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.SDSUserId), null, null,null);
                     for (PractitionerRole org : results) {
                         roleEntity = org;
                         break;
@@ -195,7 +195,8 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     public List<PractitionerRole> searchEntity(FhirContext ctx,
             TokenParam identifier
             , ReferenceParam practitioner
-            , ReferenceParam organisation) {
+            , ReferenceParam organisation
+            , TokenParam resid) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -214,6 +215,10 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
         }
         if (practitioner != null) {
             Join<PractitionerRole,PractitionerEntity> joinPractitioner = root.join("practitionerEntity",JoinType.LEFT);
@@ -257,9 +262,10 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     public List<org.hl7.fhir.dstu3.model.PractitionerRole> search(FhirContext ctx,
             TokenParam identifier
             , ReferenceParam practitioner
-            , ReferenceParam organisation) {
+            , ReferenceParam organisation
+            , TokenParam resid) {
         List<org.hl7.fhir.dstu3.model.PractitionerRole> results = new ArrayList<>();
-        List<PractitionerRole> roles = searchEntity(ctx, identifier,practitioner,organisation);
+        List<PractitionerRole> roles = searchEntity(ctx, identifier,practitioner,organisation,resid);
         for (PractitionerRole role : roles) {
              results.add(practitionerRoleToFHIRPractitionerRoleTransformer.transform(role));
         }

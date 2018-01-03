@@ -13,10 +13,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Immunization;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +87,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
                                                  @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Immunization.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Immunization> results = new ArrayList<Immunization>();

@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -127,7 +128,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<AllergyIntoleranceEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/allergy"));
+                    List<AllergyIntoleranceEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/allergy"),null);
                     for (AllergyIntoleranceEntity con : results) {
                         allergyEntity = con;
                         break;
@@ -246,8 +247,8 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntolerance> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier) {
-        List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus,identifier);
+    public List<AllergyIntolerance> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,TokenParam resid) {
+        List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus,identifier,resid);
         List<AllergyIntolerance> results = new ArrayList<>();
 
         for (AllergyIntoleranceEntity allergyIntoleranceEntity : qryResults)
@@ -261,7 +262,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier) {
+    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,TokenParam resid) {
 
 
         List<AllergyIntoleranceEntity> qryResults = null;
@@ -278,6 +279,10 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             Join<AllergyIntoleranceEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
             Predicate p = builder.equal(join.get("id"),patient.getIdPart());
+            predList.add(p);
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
             predList.add(p);
         }
         if (identifier !=null)

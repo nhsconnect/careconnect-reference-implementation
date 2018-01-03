@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -99,11 +100,12 @@ public class PatientProvider implements ICCResourceProvider {
                                        @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                                        @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
+            , @OptionalParam(name = Patient.SP_RES_ID) TokenParam resid
                                        ) {
 
 
 
-        return patientDao.search(ctx,addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone);
+        return patientDao.search(ctx,addressPostcode, birthDate, email, familyName, gender,givenName, identifier, name, phone,resid);
 
     }
 

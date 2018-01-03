@@ -12,10 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +83,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
     public List<Organization> searchOrganization(HttpServletRequest theRequest,
                                                  @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name
+            , @OptionalParam(name = Organization.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Organization> results = new ArrayList<Organization>();

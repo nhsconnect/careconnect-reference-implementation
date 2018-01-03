@@ -122,7 +122,7 @@ public class OrganisationDao implements OrganisationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<OrganisationEntity> results = searchOrganizationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null,null);
+                    List<OrganisationEntity> results = searchOrganizationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSOrganisationCode),null,null,null);
                     for (OrganisationEntity org : results) {
                         organisationEntity = org;
                         break;
@@ -230,9 +230,10 @@ public class OrganisationDao implements OrganisationRepository {
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     ) {
         List<Organization> results = new ArrayList<>();
-        List<OrganisationEntity> qryResults = searchOrganizationEntity(ctx, identifier,name,postCode);
+        List<OrganisationEntity> qryResults = searchOrganizationEntity(ctx, identifier,name,postCode,resid);
         for (OrganisationEntity organizationEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
@@ -247,6 +248,7 @@ public class OrganisationDao implements OrganisationRepository {
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     )
     {
         List<OrganisationEntity> qryResults = null;
@@ -269,7 +271,10 @@ public class OrganisationDao implements OrganisationRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
-
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
+        }
         if (name !=null)
         {
 

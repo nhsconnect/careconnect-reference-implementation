@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
             @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
             @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
             );
 
     List<ObservationEntity> searchEntity (FhirContext ctx,
@@ -36,5 +38,6 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
                               @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                               @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
     );
 }

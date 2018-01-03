@@ -116,7 +116,7 @@ public class LocationDao implements LocationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<LocationEntity> results = searchLocationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null, null);
+                    List<LocationEntity> results = searchLocationEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem(CareConnectSystem.ODSSiteCode),null, null,null);
                     for (LocationEntity org : results) {
                         locationEntity = org;
                         break;
@@ -229,9 +229,10 @@ public class LocationDao implements LocationRepository {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     )
     {
-        List<LocationEntity> qryResults = searchLocationEntity(ctx, identifier,name, postCode);
+        List<LocationEntity> qryResults = searchLocationEntity(ctx, identifier,name, postCode,resid);
         List<Location> results = new ArrayList<>();
 
         for (LocationEntity locationEntity : qryResults)
@@ -250,6 +251,7 @@ public class LocationDao implements LocationRepository {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
+            , TokenParam resid
     )
     {
         List<LocationEntity> qryResults = null;
@@ -270,6 +272,10 @@ public class LocationDao implements LocationRepository {
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid);
+            predList.add(p);
         }
         if (name !=null)
         {

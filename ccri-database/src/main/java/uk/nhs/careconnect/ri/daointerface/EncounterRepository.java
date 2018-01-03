@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter>
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
 
     );
 
@@ -36,5 +38,6 @@ public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter>
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
     );
 }

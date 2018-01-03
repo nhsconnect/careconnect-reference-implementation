@@ -67,8 +67,8 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
-        List<MedicationRequestEntity> prescriptions = prescriptionDao.searchEntity(ctx,patient,null,effectiveDate,status,null);
+    public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid) {
+        List<MedicationRequestEntity> prescriptions = prescriptionDao.searchEntity(ctx,patient,null,effectiveDate,status,null,null);
         List<MedicationStatement> results = new ArrayList<>();
 
         for (MedicationRequestEntity prescriptionEntity : prescriptions)
@@ -82,7 +82,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status) {
+    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid) {
         return null;
     }
 }

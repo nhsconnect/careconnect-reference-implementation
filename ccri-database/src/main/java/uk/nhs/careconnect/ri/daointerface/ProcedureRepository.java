@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Procedure;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
@@ -27,6 +28,7 @@ public interface ProcedureRepository extends BaseDao<ProcedureEntity,Procedure> 
             ,@OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
             , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Procedure.SP_RES_ID) TokenParam id
     );
 
     List<ProcedureEntity> searchEntity(FhirContext ctx,
@@ -34,5 +36,6 @@ public interface ProcedureRepository extends BaseDao<ProcedureEntity,Procedure> 
             ,@OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
             , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
+            ,@OptionalParam(name= Procedure.SP_RES_ID) TokenParam id
     );
 }

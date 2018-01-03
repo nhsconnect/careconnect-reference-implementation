@@ -13,10 +13,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +88,7 @@ public class ConditionResourceProvider implements IResourceProvider {
             , @OptionalParam(name = Condition.SP_CATEGORY) TokenParam category
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
+            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<Condition> results = new ArrayList<Condition>();

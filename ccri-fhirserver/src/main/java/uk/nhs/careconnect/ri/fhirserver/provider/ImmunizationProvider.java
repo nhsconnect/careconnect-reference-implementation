@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -67,8 +68,9 @@ public class ImmunizationProvider implements ICCResourceProvider {
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = Immunization.SP_RES_ID) TokenParam resid
     ){
-        return immunisationDao.search(ctx,patient,date, status, identifier);
+        return immunisationDao.search(ctx,patient,date, status, identifier,resid);
     }
 
     @Read()

@@ -70,8 +70,9 @@ public class ConditionProvider implements ICCResourceProvider {
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = Condition.SP_RES_ID) TokenParam resid
                                   ) {
-        return conditionDao.search(ctx,patient, category, clinicalstatus, asserted, identifier);
+        return conditionDao.search(ctx,patient, category, clinicalstatus, asserted, identifier,resid);
     }
 
     @Read()
