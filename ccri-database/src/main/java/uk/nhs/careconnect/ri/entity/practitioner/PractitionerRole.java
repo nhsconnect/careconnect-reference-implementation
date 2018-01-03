@@ -17,7 +17,7 @@ public class PractitionerRole extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="PRACTITIONER_ROLE_ID")
-    private Long myId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_PRACTITIONER_ID"))
@@ -71,7 +71,7 @@ public class PractitionerRole extends BaseResource {
 
     public Long getId()
     {
-        return this.myId;
+        return this.id;
     }
 
     public PractitionerEntity getPractitioner() {
