@@ -25,7 +25,7 @@ import java.util.TimeZone;
 public class HAPIRestfulConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
-	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(HAPIRestfulConfig.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HAPIRestfulConfig.class);
 
 	private WebApplicationContext myAppCtx;
 
@@ -91,7 +91,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		// be used here. See the JavaDoc for LoggingInterceptor for information on
 		// what is available.
 
-		ServerInterceptor gatewayInterceptor = new ServerInterceptor(ourLog);
+		ServerInterceptor gatewayInterceptor = new ServerInterceptor(log);
 		registerInterceptor(gatewayInterceptor);
 		//gatewayInterceptor.setLoggerName("ccri.FHIRGateway");
 		//gatewayInterceptor.setLogger(ourLog);
