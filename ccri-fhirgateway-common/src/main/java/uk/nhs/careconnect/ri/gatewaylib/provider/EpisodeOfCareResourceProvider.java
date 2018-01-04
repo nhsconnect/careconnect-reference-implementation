@@ -71,7 +71,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
         {
 
             OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
 
             OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
@@ -117,7 +117,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
         {
 
             OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.error("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
 
             OperationOutcomeFactory.convertToException(operationOutcome);
         } else {

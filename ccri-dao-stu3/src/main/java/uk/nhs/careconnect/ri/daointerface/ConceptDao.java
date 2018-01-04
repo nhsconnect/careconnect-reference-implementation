@@ -175,7 +175,7 @@ public class ConceptDao implements ConceptRepository {
         predList.toArray(predArray);
         if (predList.size()>0)
         {
-            log.info("Found CodeSystem "+system);
+            log.debug("Found CodeSystem "+system);
             criteria.select(root).where(predArray);
 
             List<CodeSystemEntity> qryResults = sessionEntityManager.createQuery(criteria).getResultList();

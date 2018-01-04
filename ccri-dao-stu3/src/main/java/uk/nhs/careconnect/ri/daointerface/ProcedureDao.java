@@ -162,7 +162,7 @@ public class ProcedureDao implements ProcedureRepository {
                 procedureEntity.setCode(code);
             }
             else {
-                log.error("Code: Missing System/Code = "+ procedure.getCode().getCoding().get(0).getSystem()
+                log.info("Code: Missing System/Code = "+ procedure.getCode().getCoding().get(0).getSystem()
                         +" code = "+procedure.getCode().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ procedure.getCode().getCoding().get(0).getSystem()
@@ -174,7 +174,7 @@ public class ProcedureDao implements ProcedureRepository {
             if (code != null) {
                 procedureEntity.setCategory(code); }
             else {
-                log.error("Category: Missing System/Code = "+ procedure.getCategory().getCoding().get(0).getSystem()
+                log.info("Category: Missing System/Code = "+ procedure.getCategory().getCoding().get(0).getSystem()
                         +" code = "+procedure.getCategory().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing Category System/Code = "+ procedure.getCategory().getCoding().get(0).getSystem()
@@ -186,7 +186,7 @@ public class ProcedureDao implements ProcedureRepository {
             if (code != null) {
                 procedureEntity.setOutcome(code); }
             else {
-                log.error("Outcome: Missing System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()
+                log.info("Outcome: Missing System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()
                         +" code = "+procedure.getOutcome().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing Outcome System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()

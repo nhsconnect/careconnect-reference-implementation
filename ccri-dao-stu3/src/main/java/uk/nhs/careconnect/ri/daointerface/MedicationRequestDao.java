@@ -190,7 +190,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 if (code != null) {
                     prescriptionEntity.setMedicationCode(code);
                 } else {
-                    log.error("Code: Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
+                    log.info("Code: Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
                             + " code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
 
                     throw new IllegalArgumentException("Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
@@ -223,7 +223,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             if (code != null) {
                 prescriptionEntity.setDurationUnitsCode(code);
             } else {
-                log.error("Duration Code: Missing System/Code = " +dispense.getExpectedSupplyDuration().getSystem()
+                log.info("Duration Code: Missing System/Code = " +dispense.getExpectedSupplyDuration().getSystem()
                         + " code = " + dispense.getExpectedSupplyDuration().getCode());
 
                 throw new IllegalArgumentException("Missing Duration System/Code = " +dispense.getExpectedSupplyDuration().getSystem()
@@ -282,7 +282,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
-                    log.error("Code: Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                    log.info("Code: Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
                             + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
 
                     throw new IllegalArgumentException("Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
@@ -297,7 +297,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
-                    log.error("Code: Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                    log.info("Code: Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
                             + " code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
 
                     throw new IllegalArgumentException("Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
@@ -314,7 +314,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 if (code != null) {
                     dosageEntity.setRouteCode(code);
                 } else {
-                    log.error("Code: Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
+                    log.info("Code: Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
                             + " code = " + dosage.getRoute().getCoding().get(0).getCode());
 
                     throw new IllegalArgumentException("Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
@@ -344,7 +344,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                         if (code != null) {
                             dosageEntity.setDoseUnitOfMeasure(code);
                         } else {
-                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
                                     + " code = " + qty.getCode());
 
                             throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
@@ -370,7 +370,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                         if (code != null) {
                             dosageEntity.setDoseHighUnitOfMeasure(code);
                         } else {
-                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
                                     + " code = " + qty.getCode());
 
                             throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
@@ -390,7 +390,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                         if (code != null) {
                             dosageEntity.setDoseLowUnitOfMeasure(code);
                         } else {
-                            log.error("Code: Missing System/Code = " + qty.getSystem()
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
                                     + " code = " + qty.getCode());
 
                             throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()

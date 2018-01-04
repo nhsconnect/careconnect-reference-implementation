@@ -149,7 +149,7 @@ public class ObservationDao implements ObservationRepository {
           ConceptEntity code = conceptDao.findCode(observation.getCode().getCoding().get(0).getSystem(),observation.getCode().getCoding().get(0).getCode());
           if (code != null) { observationEntity.setCode(code); }
           else {
-              log.error("Code: Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
+              log.info("Code: Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
 
               throw new IllegalArgumentException("Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
           }
@@ -191,7 +191,7 @@ public class ObservationDao implements ObservationRepository {
             ConceptEntity code = conceptDao.findCode(observation.getBodySite().getCoding().get(0).getSystem(),observation.getBodySite().getCoding().get(0).getCode());
             if (code != null) { observationEntity.setBodySite(code); }
             else {
-                log.error("Body: Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
+                log.info("Body: Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
                 throw new IllegalArgumentException("Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
             }
 
@@ -203,7 +203,7 @@ public class ObservationDao implements ObservationRepository {
             ConceptEntity code = conceptDao.findCode(observation.getMethod().getCoding().get(0).getSystem(),observation.getMethod().getCoding().get(0).getCode());
             if (code != null) { observationEntity.setMethod(code); }
             else {
-                log.error("Method: Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
+                log.info("Method: Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
             }
@@ -265,7 +265,7 @@ public class ObservationDao implements ObservationRepository {
                 ConceptEntity code = conceptDao.findCode(range.getType().getCoding().get(0).getSystem(),range.getType().getCoding().get(0).getCode());
                 if (code != null) { rangeEntity.setType(code); }
                 else {
-                    log.error("Range: Missing System/Code = "+ range.getType().getCoding().get(0).getSystem() +" code = "+range.getType().getCoding().get(0).getCode());
+                    log.info("Range: Missing System/Code = "+ range.getType().getCoding().get(0).getSystem() +" code = "+range.getType().getCoding().get(0).getCode());
                     throw new IllegalArgumentException("Missing System/Code = "+ range.getType().getCoding().get(0).getSystem() +" code = "+range.getType().getCoding().get(0).getCode());
                 }
             }
@@ -354,7 +354,7 @@ public class ObservationDao implements ObservationRepository {
                     observationEntity.getCategories().add(category);
                 }
                 else {
-                    log.error("Missing Category. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                    log.info("Missing Category. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                     throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                 }
             }
@@ -396,7 +396,7 @@ public class ObservationDao implements ObservationRepository {
                             observationComponent.setValueUnitOfMeasure(concept);
                         }
                         else {
-                            log.error("Missing Category. System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
+                            log.info("Missing Category. System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
                             throw new IllegalArgumentException("Missing System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
 
                         }
@@ -539,7 +539,7 @@ public class ObservationDao implements ObservationRepository {
     public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
         List<Observation> results = new ArrayList<Observation>();
         List<ObservationEntity> qryResults = searchEntity(ctx, category, code, effectiveDate, patient, identifier,resid);
-        log.info("Found Observations = "+qryResults.size());
+        log.debug("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
             Observation observation = null;

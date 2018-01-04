@@ -161,7 +161,7 @@ public class ConditionDao implements ConditionRepository {
             ConceptEntity code = conceptDao.findCode(condition.getSeverity().getCoding().get(0).getSystem(),condition.getSeverity().getCoding().get(0).getCode());
             if (code != null) { conditionEntity.setSeverity(code); }
             else {
-                log.error("Severity Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+                log.info("Severity Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing Severity System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
             }
@@ -170,7 +170,7 @@ public class ConditionDao implements ConditionRepository {
             ConceptEntity code = conceptDao.findCode(condition.getCode().getCoding().get(0).getSystem(),condition.getCode().getCoding().get(0).getCode());
             if (code != null) { conditionEntity.setCode(code); }
             else {
-                log.error("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
+                log.info("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem()
                         +" code = "+condition.getCode().getCoding().get(0).getCode());
@@ -228,7 +228,7 @@ public class ConditionDao implements ConditionRepository {
                 em.persist(conditionCategory);
             }
             else {
-                log.error("Category Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+                log.info("Category Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
                 throw new IllegalArgumentException("Missing Category System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
             }
         }

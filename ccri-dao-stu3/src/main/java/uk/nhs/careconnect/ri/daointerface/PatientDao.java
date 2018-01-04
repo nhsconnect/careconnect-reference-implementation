@@ -112,13 +112,13 @@ public class PatientDao implements PatientRepository {
         PatientEntity patientEntity = null;
         log.info("Started patient updated");
         if (theId != null) {
-            log.info("theId.getIdPart()="+theId.getIdPart());
+            log.trace("theId.getIdPart()="+theId.getIdPart());
             patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
         if (theConditional != null) {
             try {
-                log.info("Conditional Url = "+theConditional);
+                log.trace("Conditional Url = "+theConditional);
 
                 //CareConnectSystem.ODSOrganisationCode
                 if (theConditional.contains("PPMIdentifier")) {
@@ -127,19 +127,19 @@ public class PatientDao implements PatientRepository {
                     //String scheme = uri.getScheme();
                     //String host = uri.getHost();
                     String query = uri.getRawQuery();
-                    log.info(query);
+                    log.trace(query);
                     String[] spiltStr = query.split("%7C");
-                    log.info(spiltStr[1]);
+                    log.trace(spiltStr[1]);
 
                     List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null,null);
-                    log.info("Loop over results");
+                    log.trace("Loop over results");
                     for (PatientEntity pat : results) {
                         patientEntity = pat;
                         break;
                     }
                     // This copes with the new identifier being added.
                     if (patientEntity == null && daoutils.isNumeric(spiltStr[1])) {
-                        log.info("Looking for patient with id of "+spiltStr[1]);
+                        log.trace("Looking for patient with id of "+spiltStr[1]);
                         patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(spiltStr[1]));
                     }
                 } else {
@@ -150,10 +150,10 @@ public class PatientDao implements PatientRepository {
                 log.error(ex.getMessage());
             }
         }
-        log.info("Finished searching for Patient");
+
 
         if (patientEntity == null) {
-            log.info("Adding new Patient");
+            log.trace("Adding new Patient");
             patientEntity = new PatientEntity();
         }
 
@@ -166,7 +166,7 @@ public class PatientDao implements PatientRepository {
                         ConceptEntity code = conceptDao.findCode(ethnic.getCoding().get(0).getSystem(),ethnic.getCoding().get(0).getCode());
                         if (code != null) { patientEntity.setEthnicCode(code); }
                         else {
-                            log.error("Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
+                            log.info("Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
                             throw new IllegalArgumentException("Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
                         }
                         break;
@@ -213,7 +213,7 @@ public class PatientDao implements PatientRepository {
             ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0).getSystem(),martial.getCoding().get(0).getCode());
             if (code != null) { patientEntity.setMaritalCode(code); }
             else {
-                log.error("Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
+                log.info("Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
                 throw new IllegalArgumentException("Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
             }
         }
@@ -239,7 +239,7 @@ public class PatientDao implements PatientRepository {
                 ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0).getSystem(),nhsVerification.getCoding().get(0).getCode());
                 if (code != null) { patientEntity.setNHSVerificationCode(code); }
                 else {
-                    log.error("NHS Verfication: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
+                    log.info("NHS Verfication: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
                     throw new IllegalArgumentException("Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
                 }
             }
@@ -634,7 +634,7 @@ public class PatientDao implements PatientRepository {
 
         qryResults = typedQuery.getResultList();
 
-        log.info("Found Patients = "+qryResults.size());
+        log.debug("Found Patients = "+qryResults.size());
 
         return qryResults;
     }

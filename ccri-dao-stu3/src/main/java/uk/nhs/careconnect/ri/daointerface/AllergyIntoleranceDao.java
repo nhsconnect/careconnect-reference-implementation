@@ -169,7 +169,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             ConceptEntity code = conceptDao.findCode(allergy.getCode().getCoding().get(0).getSystem(),allergy.getCode().getCoding().get(0).getCode());
             if (code != null) { allergyEntity.setCode(code); }
             else {
-                log.error("Code: Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem() +" code = "+allergy.getCode().getCoding().get(0).getCode());
+                log.info("Code: Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem() +" code = "+allergy.getCode().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem()
                         +" code = "+allergy.getCode().getCoding().get(0).getCode());
@@ -234,7 +234,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
                 em.persist(allergyReaction);
             }
             else {
-                log.error("Code: Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem() +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
+                log.info("Code: Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem() +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem()
                         +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());

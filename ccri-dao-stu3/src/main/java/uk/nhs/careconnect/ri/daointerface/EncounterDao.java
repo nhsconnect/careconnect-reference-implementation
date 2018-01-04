@@ -155,7 +155,7 @@ public class  EncounterDao implements EncounterRepository {
             ConceptEntity code = conceptDao.findCode(encounter.getClass_().getSystem(),encounter.getClass_().getCode());
             if (code != null) { encounterEntity._setClass(code); }
             else {
-                log.error("Code: Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
+                log.info("Code: Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
             }
@@ -165,7 +165,7 @@ public class  EncounterDao implements EncounterRepository {
             ConceptEntity code = conceptDao.findCode(encounter.getType().get(0).getCoding().get(0).getSystem(),encounter.getType().get(0).getCoding().get(0).getCode());
             if (code != null) { encounterEntity.setType(code); }
             else {
-                log.error("Code: Missing System/Code = "+encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
+                log.info("Code: Missing System/Code = "+encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
             }
@@ -193,7 +193,7 @@ public class  EncounterDao implements EncounterRepository {
                     if (code != null) {
                         encounterEntity.setParticipantType(code);
                     } else {
-                        log.error("Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
+                        log.info("Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
 
                         throw new IllegalArgumentException("Missing System/Code = "+ participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
                     }
@@ -221,7 +221,7 @@ public class  EncounterDao implements EncounterRepository {
             ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0).getSystem(),encounter.getPriority().getCoding().get(0).getCode());
             if (code != null) { encounterEntity.setPriority(code); }
             else {
-                log.error("Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
+                log.info("Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
             }

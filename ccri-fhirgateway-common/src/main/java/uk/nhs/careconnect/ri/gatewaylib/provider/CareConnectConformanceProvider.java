@@ -58,9 +58,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
             ,String oauth2token
             ,String oauth2register
           ) {
-        log.info("oauth2authorize = "+oauth2authorize);
-        log.info("oauth2register = "+oauth2register);
-        log.info("oauth2token = "+oauth2token);
+        log.trace("oauth2authorize = "+oauth2authorize);
+        log.trace("oauth2register = "+oauth2register);
+        log.trace("oauth2token = "+oauth2token);
         this.oauth2authorize = oauth2authorize;
         this.oauth2register = oauth2register;
         this.oauth2token = oauth2token;
@@ -293,7 +293,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
             log.trace("Server CS not null");
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : retVal.getRest()) {
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
-                    log.info("restResourceComponent.getType - " + restResourceComponent.getType());
+                    log.trace("restResourceComponent.getType - " + restResourceComponent.getType());
                     for (CapabilityStatement.CapabilityStatementRestComponent nextRestServer : serverCapabilityStatement.getRest()) {
                         for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponentServer : nextRestServer.getResource()) {
                             if (restResourceComponent.getType().equals(restResourceComponentServer.getType())

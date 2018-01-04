@@ -33,16 +33,16 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
 
         valueSet.setStatus(valueSetEntity.getStatus());
 
-        log.info("ValueSetEntity name ="+valueSetEntity.getName());
+        log.trace("ValueSetEntity name ="+valueSetEntity.getName());
 
         if (valueSetEntity.getCodeSystem() != null) {
-            log.info("CodeSystem Id = "+valueSetEntity.getCodeSystem().getId());
+            log.trace("CodeSystem Id = "+valueSetEntity.getCodeSystem().getId());
         }
         // Hard coded to not attempt to retrieve SNOMED!
 
 
         for (ValueSetInclude includeEntity : valueSetEntity.getIncludes()) {
-            log.info("Compose CodeSystem : "+includeEntity.getSystem());
+            log.trace("Compose CodeSystem : "+includeEntity.getSystem());
             ValueSet.ConceptSetComponent include = valueSet.getCompose().addInclude().setSystem(includeEntity.getSystem());
 
             for (ValueSetIncludeConcept

@@ -97,7 +97,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 FhirContext ctx = FhirContext.forDstu3();
 
                 OperationOutcome outcome  = (OperationOutcome) theException.getOperationOutcome();
-                log.debug("Exception intercept. Diagnostic Response = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
+                log.error("InternalErrorException: Diagnostics = "+outcome.getIssueFirstRep().getDiagnostics()+ " "+outcome.getIssueFirstRep().getCode().getDisplay());
                 if (outcome.getIssueFirstRep().getCode().equals(OperationOutcome.IssueType.PROCESSING)) {
 
                     theServletResponse.setStatus(400);
@@ -191,17 +191,17 @@ public class ServerInterceptor extends InterceptorAdapter {
                 MediaType media = MediaType.parseMediaType(contentType);
                 // TODO improve the logic here
                 if (media.getSubtype() != null && !media.getSubtype().contains("xml") && !media.getSubtype().contains("fhir") && !media.getSubtype().contains("json") && !media.getSubtype().contains("plain")) {
-                    log.error("Unsupported media type: " + contentType);
+                    log.info("Unsupported media type: " + contentType);
                     throw new InvalidRequestException("Unsupported media type: sub " + contentType);
                 } else {
                     if (!contentType.contains("xml") && !contentType.contains("json")) {
-                        log.error("Unsupported media type: " + contentType);
+                        log.info("Unsupported media type: " + contentType);
                         throw new InvalidRequestException("Unsupported media type: content " + contentType);
                     }
                 }
 
         } catch (InvalidMediaTypeException e) {
-            log.error("Unsupported media type: " + contentType);
+            log.info("Unsupported media type: " + contentType);
             throw new InvalidRequestException("Unsupported media type: mime " + contentType);
         }
     }

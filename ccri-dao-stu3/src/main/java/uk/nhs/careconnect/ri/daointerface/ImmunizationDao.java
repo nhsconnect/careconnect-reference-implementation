@@ -166,7 +166,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             ConceptEntity code = conceptDao.findCode(immunisation.getVaccineCode().getCoding().get(0).getSystem(),immunisation.getVaccineCode().getCoding().get(0).getCode());
             if (code != null) { immunisationEntity.setVacinationCode(code); }
             else {
-                log.error("Code: Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
+                log.info("Code: Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
                         +" code = "+immunisation.getVaccineCode().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
@@ -177,7 +177,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             ConceptEntity code = conceptDao.findCode(immunisation.getReportOrigin().getCoding().get(0).getSystem(),immunisation.getReportOrigin().getCoding().get(0).getCode());
             if (code != null) { immunisationEntity.setReportOrigin(code); }
             else {
-                log.error("Code: Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
+                log.info("Code: Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
                         +" code = "+immunisation.getReportOrigin().getCoding().get(0).getCode());
 
                 throw new IllegalArgumentException("Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
