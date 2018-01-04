@@ -567,10 +567,18 @@ public class ObservationDao implements ObservationRepository {
         List<Predicate> predList = new LinkedList<Predicate>();
 
         if (patient != null) {
-            Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+            // KGM 4/1/2018 only search on patient id
+            if (daoutils.isNumeric(patient.getIdPart())) {
+                Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
-            Predicate p = builder.equal(join.get("id"),patient.getIdPart());
-            predList.add(p);
+                Predicate p = builder.equal(join.get("id"), patient.getIdPart());
+                predList.add(p);
+            } else {
+                Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
         }
         if (resid != null) {
             Predicate p = builder.equal(root.get("id"),resid.getValue());

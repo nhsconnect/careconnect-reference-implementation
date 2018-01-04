@@ -104,10 +104,18 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
         List<EpisodeOfCare> results = new ArrayList<EpisodeOfCare>();
 
         if (patient != null) {
-            Join<EpisodeOfCareEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+            // KGM 4/1/2018 only search on patient id
+            if (daoutils.isNumeric(patient.getIdPart())) {
+                Join<EpisodeOfCareEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
-            Predicate p = builder.equal(join.get("id"),patient.getIdPart());
-            predList.add(p);
+                Predicate p = builder.equal(join.get("id"), patient.getIdPart());
+                predList.add(p);
+            } else {
+                Join<EpisodeOfCareEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
         }
         if (resid != null) {
             Predicate p = builder.equal(root.get("id"),resid.getValue());

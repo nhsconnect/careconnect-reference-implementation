@@ -299,10 +299,18 @@ public class  EncounterDao implements EncounterRepository {
             predList.add(p);
         }
         if (patient != null) {
-            Join<EncounterEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+            // KGM 4/1/2018 only search on patient id
+            if (daoutils.isNumeric(patient.getIdPart())) {
+                Join<EncounterEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
-            Predicate p = builder.equal(join.get("id"),patient.getIdPart());
-            predList.add(p);
+                Predicate p = builder.equal(join.get("id"), patient.getIdPart());
+                predList.add(p);
+            } else {
+                Join<EncounterEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
         }
 
 

@@ -565,10 +565,16 @@ public class PatientDao implements PatientRepository {
         if (gender != null)
         {
             // KGM 2017-10-11 Fix for #3 https://github.com/nhsconnect/careconnect-reference-implementation/issues/3
-            Predicate p = builder.equal(
-                    builder.upper(root.get("gender"))
-                    ,builder.upper(builder.literal(gender.getValue()))
-            );
+            // KGM 4/1/2018 to support null search
+            Predicate p = null;
+            if (!gender.getValueNotNull().isEmpty()) {
+                p = builder.equal(
+                        builder.upper(root.get("gender"))
+                        , builder.upper(builder.literal(gender.getValue()))
+                );
+            } else {
+                p = builder.isNull(root.get("gender"));
+            }
             predList.add(p);
         }
 
