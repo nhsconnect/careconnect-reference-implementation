@@ -160,10 +160,12 @@ public class PatientResourceProvider implements IResourceProvider {
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
             bundle.addEntry().setResource(entry.getResource());
         }
+        /*
         resources = encounterResourceProvider.getEverythingOperation(patientId);
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
             bundle.addEntry().setResource(entry.getResource());
         }
+        */
         resources = immunizationResourceProvider.getEverythingOperation(patientId);
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
             bundle.addEntry().setResource(entry.getResource());
