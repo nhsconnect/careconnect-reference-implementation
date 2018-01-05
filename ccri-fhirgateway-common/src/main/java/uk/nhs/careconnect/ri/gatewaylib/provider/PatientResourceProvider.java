@@ -43,6 +43,15 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     OrganisationResourceProvider organistionProvider;
 
+    @Autowired
+    ConditionResourceProvider conditionResourceProvider;
+
+    @Autowired
+    ProcedureResourceProvider procedureResourceProvider;
+
+    @Autowired
+    ObservationResourceProvider observationResourceProvider;
+
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
     @Override
@@ -120,6 +129,19 @@ public class PatientResourceProvider implements IResourceProvider {
 
         }
         // Populate bundle with matching resources
+        Bundle resources = conditionResourceProvider.conditionEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = observationResourceProvider.observationEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = procedureResourceProvider.procedureEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+
         return bundle;
     }
 

@@ -1,18 +1,14 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -43,11 +39,24 @@ public class ConditionResourceProvider implements IResourceProvider {
     public Class<Condition> getResourceType() {
         return Condition.class;
     }
-
-
+    
+    public Bundle conditionEverythingOperation(
+            @IdParam IdType patientId
+    ) {
+        
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        List<Condition> conditions = searchCondition(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null,null);
+      
+        for (Condition condition : conditions) {
+            bundle.addEntry().setResource(condition);
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Read
-    public Condition getConditionById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Condition getConditionById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -57,7 +66,7 @@ public class ConditionResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRCondition",
-                    ExchangePattern.InOut,theRequest);
+                    ExchangePattern.InOut,httpRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -83,7 +92,7 @@ public class ConditionResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Condition> searchCondition(HttpServletRequest theRequest,
+    public List<Condition> searchCondition(HttpServletRequest httpRequest,
                                            @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_CATEGORY) TokenParam category
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
@@ -95,8 +104,20 @@ public class ConditionResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRCondition",
-                ExchangePattern.InOut,theRequest);
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream = (InputStream) template.sendBody("direct:FHIRCondition",
+                ExchangePattern.InOut,httpRequest);
+        } else {
+            Exchange exchange = template.send("direct:FHIRCondition",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?patient="+patient.getIdPart());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Condition");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+        }
 
         Bundle bundle = null;
 

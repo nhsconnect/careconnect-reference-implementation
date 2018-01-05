@@ -10,9 +10,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -44,20 +42,31 @@ public class ProcedureResourceProvider implements IResourceProvider {
         return Procedure.class;
     }
 
+    public Bundle procedureEverythingOperation(
+            @IdParam IdType patientId
+    ) {
 
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        List<Procedure> resources = searchProcedure(null, new ReferenceParam().setValue(patientId.getValue()),null, null,null);
+
+        for (Procedure resource : resources) {
+            bundle.addEntry().setResource(resource);
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Read
-    public Procedure getProcedureById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Procedure getProcedureById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
-
-
 
         Procedure procedure = null;
         IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRProcedure",
-                    ExchangePattern.InOut,theRequest);
+                    ExchangePattern.InOut,httpRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -83,7 +92,7 @@ public class ProcedureResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Procedure> searchProcedure(HttpServletRequest theRequest,
+    public List<Procedure> searchProcedure(HttpServletRequest httpRequest,
                                            @OptionalParam(name = Procedure.SP_PATIENT) ReferenceParam patient
              ,@OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
@@ -94,9 +103,20 @@ public class ProcedureResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRProcedure",
-                ExchangePattern.InOut,theRequest);
-
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream = (InputStream) template.sendBody("direct:FHIRProcedure",
+                ExchangePattern.InOut,httpRequest);
+        } else {
+            Exchange exchange = template.send("direct:FHIRProcedure",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?patient="+patient.getIdPart());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Procedure");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+        }
         Bundle bundle = null;
 
         Reader reader = new InputStreamReader(inputStream);

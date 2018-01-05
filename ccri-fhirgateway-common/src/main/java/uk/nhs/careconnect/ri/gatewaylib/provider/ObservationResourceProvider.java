@@ -10,9 +10,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -44,10 +42,23 @@ public class ObservationResourceProvider implements IResourceProvider {
         return Observation.class;
     }
 
+    public Bundle observationEverythingOperation(
+            @IdParam IdType patientId
+    ) {
 
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        List<Observation> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null);
+
+        for (Observation resource : resources) {
+            bundle.addEntry().setResource(resource);
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Read
-    public Observation getObservationById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Observation getObservationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -57,7 +68,7 @@ public class ObservationResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRObservation",
-                    ExchangePattern.InOut,theRequest);
+                    ExchangePattern.InOut,httpRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -83,7 +94,7 @@ public class ObservationResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Observation> searchObservation(HttpServletRequest theRequest,
+    public List<Observation> searchObservation(HttpServletRequest httpRequest,
                                                @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
                                                @OptionalParam(name= Observation.SP_CODE) TokenParam code,
                                                @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
@@ -95,8 +106,20 @@ public class ObservationResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRObservation",
-                ExchangePattern.InOut,theRequest);
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream =(InputStream) template.sendBody("direct:FHIRObservation",
+                ExchangePattern.InOut,httpRequest);
+         } else {
+            Exchange exchange = template.send("direct:FHIRObservation",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?patient="+patient.getIdPart());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Observation");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+        }
 
         Bundle bundle = null;
 
