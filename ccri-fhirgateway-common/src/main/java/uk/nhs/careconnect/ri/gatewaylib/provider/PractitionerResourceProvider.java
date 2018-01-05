@@ -9,9 +9,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -46,17 +44,28 @@ public class PractitionerResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Practitioner getPractitionerById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Practitioner getPractitionerById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
         Practitioner practitioner = null;
         IBaseResource resource = null;
         try {
-            InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRPractitioner",
-                    ExchangePattern.InOut,theRequest);
-
-
+            InputStream inputStream = null;
+            if (httpRequest != null) {
+                inputStream = (InputStream)  template.sendBody("direct:FHIRPractitioner",
+                    ExchangePattern.InOut,httpRequest);
+            } else {
+                Exchange exchange = template.send("direct:FHIRPractitioner",ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH, "/"+internalId.getValue());
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+            }
+            
             Reader reader = new InputStreamReader(inputStream);
             resource = ctx.newJsonParser().parseResource(reader);
         } catch(Exception ex) {
@@ -79,7 +88,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Practitioner> searchPractitioner(HttpServletRequest theRequest,
+    public List<Practitioner> searchPractitioner(HttpServletRequest httpRequest,
 
                                                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
@@ -92,7 +101,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
 
 
         InputStream inputStream = (InputStream) template.sendBody("direct:FHIRPractitioner",
-                ExchangePattern.InOut,theRequest);
+                ExchangePattern.InOut,httpRequest);
 
         Bundle bundle = null;
         Reader reader = new InputStreamReader(inputStream);

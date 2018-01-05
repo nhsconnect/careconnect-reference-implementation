@@ -9,9 +9,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -46,7 +44,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Organization getOrganizationById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Organization getOrganizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -54,9 +52,20 @@ public class OrganisationResourceProvider implements IResourceProvider {
         Organization organization = null;
         IBaseResource resource = null;
         try {
-            InputStream inputStream = (InputStream)  template.sendBody("direct:FHIROrganisation",
-                    ExchangePattern.InOut,theRequest);
-
+            InputStream inputStream = null;
+            if (httpRequest != null) {
+                inputStream = (InputStream) template.sendBody("direct:FHIROrganisation",
+                        ExchangePattern.InOut, httpRequest);
+            } else {
+                Exchange exchange = template.send("direct:FHIROrganisation",ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH, "/"+internalId.getValue());
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+            }
             Reader reader = new InputStreamReader(inputStream);
             resource = ctx.newJsonParser().parseResource(reader);
         } catch(Exception ex) {
@@ -80,7 +89,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Organization> searchOrganization(HttpServletRequest theRequest,
+    public List<Organization> searchOrganization(HttpServletRequest httpRequest,
                                                  @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name
             , @OptionalParam(name = Organization.SP_RES_ID) TokenParam resid
@@ -91,7 +100,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = (InputStream) template.sendBody("direct:FHIROrganisation",
-                ExchangePattern.InOut,theRequest);
+                ExchangePattern.InOut,httpRequest);
 
         Bundle bundle = null;
         Reader reader = new InputStreamReader(inputStream);

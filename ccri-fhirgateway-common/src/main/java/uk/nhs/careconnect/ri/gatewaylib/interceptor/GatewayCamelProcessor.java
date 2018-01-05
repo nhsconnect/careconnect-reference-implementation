@@ -19,67 +19,57 @@ public class GatewayCamelProcessor implements Processor
     @Override
     public void process(Exchange exchange) throws Exception {
 
-        HttpServletRequest theRequest = (HttpServletRequest) exchange.getIn().getBody();
-
-        /*
-        Enumeration<String> headers = theRequest.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = headers.nextElement();
-            exchange.getIn().setHeader(header,theRequest.getHeader(header));
-        }
-        */
-
-        exchange.getIn().setBody(theRequest.getInputStream());
-
-        exchange.getIn().removeHeaders("*" );
-
-        exchange.getIn().setHeader(Exchange.HTTP_METHOD, theRequest.getMethod());
 
 
+        if (exchange.getIn().getBody() instanceof HttpServletRequest) {
+            // This is a result of a passthrough operation in the resource provider.
 
+            HttpServletRequest httpRequest = (HttpServletRequest) exchange.getIn().getBody();
 
+            exchange.getIn().removeHeaders("*" );
 
-        if (theRequest.getQueryString() != null) {
+            exchange.getIn().setBody(httpRequest.getInputStream());
 
-            //log.info("QueryString = "+theRequest.getQueryString());
-            List<NameValuePair> params = URLEncodedUtils.parse(new URI("http://dummy?"+theRequest.getQueryString()), "UTF-8");
+            exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpRequest.getMethod());
 
-            ListIterator paramlist = params.listIterator();
-            while (paramlist.hasNext()) {
-                // Remove format. This causes errors in the server (internally we work in JSON only)
-                // KGM 3/1/2018
-                NameValuePair param = (NameValuePair) paramlist.next();
-               // log.info("QS Name ="+param.getName()+" Value="+param.getValue());
-                if (param.getName().equals("_format")) paramlist.remove();
+            if (httpRequest.getQueryString() != null) {
 
+                //log.info("QueryString = "+httpRequest.getQueryString());
+                List<NameValuePair> params = URLEncodedUtils.parse(new URI("http://dummy?" + httpRequest.getQueryString()), "UTF-8");
+
+                ListIterator paramlist = params.listIterator();
+                while (paramlist.hasNext()) {
+                    // Remove format. This causes errors in the server (internally we work in JSON only)
+                    // KGM 3/1/2018
+                    NameValuePair param = (NameValuePair) paramlist.next();
+                    // log.info("QS Name ="+param.getName()+" Value="+param.getValue());
+                    if (param.getName().equals("_format")) paramlist.remove();
+
+                }
+                String queryString = URLEncodedUtils.format(params, "UTF-8");
+                //log.info("New QS="+queryString);
+
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, queryString);
+            } else {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
             }
-            String queryString =  URLEncodedUtils.format(params,"UTF-8");
-            //log.info("New QS="+queryString);
 
-            exchange.getIn().setHeader(Exchange.HTTP_QUERY, queryString);
-        } else {
-            exchange.getIn().setHeader(Exchange.HTTP_QUERY,null);
+
+            exchange.getIn().setHeader(Exchange.HTTP_PATH, httpRequest.getPathInfo());
+
+            if (httpRequest.getRemoteAddr() !=null && !httpRequest.getRemoteAddr().isEmpty()) {
+                exchange.getIn().setHeader("X-Forwarded-For", httpRequest.getRemoteAddr());
+            }
+            if (httpRequest.getRemoteHost() !=null && !httpRequest.getRemoteHost().isEmpty()) {
+                exchange.getIn().setHeader("X-Forwarded-Host", httpRequest.getRemoteHost());
+            }
         }
-
-
-        exchange.getIn().setHeader(Exchange.HTTP_PATH,  theRequest.getPathInfo());
 
         exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {
             exchange.getIn().setHeader("X-Request-ID",exchange.getExchangeId());
         }
-
-        if (theRequest.getRemoteAddr() !=null && !theRequest.getRemoteAddr().isEmpty()) {
-            exchange.getIn().setHeader("X-Forwarded-For", theRequest.getRemoteAddr());
-        }
-        if (theRequest.getRemoteHost() !=null && !theRequest.getRemoteHost().isEmpty()) {
-            exchange.getIn().setHeader("X-Forwarded-Host", theRequest.getRemoteHost());
-        }
-
-
-
-
 
     }
 

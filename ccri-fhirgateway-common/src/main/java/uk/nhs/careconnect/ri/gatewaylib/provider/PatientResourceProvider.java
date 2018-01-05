@@ -1,18 +1,18 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.Constants;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -37,6 +37,12 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    PractitionerResourceProvider practitionerProvider;
+
+    @Autowired
+    OrganisationResourceProvider organistionProvider;
+
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
     @Override
@@ -47,15 +53,27 @@ public class PatientResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Patient getPatientById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public Patient getPatientById(HttpServletRequest request, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
         Patient patient = null;
         IBaseResource resource = null;
          try {
-            InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRPatient",
-                    ExchangePattern.InOut,theRequest);
+            InputStream inputStream = null;
+            if (request != null) {
+                inputStream = (InputStream) template.sendBody("direct:FHIRPatient",
+                        ExchangePattern.InOut, request);
+            } else {
+                Exchange exchange = template.send("direct:FHIRPatient",ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH, "/"+internalId.getValue());
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+            }
             Reader reader = new InputStreamReader(inputStream);
             resource = ctx.newJsonParser().parseResource(reader);
         } catch(Exception ex) {
@@ -78,9 +96,35 @@ public class PatientResourceProvider implements IResourceProvider {
         return patient;
     }
 
+    @Operation(name = "everything", idempotent = true, bundleType= BundleTypeEnum.SEARCHSET)
+    public Bundle patientEverythingOperation(
+            @IdParam IdType patientId
+    ) {
+        HttpServletRequest request =  null; //new HttpServletRequest();
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        Patient patient = getPatientById(request, patientId);
+        if (patient !=null) {
+            bundle.addEntry().setResource(patient);
+            for (Reference gp : patient.getGeneralPractitioner()) {
+
+                Practitioner practitioner = practitionerProvider.getPractitionerById(null, new IdType(gp.getReference()));
+                if (practitioner != null) bundle.addEntry().setResource(practitioner);
+            }
+            Reference prac = patient.getManagingOrganization();
+            if (prac!=null) {
+
+                Organization organization = organistionProvider.getOrganizationById(null, new IdType(prac.getReference()));
+                if (organization != null) bundle.addEntry().setResource(organization);
+            }
+
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Search
-    public List<Patient> searchPatient(HttpServletRequest theRequest,
+    public List<Patient> searchPatient(HttpServletRequest request,
 
                                        @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
                                        @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
@@ -99,7 +143,7 @@ public class PatientResourceProvider implements IResourceProvider {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = (InputStream) template.sendBody("direct:FHIRPatient",
-                ExchangePattern.InOut,theRequest);
+                ExchangePattern.InOut,request);
 
         Bundle bundle = null;
 
