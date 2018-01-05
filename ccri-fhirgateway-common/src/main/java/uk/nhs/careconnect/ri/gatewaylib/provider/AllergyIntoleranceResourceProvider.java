@@ -10,13 +10,8 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
-import org.hl7.fhir.dstu3.model.AllergyIntolerance;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.apache.camel.*;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +42,23 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
         return AllergyIntolerance.class;
     }
 
+    public Bundle getEverythingOperation(
+            @IdParam IdType patientId
+    ) {
 
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        List<AllergyIntolerance> resources = searchAllergyIntolerance(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
+
+        for (AllergyIntolerance resource : resources) {
+            bundle.addEntry().setResource(resource);
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Read
-    public AllergyIntolerance getAllergyIntoleranceById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public AllergyIntolerance getAllergyIntoleranceById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -60,7 +68,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRAllergyIntolerance",
-                    ExchangePattern.InOut,theRequest);
+                    ExchangePattern.InOut,httpRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -86,7 +94,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<AllergyIntolerance> searchAllergyIntolerance(HttpServletRequest theRequest,
+    public List<AllergyIntolerance> searchAllergyIntolerance(HttpServletRequest httpRequest,
                                                              @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
@@ -97,9 +105,20 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRAllergyIntolerance",
-                ExchangePattern.InOut,theRequest);
-
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream = (InputStream) template.sendBody("direct:FHIRAllergyIntolerance",
+                ExchangePattern.InOut,httpRequest);
+        } else {
+            Exchange exchange = template.send("direct:FHIRAllergyIntolerance",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?patient="+patient.getIdPart());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "AllergyIntolerance");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+        }
         Bundle bundle = null;
 
         Reader reader = new InputStreamReader(inputStream);

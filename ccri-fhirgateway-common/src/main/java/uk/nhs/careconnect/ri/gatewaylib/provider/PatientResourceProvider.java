@@ -52,6 +52,21 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     ObservationResourceProvider observationResourceProvider;
 
+    @Autowired
+    AllergyIntoleranceResourceProvider allergyIntoleranceResourceProvider;
+
+    @Autowired
+    EncounterResourceProvider encounterResourceProvider;
+
+    @Autowired
+    ImmunizationResourceProvider immunizationResourceProvider;
+
+    @Autowired
+    MedicationRequestResourceProvider medicationRequestResourceProvider;
+
+    @Autowired
+    MedicationStatementResourceProvider medicationStatementResourceProvider;
+
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
     @Override
@@ -138,6 +153,26 @@ public class PatientResourceProvider implements IResourceProvider {
             bundle.addEntry().setResource(entry.getResource());
         }
         resources = procedureResourceProvider.procedureEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = allergyIntoleranceResourceProvider.getEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = encounterResourceProvider.getEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = immunizationResourceProvider.getEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = medicationRequestResourceProvider.getEverythingOperation(patientId);
+        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+            bundle.addEntry().setResource(entry.getResource());
+        }
+        resources = medicationStatementResourceProvider.getEverythingOperation(patientId);
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
             bundle.addEntry().setResource(entry.getResource());
         }

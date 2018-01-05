@@ -10,9 +10,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -44,10 +42,23 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         return MedicationRequest.class;
     }
 
+    public Bundle getEverythingOperation(
+            @IdParam IdType patientId
+    ) {
 
+        Bundle bundle = new Bundle();
+        bundle.setType(Bundle.BundleType.SEARCHSET);
+        List<MedicationRequest> resources = searchMedicationRequest(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null,null);
+
+        for (MedicationRequest resource : resources) {
+            bundle.addEntry().setResource(resource);
+        }
+        // Populate bundle with matching resources
+        return bundle;
+    }
 
     @Read
-    public MedicationRequest getMedicationRequestById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public MedicationRequest getMedicationRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -57,7 +68,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = (InputStream)  template.sendBody("direct:FHIRMedicationRequest",
-                    ExchangePattern.InOut,theRequest);
+                    ExchangePattern.InOut,httpRequest);
 
 
             Reader reader = new InputStreamReader(inputStream);
@@ -83,7 +94,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<MedicationRequest> searchMedicationRequest(HttpServletRequest theRequest,
+    public List<MedicationRequest> searchMedicationRequest(HttpServletRequest httpRequest,
                                                            @OptionalParam(name = MedicationRequest.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
@@ -95,9 +106,20 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRMedicationRequest",
-                ExchangePattern.InOut,theRequest);
-
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream = (InputStream) template.sendBody("direct:FHIRMedicationRequest",
+                ExchangePattern.InOut,httpRequest);
+        } else {
+            Exchange exchange = template.send("direct:FHIRMedicationRequest",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?patient="+patient.getIdPart());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "MedicationRequest");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+        }
         Bundle bundle = null;
 
         Reader reader = new InputStreamReader(inputStream);
