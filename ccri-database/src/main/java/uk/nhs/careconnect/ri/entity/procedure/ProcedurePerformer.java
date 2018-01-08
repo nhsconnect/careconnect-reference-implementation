@@ -30,7 +30,7 @@ public class ProcedurePerformer {
     @ManyToOne
     @JoinColumn(name="ACTOR_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_PRACTITIONER"))
     @LazyCollection(LazyCollectionOption.TRUE)
-    private PractitionerEntity actorPractioner;
+    private PractitionerEntity actorPractitioner;
 
     @ManyToOne
     @JoinColumn(name="ACTOR_ORGNANISATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_ORGNANISATION"))
@@ -62,8 +62,8 @@ public class ProcedurePerformer {
         return onBehalfOrganisation;
     }
 
-    public PractitionerEntity getActorPractioner() {
-        return actorPractioner;
+    public PractitionerEntity getActorPractitioner() {
+        return actorPractitioner;
     }
 
     public ProcedureEntity getProcedure() {
@@ -75,8 +75,8 @@ public class ProcedurePerformer {
         return this;
     }
 
-    public ProcedurePerformer setActorPractioner(PractitionerEntity actorPractioner) {
-        this.actorPractioner = actorPractioner;
+    public ProcedurePerformer setActorPractitioner(PractitionerEntity actorPractitioner) {
+        this.actorPractitioner = actorPractitioner;
         return this;
     }
 

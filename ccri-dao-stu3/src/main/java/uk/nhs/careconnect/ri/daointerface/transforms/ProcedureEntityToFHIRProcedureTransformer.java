@@ -103,9 +103,9 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
             if (performer.getActorOrganisation() != null) {
                 actor = new Reference("Organisation/"+performer.getActorOrganisation().getId());
                 actor.setDisplay(performer.getActorOrganisation().getName());
-            } else if (performer.getActorPractioner() != null) {
-                actor = new Reference("Practitioner/"+performer.getActorPractioner().getId());
-                actor.setDisplay(performer.getActorPractioner().getNames().get(0).getDisplayName());
+            } else if (performer.getActorPractitioner() != null) {
+                actor = new Reference("Practitioner/"+performer.getActorPractitioner().getId());
+                actor.setDisplay(performer.getActorPractitioner().getNames().get(0).getDisplayName());
             }
 
             Procedure.ProcedurePerformerComponent performerComponent = procedure.addPerformer();

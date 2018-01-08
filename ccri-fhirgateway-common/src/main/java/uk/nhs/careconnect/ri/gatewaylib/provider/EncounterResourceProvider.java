@@ -44,13 +44,20 @@ public class EncounterResourceProvider implements IResourceProvider {
 
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
+        Bundle bundle = completeBundle.getBundle();
         bundle.setType(Bundle.BundleType.SEARCHSET);
         List<Encounter> resources = searchEncounter(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
 
         for (Encounter resource : resources) {
+            for (Encounter.EncounterParticipantComponent component : resource.getParticipant()) {
+                Reference ref = component.getIndividual();
+                if (ref.getReference().contains("Practitioner")) {
+                    completeBundle.addGetPractitioner(new IdType(ref.getReference()));
+                }
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources

@@ -93,7 +93,7 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
             Encounter.EncounterParticipantComponent participantComponent = encounter.addParticipant();
 
             participantComponent
-                    .setIndividual(new Reference("Practioner/"+encounterEntity.getParticipant().getId()))
+                    .setIndividual(new Reference("Practitioner/"+encounterEntity.getParticipant().getId()))
                     .getIndividual().setDisplay(encounterEntity.getParticipant().getNames().get(0).getDisplayName());
 
             if (encounterEntity.getParticipantType() != null) {

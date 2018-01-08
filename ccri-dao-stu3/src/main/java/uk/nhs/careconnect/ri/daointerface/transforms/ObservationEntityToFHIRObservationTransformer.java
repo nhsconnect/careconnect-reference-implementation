@@ -88,7 +88,7 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             switch (performer.getPerformerType()) {
                 case Practitioner:
                     if (performer.getPerformerPractitioner() !=null) {
-                        observation.getPerformer().add(new Reference("Practioner/" + performer.getPerformerPractitioner().getId())
+                        observation.getPerformer().add(new Reference("Practitioner/" + performer.getPerformerPractitioner().getId())
                                 .setDisplay(performer.getPerformerPractitioner().getNames().get(0).getDisplayName()));
                     }
                     break;

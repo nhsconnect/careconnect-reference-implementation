@@ -124,24 +124,20 @@ public class PatientResourceProvider implements IResourceProvider {
     public Bundle patientEverythingOperation(
             @IdParam IdType patientId
     ) {
-        HttpServletRequest request =  null; //new HttpServletRequest();
-        Bundle bundle = new Bundle();
+        HttpServletRequest request =  null;
+        CompleteBundle completeBundle = new CompleteBundle(practitionerProvider, organistionProvider);
+        Bundle bundle = completeBundle.getBundle();
         bundle.setType(Bundle.BundleType.SEARCHSET);
         Patient patient = getPatientById(request, patientId);
         if (patient !=null) {
             bundle.addEntry().setResource(patient);
             for (Reference gp : patient.getGeneralPractitioner()) {
-
-                Practitioner practitioner = practitionerProvider.getPractitionerById(null, new IdType(gp.getReference()));
-                if (practitioner != null) bundle.addEntry().setResource(practitioner);
+                completeBundle.addGetPractitioner(new IdType(gp.getReference()));
             }
             Reference prac = patient.getManagingOrganization();
             if (prac!=null) {
-
-                Organization organization = organistionProvider.getOrganizationById(null, new IdType(prac.getReference()));
-                if (organization != null) bundle.addEntry().setResource(organization);
+                completeBundle.addGetOrganisation(new IdType(prac.getReference()));
             }
-
         }
         // Populate bundle with matching resources
         Bundle resources = conditionResourceProvider.conditionEverythingOperation(patientId);
@@ -161,10 +157,13 @@ public class PatientResourceProvider implements IResourceProvider {
             bundle.addEntry().setResource(entry.getResource());
         }
 
-        resources = encounterResourceProvider.getEverythingOperation(patientId);
+        encounterResourceProvider.getEverythingOperation(patientId,completeBundle);
+        /*
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
+
             bundle.addEntry().setResource(entry.getResource());
         }
+        */
 
         resources = immunizationResourceProvider.getEverythingOperation(patientId);
         for (Bundle.BundleEntryComponent entry : resources.getEntry()) {

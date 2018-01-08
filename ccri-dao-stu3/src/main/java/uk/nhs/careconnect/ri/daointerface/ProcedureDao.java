@@ -239,7 +239,7 @@ public class ProcedureDao implements ProcedureRepository {
                 procedurePerformer.setActorOrganisation(organisationDao.readEntity(ctx, new IdType(performer.getActor().getReference())));
             }
              if (performer.getActor().getReference().contains("Practitioner")) {
-                 procedurePerformer.setActorPractioner(practitionerDao.readEntity(ctx, new IdType(performer.getActor().getReference())));
+                 procedurePerformer.setActorPractitioner(practitionerDao.readEntity(ctx, new IdType(performer.getActor().getReference())));
              }
 
             procedurePerformer.setProcedure(procedureEntity);

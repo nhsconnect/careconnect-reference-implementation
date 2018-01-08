@@ -44,7 +44,7 @@
   "participant": [
     {
       "individual": {
-        "reference": "Practioner/200001",
+        "reference": "Practitioner/200001",
         "display": "Dr. Samuel Darwin"
       }
     }
