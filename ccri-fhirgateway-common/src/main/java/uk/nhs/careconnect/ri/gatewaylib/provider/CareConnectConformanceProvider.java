@@ -353,6 +353,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "MedicationRequest":
                 case "MedicationStatement":
                 case "AllergyIntolerance":
+                case "Bundle":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
