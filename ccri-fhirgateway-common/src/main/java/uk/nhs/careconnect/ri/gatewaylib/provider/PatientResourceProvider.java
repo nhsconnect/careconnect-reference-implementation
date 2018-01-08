@@ -67,6 +67,9 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     MedicationStatementResourceProvider medicationStatementResourceProvider;
 
+    @Autowired
+    LocationResourceProvider locationProvider;
+
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
     @Override
@@ -125,7 +128,7 @@ public class PatientResourceProvider implements IResourceProvider {
             @IdParam IdType patientId
     ) {
         HttpServletRequest request =  null;
-        CompleteBundle completeBundle = new CompleteBundle(practitionerProvider, organistionProvider);
+        CompleteBundle completeBundle = new CompleteBundle(practitionerProvider, organistionProvider, locationProvider);
         Bundle bundle = completeBundle.getBundle();
         bundle.setType(Bundle.BundleType.SEARCHSET);
         Patient patient = getPatientById(request, patientId);
@@ -140,43 +143,21 @@ public class PatientResourceProvider implements IResourceProvider {
             }
         }
         // Populate bundle with matching resources
-        Bundle resources = conditionResourceProvider.conditionEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        resources = observationResourceProvider.observationEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        resources = procedureResourceProvider.procedureEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        resources = allergyIntoleranceResourceProvider.getEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
+        conditionResourceProvider.conditionEverythingOperation(patientId,completeBundle);
+
+        observationResourceProvider.observationEverythingOperation(patientId,completeBundle);
+
+        procedureResourceProvider.procedureEverythingOperation(patientId,completeBundle);
+
+        allergyIntoleranceResourceProvider.getEverythingOperation(patientId,completeBundle);
 
         encounterResourceProvider.getEverythingOperation(patientId,completeBundle);
-        /*
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
 
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        */
+        immunizationResourceProvider.getEverythingOperation(patientId,completeBundle);
 
-        resources = immunizationResourceProvider.getEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        resources = medicationRequestResourceProvider.getEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
-        resources = medicationStatementResourceProvider.getEverythingOperation(patientId);
-        for (Bundle.BundleEntryComponent entry : resources.getEntry()) {
-            bundle.addEntry().setResource(entry.getResource());
-        }
+        medicationRequestResourceProvider.getEverythingOperation(patientId,completeBundle);
+
+        medicationStatementResourceProvider.getEverythingOperation(patientId,completeBundle);
 
         return bundle;
     }

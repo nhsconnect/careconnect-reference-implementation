@@ -44,13 +44,23 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
 
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
-        bundle.setType(Bundle.BundleType.SEARCHSET);
+        Bundle bundle = completeBundle.getBundle();
+
         List<MedicationRequest> resources = searchMedicationRequest(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null,null);
 
         for (MedicationRequest resource : resources) {
+            if (resource.getRequester()!= null && resource.getRequester().getAgent() != null) {
+                Reference reference = resource.getRequester().getAgent();
+                if (reference.getReference().contains("Practitioner")) {
+                    completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+                }
+                if (reference.getReference().contains("Organization")) {
+                    completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+                }
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources

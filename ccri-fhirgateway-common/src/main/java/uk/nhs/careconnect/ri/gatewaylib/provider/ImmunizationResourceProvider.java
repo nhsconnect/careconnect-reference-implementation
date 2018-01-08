@@ -44,13 +44,17 @@ public class ImmunizationResourceProvider implements IResourceProvider {
 
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
-        bundle.setType(Bundle.BundleType.SEARCHSET);
+        Bundle bundle = completeBundle.getBundle();
+
         List<Immunization> resources = searchImmunization(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
 
         for (Immunization resource : resources) {
+            if (resource.getLocation()!=null) {
+                completeBundle.addGetLocation(new IdType(resource.getLocation().getReference()));
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources

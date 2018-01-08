@@ -44,13 +44,23 @@ public class ProcedureResourceProvider implements IResourceProvider {
 
     public Bundle procedureEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
+        Bundle bundle = completeBundle.getBundle();
         bundle.setType(Bundle.BundleType.SEARCHSET);
         List<Procedure> resources = searchProcedure(null, new ReferenceParam().setValue(patientId.getValue()),null, null,null);
 
         for (Procedure resource : resources) {
+            for (Procedure.ProcedurePerformerComponent performerComponent : resource.getPerformer()) {
+                Reference reference = performerComponent.getActor();
+                if (reference.getReference().contains("Practitioner")) {
+                    completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+                }
+                if (reference.getReference().contains("Organization")) {
+                    completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+                }
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources

@@ -44,13 +44,22 @@ public class ObservationResourceProvider implements IResourceProvider {
 
     public Bundle observationEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
-        bundle.setType(Bundle.BundleType.SEARCHSET);
+        Bundle bundle = completeBundle.getBundle();
+
         List<Observation> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null);
 
         for (Observation resource : resources) {
+            for (Reference reference : resource.getPerformer()) {
+                if (reference.getReference().contains("Practitioner")) {
+                    completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+                }
+                if (reference.getReference().contains("Organization")) {
+                    completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+                }
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources

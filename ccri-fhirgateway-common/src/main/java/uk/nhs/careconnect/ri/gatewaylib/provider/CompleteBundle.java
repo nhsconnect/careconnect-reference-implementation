@@ -15,17 +15,22 @@ public class CompleteBundle {
 
     private Map<String,Organization> organisationMap;
 
+    private Map<String,Location> locationMap;
+
     PractitionerResourceProvider practitionerProvider;
 
     OrganisationResourceProvider organistionProvider;
 
-    public CompleteBundle(PractitionerResourceProvider practitionerProvider,OrganisationResourceProvider organistionProvider) {
+    LocationResourceProvider locationProvider;
+
+    public CompleteBundle(PractitionerResourceProvider practitionerProvider,OrganisationResourceProvider organistionProvider,  LocationResourceProvider locationProvider) {
         bundle = new Bundle( );
         practitionerMap = new HashMap<>();
 
         organisationMap = new HashMap<>();
         this.practitionerProvider = practitionerProvider;
         this.organistionProvider = organistionProvider;
+        this.locationProvider = locationProvider;
     }
 
     public Bundle getBundle() {
@@ -53,23 +58,40 @@ public class CompleteBundle {
     }
 
     public void addGetPractitioner(IdType id) {
-        Practitioner practitioner = practitionerMap.get(id.getIdPart());
-        if (practitioner == null) {
-            practitioner = practitionerProvider.getPractitionerById(null, id);
-            if (practitioner != null) {
-                bundle.addEntry().setResource(practitioner);
-                practitionerMap.put(id.getIdPart(),practitioner);
+        if (id !=null) {
+            Practitioner practitioner = practitionerMap.get(id.getIdPart());
+            if (practitioner == null) {
+                practitioner = practitionerProvider.getPractitionerById(null, id);
+                if (practitioner != null) {
+                    bundle.addEntry().setResource(practitioner);
+                    practitionerMap.put(id.getIdPart(), practitioner);
+                }
             }
         }
     }
 
     public void addGetOrganisation(IdType id) {
-        Organization organization = organisationMap.get(id.getIdPart());
-        if (organization == null) {
-            organization = organistionProvider.getOrganizationById(null, id);
-            if (organization != null) {
-                bundle.addEntry().setResource(organization);
-                organisationMap.put(id.getIdPart(),organization);
+        if (id != null) {
+            Organization organization = organisationMap.get(id.getIdPart());
+            if (organization == null) {
+                organization = organistionProvider.getOrganizationById(null, id);
+                if (organization != null) {
+                    bundle.addEntry().setResource(organization);
+                    organisationMap.put(id.getIdPart(), organization);
+                }
+            }
+        }
+    }
+
+    public void addGetLocation(IdType id) {
+        if (id != null) {
+            Location location = locationMap.get(id.getIdPart());
+            if (location == null) {
+                location = locationProvider.getLocationById(null, id);
+                if (location != null) {
+                    bundle.addEntry().setResource(location);
+                    locationMap.put(id.getIdPart(), location);
+                }
             }
         }
     }

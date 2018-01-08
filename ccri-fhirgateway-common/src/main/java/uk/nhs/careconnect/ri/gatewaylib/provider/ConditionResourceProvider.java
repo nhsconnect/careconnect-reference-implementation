@@ -42,13 +42,17 @@ public class ConditionResourceProvider implements IResourceProvider {
     
     public Bundle conditionEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
         
         Bundle bundle = new Bundle();
-        bundle.setType(Bundle.BundleType.SEARCHSET);
+
         List<Condition> conditions = searchCondition(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null,null);
       
         for (Condition condition : conditions) {
+            if (condition.getAsserter() != null && condition.getAsserter().getReference() != null) {
+                completeBundle.addGetPractitioner(new IdType(condition.getAsserter().getReference()));
+            }
             bundle.addEntry().setResource(condition);
         }
         // Populate bundle with matching resources

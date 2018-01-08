@@ -44,13 +44,17 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
 
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
+            ,CompleteBundle completeBundle
     ) {
 
-        Bundle bundle = new Bundle();
-        bundle.setType(Bundle.BundleType.SEARCHSET);
+        Bundle bundle =completeBundle.getBundle();
+
         List<AllergyIntolerance> resources = searchAllergyIntolerance(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
 
         for (AllergyIntolerance resource : resources) {
+            if (resource.getAsserter() != null && resource.getAsserter().getReference() != null) {
+                completeBundle.addGetPractitioner(new IdType(resource.getAsserter().getReference()));
+            }
             bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources
