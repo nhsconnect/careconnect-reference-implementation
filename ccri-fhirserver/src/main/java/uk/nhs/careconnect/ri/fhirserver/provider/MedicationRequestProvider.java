@@ -63,6 +63,26 @@ public class MedicationRequestProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam MedicationRequest prescription) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        MedicationRequest newMedicationRequest = prescriptionDao.create(ctx,prescription, null,null);
+        method.setId(newMedicationRequest.getIdElement());
+        method.setResource(newMedicationRequest);
+
+
+
+        return method;
+    }
+
     @Search
     public List<MedicationRequest> search(HttpServletRequest theRequest,
                                           @OptionalParam(name = MedicationRequest.SP_PATIENT) ReferenceParam patient

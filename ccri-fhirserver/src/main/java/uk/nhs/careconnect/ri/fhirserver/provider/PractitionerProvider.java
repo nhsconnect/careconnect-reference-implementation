@@ -55,6 +55,24 @@ public class PractitionerProvider implements ICCResourceProvider {
 
         return method;
     }
+
+    @Create
+    public MethodOutcome createPractitioner(HttpServletRequest theRequest, @ResourceParam Practitioner practitioner) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        Practitioner newPractitioner = practitionerDao.create(ctx,practitioner, null, null);
+        method.setId(newPractitioner.getIdElement());
+        method.setResource(newPractitioner);
+
+        return method;
+    }
+
     @Read
     public Practitioner getPractitioner
             (@IdParam IdType internalId) {

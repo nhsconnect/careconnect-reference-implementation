@@ -228,8 +228,8 @@ public class ConditionDao implements ConditionRepository {
                 em.persist(conditionCategory);
             }
             else {
-                log.info("Category Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
-                throw new IllegalArgumentException("Missing Category System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+                log.info("Category Code: Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing Category System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
             }
         }
 

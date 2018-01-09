@@ -62,14 +62,35 @@ public class ProcedureProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Procedure procedure) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        Procedure newProcedure = procedureDao.create(ctx,procedure, null,null);
+        method.setId(newProcedure.getIdElement());
+        method.setResource(newProcedure);
+
+
+
+        return method;
+    }
+
     @Search
     public List<Procedure> search(HttpServletRequest theRequest,
                                   @OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
+            , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Procedure.SP_RES_ID) TokenParam resid
                                   ) {
-        return procedureDao.search(ctx, patient, date, subject,null,resid);
+        return procedureDao.search(ctx, patient, date, subject,identifier,resid);
     }
 
     @Read()

@@ -60,6 +60,26 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam AllergyIntolerance allergy) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        AllergyIntolerance newAllergyIntolerance = allergyDao.create(ctx,allergy, null,null);
+        method.setId(newAllergyIntolerance.getIdElement());
+        method.setResource(newAllergyIntolerance);
+
+
+
+        return method;
+    }
+
     @Search
     public List<AllergyIntolerance> search(HttpServletRequest theRequest,
                                            @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient

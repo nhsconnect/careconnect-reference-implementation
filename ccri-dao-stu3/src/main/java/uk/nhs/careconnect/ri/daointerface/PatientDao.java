@@ -252,7 +252,7 @@ public class PatientDao implements PatientRepository {
             }
             if (patientIdentifier == null)  patientIdentifier = new PatientIdentifier();
 
-            patientIdentifier.setValue(identifier.getValue());
+            patientIdentifier.setValue(daoutils.removeSpace(identifier.getValue()));
             patientIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             patientIdentifier.setPatient(patientEntity);
             em.persist(patientIdentifier);
@@ -424,7 +424,7 @@ public class PatientDao implements PatientRepository {
 
             Predicate pvalue = builder.like(
                     builder.upper(join.get("value")),
-                    builder.upper(builder.literal(identifier.getValue()))
+                    builder.upper(builder.literal(daoutils.removeSpace(identifier.getValue())))
             );
             if (identifier.getSystem() != null) {
                 Predicate psystem = builder.like(

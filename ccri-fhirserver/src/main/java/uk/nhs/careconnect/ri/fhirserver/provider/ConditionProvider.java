@@ -63,6 +63,26 @@ public class ConditionProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Condition condition) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        Condition newCondition = conditionDao.create(ctx,condition, null,null);
+        method.setId(newCondition.getIdElement());
+        method.setResource(newCondition);
+
+
+
+        return method;
+    }
+
     @Search
     public List<Condition> search(HttpServletRequest theRequest,
                                   @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient

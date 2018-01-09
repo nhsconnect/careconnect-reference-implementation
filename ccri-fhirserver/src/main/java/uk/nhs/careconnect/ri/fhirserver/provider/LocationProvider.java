@@ -61,6 +61,23 @@ public class LocationProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome createLocation(HttpServletRequest theRequest, @ResourceParam Location location) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        Location newLocation = locationDao.create(ctx, location,null,null);
+        method.setId(newLocation.getIdElement());
+        method.setResource(newLocation);
+
+        return method;
+    }
+
     @Search
     public List<Location> searchLocation(HttpServletRequest theRequest,
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,

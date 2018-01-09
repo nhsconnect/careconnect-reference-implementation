@@ -88,6 +88,30 @@ public class PatientProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam Patient patient) {
+
+        log.debug("Update Patient Provider called");
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+        Patient newPatient = null;
+        try {
+            newPatient = patientDao.update(ctx, patient, null,null);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            method.setId(newPatient.getIdElement());
+            method.setResource(newPatient);
+        }
+
+        log.debug("called create Patient method");
+
+        return method;
+    }
+
     @Search
     public List<Patient> searchPatient(HttpServletRequest theRequest,
 

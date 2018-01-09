@@ -46,7 +46,7 @@ public class ObservationProvider implements ICCResourceProvider {
 
 
     @Update
-    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
 
         MethodOutcome method = new MethodOutcome();
@@ -56,6 +56,23 @@ public class ObservationProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
         Observation newObservation = observationDao.save(ctx,observation,theId,theConditional);
+        method.setId(newObservation.getIdElement());
+        method.setResource(newObservation);
+
+        return method;
+    }
+
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Observation observation) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        Observation newObservation = observationDao.save(ctx,observation,null,null);
         method.setId(newObservation.getIdElement());
         method.setResource(newObservation);
 

@@ -10,6 +10,8 @@ public final class daoutils {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
+    public static String removeSpace(String s) { return s.replaceAll("\\s+",""); }
+
     public static Enumerations.AdministrativeGender getGender(String gender) {
 
             switch (gender)

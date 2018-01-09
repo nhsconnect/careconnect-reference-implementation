@@ -58,6 +58,26 @@ public class EncounterProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Encounter encounter) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        Encounter newEncounter = encounterDao.create(ctx, encounter, null, null);
+        method.setId(newEncounter.getIdElement());
+        method.setResource(newEncounter);
+
+
+
+        return method;
+    }
+
     @Search
     public List<Encounter> search(HttpServletRequest theRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient

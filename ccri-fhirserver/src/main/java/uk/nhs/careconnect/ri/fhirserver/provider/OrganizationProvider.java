@@ -58,6 +58,23 @@ public class OrganizationProvider implements ICCResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome createOrganization(HttpServletRequest theRequest,@ResourceParam Organization organization) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        Organization newOrganization = organisationDao.create(ctx, organization,null,null);
+        method.setId(newOrganization.getIdElement());
+        method.setResource(newOrganization);
+
+        return method;
+    }
+
     @Read()
     public Organization getOrganizationById(@IdParam IdType organisationId) {
         Organization organisation = organisationDao.read(ctx, organisationId);
