@@ -222,6 +222,10 @@ public class ObservationDao implements ObservationRepository {
 
         }
 
+        if (observation.hasComment()) {
+            observationEntity.setComments(observation.getComment());
+        }
+
         em.persist(observationEntity);
 
         /* Identity */

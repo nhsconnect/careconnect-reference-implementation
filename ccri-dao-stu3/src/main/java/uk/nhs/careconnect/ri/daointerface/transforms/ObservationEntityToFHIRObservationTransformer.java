@@ -82,6 +82,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                     .setDisplay(observationEntity.getInterpretation().getDisplay());
         }
 
+        if (observationEntity.getComments()!=null) {
+            observation.setComment(observationEntity.getComments());
+        }
         // Performer
 
         for (ObservationPerformer performer :observationEntity.getPerformers()) {

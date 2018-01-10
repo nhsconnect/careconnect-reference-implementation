@@ -70,6 +70,17 @@ public class ObservationEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    @Column(name="comments")
+    private String comments;
+
 
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private Set<ObservationCategory> categories = new HashSet<>();
