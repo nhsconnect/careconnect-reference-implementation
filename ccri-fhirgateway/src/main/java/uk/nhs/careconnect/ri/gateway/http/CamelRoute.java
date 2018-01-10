@@ -93,6 +93,10 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway Bundle")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRComposition")
+				.routeId("Gateway Composition")
+				.to("direct:HAPIServer");
+
 		from("direct:HAPIServer")
             .routeId("INT FHIR Server")
 				.process(camelProcessor)

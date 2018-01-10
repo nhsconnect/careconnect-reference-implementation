@@ -84,6 +84,7 @@ public class HAPIRestfulConfig extends RestfulServer {
                 ,myAppCtx.getBean(ImmunizationProvider.class)
                 ,myAppCtx.getBean(MedicationRequestProvider.class)
                 ,myAppCtx.getBean(MedicationStatementProvider.class)
+                ,myAppCtx.getBean(CompositionProvider.class)
 
         ));
 

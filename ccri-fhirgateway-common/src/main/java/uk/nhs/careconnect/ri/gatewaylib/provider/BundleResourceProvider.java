@@ -68,7 +68,7 @@ public class BundleResourceProvider implements IResourceProvider {
             if (resource instanceof AllergyIntolerance ) {
                 searchAddAllergyIntolerance(resource.getId());
             } else
-            if (resource instanceof Condition ) {
+                if (resource instanceof Condition ) {
                 searchAddCondition(resource.getId());
             } else
             if (resource instanceof Procedure ) {
@@ -88,7 +88,10 @@ public class BundleResourceProvider implements IResourceProvider {
             } else
             if (resource instanceof Patient ) {
                 searchAddPatient(resource.getId());
-            } else {
+            } else
+                if (resource instanceof Composition ) {
+                    searchAddComposition(resource.getId());
+                } else {
                 log.info("Not searched for "+resource.getClass());
             }
         }
@@ -631,6 +634,125 @@ public class BundleResourceProvider implements IResourceProvider {
         }
 
         return eprCondition;
+    }
+
+    public Composition searchAddComposition(String compositionId) {
+
+        Composition composition = null;
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource().getId().equals(compositionId)) {
+                composition = (Composition) entry.getResource();
+            }
+        }
+        if (composition == null) throw new InternalErrorException("Bundle processing error");
+
+        Composition eprComposition = (Composition) resourceMap.get(composition.getId());
+
+        // Organization already processed, quit with Organization
+        if (eprComposition != null) return eprComposition;
+
+        // Prevent re-adding the same Practitioner
+        if (composition.getIdentifier() == null) {
+            composition.getIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(composition.getId());
+        } else {
+            if (composition.getIdentifier().getSystem() == null) {
+                composition.getIdentifier()
+                        .setSystem("urn:uuid");
+            }
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        String identifierUrl = "?identifier=" + composition.getIdentifier().getSystem() + "|" + composition.getIdentifier().getValue();
+        Exchange exchange = template.send("direct:FHIRComposition", ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, identifierUrl);
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "Composition");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource iresource = null;
+        try {
+            iresource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iresource instanceof Bundle) {
+            Bundle returnedBundle = (Bundle) iresource;
+            if (returnedBundle.getEntry().size()>0) {
+                eprComposition = (Composition) returnedBundle.getEntry().get(0).getResource();
+                log.info("Found Composition = " + eprComposition.getId());
+            }
+        }
+
+        // Location found do not add
+        if (eprComposition != null) {
+            resourceMap.put(composition.getId(),eprComposition);
+            return eprComposition;
+        }
+
+        // Location not found. Add to database
+        List<Reference> authors = new ArrayList<>();
+        for (Reference reference : composition.getAuthor()) {
+            Resource resource = searchAddResource(reference.getReference());
+            log.info("Found Resource = " + resource.getId());
+            authors.add(getReference(resource));
+        }
+        composition.setAuthor(authors);
+
+        if (composition.getSubject() != null) {
+            Patient patient = searchAddPatient(composition.getSubject().getReference());
+            composition.setSubject(getReference(patient));
+        }
+        if (composition.getEncounter().getReference() != null) {
+            Resource resource = searchAddResource(composition.getEncounter().getReference());
+            composition.setEncounter(getReference(resource));
+        }
+        if (composition.getCustodian() != null) {
+            Resource resource = searchAddResource(composition.getSubject().getReference());
+            composition.setCustodian(getReference(resource));
+        }
+
+        IBaseResource iResource = null;
+        String jsonResource = ctx.newJsonParser().encodeResourceToString(composition);
+        try {
+            exchange = template.send("direct:FHIRComposition", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Composition");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(jsonResource);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Composition) {
+            eprComposition = (Composition) iResource;
+            resourceMap.put(composition.getId(),eprComposition);
+        } else if (iResource instanceof OperationOutcome)
+        {
+            OperationOutcome operationOutcome = (OperationOutcome) iResource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprComposition;
     }
 
     public Procedure searchAddProcedure(String procedureId) {
