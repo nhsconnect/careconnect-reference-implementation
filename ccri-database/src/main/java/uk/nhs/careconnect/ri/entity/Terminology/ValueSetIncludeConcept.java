@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Table(name="ValueSetIncludeConcept")
 public class ValueSetIncludeConcept {
 
-	private static final int MAX_DESC_LENGTH = 400;
 
 	public ValueSetIncludeConcept() {
 

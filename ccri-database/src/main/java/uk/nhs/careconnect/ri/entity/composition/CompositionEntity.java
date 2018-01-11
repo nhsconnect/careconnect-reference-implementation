@@ -19,6 +19,9 @@ import java.util.Set;
 @Entity
 @Table(name = "Composition")
 public class CompositionEntity  extends BaseResource {
+
+    private static final int MAX_DESC_LENGTH = 1024;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="COMPOSITION_ID")
@@ -60,7 +63,7 @@ public class CompositionEntity  extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity authorPractitioner;
 
-    @Column
+    @Column(name="TITLE_COMPOSITION",length = MAX_DESC_LENGTH,nullable = true)
     private String title;
 
 

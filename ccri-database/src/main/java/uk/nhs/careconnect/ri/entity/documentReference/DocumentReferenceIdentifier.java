@@ -30,6 +30,13 @@ public class DocumentReferenceIdentifier extends BaseIdentifier {
     private DocumentReferenceEntity documentReference;
 
 
+	public DocumentReferenceEntity getDocumentReference() {
+		return documentReference;
+	}
+
+	public void setDocumentReference(DocumentReferenceEntity documentReference) {
+		this.documentReference = documentReference;
+	}
 
 	public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }

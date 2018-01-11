@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.DocumentReference;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
@@ -48,7 +49,7 @@ public class DocumentReferenceEntity extends BaseResource {
     @ManyToOne
     @JoinColumn(name="CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_CLASS_CONCEPT_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
-    private ConceptEntity _class;
+    private ConceptEntity class_;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created")
@@ -97,7 +98,114 @@ public class DocumentReferenceEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity contextPracticeSetting;
 
+    public Set<DocumentReferenceIdentifier> getIdentifiers() {
+        return identifiers;
+    }
 
+    public Enumerations.DocumentReferenceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Enumerations.DocumentReferenceStatus status) {
+        this.status = status;
+    }
+
+    public DocumentReference.ReferredDocumentStatus getDocStatus() {
+        return docStatus;
+    }
+
+    public void setDocStatus(DocumentReference.ReferredDocumentStatus docStatus) {
+        this.docStatus = docStatus;
+    }
+
+    public ConceptEntity getType() {
+        return type;
+    }
+
+    public void setType(ConceptEntity type) {
+        this.type = type;
+    }
+
+    public ConceptEntity getClass_() {
+        return class_;
+    }
+
+    public void setClass_(ConceptEntity class_) {
+        this.class_ = class_;
+    }
+
+    @Override
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getIndexed() {
+        return indexed;
+    }
+
+    public void setIndexed(Date indexed) {
+        this.indexed = indexed;
+    }
+
+    public Set<DocumentReferenceAuthor> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(Set<DocumentReferenceAuthor> authors) {
+        this.authors = authors;
+    }
+
+    public PractitionerEntity getAuthenticatorPractitioner() {
+        return authenticatorPractitioner;
+    }
+
+    public void setAuthenticatorPractitioner(PractitionerEntity authenticatorPractitioner) {
+        this.authenticatorPractitioner = authenticatorPractitioner;
+    }
+
+    public OrganisationEntity getAuthenticatorOrganisation() {
+        return authenticatorOrganisation;
+    }
+
+    public void setAuthenticatorOrganisation(OrganisationEntity authenticatorOrganisation) {
+        this.authenticatorOrganisation = authenticatorOrganisation;
+    }
+
+    public OrganisationEntity getCustodian() {
+        return custodian;
+    }
+
+    public void setCustodian(OrganisationEntity custodian) {
+        this.custodian = custodian;
+    }
+
+    public ConceptEntity getContentFormat() {
+        return contentFormat;
+    }
+
+    public void setContentFormat(ConceptEntity contentFormat) {
+        this.contentFormat = contentFormat;
+    }
+
+    public EncounterEntity getContextEncounter() {
+        return contextEncounter;
+    }
+
+    public void setContextEncounter(EncounterEntity contextEncounter) {
+        this.contextEncounter = contextEncounter;
+    }
+
+    public ConceptEntity getContextPracticeSetting() {
+        return contextPracticeSetting;
+    }
+
+    public void setContextPracticeSetting(ConceptEntity contextPracticeSetting) {
+        this.contextPracticeSetting = contextPracticeSetting;
+    }
 
     public Long getId() {
         return id;
@@ -119,6 +227,7 @@ public class DocumentReferenceEntity extends BaseResource {
         this.identifiers = identifiers;
         return this;
     }
+
 
 
 }

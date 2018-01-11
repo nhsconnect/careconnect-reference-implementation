@@ -584,11 +584,7 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
-        // Location found do not add
-        if (eprObservation != null) {
-            resourceMap.put(observation.getId(),eprObservation);
-            return eprObservation;
-        }
+
 
         // Location not found. Add to database
 
@@ -605,19 +601,31 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (observation.hasContext()) {
             Resource resource = searchAddResource(observation.getContext().getReference());
-            observation.setSubject(getReference(resource));
+            observation.setContext(getReference(resource));
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(observation);
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Observation";
+        // Location found do not add
+        if (eprObservation != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Observation/"+eprObservation.getIdElement().getIdPart();
+            observation.setId(eprObservation.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(observation);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             Exchange exchange = template.send("direct:FHIRObservation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Observation");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();

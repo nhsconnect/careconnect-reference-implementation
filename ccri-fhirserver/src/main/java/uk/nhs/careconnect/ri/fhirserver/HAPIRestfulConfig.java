@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import org.hl7.fhir.dstu3.model.DiagnosticReport;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -84,7 +85,10 @@ public class HAPIRestfulConfig extends RestfulServer {
                 ,myAppCtx.getBean(ImmunizationProvider.class)
                 ,myAppCtx.getBean(MedicationRequestProvider.class)
                 ,myAppCtx.getBean(MedicationStatementProvider.class)
+                // Basic implementation of reporting resources
                 ,myAppCtx.getBean(CompositionProvider.class)
+                ,myAppCtx.getBean(DocumentReferenceProvider.class)
+                ,myAppCtx.getBean(DiagnosticReportProvider.class)
 
         ));
 

@@ -1,0 +1,58 @@
+package uk.nhs.careconnect.ri.daointerface.transforms;
+
+import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.DiagnosticReport;
+import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportIdentifier;
+
+
+@Component
+public class DiagnosticReportEntityToFHIRDiagnosticReportTransformer implements Transformer<DiagnosticReportEntity, DiagnosticReport> {
+
+
+    @Override
+    public DiagnosticReport transform(final DiagnosticReportEntity diagnosticReportEntity) {
+        final DiagnosticReport diagnosticReport = new DiagnosticReport();
+
+        Meta meta = new Meta();
+                //.addProfile(CareConnectProfile.Condition_1);
+
+        if (diagnosticReportEntity.getUpdated() != null) {
+            meta.setLastUpdated(diagnosticReportEntity.getUpdated());
+        }
+        else {
+            if (diagnosticReportEntity.getCreated() != null) {
+                meta.setLastUpdated(diagnosticReportEntity.getCreated());
+            }
+        }
+        diagnosticReport.setMeta(meta);
+
+        diagnosticReport.setId(diagnosticReportEntity.getId().toString());
+
+
+
+        if (diagnosticReportEntity.getStatus() != null) {
+            diagnosticReport.setStatus(diagnosticReportEntity.getStatus());
+        }
+
+        if (diagnosticReportEntity.getPatient() != null) {
+            diagnosticReport
+                    .setSubject(new Reference("Patient/"+diagnosticReportEntity.getPatient().getId())
+                    .setDisplay(diagnosticReportEntity.getPatient().getNames().get(0).getDisplayName()));
+        }
+
+
+
+        for (DiagnosticReportIdentifier identifier : diagnosticReportEntity.getIdentifiers()) {
+            diagnosticReport.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
+        }
+
+        return diagnosticReport;
+
+    }
+}

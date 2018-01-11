@@ -22,7 +22,7 @@ import java.util.Set;
 })
 public class ObservationEntity extends BaseResource {
 
-
+    private static final int MAX_DESC_LENGTH = 1024;
 
     public enum ObservationType  { component, valueQuantity }
 
@@ -78,7 +78,7 @@ public class ObservationEntity extends BaseResource {
         this.comments = comments;
     }
 
-    @Column(name="comments")
+    @Column(name="COMMENT",length = MAX_DESC_LENGTH,nullable = true)
     private String comments;
 
 
