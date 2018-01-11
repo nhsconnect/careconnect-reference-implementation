@@ -967,7 +967,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (procedure.getSubject() != null) {
             Resource resource = searchAddResource(procedure.getSubject().getReference());
-            procedure.setSubject(new Reference ("Patient/"+resource.getId()));
+            procedure.setSubject(getReference(resource));
         }
 
         IBaseResource iResource = null;
