@@ -225,7 +225,16 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
 
             ConceptEntity code = conceptDao.findCode(reaction.getManifestationFirstRep().getCoding().get(0).getSystem(),reaction.getManifestationFirstRep().getCoding().get(0).getCode());
             if (code != null) {
-                AllergyIntoleranceManifestation man = new AllergyIntoleranceManifestation();
+
+                AllergyIntoleranceManifestation man = null;
+                // 11/1/2018 KGM Search for existing manifestations
+                for (AllergyIntoleranceManifestation manSearch : allergyReaction.getManifestations()) {
+                    if (manSearch.getManifestation().getCode().equals(code.getCode())) {
+                        man = manSearch;
+                        break;
+                    }
+                }
+                if (man == null) man = new AllergyIntoleranceManifestation();
                 man.setManifestation(code);
                 man.setAllergyReaction(allergyReaction);
                 em.persist(man);
