@@ -33,7 +33,10 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
         if (observationEntity.getIssued() != null) observation.setIssued(observationEntity.getIssued());
 
-        observation.setSubject(new Reference("Patient/"+observationEntity.getPatient().getId()));
+        observation.setSubject(
+                        new Reference("Patient/"+observationEntity.getPatient().getId())
+                                .setDisplay(observationEntity.getPatient().getNames().get(0).getDisplayName()));
+
 
         if (observationEntity.getCode() != null) {
             observation.getCode().addCoding()

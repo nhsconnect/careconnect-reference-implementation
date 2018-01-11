@@ -65,38 +65,8 @@ public class BundleResourceProvider implements IResourceProvider {
             // Look for existing resources. Ideally we should not need to add Patient, Practitioner, Organization, etc
             // These should be using well known identifiers and ideally will be present on our system.
 
-            if (resource instanceof AllergyIntolerance ) {
-                searchAddAllergyIntolerance(resource.getId());
-            } else
-                if (resource instanceof Condition ) {
-                searchAddCondition(resource.getId());
-            } else
-            if (resource instanceof Procedure ) {
-                searchAddProcedure(resource.getId());
-            } else
-            if (resource instanceof Encounter ) {
-                searchAddEncounter(resource.getId());
-            } else
-            if (resource instanceof Organization ) {
-                searchAddOrganisation(resource.getId());
-            } else
-            if (resource instanceof Practitioner ) {
-                searchAddPractitioner(resource.getId());
-            } else
-            if (resource instanceof Observation ) {
-                searchAddObservation(resource.getId());
-            } else
-            if (resource instanceof Location ) {
-                searchAddLocation(resource.getId());
-            } else
-            if (resource instanceof Patient ) {
-                searchAddPatient(resource.getId());
-            } else
-                if (resource instanceof Composition ) {
-                    searchAddComposition(resource.getId());
-                } else {
-                log.info("Not searched for "+resource.getClass());
-            }
+            searchAddResource(resource.getId());
+
         }
 
         OperationOutcome opOutcome = new OperationOutcome();
@@ -119,7 +89,11 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Resource searchAddResource(String referenceId) {
-        Resource resource = null;
+
+        Resource resource = resourceMap.get(referenceId);
+        // Don't process, if already processed.
+        if (resource !=null) return resource;
+
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(referenceId)) {
                 Resource iResource = entry.getResource();
@@ -129,11 +103,21 @@ public class BundleResourceProvider implements IResourceProvider {
                 else if (iResource instanceof Organization) { resource = searchAddOrganisation(referenceId); }
                 else if (iResource instanceof Location) { resource = searchAddLocation(referenceId); }
                 else if (iResource instanceof Observation) { resource = searchAddObservation(referenceId); }
+                else if (iResource instanceof AllergyIntolerance) { resource = searchAddAllergyIntolerance(referenceId); }
+                else if (iResource instanceof Condition) { resource = searchAddCondition(referenceId); }
+                else if (iResource instanceof Procedure) { resource = searchAddProcedure(referenceId); }
+                else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId); }
+                else {
+                    log.info( "Not processed " + iResource.getClass());
+                }
             }
         }
         return resource;
     }
+
     public Practitioner searchAddPractitioner(String practitionerId) {
+
+        log.info("Practitioner searchAdd " +practitionerId);
         Practitioner practitioner = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(practitionerId)) {
@@ -142,7 +126,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (practitioner == null) throw new InternalErrorException("Bundle processing error");
 
-        Practitioner eprPractitioner = (Practitioner) resourceMap.get(practitioner.getId());
+        Practitioner eprPractitioner = (Practitioner) resourceMap.get(practitionerId);
 
         // Practitioner already processed, quit with Practitioner
         if (eprPractitioner != null) return eprPractitioner;
@@ -183,10 +167,13 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
+
+
         if (eprPractitioner != null) {
-            resourceMap.put(practitioner.getId(),eprPractitioner);
+            resourceMap.put(practitionerId,eprPractitioner);
             return eprPractitioner;
         }
+
         // Practitioner not found. Add to database
 
 
@@ -212,7 +199,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Practitioner) {
             eprPractitioner = (Practitioner) iResource;
-            resourceMap.put(practitioner.getId(),eprPractitioner);
+            if (resourceMap.get(practitionerId) != null) { resourceMap.replace(practitionerId,eprPractitioner); }
+            else { resourceMap.put(practitionerId,eprPractitioner); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -226,7 +215,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Organization searchAddOrganisation(String organisationId) {
-
+        log.info("Orgnisation searchAdd " +organisationId);
         Organization organisation = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(organisationId)) {
@@ -235,7 +224,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (organisation == null) throw new InternalErrorException("Bundle processing error");
 
-        Organization eprOrganization = (Organization) resourceMap.get(organisation.getId());
+        Organization eprOrganization = (Organization) resourceMap.get(organisationId);
 
         // Organization already processed, quit with Organization
         if (eprOrganization != null) return eprOrganization;
@@ -271,7 +260,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         // Organization found do not add
         if (eprOrganization != null) {
-            resourceMap.put(organisation.getId(),eprOrganization);
+            resourceMap.put(organisationId,eprOrganization);
             return eprOrganization;
         }
 
@@ -314,7 +303,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Organization) {
             eprOrganization = (Organization) iResource;
-            resourceMap.put(organisation.getId(),eprOrganization);
+            if (resourceMap.get(organisationId) != null) { resourceMap.replace(organisationId,eprOrganization); }
+            else { resourceMap.put(organisationId,eprOrganization); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -329,7 +320,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Location searchAddLocation(String locationId) {
-
+        log.info("Location searchAdd " +locationId);
         Location location = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(locationId)) {
@@ -338,7 +329,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (location == null) throw new InternalErrorException("Bundle processing error");
 
-        Location eprLocation = (Location) resourceMap.get(location.getId());
+        Location eprLocation = (Location) resourceMap.get(locationId);
 
         // Organization already processed, quit with Organization
         if (eprLocation != null) return eprLocation;
@@ -381,7 +372,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         // Location found do not add
         if (eprLocation != null) {
-            resourceMap.put(location.getId(),eprLocation);
+            resourceMap.put(locationId,eprLocation);
             return eprLocation;
         }
 
@@ -414,7 +405,10 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Location) {
             eprLocation = (Location) iResource;
-            resourceMap.put(location.getId(),eprLocation);
+            if (resourceMap.get(locationId) != null) { resourceMap.replace(locationId,eprLocation); }
+            else { resourceMap.put(locationId,eprLocation); }
+
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -428,7 +422,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public AllergyIntolerance searchAddAllergyIntolerance(String allergyIntoleranceId) {
-
+        log.info("AllergyIntolerance searchAdd " +allergyIntoleranceId);
         AllergyIntolerance allergyIntolerance = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(allergyIntoleranceId)) {
@@ -437,7 +431,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (allergyIntolerance == null) throw new InternalErrorException("Bundle processing error");
 
-        AllergyIntolerance eprAllergyIntolerance = (AllergyIntolerance) resourceMap.get(allergyIntolerance.getId());
+        AllergyIntolerance eprAllergyIntolerance = (AllergyIntolerance) resourceMap.get(allergyIntoleranceId);
 
         // Organization already processed, quit with Organization
         if (eprAllergyIntolerance != null) return eprAllergyIntolerance;
@@ -478,13 +472,6 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
-        // Location found do not add
-        if (eprAllergyIntolerance != null) {
-            resourceMap.put(allergyIntolerance.getId(),eprAllergyIntolerance);
-            return eprAllergyIntolerance;
-        }
-
-        // Location not found. Add to database
 
         if (allergyIntolerance.getAsserter().getReference() != null) {
 
@@ -494,20 +481,31 @@ public class BundleResourceProvider implements IResourceProvider {
 
         }
         if (allergyIntolerance.getPatient() != null) {
-            Patient patient = searchAddPatient(allergyIntolerance.getPatient().getReference());
-            allergyIntolerance.setPatient(new Reference ("Patient/"+patient.getId()));
+            Resource resource = searchAddResource(allergyIntolerance.getPatient().getReference());
+            allergyIntolerance.setPatient(getReference(resource));
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(allergyIntolerance);
+        String xhttpMethod = "POST";
+        String xhttpPath = "AllergyIntolerance";
+        // Location found do not add
+        if (eprAllergyIntolerance != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "AllergyIntolerance/"+eprAllergyIntolerance.getIdElement().getIdPart();
+            allergyIntolerance.setId(eprAllergyIntolerance.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(allergyIntolerance);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             Exchange exchange = template.send("direct:FHIRAllergyIntolerance", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "AllergyIntolerance");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();
@@ -520,7 +518,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof AllergyIntolerance) {
             eprAllergyIntolerance = (AllergyIntolerance) iResource;
-            resourceMap.put(allergyIntolerance.getId(),eprAllergyIntolerance);
+            if (resourceMap.get(allergyIntoleranceId) != null) { resourceMap.replace(allergyIntoleranceId,eprAllergyIntolerance); }
+            else { resourceMap.put(allergyIntoleranceId,eprAllergyIntolerance); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -534,7 +534,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Observation searchAddObservation(String observationId) {
-
+        log.info("Observation searchAdd " +observationId);
         Observation observation = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(observationId)) {
@@ -543,7 +543,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (observation == null) throw new InternalErrorException("Bundle processing error");
 
-        Observation eprObservation = (Observation) resourceMap.get(observation.getId());
+        Observation eprObservation = (Observation) resourceMap.get(observationId);
 
         // Organization already processed, quit with Organization
         if (eprObservation != null) return eprObservation;
@@ -596,8 +596,8 @@ public class BundleResourceProvider implements IResourceProvider {
         observation.setPerformer(performers);
 
         if (observation.hasSubject()) {
-            Patient patient = searchAddPatient(observation.getSubject().getReference());
-            observation.setSubject(new Reference ("Patient/"+patient.getId()));
+            Resource resource = searchAddResource(observation.getSubject().getReference());
+            observation.setSubject(getReference(resource));
         }
         if (observation.hasContext()) {
             Resource resource = searchAddResource(observation.getContext().getReference());
@@ -638,7 +638,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Observation) {
             eprObservation = (Observation) iResource;
-            resourceMap.put(observation.getId(),eprObservation);
+            if (resourceMap.get(observationId) != null) { resourceMap.replace(observationId,eprObservation); }
+            else { resourceMap.put(observationId,eprObservation); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -652,7 +654,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Condition searchAddCondition(String conditionId) {
-
+        log.info("Condition searchAdd " +conditionId);
         Condition condition = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(conditionId)) {
@@ -661,7 +663,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (condition == null) throw new InternalErrorException("Bundle processing error");
 
-        Condition eprCondition = (Condition) resourceMap.get(condition.getId());
+        Condition eprCondition = (Condition) resourceMap.get(conditionId);
 
         // Organization already processed, quit with Organization
         if (eprCondition != null) return eprCondition;
@@ -702,13 +704,7 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
-        // Location found do not add
-        if (eprCondition != null) {
-            resourceMap.put(condition.getId(),eprCondition);
-            return eprCondition;
-        }
 
-        // Location not found. Add to database
 
         if (condition.getAsserter().getReference() != null) {
 
@@ -717,8 +713,8 @@ public class BundleResourceProvider implements IResourceProvider {
                 condition.setAsserter(getReference(resource));
         }
         if (condition.getSubject() != null) {
-            Patient patient = searchAddPatient(condition.getSubject().getReference());
-            condition.setSubject(getReference(patient));
+            Resource resource = searchAddResource(condition.getSubject().getReference());
+            condition.setSubject(getReference(resource));
         }
         if (condition.getContext().getReference() != null) {
             Resource resource = searchAddResource(condition.getContext().getReference());
@@ -726,15 +722,26 @@ public class BundleResourceProvider implements IResourceProvider {
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(condition);
+        String xhttpMethod = "POST";
+        String xhttpPath = "Condition";
+        // Location found do not add
+        if (eprCondition != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Condition/"+eprCondition.getIdElement().getIdPart();
+            condition.setId(eprCondition.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(condition);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             Exchange exchange = template.send("direct:FHIRCondition", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Condition");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();
@@ -747,7 +754,10 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Condition) {
             eprCondition = (Condition) iResource;
-            resourceMap.put(condition.getId(),eprCondition);
+            if (resourceMap.get(conditionId) != null) { resourceMap.replace(conditionId,eprCondition); }
+            else { resourceMap.put(conditionId,eprCondition); }
+
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -761,7 +771,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Composition searchAddComposition(String compositionId) {
-
+        log.info("Composition searchAdd " +compositionId);
         Composition composition = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(compositionId)) {
@@ -770,7 +780,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (composition == null) throw new InternalErrorException("Bundle processing error");
 
-        Composition eprComposition = (Composition) resourceMap.get(composition.getId());
+        Composition eprComposition = (Composition) resourceMap.get(compositionId);
 
         // Organization already processed, quit with Organization
         if (eprComposition != null) return eprComposition;
@@ -816,12 +826,6 @@ public class BundleResourceProvider implements IResourceProvider {
             }
         }
 
-        // Location found do not add
-        if (eprComposition != null) {
-            resourceMap.put(composition.getId(),eprComposition);
-            return eprComposition;
-        }
-
         // Location not found. Add to database
         List<Reference> authors = new ArrayList<>();
         for (Reference reference : composition.getAuthor()) {
@@ -846,15 +850,26 @@ public class BundleResourceProvider implements IResourceProvider {
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(composition);
+        String xhttpMethod = "POST";
+        String xhttpPath = "Composition";
+        // Location found do not add
+        if (eprComposition != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Composition/"+eprComposition.getIdElement().getIdPart();
+            composition.setId(eprComposition.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(composition);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             exchange = template.send("direct:FHIRComposition", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Composition");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();
@@ -867,7 +882,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Composition) {
             eprComposition = (Composition) iResource;
-            resourceMap.put(composition.getId(),eprComposition);
+            if (resourceMap.get(compositionId) != null) { resourceMap.replace(compositionId,eprComposition); }
+            else { resourceMap.put(compositionId,eprComposition); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -881,7 +898,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Procedure searchAddProcedure(String procedureId) {
-
+        log.info("Procedure searchAdd " +procedureId);
         Procedure procedure = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(procedureId)) {
@@ -890,7 +907,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (procedure == null) throw new InternalErrorException("Bundle processing error");
 
-        Procedure eprProcedure = (Procedure) resourceMap.get(procedure.getId());
+        Procedure eprProcedure = (Procedure) resourceMap.get(procedureId);
 
         // Organization already processed, quit with Organization
         if (eprProcedure != null) return eprProcedure;
@@ -931,11 +948,13 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
+        /*
         // Location found do not add
         if (eprProcedure != null) {
             resourceMap.put(procedure.getId(),eprProcedure);
             return eprProcedure;
         }
+        */
 
         // Location not found. Add to database
 
@@ -947,20 +966,31 @@ public class BundleResourceProvider implements IResourceProvider {
 
         }
         if (procedure.getSubject() != null) {
-            Patient patient = searchAddPatient(procedure.getSubject().getReference());
-            procedure.setSubject(new Reference ("Patient/"+patient.getId()));
+            Resource resource = searchAddResource(procedure.getSubject().getReference());
+            procedure.setSubject(new Reference ("Patient/"+resource.getId()));
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(procedure);
+        String xhttpMethod = "POST";
+        String xhttpPath = "Procedure";
+        // Location found do not add
+        if (eprProcedure != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Procedure/"+eprProcedure.getIdElement().getIdPart();
+            procedure.setId(eprProcedure.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(procedure);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             Exchange exchange = template.send("direct:FHIRProcedure", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Procedure");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();
@@ -973,7 +1003,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Procedure) {
             eprProcedure = (Procedure) iResource;
-            resourceMap.put(procedure.getId(),eprProcedure);
+            if (resourceMap.get(procedureId) != null) { resourceMap.replace(procedureId,eprProcedure); }
+            else { resourceMap.put(procedureId,eprProcedure); }
+
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -987,7 +1019,7 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     public Encounter searchAddEncounter(String encounterId) {
-
+        log.info("Encounter searchAdd " +encounterId);
         Encounter encounter
                 = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -997,7 +1029,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (encounter == null) throw new InternalErrorException("Bundle processing error");
 
-        Encounter eprEncounter = (Encounter) resourceMap.get(encounter.getId());
+        Encounter eprEncounter = (Encounter) resourceMap.get(encounterId);
 
         // Organization already processed, quit with Organization
         if (eprEncounter != null) return eprEncounter;
@@ -1038,11 +1070,13 @@ public class BundleResourceProvider implements IResourceProvider {
                 }
             }
         }
+        /*
         // Location found do not add
         if (eprEncounter != null) {
             resourceMap.put(encounter.getId(),eprEncounter);
             return eprEncounter;
         }
+        */
 
         // Location not found. Add to database
 
@@ -1063,20 +1097,31 @@ public class BundleResourceProvider implements IResourceProvider {
         encounter.setParticipant(performertemp);
 
         if (encounter.getSubject() != null) {
-            Patient patient = searchAddPatient(encounter.getSubject().getReference());
-            encounter.setSubject(new Reference ("Patient/"+patient.getId()));
+            Resource resource = searchAddResource(encounter.getSubject().getReference());
+            encounter.setSubject(getReference(resource));
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(encounter);
+        String xhttpMethod = "POST";
+        String xhttpPath = "Encounter";
+        // Location found do not add
+        if (eprEncounter != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Encounter/"+eprEncounter.getIdElement().getIdPart();
+            encounter.setId(eprEncounter.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(encounter);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
             Exchange exchange = template.send("direct:FHIREncounter", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Encounter");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();
@@ -1089,7 +1134,8 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Encounter) {
             eprEncounter = (Encounter) iResource;
-            resourceMap.put(encounter.getId(),eprEncounter);
+            if (resourceMap.get(encounterId) != null) { resourceMap.replace(encounterId,eprEncounter); }
+            else { resourceMap.put(encounterId,eprEncounter); }
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;
@@ -1104,6 +1150,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
 
     public Patient searchAddPatient(String patientId) {
+        log.info("Patient searchAdd " +patientId);
         Patient patient = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource().getId().equals(patientId)) {
@@ -1112,7 +1159,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (patient == null) throw new InternalErrorException("Bundle processing error");
 
-        Patient eprPatient = (Patient) resourceMap.get(patient.getId());
+        Patient eprPatient = (Patient) resourceMap.get(patientId);
 
         // Patient already processed, quit with Patient
         if (eprPatient != null) return eprPatient;
@@ -1148,7 +1195,7 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         // Patient found do not add
         if (eprPatient != null) {
-            resourceMap.put(patient.getId(),eprPatient);
+            resourceMap.put(patientId,eprPatient);
             return eprPatient;
         }
 
@@ -1188,7 +1235,8 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (iResource instanceof Patient) {
             eprPatient = (Patient) iResource;
-            resourceMap.put(patient.getId(),eprPatient);
+            if (resourceMap.get(patientId) != null) { resourceMap.replace(patientId,eprPatient); }
+            else { resourceMap.put(patientId,eprPatient); }
         } else if (iResource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) iResource;

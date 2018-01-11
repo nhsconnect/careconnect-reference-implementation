@@ -73,7 +73,8 @@ public class OperationOutcomeFactory {
                     registerExceptionType(PreconditionFailedException.STATUS_CODE, PreconditionFailedException.class);
 
                    */
-
+                default:
+                    throw new UnprocessableEntityException(issue.getDetails().getText(), outcome);
 
             }
         }

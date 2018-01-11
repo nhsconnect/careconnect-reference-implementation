@@ -226,14 +226,20 @@ public class CompositionDao implements CompositionRepository {
         for (Composition.SectionComponent section : composition.getSection()) {
             CompositionSection sectionEntity = null;
             if (section.hasCode()) {
+               log.trace("New Section Code = "+section.getCode().getCoding().get(0).getCode());
                 for (CompositionSection sectionSearch :compositionEntity.getSections()) {
-                    if (sectionSearch.getCode() != null && section.getCode().getCoding().get(0).equals(sectionSearch.getCode().getCode())) {
-                        sectionEntity = sectionSearch;
-                        break;
+                    if (sectionSearch.getCode() != null) {
+                        log.trace("Existing Section Code = "+sectionSearch.getCode().getCode());
+                        if (section.getCode().getCoding().get(0).getCode().equals(sectionSearch.getCode().getCode())) {
+                            sectionEntity = sectionSearch;
+                            log.trace("Found match");
+                            break;
+                        }
                     }
                 }
             }
             if (sectionEntity == null) {
+                log.trace("Section Not Found");
                 sectionEntity = new CompositionSection();
                 sectionEntity.setComposition(compositionEntity);
             }
