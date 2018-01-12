@@ -136,7 +136,7 @@ public class LocationDao implements LocationRepository {
         locationEntity.setStatus(location.getStatus());
 
         if (location.hasType() && location.getType().getCoding().size()>0) {
-            locationEntity.setType(codeSvc.findCode(location.getType().getCoding().get(0).getSystem(),location.getType().getCoding().get(0).getCode()));
+            locationEntity.setType(codeSvc.findCode(location.getType().getCoding().get(0)));
         }
 
       

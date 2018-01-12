@@ -139,15 +139,14 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
         if (practitionerRole.getCode().size() > 0) {
             if (practitionerRole.getCode().get(0).getCoding().get(0).getSystem().equals(CareConnectSystem.SDSJobRoleName)) {
-                roleEntity.setRole(codeDao.findCode(practitionerRole.getCode().get(0).getCoding().get(0).getSystem(), practitionerRole.getCode().get(0).getCoding().get(0).getCode()));
+                roleEntity.setRole(codeDao.findCode(practitionerRole.getCode().get(0).getCoding().get(0)));
             }
         }
         em.persist(roleEntity);
 
         for (CodeableConcept specialty : practitionerRole.getSpecialty()) {
             Boolean found = false;
-            ConceptEntity specialtyConcept = codeDao.findCode(specialty.getCoding().get(0).getSystem()
-                    , specialty.getCoding().get(0).getCode());
+            ConceptEntity specialtyConcept = codeDao.findCode(specialty.getCoding().get(0));
             for (PractitionerSpecialty searchSpecialty : roleEntity.getSpecialties()) {
                 log.trace("Already has specialty = " + searchSpecialty.getSpecialty().getCode() + " code "+searchSpecialty.getSpecialty().getSystem());
                 if (searchSpecialty.getSpecialty().getCode().equals(specialtyConcept.getCode())

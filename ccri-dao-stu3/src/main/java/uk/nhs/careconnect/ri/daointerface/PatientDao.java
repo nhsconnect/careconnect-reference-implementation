@@ -163,7 +163,7 @@ public class PatientDao implements PatientRepository {
                 switch (extension.getUrl()) {
                     case CareConnectExtension.UrlEthnicCategory :
                         CodeableConcept ethnic = (CodeableConcept) extension.getValue();
-                        ConceptEntity code = conceptDao.findCode(ethnic.getCoding().get(0).getSystem(),ethnic.getCoding().get(0).getCode());
+                        ConceptEntity code = conceptDao.findCode(ethnic.getCoding().get(0));
                         if (code != null) { patientEntity.setEthnicCode(code); }
                         else {
                             log.info("Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
@@ -210,7 +210,7 @@ public class PatientDao implements PatientRepository {
 
         if (patient.hasMaritalStatus()) {
             CodeableConcept martial = patient.getMaritalStatus();
-            ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0).getSystem(),martial.getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0));
             if (code != null) { patientEntity.setMaritalCode(code); }
             else {
                 log.info("Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
@@ -236,7 +236,7 @@ public class PatientDao implements PatientRepository {
         for (Identifier identifier : patient.getIdentifier()) {
             if (identifier.getSystem().equals(CareConnectSystem.NHSNumber) && identifier.getExtension().size()>0) {
                 CodeableConcept nhsVerification = (CodeableConcept) identifier.getExtension().get(0).getValue();
-                ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0).getSystem(),nhsVerification.getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0));
                 if (code != null) { patientEntity.setNHSVerificationCode(code); }
                 else {
                     log.info("NHS Verfication: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());

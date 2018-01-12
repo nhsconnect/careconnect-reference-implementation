@@ -143,10 +143,14 @@ public class OrganisationDao implements OrganisationRepository {
 
         if (organisation.getType().size()>0) {
             if (organisation.getType().get(0).getCoding().get(0).getSystem().equals(CareConnectSystem.OrganisationType)) {
-                organisationEntity.setType(codeSvc.findCode(CareConnectSystem.OrganisationType,organisation.getType().get(0).getCoding().get(0).getCode()));
+                Coding code = new Coding().setSystem(CareConnectSystem.OrganisationType).setCode(organisation.getType().get(0).getCoding().get(0).getCode());
+                organisationEntity.setType(codeSvc.findCode(code));
             }
             if (organisation.getType().get(0).getCoding().get(0).getSystem().equals(CareConnectSystem.SNOMEDCT)) {
-                organisationEntity.setType(codeSvc.findCode(CareConnectSystem.SNOMEDCT,organisation.getType().get(0).getCoding().get(0).getCode()));
+
+                Coding code = new Coding().setSystem(CareConnectSystem.SNOMEDCT).setCode(organisation.getType().get(0).getCoding().get(0).getCode());
+
+                organisationEntity.setType(codeSvc.findCode(code));
             }
         }
 

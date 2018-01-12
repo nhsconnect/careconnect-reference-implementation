@@ -139,7 +139,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
         }
 
         if (documentReference.hasType()) {
-            ConceptEntity code = conceptDao.findCode(documentReference.getType().getCoding().get(0).getSystem(),documentReference.getType().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(documentReference.getType().getCoding().get(0));
             if (code != null) { documentReferenceEntity.setType(code); }
             else {
                 log.info("Type: Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem() +" code = "+documentReference.getType().getCoding().get(0).getCode());
@@ -149,7 +149,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             }
         }
         if (documentReference.hasClass_()) {
-            ConceptEntity code = conceptDao.findCode(documentReference.getClass_().getCoding().get(0).getSystem(),documentReference.getClass_().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(documentReference.getClass_().getCoding().get(0));
             if (code != null) { documentReferenceEntity.setClass_(code); }
             else {
                 log.info("Class: Missing System/Code = "+ documentReference.getClass_().getCoding().get(0).getSystem() +" code = "+documentReference.getClass_().getCoding().get(0).getCode());
@@ -162,7 +162,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             for (Extension extension : documentReference.getExtension()) {
                 if (extension.getUrl().contains("https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1")) {
                     CodeableConcept concept = (CodeableConcept) extension.getValue();
-                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0).getSystem(),concept.getCoding().get(0).getCode());
+                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0));
                     if (code != null) { documentReferenceEntity.setClass_(code); }
                 }
             }

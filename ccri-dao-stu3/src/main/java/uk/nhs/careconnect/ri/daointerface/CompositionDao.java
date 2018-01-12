@@ -167,7 +167,7 @@ public class CompositionDao implements CompositionRepository {
             for (Extension extension : composition.getExtension()) {
                 if (extension.getUrl().contains("https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1")) {
                     CodeableConcept concept = (CodeableConcept) extension.getValue();
-                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0).getSystem(),concept.getCoding().get(0).getCode());
+                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0));
                     if (code != null) { compositionEntity.setClass_(code); }
                 }
             }
@@ -263,8 +263,7 @@ public class CompositionDao implements CompositionRepository {
                 sectionEntity.setNarrativeStatus(section.getText().getStatus());
             }
             if (section.hasOrderedBy()) {
-                ConceptEntity code = conceptDao.findCode(section.getOrderedBy().getCoding().get(0).getSystem()
-                        ,section.getOrderedBy().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(section.getOrderedBy().getCoding().get(0));
                 if (code != null) { sectionEntity.setOrderBy(code); }
                 else {
                     log.info("Class: Missing System/Code = "+ section.getOrderedBy().getCoding().get(0).getSystem()

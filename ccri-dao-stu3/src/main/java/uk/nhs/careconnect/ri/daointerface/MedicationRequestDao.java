@@ -186,7 +186,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
         if (prescription.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findCode(prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem(), prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(prescription.getMedicationCodeableConcept().getCoding().get(0));
                 if (code != null) {
                     prescriptionEntity.setMedicationCode(code);
                 } else {
@@ -218,8 +218,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         if (dispense.hasExpectedSupplyDuration()) {
             prescriptionEntity.setExpectedSupplyDuration(dispense.getExpectedSupplyDuration().getValue());
 
-            ConceptEntity code = conceptDao.findCode(dispense.getExpectedSupplyDuration().getSystem()
-                    , dispense.getExpectedSupplyDuration().getCode());
+            ConceptEntity code = conceptDao.findCode(dispense.getExpectedSupplyDuration());
             if (code != null) {
                 prescriptionEntity.setDurationUnitsCode(code);
             } else {
@@ -277,8 +276,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
             if (dosage.hasAdditionalInstruction()) {
 
-                ConceptEntity code = conceptDao.findCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
-                        , dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
@@ -292,8 +290,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             if (dosage.hasAsNeededCodeableConcept()) {
 
                 try {
-                ConceptEntity code = conceptDao.findCode(dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
-                        , dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(dosage.getAsNeededCodeableConcept().getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
@@ -309,8 +306,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             }
             if (dosage.hasRoute()) {
 
-                ConceptEntity code = conceptDao.findCode(dosage.getRoute().getCoding().get(0).getSystem()
-                        , dosage.getRoute().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findCode(dosage.getRoute().getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setRouteCode(code);
                 } else {
@@ -339,8 +335,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                     SimpleQuantity qty = dosage.getDoseSimpleQuantity();
 
                     if (qty.hasCode()) {
-                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
-                                , qty.getCode());
+                        ConceptEntity code = conceptDao.findAddCode(qty);
                         if (code != null) {
                             dosageEntity.setDoseUnitOfMeasure(code);
                         } else {
@@ -365,8 +360,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                     dosageEntity.setDoseRangeHigh(qty.getValue());
 
                     if (qty.hasCode()) {
-                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
-                                , qty.getCode());
+                        ConceptEntity code = conceptDao.findAddCode(qty);
                         if (code != null) {
                             dosageEntity.setDoseHighUnitOfMeasure(code);
                         } else {
@@ -385,8 +379,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                     dosageEntity.setDoseRangeLow(qty.getValue());
 
                     if (qty.hasCode()) {
-                        ConceptEntity code = conceptDao.findCode(qty.getSystem()
-                                , qty.getCode());
+                        ConceptEntity code = conceptDao.findAddCode(qty);
                         if (code != null) {
                             dosageEntity.setDoseLowUnitOfMeasure(code);
                         } else {

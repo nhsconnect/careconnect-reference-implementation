@@ -4,6 +4,8 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Duration;
+import org.hl7.fhir.dstu3.model.Quantity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +100,7 @@ public class ConceptDao implements ConceptRepository {
         }
         return conceptEntity;
     }
-
+/*
     @Override
 
     public ConceptEntity saveTransactional(ConceptEntity conceptEntity){
@@ -109,7 +111,7 @@ public class ConceptDao implements ConceptRepository {
         sessionEntityManager.flush();
         return conceptEntity;
     }
-
+*/
     @Override
     public ConceptDesignation save(ConceptDesignation conceptDesignation){
         sessionEntityManager.persist(conceptDesignation);
@@ -238,47 +240,9 @@ public class ConceptDao implements ConceptRepository {
     }
 
     @Override
-    public ConceptEntity findCode(String codeSystemUri, String code) {
+    public ConceptEntity findCode(Coding coding) {
 
 
-        ConceptEntity conceptEntity = null;
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<ConceptEntity> criteria = builder.createQuery(ConceptEntity.class);
-        Root<ConceptEntity> root = criteria.from(ConceptEntity.class);
-
-
-        List<Predicate> predList = new LinkedList<Predicate>();
-        List<ConceptEntity> results = new ArrayList<ConceptEntity>();
-        Join<ConceptEntity,CodeSystemRepository> join = root.join("codeSystemEntity");
-
-        log.debug("Looking for code ="+code+" in "+codeSystemUri);
-        Predicate pcode = builder.equal(root.get("code"), code);
-        predList.add(pcode);
-
-        Predicate psystem = builder.equal(join.get("codeSystemUri"), codeSystemUri);
-        predList.add(psystem);
-
-        Predicate[] predArray = new Predicate[predList.size()];
-        predList.toArray(predArray);
-
-        criteria.select(root).where(predArray);
-
-        TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
-        qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        List<ConceptEntity> qryResults = qry.getResultList();
-
-        for (ConceptEntity concept : qryResults) {
-            conceptEntity = concept;
-            log.debug("Found for code="+code+" ConceptEntity.Id="+conceptEntity.getId());
-            break;
-        }
-
-        return conceptEntity;
-    }
-
-    @Override
-    public ConceptEntity findAddCode(Coding coding) {
         ConceptEntity conceptEntity = null;
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -311,6 +275,23 @@ public class ConceptDao implements ConceptRepository {
             log.debug("Found for code="+coding.getCode()+" ConceptEntity.Id="+conceptEntity.getId());
             break;
         }
+
+        return conceptEntity;
+    }
+
+    @Override
+    public ConceptEntity findCode(Duration duration) {
+        Coding code = new Coding().setCode(duration.getCode()).setSystem(duration.getSystem());
+        ConceptEntity conceptEntity = findCode(code);
+
+
+        return conceptEntity;
+    }
+
+    @Override
+    public ConceptEntity findAddCode(Coding coding) {
+        ConceptEntity conceptEntity = findCode(coding);
+
         // 12/Jan/2018 KGM to cope with LOINC codes and depreciated SNOMED codes.
         if (conceptEntity == null) {
             CodeSystemEntity system = codeSystemRepository.findBySystem(coding.getSystem());
@@ -319,6 +300,26 @@ public class ConceptDao implements ConceptRepository {
                 conceptEntity.setCode(coding.getCode());
                 conceptEntity.setDescription(coding.getDisplay());
                 conceptEntity.setDisplay(coding.getDisplay());
+                conceptEntity.setCodeSystem(system);
+                em.persist(conceptEntity);
+            }
+        }
+        return conceptEntity;
+    }
+
+    @Override
+    public ConceptEntity findAddCode(Quantity quantity) {
+        Coding code = new Coding().setCode(quantity.getCode()).setSystem(quantity.getSystem());
+        ConceptEntity conceptEntity = findCode(code);
+
+        // 12/Jan/2018 KGM to cope with LOINC codes and depreciated SNOMED codes.
+        if (conceptEntity == null) {
+            CodeSystemEntity system = codeSystemRepository.findBySystem(quantity.getSystem());
+            if (system !=null) {
+                conceptEntity = new ConceptEntity();
+                conceptEntity.setCode(quantity.getCode());
+                conceptEntity.setDescription(quantity.getUnit());
+                conceptEntity.setDisplay(quantity.getUnit());
                 conceptEntity.setCodeSystem(system);
                 em.persist(conceptEntity);
             }

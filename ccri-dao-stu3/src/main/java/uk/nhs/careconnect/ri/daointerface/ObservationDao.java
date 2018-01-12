@@ -178,7 +178,7 @@ public class ObservationDao implements ObservationRepository {
                 observationEntity.setValueQuantity(observation.getValueQuantity().getValue());
 
                 if (observation.getValueQuantity().getCode() != null) {
-                    ConceptEntity concept = conceptDao.findCode(observation.getValueQuantity().getSystem(),observation.getValueQuantity().getCode());
+                    ConceptEntity concept = conceptDao.findAddCode(observation.getValueQuantity());
                     if (concept != null) observationEntity.setValueUnitOfMeasure(concept);
 
                 }
@@ -188,7 +188,7 @@ public class ObservationDao implements ObservationRepository {
         // Body Site
 
         if (observation.hasBodySite()) {
-            ConceptEntity code = conceptDao.findCode(observation.getBodySite().getCoding().get(0).getSystem(),observation.getBodySite().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(observation.getBodySite().getCoding().get(0));
             if (code != null) { observationEntity.setBodySite(code); }
             else {
                 log.info("Body: Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
@@ -200,7 +200,7 @@ public class ObservationDao implements ObservationRepository {
         // Method
 
         if (observation.hasMethod()) {
-            ConceptEntity code = conceptDao.findCode(observation.getMethod().getCoding().get(0).getSystem(),observation.getMethod().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(observation.getMethod().getCoding().get(0));
             if (code != null) { observationEntity.setMethod(code); }
             else {
                 log.info("Method: Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
@@ -213,7 +213,7 @@ public class ObservationDao implements ObservationRepository {
         // Interpretation
 
         if (observation.hasInterpretation()) {
-            ConceptEntity code = conceptDao.findCode(observation.getInterpretation().getCoding().get(0).getSystem(),observation.getInterpretation().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(observation.getInterpretation().getCoding().get(0));
             if (code != null) { observationEntity.setInterpretation(code); }
             else {
                 log.error("Interpretation: Missing System/Code = "+ observation.getInterpretation().getCoding().get(0).getSystem() +" code = "+observation.getInterpretation().getCoding().get(0).getCode());
@@ -266,7 +266,7 @@ public class ObservationDao implements ObservationRepository {
             if (range.hasLow()) rangeEntity.setLowQuantity(range.getLow().getValue());
             if (range.hasHigh()) rangeEntity.setHighQuantity(range.getHigh().getValue());
             if (range.hasType()) {
-                ConceptEntity code = conceptDao.findCode(range.getType().getCoding().get(0).getSystem(),range.getType().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findAddCode(range.getType().getCoding().get(0));
                 if (code != null) { rangeEntity.setType(code); }
                 else {
                     log.info("Range: Missing System/Code = "+ range.getType().getCoding().get(0).getSystem() +" code = "+range.getType().getCoding().get(0).getCode());
@@ -343,7 +343,7 @@ public class ObservationDao implements ObservationRepository {
 
         for (CodeableConcept concept :observation.getCategory()) {
             if (concept.getCoding().size() > 0) {
-                ConceptEntity conceptEntity = conceptDao.findCode(concept.getCoding().get(0).getSystem(), concept.getCoding().get(0).getCode());
+                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
                 if (conceptEntity != null) {
                     ObservationCategory category = null;
                     // Look for existing categories
@@ -395,7 +395,7 @@ public class ObservationDao implements ObservationRepository {
                     observationComponent.setValueQuantity(component.getValueQuantity().getValue());
 
                     if (component.getValueQuantity().getCode() != null) {
-                        ConceptEntity concept = conceptDao.findCode(component.getValueQuantity().getSystem(),component.getValueQuantity().getCode());
+                        ConceptEntity concept = conceptDao.findAddCode(component.getValueQuantity());
                         if (concept != null) {
                             observationComponent.setValueUnitOfMeasure(concept);
                         }
@@ -425,7 +425,7 @@ public class ObservationDao implements ObservationRepository {
 
                     if (component.getValueCodeableConcept().getCoding().get(0).hasCode()) {
                         CodeableConcept valueConcept = component.getValueCodeableConcept();
-                        codeValue = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                        codeValue = conceptDao.findAddCode(valueConcept.getCoding().get(0));
                     }
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
@@ -468,7 +468,7 @@ public class ObservationDao implements ObservationRepository {
 
                 if (observation.getValueCodeableConcept().getCoding().get(0).hasCode()) {
                     CodeableConcept valueConcept = observation.getValueCodeableConcept();
-                     code = conceptDao.findCode(valueConcept.getCoding().get(0).getSystem(),valueConcept.getCoding().get(0).getCode());
+                     code = conceptDao.findAddCode(valueConcept.getCoding().get(0));
                 }
             } catch (Exception ex) {
                 log.error(ex.getMessage());

@@ -4,6 +4,8 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Duration;
+import org.hl7.fhir.dstu3.model.Quantity;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -11,25 +13,29 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 
 public interface ConceptRepository {
 
-    public ConceptEntity findCode(String codeSystemUri, String code);
+    ConceptEntity findCode(Coding code);
 
-    public ConceptEntity findAddCode(Coding code);
+    ConceptEntity findCode(Duration duration);
 
-    public ConceptEntity findCode(CodeSystemEntity codeSystemUri, String code);
+    ConceptEntity findAddCode(Coding code);
 
-    public ConceptEntity save(ConceptEntity conceptEntity);
+    ConceptEntity findAddCode(Quantity quantity);
 
-    public ConceptEntity saveTransactional(ConceptEntity conceptEntity);
+    ConceptEntity findCode(CodeSystemEntity codeSystemUri, String code);
 
-    public void save(ConceptParentChildLink conceptParentChildLink);
+    ConceptEntity save(ConceptEntity conceptEntity);
 
-    public void persistLinks(ConceptEntity conceptEntity);
+    //public ConceptEntity saveTransactional(ConceptEntity conceptEntity);
 
-    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
+    void save(ConceptParentChildLink conceptParentChildLink);
 
-    public ConceptDesignation save(ConceptDesignation conceptDesignation);
+    void persistLinks(ConceptEntity conceptEntity);
 
-    public Session getSession();
+    void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
+
+    ConceptDesignation save(ConceptDesignation conceptDesignation);
+
+    Session getSession();
 
     public CodeSystemEntity findBySystem(String system);
 

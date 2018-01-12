@@ -152,7 +152,7 @@ public class  EncounterDao implements EncounterRepository {
             encounterEntity.setPatient(patientEntity);
         }
         if (encounter.hasClass_()) {
-            ConceptEntity code = conceptDao.findCode(encounter.getClass_().getSystem(),encounter.getClass_().getCode());
+            ConceptEntity code = conceptDao.findCode(encounter.getClass_());
             if (code != null) { encounterEntity._setClass(code); }
             else {
                 log.info("Code: Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
@@ -162,7 +162,7 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasType()) {
-            ConceptEntity code = conceptDao.findCode(encounter.getType().get(0).getCoding().get(0).getSystem(),encounter.getType().get(0).getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(encounter.getType().get(0).getCoding().get(0));
             if (code != null) { encounterEntity.setType(code); }
             else {
                 log.info("Code: Missing System/Code = "+encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());
@@ -189,7 +189,7 @@ public class  EncounterDao implements EncounterRepository {
                 }
 
                 if (participant.hasType()) {
-                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0).getSystem(),participant.getType().get(0).getCoding().get(0).getCode());
+                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0));
                     if (code != null) {
                         encounterEntity.setParticipantType(code);
                     } else {
@@ -218,7 +218,7 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasPriority()) {
-            ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0).getSystem(),encounter.getPriority().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0));
             if (code != null) { encounterEntity.setPriority(code); }
             else {
                 log.info("Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());

@@ -139,7 +139,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
         }
 
         if (diagnosticReport.hasType()) {
-            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCategory().getCoding().get(0).getSystem(),diagnosticReport.getCategory().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCategory().getCoding().get(0));
             if (code != null) { diagnosticReportEntity.setCategory(code); }
             else {
                 log.info("Type: Missing System/Code = "+ diagnosticReport.getCategory().getCoding().get(0).getSystem() +" code = "+diagnosticReport.getCategory().getCoding().get(0).getCode());
@@ -149,7 +149,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
             }
         }
         if (diagnosticReport.hasCode()) {
-            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCode().getCoding().get(0).getSystem(),diagnosticReport.getCode().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCode().getCoding().get(0));
             if (code != null) { diagnosticReportEntity.setCode(code); }
             else {
                 log.info("Class: Missing System/Code = "+ diagnosticReport.getCode().getCoding().get(0).getSystem()
