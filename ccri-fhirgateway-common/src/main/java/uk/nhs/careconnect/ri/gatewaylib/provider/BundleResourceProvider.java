@@ -84,7 +84,7 @@ public class BundleResourceProvider implements IResourceProvider {
     public Resource searchAddResource(String referenceId) {
 
         log.info("Search "+referenceId);
-        if (referenceId == null) throw new InternalErrorException("Null Reference");
+        if (referenceId == null) return null; //throw new InternalErrorException("Null Reference");
         Resource resource = resourceMap.get(referenceId);
         // Don't process, if already processed.
         if (resource !=null)
@@ -796,14 +796,19 @@ public class BundleResourceProvider implements IResourceProvider {
         List<Reference> authors = new ArrayList<>();
         for (Reference reference : composition.getAuthor()) {
             Resource resource = searchAddResource(reference.getReference());
-            if (resource != null) log.info("Found Resource = " + resource.getId());
-            authors.add(getReference(resource));
+            if (resource != null) {
+                log.info("Found Resource = " + resource.getId());
+                authors.add(getReference(resource));
+            }
+
         }
         composition.setAuthor(authors);
 
         if (composition.getSubject() != null) {
             Resource resource = searchAddResource(composition.getSubject().getReference());
-            if (resource != null) log.info("Patient resource = "+resource.getId());
+            if (resource != null) {
+                log.info("Patient resource = "+resource.getId());
+            }
             composition.setSubject(getReference(resource));
         }
         if (composition.getEncounter().getReference() != null) {
