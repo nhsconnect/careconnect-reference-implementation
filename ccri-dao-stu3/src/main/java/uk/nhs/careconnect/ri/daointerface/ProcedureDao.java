@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ProcedureEntityToFHIRProcedureTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
@@ -52,6 +54,9 @@ public class ProcedureDao implements ProcedureRepository {
 
     @Autowired
     OrganisationRepository organisationDao;
+
+    @Autowired
+    LocationRepository locationDao;
 
     @Autowired
     EncounterRepository encounterDao;
@@ -192,6 +197,10 @@ public class ProcedureDao implements ProcedureRepository {
                 throw new IllegalArgumentException("Missing Outcome System/Code = "+ procedure.getOutcome().getCoding().get(0).getSystem()
                         +" code = "+procedure.getOutcome().getCoding().get(0).getCode());
             }
+        }
+        if (procedure.hasLocation()) {
+            LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(procedure.getLocation().getReference()));
+            procedureEntity.setLocation(locationEntity);
         }
         if (procedure.hasPerformed()) {
             try {
