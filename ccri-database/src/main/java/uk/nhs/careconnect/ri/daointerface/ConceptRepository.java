@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.daointerface;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hl7.fhir.dstu3.model.Coding;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -11,6 +12,8 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
 public interface ConceptRepository {
 
     public ConceptEntity findCode(String codeSystemUri, String code);
+
+    public ConceptEntity findAddCode(Coding code);
 
     public ConceptEntity findCode(CodeSystemEntity codeSystemUri, String code);
 

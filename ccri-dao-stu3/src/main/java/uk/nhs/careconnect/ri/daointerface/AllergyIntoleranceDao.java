@@ -166,7 +166,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             allergyEntity.setVerificationStatus(allergy.getVerificationStatus());
         }
         if (allergy.hasCode()) {
-            ConceptEntity code = conceptDao.findCode(allergy.getCode().getCoding().get(0).getSystem(),allergy.getCode().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(allergy.getCode().getCoding().get(0));
             if (code != null) { allergyEntity.setCode(code); }
             else {
                 log.info("Code: Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem() +" code = "+allergy.getCode().getCoding().get(0).getCode());

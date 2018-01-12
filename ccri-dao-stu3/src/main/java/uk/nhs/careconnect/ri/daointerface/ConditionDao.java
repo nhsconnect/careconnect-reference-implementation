@@ -158,7 +158,7 @@ public class ConditionDao implements ConditionRepository {
             conditionEntity.setVerificationStatus(condition.getVerificationStatus());
         }
         if (condition.hasSeverity()) {
-            ConceptEntity code = conceptDao.findCode(condition.getSeverity().getCoding().get(0).getSystem(),condition.getSeverity().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(condition.getSeverity().getCoding().get(0));
             if (code != null) { conditionEntity.setSeverity(code); }
             else {
                 log.info("Severity Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
@@ -167,7 +167,7 @@ public class ConditionDao implements ConditionRepository {
             }
         }
         if (condition.hasCode()) {
-            ConceptEntity code = conceptDao.findCode(condition.getCode().getCoding().get(0).getSystem(),condition.getCode().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(condition.getCode().getCoding().get(0));
             if (code != null) { conditionEntity.setCode(code); }
             else {
                 log.info("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
@@ -221,7 +221,7 @@ public class ConditionDao implements ConditionRepository {
             }
             if (conditionCategory == null)  conditionCategory = new ConditionCategory();
 
-            ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0).getSystem(),concept.getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
             if (code != null) {
                 conditionCategory.setCategory(code);
                 conditionCategory.setCondition(conditionEntity);

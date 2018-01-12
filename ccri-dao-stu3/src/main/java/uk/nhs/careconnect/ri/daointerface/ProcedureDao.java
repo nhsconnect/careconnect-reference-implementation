@@ -162,7 +162,7 @@ public class ProcedureDao implements ProcedureRepository {
         }
 
         if (procedure.hasCode()) {
-            ConceptEntity code = conceptDao.findCode(procedure.getCode().getCoding().get(0).getSystem(),procedure.getCode().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(procedure.getCode().getCoding().get(0));
             if (code != null) {
                 procedureEntity.setCode(code);
             }
@@ -175,7 +175,7 @@ public class ProcedureDao implements ProcedureRepository {
             }
         }
         if (procedure.hasCategory()) {
-            ConceptEntity code = conceptDao.findCode(procedure.getCategory().getCoding().get(0).getSystem(),procedure.getCategory().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(procedure.getCategory().getCoding().get(0));
             if (code != null) {
                 procedureEntity.setCategory(code); }
             else {
@@ -187,7 +187,7 @@ public class ProcedureDao implements ProcedureRepository {
             }
         }
         if (procedure.hasOutcome()) {
-            ConceptEntity code = conceptDao.findCode(procedure.getOutcome().getCoding().get(0).getSystem(),procedure.getOutcome().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(procedure.getOutcome().getCoding().get(0));
             if (code != null) {
                 procedureEntity.setOutcome(code); }
             else {

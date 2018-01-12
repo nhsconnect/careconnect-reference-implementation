@@ -163,7 +163,7 @@ public class ImmunizationDao implements ImmunizationRepository {
         }
 
         if (immunisation.hasVaccineCode()) {
-            ConceptEntity code = conceptDao.findCode(immunisation.getVaccineCode().getCoding().get(0).getSystem(),immunisation.getVaccineCode().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(immunisation.getVaccineCode().getCoding().get(0));
             if (code != null) { immunisationEntity.setVacinationCode(code); }
             else {
                 log.info("Code: Missing System/Code = "+ immunisation.getVaccineCode().getCoding().get(0).getSystem()
@@ -174,7 +174,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             }
         }
         if (immunisation.hasReportOrigin()) {
-            ConceptEntity code = conceptDao.findCode(immunisation.getReportOrigin().getCoding().get(0).getSystem(),immunisation.getReportOrigin().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(immunisation.getReportOrigin().getCoding().get(0));
             if (code != null) { immunisationEntity.setReportOrigin(code); }
             else {
                 log.info("Code: Missing Origin System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()

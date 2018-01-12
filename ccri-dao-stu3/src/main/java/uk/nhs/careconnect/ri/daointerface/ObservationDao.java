@@ -146,7 +146,7 @@ public class ObservationDao implements ObservationRepository {
         observationEntity.setStatus(observation.getStatus());
 
         if (observation.hasCode()) {
-          ConceptEntity code = conceptDao.findCode(observation.getCode().getCoding().get(0).getSystem(),observation.getCode().getCoding().get(0).getCode());
+          ConceptEntity code = conceptDao.findAddCode(observation.getCode().getCoding().get(0));
           if (code != null) { observationEntity.setCode(code); }
           else {
               log.info("Code: Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
@@ -367,7 +367,7 @@ public class ObservationDao implements ObservationRepository {
         for (Observation.ObservationComponentComponent component :observation.getComponent()) {
             ConceptEntity codeComponent = null;
             if (component.hasCode()) {
-                codeComponent = conceptDao.findCode(component.getCode().getCoding().get(0).getSystem(),component.getCode().getCoding().get(0).getCode());
+                codeComponent = conceptDao.findAddCode(component.getCode().getCoding().get(0));
             }
 
             ObservationEntity observationComponent = searchAndCreateComponentObservation(observationEntity,codeComponent);

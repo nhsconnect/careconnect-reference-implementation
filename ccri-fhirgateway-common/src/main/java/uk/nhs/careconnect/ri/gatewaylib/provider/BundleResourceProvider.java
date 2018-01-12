@@ -94,8 +94,9 @@ public class BundleResourceProvider implements IResourceProvider {
         }
 
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource().getId().equals(referenceId) || entry.getFullUrl().equals(referenceId)) {
-                Resource iResource = entry.getResource();
+            Resource iResource = null;
+            if ((entry.getFullUrl() !=null && entry.getFullUrl().equals(referenceId))) {
+                iResource = entry.getResource();
                 if (iResource instanceof Patient) { resource = searchAddPatient(referenceId, (Patient) iResource); }
                 else if (iResource instanceof Practitioner) { resource = searchAddPractitioner(referenceId, (Practitioner) iResource); }
                 else if (iResource instanceof Encounter) { resource = searchAddEncounter(referenceId, (Encounter) iResource); }
@@ -107,7 +108,23 @@ public class BundleResourceProvider implements IResourceProvider {
                 else if (iResource instanceof Procedure) { resource = searchAddProcedure(referenceId, (Procedure) iResource); }
                 else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId, (Composition) iResource); }
                 else {
-                    log.info( "Not processed (" + iResource.getClass());
+                    log.info( "Found in Bundle. Not processed (" + iResource.getClass());
+                }
+            }
+            if (iResource == null && entry.getResource() !=null && entry.getResource().getId() !=null && entry.getResource().getId().equals(referenceId)) {
+                iResource = entry.getResource();
+                if (iResource instanceof Patient) { resource = searchAddPatient(referenceId, (Patient) iResource); }
+                else if (iResource instanceof Practitioner) { resource = searchAddPractitioner(referenceId, (Practitioner) iResource); }
+                else if (iResource instanceof Encounter) { resource = searchAddEncounter(referenceId, (Encounter) iResource); }
+                else if (iResource instanceof Organization) { resource = searchAddOrganisation(referenceId, (Organization) iResource); }
+                else if (iResource instanceof Location) { resource = searchAddLocation(referenceId, (Location) iResource); }
+                else if (iResource instanceof Observation) { resource = searchAddObservation(referenceId, (Observation) iResource); }
+                else if (iResource instanceof AllergyIntolerance) { resource = searchAddAllergyIntolerance(referenceId, (AllergyIntolerance) iResource); }
+                else if (iResource instanceof Condition) { resource = searchAddCondition(referenceId, (Condition) iResource); }
+                else if (iResource instanceof Procedure) { resource = searchAddProcedure(referenceId, (Procedure) iResource); }
+                else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId, (Composition) iResource); }
+                else {
+                    log.info( "Found in Bundle. Not processed (" + iResource.getClass());
                 }
             }
         }
@@ -1058,6 +1075,30 @@ public class BundleResourceProvider implements IResourceProvider {
             if (encounter.getHospitalization().getDestination().getReference() !=null) {
                 Resource resource = searchAddResource(encounter.getHospitalization().getDestination().getReference());
                 encounter.getHospitalization().setDestination(getReference(resource));
+            }
+        }
+        if (encounter.hasServiceProvider()) {
+            Resource resource = searchAddResource(encounter.getServiceProvider().getReference());
+            encounter.setServiceProvider(getReference(resource));
+        }
+        if (encounter.hasClass_()) {
+            if (encounter.getClass_().getSystem() == null) {
+                encounter.getClass_().setSystem("http://hl7.org/fhir/v3/ActCode");
+
+                switch (encounter.getClass_().getCode()) {
+                    case "inpatient":
+                        encounter.getClass_().setCode("ACUTE");
+                        break;
+                    case "outpatient":
+                        encounter.getClass_().setCode("SS");
+                        break;
+                    case "ambulatory":
+                        encounter.getClass_().setCode("AMB");
+                        break;
+                    case "emergency":
+                        encounter.getClass_().setCode("EMER");
+                        break;
+                }
             }
         }
 

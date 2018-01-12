@@ -144,7 +144,7 @@ public class CompositionDao implements CompositionRepository {
         }
 
         if (composition.hasType()) {
-            ConceptEntity code = conceptDao.findCode(composition.getType().getCoding().get(0).getSystem(),composition.getType().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(composition.getType().getCoding().get(0));
             if (code != null) { compositionEntity.setType(code); }
             else {
                 log.info("Type: Missing System/Code = "+ composition.getType().getCoding().get(0).getSystem() +" code = "+composition.getType().getCoding().get(0).getCode());
@@ -154,7 +154,7 @@ public class CompositionDao implements CompositionRepository {
             }
         }
         if (composition.hasClass_()) {
-            ConceptEntity code = conceptDao.findCode(composition.getClass_().getCoding().get(0).getSystem(),composition.getClass_().getCoding().get(0).getCode());
+            ConceptEntity code = conceptDao.findAddCode(composition.getClass_().getCoding().get(0));
             if (code != null) { compositionEntity.setClass_(code); }
             else {
                 log.info("Class: Missing System/Code = "+ composition.getClass_().getCoding().get(0).getSystem() +" code = "+composition.getClass_().getCoding().get(0).getCode());
@@ -244,8 +244,7 @@ public class CompositionDao implements CompositionRepository {
                 sectionEntity.setComposition(compositionEntity);
             }
             if (section.hasCode()) {
-                ConceptEntity code = conceptDao.findCode(section.getCode().getCoding().get(0).getSystem()
-                        ,section.getCode().getCoding().get(0).getCode());
+                ConceptEntity code = conceptDao.findAddCode(section.getCode().getCoding().get(0));
                 if (code != null) { sectionEntity.setCode(code); }
                 else {
                     log.info("Class: Missing System/Code = "+ section.getCode().getCoding().get(0).getSystem()

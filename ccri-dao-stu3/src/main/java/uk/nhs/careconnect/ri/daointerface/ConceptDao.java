@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.daointerface;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -273,6 +274,55 @@ public class ConceptDao implements ConceptRepository {
             break;
         }
 
+        return conceptEntity;
+    }
+
+    @Override
+    public ConceptEntity findAddCode(Coding coding) {
+        ConceptEntity conceptEntity = null;
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<ConceptEntity> criteria = builder.createQuery(ConceptEntity.class);
+        Root<ConceptEntity> root = criteria.from(ConceptEntity.class);
+
+
+        List<Predicate> predList = new LinkedList<Predicate>();
+        List<ConceptEntity> results = new ArrayList<ConceptEntity>();
+        Join<ConceptEntity,CodeSystemRepository> join = root.join("codeSystemEntity");
+
+        log.debug("Looking for code ="+coding.getCode()+" in "+coding.getSystem());
+        Predicate pcode = builder.equal(root.get("code"), coding.getCode());
+        predList.add(pcode);
+
+        Predicate psystem = builder.equal(join.get("codeSystemUri"), coding.getSystem());
+        predList.add(psystem);
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+
+        criteria.select(root).where(predArray);
+
+        TypedQuery<ConceptEntity> qry = em.createQuery(criteria);
+        qry.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        List<ConceptEntity> qryResults = qry.getResultList();
+
+        for (ConceptEntity concept : qryResults) {
+            conceptEntity = concept;
+            log.debug("Found for code="+coding.getCode()+" ConceptEntity.Id="+conceptEntity.getId());
+            break;
+        }
+        // 12/Jan/2018 KGM to cope with LOINC codes and depreciated SNOMED codes.
+        if (conceptEntity == null) {
+            CodeSystemEntity system = codeSystemRepository.findBySystem(coding.getSystem());
+            if (system !=null) {
+                conceptEntity = new ConceptEntity();
+                conceptEntity.setCode(coding.getCode());
+                conceptEntity.setDescription(coding.getDisplay());
+                conceptEntity.setDisplay(coding.getDisplay());
+                conceptEntity.setCodeSystem(system);
+                em.persist(conceptEntity);
+            }
+        }
         return conceptEntity;
     }
 }
