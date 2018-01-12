@@ -302,6 +302,8 @@ public class ConceptDao implements ConceptRepository {
                 conceptEntity.setDisplay(coding.getDisplay());
                 conceptEntity.setCodeSystem(system);
                 em.persist(conceptEntity);
+            } else {
+                throw new IllegalArgumentException("Unsupported System "+coding.getSystem());
             }
         }
         return conceptEntity;
@@ -322,6 +324,8 @@ public class ConceptDao implements ConceptRepository {
                 conceptEntity.setDisplay(quantity.getUnit());
                 conceptEntity.setCodeSystem(system);
                 em.persist(conceptEntity);
+            } else {
+                throw new IllegalArgumentException("Unsupported system "+quantity.getSystem());
             }
         }
         return conceptEntity;
