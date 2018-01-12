@@ -62,7 +62,7 @@ public class BundleResourceProvider implements IResourceProvider {
             // Look for existing resources. Ideally we should not need to add Patient, Practitioner, Organization, etc
             // These should be using well known identifiers and ideally will be present on our system.
 
-            searchAddResource(resource.getId());
+            if (resource.getId() != null) searchAddResource(resource.getId());
 
         }
 
