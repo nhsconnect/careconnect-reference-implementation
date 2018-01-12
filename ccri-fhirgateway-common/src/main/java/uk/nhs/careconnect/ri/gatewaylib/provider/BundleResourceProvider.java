@@ -84,7 +84,9 @@ public class BundleResourceProvider implements IResourceProvider {
     public Resource searchAddResource(String referenceId) {
 
         log.info("Search "+referenceId);
-        if (referenceId == null) return null; //throw new InternalErrorException("Null Reference");
+        if (referenceId == null) {
+            return null; //throw new InternalErrorException("Null Reference");
+        }
         Resource resource = resourceMap.get(referenceId);
         // Don't process, if already processed.
         if (resource !=null)
