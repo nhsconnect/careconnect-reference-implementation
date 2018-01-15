@@ -394,7 +394,7 @@ public class ConditionDao implements ConditionRepository {
                     }
 
                     case LESSTHAN_OR_EQUALS: {
-                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterUpper);
+                        Predicate p = builder.lessThanOrEqualTo(root.get("assertedDateTime"), parameterUpper);
                         predList.add(p);
                         break;
                     }
@@ -424,6 +424,8 @@ public class ConditionDao implements ConditionRepository {
         {
             criteria.select(root);
         }
+
+        criteria.orderBy(builder.desc(root.get("assertedDateTime")));
 
         TypedQuery<ConditionEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

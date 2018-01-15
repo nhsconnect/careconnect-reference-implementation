@@ -82,7 +82,7 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterDiagnosis.class)
     @LazyCollection(LazyCollectionOption.TRUE)
-    Set<EncounterReason> diagnoses = new HashSet<>();
+    Set<EncounterDiagnosis> diagnoses = new HashSet<>();
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterIdentifier.class)
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -178,7 +178,7 @@ public class EncounterEntity extends BaseResource {
         return participant;
     }
 
-    public Set<EncounterReason> getDiagnoses() {
+    public Set<EncounterDiagnosis> getDiagnoses() {
         if (diagnoses == null) {
             diagnoses = new HashSet<>();
         }
@@ -196,7 +196,7 @@ public class EncounterEntity extends BaseResource {
         return location;
     }
 
-    public EncounterEntity setDiagnoses(Set<EncounterReason> diagnoses) {
+    public EncounterEntity setDiagnoses(Set<EncounterDiagnosis> diagnoses) {
         this.diagnoses = diagnoses;
         return this;
     }

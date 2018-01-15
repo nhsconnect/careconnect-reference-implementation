@@ -431,7 +431,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
         {
             criteria.select(root);
         }
-
+        criteria.orderBy(builder.desc(root.get("assertedDateTime")));
 
         TypedQuery<AllergyIntoleranceEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

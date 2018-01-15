@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.EncounterEntityToFHIREncounterTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
@@ -59,6 +61,9 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     LocationRepository locationDao;
+
+    @Autowired
+    ConditionRepository conditionDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -254,6 +259,25 @@ public class  EncounterDao implements EncounterRepository {
             em.persist(encounterIdentifier);
         }
 
+        for (Encounter.DiagnosisComponent component:encounter.getDiagnosis()) {
+
+            EncounterDiagnosis encounterDiagnosis = null;
+            for (EncounterDiagnosis searchEncounter : encounterEntity.getDiagnoses()) {
+                if (searchEncounter.getCondition().getId().equals(component.getCondition().getIdElement().getValue())) {
+                    encounterDiagnosis = searchEncounter;
+                    break;
+                }
+            }
+            if (encounterDiagnosis == null) {
+                encounterDiagnosis= new EncounterDiagnosis();
+                encounterDiagnosis.setEncounter(encounterEntity);
+                ConditionEntity condition = conditionDao.readEntity(ctx,new IdType(component.getCondition().getReference()));
+                encounterDiagnosis.setCondition(condition);
+                em.persist(encounterDiagnosis);
+            }
+
+        }
+
         return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
     }
 
@@ -410,7 +434,7 @@ public class  EncounterDao implements EncounterRepository {
         {
             criteria.select(root);
         }
-
+        criteria.orderBy(builder.desc(root.get("periodStartDate")));
 
         TypedQuery<EncounterEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

@@ -386,6 +386,7 @@ public class ImmunizationDao implements ImmunizationRepository {
         {
             criteria.select(root);
         }
+        criteria.orderBy(builder.desc(root.get("administrationDate")));
 
         TypedQuery<ImmunisationEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

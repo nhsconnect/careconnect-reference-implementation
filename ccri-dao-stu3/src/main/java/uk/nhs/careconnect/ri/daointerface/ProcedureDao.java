@@ -416,6 +416,7 @@ public class ProcedureDao implements ProcedureRepository {
             criteria.select(root);
         }
 
+        criteria.orderBy(builder.desc(root.get("performedDate")));
 
         TypedQuery<ProcedureEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

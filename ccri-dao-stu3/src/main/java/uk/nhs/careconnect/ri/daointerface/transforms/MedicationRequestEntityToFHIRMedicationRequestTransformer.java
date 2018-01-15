@@ -131,8 +131,13 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
                     .setDisplay(medicationRequestEntity.getSupplyTypeCode().getDisplay())
                     .setSystem(medicationRequestEntity.getSupplyTypeCode().getSystem())
                     .setCode(medicationRequestEntity.getSupplyTypeCode().getCode());
-
-            medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
+            if (medicationRequestEntity.getSupplyTypeCode().getCode().contains("39482")) {
+                // NHS coding
+                medicationRequest.addExtension().setUrl(CareConnectExtension.UrlMedicationSupplyType).setValue(concept);
+            } else {
+                // else assume (US) shared record coding
+                medicationRequest.addExtension().setUrl(CareConnectExtension.ShrActionCodeExtension).setValue(concept);
+            }
         } else {
             CodeableConcept concept = new CodeableConcept();
             concept.addCoding()

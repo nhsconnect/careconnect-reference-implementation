@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -186,7 +187,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
         if (prescription.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findCode(prescription.getMedicationCodeableConcept().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(prescription.getMedicationCodeableConcept().getCoding().get(0));
                 if (code != null) {
                     prescriptionEntity.setMedicationCode(code);
                 } else {
@@ -203,7 +204,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             prescriptionEntity.setAuthoredDate(prescription.getAuthoredOn());
         }
 
-        if (prescription.getRequester()!=null) {
+        if (prescription.hasRequester()) {
             if (prescription.getRequester().getAgent().getReference().contains("Practitioner")) {
                 PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(prescription.getRequester().getAgent().getReference()));
                 prescriptionEntity.setRequesterPractitioner(practitionerEntity);
@@ -218,7 +219,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         if (dispense.hasExpectedSupplyDuration()) {
             prescriptionEntity.setExpectedSupplyDuration(dispense.getExpectedSupplyDuration().getValue());
 
-            ConceptEntity code = conceptDao.findCode(dispense.getExpectedSupplyDuration());
+            ConceptEntity code = conceptDao.findAddCode(dispense.getExpectedSupplyDuration());
             if (code != null) {
                 prescriptionEntity.setDurationUnitsCode(code);
             } else {
@@ -238,6 +239,19 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             }
             if (dispense.getValidityPeriod().hasEnd()) {
                 prescriptionEntity.setDispenseRequestEnd(dispense.getValidityPeriod().getEnd());
+            }
+        }
+
+        for (Extension extension : prescription.getExtension()) {
+            if (extension.getUrl().equals(CareConnectExtension.UrlMedicationSupplyType) && extension.getValue() instanceof CodeableConcept) {
+                CodeableConcept concept = (CodeableConcept) extension.getValue();
+                ConceptEntity code = conceptDao.findAddCode(concept.getCodingFirstRep());
+                if (code != null) prescriptionEntity.setSupplyTypeCode(code);
+            }
+            if (extension.getUrl().equals(CareConnectExtension.ShrActionCodeExtension) && extension.getValue() instanceof CodeableConcept) {
+                CodeableConcept concept = (CodeableConcept) extension.getValue();
+                ConceptEntity code = conceptDao.findAddCode(concept.getCodingFirstRep());
+                if (code != null) prescriptionEntity.setSupplyTypeCode(code);
             }
         }
 
@@ -276,7 +290,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
             if (dosage.hasAdditionalInstruction()) {
 
-                ConceptEntity code = conceptDao.findCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
@@ -290,7 +304,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             if (dosage.hasAsNeededCodeableConcept()) {
 
                 try {
-                ConceptEntity code = conceptDao.findCode(dosage.getAsNeededCodeableConcept().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(dosage.getAsNeededCodeableConcept().getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setAdditionalInstructionCode(code);
                 } else {
@@ -306,7 +320,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             }
             if (dosage.hasRoute()) {
 
-                ConceptEntity code = conceptDao.findCode(dosage.getRoute().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(dosage.getRoute().getCoding().get(0));
                 if (code != null) {
                     dosageEntity.setRouteCode(code);
                 } else {
@@ -586,7 +600,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         {
             criteria.select(root);
         }
-
+        criteria.orderBy(builder.desc(root.get("authoredDate")));
         TypedQuery<MedicationRequestEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         if (authoredDate != null) {

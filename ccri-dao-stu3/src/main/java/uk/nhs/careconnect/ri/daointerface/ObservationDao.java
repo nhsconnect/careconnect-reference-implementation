@@ -707,7 +707,7 @@ public class ObservationDao implements ObservationRepository {
         {
             criteria.select(root);
         }
-
+        criteria.orderBy(builder.desc(root.get("effectiveDateTime")));
 
         List<ObservationEntity> qryResults = null;
         TypedQuery<ObservationEntity> typedQuery = em.createQuery(criteria);

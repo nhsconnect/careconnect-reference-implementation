@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEpisode;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
@@ -109,6 +110,10 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
                         .setCode(encounterEntity.getPriority().getCode())
                         .setSystem(encounterEntity.getPriority().getSystem())
                         .setDisplay(encounterEntity.getPriority().getDisplay());
+        }
+
+        for (EncounterDiagnosis diagnosis : encounterEntity.getDiagnoses()) {
+            encounter.addDiagnosis().setCondition(new Reference("Condition/"+diagnosis.getCondition().getId()));
         }
 
         return encounter;
