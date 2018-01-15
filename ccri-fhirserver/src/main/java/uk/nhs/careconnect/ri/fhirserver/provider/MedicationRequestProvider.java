@@ -90,8 +90,9 @@ public class MedicationRequestProvider implements ICCResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER)  TokenParam identifierCode
                                           ) {
-        return prescriptionDao.search(ctx,patient, code, dateWritten, status,null,resid);
+        return prescriptionDao.search(ctx,patient, code, dateWritten, status,identifierCode,resid);
     }
 
     @Read()
