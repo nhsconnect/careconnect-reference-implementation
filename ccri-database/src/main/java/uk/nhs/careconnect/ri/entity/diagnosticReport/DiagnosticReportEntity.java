@@ -20,7 +20,7 @@ import java.util.Set;
 @Table(name = "DiagnosticReport")
 public class DiagnosticReportEntity extends BaseResource {
 
-    private static final int MAX_DESC_LENGTH = 16384;
+    private static final int MAX_DESC_LENGTH = 7000;
 
 
     @Id

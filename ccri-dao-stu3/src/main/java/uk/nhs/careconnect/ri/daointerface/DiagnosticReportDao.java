@@ -13,6 +13,8 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportIdentifier;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportResult;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,6 +46,9 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
 
     @Autowired
     EncounterRepository encounterDao;
+
+    @Autowired
+    ObservationRepository observationDao;
 
     @Autowired
     OrganisationRepository organisationDao;
@@ -139,7 +144,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
         }
 
         if (diagnosticReport.hasType()) {
-            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCategory().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(diagnosticReport.getCategory().getCoding().get(0));
             if (code != null) { diagnosticReportEntity.setCategory(code); }
             else {
                 log.info("Type: Missing System/Code = "+ diagnosticReport.getCategory().getCoding().get(0).getSystem() +" code = "+diagnosticReport.getCategory().getCoding().get(0).getCode());
@@ -149,7 +154,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
             }
         }
         if (diagnosticReport.hasCode()) {
-            ConceptEntity code = conceptDao.findCode(diagnosticReport.getCode().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(diagnosticReport.getCode().getCoding().get(0));
             if (code != null) { diagnosticReportEntity.setCode(code); }
             else {
                 log.info("Class: Missing System/Code = "+ diagnosticReport.getCode().getCoding().get(0).getSystem()
@@ -187,6 +192,27 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
             diagnosticReportIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             diagnosticReportIdentifier.setDiagnosticReport(diagnosticReportEntity);
             em.persist(diagnosticReportIdentifier);
+        }
+        for (Reference reference : diagnosticReport.getResult()) {
+            DiagnosticReportResult diagnosticReportResult = null;
+
+            for (DiagnosticReportResult resultSearch : diagnosticReportEntity.getResults()) {
+                log.info("Diag = "+reference.getIdElement().getValue());
+                if (resultSearch.getObservation().getId().equals(reference.getIdElement().getValue())) {
+                    diagnosticReportResult = resultSearch;
+                    break;
+                }
+            }
+            if (diagnosticReportResult == null) {
+                diagnosticReportResult = new DiagnosticReportResult();
+                diagnosticReportResult.setDiagnosticReport(diagnosticReportEntity);
+                ObservationEntity observation = observationDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (observation!=null) {
+                    diagnosticReportResult.setObservation(observation);
+                    em.persist(diagnosticReportResult);
+                }
+            }
+
         }
 
 

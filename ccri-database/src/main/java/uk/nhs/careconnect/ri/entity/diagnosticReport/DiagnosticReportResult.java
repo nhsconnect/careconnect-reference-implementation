@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="DiagnosticReportResult", uniqueConstraints= @UniqueConstraint(name="PK_DIAGNOSTIC_REPORT_RESULT", columnNames={"DIAGNOSTIC_REPORT_RESULT_ID"})
 		)
-public class DiagnosticReportResult {
+public class  DiagnosticReportResult {
 
 	public DiagnosticReportResult() {
 

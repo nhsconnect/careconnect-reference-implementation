@@ -5,10 +5,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Location;
-import org.hl7.fhir.dstu3.model.Procedure;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,9 +201,14 @@ public class ProcedureDao implements ProcedureRepository {
         }
         if (procedure.hasPerformed()) {
             try {
-                procedureEntity.setPerformedDate(procedure.getPerformedDateTimeType().getValue());
+                if (procedure.getPerformed() instanceof DateTimeType) {
+                    procedureEntity.setPerformedDate(procedure.getPerformedDateTimeType().getValue());
+                } else if (procedure.getPerformed() instanceof Period) {
+                    procedureEntity.setPerformedDate(procedure.getPerformedPeriod().getStart());
+                    procedureEntity.setPerformedEndDate(procedure.getPerformedPeriod().getEnd());
+                }
             } catch (Exception ex) {
-                throw new IllegalArgumentException("Invalid Date Time");
+                throw new IllegalArgumentException("Invalid Date Time: "+ex.getMessage());
             }
         }
         if (procedure.hasContext() && procedure.getContext().getReference().contains("Encounter")) {

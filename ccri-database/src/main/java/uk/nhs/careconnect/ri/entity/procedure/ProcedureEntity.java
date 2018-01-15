@@ -76,6 +76,17 @@ public class ProcedureEntity extends BaseResource {
     @Column(name = "performedDate")
     private Date performedDate;
 
+    public Date getPerformedEndDate() {
+        return performedEndDate;
+    }
+
+    public void setPerformedEndDate(Date performedEndDate) {
+        this.performedEndDate = performedEndDate;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "performedEndDate")
+    private Date performedEndDate;
 
     @OneToMany(mappedBy="procedure", targetEntity=ProcedurePerformer.class)
     @LazyCollection(LazyCollectionOption.TRUE)

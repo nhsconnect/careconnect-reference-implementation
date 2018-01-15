@@ -7,6 +7,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportIdentifier;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportResult;
 
 
 @Component
@@ -50,6 +51,10 @@ public class DiagnosticReportEntityToFHIRDiagnosticReportTransformer implements 
             diagnosticReport.addIdentifier()
                     .setSystem(identifier.getSystem().getUri())
                     .setValue(identifier.getValue());
+        }
+
+        for (DiagnosticReportResult reportResult : diagnosticReportEntity.getResults()) {
+            diagnosticReport.addResult(new Reference("Observation/"+reportResult.getObservation().getId()));
         }
 
         return diagnosticReport;

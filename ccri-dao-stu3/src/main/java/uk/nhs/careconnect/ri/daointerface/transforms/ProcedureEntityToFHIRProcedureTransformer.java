@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Procedure;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
@@ -92,7 +89,15 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
         }
 
         if (procedureEntity.getPerformedDate() != null) {
-            procedure.setPerformed(new DateTimeType().setValue(procedureEntity.getPerformedDate()));
+            if (procedureEntity.getPerformedEndDate() !=null) {
+                // 15/1/2018 KGM support for period
+                Period period = new Period();
+                period.setStart(procedureEntity.getPerformedDate());
+                period.setEnd(procedureEntity.getPerformedEndDate());
+                procedure.setPerformed(period);
+            } else {
+                procedure.setPerformed(new DateTimeType().setValue(procedureEntity.getPerformedDate()));
+            }
         }
         if (procedureEntity.getStatus() != null) {
             procedure.setStatus(procedureEntity.getStatus());
