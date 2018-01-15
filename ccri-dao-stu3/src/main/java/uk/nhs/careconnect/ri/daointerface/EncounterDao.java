@@ -152,7 +152,7 @@ public class  EncounterDao implements EncounterRepository {
             encounterEntity.setPatient(patientEntity);
         }
         if (encounter.hasClass_()) {
-            ConceptEntity code = conceptDao.findCode(encounter.getClass_());
+            ConceptEntity code = conceptDao.findAddCode(encounter.getClass_());
             if (code != null) { encounterEntity._setClass(code); }
             else {
                 log.info("Code: Missing System/Code = "+ encounter.getClass_().getSystem() +" code = "+encounter.getClass_().getCode());
@@ -162,7 +162,7 @@ public class  EncounterDao implements EncounterRepository {
         }
 
         if (encounter.hasType()) {
-            ConceptEntity code = conceptDao.findCode(encounter.getType().get(0).getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(encounter.getType().get(0).getCoding().get(0));
             if (code != null) { encounterEntity.setType(code); }
             else {
                 log.info("Code: Missing System/Code = "+encounter.getType().get(0).getCoding().get(0).getSystem() +" code = "+encounter.getType().get(0).getCoding().get(0).getCode());

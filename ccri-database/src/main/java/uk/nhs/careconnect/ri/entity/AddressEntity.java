@@ -39,6 +39,17 @@ public class AddressEntity extends BaseResource {
     @Column(name = "county")
     private String county;
 
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    @Column(name = "country")
+    private String country;
+
     @Column(name = "postcode")
     private String postcode;
 

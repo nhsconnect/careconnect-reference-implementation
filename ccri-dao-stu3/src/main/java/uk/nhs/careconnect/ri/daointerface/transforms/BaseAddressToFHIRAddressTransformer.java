@@ -41,6 +41,9 @@ public class BaseAddressToFHIRAddressTransformer implements Transformer<BaseAddr
         if (addressEntity.getCounty() != null) {
             address.setDistrict(addressEntity.getCounty());
         }
+        if (addressEntity.getCountry() != null) {
+            address.setCountry(addressEntity.getCountry());
+        }
 
         if (baseAddress.getAddressType() != null) {
             address.setType(baseAddress.getAddressType());

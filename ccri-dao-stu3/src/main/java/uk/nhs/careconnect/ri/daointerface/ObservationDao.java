@@ -342,7 +342,8 @@ public class ObservationDao implements ObservationRepository {
         }
 
         for (CodeableConcept concept :observation.getCategory()) {
-            if (concept.getCoding().size() > 0) {
+            // Category must have a code 15/Jan/2018 testing with Synthea examples
+            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
                 ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
                 if (conceptEntity != null) {
                     ObservationCategory category = null;
@@ -400,7 +401,7 @@ public class ObservationDao implements ObservationRepository {
                             observationComponent.setValueUnitOfMeasure(concept);
                         }
                         else {
-                            log.info("Missing Category. System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
+                            log.info("Missing component.getValueQuantity. System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
                             throw new IllegalArgumentException("Missing System/Code = "+ component.getValueQuantity().getSystem() +" code = "+component.getValueQuantity().getCode());
 
                         }

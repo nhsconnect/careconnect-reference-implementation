@@ -328,8 +328,11 @@ public class PatientDao implements PatientRepository {
             if (address.getCity() != null) addr.setCity(address.getCity());
             if (address.getDistrict() != null) addr.setCounty(address.getDistrict());
             if (address.getPostalCode() != null) addr.setPostcode(address.getPostalCode());
+            if (address.getCountry() != null) addr.setCountry(address.getCountry());
+
             if (address.getUse() != null) patientAdr.setAddressUse(address.getUse());
             if (address.getType() != null) patientAdr.setAddressType(address.getType());
+
 
             em.persist(addr);
             em.persist(patientAdr);
@@ -356,7 +359,15 @@ public class PatientDao implements PatientRepository {
             em.persist(patientTel);
         }
 
-        return patientEntityToFHIRPatientTransformer.transform(patientEntity);
+        Patient newPatient = null;
+
+        if (patientEntity !=null) {
+            newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+            patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
+            em.persist(patientEntity);
+        }
+
+        return newPatient;
     }
 
     @Override
