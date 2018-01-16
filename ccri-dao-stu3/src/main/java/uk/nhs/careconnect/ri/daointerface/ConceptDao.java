@@ -305,14 +305,14 @@ public class ConceptDao implements ConceptRepository {
             } else {
                 throw new IllegalArgumentException("Unsupported System "+coding.getSystem());
             }
-        } else {
+        } /* else {
             // Pick up descriptions from incoming resources - should correct LOINC issues
             if (coding.getDisplay() != null && !coding.getDisplay().isEmpty() && (conceptEntity.getDisplay() == null || conceptEntity.getDisplay().isEmpty())) {
                 conceptEntity.setDisplay(coding.getDisplay());
                 conceptEntity.setDescription(coding.getDisplay());
                 em.persist(conceptEntity);
             }
-        }
+        } */
         return conceptEntity;
     }
 
