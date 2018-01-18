@@ -37,6 +37,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                         new Reference("Patient/"+observationEntity.getPatient().getId())
                                 .setDisplay(observationEntity.getPatient().getNames().get(0).getDisplayName()));
 
+        if (observationEntity.getContext() != null) {
+            observation.setContext(new Reference("Encounter/"+observationEntity.getContextEncounter().getId()));
+        }
 
         if (observationEntity.getCode() != null) {
             observation.getCode().addCoding()

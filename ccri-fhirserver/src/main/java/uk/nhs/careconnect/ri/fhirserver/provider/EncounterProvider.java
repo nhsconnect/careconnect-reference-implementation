@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.fhirserver.provider;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -9,10 +10,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +19,7 @@ import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class EncounterProvider implements ICCResourceProvider {
@@ -79,14 +78,17 @@ public class EncounterProvider implements ICCResourceProvider {
     }
 
     @Search
-    public List<Encounter> search(HttpServletRequest theRequest,
-                                           @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
-            ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
-            ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
+    public List<Resource> search(HttpServletRequest theRequest,
+                                 @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
+            , @OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
+            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
+                                 //  , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes
+
     ) {
-        return encounterDao.search(ctx,patient,date,episode,identifier,resid);
+        return encounterDao.search(ctx,patient,date,episode,identifier,resid,reverseIncludes);
     }
 
     @Read()

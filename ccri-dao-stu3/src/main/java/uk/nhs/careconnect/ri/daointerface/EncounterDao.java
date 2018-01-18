@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -8,20 +10,24 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.daointerface.transforms.EncounterEntityToFHIREncounterTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,10 +36,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
 
@@ -64,6 +67,19 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     ConditionRepository conditionDao;
+
+    @Autowired
+    ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
+
+    @Autowired
+    private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
+
+    @Autowired
+    ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    @Autowired
+    private MedicationRequestEntityToFHIRMedicationRequestTransformer
+            medicationRequestEntityToFHIRMedicationRequestTransformer;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -133,7 +149,7 @@ public class  EncounterDao implements EncounterRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null);
+                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null, null);
                     for (EncounterEntity enc : results) {
                         encounterEntity = enc;
                         break;
@@ -282,9 +298,9 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<Encounter> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid) {
-        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid);
-        List<Encounter> results = new ArrayList<>();
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, TokenParam resid, Set<Include> reverseIncludes) {
+        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes);
+        List<Resource> results = new ArrayList<>();
 
         for (EncounterEntity encounterEntity : qryResults)
         {
@@ -292,12 +308,33 @@ public class  EncounterDao implements EncounterRepository {
             Encounter encounter = encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
             results.add(encounter);
         }
+        // If reverse include selected
+        if (reverseIncludes!= null) {
+            log.info("Reverse includes");
+            for (EncounterEntity encounterEntity : qryResults) {
+                if (reverseIncludes.size() > 0) {
+                    for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
+                        results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                    }
+                    for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
+                        results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                    }
+                    for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
+                        results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                    }
+                    for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                        results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                    }
+                }
+            }
+        }
+
 
         return results;
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid,Set<Include> reverseIncludes) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

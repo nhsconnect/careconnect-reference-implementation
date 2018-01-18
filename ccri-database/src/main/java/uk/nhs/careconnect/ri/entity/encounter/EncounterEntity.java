@@ -3,12 +3,18 @@ package uk.nhs.careconnect.ri.entity.encounter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Medication;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -80,6 +86,14 @@ public class EncounterEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterReason> reasons = new HashSet<>();
 
+    public Set<ProcedureEntity> getProcedureEncounters() {
+        return procedureEncounters;
+    }
+
+    public void setProcedureEncounters(Set<ProcedureEntity> procedureEncounters) {
+        this.procedureEncounters = procedureEncounters;
+    }
+
     @OneToMany(mappedBy="encounter", targetEntity = EncounterDiagnosis.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterDiagnosis> diagnoses = new HashSet<>();
@@ -102,6 +116,29 @@ public class EncounterEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity serviceProvider;
 
+    // For Reverse Includes
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = ProcedureEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ProcedureEntity> procedureEncounters = new HashSet<>();
+
+
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = ObservationEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ObservationEntity> observationEncounters = new HashSet<>();
+
+
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = ConditionEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ConditionEntity> conditionEncounters = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationRequestEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<MedicationRequestEntity> medicationRequestEncounters = new HashSet<>();
+    // Support for reverse includes
+
     public Long getId() {
         return id;
     }
@@ -113,6 +150,30 @@ public class EncounterEntity extends BaseResource {
 
     public PatientEntity getPatient() {
         return patient;
+    }
+
+    public Set<ConditionEntity> getConditionEncounters() {
+        return conditionEncounters;
+    }
+
+    public Set<MedicationRequestEntity> getMedicationRequestEncounters() {
+        return medicationRequestEncounters;
+    }
+
+    public void setMedicationRequestEncounters(Set<MedicationRequestEntity> medicationRequestEncounters) {
+        this.medicationRequestEncounters = medicationRequestEncounters;
+    }
+
+    public void setConditionEncounters(Set<ConditionEntity> conditionEncounters) {
+        this.conditionEncounters = conditionEncounters;
+    }
+
+    public Set<ObservationEntity> getObservationEncounters() {
+        return observationEncounters;
+    }
+
+    public void setObservationEncounters(Set<ObservationEntity> observationEncounters) {
+        this.observationEncounters = observationEncounters;
     }
 
     public Set<EncounterIdentifier> getIdentifiers() {

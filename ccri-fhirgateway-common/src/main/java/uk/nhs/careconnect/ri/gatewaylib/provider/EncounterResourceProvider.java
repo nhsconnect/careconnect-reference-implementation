@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -25,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class EncounterResourceProvider implements IResourceProvider {
@@ -49,19 +48,22 @@ public class EncounterResourceProvider implements IResourceProvider {
 
         Bundle bundle = completeBundle.getBundle();
 
-        List<Encounter> resources = searchEncounter(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
+        List<Resource> resources = searchEncounter(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null, null);
 
-        for (Encounter resource : resources) {
-            for (Encounter.EncounterParticipantComponent component : resource.getParticipant()) {
-                Reference reference = component.getIndividual();
-                if (reference.getReference().contains("Practitioner")) {
-                    completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+        for (Resource resource : resources) {
+            if (resource instanceof Encounter) {
+                Encounter encounter = (Encounter) resource;
+                for (Encounter.EncounterParticipantComponent component : encounter.getParticipant()) {
+                    Reference reference = component.getIndividual();
+                    if (reference.getReference().contains("Practitioner")) {
+                        completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+                    }
+                    if (reference.getReference().contains("Organization")) {
+                        completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+                    }
                 }
-                if (reference.getReference().contains("Organization")) {
-                    completeBundle.addGetOrganisation(new IdType(reference.getReference()));
-                }
+                bundle.addEntry().setResource(resource);
             }
-            bundle.addEntry().setResource(resource);
         }
         // Populate bundle with matching resources
         return bundle;
@@ -103,15 +105,20 @@ public class EncounterResourceProvider implements IResourceProvider {
         return encounter;
     }
 
+
+
     @Search
-    public List<Encounter> searchEncounter(HttpServletRequest httpRequest,
+    public List<Resource> searchEncounter(HttpServletRequest httpRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
+            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
+         //   , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes
+
                                        ) {
 
-        List<Encounter> results = new ArrayList<Encounter>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -142,8 +149,8 @@ public class EncounterResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                Encounter encounter = (Encounter) entry.getResource();
-                results.add(encounter);
+                //Encounter resourceEntry = (Resource) entry.getResource();
+                results.add(entry.getResource());
             }
         }
         else if (resource instanceof OperationOutcome)

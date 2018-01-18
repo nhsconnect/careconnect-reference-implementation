@@ -500,7 +500,7 @@ public class JPAStepsDef {
 
     @When("^I search Encounter on Patient ID = (\\d+)$")
     public void i_search_Encounter_on_Patient_ID(int patient) throws Throwable {
-        encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+        encounterList = encounterRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null,null);
     }
 
     @Then("^I should get a Bundle of Encounter (\\d+) resource$")

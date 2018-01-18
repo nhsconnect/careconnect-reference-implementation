@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.observation.*;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
@@ -48,6 +49,9 @@ public class ObservationDao implements ObservationRepository {
 
     @Autowired
     OrganisationRepository organisationDao;
+
+    @Autowired
+    EncounterRepository encounterDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -171,6 +175,13 @@ public class ObservationDao implements ObservationRepository {
             log.trace(observation.getSubject().getReference());
             patientEntity = patientDao.readEntity(ctx, new IdType(observation.getSubject().getReference()));
             observationEntity.setPatient(patientEntity);
+        }
+        // KGM 18/1/2018
+        if (observation.hasContext()) {
+            if (observation.getContext().getReference().contains("Encounter")) {
+                EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(observation.getContext().getReference()));
+                observationEntity.setContext(encounterEntity);
+            }
         }
         try {
             if (observation.hasValueQuantity()) {
