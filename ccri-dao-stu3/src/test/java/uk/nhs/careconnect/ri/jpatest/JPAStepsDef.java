@@ -98,7 +98,7 @@ public class JPAStepsDef {
 
     List<Organization> organizationList = null;
 
-    List<Encounter> encounterList = null;
+    List<Resource> encounterList = null;
 
     List<Condition> conditionList = null;
 
