@@ -34,7 +34,7 @@ public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter>
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
-            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
+            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
 
     );
 
@@ -44,6 +44,7 @@ public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter>
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             ,@OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
-            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
+            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+
     );
 }

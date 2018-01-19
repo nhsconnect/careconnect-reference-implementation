@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
@@ -27,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class PatientResourceProvider implements IResourceProvider {
@@ -173,7 +175,7 @@ public class PatientResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Patient> searchPatient(HttpServletRequest request,
+    public List<Resource> searchPatient(HttpServletRequest request,
 
                                        @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
                                        @OptionalParam(name= Patient.SP_BIRTHDATE) DateParam birthDate,
@@ -185,9 +187,14 @@ public class PatientResourceProvider implements IResourceProvider {
                                        @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
                                         , @OptionalParam(name = Patient.SP_RES_ID) TokenParam resid
+                                        ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+                                        ,@IncludeParam(allow= {
+                                        "Patient:general-practitioner"
+                                        ,"Patient:organization"
+                                        , "*"}) Set<Include> includes
                                        ) {
 
-        List<Patient> results = new ArrayList<Patient>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 

@@ -3,15 +3,21 @@ package uk.nhs.careconnect.ri.entity.patient;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hl7.fhir.dstu3.model.Immunization;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Entity
@@ -25,8 +31,6 @@ public class PatientEntity extends BaseResource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="PATIENT_ID")
     private Long id;
-
-
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
@@ -88,6 +92,39 @@ public class PatientEntity extends BaseResource {
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<PatientName> names;
+
+
+    // For Reverse Includes
+
+    @OneToMany(mappedBy="patient", targetEntity = ProcedureEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ProcedureEntity> patientProcedures = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = ObservationEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ObservationEntity> patientObservations = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = ConditionEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ConditionEntity> patientConditions = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = MedicationRequestEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<MedicationRequestEntity> patientMedicationRequests = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = EncounterEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<EncounterEntity> patientEncounters = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity =AllergyIntoleranceEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<AllergyIntoleranceEntity> patientAlelrgies = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = ImmunisationEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<ImmunisationEntity> patientImmunisations = new HashSet<>();
+
+    // Support for reverse includes
 
     public Long getId() {
         return id;
@@ -247,5 +284,71 @@ public class PatientEntity extends BaseResource {
     public List<PatientTelecom> removeTelecom(PatientTelecom telecom){
         addresses.remove(telecom); return telecoms; }
 
+    public PractitionerEntity getGp() {
+        return gp;
+    }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setAddresses(List<PatientAddress> addresses) {
+        this.addresses = addresses;
+    }
+
+    public Set<ProcedureEntity> getPatientProcedures() {
+        return patientProcedures;
+    }
+
+    public void setPatientProcedures(Set<ProcedureEntity> patientProcedures) {
+        this.patientProcedures = patientProcedures;
+    }
+
+    public Set<ObservationEntity> getPatientObservations() {
+        return patientObservations;
+    }
+
+    public void setPatientObservations(Set<ObservationEntity> patientObservations) {
+        this.patientObservations = patientObservations;
+    }
+
+    public Set<ConditionEntity> getPatientConditions() {
+        return patientConditions;
+    }
+
+    public void setPatientConditions(Set<ConditionEntity> patientConditions) {
+        this.patientConditions = patientConditions;
+    }
+
+    public Set<MedicationRequestEntity> getPatientMedicationRequests() {
+        return patientMedicationRequests;
+    }
+
+    public void setPatientMedicationRequests(Set<MedicationRequestEntity> patientMedicationRequests) {
+        this.patientMedicationRequests = patientMedicationRequests;
+    }
+
+    public Set<EncounterEntity> getPatientEncounters() {
+        return patientEncounters;
+    }
+
+    public void setPatientEncounters(Set<EncounterEntity> patientEncounters) {
+        this.patientEncounters = patientEncounters;
+    }
+
+    public Set<AllergyIntoleranceEntity> getPatientAlelrgies() {
+        return patientAlelrgies;
+    }
+
+    public void setPatientAlelrgies(Set<AllergyIntoleranceEntity> patientAlelrgies) {
+        this.patientAlelrgies = patientAlelrgies;
+    }
+
+    public Set<ImmunisationEntity> getPatientImmunisations() {
+        return patientImmunisations;
+    }
+
+    public void setPatientImmunisations(Set<ImmunisationEntity> patientImmunisations) {
+        this.patientImmunisations = patientImmunisations;
+    }
 }

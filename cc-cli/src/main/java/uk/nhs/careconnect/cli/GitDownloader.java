@@ -40,6 +40,9 @@ public class GitDownloader extends BaseCommand {
 
     IGenericClient client;
 
+	Bundle valueSet;
+	Bundle structuredDefinition;
+
     /* Intelij Programme arguments
 -d
 /Development/NHSD/careconnect-reference-implementation/cc-fhir-validation-resources-stu3/src/main/resources/uk/org/hl7/fhir/stu3/model
@@ -80,71 +83,38 @@ public class GitDownloader extends BaseCommand {
 		if (isBlank(targetServer)) {
 			throw new ParseException("No destination folder (-d) specified");
 		}
-        Bundle valueSet = new Bundle();
-        Bundle structuredDefinition = new Bundle();
+    	valueSet = new Bundle();
+     	structuredDefinition = new Bundle();
 		ctx = getSpecVersionContext(theCommandLine);
 
 
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+
 			try {
-				File tmpDir = new File(System.getProperty("java.io.tmpdir"), "tmp"
-						+ System.currentTimeMillis());
-				tmpDir.mkdirs();
-				try {
-					Git r = Git.cloneRepository().setDirectory(tmpDir)
-							.setURI("https://github.com/nhsconnect/CareConnect-profiles.git")
-                            .setBranch("feature/stu3")
-							.setProgressMonitor(new TextProgressMonitor())
-                            .call();
+				callGits("https://github.com/nhsconnect/CareConnect-profiles.git", "feature/stu3");
+				callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "develop");
 
-					r.checkout(). setName("feature/stu3").call();
-                    for (File directory : tmpDir.listFiles(File::isDirectory)) {
-                        System.out.println(directory.getName());
-					    if (!directory.getName().equals(".git")) {
-					        for (File file : directory.listFiles()) {
-					         //   System.out.println("-"+file.getName());
-					            FileInputStream inputStream = new FileInputStream(file);
-					            Reader reader = new InputStreamReader(inputStream);
-					            IBaseResource resource = ctx.newXmlParser().parseResource(reader);
-					            if (resource instanceof ValueSet) {
-					            //    System.out.println("ValueSet");
-					                valueSet.addEntry().setResource((ValueSet) resource);
-                                }
-                                if (resource instanceof CodeSystem) {
-                                    //    System.out.println("ValueSet");
-                                    valueSet.addEntry().setResource((CodeSystem) resource);
-                                }
-                                if (resource instanceof StructureDefinition) {
-                                 //   System.out.println("StructuredDefinition");
-                                    structuredDefinition.addEntry().setResource((StructureDefinition) resource);
-                                }
-                            }
-                        }
-                    }
+				File file = new File(targetServer + "/profile/profiles-resources.xml");
 
-                    File file = new File(targetServer+"/profile/profiles-resources.xml");
+				FileOutputStream profileFS = new FileOutputStream(file);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				Writer writer = new OutputStreamWriter(profileFS);
+				ctx.newXmlParser().encodeResourceToWriter(structuredDefinition, writer);
+				profileFS.flush();
+				profileFS.close();
 
-                    FileOutputStream profileFS = new FileOutputStream(file);
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-                    Writer writer = new OutputStreamWriter(profileFS);
-                    ctx.newXmlParser().encodeResourceToWriter(structuredDefinition,writer);
-                    profileFS.flush();
-                    profileFS.close();
+				file = new File(targetServer + "/valueset/valuesets.xml");
 
-                    file = new File(targetServer+"/valueset/valuesets.xml");
-
-                    profileFS = new FileOutputStream(file);
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-                    writer = new OutputStreamWriter(profileFS);
-                    ctx.newXmlParser().encodeResourceToWriter(valueSet,writer);
-                    profileFS.flush();
-                    profileFS.close();
-
-
+				profileFS = new FileOutputStream(file);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				writer = new OutputStreamWriter(profileFS);
+				ctx.newXmlParser().encodeResourceToWriter(valueSet, writer);
+				profileFS.flush();
+				profileFS.close();
 
 					/*
 					System.out.println("KGM="+r.getRepository().getDirectory().getName());
@@ -164,19 +134,67 @@ public class GitDownloader extends BaseCommand {
 								+ r.getRepository().getRef("HEAD"));
 					}
 					*/
-				} finally {
-					rm(tmpDir);
-				}
+
 			} catch (Exception ex) {
-                System.out.println(ex.getMessage());
+				System.out.println(ex.getMessage());
 			}
 		}
-
-
 	}
+	private void callGits(String repo, String branch) {
+		try {
+			File tmpDir;
+			tmpDir = new File(System.getProperty("java.io.tmpdir"), "tmp"
+					+ System.currentTimeMillis());
+			tmpDir.mkdirs();
+			try {
+				Git r = Git.cloneRepository().setDirectory(tmpDir)
+						.setURI(repo)
+						.setBranch(branch)
+						.setProgressMonitor(new TextProgressMonitor())
+						.call();
 
-
-
-
+				r.checkout().setName(branch).call();
+				for (File directory : tmpDir.listFiles(File::isDirectory)) {
+					System.out.println(directory.getName());
+					if (!directory.getName().equals(".git")) {
+						for (File file : directory.listFiles()) {
+							//   System.out.println("-"+file.getName());
+							FileInputStream inputStream = new FileInputStream(file);
+							Reader reader = new InputStreamReader(inputStream);
+							IBaseResource resource = null;
+							try {
+								resource = ctx.newXmlParser().parseResource(reader);
+							} catch (Exception ex) {
+								try {
+									System.out.println("WARNING - XML Parse error " + file.getName());
+									resource = ctx.newJsonParser().parseResource(reader);
+								} catch (Exception ec1) {
+									System.out.println("XML and JSON failed - " + file);
+									resource = null;
+								}
+							}
+							if (resource instanceof ValueSet) {
+								//    System.out.println("ValueSet");
+								valueSet.addEntry().setResource((ValueSet) resource);
+							}
+							if (resource instanceof CodeSystem) {
+								//    System.out.println("ValueSet");
+								valueSet.addEntry().setResource((CodeSystem) resource);
+							}
+							if (resource instanceof StructureDefinition) {
+								//   System.out.println("StructuredDefinition");
+								structuredDefinition.addEntry().setResource((StructureDefinition) resource);
+							}
+						}
+					}
+				}
+			} finally {
+				rm(tmpDir);
+			}
+		}
+		catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+	}
 }
 

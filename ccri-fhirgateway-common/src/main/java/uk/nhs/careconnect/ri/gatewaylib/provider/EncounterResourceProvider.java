@@ -113,7 +113,7 @@ public class EncounterResourceProvider implements IResourceProvider {
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
-            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
+            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
          //   , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes
 
                                        ) {

@@ -1,37 +1,42 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.*;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
 
@@ -57,6 +62,34 @@ public class PatientDao implements PatientRepository {
 
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
+
+    @Autowired
+    ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
+
+    @Autowired
+    private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
+
+    @Autowired
+    ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    @Autowired
+    private MedicationRequestEntityToFHIRMedicationRequestTransformer
+            medicationRequestEntityToFHIRMedicationRequestTransformer;
+
+    @Autowired
+    private EncounterEntityToFHIREncounterTransformer encounterEntityToFHIREncounterTransformer;
+
+    @Autowired
+    private AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
+
+    @Autowired
+    private ImmunisationEntityToFHIRImmunizationTransformer immunisationEntityToFHIRImmunizationTransformer;
+
+    @Autowired
+    private OrganisationEntityToFHIROrganizationTransformer organisationEntityToFHIROrganizationTransformer;
+
+    @Autowired
+    private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
@@ -131,7 +164,7 @@ public class PatientDao implements PatientRepository {
                     String[] spiltStr = query.split("%7C");
                     log.trace(spiltStr[1]);
 
-                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null,null);
+                    List<PatientEntity> results = searchEntity(ctx, null, null,null, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"), null,null,null, null,null);
                     log.trace("Loop over results");
                     for (PatientEntity pat : results) {
                         patientEntity = pat;
@@ -371,7 +404,7 @@ public class PatientDao implements PatientRepository {
     }
 
     @Override
-    public List<Patient> search (FhirContext ctx,
+    public List<Resource> search (FhirContext ctx,
                                              @OptionalParam(name= Patient.SP_ADDRESS_POSTALCODE) StringParam addressPostcode,
                                              @OptionalParam(name= Patient.SP_BIRTHDATE) DateRangeParam birthDate,
                                              @OptionalParam(name= Patient.SP_EMAIL) StringParam email,
@@ -381,10 +414,15 @@ public class PatientDao implements PatientRepository {
                                              @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                                              @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                              @OptionalParam(name= Patient.SP_PHONE) StringParam phone
-            , TokenParam resid
+            , @OptionalParam(name= Patient.SP_RES_ID) TokenParam resid
+            ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            ,@IncludeParam(allow= {
+                "Patient:general-practitioner"
+                ,"Patient:organization"
+                , "*"}) Set<Include> includes
     ) {
-        List<PatientEntity> qryResults = searchEntity(ctx, addressPostcode, birthDate, email, familyName, gender, givenName, identifier, name, phone,resid);
-        List<Patient> results = new ArrayList<>();
+        List<PatientEntity> qryResults = searchEntity(ctx, addressPostcode, birthDate, email, familyName, gender, givenName, identifier, name, phone,resid, reverseIncludes,includes);
+        List<Resource> results = new ArrayList<>();
 
         for (PatientEntity patientEntity : qryResults)
         {
@@ -398,6 +436,54 @@ public class PatientDao implements PatientRepository {
                     em.persist(patientEntity);
             }
             results.add(patient);
+
+            // If reverse include selected
+
+        }
+
+        if (reverseIncludes!= null || includes!=null) {
+            log.info("Reverse includes");
+            for (PatientEntity patientEntity : qryResults) {
+                if (includes !=null) {
+                    for (Include include : includes) {
+                        switch(include.getValue()) {
+                            case "Patient:general-practitioner":
+                                PractitionerEntity practitioner = patientEntity.getGP();
+                                if (practitioner !=null) results.add(practitionerEntityToFHIRPractitionerTransformer.transform(practitioner));
+                                break;
+                            case "Patient:organization":
+                                OrganisationEntity organisation = patientEntity.getPractice();
+                                if (organisation !=null) results.add(organisationEntityToFHIROrganizationTransformer.transform(organisation));
+                                break;
+                        }
+                    }
+                }
+                if (reverseIncludes.size() > 0) {
+                    for (ProcedureEntity procedureEntity : patientEntity.getPatientProcedures()) {
+                        results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                    }
+                    for (ObservationEntity observationEntity : patientEntity.getPatientObservations()) {
+                        results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                    }
+                    for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
+                        results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                    }
+                    //allegry
+                    for (AllergyIntoleranceEntity allergy : patientEntity.getPatientAlelrgies()) {
+                        results.add(allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergy));
+                    }
+                    //immunisation
+                    for (ImmunisationEntity immunisation : patientEntity.getPatientImmunisations()) {
+                        results.add(immunisationEntityToFHIRImmunizationTransformer.transform(immunisation));
+                    }
+                    for (MedicationRequestEntity medicationRequestEntity : patientEntity.getPatientMedicationRequests()) {
+                        results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                    }
+                    for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
+                        results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
+                    }
+                }
+            }
         }
         return results;
     }
@@ -414,6 +500,11 @@ public class PatientDao implements PatientRepository {
             @OptionalParam(name= Patient.SP_NAME) StringParam name,
             @OptionalParam(name= Patient.SP_PHONE) StringParam phone
             , TokenParam resid
+            ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            ,@IncludeParam(allow= {
+                "Patient:general-practitioner"
+                ,"Patient:organization"
+                , "*"}) Set<Include> includes
     )
     {
 
