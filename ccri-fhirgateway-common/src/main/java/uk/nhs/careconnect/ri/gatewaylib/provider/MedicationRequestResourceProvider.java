@@ -52,7 +52,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         List<MedicationRequest> resources = searchMedicationRequest(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null,null);
 
         for (MedicationRequest resource : resources) {
-            if (resource.getRequester()!= null && resource.getRequester().getAgent() != null) {
+            if (resource.getRequester()!= null && resource.getRequester().hasAgent()) {
                 Reference reference = resource.getRequester().getAgent();
                 if (reference.getReference().contains("Practitioner")) {
                     completeBundle.addGetPractitioner(new IdType(reference.getReference()));

@@ -134,29 +134,39 @@ public class PatientResourceProvider implements IResourceProvider {
         Patient patient = getPatientById(request, patientId);
         if (patient !=null) {
             bundle.addEntry().setResource(patient);
+            log.info("Practitioner");
             for (Reference gp : patient.getGeneralPractitioner()) {
                 completeBundle.addGetPractitioner(new IdType(gp.getReference()));
             }
             Reference prac = patient.getManagingOrganization();
-            if (prac!=null) {
+            log.info("Organization");
+            if (prac!=null && prac.getReference() !=null) {
                 completeBundle.addGetOrganisation(new IdType(prac.getReference()));
             }
         }
         // Populate bundle with matching resources
+        log.info("Condition");
         conditionResourceProvider.conditionEverythingOperation(patientId,completeBundle);
 
+        log.info("Observation");
         observationResourceProvider.observationEverythingOperation(patientId,completeBundle);
 
+        log.info("Procedure");
         procedureResourceProvider.procedureEverythingOperation(patientId,completeBundle);
 
+        log.info("AllergyIntolerance");
         allergyIntoleranceResourceProvider.getEverythingOperation(patientId,completeBundle);
 
+        log.info("Encounter");
         encounterResourceProvider.getEverythingOperation(patientId,completeBundle);
 
+        log.info("Immunization");
         immunizationResourceProvider.getEverythingOperation(patientId,completeBundle);
 
+        log.info("medicationRequest");
         medicationRequestResourceProvider.getEverythingOperation(patientId,completeBundle);
 
+        log.info("medicationStatement");
         medicationStatementResourceProvider.getEverythingOperation(patientId,completeBundle);
 
         return bundle;
