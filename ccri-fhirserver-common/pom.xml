@@ -10,7 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ccri-fhirserver-common</artifactId>
-
+    <properties>
+        <spring_version>5.0.0.RELEASE</spring_version>
+    </properties>
 
 
     <dependencies>
