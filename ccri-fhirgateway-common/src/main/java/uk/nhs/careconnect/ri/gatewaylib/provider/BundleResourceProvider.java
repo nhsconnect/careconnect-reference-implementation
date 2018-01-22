@@ -62,7 +62,12 @@ public class BundleResourceProvider implements IResourceProvider {
             // Look for existing resources. Ideally we should not need to add Patient, Practitioner, Organization, etc
             // These should be using well known identifiers and ideally will be present on our system.
 
-            if (resource.getId() != null) searchAddResource(resource.getId());
+            if (resource.getId() != null) {
+                searchAddResource(resource.getId());
+            } else {
+                resource.setId(java.util.UUID.randomUUID().toString());
+                searchAddResource(resource.getId());
+            }
 
         }
 
@@ -111,6 +116,8 @@ public class BundleResourceProvider implements IResourceProvider {
                 else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId, (Composition) iResource); }
                 else if (iResource instanceof DiagnosticReport) { resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource); }
                 else if (iResource instanceof MedicationRequest) { resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource); }
+                else if (iResource instanceof Immunization) { resource = searchAddImmunization(referenceId, (Immunization) iResource); }
+                else if (iResource instanceof CarePlan) { resource = searchAddCarePlan(referenceId, (CarePlan) iResource); }
                 else {
                     log.info( "Found in Bundle. Not processed (" + iResource.getClass());
                 }
@@ -507,6 +514,115 @@ public class BundleResourceProvider implements IResourceProvider {
         return eprAllergyIntolerance;
     }
 
+    public CarePlan searchAddCarePlan(String carePlanId,CarePlan carePlan) {
+        log.info("CarePlan searchAdd " +carePlanId);
+
+        if (carePlan == null) throw new InternalErrorException("Bundle processing error");
+
+        CarePlan eprCarePlan = (CarePlan) resourceMap.get(carePlanId);
+
+        // Organization already processed, quit with Organization
+        if (eprCarePlan != null) return eprCarePlan;
+
+        // Prevent re-adding the same Practitioner
+        if (carePlan.getIdentifier().size() == 0) {
+            carePlan.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(carePlan.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : carePlan.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRCarePlan", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "CarePlan");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprCarePlan = (CarePlan) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found CarePlan = " + eprCarePlan.getId());
+                }
+            }
+        }
+
+        if (carePlan.getContext().getReference() != null) {
+            Resource resource = searchAddResource(carePlan.getContext().getReference());
+            carePlan.setContext(getReference(resource));
+        }
+        if (carePlan.getSubject() != null) {
+            Resource resource = searchAddResource(carePlan.getSubject().getReference());
+            carePlan.setSubject(getReference(resource));
+        }
+        List<Reference> references = new ArrayList<>();
+        for (Reference reference : carePlan.getAddresses()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource!=null) references.add(getReference(resource));
+        }
+        carePlan.setAddresses(references);
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "CarePlan";
+        // Location found do not add
+        if (eprCarePlan != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "CarePlan/"+eprCarePlan.getIdElement().getIdPart();
+            carePlan.setId(eprCarePlan.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(carePlan);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRCarePlan", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof CarePlan) {
+            eprCarePlan = (CarePlan) iResource;
+            setResourceMap(carePlanId,eprCarePlan);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprCarePlan;
+    }
+
+
     public Observation searchAddObservation(String observationId,Observation observation) {
         log.info("Observation searchAdd " +observationId);
 
@@ -619,6 +735,9 @@ public class BundleResourceProvider implements IResourceProvider {
 
         return eprObservation;
     }
+
+
+
 
     public DiagnosticReport searchAddDiagnosticReport(String diagnosticReportId,DiagnosticReport diagnosticReport) {
         log.info("DiagnosticReport searchAdd " +diagnosticReportId);
@@ -739,6 +858,123 @@ public class BundleResourceProvider implements IResourceProvider {
 
         return eprDiagnosticReport;
     }
+
+    // KGM 22/Jan/2018 Added Immunization processing
+
+    public Immunization searchAddImmunization(String immunisationId,Immunization immunisation) {
+        log.info("Immunization searchAdd " +immunisationId);
+
+        if (immunisation == null) throw new InternalErrorException("Bundle processing error");
+
+        Immunization eprImmunization = (Immunization) resourceMap.get(immunisationId);
+
+        // Organization already processed, quit with Organization
+        if (eprImmunization != null) return eprImmunization;
+
+        // Prevent re-adding the same Practitioner
+        if (immunisation.getIdentifier().size() == 0) {
+            // Use a custom identifier
+            immunisation.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(immunisation.getDate().toString()+"-"+immunisation.getVaccineCode().getCodingFirstRep().getCode());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : immunisation.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRImmunization", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Immunization");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprImmunization = (Immunization) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Immunization = " + eprImmunization.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+        for (Immunization.ImmunizationPractitionerComponent reference : immunisation.getPractitioner()) {
+            Resource resource = searchAddResource(reference.getActor().getReference());
+            if (resource!=null) reference.setActor(getReference(resource));
+        }
+
+        if (immunisation.hasPatient()) {
+            Resource resource = searchAddResource(immunisation.getPatient().getReference());
+            immunisation.setPatient(getReference(resource));
+        }
+        if (immunisation.hasEncounter()) {
+            Resource resource = searchAddResource(immunisation.getEncounter().getReference());
+            immunisation.setEncounter(getReference(resource));
+        }
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Immunization";
+        // Location found do not add
+        if (eprImmunization != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Immunization/"+eprImmunization.getIdElement().getIdPart();
+            immunisation.setId(eprImmunization.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(immunisation);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRImmunization", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Immunization) {
+            eprImmunization = (Immunization) iResource;
+            setResourceMap(immunisationId,eprImmunization);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprImmunization;
+    }
+
+
 
     public MedicationRequest searchAddMedicationRequest(String medicationRequestId,MedicationRequest medicationRequest) {
         log.info("MedicationRequest searchAdd " +medicationRequestId);

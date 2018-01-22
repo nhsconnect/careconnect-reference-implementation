@@ -101,6 +101,10 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway DiagnosticReport")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRCarePlan")
+				.routeId("Gateway CarePlan")
+				.to("direct:HAPIServer");
+
 		from("direct:HAPIServer")
             .routeId("INT FHIR Server")
 				.process(camelProcessor)

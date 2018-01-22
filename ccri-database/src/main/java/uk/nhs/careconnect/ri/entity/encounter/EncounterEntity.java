@@ -2,12 +2,12 @@ package uk.nhs.careconnect.ri.entity.encounter;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.Medication;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
+import org.hl7.fhir.dstu3.model.*;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
@@ -137,6 +137,15 @@ public class EncounterEntity extends BaseResource {
     @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationRequestEntity.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<MedicationRequestEntity> medicationRequestEncounters = new HashSet<>();
+    // Support for reverse includes
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = DiagnosticReportEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<DiagnosticReportEntity> diagnosticReports = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = CarePlanEntity.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<CarePlanEntity> carePlans = new HashSet<>();
     // Support for reverse includes
 
     public Long getId() {
@@ -295,5 +304,29 @@ public class EncounterEntity extends BaseResource {
     public EncounterEntity setType(ConceptEntity type) {
         this.type = type;
         return this;
+    }
+
+    public ConceptEntity get_class() {
+        return _class;
+    }
+
+    public void set_class(ConceptEntity _class) {
+        this._class = _class;
+    }
+
+    public Set<DiagnosticReportEntity> getDiagnosticReports() {
+        return diagnosticReports;
+    }
+
+    public void setDiagnosticReports(Set<DiagnosticReportEntity> diagnosticReports) {
+        this.diagnosticReports = diagnosticReports;
+    }
+
+    public Set<CarePlanEntity> getCarePlans() {
+        return carePlans;
+    }
+
+    public void setCarePlans(Set<CarePlanEntity> carePlans) {
+        this.carePlans = carePlans;
     }
 }

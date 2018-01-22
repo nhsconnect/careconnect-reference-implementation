@@ -7,17 +7,16 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
@@ -81,6 +80,12 @@ public class  EncounterDao implements EncounterRepository {
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
+
+    @Autowired
+    CarePlanEntityToFHIRCarePlanTransformer carePlanIntoleranceEntityToFHIRCarePlanTransformer;
+
+    @Autowired
+    DiagnosticReportEntityToFHIRDiagnosticReportTransformer diagnosticReportEntityToFHIRDiagnosticReportTransformer;
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
@@ -324,6 +329,12 @@ public class  EncounterDao implements EncounterRepository {
                     }
                     for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
                         results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                    }
+                    for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
+                        results.add(carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
+                    }
+                    for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
+                        results.add(diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
                     }
                 }
             }

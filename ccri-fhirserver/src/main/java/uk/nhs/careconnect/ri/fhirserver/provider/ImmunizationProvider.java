@@ -45,19 +45,29 @@ public class ImmunizationProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
-
         method.setOperationOutcome(opOutcome);
-
 
         Immunization newImmunisation = immunisationDao.create(ctx,immunisation, theId, theConditional);
         method.setId(newImmunisation.getIdElement());
         method.setResource(newImmunisation);
 
+        return method;
+    }
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Immunization immunisation) {
 
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+        method.setOperationOutcome(opOutcome);
+
+        Immunization newImmunisation = immunisationDao.create(ctx,immunisation, null, null);
+        method.setId(newImmunisation.getIdElement());
+        method.setResource(newImmunisation);
 
         return method;
     }
