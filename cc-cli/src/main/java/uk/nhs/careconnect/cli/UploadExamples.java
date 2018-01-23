@@ -273,6 +273,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     processConditionCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Condition.csv"));
                     for (IBaseResource resource : resources) {
                         Condition condition = (Condition) resource;
+                   //     System.out.println("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" +condition.getIdentifier().get(0).getValue());
                         MethodOutcome outcome = client.update().resource(resource)
                                 .conditionalByUrl("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" +condition.getIdentifier().get(0).getValue())
                                 .execute();

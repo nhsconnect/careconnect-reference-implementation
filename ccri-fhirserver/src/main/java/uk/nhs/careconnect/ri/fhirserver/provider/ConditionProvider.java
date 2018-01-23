@@ -58,10 +58,9 @@ public class ConditionProvider implements ICCResourceProvider {
         method.setId(newCondition.getIdElement());
         method.setResource(newCondition);
 
-
-
         return method;
     }
+    /*
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Condition condition, @IdParam IdType theId) {
 
@@ -79,6 +78,7 @@ public class ConditionProvider implements ICCResourceProvider {
 
         return method;
     }
+    */
 
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Condition condition) {
