@@ -1,15 +1,10 @@
 package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.CarePlan;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 
-import uk.nhs.careconnect.ri.entity.carePlan.CarePlanCategory;
-import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
-import uk.nhs.careconnect.ri.entity.carePlan.CarePlanIdentifier;
+import uk.nhs.careconnect.ri.entity.carePlan.*;
 
 @Component
 public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<CarePlanEntity, CarePlan> {
@@ -40,6 +35,14 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                     .setSubject(new Reference("Patient/"+carePlanEntity.getPatient().getId())
                     .setDisplay(carePlanEntity.getPatient().getNames().get(0).getDisplayName()));
         }
+
+        if (carePlanEntity.getStatus() != null) {
+            carePlan.setStatus(carePlanEntity.getStatus());
+        }
+
+        if (carePlanEntity.getIntent() != null) {
+            carePlan.setIntent(carePlanEntity.getIntent());
+        }
         
         
         for (CarePlanCategory categoryEntity : carePlanEntity.getCategories()) {
@@ -48,7 +51,46 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                     .setSystem(categoryEntity.getCategory().getSystem())
                     .setCode(categoryEntity.getCategory().getCode())
                     .setDisplay(categoryEntity.getCategory().getDisplay());
-            carePlan.addCategory(concept);
+        }
+
+        if (carePlanEntity.getContextEncounter()!=null) {
+            carePlan.setContext(new Reference("Encounter/"+carePlanEntity.getContextEncounter().getId()));
+        }
+        if (carePlanEntity.getContextEpisodeOfCare()!=null) {
+            carePlan.setContext(new Reference("EpisodeOfCare/"+carePlanEntity.getContextEpisodeOfCare().getId()));
+        }
+        Period period = carePlan.getPeriod();
+        if (carePlanEntity.getPeriodStartDateTime() != null) {
+            period.setStart(carePlanEntity.getPeriodStartDateTime());
+        }
+        if (carePlanEntity.getPeriodEndDateTime() != null) {
+            period.setEnd(carePlanEntity.getPeriodEndDateTime());
+        }
+
+        for (CarePlanCondition condition : carePlanEntity.getAddresses()) {
+            carePlan.addAddresses(new Reference("Condition/"+condition.getCondition().getId())
+                    .setDisplay(condition.getCondition().getCode().getDisplay()));
+        }
+
+        for (CarePlanActivity activity : carePlanEntity.getActivities()) {
+            CarePlan.CarePlanActivityComponent activityComponent = carePlan.addActivity();
+            for (CarePlanActivityDetail carePlanActivityDetail : activity.getDetails()) {
+                CarePlan.CarePlanActivityDetailComponent activityDetailComponent = activityComponent.getDetail();
+                activityDetailComponent.getCode().addCoding()
+                        .setCode(carePlanActivityDetail.getCode().getCode())
+                        .setDisplay(carePlanActivityDetail.getCode().getDisplay())
+                        .setSystem(carePlanActivityDetail.getCode().getSystem());
+                if (carePlanActivityDetail.getStatus() != null) {
+                    activityDetailComponent.setStatus(carePlanActivityDetail.getStatus());
+                }
+                if (carePlanActivityDetail.getCategory() != null) {
+                    activityDetailComponent.getCategory().addCoding()
+                            .setCode(carePlanActivityDetail.getCategory().getCode())
+                            .setDisplay(carePlanActivityDetail.getCategory().getDisplay())
+                            .setSystem(carePlanActivityDetail.getCategory().getSystem());
+                }
+
+            }
         }
 
         for (CarePlanIdentifier identifier : carePlanEntity.getIdentifiers()) {
