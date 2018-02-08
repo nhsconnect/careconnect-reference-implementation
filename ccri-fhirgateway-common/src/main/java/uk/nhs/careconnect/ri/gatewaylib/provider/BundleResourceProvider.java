@@ -1651,6 +1651,8 @@ public class BundleResourceProvider implements IResourceProvider {
                 if (returnedBundle.getEntry().size() > 0) {
                     eprPatient = (Patient) returnedBundle.getEntry().get(0).getResource();
                     log.info("Found Patient = " + eprPatient.getId());
+                    // KGM 31/Jan/2018 Missing break on finding patient
+                    break;
                 }
             }
         }
