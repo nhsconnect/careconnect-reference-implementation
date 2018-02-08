@@ -26,7 +26,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.20.1</camel-version>
+        <camel-version>2.20.2</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->
