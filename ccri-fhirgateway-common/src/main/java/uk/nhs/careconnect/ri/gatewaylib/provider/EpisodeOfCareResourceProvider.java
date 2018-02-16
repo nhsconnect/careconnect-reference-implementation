@@ -86,7 +86,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
     public List<EpisodeOfCare> searchEpisodeOfCare(HttpServletRequest theRequest,
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
           //  , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
-            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) TokenParam resid
                                        ) {
 
         List<EpisodeOfCare> results = new ArrayList<EpisodeOfCare>();

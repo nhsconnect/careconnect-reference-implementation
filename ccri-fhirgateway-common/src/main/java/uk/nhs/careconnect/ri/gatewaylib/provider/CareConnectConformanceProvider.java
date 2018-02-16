@@ -5,21 +5,22 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.RuntimeResourceDefinition;
 import ca.uhn.fhir.context.RuntimeSearchParam;
 import ca.uhn.fhir.parser.DataFormatException;
+import ca.uhn.fhir.rest.annotation.Initialize;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.server.IServerConformanceProvider;
 import ca.uhn.fhir.rest.server.ResourceBinding;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
-import ca.uhn.fhir.rest.server.method.BaseMethodBinding;
-import ca.uhn.fhir.rest.server.method.IParameter;
-import ca.uhn.fhir.rest.server.method.SearchMethodBinding;
+import ca.uhn.fhir.rest.server.method.*;
 import ca.uhn.fhir.rest.server.method.SearchParameter;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.Conformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
     private static final Logger log = LoggerFactory.getLogger(CareConnectConformanceProvider.class);
 
+    private IdentityHashMap<OperationMethodBinding, String> myOperationBindingToName;
+    private HashMap<String, List<OperationMethodBinding>> myOperationNameToBindings;
+
     private String oauth2authorize;
 
     private String oauth2token;
@@ -124,6 +128,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 serverCapabilityStatement = ctx
                         .newJsonParser()
                         .parseResource(CapabilityStatement.class, reader);
+                log.debug("ServerCapabilityStatement="+ctx.newJsonParser().encodeResourceToString(serverCapabilityStatement));
             } catch (Exception ex) {
                 log.error(ex.getMessage());
             }
@@ -173,6 +178,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     .setUrl("token")
                     .setValue(new UriType(oauth2token));
         }
+
+        Set<Conformance.SystemRestfulInteraction> systemOps = new HashSet<Conformance.SystemRestfulInteraction>();
+        Set<String> operationNames = new HashSet<String>();
 
         Map<String, List<BaseMethodBinding<?>>> resourceToMethods = collectMethodBindings();
         for (Map.Entry<String, List<BaseMethodBinding<?>>> nextEntry : resourceToMethods.entrySet()) {
@@ -282,8 +290,20 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
                         if (nextMethodBinding instanceof SearchMethodBinding) {
                             handleSearchMethodBinding(rest, resource, resourceName, def, includes, (SearchMethodBinding) nextMethodBinding);
+                        } else if (nextMethodBinding instanceof DynamicSearchMethodBinding) {
+                            handleDynamicSearchMethodBinding(resource, def, includes, (DynamicSearchMethodBinding) nextMethodBinding);
+                        } else if (nextMethodBinding instanceof OperationMethodBinding) {
+                            OperationMethodBinding methodBinding = (OperationMethodBinding) nextMethodBinding;
+                            String opName = myOperationBindingToName.get(methodBinding);
+                            if (operationNames.add(opName)) {
+                                // Only add each operation (by name) once
+                                rest.addOperation().setName(methodBinding.getName().substring(1)).setDefinition(new Reference("OperationDefinition/" + opName));
+                            }
                         }
                     }
+                }
+                for (String nextInclude : includes) {
+                    resource.addSearchInclude(nextInclude);
                 }
 
             }
@@ -354,6 +374,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "MedicationStatement":
                 case "AllergyIntolerance":
                 case "Bundle":
+                case "Composition":
+                case "DocumentReference":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
@@ -392,6 +414,51 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
             }
         });
     }
+
+    private void handleDynamicSearchMethodBinding(CapabilityStatement.CapabilityStatementRestResourceComponent resource, RuntimeResourceDefinition def, TreeSet<String> includes, DynamicSearchMethodBinding searchMethodBinding) {
+        includes.addAll(searchMethodBinding.getIncludes());
+
+        List<RuntimeSearchParam> searchParameters = new ArrayList<RuntimeSearchParam>();
+        searchParameters.addAll(searchMethodBinding.getSearchParams());
+        sortRuntimeSearchParameters(searchParameters);
+
+        if (!searchParameters.isEmpty()) {
+
+            for (RuntimeSearchParam nextParameter : searchParameters) {
+
+                String nextParamName = nextParameter.getName();
+
+                // String chain = null;
+                String nextParamUnchainedName = nextParamName;
+                if (nextParamName.contains(".")) {
+                    // chain = nextParamName.substring(nextParamName.indexOf('.') + 1);
+                    nextParamUnchainedName = nextParamName.substring(0, nextParamName.indexOf('.'));
+                }
+
+                String nextParamDescription = nextParameter.getDescription();
+
+                /*
+                 * If the parameter has no description, default to the one from the resource
+                 */
+                if (StringUtils.isBlank(nextParamDescription)) {
+                    RuntimeSearchParam paramDef = def.getSearchParam(nextParamUnchainedName);
+                    if (paramDef != null) {
+                        nextParamDescription = paramDef.getDescription();
+                    }
+                }
+
+                CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent param = resource.addSearchParam();
+
+                param.setName(nextParamName);
+                // if (StringUtils.isNotBlank(chain)) {
+                // param.addChain(chain);
+                // }
+                param.setDocumentation(nextParamDescription);
+                // param.setType(nextParameter.getParamType());
+            }
+        }
+    }
+
 
     private void handleSearchMethodBinding(CapabilityStatement.CapabilityStatementRestComponent rest, CapabilityStatement.CapabilityStatementRestResourceComponent resource, String resourceName, RuntimeResourceDefinition def, TreeSet<String> includes,
                                            SearchMethodBinding searchMethodBinding) {
@@ -478,6 +545,64 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 }
             }
         }
+    }
+
+    @Initialize
+    public void initializeOperations() {
+        myOperationBindingToName = new IdentityHashMap<OperationMethodBinding, String>();
+        myOperationNameToBindings = new HashMap<String, List<OperationMethodBinding>>();
+
+        Map<String, List<BaseMethodBinding<?>>> resourceToMethods = collectMethodBindings();
+        for (Map.Entry<String, List<BaseMethodBinding<?>>> nextEntry : resourceToMethods.entrySet()) {
+            List<BaseMethodBinding<?>> nextMethodBindings = nextEntry.getValue();
+            for (BaseMethodBinding<?> nextMethodBinding : nextMethodBindings) {
+                if (nextMethodBinding instanceof OperationMethodBinding) {
+                    OperationMethodBinding methodBinding = (OperationMethodBinding) nextMethodBinding;
+                    if (myOperationBindingToName.containsKey(methodBinding)) {
+                        continue;
+                    }
+
+                    String name = createOperationName(methodBinding);
+                    log.info("Detected operation: {}", name);
+
+                    myOperationBindingToName.put(methodBinding, name);
+                    if (myOperationNameToBindings.containsKey(name) == false) {
+                        myOperationNameToBindings.put(name, new ArrayList<OperationMethodBinding>());
+                    }
+                    myOperationNameToBindings.get(name).add(methodBinding);
+                }
+            }
+        }
+    }
+
+    private String createOperationName(OperationMethodBinding theMethodBinding) {
+        StringBuilder retVal = new StringBuilder();
+        if (theMethodBinding.getResourceName() != null) {
+            retVal.append(theMethodBinding.getResourceName());
+        }
+
+        retVal.append('-');
+        if (theMethodBinding.isCanOperateAtInstanceLevel()) {
+            retVal.append('i');
+        }
+        if (theMethodBinding.isCanOperateAtServerLevel()) {
+            retVal.append('s');
+        }
+        retVal.append('-');
+
+        // Exclude the leading $
+        retVal.append(theMethodBinding.getName(), 1, theMethodBinding.getName().length());
+
+        return retVal.toString();
+    }
+
+    private void sortRuntimeSearchParameters(List<RuntimeSearchParam> searchParameters) {
+        Collections.sort(searchParameters, new Comparator<RuntimeSearchParam>() {
+            @Override
+            public int compare(RuntimeSearchParam theO1, RuntimeSearchParam theO2) {
+                return theO1.getName().compareTo(theO2.getName());
+            }
+        });
     }
 
 
