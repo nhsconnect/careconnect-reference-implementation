@@ -325,6 +325,12 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                         }
 
                     }
+                    // No extensions found, so add in a zero result to prevent hapiUI display error
+                    if (restResourceComponent.getExtension().size() == 0) {
+                        restResourceComponent.addExtension()
+                                .setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
+                                .setValue(new DecimalType(0));
+                    }
                 }
             }
 
