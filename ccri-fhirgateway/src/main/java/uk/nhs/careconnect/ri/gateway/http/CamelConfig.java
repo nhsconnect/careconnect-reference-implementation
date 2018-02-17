@@ -19,7 +19,7 @@ public class CamelConfig extends CamelConfiguration {
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
 		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Gateway"));
-
+		camelContext.setStreamCaching(true);
 	}
 
 

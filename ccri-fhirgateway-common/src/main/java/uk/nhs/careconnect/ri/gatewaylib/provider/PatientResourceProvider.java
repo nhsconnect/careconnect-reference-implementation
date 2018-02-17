@@ -125,6 +125,7 @@ public class PatientResourceProvider implements IResourceProvider {
         return patient;
     }
 
+    /*
     @Operation(name = "everything", idempotent = true, bundleType= BundleTypeEnum.SEARCHSET)
     public Bundle patientEverythingOperation(
             @IdParam IdType patientId
@@ -173,6 +174,7 @@ public class PatientResourceProvider implements IResourceProvider {
 
         return bundle;
     }
+    */
 
     @Search
     public List<Resource> searchPatient(HttpServletRequest request,
