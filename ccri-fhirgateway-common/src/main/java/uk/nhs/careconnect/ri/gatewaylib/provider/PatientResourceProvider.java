@@ -217,8 +217,8 @@ public class PatientResourceProvider implements IResourceProvider {
             bundle = (Bundle) resource;
             log.trace("Found Entries = " + bundle.getEntry().size());
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                Patient patient = (Patient) entry.getResource();
-                results.add(patient);
+                //Patient patient = (Patient) ;
+                results.add(entry.getResource());
             }
         } else if (resource instanceof OperationOutcome)
         {

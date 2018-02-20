@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.model.Composition;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.gatewaylib.provider.*;
@@ -22,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.TimeZone;
+
 
 public class HAPIRestfulConfig extends RestfulServer {
 
