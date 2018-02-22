@@ -60,7 +60,7 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
             medicationStatement.setContext(new Reference("Encounter/"+medicationRequestEntity.getContextEncounter().getId()));
         }
         if (medicationRequestEntity.getAuthoredDate() !=null) {
-            medicationStatement.setEffective(new DateType(medicationRequestEntity.getAuthoredDate()));
+            medicationStatement.setEffective(new DateTimeType(medicationRequestEntity.getAuthoredDate()));
         }
 
         // Typo 15/12/2017 KGM Was MedicationOrder
