@@ -59,6 +59,9 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
         if (medicationRequestEntity.getContextEncounter() != null) {
             medicationStatement.setContext(new Reference("Encounter/"+medicationRequestEntity.getContextEncounter().getId()));
         }
+        if (medicationRequestEntity.getAuthoredDate() !=null) {
+            medicationStatement.setEffective(new DateType(medicationRequestEntity.getAuthoredDate()));
+        }
 
         // Typo 15/12/2017 KGM Was MedicationOrder
         medicationStatement.addDerivedFrom().setReference("MedicationRequest/"+medicationRequestEntity.getId());
