@@ -233,6 +233,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "AllergyIntolerance":
                         resource.getProfile().setReference(CareConnectProfile.AllergyIntolerance_1);
                         break;
+                    case "Medication":
+                        resource.getProfile().setReference(CareConnectProfile.Medication_1);
+                        break;
                     default:
                         resource.getProfile().setReference((def.getResourceProfile(serverBase)));
                 }
@@ -382,6 +385,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Bundle":
                 case "Composition":
                 case "DocumentReference":
+                case "Medication":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {

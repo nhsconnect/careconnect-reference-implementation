@@ -33,9 +33,14 @@ public class MedicationRequestEntity extends BaseResource {
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
+    @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity medicationCode;
+
+    @ManyToOne
+    @JoinColumn (name ="MEDICATION_ID", nullable = true,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private MedicationEntity medicationEntity;
 
     @ManyToOne
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_ENCOUNTER"))
@@ -393,5 +398,13 @@ public class MedicationRequestEntity extends BaseResource {
     public MedicationRequestEntity setDosages(Set<MedicationRequestDosage> dosages) {
         this.dosages = dosages;
         return this;
+    }
+
+    public MedicationEntity getMedicationEntity() {
+        return medicationEntity;
+    }
+
+    public void setMedicationEntity(MedicationEntity medicationEntity) {
+        this.medicationEntity = medicationEntity;
     }
 }

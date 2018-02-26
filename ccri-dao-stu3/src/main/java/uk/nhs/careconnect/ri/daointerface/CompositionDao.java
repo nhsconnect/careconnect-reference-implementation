@@ -81,7 +81,7 @@ public class CompositionDao implements CompositionRepository {
     public Long count() {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(ConditionEntity.class)));
+        cq.select(qb.count(cq.from(CompositionEntity.class)));
         //cq.where(/*your stuff*/);
         return em.createQuery(cq).getSingleResult();
     }
