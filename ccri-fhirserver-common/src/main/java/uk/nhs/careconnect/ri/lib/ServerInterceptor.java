@@ -202,7 +202,11 @@ public class ServerInterceptor extends InterceptorAdapter {
 
         } catch (InvalidMediaTypeException e) {
             log.info("Unsupported media type: " + contentType);
-            throw new InvalidRequestException("Unsupported media type: mime " + contentType);
+            // KGM 26/02/2018 Don't throw error for xml and json
+            if (!contentType.contains("xml") && !contentType.contains("json")) {
+                log.info("Unsupported media type: " + contentType);
+                throw new InvalidRequestException("Unsupported media type: content " + contentType);
+            }
         }
     }
 
