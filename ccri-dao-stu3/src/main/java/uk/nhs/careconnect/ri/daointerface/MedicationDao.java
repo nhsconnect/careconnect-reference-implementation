@@ -22,6 +22,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -66,6 +67,19 @@ public class MedicationDao implements MedicationRepository {
             if (medicationEntity == null) return null;
 
             Medication medication = new Medication();
+
+            Meta meta = new Meta().addProfile(CareConnectProfile.Medication_1);
+
+            if (medicationEntity.getUpdated() != null) {
+                meta.setLastUpdated(medicationEntity.getUpdated());
+            }
+            else {
+                if (medicationEntity.getCreated() != null) {
+                    meta.setLastUpdated(medicationEntity.getCreated());
+                }
+            }
+            medication.setMeta(meta);
+
             medication.setId(medicationEntity.getId().toString());
             medication.getCode()
                     .addCoding()

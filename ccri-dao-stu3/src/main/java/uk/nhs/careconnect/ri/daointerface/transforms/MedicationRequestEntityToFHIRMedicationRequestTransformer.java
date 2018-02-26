@@ -83,7 +83,8 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
                 medicationRequest.setMedication(medication);
 
         } else if (medicationRequestEntity.getMedicationEntity() != null) {
-            medicationRequest.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId()));
+            medicationRequest.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
+                    .setDisplay(medicationRequestEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
         if (medicationRequestEntity.getPriority() != null) {
             medicationRequest.setPriority(medicationRequestEntity.getPriority());
