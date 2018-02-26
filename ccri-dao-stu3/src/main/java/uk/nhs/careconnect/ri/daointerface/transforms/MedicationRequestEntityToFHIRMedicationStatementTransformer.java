@@ -111,6 +111,9 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
                     .setCode(medicationRequestEntity.getMedicationCode().getCode());
                 medicationStatement.setMedication(medication);
 
+        } else if (medicationRequestEntity.getMedicationEntity() != null) {
+            medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
+                    .setDisplay(medicationRequestEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
         if (medicationRequestEntity.getReasonCode() != null) {
             medicationStatement.addReasonCode().addCoding()
