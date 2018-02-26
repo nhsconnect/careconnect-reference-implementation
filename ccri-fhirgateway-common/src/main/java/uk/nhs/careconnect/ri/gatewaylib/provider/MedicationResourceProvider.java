@@ -63,7 +63,7 @@ public class MedicationResourceProvider implements IResourceProvider {
             log.error("JSON Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
-        if (resource instanceof MedicationRequest) {
+        if (resource instanceof Medication) {
             medication = (Medication) resource;
         }else if (resource instanceof OperationOutcome)
         {
