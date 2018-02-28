@@ -652,7 +652,7 @@ public class JPAStepsDef {
 
     @When("^I search MedicationRequest on Patient ID = (\\d+)$")
     public void i_search_MedicationRequest_on_Patient_ID(int patient) throws Throwable {
-        prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null,null);
+        prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null,null, null);
     }
 
     @Then("^I should get a Bundle of MedicationRequest (\\d+) resource$")

@@ -49,7 +49,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
 
         Bundle bundle = completeBundle.getBundle();
 
-        List<MedicationRequest> resources = searchMedicationRequest(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
+        List<MedicationRequest> resources = searchMedicationRequest(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null, null);
 
         for (MedicationRequest resource : resources) {
             if (resource.getRequester()!= null && resource.getRequester().hasAgent()) {
@@ -110,6 +110,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name= MedicationRequest.SP_MEDICATION) ReferenceParam medication
                                        ) {
 
         List<MedicationRequest> results = new ArrayList<MedicationRequest>();

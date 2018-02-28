@@ -62,7 +62,7 @@ public class MedicationDao implements MedicationRepository {
 
     @Override
     public List<Medication> search(FhirContext ctx, TokenParam code, TokenParam id) {
-        List<MedicationRequestEntity> results = prescriptionDao.searchEntity(ctx,null,code,null,null,null,id);
+        List<MedicationRequestEntity> results = prescriptionDao.searchEntity(ctx,null,code,null,null,null,id,null);
         List<Medication> res = new ArrayList<>();
 
         for (MedicationRequestEntity medicationRequest :results) {

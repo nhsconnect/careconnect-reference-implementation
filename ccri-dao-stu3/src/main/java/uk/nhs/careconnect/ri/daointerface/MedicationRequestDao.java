@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -139,7 +140,14 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<MedicationRequestEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/prescription"),null);
+                    List<MedicationRequestEntity> results = searchEntity(ctx
+                            , null
+                            , null
+                            ,null
+                            , null
+                            , new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/prescription")
+                            ,null
+                            , null);
                     for (MedicationRequestEntity con : results) {
                         prescriptionEntity = con;
                         break;
@@ -415,8 +423,15 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequest> search(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier, TokenParam resid) {
-        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier,resid);
+    public List<MedicationRequest> search(FhirContext ctx
+            , ReferenceParam patient
+            , TokenParam code
+            , DateRangeParam authoredDate
+            , TokenParam status
+            , TokenParam identifier
+            , TokenParam resid
+            , ReferenceParam medication) {
+        List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier,resid, medication);
         List<MedicationRequest> results = new ArrayList<>();
 
         for (MedicationRequestEntity medicationRequestEntity : qryResults)
@@ -429,7 +444,14 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     }
 
     @Override
-    public List<MedicationRequestEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam code, DateRangeParam authoredDate, TokenParam status, TokenParam identifier, TokenParam resid) {
+    public List<MedicationRequestEntity> searchEntity(FhirContext ctx
+            , ReferenceParam patient
+            , TokenParam code
+            , DateRangeParam authoredDate
+            , TokenParam status
+            , TokenParam identifier
+            , TokenParam resid
+            , ReferenceParam medication) {
         List<MedicationRequestEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -456,6 +478,12 @@ public class MedicationRequestDao implements MedicationRequestRepository {
         }
         if (resid != null) {
             Predicate p = builder.equal(root.get("id"),resid.getValue());
+            predList.add(p);
+        }
+        // REVISIT KGM 28/2/2018 Added Medication search. This is using itself not Medication table
+
+        if (medication != null) {
+            Predicate p = builder.equal(root.get("id"),medication.getIdPart());
             predList.add(p);
         }
         if (identifier !=null)
