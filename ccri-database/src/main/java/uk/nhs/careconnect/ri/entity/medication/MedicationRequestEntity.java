@@ -407,4 +407,6 @@ public class MedicationRequestEntity extends BaseResource {
     public void setMedicationEntity(MedicationEntity medicationEntity) {
         this.medicationEntity = medicationEntity;
     }
+
+
 }

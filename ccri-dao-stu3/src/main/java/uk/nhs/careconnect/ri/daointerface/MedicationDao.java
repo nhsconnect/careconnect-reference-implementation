@@ -42,7 +42,8 @@ public class MedicationDao implements MedicationRepository {
     @PersistenceContext
     EntityManager em;
 
-
+    @Autowired
+    MedicationRequestRepository prescriptionDao;
 
     private static final Logger log = LoggerFactory.getLogger(MedicationDao.class);
 
@@ -53,15 +54,63 @@ public class MedicationDao implements MedicationRepository {
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(MedicationEntity.class)));
+        // TODO This is going to MedicationRequest
+        cq.select(qb.count(cq.from(MedicationRequestEntity.class)));
         //cq.where(/*your stuff*/);
         return em.createQuery(cq).getSingleResult();
     }
 
+    @Override
+    public List<Medication> search(FhirContext ctx, TokenParam code, TokenParam id) {
+        List<MedicationRequestEntity> results = prescriptionDao.searchEntity(ctx,null,code,null,null,null,id);
+        List<Medication> res = new ArrayList<>();
+
+        for (MedicationRequestEntity medicationRequest :results) {
+            res.add(transform(medicationRequest));
+        }
+        return res;
+    }
+
+    private Medication transform(MedicationRequestEntity medicationRequest) {
+        Medication medication = new Medication();
+
+        Meta meta = new Meta().addProfile(CareConnectProfile.Medication_1);
+
+        if (medicationRequest.getUpdated() != null) {
+            meta.setLastUpdated(medicationRequest.getUpdated());
+        }
+        else {
+            if (medicationRequest.getCreated() != null) {
+                meta.setLastUpdated(medicationRequest.getCreated());
+            }
+        }
+        medication.setMeta(meta);
+
+        medication.setId(medicationRequest.getId().toString());
+        medication.getCode()
+                .addCoding()
+                .setCode(medicationRequest.getMedicationCode().getCode())
+                .setSystem(medicationRequest.getMedicationCode().getSystem())
+                .setDisplay(medicationRequest.getMedicationCode().getDisplay());
+        return medication;
+    }
 
     @Override
     public Medication read(FhirContext ctx, IdType theId) {
+        Medication medication = null;
+        // Uses the MedicationRequest table.
         if (daoutils.isNumeric(theId.getIdPart())) {
+            MedicationRequestEntity medicationRequest = prescriptionDao.readEntity(ctx, theId);
+            if (medicationRequest != null) {
+                medication = transform(medicationRequest);
+            }
+        }
+        return medication;
+    }
+
+
+            /* 28/2/2018 KGM Disable for now future use
+
             MedicationEntity medicationEntity = em.find(MedicationEntity.class, Long.parseLong(theId.getIdPart()));
 
             if (medicationEntity == null) return null;
@@ -87,10 +136,8 @@ public class MedicationDao implements MedicationRepository {
                         .setSystem(medicationEntity.getMedicationCode().getSystem())
                         .setDisplay(medicationEntity.getMedicationCode().getDisplay());
             return medication;
-        } else {
-            return null;
-        }
-    }
+            */
+
 
     @Override
     public MedicationEntity readEntity(FhirContext ctx, IdType theId) {
