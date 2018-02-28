@@ -68,7 +68,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
     @Override
     public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid) {
-        List<MedicationRequestEntity> prescriptions = prescriptionDao.searchEntity(ctx,patient,null,effectiveDate,status,null,null);
+        List<MedicationRequestEntity> prescriptions = prescriptionDao.searchEntity(ctx,patient,null,effectiveDate,status,null,resid);
         List<MedicationStatement> results = new ArrayList<>();
 
         for (MedicationRequestEntity prescriptionEntity : prescriptions)
