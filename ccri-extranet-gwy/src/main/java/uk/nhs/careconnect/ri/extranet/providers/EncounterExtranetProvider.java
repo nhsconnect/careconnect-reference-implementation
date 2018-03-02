@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewaylib.provider;
+package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.gatewaylib.provider.CompleteBundle;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class EncounterResourceProvider implements IResourceProvider {
+public class EncounterExtranetProvider implements IResourceProvider {
 
     @Autowired
     CamelContext context;
@@ -34,76 +35,14 @@ public class EncounterResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
-    private static final Logger log = LoggerFactory.getLogger(EncounterResourceProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(EncounterExtranetProvider.class);
 
     @Override
     public Class<Encounter> getResourceType() {
         return Encounter.class;
     }
 
-    public Bundle getEverythingOperation(
-            @IdParam IdType patientId
-            ,CompleteBundle completeBundle
-    ) {
 
-        Bundle bundle = completeBundle.getBundle();
-
-        List<Resource> resources = searchEncounter(null, new ReferenceParam().setValue(patientId.getValue()),null,null,null);
-
-        for (Resource resource : resources) {
-            if (resource instanceof Encounter) {
-                Encounter encounter = (Encounter) resource;
-                for (Encounter.EncounterParticipantComponent component : encounter.getParticipant()) {
-                    Reference reference = component.getIndividual();
-                    if (reference.getReference().contains("Practitioner")) {
-                        completeBundle.addGetPractitioner(new IdType(reference.getReference()));
-                    }
-                    if (reference.getReference().contains("Organization")) {
-                        completeBundle.addGetOrganisation(new IdType(reference.getReference()));
-                    }
-                }
-                bundle.addEntry().setResource(resource);
-            }
-        }
-        // Populate bundle with matching resources
-        return bundle;
-    }
-
-    @Read
-    public Encounter getEncounterById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
-
-        ProducerTemplate template = context.createProducerTemplate();
-
-
-
-        Encounter encounter = null;
-        IBaseResource resource = null;
-        try {
-            InputStream inputStream = (InputStream)  template.sendBody("direct:FHIREncounter",
-                    ExchangePattern.InOut,httpRequest);
-
-
-            Reader reader = new InputStreamReader(inputStream);
-            resource = ctx.newJsonParser().parseResource(reader);
-        } catch(Exception ex) {
-            log.error("JSON Parse failed " + ex.getMessage());
-            throw new InternalErrorException(ex.getMessage());
-        }
-        if (resource instanceof Encounter) {
-            encounter = (Encounter) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Unknown Error");
-        }
-
-        return encounter;
-    }
 
 
 
@@ -111,7 +50,7 @@ public class EncounterResourceProvider implements IResourceProvider {
     public List<Resource> searchEncounter(HttpServletRequest httpRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
-          //  ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
+
             , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
          //   , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes

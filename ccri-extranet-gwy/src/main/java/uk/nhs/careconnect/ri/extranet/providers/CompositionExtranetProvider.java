@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
-public class CompositionProvider implements IResourceProvider {
+public class CompositionExtranetProvider implements IResourceProvider {
 
     @Autowired
     FhirContext ctx;

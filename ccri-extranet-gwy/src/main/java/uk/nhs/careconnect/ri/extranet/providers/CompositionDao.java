@@ -19,12 +19,11 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
-import javax.transaction.Transactional;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Transactional
 @Component
 public class CompositionDao implements IComposition {
 
@@ -327,6 +326,7 @@ public class CompositionDao implements IComposition {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource() instanceof MedicationStatement) {
                 MedicationStatement medicationStatement = (MedicationStatement) entry.getResource();
+                //medicationStatement.getMedicationReference().getDisplay();
                 section.getEntry().add(new Reference("urn:uuid:"+medicationStatement.getId()));
                 medicationStatements.add(medicationStatement);
 

@@ -9,13 +9,11 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Resource;
 
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.extranet.providers.IPatient;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
+
 @Component
 public class PatientDao implements IPatient {
 

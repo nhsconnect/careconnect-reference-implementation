@@ -1,8 +1,6 @@
 package uk.nhs.careconnect.ri.extranet;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.api.EncodingEnum;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
@@ -33,7 +31,7 @@ public class ccriExtranetApplication{
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new CCRIRestfulServer(context), "/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new ccriExtranetHAPIServer(context), "/STU3/*");
         registration.setName("FhirServlet");
         return registration;
     }

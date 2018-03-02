@@ -76,7 +76,11 @@
             <artifactId>camel-spring-boot-starter</artifactId>
             <version>${camel-version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http4</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
 
 
         <dependency>
@@ -90,7 +94,7 @@
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
+<!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jta-narayana</artifactId>
@@ -101,7 +105,7 @@
             <artifactId>jboss-transaction-api_1.2_spec</artifactId>
             <version>1.1.1.Final</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
@@ -151,19 +155,16 @@
             <version>${care-connect-version}</version>
         </dependency>
 
-        <!-- For stylesheet transform -->
         <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.2</version>
+            <groupId>uk.nhs.careconnect.ri</groupId>
+            <artifactId>ccri-fhirserver-common</artifactId>
+            <version>${care-connect-version}</version>
         </dependency>
 
-
-        <!-- flying saucer pdf -->
         <dependency>
-            <groupId>org.xhtmlrenderer</groupId>
-            <artifactId>flying-saucer-pdf</artifactId>
-            <version>9.1.4</version>
+            <groupId>uk.nhs.careconnect.ri</groupId>
+            <artifactId>ccri-fhirgateway-common</artifactId>
+            <version>${care-connect-version}</version>
         </dependency>
 
     </dependencies>

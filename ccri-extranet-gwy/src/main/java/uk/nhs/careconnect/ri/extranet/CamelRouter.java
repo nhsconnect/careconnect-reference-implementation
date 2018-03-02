@@ -18,8 +18,14 @@ package uk.nhs.careconnect.ri.extranet;
 
 
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.gatewaylib.interceptor.GatewayCamelPostProcessor;
+import uk.nhs.careconnect.ri.gatewaylib.interceptor.GatewayCamelProcessor;
 
+import java.io.InputStream;
 
 
 /**
@@ -30,10 +36,41 @@ import org.springframework.stereotype.Component;
 @Component
 public class CamelRouter extends RouteBuilder {
 
+    @Autowired
+    protected Environment env;
+
+    @Value("${fhir.restserver.serverBase}")
+    private String serverBase;
 
     @Override
-    public void configure() throws Exception {
+    public void configure()
+    {
 
+        GatewayCamelProcessor camelProcessor = new GatewayCamelProcessor();
+
+        GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
+
+
+        from("direct:FHIRPatient")
+                .routeId("Extranet Patient")
+                .to("direct:HAPIServer");
+
+        from("direct:FHIREncounter")
+                .routeId("Extranet Encounter")
+                .to("direct:HAPIServer");
+
+        from("direct:FHIRCapabilityStatement")
+                .routeId("Extranet CapabilityStatement")
+                .to("direct:HAPIServer");
+
+        from("direct:HAPIServer")
+                .routeId("INT FHIR Server")
+                .process(camelProcessor)
+                .to("log:uk.nhs.careconnect.extranet.start?level=INFO&showHeaders=true&showExchangeId=true")
+                .to(serverBase)
+                .process(camelPostProcessor)
+                .to("log:uk.nhs.careconnect.extranet.complete?level=INFO&showHeaders=true&showExchangeId=true")
+                .convertBodyTo(InputStream.class);
 
     }
 

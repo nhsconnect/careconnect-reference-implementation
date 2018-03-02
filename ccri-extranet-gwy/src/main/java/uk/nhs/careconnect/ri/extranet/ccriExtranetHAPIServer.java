@@ -3,7 +3,6 @@ package uk.nhs.careconnect.ri.extranet;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -15,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import uk.nhs.careconnect.ri.extranet.providers.CompositionProvider;
-import uk.nhs.careconnect.ri.extranet.providers.PatientProvider;
+import uk.nhs.careconnect.ri.extranet.providers.ConformanceExtranetProvider;
+import uk.nhs.careconnect.ri.extranet.providers.EncounterExtranetProvider;
+import uk.nhs.careconnect.ri.extranet.providers.PatientExtranetProvider;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -24,14 +25,14 @@ import java.util.Arrays;
 import java.util.TimeZone;
 
 
-public class CCRIRestfulServer extends RestfulServer {
+public class ccriExtranetHAPIServer extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CCRIRestfulServer.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ccriExtranetHAPIServer.class);
 
 	private ApplicationContext applicationContext;
 
-	CCRIRestfulServer(ApplicationContext context) {
+	ccriExtranetHAPIServer(ApplicationContext context) {
 		this.applicationContext = context;
 	}
 
@@ -67,10 +68,12 @@ public class CCRIRestfulServer extends RestfulServer {
         if (applicationContext == null ) log.info("Context is null");
 
 		setResourceProviders(Arrays.asList(
-				applicationContext.getBean(CompositionProvider.class)
-				,applicationContext.getBean(PatientProvider.class)
+				applicationContext.getBean(EncounterExtranetProvider.class)
+				,applicationContext.getBean(PatientExtranetProvider.class)
 		));
 
+		// Replace built in conformance provider (CapabilityStatement)
+		setServerConformanceProvider(new ConformanceExtranetProvider(applicationContext ));
 
         setServerName(serverName);
         setServerVersion(serverVersion);
