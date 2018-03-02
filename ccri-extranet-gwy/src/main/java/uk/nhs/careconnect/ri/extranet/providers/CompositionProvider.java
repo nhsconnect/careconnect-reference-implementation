@@ -13,7 +13,6 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.extranet.IComposition;
 
 import javax.servlet.http.HttpServletRequest;
 

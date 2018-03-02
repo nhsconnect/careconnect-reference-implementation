@@ -3,6 +3,9 @@ package uk.nhs.careconnect.ri.extranet;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContextNameStrategy;
+import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -48,6 +51,24 @@ public class ccriExtranetApplication{
         return source;
     }
 
+
+    @Bean
+    CamelContextConfiguration contextConfiguration() {
+        return new CamelContextConfiguration() {
+
+            @Override
+            public void beforeApplicationStart(CamelContext camelContext) {
+
+                camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("CCRIExtranet"));
+
+            }
+
+            @Override
+            public void afterApplicationStart(CamelContext camelContext) {
+
+            }
+        };
+    }
 
 
 }

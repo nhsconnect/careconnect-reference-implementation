@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.extranet;
+package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -9,7 +9,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Resource;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.ri.extranet.providers.IPatient;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.extranet;
+package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;

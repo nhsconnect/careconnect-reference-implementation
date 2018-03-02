@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.extranet;
+package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
