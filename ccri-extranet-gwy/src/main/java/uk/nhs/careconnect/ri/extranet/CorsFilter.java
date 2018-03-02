@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.ri.extranet;
 
 import org.springframework.context.annotation.Configuration;
 

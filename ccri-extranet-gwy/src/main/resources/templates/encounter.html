@@ -1,0 +1,29 @@
+
+<div>
+    <div th:if="${#lists.isEmpty(encounters)}">
+        <p>None Recorded</p>
+    </div>
+    <div th:if="${not #lists.isEmpty(encounters)}">
+        <div>
+            <p>Last three encounters</p>
+        </div>
+        <div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Provider</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="encounter : ${encounters}">
+                        <td th:text="${#dates.format(encounter.getPeriod().getStart(),'dd MMM YYYY')}">Unknown</td>
+                        <td th:text="${encounter.getTypeFirstRep().getCodingFirstRep().getDisplay()}">No type given</td>
+                        <td th:text="${encounter.getServiceProvider().getDisplay()}">No provider specified</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,22 +1,22 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.ri.extranet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
-import mayfieldis.careconnect.nosql.providers.CompositionProvider;
-import mayfieldis.careconnect.nosql.providers.PatientProvider;
+
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import mayfieldis.careconnect.nosql.providers.BundleProvider;
-
+import uk.nhs.careconnect.ri.extranet.providers.CompositionProvider;
+import uk.nhs.careconnect.ri.extranet.providers.PatientProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -67,13 +67,10 @@ public class CCRIRestfulServer extends RestfulServer {
         if (applicationContext == null ) log.info("Context is null");
 
 		setResourceProviders(Arrays.asList(
-				applicationContext.getBean(BundleProvider.class)
-				,applicationContext.getBean(CompositionProvider.class)
+				applicationContext.getBean(CompositionProvider.class)
 				,applicationContext.getBean(PatientProvider.class)
 		));
 
-
-		registerInterceptor(new mimeInterceptor());
 
         setServerName(serverName);
         setServerVersion(serverVersion);

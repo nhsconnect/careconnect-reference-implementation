@@ -1,5 +1,8 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.ri.extranet;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,16 +15,16 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
-@ComponentScan("mayfieldis.careconnect.nosql")
-public class CCRINoSQLApplication {
+@ComponentScan("uk.nhs.careconnect.ri.extranet")
+public class ccriExtranetApplication{
 
     @Autowired
     ApplicationContext context;
 
     public static void main(String[] args) {
         //System.setProperty(AuthenticationFilter.HAWTIO_AUTHENTICATION_ENABLED, "false");
-        System.setProperty("server.port", "8181");
-        SpringApplication.run(CCRINoSQLApplication.class, args);
+        System.setProperty("server.port", "8182");
+        SpringApplication.run(ccriExtranetApplication.class, args);
 
     }
 
@@ -33,12 +36,18 @@ public class CCRINoSQLApplication {
     }
 
     @Bean
+    public FhirContext getFhirContext() {
+        return FhirContext.forDstu3();
+    }
+
+    @Bean
     CorsConfigurationSource
     corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
     }
+
 
 
 }

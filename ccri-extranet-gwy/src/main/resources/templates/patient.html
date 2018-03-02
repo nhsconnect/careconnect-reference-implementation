@@ -1,0 +1,84 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+    <h2>Patient</h2>
+    <div>
+        <b>THIS IS A MOCK OF OVERRAL STRUCTURE AND IS NOT MEANT TO BE PRETTY</b>
+    </div>
+    <table>
+        <tbody>
+            <tr>
+                <td>Name</td>
+                <td th:text="${patient.getNameFirstRep().getNameAsSingleString()}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Date Of Birth</td>
+                <td th:text="${#dates.format(patient.getBirthDate(),'dd MMM YYYY')}"></td>
+            </tr>
+            <tr>
+                <td>Sex</td>
+                <td th:text="${patient.getGender().getDisplay()}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Contact Details</td>
+                <td></td>
+            </tr>
+            <tr th:each="telecom : ${patient.getTelecom()}">
+                <td></td>
+                <td th:text="${telecom.getValue()}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td></td>
+            </tr>
+            <tr th:each="line : ${patient.getAddressFirstRep().getLine()}">
+                <td></td>
+                <td th:text="${line.getValue()}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td th:text="${patient.getAddressFirstRep().getPostalCode()}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr th:if="${practice!=null}">
+                <td>GP Practice</td>
+                <td th:text="${practice?.getName()  + ' (' + practice?.getIdentifierFirstRep().getValue()+')' }"></td>
+            </tr>
+            <tr th:if="${gp!=null}">
+                <td>GP</td>
+                <td th:text="${gp?.getNameFirstRep().getNameAsSingleString() + ' ('+gp?.getIdentifierFirstRep().getValue()+')' }"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr th:each="identifier : ${patient.getIdentifier()}">
+
+                <div th:switch="${identifier.getSystem()}">
+                    <td th:case="'https://fhir.nhs.uk/Id/nhs-number'">NHS Number</td>
+                    <td th:case="'http://hl7.org/fhir/sid/us-ssn'">US Social Security Number</td>
+                    <td th:case="'urn:oid:2.16.840.1.113883.4.3.25'">Massachusetts Driver's License</td>
+                    <td th:case="'https://fhir.leedsth.nhs.uk/Id/pas-number'">Leeds Teaching Hospitals PPM Number</td>
+                    <td th:case="*" th:text="${'Local Identifier ('+identifier.getSystem()+')'}"></td>
+                </div>
+                <td th:text="${identifier.getValue()}"></td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+

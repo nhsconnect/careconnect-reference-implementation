@@ -1,7 +1,8 @@
-package mayfieldis.careconnect.nosql.dao;
+package uk.nhs.careconnect.ri.extranet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -16,4 +17,6 @@ public interface IComposition {
 
     List<Resource> search(FhirContext ctx, TokenParam resid
             ,ReferenceParam patient);
+
+    Bundle buildSummaryCareDocument(IGenericClient client, IdType patientId);
 }

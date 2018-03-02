@@ -1,0 +1,24 @@
+
+<div>
+    <div th:if="${#lists.isEmpty(conditions)}">
+        <p>None Recorded</p>
+    </div>
+    <div th:if="${not #lists.isEmpty(conditions)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+
+            </tr>
+            </thead>
+            <tbody>
+                <tr th:each="condition : ${conditions}">
+                    <td th:text="${#dates.format(condition.getAssertedDate(),'dd MMM YYYY')}">Unknown</td>
+                    <td th:text="${condition.getCode().getCodingFirstRep().getDisplay()}">No Condition given</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

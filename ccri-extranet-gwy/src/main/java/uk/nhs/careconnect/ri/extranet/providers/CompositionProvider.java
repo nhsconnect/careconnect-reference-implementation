@@ -1,22 +1,22 @@
-package mayfieldis.careconnect.nosql.providers;
+package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.param.DateRangeParam;
+
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 
-import mayfieldis.careconnect.nosql.dao.IComposition;
-import mayfieldis.careconnect.nosql.dao.IResource;
+
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.extranet.IComposition;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Component
@@ -28,8 +28,6 @@ public class CompositionProvider implements IResourceProvider {
     @Autowired
     IComposition compositionDao;
 
-    @Autowired
-    IResource resourceDao;
 
     public Class<? extends IBaseResource> getResourceType() {
         return Composition.class;
@@ -54,6 +52,8 @@ public class CompositionProvider implements IResourceProvider {
 
         return composition;
     }
+
+
 
     @Search
     public List<Resource> searchComposition(HttpServletRequest theRequest
