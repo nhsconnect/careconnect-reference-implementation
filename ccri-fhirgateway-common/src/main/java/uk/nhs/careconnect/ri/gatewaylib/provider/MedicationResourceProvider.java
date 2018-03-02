@@ -79,6 +79,53 @@ public class MedicationResourceProvider implements IResourceProvider {
         return medication;
     }
 
+    @Search
+    public List<Medication> searchMedicationRequest(HttpServletRequest httpRequest
+            , @OptionalParam(name = Medication.SP_CODE) TokenParam code
+            , @OptionalParam(name = Medication.SP_RES_ID) TokenParam resid
+    ) {
+
+        List<Medication> results = new ArrayList<>();
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+        if (httpRequest != null) {
+            inputStream = (InputStream) template.sendBody("direct:FHIRMedication",
+                    ExchangePattern.InOut,httpRequest);
+        }
+        Bundle bundle = null;
+
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
+        try {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                Medication medication = (Medication) entry.getResource();
+                results.add(medication);
+            }
+        }
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
+        return results;
+
+    }
+
 
 
 

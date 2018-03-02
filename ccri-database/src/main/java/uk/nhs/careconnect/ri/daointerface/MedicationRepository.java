@@ -19,5 +19,9 @@ public interface MedicationRepository extends BaseDao<MedicationEntity, Medicati
 
     Medication read(FhirContext ctx, IdType theId);
 
+    List<Medication> search(FhirContext ctx
+            , @OptionalParam(name = MedicationRequest.SP_CODE) TokenParam code
+            ,@OptionalParam(name= MedicationRequest.SP_RES_ID) TokenParam id
 
+    );
 }

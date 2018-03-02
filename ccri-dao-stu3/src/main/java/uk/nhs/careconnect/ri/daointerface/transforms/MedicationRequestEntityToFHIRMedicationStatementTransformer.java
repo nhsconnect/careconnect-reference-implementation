@@ -101,6 +101,14 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
         }
 
 
+        if (medicationRequestEntity.getMedicationCode() != null) {
+            medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getId())
+                    .setDisplay(medicationRequestEntity.getMedicationCode().getDisplay()));
+        }
+        /*
+         Disabled due to profile constraint 28/02/2018 KGM
+
+         Leave in as we may go back to this method.
 
         if (medicationRequestEntity.getMedicationCode() != null) {
 
@@ -115,6 +123,7 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
             medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
                     .setDisplay(medicationRequestEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
+        */
         if (medicationRequestEntity.getReasonCode() != null) {
             medicationStatement.addReasonCode().addCoding()
                     .setDisplay(medicationRequestEntity.getReasonCode().getDisplay())

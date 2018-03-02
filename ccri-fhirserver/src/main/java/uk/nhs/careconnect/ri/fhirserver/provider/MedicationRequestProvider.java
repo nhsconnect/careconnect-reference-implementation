@@ -9,10 +9,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,8 +88,9 @@ public class MedicationRequestProvider implements ICCResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_RES_ID) TokenParam resid
             , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER)  TokenParam identifierCode
+            , @OptionalParam(name = MedicationRequest.SP_MEDICATION) ReferenceParam medication
                                           ) {
-        return prescriptionDao.search(ctx,patient, code, dateWritten, status,identifierCode,resid);
+        return prescriptionDao.search(ctx,patient, code, dateWritten, status,identifierCode,resid,medication);
     }
 
     @Read()
