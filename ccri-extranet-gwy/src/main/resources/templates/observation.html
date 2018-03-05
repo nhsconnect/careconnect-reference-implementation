@@ -10,15 +10,21 @@
                 <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Type</th>
-                    <th>Provider</th>
+                    <th>Name</th>
+                    <th>Value</th>
                 </tr>
                 </thead>
                 <tbody>
                     <tr th:each="observation : ${observations}">
-                        <td th:text="${#dates.format(observation.effectiveDate,'dd MMM YYYY')}">Unknown</td>
-                        <td th:text="${encounter.getTypeFirstRep().getCodingFirstRep().getDisplay()}">No type given</td>
-                        <td th:text="${encounter.getServiceProvider().getDisplay()}">No provider specified</td>
+                        <td th:text="${#dates.format(observation.getEffectiveDateTimeType().getValue(),'dd MMM YYYY HH:mm')}">Unknown</td>
+
+                        <td th:text="${observation.getCode().getCodingFirstRep().getDisplay()}">No type given</td>
+                        <div th:if="${observation.hasValueQuantity()}">
+                            <td th:text="${observation.getValueQuantity().getValue()+' '+observation.getValueQuantity().getUnit()}">No provider specified</td>
+                        </div>
+                        <div th:if="${!observation.hasValueQuantity()}">
+                            <td th:text="${observation.getComponent().get(0).getValue()+'/'+observation.getComponent().get(1).getValue()+' '+observation.getComponent().get(0).getUnit()}">No provider specified</td>
+                        </div>
                     </tr>
                 </tbody>
             </table>

@@ -136,6 +136,11 @@ public class CompositionDao implements IComposition {
         section = getAllergySection(fhirDocument);
         if (section.getEntry().size()>0) composition.addSection(section);
 
+        section = getObservationSection(fhirDocument);
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = getProcedureSection(fhirDocument);
+        if (section.getEntry().size()>0) composition.addSection(section);
 
         return fhirDocument;
     }
@@ -444,6 +449,62 @@ public class CompositionDao implements IComposition {
         ctxThymeleaf.setVariable("allergies", allergyIntolerances);
 
         section.getText().setDiv(getDiv("allergy")).setStatus(Narrative.NarrativeStatus.GENERATED);
+
+        return section;
+    }
+
+    private Composition.SectionComponent getObservationSection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
+
+        ArrayList<Observation>  observations = new ArrayList<>();
+
+        section.getCode().addCoding()
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setCode("425044008")
+                .setDisplay("Physical exam section");
+        section.setTitle("Physical exam section");
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof Observation) {
+                Observation observation= (Observation) entry.getResource();
+
+                section.getEntry().add(new Reference("urn:uuid:"+observation.getId()));
+                observations.add(observation);
+            }
+        }
+        ctxThymeleaf.clearVariables();
+
+        ctxThymeleaf.setVariable("observations", observations);
+
+        section.getText().setDiv(getDiv("observation")).setStatus(Narrative.NarrativeStatus.GENERATED);
+
+        return section;
+    }
+
+    private Composition.SectionComponent getProcedureSection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
+
+        ArrayList<Procedure>  procedures = new ArrayList<>();
+
+        section.getCode().addCoding()
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setCode("887171000000109")
+                .setDisplay("Procedues");
+        section.setTitle("Procedures");
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof Procedure) {
+                Procedure procedure = (Procedure) entry.getResource();
+
+                section.getEntry().add(new Reference("urn:uuid:"+procedure.getId()));
+                procedures.add(procedure);
+            }
+        }
+        ctxThymeleaf.clearVariables();
+
+        ctxThymeleaf.setVariable("procedures", procedures);
+
+        section.getText().setDiv(getDiv("procedure")).setStatus(Narrative.NarrativeStatus.GENERATED);
 
         return section;
     }
