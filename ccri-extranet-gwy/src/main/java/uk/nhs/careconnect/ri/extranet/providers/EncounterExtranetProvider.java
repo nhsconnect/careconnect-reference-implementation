@@ -2,7 +2,10 @@ package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -35,6 +38,9 @@ public class EncounterExtranetProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    IComposition compositionDao;
+
     private static final Logger log = LoggerFactory.getLogger(EncounterExtranetProvider.class);
 
     @Override
@@ -43,6 +49,24 @@ public class EncounterExtranetProvider implements IResourceProvider {
     }
 
 
+    @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
+    public Bundle encounterDocumentOperation(
+            @IdParam IdType encounterId
+
+    ) {
+        log.info("In Encounter document " +encounterId.getIdPart());
+
+        HttpServletRequest request =  null;
+
+        IGenericClient client = FhirContext.forDstu3().newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
+
+        log.info("Build client");
+        client.setEncoding(EncodingEnum.XML);
+
+        log.info("calling composition");
+        return compositionDao.buildEncounterDocument(client,encounterId);
+
+    }
 
 
 
@@ -50,7 +74,6 @@ public class EncounterExtranetProvider implements IResourceProvider {
     public List<Resource> searchEncounter(HttpServletRequest httpRequest,
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
-
             , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
          //   , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes

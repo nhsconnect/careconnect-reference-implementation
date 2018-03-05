@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.extranet.providers;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -73,8 +74,71 @@ public class CompositionDao implements IComposition {
            return null;
     }
 
+    @Override
+    public Bundle buildEncounterDocument(IGenericClient client, IdType encounterId) {
+
+        Bundle fhirDocument = new Bundle()
+                .setType(Bundle.BundleType.DOCUMENT);
+
+        fhirDocument.getIdentifier().setValue(UUID.randomUUID().toString()).setSystem("https://tools.ietf.org/html/rfc4122");
+
+        // Main resource of a FHIR Bundle is a Composition
+        Composition composition = new Composition();
+        composition.setId(UUID.randomUUID().toString());
+        fhirDocument.addEntry().setResource(composition).setFullUrl(uuidtag + composition.getId());
+
+        composition.setTitle("Encounter Document");
+        composition.setDate(new Date());
+        composition.setStatus(Composition.CompositionStatus.FINAL);
+
+        Organization leedsTH = getOrganization(client,"RR8");
+        leedsTH.setId(getNewReferenceUri(leedsTH));
+        fhirDocument.addEntry().setResource(leedsTH).setFullUrl(uuidtag + leedsTH.getId());
+
+        composition.addAttester()
+                .setParty(new Reference(uuidtag+leedsTH.getId()))
+                .addMode(Composition.CompositionAttestationMode.OFFICIAL);
 
 
+        Device device = new Device();
+        device.setId(UUID.randomUUID().toString());
+        device.getType().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("58153004")
+                .setDisplay("Android");
+        device.setOwner(new Reference(uuidtag+leedsTH.getId()));
+        fhirDocument.addEntry().setResource(device).setFullUrl(uuidtag +device.getId());
+
+        composition.addAuthor(new Reference(uuidtag+device.getId()));
+
+        composition.getType().addCoding()
+                .setCode("371531000")
+                .setDisplay("Report of clinical encounter")
+                .setSystem(CareConnectSystem.SNOMEDCT);
+
+
+        Bundle encounterBundle =getEncounterBundleRev(client, encounterId.getIdPart());
+
+        for(Bundle.BundleEntryComponent entry : encounterBundle.getEntry()) {
+            Resource resource =  entry.getResource();
+            resource.setId(getNewReferenceUri(resource));
+            fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + resource.getId());
+        }
+
+        composition.addSection(getEncounterSection(fhirDocument));
+
+        Composition.SectionComponent section = getConditionSection(fhirDocument);
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = getMedicationStatementSection(fhirDocument);
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = getAllergySection(fhirDocument);
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+
+        return fhirDocument;
+    }
 
     @Override
     public Bundle readDocument(FhirContext ctx, IdType theId) {
@@ -135,6 +199,11 @@ public class CompositionDao implements IComposition {
 
         composition.addAuthor(new Reference(uuidtag+device.getId()));
 
+        composition.getType().addCoding()
+                .setCode("422735006")
+                .setDisplay("Summary clinical document")
+                .setSystem(CareConnectSystem.SNOMEDCT);
+
 
         Patient patient = null;
         Practitioner gp = null;
@@ -152,7 +221,7 @@ public class CompositionDao implements IComposition {
                 patient.setId(getNewReferenceUri(patient));
 
                 composition.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(patient).setFullUrl(uuidtag + patient.getId());;
+                fhirDocument.addEntry().setResource(patient).setFullUrl(uuidtag + patient.getId());
             }
             if (entry.getResource() instanceof Practitioner) {
                 gp = (Practitioner) entry.getResource();
@@ -243,6 +312,18 @@ public class CompositionDao implements IComposition {
         return fhirDocument;
     }
 
+
+    private Bundle getEncounterBundleRev(IGenericClient client, String encouterId) {
+
+        Bundle bundle = client
+                .search()
+                .forResource(Encounter.class)
+                .where(Patient.RES_ID.exactly().code(encouterId))
+                .revInclude(new Include("*"))
+                .returnBundle(Bundle.class)
+                .execute();
+        return bundle;
+    }
 
     private Bundle getPatientBundle(IGenericClient client, String patientId) {
 

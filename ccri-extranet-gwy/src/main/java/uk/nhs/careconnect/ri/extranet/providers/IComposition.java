@@ -19,4 +19,6 @@ public interface IComposition {
             ,ReferenceParam patient);
 
     Bundle buildSummaryCareDocument(IGenericClient client, IdType patientId);
+
+    Bundle buildEncounterDocument(IGenericClient client, IdType encounterId);
 }

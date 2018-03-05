@@ -109,7 +109,7 @@ public class PatientExtranetProvider implements IResourceProvider {
     }
 
     @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
-    public Bundle compositionDocumentOperation(
+    public Bundle patientDocumentOperation(
             @IdParam IdType patientId
 
     ) {
