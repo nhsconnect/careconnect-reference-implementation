@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 
@@ -87,6 +88,7 @@ public class CompositionDao implements IComposition {
         composition.setId(UUID.randomUUID().toString());
         fhirDocument.addEntry().setResource(composition).setFullUrl(uuidtag + composition.getId());
 
+        composition.getMeta().addProfile(CareConnectProfile.Composition_1);
         composition.setTitle("Encounter Document");
         composition.setDate(new Date());
         composition.setStatus(Composition.CompositionStatus.FINAL);
@@ -180,6 +182,7 @@ public class CompositionDao implements IComposition {
         composition.setId(UUID.randomUUID().toString());
         fhirDocument.addEntry().setResource(composition).setFullUrl(uuidtag + composition.getId());
 
+        composition.getMeta().addProfile(CareConnectProfile.Composition_1);
         composition.setTitle("Patient Summary Care Record");
         composition.setDate(new Date());
         composition.setStatus(Composition.CompositionStatus.FINAL);
@@ -469,6 +472,7 @@ public class CompositionDao implements IComposition {
                 Observation observation= (Observation) entry.getResource();
 
                 section.getEntry().add(new Reference("urn:uuid:"+observation.getId()));
+
                 observations.add(observation);
             }
         }

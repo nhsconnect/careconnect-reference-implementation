@@ -16,7 +16,12 @@
                 </thead>
                 <tbody>
                     <tr th:each="procedure : ${procedures}">
-                        <td th:text="${#dates.format(procedure.getPerformedDateTimeType().getValue(),'dd MMM YYYY')}">Unknown</td>
+                        <div th:if="${procedure.hasPerformedDateTimeType()}">
+                            <td th:text="${#dates.format(procedure.getPerformedDateTimeType().getValue(),'dd MMM YYYY')}">Unknown</td>
+                        </div>
+                        <div th:if="${!procedure.hasPerformedDateTimeType()}">
+                            <td ></td>
+                        </div>
                         <td th:text="${procedure.getCode().getCodingFirstRep().getDisplay()}">No type given</td>
 
                     </tr>

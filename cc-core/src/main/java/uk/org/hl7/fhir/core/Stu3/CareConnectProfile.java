@@ -21,4 +21,6 @@ public class CareConnectProfile {
     public static final String Condition_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1";
     public static final String Procedure_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Procedure-1";
     public static final String AllergyIntolerance_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-AllergyIntolerance-1";
+
+    public static final String Composition_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Composition-1";
 }

@@ -23,7 +23,7 @@
                             <td th:text="${observation.getValueQuantity().getValue()+' '+observation.getValueQuantity().getUnit()}">No provider specified</td>
                         </div>
                         <div th:if="${!observation.hasValueQuantity()}">
-                            <td th:text="${observation.getComponent().get(0).getValue()+'/'+observation.getComponent().get(1).getValue()+' '+observation.getComponent().get(0).getUnit()}">No provider specified</td>
+                            <td th:text="${observation.getComponent().get(0).getValueQuantity().getValue()+'/'+observation.getComponent().get(1).getValueQuantity().getValue()+' '+observation.getComponent().get(0).getValueQuantity().getUnit()}">No provider specified</td>
                         </div>
                     </tr>
                 </tbody>
