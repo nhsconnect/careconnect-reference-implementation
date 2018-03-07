@@ -154,7 +154,6 @@
         <module>ccri-fhirgateway</module>
         <module>ccri-fhirgatewayhttps</module>
         <module>ccri-fhirserver</module>
-        <module>ccri-extranet-gwy</module>
     </modules>
 
     <distributionManagement>
