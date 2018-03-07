@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationRequestTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
@@ -45,6 +46,9 @@ public class MedicationDao implements MedicationRepository {
     @Autowired
     MedicationRequestRepository prescriptionDao;
 
+    @Autowired
+    MedicationRequestEntityToFHIRMedicationTransformer medicationRequestEntityToFHIRMedicationTransformer;
+
     private static final Logger log = LoggerFactory.getLogger(MedicationDao.class);
 
 
@@ -66,34 +70,12 @@ public class MedicationDao implements MedicationRepository {
         List<Medication> res = new ArrayList<>();
 
         for (MedicationRequestEntity medicationRequest :results) {
-            res.add(transform(medicationRequest));
+            res.add(medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequest));
         }
         return res;
     }
 
-    private Medication transform(MedicationRequestEntity medicationRequest) {
-        Medication medication = new Medication();
 
-        Meta meta = new Meta().addProfile(CareConnectProfile.Medication_1);
-
-        if (medicationRequest.getUpdated() != null) {
-            meta.setLastUpdated(medicationRequest.getUpdated());
-        }
-        else {
-            if (medicationRequest.getCreated() != null) {
-                meta.setLastUpdated(medicationRequest.getCreated());
-            }
-        }
-        medication.setMeta(meta);
-
-        medication.setId(medicationRequest.getId().toString());
-        medication.getCode()
-                .addCoding()
-                .setCode(medicationRequest.getMedicationCode().getCode())
-                .setSystem(medicationRequest.getMedicationCode().getSystem())
-                .setDisplay(medicationRequest.getMedicationCode().getDisplay());
-        return medication;
-    }
 
     @Override
     public Medication read(FhirContext ctx, IdType theId) {
@@ -102,7 +84,7 @@ public class MedicationDao implements MedicationRepository {
         if (daoutils.isNumeric(theId.getIdPart())) {
             MedicationRequestEntity medicationRequest = prescriptionDao.readEntity(ctx, theId);
             if (medicationRequest != null) {
-                medication = transform(medicationRequest);
+                medication = medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequest);
             }
         }
         return medication;

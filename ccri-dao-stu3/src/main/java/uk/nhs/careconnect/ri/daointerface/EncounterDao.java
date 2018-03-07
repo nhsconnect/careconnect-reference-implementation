@@ -27,6 +27,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -79,6 +80,11 @@ public class  EncounterDao implements EncounterRepository {
     @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
             medicationRequestEntityToFHIRMedicationRequestTransformer;
+
+    @Autowired
+    private MedicationRequestEntityToFHIRMedicationTransformer
+            medicationRequestEntityToFHIRMedicationTransformer;
+
 
 
     @Autowired
@@ -329,6 +335,7 @@ public class  EncounterDao implements EncounterRepository {
                     }
                     for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
                         results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                        results.add(medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequestEntity));
                     }
                     for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
                         results.add(carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
