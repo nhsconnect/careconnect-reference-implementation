@@ -42,7 +42,7 @@ public class PatientEntityToFHIRPatientTransformerTest {
         HumanName name = patient.getName().get(0);
         assertThat(name.getGivenAsSingleString(), equalTo("John"));
         assertThat(name.getFamily(), equalTo("Smith"));
-        assertThat(name.getUse(), equalTo(HumanName.NameUse.USUAL));
+        assertThat(name.getUse(), equalTo(HumanName.NameUse.OFFICIAL));
         assertThat(name.getPrefixAsSingleString(), equalTo("Mr"));
 
         assertThat(patient.getGender(), equalTo(Enumerations.AdministrativeGender.MALE));

@@ -91,7 +91,8 @@ public class GitDownloader extends BaseCommand {
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 
 			try {
-				callGits("https://github.com/nhsconnect/CareConnect-profiles.git", "feature/stu3");
+				//callGits("https://github.com/nhsconnect/CareConnect-profiles.git", "feature/stu3");
+				callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease1");
 				callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "develop");
 
 				File file = new File(targetServer + "/profile/profiles-resources.xml");

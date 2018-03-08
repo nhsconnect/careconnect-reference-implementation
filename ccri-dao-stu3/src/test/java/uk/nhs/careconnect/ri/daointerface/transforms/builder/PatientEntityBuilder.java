@@ -30,7 +30,7 @@ public class PatientEntityBuilder {
         patientEntity.setDateOfBirth(DateUtils.asDate(dateOfBirth));
         patientEntity.setGender("MALE");
         final PatientName name = patientEntity.addName();
-        name.setNameUse(HumanName.NameUse.USUAL);
+        name.setNameUse(HumanName.NameUse.OFFICIAL);
         name.setGivenName("John");
         name.setFamilyName("Smith");
         name.setPrefix("Mr");

@@ -71,6 +71,7 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         patient.setId(patientEntity.getId().toString());
 
+        Boolean officialFound = false;
         for (PatientName nameEntity : patientEntity.getNames()) {
 
             HumanName name = patient.addName()
@@ -84,7 +85,17 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
             if (nameEntity.getNameUse() != null) {
                 name.setUse(nameEntity.getNameUse());
+                if (nameEntity.getNameUse().equals(HumanName.NameUse.OFFICIAL)) {
+                    officialFound = true;
+                }
+            } else {
+                name.setUse(HumanName.NameUse.OFFICIAL);
+                officialFound = true;
             }
+        }
+        if (!officialFound && patient.getName().size()>0) {
+            // No official name found. It is required so as a workaround make the first one official THIS IS A WORK AROUND and not to be implementated live
+            patient.getName().get(0).setUse(HumanName.NameUse.OFFICIAL);
         }
         if (patientEntity.getDateOfBirth() != null)
         {
