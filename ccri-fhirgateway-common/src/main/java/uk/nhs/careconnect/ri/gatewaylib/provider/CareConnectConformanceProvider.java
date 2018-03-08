@@ -148,7 +148,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
         // TODO KGM move to config
         retVal.getSoftware().setName("Care Connect RI FHIR Server");
-        retVal.getSoftware().setVersion("3.4.8");
+        retVal.getSoftware().setVersion("3.5.0");
         retVal.addFormat(Constants.CT_FHIR_XML_NEW);
         retVal.addFormat(Constants.CT_FHIR_JSON_NEW);
         retVal.setStatus(Enumerations.PublicationStatus.ACTIVE);

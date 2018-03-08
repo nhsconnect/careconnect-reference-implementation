@@ -45,9 +45,15 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
             Identifier identifier = patient.addIdentifier()
                     .setSystem(patientIdentifier.getSystemUri())
                     .setValue(patientIdentifier.getValue());
+                    //.setUse(Identifier.IdentifierUse.SECONDARY);
+
+            if (identifier.getSystem().equals("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")) {
+                //identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+            }
            // NHS Verification Status
             if ( (patientIdentifier.getSystemUri().equals(CareConnectSystem.NHSNumber))
                     && (patientEntity.getNHSVerificationCode() != null)) {
+                //identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
                 CodeableConcept verificationStatusCode = new CodeableConcept();
                 verificationStatusCode
                         .addCoding()

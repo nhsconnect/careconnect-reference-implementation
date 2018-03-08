@@ -3,7 +3,7 @@
 
  	<groupId>uk.org.hl7.fhir</groupId>
     <artifactId>cc-fhir-validation-resources-stu3</artifactId>
-    <version>3.4.8</version>
+    <version>3.5.0</version>
     <packaging>jar</packaging>
     <properties>
         <hapi-fhir-version>3.0.0</hapi-fhir-version>
