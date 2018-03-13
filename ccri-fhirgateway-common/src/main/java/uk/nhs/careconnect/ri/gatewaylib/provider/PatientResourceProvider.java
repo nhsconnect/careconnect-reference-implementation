@@ -141,10 +141,10 @@ public class PatientResourceProvider implements IResourceProvider {
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
                                         , @OptionalParam(name = Patient.SP_RES_ID) TokenParam resid
                                      //   ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
-                                   /*    ,@IncludeParam(allow= {
+                                     ,@IncludeParam(allow= {
                                         "Patient:general-practitioner"
                                         ,"Patient:organization"
-                                        , "*"}) Set<Include> includes */
+                                        , "*"}) Set<Include> includes
                                        ) {
 
         List<Resource> results = new ArrayList<>();
