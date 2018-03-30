@@ -12,11 +12,12 @@
 
     <properties>
         <care-connect-version>3.5.1-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>3.2.0</hapi-fhir-version>
+        <hapi-fhir-version>3.3.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <derby_version>10.13.1.1</derby_version>
         <slf4j>1.7.25</slf4j>
         <spring-boot>1.5.7.RELEASE</spring-boot>
+        <spring-version>5.0.3.RELEASE</spring-version>
 
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
 
@@ -26,7 +27,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.20.2</camel-version>
+        <camel-version>2.21.0</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->

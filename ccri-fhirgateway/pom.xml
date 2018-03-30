@@ -24,7 +24,7 @@
 
 	<properties>
 		<hapi-fhir-version>3.0.0</hapi-fhir-version>
-		<spring_version>4.3.10.RELEASE</spring_version>
+		<spring_version>4.3.12.RELEASE</spring_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>

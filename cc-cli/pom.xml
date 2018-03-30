@@ -45,7 +45,7 @@
     	<category>Rest</category>
 
         <care-connect-version>3.5.1-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>3.2.0</hapi-fhir-version>
+        <hapi-fhir-version>3.3.0</hapi-fhir-version>
         <junit-version>4.12</junit-version>
         <spring-boot-version>1.5.7.RELEASE</spring-boot-version>
         <phloc_schematron_version>2.7.1</phloc_schematron_version>
@@ -113,10 +113,21 @@
           <version>${hapi-fhir-version}</version>
       </dependency>
 
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-structures-r4</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
 
       <dependency>
           <groupId>ca.uhn.hapi.fhir</groupId>
           <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-validation-resources-r4</artifactId>
           <version>${hapi-fhir-version}</version>
       </dependency>
 

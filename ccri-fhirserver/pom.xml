@@ -27,7 +27,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<spring_version>5.0.0.RELEASE</spring_version>
+
 
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
 
@@ -181,7 +181,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring_version}</version>
+            <version>${spring-version}</version>
         </dependency>
 
 		<dependency>
@@ -210,7 +210,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring_version}</version>
+			<version>${spring-version}</version>
 			<scope>test</scope>
 		</dependency>
 
