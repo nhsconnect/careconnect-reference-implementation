@@ -63,7 +63,7 @@ function updateSearchDateQualifier(qualifierBtn, qualifierInput, qualifier) {
 function addSearchControls(theConformance, theSearchParamType, theSearchParamName, theSearchParamChain, theSearchParamTarget, theContainerRowNum, theRowNum) {
 	
 	var addNameAndType = true;
-	if (theSearchParamType == 'id') {
+	if (theSearchParamType == 'id' ) {
 		$('#search-param-rowopts-' + theContainerRowNum).append(
 			$('<div />', { 'class': 'col-sm-3' }).append(
 		    	$('<input />', { id: 'param.' + theRowNum + '.0', placeholder: 'id', type: 'text', 'class': 'form-control' })
@@ -129,28 +129,42 @@ function addSearchControls(theConformance, theSearchParamType, theSearchParamNam
 		}
 		
 		
-		
-		$('#search-param-rowopts-' + theContainerRowNum).append(
-			$('<div />', { 'class': 'col-sm-6' }).append(
-				$('<div />', { 'class':'input-group'}).append(
-					$('<div />', {'class':'input-group-btn'}).append(
-							$('<button />', {'class':'btn btn-default dropdown-toggle', 'data-toggle':'dropdown'}).append(
-									tokenQualifierLabel,
-									$('<span class="caret" style="margin-left: 5px;"></span>')
+		if (theSearchParamName !='_id') {
+			$('#search-param-rowopts-' + theContainerRowNum).append(
+				$('<div />', { 'class': 'col-sm-6' }).append(
+					$('<div />', { 'class':'input-group'}).append(
+						$('<div />', {'class':'input-group-btn'}).append(
+								$('<button />', {'class':'btn btn-default dropdown-toggle', 'data-toggle':'dropdown'}).append(
+										tokenQualifierLabel,
+										$('<span class="caret" style="margin-left: 5px;"></span>')
+									),
+									tokenQualifierDropdown
 								),
-								tokenQualifierDropdown
+						$('<div />', { 'class':'input-group-addon', 'style':'padding:6px;'} ).append(
+								$('<span>System</span>')
 							),
-					$('<div />', { 'class':'input-group-addon', 'style':'padding:6px;'} ).append(
-							$('<span>System</span>')
+						$('<input />', { type:'text', 'class':'form-control', id: 'param.' + theRowNum + '.0', placeholder: "(opt)" }),
+						$('<div />', { 'class':'input-group-addon', 'style':'padding:6px;'} ).append(
+							$('<span>Code</span>')
 						),
-					$('<input />', { type:'text', 'class':'form-control', id: 'param.' + theRowNum + '.0', placeholder: "(opt)" }),
-					$('<div />', { 'class':'input-group-addon', 'style':'padding:6px;'} ).append(
-						$('<span>Code</span>')
-					),
-					$('<input />', { type:'text', 'class':'form-control', id: 'param.' + theRowNum + '.1', placeholder: "(opt)" })
+						$('<input />', { type:'text', 'class':'form-control', id: 'param.' + theRowNum + '.1', placeholder: "(opt)" })
+					)
 				)
-		    )
-		);
+			);
+		} else {
+			// KGM 6 Apr 2018 special processing for _id parameters
+            $('#search-param-rowopts-' + theContainerRowNum).append(
+				$('<div />', { 'class': 'col-sm-6' }).append(
+					$('<div />', { 'class':'input-group'}).append(
+
+						$('<div />', { 'class':'input-group-addon', 'style':'padding:6px;'} ).append(
+							$('<span>Id</span>')
+						),
+						$('<input />', { type:'text', 'class':'form-control', id: 'param.' + theRowNum + '.1', placeholder: "id" })
+					)
+				)
+			);
+		}
 		
 	} else if (theSearchParamType == 'string') {
 		var placeholderText = 'value';

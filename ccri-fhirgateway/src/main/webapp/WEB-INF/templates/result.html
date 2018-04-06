@@ -29,6 +29,7 @@
 						Executed request against FHIR RESTful server in 
 						<th:block th:text="${latencyMs} + 'ms'"/>
 					</div>
+<!-- Disabled due to faulty code generation
 
 					<div th:if="${clientCodeJson} != null" class="panel panel-default">
 						<div class="panel-heading">
@@ -47,6 +48,8 @@
 							generateHapi(jsonClientCode, $('#clientCodeBody'));
 						</script>
 					</div>
+
+					-->
 					 
 					<div th:if="${requestUrl} != null">
 
