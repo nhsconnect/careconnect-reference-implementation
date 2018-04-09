@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -114,7 +116,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<DocumentReferenceEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/documentReference"),null);
+                    List<DocumentReferenceEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/documentReference"),null, null, null);
                     for (DocumentReferenceEntity con : results) {
                         documentReferenceEntity = con;
                         break;
@@ -202,8 +204,9 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
-        List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id);
+    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+            , DateRangeParam dateRange) {
+        List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange);
         List<DocumentReference> results = new ArrayList<>();
 
         for (DocumentReferenceEntity documentReferenceEntity : qryResults)
@@ -216,7 +219,8 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+            , DateRangeParam dateRange) {
         List<DocumentReferenceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

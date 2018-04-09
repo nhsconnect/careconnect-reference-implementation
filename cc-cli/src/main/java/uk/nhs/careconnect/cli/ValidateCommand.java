@@ -107,7 +107,7 @@ public class ValidateCommand extends BaseCommand {
 				val.registerValidatorModule(instanceValidator);
 				ValidationSupportChain validationSupport = new ValidationSupportChain(
 				        new DefaultProfileValidationSupport()
-                        ,new CareConnectProfileValidationSupport()
+                       	,new CareConnectProfileValidationSupport()
 						,new SNOMEDUKMockValidationSupport() // This is to disable SNOMED CT Warnings. Mock validation to return ok for SNOMED Concepts
                 );
 				if (localProfileResource != null) {

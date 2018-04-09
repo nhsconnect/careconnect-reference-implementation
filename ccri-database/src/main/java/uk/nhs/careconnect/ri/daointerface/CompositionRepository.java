@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.Condition;
+import org.hl7.fhir.dstu3.model.DocumentReference;
 import org.hl7.fhir.dstu3.model.IdType;
 import uk.nhs.careconnect.ri.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
@@ -29,6 +30,8 @@ public interface CompositionRepository extends BaseDao<CompositionEntity,Composi
               @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Composition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Composition.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Composition.SP_PERIOD)DateRangeParam dateRange
 
     );
 
@@ -36,5 +39,7 @@ public interface CompositionRepository extends BaseDao<CompositionEntity,Composi
               @OptionalParam(name = Composition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Condition.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Composition.SP_PERIOD)DateRangeParam dateRange
     );
 }

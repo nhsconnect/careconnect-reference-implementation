@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.DocumentReference;
@@ -27,6 +28,8 @@ public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEn
                              @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
+            , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
 
     );
 
@@ -34,5 +37,7 @@ public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEn
                                          @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Condition.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
+            , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
     );
 }

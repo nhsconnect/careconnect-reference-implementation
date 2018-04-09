@@ -152,9 +152,10 @@ public class CompositionResourceProvider implements IResourceProvider {
     public List<Composition> searchComposition(HttpServletRequest theRequest
             , @OptionalParam(name = Composition.SP_RES_ID) TokenParam resid
             , @OptionalParam(name = Composition.SP_PATIENT) ReferenceParam patient
-            , @OptionalParam(name = Composition.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = Composition.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = Composition.SP_PERIOD) DateRangeParam date
             , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
-            , @OptionalParam(name = Composition.SP_CLASS) TokenParam _class
+           // , @OptionalParam(name = Composition.SP_CLASS) TokenParam _class
     ) {
 
         List<Composition> results = new ArrayList<Composition>();

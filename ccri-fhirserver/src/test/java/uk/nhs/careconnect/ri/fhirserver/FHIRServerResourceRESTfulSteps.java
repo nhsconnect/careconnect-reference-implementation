@@ -183,9 +183,13 @@ public class FHIRServerResourceRESTfulSteps {
                     case ERROR:
                         msg = (char) 27 + "[34mERROR" + (char) 27 + "[0m" + " - " + next.getLocationString() + " - " + next.getMessage();
                         ourLog.error(msg);
+
                         if (!next.getLocationString().equals("Patient.name")) {
                             fail(msg);
+                        } else {
+                           // fail(msg);  // TODO
                         }
+
                         break;
                     case WARNING:
                         //fail("FHIR Validation WARNING - "+ next.getMessage());

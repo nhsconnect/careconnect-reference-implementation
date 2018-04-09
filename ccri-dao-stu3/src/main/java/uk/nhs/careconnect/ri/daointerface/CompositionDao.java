@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -119,7 +120,7 @@ public class CompositionDao implements CompositionRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<CompositionEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/composition"),null);
+                    List<CompositionEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/composition"),null, null, null);
                     for (CompositionEntity con : results) {
                         compositionEntity = con;
                         break;
@@ -280,8 +281,9 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
-        List<CompositionEntity> qryResults = searchEntity(ctx,patient, identifier, id);
+    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+            , DateRangeParam dateRange) {
+        List<CompositionEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange);
         List<Composition> results = new ArrayList<>();
 
         for (CompositionEntity compositionEntity : qryResults)
@@ -294,7 +296,8 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+            , DateRangeParam dateRange) {
         List<CompositionEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -74,11 +75,13 @@ public class DocumentReferenceProvider implements ICCResourceProvider {
 
     @Search
     public List<DocumentReference> search(HttpServletRequest theRequest,
-                                  @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
+                                          @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
+            , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
                                   ) {
-        return documentReferenceDao.search(ctx,patient,identifier,resid);
+        return documentReferenceDao.search(ctx,patient,identifier,resid,type,dateRange);
     }
 
     @Read()
