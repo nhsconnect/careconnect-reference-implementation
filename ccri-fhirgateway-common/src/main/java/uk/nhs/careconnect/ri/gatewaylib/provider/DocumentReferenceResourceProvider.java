@@ -61,7 +61,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             , @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_CREATED) DateRangeParam date
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
-            , @OptionalParam(name = DocumentReference.SP_CLASS) TokenParam _class
+            , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
+            , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
     ) {
 
         List<DocumentReference> results = new ArrayList<DocumentReference>();

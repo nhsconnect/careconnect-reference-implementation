@@ -155,7 +155,7 @@ public class CompositionResourceProvider implements IResourceProvider {
             , @OptionalParam(name = Composition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Composition.SP_PERIOD) DateRangeParam date
             , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
-           // , @OptionalParam(name = Composition.SP_CLASS) TokenParam _class
+
     ) {
 
         List<Composition> results = new ArrayList<Composition>();

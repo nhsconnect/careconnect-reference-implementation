@@ -75,13 +75,14 @@ public class DocumentReferenceProvider implements ICCResourceProvider {
 
     @Search
     public List<DocumentReference> search(HttpServletRequest theRequest,
-                                          @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
+              @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam resid
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
             , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
+            , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
                                   ) {
-        return documentReferenceDao.search(ctx,patient,identifier,resid,type,dateRange);
+        return documentReferenceDao.search(ctx,patient,identifier,resid,type,dateRange,setting);
     }
 
     @Read()

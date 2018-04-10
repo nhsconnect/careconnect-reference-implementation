@@ -25,19 +25,21 @@ public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEn
 
     List<DocumentReference> search(FhirContext ctx,
 
-                             @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
+              @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam id
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
             , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
+            , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
 
     );
 
     List<DocumentReferenceEntity> searchEntity(FhirContext ctx,
-                                         @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
+              @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Condition.SP_RES_ID) TokenParam id
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
             , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
+            , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
     );
 }

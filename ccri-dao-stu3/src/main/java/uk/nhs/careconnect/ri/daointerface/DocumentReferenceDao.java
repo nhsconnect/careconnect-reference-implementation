@@ -116,7 +116,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<DocumentReferenceEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/documentReference"),null, null, null);
+                    List<DocumentReferenceEntity> results = searchEntity(ctx, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/documentReference"),null, null, null,null);
                     for (DocumentReferenceEntity con : results) {
                         documentReferenceEntity = con;
                         break;
@@ -150,25 +150,21 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                         +" code = "+documentReference.getType().getCoding().get(0).getCode());
             }
         }
-        if (documentReference.hasClass_()) {
-            ConceptEntity code = conceptDao.findCode(documentReference.getClass_().getCoding().get(0));
-            if (code != null) { documentReferenceEntity.setClass_(code); }
-            else {
-                log.info("Class: Missing System/Code = "+ documentReference.getClass_().getCoding().get(0).getSystem() +" code = "+documentReference.getClass_().getCoding().get(0).getCode());
+        // KGM 10/4/2018 replace class with practice setting
+        if (documentReference.hasContext() ) {
+            if (documentReference.getContext().hasPracticeSetting()) {
+                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getPracticeSetting().getCoding().get(0));
+                if (code != null) {
+                    documentReferenceEntity.setContextPracticeSetting(code);
+                } else {
+                    log.info("PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem() + " code = " + documentReference.getClass_().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ documentReference.getClass_().getCoding().get(0).getSystem()
-                        +" code = "+documentReference.getClass_().getCoding().get(0).getCode());
-            }
-        } else {
-            // Check extension for service type.
-            for (Extension extension : documentReference.getExtension()) {
-                if (extension.getUrl().contains("https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1")) {
-                    CodeableConcept concept = (CodeableConcept) extension.getValue();
-                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0));
-                    if (code != null) { documentReferenceEntity.setClass_(code); }
+                    throw new IllegalArgumentException("PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem()
+                            + " code = " + documentReference.getClass_().getCoding().get(0).getCode());
                 }
             }
         }
+
         PatientEntity patientEntity = null;
         if (documentReference.hasSubject()) {
             log.trace(documentReference.getSubject().getReference());
@@ -205,8 +201,8 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
 
     @Override
     public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
-            , DateRangeParam dateRange) {
-        List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange);
+            , DateRangeParam dateRange, TokenParam setting) {
+        List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange, setting);
         List<DocumentReference> results = new ArrayList<>();
 
         for (DocumentReferenceEntity documentReferenceEntity : qryResults)
@@ -220,7 +216,8 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
 
     @Override
     public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
-            , DateRangeParam dateRange) {
+            , DateRangeParam dateRange
+            , TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
