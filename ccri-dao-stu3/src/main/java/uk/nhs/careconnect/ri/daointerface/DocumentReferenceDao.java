@@ -18,6 +18,8 @@ import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceIdentifier;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.observation.ObservationCategory;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
@@ -348,6 +350,20 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             predList.add(p);
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
+        }
+        if (type!=null) {
+            log.trace("Search on DocumentReference.type code = "+type.getValue());
+
+            Join<DocumentReferenceEntity, ConceptEntity> joinConcept = root.join("type", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),type.getValue());
+            predList.add(p);
+        }
+        if (setting!=null) {
+            log.trace("Search on DocumentReference.practiceSetting code = "+setting.getValue());
+
+            Join<DocumentReferenceEntity, ConceptEntity> joinConcept = root.join("contextPracticeSetting", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),setting.getValue());
+            predList.add(p);
         }
 
         Predicate[] predArray = new Predicate[predList.size()];
