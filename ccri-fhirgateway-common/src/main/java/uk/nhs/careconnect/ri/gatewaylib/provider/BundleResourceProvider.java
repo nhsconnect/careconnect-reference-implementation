@@ -118,6 +118,7 @@ public class BundleResourceProvider implements IResourceProvider {
                 else if (iResource instanceof MedicationRequest) { resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource); }
                 else if (iResource instanceof Immunization) { resource = searchAddImmunization(referenceId, (Immunization) iResource); }
                 else if (iResource instanceof CarePlan) { resource = searchAddCarePlan(referenceId, (CarePlan) iResource); }
+                else if (iResource instanceof DocumentReference) { resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource); }
                 else {
                     log.info( "Found in Bundle. Not processed (" + iResource.getClass());
                 }
@@ -1331,6 +1332,127 @@ public class BundleResourceProvider implements IResourceProvider {
 
         return eprComposition;
     }
+
+    public DocumentReference searchAddDocumentReference(String documentReferenceId,DocumentReference documentReference) {
+        log.info("DocumentReference searchAdd " +documentReferenceId);
+
+        if (documentReference == null) throw new InternalErrorException("Bundle processing error");
+
+        DocumentReference eprDocumentReference = (DocumentReference) resourceMap.get(documentReferenceId);
+
+        // Organization already processed, quit with Organization
+        if (eprDocumentReference != null) return eprDocumentReference;
+
+        // Prevent re-adding the same Document
+
+         if (documentReference.getIdentifier().size() == 0) {
+                documentReference.addIdentifier()
+                     .setSystem("urn:uuid")
+                     .setValue(documentReference.getId());
+            }
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        String identifierUrl = "?identifier=" + documentReference.getIdentifierFirstRep().getSystem() + "|" + documentReference.getIdentifierFirstRep().getValue();
+        Exchange exchange = template.send("direct:FHIRDocumentReference", ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, identifierUrl);
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "DocumentReference");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource iresource = null;
+        try {
+            iresource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iresource instanceof Bundle) {
+            Bundle returnedBundle = (Bundle) iresource;
+            if (returnedBundle.getEntry().size()>0) {
+                eprDocumentReference = (DocumentReference) returnedBundle.getEntry().get(0).getResource();
+                log.info("Found DocumentReference = " + eprDocumentReference.getId());
+            }
+        }
+
+        // Location not found. Add to database
+        List<Reference> authors = new ArrayList<>();
+        for (Reference reference : documentReference.getAuthor()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource != null) {
+                log.info("Found Resource = " + resource.getId());
+                authors.add(getReference(resource));
+            }
+
+        }
+        documentReference.setAuthor(authors);
+
+        if (documentReference.getSubject() != null) {
+            Resource resource = searchAddResource(documentReference.getSubject().getReference());
+            if (resource != null) {
+                log.info("Patient resource = "+resource.getId());
+            }
+            documentReference.setSubject(getReference(resource));
+        }
+
+        if (documentReference.getCustodian() != null) {
+            Resource resource = searchAddResource(documentReference.getCustodian().getReference());
+            documentReference.setCustodian(getReference(resource));
+        }
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "DocumentReference";
+        // Location found do not add
+        if (eprDocumentReference != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "DocumentReference/"+eprDocumentReference.getIdElement().getIdPart();
+            documentReference.setId(eprDocumentReference.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(documentReference);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            exchange = template.send("direct:FHIRDocumentReference", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof DocumentReference) {
+            eprDocumentReference = (DocumentReference) iResource;
+
+            setResourceMap(eprDocumentReference.getId(),eprDocumentReference);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprDocumentReference;
+    }
+
 
     public Procedure searchAddProcedure(String procedureId,Procedure procedure) {
         log.info("Procedure searchAdd " +procedureId);

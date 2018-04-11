@@ -82,6 +82,10 @@ public class JPAStepsDef {
     MedicationStatementRepository statementRepository;
 
     @Autowired
+    DocumentReferenceRepository documentReferenceRepository;
+
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -758,6 +762,20 @@ PROCEDURE
         assertEquals(count,patientList.size());
     }
 
+    @Given("^I have one DocumentReference resource loaded$")
+    public void i_have_one_DocumentReference_resource_loaded() throws Throwable {
+        resource = documentReferenceRepository.read(ctx,new IdType().setValue("1"));
+    }
+
+    @When("^I get DocumentReference ID = (\\d+)$")
+    public void i_get_DocumentReference_ID(String id) throws Throwable {
+        resource = documentReferenceRepository.read(ctx,new IdType().setValue(id));
+    }
+
+    @Then("^I should get a DocumentReference resource$")
+    public void i_should_get_a_DocumentReference_resource() throws Throwable {
+        Assert.assertThat(resource,instanceOf(DocumentReference.class));
+    }
 
 
     private void validateResource(Resource resource) {
@@ -879,6 +897,12 @@ PROCEDURE
             concept.setCode("308081000000105");
             conceptDao.save(concept);
 
+            concept = new ConceptEntity();
+            concept.setCodeSystem(cs);
+            concept.setCode("718347000");
+            conceptDao.save(concept);
+
+
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("json/Vital-Body-Mass-Example.json");
             assertNotNull(inputStream);
@@ -984,6 +1008,18 @@ PROCEDURE
             MedicationRequest prescription = ctx.newJsonParser().parseResource(MedicationRequest.class, reader);
             try {
                 prescription = prescribingRepository.create(ctx,prescription,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/DocumentReference.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            DocumentReference documentReference = ctx.newXmlParser().parseResource(DocumentReference.class, reader);
+            try {
+                documentReference = documentReferenceRepository.create(ctx,documentReference,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

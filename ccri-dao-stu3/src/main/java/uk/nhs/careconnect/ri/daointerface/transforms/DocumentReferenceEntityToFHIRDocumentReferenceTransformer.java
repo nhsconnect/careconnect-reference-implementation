@@ -1,10 +1,13 @@
 package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.DocumentReference;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAttachment;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAuthor;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceIdentifier;
 
@@ -30,6 +33,13 @@ public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implement
         documentReference.setMeta(meta);
 
         documentReference.setId(documentReferenceEntity.getId().toString());
+
+        for (DocumentReferenceIdentifier identifier : documentReferenceEntity.getIdentifiers()) {
+            documentReference.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
+        }
+
         if (documentReferenceEntity.getCreated() != null) {
             documentReference.setCreated(documentReferenceEntity.getCreated());
         }
@@ -38,6 +48,51 @@ public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implement
                     .setSubject(new Reference("Patient/"+documentReferenceEntity.getPatient().getId())
                     .setDisplay(documentReferenceEntity.getPatient().getNames().get(0).getDisplayName()));
         }
+        if (documentReferenceEntity.getType() != null) {
+            documentReference.getType().addCoding()
+                    .setCode(documentReferenceEntity.getType().getCode())
+                    .setDisplay(documentReferenceEntity.getType().getDisplay())
+                    .setSystem(documentReferenceEntity.getType().getSystem());
+        }
+        if (documentReferenceEntity.getCreated() != null) {
+            documentReference.setCreated(documentReferenceEntity.getCreated());
+        }
+        if (documentReferenceEntity.getIndexed() != null) {
+            documentReference.setIndexed(documentReferenceEntity.getIndexed());
+        }
+
+        for (DocumentReferenceAuthor author : documentReferenceEntity.getAuthors()) {
+            switch(author.getAuthorType()) {
+                case Patient:
+                    documentReference.addAuthor()
+                            .setReference("Patient/"+author.getPatient().getId())
+                            .setDisplay(author.getPatient().getNames().get(0).getDisplayName());
+                    break;
+                case Practitioner:
+                    documentReference.addAuthor()
+                            .setReference("Practitioner/"+author.getPractitioner().getId())
+                            .setDisplay(author.getPractitioner().getNames().get(0).getDisplayName());
+                    break;
+                case Organisation:
+                    documentReference.addAuthor()
+                            .setReference("Organization/"+author.getOrganisation().getId())
+                            .setDisplay(author.getOrganisation().getName());
+                    break;
+            }
+        }
+        if (documentReferenceEntity.getCustodian() != null) {
+            documentReference.setCustodian(new Reference("Organization/"+documentReferenceEntity.getCustodian().getId())
+                    .setDisplay(documentReferenceEntity.getCustodian().getName()) );
+        }
+
+        for (DocumentReferenceAttachment attachment : documentReferenceEntity.getAttachments()) {
+            DocumentReference.DocumentReferenceContentComponent content = documentReference.addContent();
+            if (attachment.getUrl() !=null) content.getAttachment().setUrl(attachment.getUrl());
+            if (attachment.getTitle() !=null) content.getAttachment().setTitle(attachment.getTitle());
+            if (attachment.getCreation() !=null) content.getAttachment().setCreation(attachment.getCreation());
+            if (attachment.getContentType() !=null) content.getAttachment().setContentType(attachment.getContentType());
+        }
+
         // KGM 10/4/2018 add practice setting and type
         if (documentReferenceEntity.getContextPracticeSetting() != null) {
             documentReference.getContext().getPracticeSetting().addCoding()
@@ -45,18 +100,8 @@ public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implement
                     .setDisplay(documentReferenceEntity.getContextPracticeSetting().getDisplay())
                     .setSystem(documentReferenceEntity.getContextPracticeSetting().getSystem());
         }
-
-        if (documentReferenceEntity.getType() != null) {
-            documentReference.getType().addCoding()
-                    .setCode(documentReferenceEntity.getType().getCode())
-                    .setDisplay(documentReferenceEntity.getType().getDisplay())
-                    .setSystem(documentReferenceEntity.getType().getSystem());
-        }
-
-        for (DocumentReferenceIdentifier identifier : documentReferenceEntity.getIdentifiers()) {
-            documentReference.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+        if (documentReferenceEntity.getContextEncounter() != null) {
+            documentReference.getContext().setEncounter(new Reference("Encounter/"+documentReferenceEntity.getContextEncounter().getId()));
         }
 
         return documentReference;

@@ -59,29 +59,29 @@ public class DocumentReferenceAuthor {
         this.documentReference = documentReference;
     }
 
-    public OrganisationEntity getAuthorOrganisation() {
+    public OrganisationEntity getOrganisation() {
         return authorOrganisation;
     }
 
-    public PatientEntity getAuthorPatient() {
+    public PatientEntity getPatient() {
         return authorPatient;
     }
 
-    public PractitionerEntity getAuthorPractitioner() {
+    public PractitionerEntity getPractitioner() {
         return authorPractitioner;
     }
 
-    public DocumentReferenceAuthor setAuthorOrganisation(OrganisationEntity authorOrganisation) {
+    public DocumentReferenceAuthor setOrganisation(OrganisationEntity authorOrganisation) {
         this.authorOrganisation = authorOrganisation;
         return this;
     }
 
-    public DocumentReferenceAuthor setPerformerPatient(PatientEntity performerPatient) {
+    public DocumentReferenceAuthor setPatient(PatientEntity performerPatient) {
         this.authorPatient = performerPatient;
         return this;
     }
 
-    public DocumentReferenceAuthor setPerformerPractitioner(PractitionerEntity performerPractitioner) {
+    public DocumentReferenceAuthor setPractitioner(PractitionerEntity performerPractitioner) {
         this.authorPractitioner = performerPractitioner;
         return this;
     }

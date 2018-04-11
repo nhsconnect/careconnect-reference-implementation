@@ -12,10 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.DocumentReferenceEntityToFHIRDocumentReferenceTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAttachment;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAuthor;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceIdentifier;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -134,8 +140,6 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             documentReferenceEntity = new DocumentReferenceEntity();
         }
 
-
-
         if (documentReference.hasStatus()) {
             documentReferenceEntity.setStatus(documentReference.getStatus());
         }
@@ -150,6 +154,26 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                         +" code = "+documentReference.getType().getCoding().get(0).getCode());
             }
         }
+
+        PatientEntity patientEntity = null;
+        if (documentReference.hasSubject()) {
+            log.trace(documentReference.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(documentReference.getSubject().getReference()));
+            documentReferenceEntity.setPatient(patientEntity);
+        }
+
+        if (documentReference.hasIndexed()) {
+            documentReferenceEntity.setIndexed(documentReference.getIndexed());
+        }
+        if (documentReference.hasCreated()) {
+            documentReferenceEntity.setCreated(documentReference.getCreated());
+        }
+
+        if (documentReference.hasCustodian()) {
+            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(documentReference.getCustodian().getReference()));
+            if (organisationEntity != null) documentReferenceEntity.setCustodian(organisationEntity);
+        }
+
         // KGM 10/4/2018 replace class with practice setting
         if (documentReference.hasContext() ) {
             if (documentReference.getContext().hasPracticeSetting()) {
@@ -163,19 +187,88 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                             + " code = " + documentReference.getClass_().getCoding().get(0).getCode());
                 }
             }
-        }
+            if (documentReference.getContext().hasEncounter()) {
+                EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(documentReference.getContext().getEncounter().getReference()));
+                if (encounterEntity!=null) documentReferenceEntity.setContextEncounter(encounterEntity);
 
-        PatientEntity patientEntity = null;
-        if (documentReference.hasSubject()) {
-            log.trace(documentReference.getSubject().getReference());
-            patientEntity = patientDao.readEntity(ctx, new IdType(documentReference.getSubject().getReference()));
-            documentReferenceEntity.setPatient(patientEntity);
+            }
         }
-
 
 
         em.persist(documentReferenceEntity);
 
+        for (DocumentReference.DocumentReferenceContentComponent content : documentReference.getContent()) {
+            DocumentReferenceAttachment documentReferenceAttachment = null;
+            for (DocumentReferenceAttachment attachmentSearch : documentReferenceEntity.getAttachments() ) {
+                if (attachmentSearch.getUrl().equals(content.getAttachment().getUrl())) {
+                    documentReferenceAttachment = attachmentSearch;
+                    break;
+                }
+            }
+            if (documentReferenceAttachment == null ) {
+                documentReferenceAttachment = new DocumentReferenceAttachment();
+                documentReferenceAttachment.setDocumentReference(documentReferenceEntity);
+                documentReferenceAttachment.setUrl(content.getAttachment().getUrl());
+            }
+            if (content.getAttachment().hasTitle()) documentReferenceAttachment.setTitle(content.getAttachment().getTitle());
+            if (content.getAttachment().hasCreation()) documentReferenceAttachment.setCreation(content.getAttachment().getCreation());
+            if (content.getAttachment().hasContentType()) documentReferenceAttachment.setContentType(content.getAttachment().getContentType());
+            em.persist(documentReferenceAttachment);
+        }
+
+        for (Reference author : documentReference.getAuthor()) {
+            DocumentReferenceAuthor documentReferenceAuthor = null;
+            if (author.getReference().contains("Practitioner")) {
+                PractitionerEntity practitioner = practitionerDao.readEntity(ctx, new IdType(author.getReference()));
+                for (DocumentReferenceAuthor authSearch : documentReferenceEntity.getAuthors()) {
+                    if (authSearch.getOrganisation() != null &&authSearch.getPractitioner().getId().equals(practitioner.getId())) {
+                        documentReferenceAuthor = authSearch;
+                        break;
+                    }
+
+                }
+                if (documentReferenceAuthor == null) {
+                    documentReferenceAuthor = new DocumentReferenceAuthor();
+                    documentReferenceAuthor.setPractitioner(practitioner);
+                    documentReferenceAuthor.setDocumentReference(documentReferenceEntity);
+                    documentReferenceAuthor.setAuthorType(DocumentReferenceAuthor.author.Practitioner);
+                    em.persist(documentReferenceAuthor);
+                }
+            }
+            if (author.getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(author.getReference()));
+                for (DocumentReferenceAuthor authSearch : documentReferenceEntity.getAuthors()) {
+                    if (authSearch.getOrganisation() != null && authSearch.getOrganisation().getId().equals(organisationEntity.getId())) {
+                        documentReferenceAuthor = authSearch;
+                        break;
+                    }
+                }
+                if (documentReferenceAuthor == null) {
+                    documentReferenceAuthor = new DocumentReferenceAuthor();
+                    documentReferenceAuthor.setOrganisation(organisationEntity);
+                    documentReferenceAuthor.setDocumentReference(documentReferenceEntity);
+                    documentReferenceAuthor.setAuthorType(DocumentReferenceAuthor.author.Organisation);
+                    em.persist(documentReferenceAuthor);
+                }
+            }
+            if (author.getReference().contains("Patient")) {
+                PatientEntity patientEntity1 = patientDao.readEntity(ctx, new IdType(author.getReference()));
+                for (DocumentReferenceAuthor authSearch : documentReferenceEntity.getAuthors()) {
+                    if (authSearch.getPatient() != null && authSearch.getPatient().getId().equals(patientEntity.getId())) {
+                        documentReferenceAuthor = authSearch;
+                        break;
+                    }
+                }
+                if (documentReferenceAuthor == null) {
+                    documentReferenceAuthor = new DocumentReferenceAuthor();
+                    documentReferenceAuthor.setPatient(patientEntity);
+                    documentReferenceAuthor.setDocumentReference(documentReferenceEntity);
+                    documentReferenceAuthor.setAuthorType(DocumentReferenceAuthor.author.Patient);
+                    em.persist(documentReferenceAuthor);
+                }
+            }
+
+        }
 
         for (Identifier identifier : documentReference.getIdentifier()) {
             DocumentReferenceIdentifier documentReferenceIdentifier = null;

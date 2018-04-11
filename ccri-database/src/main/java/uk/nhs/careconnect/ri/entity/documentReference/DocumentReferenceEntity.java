@@ -98,6 +98,9 @@ public class DocumentReferenceEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity contextPracticeSetting;
 
+    @OneToMany(mappedBy="documentReference", targetEntity=DocumentReferenceAttachment.class)
+    private Set<DocumentReferenceAttachment> attachments = new HashSet<>();
+
     public Set<DocumentReferenceIdentifier> getIdentifiers() {
         return identifiers;
     }
@@ -228,6 +231,11 @@ public class DocumentReferenceEntity extends BaseResource {
         return this;
     }
 
+    public Set<DocumentReferenceAttachment> getAttachments() {
+        return attachments;
+    }
 
-
+    public void setAttachments(Set<DocumentReferenceAttachment> attachments) {
+        this.attachments = attachments;
+    }
 }

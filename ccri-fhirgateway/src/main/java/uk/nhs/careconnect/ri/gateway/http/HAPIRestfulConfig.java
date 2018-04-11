@@ -82,6 +82,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 			//	,myAppCtx.getBean(CompositionResourceProvider.class) // Composition exploration
                 ,myAppCtx.getBean(DocumentReferenceResourceProvider.class) // Composition exploration
 				,myAppCtx.getBean(MedicationResourceProvider.class)
+				,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
 				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 

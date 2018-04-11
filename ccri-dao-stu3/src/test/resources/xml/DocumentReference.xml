@@ -1,0 +1,37 @@
+<DocumentReference>
+    <id value="0353e505-f7be-4c20-8f4e-337e79a32c51"/>
+    <meta>
+        <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/NRLS-DocumentReference-1"/>
+    </meta>
+    <identifier>
+        <system value="fhir.leedsth.nhs.uk/Id/documentReference"/>
+        <value value="a73b7b0f-7301-498b-8db3-ca2e0c3a16a5"/>
+    </identifier>
+    <status value="current"/>
+    <type>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="718347000"/>
+            <display value="Mental health care plan"/>
+        </coding>
+    </type>
+    <subject>
+        <reference value="Patient/1"/>
+    </subject>
+    <created value="2016-03-08T15:26:00+01:00"/>
+    <indexed value="2016-03-08T15:26:01+01:00"/>
+    <author>
+        <reference value="Practitioner/1"/>
+    </author>
+    <custodian>
+        <reference value="Organization/1"/>
+    </custodian>
+    <content>
+        <attachment>
+            <contentType value="application/pdf"/>
+            <url value="https://spine-proxy.national.ncrs.nhs.uk/p1.nhs.uk/MentalhealthCarePlanReportRGD.pdf"/>
+            <title value="Mental health Care Plan Report"/>
+            <creation value="2016-03-08T15:26:00+01:00"/>
+        </attachment>
+    </content>
+</DocumentReference>
