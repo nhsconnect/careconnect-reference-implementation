@@ -1,7 +1,9 @@
 package uk.nhs.careconnect.ri.gateway.http;
 
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.language.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -19,6 +21,9 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.restserver.serverBase}")
 	private String serverBase;
+
+	@Value("${fhir.restserver.edmsBase}")
+	private String edmsBase;
 	
     @Override
     public void configure() 
@@ -113,6 +118,19 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway DocumentReference")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRBinary")
+				.routeId("Gateway Binary")
+				.to("direct:EDMSServer");
+
+		from("direct:EDMSServer")
+				.routeId("INT EDMS Server")
+				.process(camelProcessor)
+				.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
+				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
+				.to(edmsBase)
+				.process(camelPostProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.convertBodyTo(InputStream.class);
 
 		from("direct:HAPIServer")
             .routeId("INT FHIR Server")

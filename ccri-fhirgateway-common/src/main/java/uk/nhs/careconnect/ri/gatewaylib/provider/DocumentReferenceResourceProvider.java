@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -24,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -43,6 +46,59 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     @Override
     public Class<DocumentReference> getResourceType() {
         return DocumentReference.class;
+    }
+
+    @Create
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            if (httpRequest != null) {
+                inputStream = (InputStream)  template.sendBody("direct:FHIRDocumentReference",
+                        ExchangePattern.InOut,httpRequest);
+            } else {
+                Exchange exchange = template.send("direct:FHIRDocumentReference",ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH,  null);
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+            }
+
+            Reader reader = new InputStreamReader(inputStream);
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof DocumentReference) {
+            documentReference = (DocumentReference) resource;
+        }else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+        method.setOperationOutcome(opOutcome);
+
+        method.setId(documentReference.getIdElement());
+        method.setResource(documentReference);
+
+        return method;
+
     }
 
 

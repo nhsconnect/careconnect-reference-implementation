@@ -18,7 +18,7 @@ public class CamelConfig extends CamelConfiguration {
 	@Override
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
-		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Gateway"));
+		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("fhirGwy-https"));
 
 	}
 

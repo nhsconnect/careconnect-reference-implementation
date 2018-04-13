@@ -32,6 +32,12 @@ public class GatewayCamelProcessor implements Processor
 
             exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpRequest.getMethod());
 
+            if (httpRequest.getMethod().equals("POST") || httpRequest.getMethod().equals("PUT")) {
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE,httpRequest.getContentType());
+            } else {
+                exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
+            }
+
             if (httpRequest.getQueryString() != null) {
 
                 //log.info("QueryString = "+httpRequest.getQueryString());
@@ -65,7 +71,7 @@ public class GatewayCamelProcessor implements Processor
             }
         }
 
-        exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
+
 
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {
             exchange.getIn().setHeader("X-Request-ID",exchange.getExchangeId());
