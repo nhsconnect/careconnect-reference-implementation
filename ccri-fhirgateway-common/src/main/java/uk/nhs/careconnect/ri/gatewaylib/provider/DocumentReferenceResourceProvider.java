@@ -56,19 +56,19 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
-            if (httpRequest != null) {
-                inputStream = (InputStream)  template.sendBody("direct:FHIRDocumentReference",
-                        ExchangePattern.InOut,httpRequest);
-            } else {
-                Exchange exchange = template.send("direct:FHIRDocumentReference",ExchangePattern.InOut, new Processor() {
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
-                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                        exchange.getIn().setHeader(Exchange.HTTP_PATH,  null);
-                    }
-                });
-                inputStream = (InputStream) exchange.getIn().getBody();
-            }
+            String newJsonResource = ctx.newJsonParser().encodeResourceToString(documentReference);
+            Exchange exchange = template.send("direct:FHIRDocumentReference",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newJsonResource);
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH,  "DocumentReference");
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
 
             Reader reader = new InputStreamReader(inputStream);
             resource = ctx.newJsonParser().parseResource(reader);

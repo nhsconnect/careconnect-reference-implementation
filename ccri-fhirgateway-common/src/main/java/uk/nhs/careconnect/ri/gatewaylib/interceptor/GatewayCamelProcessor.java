@@ -33,7 +33,7 @@ public class GatewayCamelProcessor implements Processor
             exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpRequest.getMethod());
 
             if (httpRequest.getMethod().equals("POST") || httpRequest.getMethod().equals("PUT")) {
-                exchange.getIn().setHeader(Exchange.CONTENT_TYPE,httpRequest.getContentType());
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE,"application/fhir+json");
             } else {
                 exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
             }
