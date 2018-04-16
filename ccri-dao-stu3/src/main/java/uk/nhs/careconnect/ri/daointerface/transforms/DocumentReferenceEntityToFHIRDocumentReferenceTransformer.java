@@ -61,6 +61,10 @@ public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implement
             documentReference.setIndexed(documentReferenceEntity.getIndexed());
         }
 
+        if (documentReferenceEntity.getStatus() != null) {
+            documentReference.setStatus(documentReferenceEntity.getStatus());
+        }
+
         for (DocumentReferenceAuthor author : documentReferenceEntity.getAuthors()) {
             switch(author.getAuthorType()) {
                 case Patient:
