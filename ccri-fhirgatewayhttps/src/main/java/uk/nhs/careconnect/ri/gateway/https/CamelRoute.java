@@ -33,14 +33,13 @@ public class CamelRoute extends RouteBuilder {
 
 		GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
 
-		/*
+
 		restConfiguration()
 				.component("servlet")
-				.bindingMode(RestBindingMode.json)
-				//.contextPath("oauth2")
+				.contextPath("oauth2")
 				.dataFormatProperty("prettyPrint", "true")
 				.enableCORS(true);
-*/
+
 
 		rest("/fhir/").description("Auth Token")
 				.get("token")
@@ -153,9 +152,10 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:authtoken")
 				.routeId("auth Server")
-				//.to("http4:localhost:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				.to("http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				.to("log:uk.nhs.careconnect.smartOnFhir?level=INFO&showHeaders=true&showExchangeId=true");
+				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
+				.to("http4:localhost:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				//.to("http4:purple.testlab.nhs.uk:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
     }
 }
