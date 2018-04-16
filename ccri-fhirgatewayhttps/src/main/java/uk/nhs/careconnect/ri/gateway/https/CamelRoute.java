@@ -41,7 +41,7 @@ public class CamelRoute extends RouteBuilder {
 				.enableCORS(true);
 
 
-		rest("/fhir/").description("Auth Token")
+		rest("/smartonfhir/").description("Auth Token")
 				.get("token")
 					.to("direct:authtoken")
 				.post("token")
