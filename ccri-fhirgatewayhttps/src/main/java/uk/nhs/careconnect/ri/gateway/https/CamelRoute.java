@@ -1,7 +1,9 @@
 package uk.nhs.careconnect.ri.gateway.https;
 
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -19,6 +21,9 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.restserver.serverBase}")
 	private String serverBase;
+
+	@Value("${fhir.restserver.edmsBase}")
+	private String edmsBase;
 	
     @Override
     public void configure() 
@@ -27,6 +32,18 @@ public class CamelRoute extends RouteBuilder {
 		GatewayCamelProcessor camelProcessor = new GatewayCamelProcessor();
 
 		GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
+
+		restConfiguration()
+				.component("servlet")
+				.bindingMode(RestBindingMode.json)
+				.contextPath("auth")
+				.dataFormatProperty("prettyPrint", "true")
+				.enableCORS(true);
+
+
+		rest("/").description("Auth Token")
+				.get()
+					.to("direct:authtoken");
 
 
 		from("direct:FHIRPatient")
@@ -104,7 +121,23 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRCarePlan")
 				.routeId("Gateway CarePlan")
 				.to("direct:HAPIServer");
+		from("direct:FHIRDocumentReference")
+				.routeId("Gateway DocumentReference")
+				.to("direct:HAPIServer");
 
+		from("direct:FHIRBinary")
+				.routeId("Gateway Binary")
+				.to("direct:EDMSServer");
+
+		from("direct:EDMSServer")
+				.routeId("INT EDMS Server")
+				.process(camelProcessor)
+				.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
+				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
+				.to(edmsBase)
+				.process(camelPostProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.convertBodyTo(InputStream.class);
 
 		from("direct:HAPIServer")
             .routeId("INT FHIR Server")
@@ -114,6 +147,11 @@ public class CamelRoute extends RouteBuilder {
 				.process(camelPostProcessor)
                 .to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
+
+		from("direct:authtoken")
+				.routeId("auth Server")
+				.to("http4:localhost:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to("log:uk.nhs.careconnect.smartOnFhir?level=INFO&showHeaders=true&showExchangeId=true");
 
     }
 }

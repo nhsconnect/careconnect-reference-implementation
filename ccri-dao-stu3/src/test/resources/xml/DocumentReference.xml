@@ -16,7 +16,7 @@
         </coding>
     </type>
     <subject>
-        <reference value="Patient/1"/>
+        <reference value="Patient/1170"/>
     </subject>
     <created value="2016-03-08T15:26:00+01:00"/>
     <indexed value="2016-03-08T15:26:01+01:00"/>
@@ -29,9 +29,33 @@
     <content>
         <attachment>
             <contentType value="application/pdf"/>
-            <url value="https://spine-proxy.national.ncrs.nhs.uk/p1.nhs.uk/MentalhealthCarePlanReportRGD.pdf"/>
+            <url value="http://127.0.0.1:8080/careconnect-gateway/STU3/Binary/0161e141-0098-44e5-a793-6e74c619c594"/>
             <title value="Mental health Care Plan Report"/>
             <creation value="2016-03-08T15:26:00+01:00"/>
         </attachment>
     </content>
+    <context> 
+        <encounter> 
+            <reference value="Encounter/1170"/> 
+        </encounter> 
+        <period> 
+            <start value="2004-12-23T08:00:00+11:00"/> 
+            <end value="2004-12-23T08:01:00+11:00"/> 
+        </period> 
+        <facilityType> 
+            <coding> 
+                <system value="http://www.ihe.net/xds/connectathon/healthcareFacilityTypeCodes"/> 
+                <code value="Outpatient"/> 
+                <display value="Outpatient"/> 
+            </coding> 
+        </facilityType> 
+        <practiceSetting> 
+            <coding> 
+                <system value="http://snomed.info/sct"/> 
+                <code value="394582007"/> 
+                <display value="Dermatology"/> 
+            </coding> 
+        </practiceSetting> 
+        
+    </context> 
 </DocumentReference>
