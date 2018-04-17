@@ -25,6 +25,9 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.restserver.edmsBase}")
 	private String edmsBase;
+
+	@Value("${fhir.restserver.oauth}")
+	private String oauthBase;
 	
     @Override
     public void configure() 
@@ -38,7 +41,7 @@ public class CamelRoute extends RouteBuilder {
 				.component("servlet")
 				.contextPath("oauth2")
 				.dataFormatProperty("prettyPrint", "true")
-				.enableCORS(true);
+				.enableCORS(false);
 
 
 		rest("/").description("OAuth")
@@ -49,8 +52,7 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("auth Server")
 				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
 				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
-				//.to("http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				.to("http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to(oauthBase)
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
 
