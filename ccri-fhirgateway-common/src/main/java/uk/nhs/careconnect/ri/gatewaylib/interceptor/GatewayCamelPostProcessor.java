@@ -21,6 +21,19 @@ public class GatewayCamelPostProcessor implements Processor
             exchange.getIn().removeHeader("X-Forwarded-Host");
         }
 
+        // Remove cors headers
+
+        removeHeader(exchange,"Access-Control-Allow-Methods");
+        removeHeader(exchange,"Access-Control-Allow-Origin");
+        removeHeader(exchange,"Access-Control-Max-Age");
+        removeHeader(exchange,"action");
+
+    }
+
+    private void removeHeader(Exchange exchange, String header) {
+        if (exchange.getIn().getHeader(header) != null ) {
+            exchange.getIn().removeHeader(header);
+        }
     }
 
 

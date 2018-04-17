@@ -53,6 +53,7 @@ public class CamelRoute extends RouteBuilder {
 				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
 				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(oauthBase)
+				.process(camelPostProcessor)
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
 
