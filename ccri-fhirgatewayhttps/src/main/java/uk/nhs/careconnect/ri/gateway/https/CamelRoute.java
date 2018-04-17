@@ -6,6 +6,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.SimpleAliasRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.gatewaylib.interceptor.GatewayCamelPostProcessor;
@@ -41,11 +42,16 @@ public class CamelRoute extends RouteBuilder {
 				.enableCORS(true);
 
 
-		rest("/smartonfhir/").description("Auth Token")
-				.get("token")
-					.to("direct:authtoken")
-				.post("token")
-					.to("direct:authtoken");
+		rest("/").description("OAuth")
+				.get("/{action}").to("direct:oauth2")
+				.post("/{action}").to("direct:oauth2");
+
+		from("direct:oauth2")
+				.routeId("auth Server")
+				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
+				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
+				.to("http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
 
 		from("direct:FHIRPatient")
@@ -150,12 +156,7 @@ public class CamelRoute extends RouteBuilder {
                 .to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
 
-		from("direct:authtoken")
-				.routeId("auth Server")
-				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
-				//.to("http4:localhost:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				.to("http4:purple.testlab.nhs.uk:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
+
 
     }
 }
