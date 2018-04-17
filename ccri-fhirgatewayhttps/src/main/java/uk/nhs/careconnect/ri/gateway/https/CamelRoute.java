@@ -34,7 +34,6 @@ public class CamelRoute extends RouteBuilder {
 
 		GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
 
-
 		restConfiguration()
 				.component("servlet")
 				.contextPath("oauth2")
