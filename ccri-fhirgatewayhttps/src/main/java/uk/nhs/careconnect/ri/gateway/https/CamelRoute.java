@@ -153,8 +153,8 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:authtoken")
 				.routeId("auth Server")
 				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
-				.to("http4:localhost:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
-				//.to("http4:purple.testlab.nhs.uk:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				//.to("http4:localhost:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to("http4:purple.testlab.nhs.uk:20080/token?throwExceptionOnFailure=false&bridgeEndpoint=true")
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
     }
