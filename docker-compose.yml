@@ -78,7 +78,7 @@ services:
       - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
       - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.oauth=http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccri
     ports:
