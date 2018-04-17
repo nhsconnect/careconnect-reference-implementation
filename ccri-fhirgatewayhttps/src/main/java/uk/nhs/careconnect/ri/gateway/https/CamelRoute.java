@@ -50,7 +50,8 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("auth Server")
 				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
 				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
-				.to("http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				//.to("http4:purple.testlab.nhs.uk:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
+				.to("http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true")
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
 
