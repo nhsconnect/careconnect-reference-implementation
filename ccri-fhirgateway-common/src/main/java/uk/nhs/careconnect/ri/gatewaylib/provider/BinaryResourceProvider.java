@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -51,10 +52,7 @@ public class BinaryResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
-          /*  if (httpRequest != null) {
-                inputStream = (InputStream)  template.sendBody("direct:FHIRBinary",
-                        ExchangePattern.InOut,httpRequest);
-            } else {*/
+
                 Exchange exchange = template.send("direct:FHIRBinary",ExchangePattern.InOut, new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
@@ -66,15 +64,31 @@ public class BinaryResourceProvider implements IResourceProvider {
 
                 binary.setContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString());
                 log.info("Return Content-Type = "+binary.getContentType());
+
                 binary.setId(internalId.getValue());
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                try {
-                    org.apache.commons.io.IOUtils.copyLarge((InputStream) exchange.getIn().getBody(),buffer);
-                    byte[] byteArray = buffer.toByteArray();
-                    binary.setContent(byteArray);
-                } catch (IOException ex) {
-                    log.error("Processing returned Binary:" + ex.getMessage());
-                    binary = null;
+                if (binary.getContentType().equals("application/fhir+xml")) {
+                    // This server defaults to JSON so convert content to json
+                    binary.setContentType("application/fhir+json");
+
+                    inputStream = (InputStream) exchange.getIn().getBody();
+                    Reader reader = new InputStreamReader(inputStream);
+                    // read the resource
+                    resource = ctx.newXmlParser().parseResource(reader);
+
+                    String jsonResource = ctx.newJsonParser().encodeResourceToString(resource);
+                    binary.setContent(jsonResource.getBytes());
+                    resource = null;
+
+                } else {
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    try {
+                        org.apache.commons.io.IOUtils.copyLarge((InputStream) exchange.getIn().getBody(), buffer);
+                        byte[] byteArray = buffer.toByteArray();
+                        binary.setContent(byteArray);
+                    } catch (IOException ex) {
+                        log.error("Processing returned Binary:" + ex.getMessage());
+                        binary = null;
+                    }
                 }
 
                 if (binary == null) {

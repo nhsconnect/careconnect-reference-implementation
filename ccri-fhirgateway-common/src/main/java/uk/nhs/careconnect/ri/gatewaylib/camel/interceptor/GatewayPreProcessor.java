@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gatewaylib.interceptor;
+package uk.nhs.careconnect.ri.gatewaylib.camel.interceptor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -10,10 +10,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.ListIterator;
 
-public class GatewayCamelProcessor implements Processor
+public class GatewayPreProcessor implements Processor
 {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GatewayCamelProcessor.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GatewayPreProcessor.class);
 
 
     @Override

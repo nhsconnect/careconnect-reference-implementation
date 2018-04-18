@@ -1,16 +1,16 @@
 package uk.nhs.careconnect.ri.gateway.https;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.SimpleAliasRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.gatewaylib.interceptor.GatewayCamelPostProcessor;
-import uk.nhs.careconnect.ri.gatewaylib.interceptor.GatewayCamelProcessor;
+import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
+import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
 
 import java.io.InputStream;
 
@@ -33,9 +33,14 @@ public class CamelRoute extends RouteBuilder {
     public void configure() 
     {
 
-		GatewayCamelProcessor camelProcessor = new GatewayCamelProcessor();
+		GatewayPreProcessor camelProcessor = new GatewayPreProcessor();
 
-		GatewayCamelPostProcessor camelPostProcessor = new GatewayCamelPostProcessor();
+		GatewayPostProcessor camelPostProcessor = new GatewayPostProcessor();
+
+		FhirContext ctx = FhirContext.forDstu3();
+		BundleMessage bundleMessage = new BundleMessage(ctx);
+
+		// OAuth endpoint
 
 		restConfiguration()
 				.component("servlet")
@@ -56,6 +61,23 @@ public class CamelRoute extends RouteBuilder {
 				.process(camelPostProcessor)
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
+		// Complex processing for FHIR Bundles
+
+		from("direct:FHIRBundleCollection")
+				.routeId("Bundle Collection Queue")
+				.wireTap("seda:FHIRBundleCollection");
+
+		// This bundle goes to the EDMS Server. See also Binary
+		from("direct:FHIRBundleDocument")
+				.routeId("Bundle Document Queue")
+				.to("direct:EDMSServer");
+
+
+		from("seda:FHIRBundleCollection")
+				.routeId("Bundle Processing")
+				.process(bundleMessage);
+
+		// Simple process for low level resources
 
 		from("direct:FHIRPatient")
 			.routeId("Gateway Patient")
@@ -115,10 +137,6 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:FHIRCapabilityStatement")
 				.routeId("Gateway CapabilityStatement")
-				.to("direct:HAPIServer");
-
-		from("direct:FHIRBundle")
-				.routeId("Gateway Bundle")
 				.to("direct:HAPIServer");
 
 		from("direct:FHIRComposition")

@@ -1,9 +1,9 @@
-package uk.nhs.careconnect.ri.gatewaylib.interceptor;
+package uk.nhs.careconnect.ri.gatewaylib.camel.interceptor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-public class GatewayCamelPostProcessor implements Processor
+public class GatewayPostProcessor implements Processor
 {
     @Override
     public void process(Exchange exchange) throws Exception {
