@@ -156,6 +156,7 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRCarePlan")
 				.routeId("Gateway CarePlan")
 				.to("direct:HAPIServer");
+
 		from("direct:FHIRDocumentReference")
 				.routeId("Gateway DocumentReference")
 				.to("direct:HAPIServer");
