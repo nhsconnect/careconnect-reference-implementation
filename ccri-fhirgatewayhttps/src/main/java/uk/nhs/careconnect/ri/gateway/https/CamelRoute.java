@@ -165,9 +165,8 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:EDMSServer");
 
 		from("direct:EDMSServer")
-				.routeId("INT EDMS Server")
-				.process(camelProcessor)
-				.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
+				.routeId("Int EDMS FHIR Server")
+				//.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(edmsBase)
 				.process(camelPostProcessor)
