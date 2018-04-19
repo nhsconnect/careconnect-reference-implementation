@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.EPRDocumentBundle;
 
 import java.io.InputStream;
 
@@ -28,6 +29,9 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.restserver.oauth}")
 	private String oauthBase;
+
+	@Value("${fhir.resource.serverBase}")
+	private String hapiBase;
 	
     @Override
     public void configure() 
@@ -39,6 +43,8 @@ public class CamelRoute extends RouteBuilder {
 
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
+		EPRDocumentBundle eprDocumentBundle = new EPRDocumentBundle(ctx, hapiBase);
+
 
 		// OAuth endpoint
 
@@ -69,9 +75,9 @@ public class CamelRoute extends RouteBuilder {
 
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocument")
-				.routeId("Bundle Document Queue")
-				.to("direct:EDMSServer");
-
+				.routeId("Bundle Document")
+				.process(camelProcessor) // Add in correlation Id if not present
+				.enrich("direct:EDMSServer",eprDocumentBundle);
 
 		from("seda:FHIRBundleCollection")
 				.routeId("Bundle Processing")

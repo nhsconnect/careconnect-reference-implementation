@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.gateway.camel.processor;
+package uk.nhs.careconnect.ri.gatewaylib.camel.processor;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.CamelContext;

@@ -2,13 +2,12 @@ package uk.nhs.careconnect.ri.gateway.http;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.gateway.camel.processor.EPRDocumentBundle;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.EPRDocumentBundle;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
