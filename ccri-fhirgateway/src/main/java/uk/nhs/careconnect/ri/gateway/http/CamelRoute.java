@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.gateway.camel.processor.EPRDocumentBundle;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
@@ -25,6 +26,9 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.restserver.edmsBase}")
 	private String edmsBase;
+
+	@Value("${fhir.resource.serverBase}")
+    private String hapiBase;
 	
     @Override
     public void configure() 
@@ -36,18 +40,22 @@ public class CamelRoute extends RouteBuilder {
 
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
+        EPRDocumentBundle eprDocumentBundle = new EPRDocumentBundle(ctx, hapiBase);
 
 		// Complex processing
 
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
+                .process(camelProcessor) // Add in correlation Id if not present
 				.wireTap("seda:FHIRBundleCollection");
 
 
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocument")
-				.routeId("Bundle Document Queue")
-				.to("direct:EDMSServer");
+				.routeId("Bundle Document")
+                .process(camelProcessor) // Add in correlation Id if not present
+				.enrich("direct:EDMSServer",eprDocumentBundle);
+
 
 		from("seda:FHIRBundleCollection")
 				.routeId("Bundle Processing")
@@ -141,7 +149,6 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:EDMSServer")
 				.routeId("Int EDMS FHIR Server")
-				.process(camelProcessor)
 				//.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(edmsBase)

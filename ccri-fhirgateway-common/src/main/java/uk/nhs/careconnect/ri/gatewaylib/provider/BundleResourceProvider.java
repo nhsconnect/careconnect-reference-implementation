@@ -102,10 +102,14 @@ public class BundleResourceProvider implements IResourceProvider {
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
 
                     // This response is coming from an external FHIR Server, so uses inputstream
-                    inputStream = (InputStream) exchangeDocument.getIn().getBody();
-
-                    Reader reader = new InputStreamReader(inputStream);
-                    resource = ctx.newXmlParser().parseResource(reader);
+                    if (exchangeDocument.getIn().getBody() instanceof InputStream) {
+                        inputStream = (InputStream) exchangeDocument.getIn().getBody();
+                        Reader reader = new InputStreamReader(inputStream);
+                        resource = ctx.newXmlParser().parseResource(reader);
+                    } else
+                        if (exchangeDocument.getIn().getBody() instanceof String) {
+                            resource = ctx.newXmlParser().parseResource((String) exchangeDocument.getIn().getBody());
+                        }
 
                     default:
                         // TODO

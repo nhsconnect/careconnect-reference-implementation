@@ -21,6 +21,7 @@ public class GatewayPreProcessor implements Processor
 
 
 
+
         if (exchange.getIn().getBody() instanceof HttpServletRequest) {
             // This is a result of a passthrough operation in the resource provider.
 
