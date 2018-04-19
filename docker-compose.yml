@@ -32,6 +32,14 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.10
 
+  ccrimongo:
+      container_name: ccrimongo
+      image: mongo:3.6.3
+      ports:
+        - 27107:27107
+      networks:
+        - ccri_net
+
   ccrisql:
     container_name: ccrisql
     image: mysql:5.7.20
