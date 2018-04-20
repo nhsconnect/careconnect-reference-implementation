@@ -49,7 +49,7 @@ public class BundleCore {
 
     public Resource searchAddResource(String referenceId) {
 
-        log.info("Search "+referenceId);
+        log.info("searchAddResource "+referenceId);
         if (referenceId == null) {
             return null; //throw new InternalErrorException("Null Reference");
         }
@@ -114,7 +114,7 @@ public class BundleCore {
         for (Identifier identifier : practitioner.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRPractitioner", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Practitioner");
                 }
@@ -198,7 +198,7 @@ public class BundleCore {
         for (Identifier identifier : organisation.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIROrganisation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Organization");
                 }
@@ -302,7 +302,7 @@ public class BundleCore {
         for (Identifier identifier : location.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRLocation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Location");
                 }
@@ -395,7 +395,7 @@ public class BundleCore {
         for (Identifier identifier : allergyIntolerance.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRAllergyIntolerance", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "AllergyIntolerance");
                 }
@@ -500,7 +500,7 @@ public class BundleCore {
         for (Identifier identifier : carePlan.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRCarePlan", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "CarePlan");
                 }
@@ -609,7 +609,7 @@ public class BundleCore {
         for (Identifier identifier : observation.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRObservation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Observation");
                 }
@@ -725,7 +725,7 @@ public class BundleCore {
         for (Identifier identifier : diagnosticReport.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRDiagnosticReport", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "DiagnosticReport");
                 }
@@ -848,7 +848,7 @@ public class BundleCore {
         for (Identifier identifier : immunisation.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRImmunization", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Immunization");
                 }
@@ -962,7 +962,7 @@ public class BundleCore {
         for (Identifier identifier : medicationRequest.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRMedicationRequest", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "MedicationRequest");
                 }
@@ -1075,7 +1075,7 @@ public class BundleCore {
         for (Identifier identifier : condition.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRCondition", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Condition");
                 }
@@ -1186,7 +1186,7 @@ public class BundleCore {
 
         InputStream inputStream = null;
 
-        String identifierUrl = "?identifier=" + composition.getIdentifier().getSystem() + "|" + composition.getIdentifier().getValue();
+        String identifierUrl = "identifier=" + composition.getIdentifier().getSystem() + "|" + composition.getIdentifier().getValue();
         Exchange exchange = template.send("direct:FHIRComposition", ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setHeader(Exchange.HTTP_QUERY, identifierUrl);
@@ -1317,7 +1317,7 @@ public class BundleCore {
 
         InputStream inputStream = null;
 
-        String identifierUrl = "?identifier=" + documentReference.getIdentifierFirstRep().getSystem() + "|" + documentReference.getIdentifierFirstRep().getValue();
+        String identifierUrl = "identifier=" + documentReference.getIdentifierFirstRep().getSystem() + "|" + documentReference.getIdentifierFirstRep().getValue();
         Exchange exchange = template.send("direct:FHIRDocumentReference", ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setHeader(Exchange.HTTP_QUERY, identifierUrl);
@@ -1364,7 +1364,11 @@ public class BundleCore {
 
         if (documentReference.getCustodian() != null) {
             Resource resource = searchAddResource(documentReference.getCustodian().getReference());
-            documentReference.setCustodian(getReference(resource));
+            if (resource != null) {
+                log.info("Organization resource = "+resource.getId());
+                documentReference.setCustodian(getReference(resource));
+            }
+
         }
 
         IBaseResource iResource = null;
@@ -1439,7 +1443,7 @@ public class BundleCore {
         for (Identifier identifier : procedure.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRProcedure", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Procedure");
                 }
@@ -1562,7 +1566,7 @@ public class BundleCore {
         for (Identifier identifier : encounter.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIREncounter", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Encounter");
                 }
@@ -1715,7 +1719,7 @@ public class BundleCore {
         for (Identifier identifier : patient.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "?identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
                 }
