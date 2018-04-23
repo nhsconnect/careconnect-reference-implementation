@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.gateway.https;
 
 
 import ca.uhn.fhir.context.FhirContext;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,29 @@ public class CamelRoute extends RouteBuilder {
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
 		CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
-		//DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
+
 		BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
+
+		// OAuth endpoint
+
+		restConfiguration()
+				.component("servlet")
+				.contextPath("oauth2")
+				.dataFormatProperty("prettyPrint", "true")
+				.enableCORS(false);
+
+
+		rest("/").description("OAuth")
+				.get("/{action}").to("direct:oauth2")
+				.post("/{action}").to("direct:oauth2");
+
+		from("direct:oauth2")
+				.routeId("auth Server")
+				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
+				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
+				.to(oauthBase)
+				.process(camelPostProcessor)
+				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
 		// Complex processing
 
