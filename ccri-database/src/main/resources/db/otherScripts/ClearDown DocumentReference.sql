@@ -1,6 +1,6 @@
 SET SQL_SAFE_UPDATES = 0;
 
-delete FROM CareConnect.DocumentReferenceAuthor;
-delete FROM CareConnect.DocumentReferenceAttachment;
-delete FROM CareConnect.DocumentReferenceIdentifier;
-delete FROM CareConnect.DocumentReference;
+delete FROM careconnect.DocumentReferenceAuthor where DOCUMENT_REFERENCE_ID < 4;
+delete FROM careconnect.DocumentReferenceAttachment where DOCUMENT_REFERENCE_ID < 4;
+delete FROM careconnect.DocumentReferenceIdentifier where DOCUMENT_REFERENCE_ID < 4;
+delete FROM careconnect.DocumentReference where DOCUMENT_REFERENCE_ID < 4;

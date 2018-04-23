@@ -85,7 +85,7 @@ public class BinaryResource implements Processor {
                 String[] path = edmsExchange.getIn().getHeader("Location").toString().split("/");
                 String resourceId = path[path.length - 1];
                 log.info("Binary resource Id = " + resourceId);
-                contentComponent.getAttachment().setContentType("application/fhir+xml").setUrl(hapiBase + "/Binary/" + resourceId);
+                contentComponent.getAttachment().setUrl(hapiBase + "/Binary/" + resourceId);
             }
         } catch(Exception ex) {
             log.error("JSON Parse failed " + ex.getMessage());
