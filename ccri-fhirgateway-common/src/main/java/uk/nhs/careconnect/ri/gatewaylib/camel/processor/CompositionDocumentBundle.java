@@ -3,29 +3,25 @@ package uk.nhs.careconnect.ri.gatewaylib.camel.processor;
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleCore;
-import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Map;
 
-public class EPRDocumentBundle implements AggregationStrategy {
+public class CompositionDocumentBundle implements AggregationStrategy {
 
 
     /*
 
-    This takes the original documentBundle and the response from the
+    This takes the original documentBundle, send the FHIR Document to EDMS
+    and then takes the response, converts to a DocumentReference and updates
+     the DocumentIndex server (ccri - EPR)
 
      */
-    public EPRDocumentBundle(FhirContext ctx,String hapiBase) {
+    public CompositionDocumentBundle(FhirContext ctx, String hapiBase) {
         this.ctx = ctx;
         this.hapiBase = hapiBase;
     }

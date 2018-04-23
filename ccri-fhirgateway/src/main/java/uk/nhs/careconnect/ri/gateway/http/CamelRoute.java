@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.gatewaylib.camel.processor.EPRDocumentBundle;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BinaryResource;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.CompositionDocumentBundle;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
@@ -39,7 +40,9 @@ public class CamelRoute extends RouteBuilder {
 
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
-        EPRDocumentBundle eprDocumentBundle = new EPRDocumentBundle(ctx, hapiBase);
+        CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
+        //DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
+        BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
 		// Complex processing
 
@@ -48,17 +51,23 @@ public class CamelRoute extends RouteBuilder {
                 .process(camelProcessor) // Add in correlation Id if not present
 				.wireTap("seda:FHIRBundleCollection");
 
-
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocument")
 				.routeId("Bundle Document")
-                .process(camelProcessor) // Add in correlation Id if not present
-				.enrich("direct:EDMSServer",eprDocumentBundle);
+				.process(camelProcessor) // Add in correlation Id if not present
+				.enrich("direct:EDMSServer", compositionDocumentBundle);
 
 
 		from("seda:FHIRBundleCollection")
 				.routeId("Bundle Processing")
+				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
 				.process(bundleMessage);
+
+		from("direct:FHIRDocumentReferenceBundle")
+				.routeId("Bundle Process Binary")
+				.process(binaryResource);
+
+
 
 		// Simple processing - low level resource operations
 		from("direct:FHIRPatient")
@@ -148,7 +157,6 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:EDMSServer")
 				.routeId("Int EDMS FHIR Server")
-				//.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(edmsBase)
 				.process(camelPostProcessor)

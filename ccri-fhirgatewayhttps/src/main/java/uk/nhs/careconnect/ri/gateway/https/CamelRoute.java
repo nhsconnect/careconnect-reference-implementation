@@ -10,8 +10,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPostProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BinaryResource;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
-import uk.nhs.careconnect.ri.gatewaylib.camel.processor.EPRDocumentBundle;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.CompositionDocumentBundle;
 
 import java.io.InputStream;
 
@@ -43,71 +44,59 @@ public class CamelRoute extends RouteBuilder {
 
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
-		EPRDocumentBundle eprDocumentBundle = new EPRDocumentBundle(ctx, hapiBase);
+		CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
+		//DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
+		BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
-
-		// OAuth endpoint
-
-		restConfiguration()
-				.component("servlet")
-				.contextPath("oauth2")
-				.dataFormatProperty("prettyPrint", "true")
-				.enableCORS(false);
-
-
-		rest("/").description("OAuth")
-				.get("/{action}").to("direct:oauth2")
-				.post("/{action}").to("direct:oauth2");
-
-		from("direct:oauth2")
-				.routeId("auth Server")
-				.setHeader(Exchange.HTTP_PATH,simple("${header.action}"))
-				.to("log:uk.nhs.careconnect.smartOnFhir.PRE?level=INFO&showHeaders=true&showExchangeId=true")
-				.to(oauthBase)
-				.process(camelPostProcessor)
-				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
-
-		// Complex processing for FHIR Bundles
+		// Complex processing
 
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
+				.process(camelProcessor) // Add in correlation Id if not present
 				.wireTap("seda:FHIRBundleCollection");
 
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocument")
 				.routeId("Bundle Document")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.enrich("direct:EDMSServer",eprDocumentBundle);
+				.enrich("direct:EDMSServer", compositionDocumentBundle);
+
 
 		from("seda:FHIRBundleCollection")
 				.routeId("Bundle Processing")
+				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
 				.process(bundleMessage);
 
-		// Simple process for low level resources
+		from("direct:FHIRDocumentReferenceBundle")
+				.routeId("Bundle Process Binary")
+				.process(binaryResource);
 
+
+
+		// Simple processing - low level resource operations
 		from("direct:FHIRPatient")
-			.routeId("Gateway Patient")
+				.routeId("Gateway Patient")
 				.to("direct:HAPIServer");
 
 		from("direct:FHIRPractitioner")
 				.routeId("Gateway Practitioner")
 				.to("direct:HAPIServer");
 
-        from("direct:FHIRPractitionerRole")
-                .routeId("Gateway PractitionerRole")
-                .to("direct:HAPIServer");
+		from("direct:FHIRPractitionerRole")
+				.routeId("Gateway PractitionerRole")
+				.to("direct:HAPIServer");
 
-        from("direct:FHIROrganisation")
-                .routeId("Gateway Organisation")
-                .to("direct:HAPIServer");
+		from("direct:FHIROrganisation")
+				.routeId("Gateway Organisation")
+				.to("direct:HAPIServer");
 
-        from("direct:FHIRLocation")
-                .routeId("Gateway Location")
-                .to("direct:HAPIServer");
+		from("direct:FHIRLocation")
+				.routeId("Gateway Location")
+				.to("direct:HAPIServer");
 
 		from("direct:FHIRObservation")
-			.routeId("Gateway Observation")
-			.to("direct:HAPIServer");
+				.routeId("Gateway Observation")
+				.to("direct:HAPIServer");
 
 		from("direct:FHIREncounter")
 				.routeId("Gateway Encounter")
@@ -123,6 +112,10 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:FHIRMedicationRequest")
 				.routeId("Gateway MedicationRequest")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRMedication")
+				.routeId("Gateway Medication")
 				.to("direct:HAPIServer");
 
 		from("direct:FHIRMedicationStatement")
@@ -144,6 +137,7 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRCapabilityStatement")
 				.routeId("Gateway CapabilityStatement")
 				.to("direct:HAPIServer");
+
 
 		from("direct:FHIRComposition")
 				.routeId("Gateway Composition")
@@ -167,7 +161,6 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:EDMSServer")
 				.routeId("Int EDMS FHIR Server")
-				//.setHeader(Exchange.CONTENT_TYPE, simple("application/fhir+json"))
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(edmsBase)
 				.process(camelPostProcessor)
@@ -175,15 +168,13 @@ public class CamelRoute extends RouteBuilder {
 				.convertBodyTo(InputStream.class);
 
 		from("direct:HAPIServer")
-            .routeId("INT FHIR Server")
+				.routeId("Int FHIR Server")
 				.process(camelProcessor)
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
-                .to(serverBase)
+				.to(serverBase)
 				.process(camelPostProcessor)
-                .to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
 
-
-
-    }
+	}
 }

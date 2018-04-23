@@ -120,24 +120,30 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
+        } else if (resource instanceof OperationOutcome) {
+            if(((OperationOutcome) resource).getIssue().size()>0)
+            {
+                OperationOutcome operationOutcome = (OperationOutcome) resource;
+                log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+                OperationOutcomeFactory.convertToException(operationOutcome);
+            }
+        }
+        else {
             throw new InternalErrorException("Unknown Error");
         }
 
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
 
-        OperationOutcome opOutcome = new OperationOutcome();
+        OperationOutcome opOutcome = null;
+        if (resource instanceof OperationOutcome) {
+            opOutcome = (OperationOutcome) resource;
+        } else {
+            method.setResource(resource);
+            opOutcome = new OperationOutcome();
+        }
 
         method.setOperationOutcome(opOutcome);
-
 
         return method;
     }
