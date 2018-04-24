@@ -2,7 +2,10 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -41,6 +44,7 @@ public class EncounterResourceProvider implements IResourceProvider {
         return Encounter.class;
     }
 
+    /*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
@@ -67,6 +71,61 @@ public class EncounterResourceProvider implements IResourceProvider {
         }
         // Populate bundle with matching resources
         return bundle;
+    }
+    */
+
+    @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
+    public Bundle encounterDocumentOperation(
+            @IdParam IdType encounterId
+
+    ) {
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+        // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
+        Exchange exchange = template.send("direct:FHIREncounterDocument",ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "_count=50");
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "Encounter/"+encounterId.getIdPart()+"/$document");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+
+        Bundle bundle = null;
+
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
+        try {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+
+            return bundle;
+            /*
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+
+                results.add(entry.getResource());
+            }
+            */
+        }
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
+        return null;
+
     }
 
     @Read

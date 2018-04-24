@@ -32,6 +32,9 @@ public class CamelRoute extends RouteBuilder {
 	@Value("${fhir.restserver.oauth}")
 	private String oauthBase;
 
+	@Value("${fhir.restserver.tieBase}")
+	private String tieBase;
+
 	@Value("${fhir.resource.serverBase}")
 	private String hapiBase;
 	
@@ -93,9 +96,24 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Bundle Process Binary")
 				.process(binaryResource);
 
+		// Integration Server (TIE)
+
+		from("direct:FHIREncounterDocument")
+				.routeId("TIE Encounter")
+				.to("direct:TIEServer");
+
+		from("direct:TIEServer")
+				.routeId("TIE FHIR Server")
+				.process(camelProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
+				.to(tieBase)
+				.process(camelPostProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.convertBodyTo(InputStream.class);
 
 
-		// Simple processing - low level resource operations
+		// EPR Simple processing - low level resource operations
+
 		from("direct:FHIRPatient")
 				.routeId("Gateway Patient")
 				.to("direct:HAPIServer");

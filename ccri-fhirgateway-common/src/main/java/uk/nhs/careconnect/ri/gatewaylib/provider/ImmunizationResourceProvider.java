@@ -41,7 +41,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
     public Class<Immunization> getResourceType() {
         return Immunization.class;
     }
-
+/*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
@@ -60,7 +60,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
         // Populate bundle with matching resources
         return bundle;
     }
-
+*/
     @Read
     public Immunization getImmunizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 

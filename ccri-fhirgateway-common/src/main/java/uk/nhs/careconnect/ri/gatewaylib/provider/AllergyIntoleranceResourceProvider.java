@@ -42,6 +42,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
         return AllergyIntolerance.class;
     }
 
+    /*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
@@ -60,7 +61,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
         // Populate bundle with matching resources
         return bundle;
     }
-
+*/
     @Read
     public AllergyIntolerance getAllergyIntoleranceById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 

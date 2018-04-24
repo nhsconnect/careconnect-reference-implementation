@@ -42,6 +42,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         return MedicationRequest.class;
     }
 
+    /*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
@@ -66,7 +67,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         // Populate bundle with matching resources
         return bundle;
     }
-
+*/
     @Read
     public MedicationRequest getMedicationRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 

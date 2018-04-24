@@ -22,10 +22,13 @@ public class CamelRoute extends RouteBuilder {
 	protected Environment env;
 
 	@Value("${fhir.restserver.serverBase}")
-	private String serverBase;
+	private String eprBase;
 
 	@Value("${fhir.restserver.edmsBase}")
 	private String edmsBase;
+
+	@Value("${fhir.restserver.tieBase}")
+	private String tieBase;
 
 	@Value("${fhir.resource.serverBase}")
     private String hapiBase;
@@ -44,7 +47,7 @@ public class CamelRoute extends RouteBuilder {
         //DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
         BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
-		// Complex processing
+		// Complex processing EDMS Server
 
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
@@ -67,7 +70,22 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Bundle Process Binary")
 				.process(binaryResource);
 
+	// Integration Server (TIE)
 
+		from("direct:FHIREncounterDocument")
+				.routeId("TIE Encounter")
+				.to("direct:TIEServer");
+
+		from("direct:TIEServer")
+				.routeId("TIE FHIR Server")
+				.process(camelProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
+				.to(tieBase)
+				.process(camelPostProcessor)
+				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+				.convertBodyTo(InputStream.class);
+
+		// EPR Server
 
 		// Simple processing - low level resource operations
 		from("direct:FHIRPatient")
@@ -156,7 +174,7 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:EDMSServer");
 
 		from("direct:EDMSServer")
-				.routeId("Int EDMS FHIR Server")
+				.routeId("EDMS FHIR Server")
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(edmsBase)
 				.process(camelPostProcessor)
@@ -164,10 +182,10 @@ public class CamelRoute extends RouteBuilder {
 				.convertBodyTo(InputStream.class);
 
 		from("direct:HAPIServer")
-            .routeId("Int FHIR Server")
+            .routeId("EPR FHIR Server")
 				.process(camelProcessor)
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
-                .to(serverBase)
+                .to(eprBase)
 				.process(camelPostProcessor)
                 .to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
