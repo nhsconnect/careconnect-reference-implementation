@@ -27,7 +27,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
-import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -76,6 +76,15 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    @Autowired
+    private OrganisationEntityToFHIROrganizationTransformer organisationEntityToFHIROrganizationTransformer;
+
+    @Autowired
+    private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
+
+    @Autowired
+    private LocationEntityToFHIRLocationTransformer locationEntityToFHIRLocationTransformer;
 
     @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
@@ -160,7 +169,7 @@ public class  EncounterDao implements EncounterRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null, null);
+                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null, null, null);
                     for (EncounterEntity enc : results) {
                         encounterEntity = enc;
                         break;
@@ -309,8 +318,8 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, TokenParam resid, Set<Include> reverseIncludes) {
-        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes);
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, TokenParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
+        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes,includes);
         List<Resource> results = new ArrayList<>();
 
         for (EncounterEntity encounterEntity : qryResults)
@@ -325,23 +334,60 @@ public class  EncounterDao implements EncounterRepository {
             for (EncounterEntity encounterEntity : qryResults) {
                 if (reverseIncludes.size() > 0) {
                     for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
-                        results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                        addToResults(results,procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
                     }
                     for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
-                        results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                        addToResults(results,observationEntityToFHIRObservationTransformer.transform(observationEntity));
                     }
                     for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
-                        results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                        addToResults(results,conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
                     }
                     for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
-                        results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                        results.add(medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequestEntity));
+                        addToResults(results,medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                        addToResults(results,medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequestEntity));
                     }
                     for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
-                        results.add(carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
+                        addToResults(results,carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
                     }
                     for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
-                        results.add(diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
+                        addToResults(results,diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
+                    }
+                }
+            }
+        }
+
+        if (includes !=null) {
+            for (EncounterEntity encounterEntity : qryResults) {
+                for (Include include : includes) {
+                    switch(include.getValue()) {
+                        case
+                            "Encounter.participant":
+                            if (encounterEntity.getParticipant()!=null) {
+                                addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
+                            }
+                            break;
+                        case "Encounter.service-provider":
+                            if (encounterEntity.getServiceProvider()!=null) {
+                                addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
+                            }
+                            break;
+                        case "Encounter.location":
+                            if (encounterEntity.getLocation()!=null) {
+                                addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                            }
+                            break;
+                            case "*":
+                                if (encounterEntity.getServiceProvider()!=null) {
+                                    addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
+                                }
+                                if (encounterEntity.getLocation()!=null) {
+                                    addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                                }
+                                if (encounterEntity.getParticipant()!=null) {
+                                    addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
+                            }
+                            break;
+
                     }
                 }
             }
@@ -350,9 +396,16 @@ public class  EncounterDao implements EncounterRepository {
 
         return results;
     }
+    private void addToResults(List<Resource> results, Resource resource) {
+        Boolean found = false;
+        for (Resource resourceSearch : results) {
+            if (resourceSearch.getId().equals(resource.getId()) && resourceSearch.getResourceType().equals(resource.getResourceType())) found = true;
+        }
+        if (!found) results.add(resource);
+    }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid,Set<Include> reverseIncludes) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

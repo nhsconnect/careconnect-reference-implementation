@@ -84,11 +84,12 @@ public class EncounterProvider implements ICCResourceProvider {
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
-            , @IncludeParam(reverse=true) Set<Include> reverseIncludes
-                                 //  , @IncludeParam(allow = { "Encounter:diagnosis" }) Set<Include> includes
+            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
+    }) Set<Include> includes
 
     ) {
-        return encounterDao.search(ctx,patient,date,episode,identifier,resid,reverseIncludes);
+        return encounterDao.search(ctx,patient,date,episode,identifier,resid,reverseIncludes, includes);
     }
 
     @Read()
