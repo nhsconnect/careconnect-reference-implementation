@@ -5,12 +5,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.nhs.careconnect.ri.gateway.https.oauth2.OAuth2Interceptor;
@@ -29,24 +24,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 	private WebApplicationContext myAppCtx;
 
-	@Value("${fhir.resource.serverBase}")
-	private String serverBase;
-
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
-
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
-
-	@Value("${fhir.oauth2.authorize:https://auth.hspconsortium.org/authorize}")
-	private String oauth2authorize = "http://purple.testlab.nhs.uk:20080/authorize";
-
-	@Value("${fhir.oauth2.token:https://auth.hspconsortium.org/token}")
-	private String oauth2token = "http://purple.testlab.nhs.uk:20080/token";
-
-	@Value("${fhir.oauth2.register:https://auth.hspconsortium.org/register}")
-	private String oauth2register = "http://purple.testlab.nhs.uk:20080/register";
-
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
 		theHttpResponse.addHeader("X-Powered-By", "HAPI FHIR " + VersionUtil.getVersion() + " RESTful Server (NHS Care Connect STU3)");
@@ -64,6 +41,21 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 		// Get the spring context from the web container (it's declared in web.xml)
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
+		Config cfg = myAppCtx.getBean(Config.class);
+  
+		String serverBase = cfg.getServerBase();
+		String serverName = cfg.getServerName();
+		String serverVersion = cfg.getServerVersion();
+		String oauth2authorize = cfg.getOauth2authorize();
+		String oauth2token = cfg.getOauth2token();
+		String oauth2register = cfg.getOauth2register();
+
+		ourLog.info("serverBase: " + serverBase);
+		ourLog.info("oauth2authorize: " + oauth2authorize);
+		ourLog.info("oauth2token: " + oauth2token);
+		ourLog.info("oauth2register: " + oauth2register);
+		ourLog.info("serverName: " + serverName);
+		ourLog.info("serverVersion: " + serverVersion);
 
         if (serverBase != null && !serverBase.isEmpty()) {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
@@ -118,16 +110,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 		FhirContext ctx = getFhirContext();
 		// Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 	}
-
-	/**
-	 * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
-	 */
-	@Bean(autowire = Autowire.BY_TYPE)
-	public IServerInterceptor responseHighlighterInterceptor() {
-		ResponseHighlighterInterceptor retVal = new ResponseHighlighterInterceptor();
-		return retVal;
-	}
-
 
 
 }

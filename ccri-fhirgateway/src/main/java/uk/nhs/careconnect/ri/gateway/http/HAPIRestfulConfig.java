@@ -6,13 +6,8 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
 import org.hl7.fhir.dstu3.model.Composition;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -32,16 +27,6 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 	private WebApplicationContext myAppCtx;
 
-	@Value("${fhir.resource.serverBase}")
-	private String serverBase;
-
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
-
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
-
-
     @Override
 	public void addHeadersToResponse(HttpServletResponse theHttpResponse) {
 		theHttpResponse.addHeader("X-Powered-By", "HAPI FHIR " + VersionUtil.getVersion() + " RESTful Server (NHS Care Connect STU3)");
@@ -59,6 +44,15 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 		// Get the spring context from the web container (it's declared in web.xml)
 		myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
+		Config cfg = myAppCtx.getBean(Config.class);
+  
+		String serverBase = cfg.getServerBase();
+		String serverName = cfg.getServerName();
+		String serverVersion = cfg.getServerVersion();
+
+		log.info("serverBase: " + serverBase);
+		log.info("serverName: " + serverName);
+		log.info("serverVersion: " + serverVersion);
 
         if (serverBase != null && !serverBase.isEmpty()) {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
@@ -118,16 +112,4 @@ public class HAPIRestfulConfig extends RestfulServer {
 		FhirContext ctx = getFhirContext();
 		// Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 	}
-
-	/**
-	 * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
-	 */
-	@Bean(autowire = Autowire.BY_TYPE)
-	public IServerInterceptor responseHighlighterInterceptor() {
-		ResponseHighlighterInterceptor retVal = new ResponseHighlighterInterceptor();
-		return retVal;
-	}
-
-
-
 }
