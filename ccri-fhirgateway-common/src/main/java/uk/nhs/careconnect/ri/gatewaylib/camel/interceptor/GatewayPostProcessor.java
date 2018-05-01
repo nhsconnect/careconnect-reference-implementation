@@ -8,7 +8,6 @@ public class GatewayPostProcessor implements Processor
     @Override
     public void process(Exchange exchange) throws Exception {
 
-
         if (exchange.getIn().getHeader("X-Request-ID") == null || exchange.getIn().getHeader("X-Request-ID").toString().isEmpty()) {
             exchange.getIn().removeHeader("X-Request-ID");
         }
