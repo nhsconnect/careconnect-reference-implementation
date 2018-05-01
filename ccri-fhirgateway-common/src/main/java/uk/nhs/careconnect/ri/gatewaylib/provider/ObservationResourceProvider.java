@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -105,7 +106,7 @@ public class ObservationResourceProvider implements IResourceProvider {
     @Search
     public List<Observation> searchObservation(HttpServletRequest httpRequest,
                                                @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
-                                               @OptionalParam(name= Observation.SP_CODE) TokenParam code,
+                                               @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
                                                @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                                                @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid

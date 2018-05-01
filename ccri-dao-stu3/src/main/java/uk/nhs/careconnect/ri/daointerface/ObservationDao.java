@@ -1,12 +1,10 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.base.composite.BaseCodingDt;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -552,9 +550,9 @@ public class ObservationDao implements ObservationRepository {
 
 
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
         List<Observation> results = new ArrayList<Observation>();
-        List<ObservationEntity> qryResults = searchEntity(ctx, category, code, effectiveDate, patient, identifier,resid);
+        List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid);
         log.debug("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
@@ -574,7 +572,7 @@ public class ObservationDao implements ObservationRepository {
     }
 
     @Override
-    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenParam code, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -607,11 +605,17 @@ public class ObservationDao implements ObservationRepository {
             Predicate p = builder.equal(joinConcept.get("code"),category.getValue());
             predList.add(p);
         }
-        if (code!=null) {
-            log.trace("Search on Observation.code code = "+code.getValue());
-            Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
-            Predicate p = builder.equal(joinConcept.get("code"),code.getValue());
-            predList.add(p);
+        if (codes!=null) {
+            //List<Predicate> predOrList = new LinkedList<Predicate>();
+            // TODO KGM This need to be changed to an OR query
+            for (TokenParam code : codes.getValuesAsQueryTokens()) {
+                log.trace("Search on Observation.code code = " + code.getValue());
+                Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
+                Predicate p = builder.equal(joinConcept.get("code"), code.getValue());
+
+               predList.add(p);
+            }
+            //Predicate p = builder.;
         }
         if (identifier !=null)
         {

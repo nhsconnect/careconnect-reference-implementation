@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
@@ -25,7 +26,7 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
 
     List<Observation> search (FhirContext ctx,
             @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
-            @OptionalParam(name= Observation.SP_CODE) TokenParam code,
+            @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
             @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
             @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
@@ -34,7 +35,7 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
 
     List<ObservationEntity> searchEntity (FhirContext ctx,
                               @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
-                              @OptionalParam(name= Observation.SP_CODE) TokenParam code,
+                              @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
                               @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                               @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier

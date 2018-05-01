@@ -441,7 +441,7 @@ public class JPAStepsDef {
 
     @When("^I search Observations on SNOMED code (\\d+)$")
     public void i_search_on_SNOMED_code(String code) throws Throwable {
-        observationList = observationRepository.search(ctx,null, new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT),null,null, null,null);
+        observationList = observationRepository.search(ctx,null, new TokenOrListParam().add(new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT)),null,null, null,null);
     }
 
     @When("^I search on Patient ID = (\\d+)$")
