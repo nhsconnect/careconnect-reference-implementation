@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.lib;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -11,6 +12,8 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrLookup;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.hl7.fhir.dstu3.model.Binary;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -20,14 +23,19 @@ import org.springframework.http.MediaType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -37,6 +45,7 @@ public class ServerInterceptor extends InterceptorAdapter {
     private Logger log = null; //LoggerFactory.getLogger(ServerInterceptor.class);
     private String myErrorMessageFormat = "ERROR - ${operationType} - ${idOrResourceName}";
 
+    FhirContext ctx = FhirContext.forDstu3();
 
     public ServerInterceptor(Logger ourLog) {
         super();
@@ -81,7 +90,8 @@ public class ServerInterceptor extends InterceptorAdapter {
                         theServletResponse.getWriter().close();
                         return false;
                     }
-                    if (outcome.getIssueFirstRep().getDiagnostics().contains("Unsupported media type:")) {
+                    // Allow support for Binary 30/Apr/2018
+                    if (outcome.getIssueFirstRep().getDiagnostics().contains("Unsupported media type:") && (!theRequestDetails.getResourceName().equals("Binary"))) {
                         theServletResponse.setStatus(415);
                         theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
                         theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
@@ -145,7 +155,8 @@ public class ServerInterceptor extends InterceptorAdapter {
     @Override
     public boolean incomingRequestPreProcessed(HttpServletRequest request, HttpServletResponse theResponse) {
 
-        if (request.getMethod() != null) {
+        // 30/Apr/2018 Ignore for Binary endpoints
+        if (request.getMethod() != null && (!request.getRequestURI().contains("Binary"))) {
 
             /* KGM 3/1/2018 This is now handled by CORS headers
 
@@ -153,7 +164,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 throw new MethodNotAllowedException("request must use HTTP GET");
             */
 
-            if (request.getContentType() != null) {
+            if (request.getContentType() != null ) {
                checkContentType(request.getContentType());
             }
 
@@ -219,16 +230,105 @@ public class ServerInterceptor extends InterceptorAdapter {
     }
 
     @Override
-    public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse)
+    public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource resource, HttpServletRequest theServletRequest, HttpServletResponse response)
             throws AuthenticationException {
 
-        //log.info("Outgoing object class = "+theResponseObject.getClass().getCanonicalName());
 
         String val = theRequestDetails.getHeader("x-request-id");
 
         if (val !=null && !val.isEmpty()) {
-            theServletResponse.addHeader("X-Correlation-ID", val);
+            response.addHeader("X-Correlation-ID", val);
            // theServletResponse.setHeader("X-Request-ID","");
+        }
+        log.info("oR Content-Type = "+theRequestDetails.getHeader("Content-Type"));
+        String contentType = theRequestDetails.getHeader("Content-Type");
+
+        log.info("Response resource instance of "+resource.getClass().getSimpleName());
+        log.info("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
+
+        // Special Procecssing for Binary when a FHIR document is returned
+        if (resource instanceof Binary && theRequestDetails.getResourceName().equals("Binary")) {
+            Binary binary = (Binary) resource;
+            Bundle bundle = null;
+            log.info("Content Type of returned Binary"+binary.getContentType().contains("fhir"));
+            // Check for FHIR Document
+            if (binary.getContentType().contains("fhir")) {
+                // Assume this is a FHIR Document
+                ByteArrayInputStream b = new ByteArrayInputStream(binary.getContent());
+
+                Reader reader = new InputStreamReader(b);
+                IBaseResource resourceBundle = null;
+                // Response should be json
+                if (binary.getContentType().contains("json")) {
+                    resourceBundle = ctx.newJsonParser().parseResource(reader);
+                } else {
+                    resourceBundle = ctx.newXmlParser().parseResource(reader);
+                }
+                log.info("Parsed resource type = " + resourceBundle.getClass().getSimpleName());
+                if (resourceBundle instanceof Bundle) {
+                    // XML is default for FHIR documents
+                    if (contentType == null || (contentType.contains("fhir") && contentType.contains("xml"))) {
+                        try {
+
+                            // Response was json, convert to xml
+                            binary.setContentType("application/fhir+xml");
+                            binary.setContent(ctx.newXmlParser().encodeResourceToString(resourceBundle).getBytes());
+                            response.setStatus(200);
+                            response.setContentType("application/fhir+xml");
+
+                            if (contentType == null) {
+                                // if not asked for format return xml as default
+                                response.getOutputStream().write(ctx.newXmlParser().encodeResourceToString(resourceBundle).getBytes());
+                            } else {
+                                // else return as a Bundle
+                                response.getOutputStream().write(ctx.newXmlParser().encodeResourceToString(binary).getBytes());
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        return false;
+                    } else if ( contentType.equals("text/html")) {
+                        try {
+                            // requested document as html
+                            response.setStatus(200);
+                            response.setContentType("text/html");
+
+                            performTransform(response.getOutputStream(), resourceBundle, "XML/DocumentToHTML.xslt");
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        return false;
+                    } else if (contentType.equals("application/pdf")) {
+                        try {
+                            // requested document as pdf
+                            response.setStatus(200);
+                            response.setContentType("application/pdf");
+
+                            // TODO Remove file and convert to plain streams
+
+                            File fileHtml = File.createTempFile("pdf", ".tmp");
+                            FileOutputStream fos = new FileOutputStream(fileHtml);
+                            performTransform(fos, resourceBundle, "XML/DocumentToHTML.xslt");
+
+
+                            String processedHtml = org.apache.commons.io.IOUtils.toString(new InputStreamReader(new FileInputStream(fileHtml), "UTF-8"));
+
+                            ITextRenderer renderer = new ITextRenderer();
+                            renderer.setDocumentFromString(processedHtml);
+                            renderer.layout();
+                            renderer.createPDF(response.getOutputStream(), false);
+                            renderer.finishPDF();
+                            fos.flush();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+
         }
        return true;
 
@@ -372,6 +472,51 @@ public class ServerInterceptor extends InterceptorAdapter {
 
             return "!VAL!";
         }
+    }
+
+    private ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
+    private void performTransform(OutputStream os, IBaseResource resource, String styleSheet) {
+
+        // Input xml data file
+        ClassLoader classLoader = getContextClassLoader();
+
+        // Input xsl (stylesheet) file
+        String xslInput = classLoader.getResource(styleSheet).getFile();
+        log.info("xslInput = "+xslInput);
+        // Set the property to use xalan processor
+        System.setProperty("javax.xml.transform.TransformerFactory",
+                "org.apache.xalan.processor.TransformerFactoryImpl");
+
+        // try with resources
+        try {
+            InputStream xml = new ByteArrayInputStream(ctx.newXmlParser().encodeResourceToString(resource).getBytes(StandardCharsets.UTF_8));
+
+            // For Windows repace escape sequence
+            xslInput = xslInput.replace("%20"," ");
+            log.info("open fileInputStream for xsl "+xslInput);
+            FileInputStream xsl = new FileInputStream(xslInput);
+
+            // Instantiate a transformer factory
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+
+            // Use the TransformerFactory to process the stylesheet source and produce a Transformer
+            StreamSource styleSource = new StreamSource(xsl);
+            Transformer transformer = tFactory.newTransformer(styleSource);
+
+            // Use the transformer and perform the transformation
+            StreamSource xmlSource = new StreamSource(xml);
+            StreamResult result = new StreamResult(os);
+            log.info("Transforming");
+            transformer.transform(xmlSource, result);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+            throw new InternalErrorException(ex.getMessage());
+        }
+
     }
 
 
