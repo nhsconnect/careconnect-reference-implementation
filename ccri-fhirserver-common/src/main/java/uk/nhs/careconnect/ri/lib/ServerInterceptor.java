@@ -240,17 +240,17 @@ public class ServerInterceptor extends InterceptorAdapter {
             response.addHeader("X-Correlation-ID", val);
            // theServletResponse.setHeader("X-Request-ID","");
         }
-        log.info("oR Content-Type = "+theRequestDetails.getHeader("Content-Type"));
+        log.debug("oR Content-Type = "+theRequestDetails.getHeader("Content-Type"));
         String contentType = theRequestDetails.getHeader("Content-Type");
 
-        log.info("Response resource instance of "+resource.getClass().getSimpleName());
-        log.info("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
+        log.trace("Response resource instance of "+resource.getClass().getSimpleName());
+        if (theRequestDetails != null && theRequestDetails.getResourceName() != null) log.trace("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
 
         // Special Procecssing for Binary when a FHIR document is returned
         if (resource instanceof Binary && theRequestDetails.getResourceName().equals("Binary")) {
             Binary binary = (Binary) resource;
             Bundle bundle = null;
-            log.info("Content Type of returned Binary"+binary.getContentType().contains("fhir"));
+            log.trace("Content Type of returned Binary"+binary.getContentType().contains("fhir"));
             // Check for FHIR Document
             if (binary.getContentType().contains("fhir")) {
                 // Assume this is a FHIR Document
@@ -264,7 +264,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 } else {
                     resourceBundle = ctx.newXmlParser().parseResource(reader);
                 }
-                log.info("Parsed resource type = " + resourceBundle.getClass().getSimpleName());
+                log.debug("Parsed resource type = " + resourceBundle.getClass().getSimpleName());
                 if (resourceBundle instanceof Bundle) {
                     // XML is default for FHIR documents
                     if (contentType == null || (contentType.contains("fhir") && contentType.contains("xml"))) {
@@ -485,7 +485,7 @@ public class ServerInterceptor extends InterceptorAdapter {
 
         // Input xsl (stylesheet) file
         String xslInput = classLoader.getResource(styleSheet).getFile();
-        log.info("xslInput = "+xslInput);
+        log.debug("xslInput = "+xslInput);
         // Set the property to use xalan processor
         System.setProperty("javax.xml.transform.TransformerFactory",
                 "org.apache.xalan.processor.TransformerFactoryImpl");
@@ -496,7 +496,7 @@ public class ServerInterceptor extends InterceptorAdapter {
 
             // For Windows repace escape sequence
             xslInput = xslInput.replace("%20"," ");
-            log.info("open fileInputStream for xsl "+xslInput);
+            log.debug("open fileInputStream for xsl "+xslInput);
             FileInputStream xsl = new FileInputStream(xslInput);
 
             // Instantiate a transformer factory
@@ -509,7 +509,7 @@ public class ServerInterceptor extends InterceptorAdapter {
             // Use the transformer and perform the transformation
             StreamSource xmlSource = new StreamSource(xml);
             StreamResult result = new StreamResult(os);
-            log.info("Transforming");
+            log.trace("Transforming");
             transformer.transform(xmlSource, result);
         } catch (Exception ex) {
             log.error(ex.getMessage());
