@@ -83,7 +83,6 @@ public class ObservationProvider implements ICCResourceProvider {
     @Read
     public Observation getObservationById(@IdParam IdType internalId) {
         Observation observation = observationDao.read(ctx,internalId);
-
         if (observation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No observation found for ID: " + internalId.getIdPart()),
