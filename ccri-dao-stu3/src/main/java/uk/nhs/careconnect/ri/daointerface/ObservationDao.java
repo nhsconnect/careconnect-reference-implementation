@@ -606,16 +606,19 @@ public class ObservationDao implements ObservationRepository {
             predList.add(p);
         }
         if (codes!=null) {
-            //List<Predicate> predOrList = new LinkedList<Predicate>();
+            List<Predicate> predOrList = new LinkedList<Predicate>();
             // TODO KGM This need to be changed to an OR query
             for (TokenParam code : codes.getValuesAsQueryTokens()) {
                 log.trace("Search on Observation.code code = " + code.getValue());
                 Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
-                Predicate p = builder.equal(joinConcept.get("code"), code.getValue());
+                Predicate p = builder.or(builder.equal(joinConcept.get("code"), code.getValue()));
+                predOrList.add(p);
 
-               predList.add(p);
             }
-            //Predicate p = builder.;
+            if (predList.size()>0) {
+                Predicate p = builder.and(predOrList.toArray(new Predicate[0]));
+                predList.add(p);
+            }
         }
         if (identifier !=null)
         {

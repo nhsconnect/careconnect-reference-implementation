@@ -9,8 +9,6 @@ ADD robots.txt /usr/local/tomcat/webapps/ROOT/robots.txt
 ADD logging.properties /usr/local/tomcat/conf/logging.properties
 ADD server.xml /usr/local/tomcat/conf/server.xml
 
-# ADD hawtio.war /usr/local/tomcat/webapps/
-
 ADD target/careconnect-gateway-secure.war /usr/local/tomcat/webapps/careconnect-ri.war
 ADD .keystore /usr/local/tomcat/.keystore
 
