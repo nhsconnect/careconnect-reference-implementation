@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.daointerface.transforms.ObservationEntityToFHIRObservationTransformer;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.observation.*;
@@ -607,16 +608,23 @@ public class ObservationDao implements ObservationRepository {
         }
         if (codes!=null) {
             List<Predicate> predOrList = new LinkedList<Predicate>();
-            // TODO KGM This need to be changed to an OR query
+            Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
+            Join<ConceptEntity, CodeSystemEntity> joinCodeSystem = joinConcept.join("codeSystemEntity", JoinType.LEFT);
+
             for (TokenParam code : codes.getValuesAsQueryTokens()) {
                 log.trace("Search on Observation.code code = " + code.getValue());
-                Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
-                Predicate p = builder.or(builder.equal(joinConcept.get("code"), code.getValue()));
+
+                Predicate p = null;
+                if (code.getSystem() != null) {
+                    p = builder.and(builder.equal(joinCodeSystem.get("codeSystemUri"), code.getSystem()),builder.equal(joinConcept.get("code"), code.getValue()));
+                } else {
+                    p = builder.equal(joinConcept.get("code"), code.getValue());
+                }
                 predOrList.add(p);
 
             }
-            if (predList.size()>0) {
-                Predicate p = builder.and(predOrList.toArray(new Predicate[0]));
+            if (predOrList.size()>0) {
+                Predicate p = builder.or(predOrList.toArray(new Predicate[0]));
                 predList.add(p);
             }
         }
