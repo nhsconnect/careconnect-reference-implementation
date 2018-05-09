@@ -133,7 +133,7 @@ public class ServerInterceptor extends InterceptorAdapter {
 
     @Override
     public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {
-
+        log.trace("incomingRequestPostProcessed "+theRequest.getMethod());
         Enumeration<String> headers = theRequest.getHeaderNames();
         while (headers.hasMoreElements()) {
             String header = headers.nextElement();
@@ -154,7 +154,7 @@ public class ServerInterceptor extends InterceptorAdapter {
 
     @Override
     public boolean incomingRequestPreProcessed(HttpServletRequest request, HttpServletResponse theResponse) {
-
+        log.trace("incomingRequestPreProcessed "+request.getMethod());
         // 30/Apr/2018 Ignore for Binary endpoints
         if (request.getMethod() != null && (!request.getRequestURI().contains("Binary"))) {
 

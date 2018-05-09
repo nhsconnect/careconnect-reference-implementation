@@ -223,7 +223,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             if (author.getReference().contains("Practitioner")) {
                 PractitionerEntity practitioner = practitionerDao.readEntity(ctx, new IdType(author.getReference()));
                 for (DocumentReferenceAuthor authSearch : documentReferenceEntity.getAuthors()) {
-                    if (authSearch.getOrganisation() != null &&authSearch.getPractitioner().getId().equals(practitioner.getId())) {
+                    if (authSearch.getPractitioner() != null &&authSearch.getPractitioner().getId().equals(practitioner.getId())) {
                         documentReferenceAuthor = authSearch;
                         break;
                     }
