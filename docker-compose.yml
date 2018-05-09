@@ -87,9 +87,9 @@ services:
       - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.oauth2.authorize=https://purple.testlab.nhs.uk:20080/authorize
-      - fhir.oauth2.token=https://purple.testlab.nhs.uk:20080/token
-      - fhir.oauth2.register=https://purple.testlab.nhs.uk:20080/register
+      - fhir.oauth2.authorize=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/authorize
+      - fhir.oauth2.token=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/token
+      - fhir.oauth2.register=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/register
     depends_on:
       - ccri
     ports:
