@@ -87,6 +87,9 @@ public class  EncounterDao implements EncounterRepository {
     private LocationEntityToFHIRLocationTransformer locationEntityToFHIRLocationTransformer;
 
     @Autowired
+    private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
+
+    @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
@@ -366,6 +369,19 @@ public class  EncounterDao implements EncounterRepository {
                                 addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
                             }
                             break;
+                        case
+                            "Encounter.subject":
+                            if (encounterEntity.getPatient()!=null) {
+                                PatientEntity patientEntity = encounterEntity.getPatient();
+                                addToResults(results,patientEntityToFHIRPatientTransformer.transform(patientEntity));
+                                if (patientEntity.getGP()!=null) {
+                                    addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(patientEntity.getGP()));
+                                }
+                                if (patientEntity.getPractice()!=null) {
+                                    addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(patientEntity.getPractice()));
+                                }
+                            }
+                            break;
                         case "Encounter.service-provider":
                             if (encounterEntity.getServiceProvider()!=null) {
                                 addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
@@ -385,7 +401,17 @@ public class  EncounterDao implements EncounterRepository {
                                 }
                                 if (encounterEntity.getParticipant()!=null) {
                                     addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
-                            }
+                                }
+                                if (encounterEntity.getPatient()!=null) {
+                                    PatientEntity patientEntity = encounterEntity.getPatient();
+                                    addToResults(results,patientEntityToFHIRPatientTransformer.transform(patientEntity));
+                                    if (patientEntity.getGP()!=null) {
+                                        addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(patientEntity.getGP()));
+                                    }
+                                    if (patientEntity.getPractice()!=null) {
+                                        addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(patientEntity.getPractice()));
+                                    }
+                                }
                             break;
 
                     }

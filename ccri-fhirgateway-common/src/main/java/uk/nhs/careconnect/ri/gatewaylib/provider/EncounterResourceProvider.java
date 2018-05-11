@@ -173,7 +173,7 @@ public class EncounterResourceProvider implements IResourceProvider {
           //  ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
-            , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
+            , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
 
                                        ) {
