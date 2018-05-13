@@ -47,7 +47,16 @@ public class CamelRoute extends RouteBuilder {
         //DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
         BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
+        // Validation Service
+
+		from("direct:FHIRBundleValidate")
+				.routeId("Bundle Validation")
+				.process(camelProcessor) // Add in correlation Id if not present
+				.to("direct:TIEServer");
+
+
 		// Complex processing EDMS Server
+
 
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")

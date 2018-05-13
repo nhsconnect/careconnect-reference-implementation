@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -39,6 +40,57 @@ public class BundleResourceProvider implements IResourceProvider {
     @Override
     public Class<Bundle> getResourceType() {
         return Bundle.class;
+    }
+
+    @Validate
+    public MethodOutcome validate(@ResourceParam Bundle bundle,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        Exchange exchange = template.send("direct:FHIRBundleValidate",ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundle));
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle/$validate");
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+            }
+        });
+        IBaseResource resource = null;
+        if (exchange.getIn().getBody() instanceof InputStream) {
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            resource = null;
+            try {
+                resource = ctx.newXmlParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+        }
+        if (exchange.getIn().getBody() instanceof String) {
+            resource = ctx.newXmlParser().parseResource((String) exchange.getIn().getBody());
+        }
+        MethodOutcome retVal = new MethodOutcome();
+
+        if (resource instanceof OperationOutcome)
+        {
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Issue Count = "+operationOutcome.getIssue().size());
+            retVal.setOperationOutcome(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
+        return retVal;
+
     }
 
     @Create

@@ -73,6 +73,13 @@ public class CamelRoute extends RouteBuilder {
 				.process(camelPostProcessor)
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
 
+		// Validation Service
+
+		from("direct:FHIRBundleValidate")
+				.routeId("Bundle Validation")
+				.process(camelProcessor) // Add in correlation Id if not present
+				.to("direct:TIEServer");
+
 		// Complex processing
 
 		from("direct:FHIRBundleCollection")
