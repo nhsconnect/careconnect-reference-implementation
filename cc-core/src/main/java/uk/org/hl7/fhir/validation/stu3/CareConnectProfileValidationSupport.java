@@ -36,7 +36,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
   private void logD(String message) {
       log.debug(message);
-    //    System.out.println(message);
+      //System.out.println(message);
   }
 
     private void logW(String message) {
@@ -242,6 +242,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
         nextCandidate = nextCandidate.toUpperCase();
       }
       if (nextCandidate.equals(code)) {
+        logD("The Code "+code+" is in the list");
         retVal = new CodeValidationResult(next);
         break;
       }

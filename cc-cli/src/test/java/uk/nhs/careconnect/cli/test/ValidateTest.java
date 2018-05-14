@@ -63,6 +63,9 @@ public class ValidateTest {
         App.main(new String[] {"validate", "-p", "-x"
                 ,"-n",resourcePath});
     }
+
+
+
 	@Test
 	public void testValidateEncounter() {
 		String resourcePath = ValidateTest.class.getResource("/EncounterDates.json").getFile();

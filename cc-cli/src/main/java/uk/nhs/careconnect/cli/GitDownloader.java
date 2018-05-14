@@ -95,7 +95,7 @@ public class GitDownloader extends BaseCommand {
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 
 			try {
-
+                callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "develop");
 				callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease1");
                 callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease2");
 				callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "develop");
@@ -188,9 +188,9 @@ public class GitDownloader extends BaseCommand {
 								ValueSet valueSetR = (ValueSet) resource;
                                 if (!resources.containsKey(file.getName())) {
                                     valueSet.addEntry().setResource(valueSetR);
-                                    resources.put(file.getName(), file.getName());
+                                    resources.put(file.getName(), file.getName()+repo + " branch "+ branch);
                                 } else {
-                                    System.out.println("Duplicate CodeSystem ** "+file.getName());
+                                    System.out.println("Duplicate CodeSystem ** " + " Using: "+resources.get(file.getName()));
                                 }
 							}
 							if (resource instanceof CodeSystem) {
@@ -198,18 +198,18 @@ public class GitDownloader extends BaseCommand {
 								CodeSystem codeSystem= (CodeSystem) resource;
                                 if (!resources.containsKey(file.getName())) {
                                     valueSet.addEntry().setResource(codeSystem);
-                                    resources.put(file.getName(), file.getName());
+                                    resources.put(file.getName(), repo + " branch "+ branch);
                                 } else {
-                                    System.out.println("Duplicate CodeSystem ** "+file.getName());
+                                    System.out.println("Duplicate CodeSystem ** "+file.getName() + " Using: "+resources.get(file.getName()));
                                 }
 							}
 							if (resource instanceof StructureDefinition) {
 								StructureDefinition structureDefinition = (StructureDefinition) resource;
                                 if (!resources.containsKey(file.getName())) {
                                     structuredDefinition.addEntry().setResource(structureDefinition);
-                                    resources.put(file.getName(), file.getName());
+                                    resources.put(file.getName(), repo + " branch "+ branch);
                                 } else {
-                                    System.out.println("Duplicate StrutureDefinition ** "+file.getName());
+                                    System.out.println("Duplicate StrutureDefinition ** "+file.getName() + " Using: "+resources.get(file.getName()));
                                 }
 							}
 						}
