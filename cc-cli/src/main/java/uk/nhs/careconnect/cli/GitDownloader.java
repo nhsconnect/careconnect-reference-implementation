@@ -7,11 +7,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+
 
 import java.io.*;
 import java.util.ArrayList;
@@ -164,9 +166,12 @@ public class GitDownloader extends BaseCommand {
 							Reader reader = new InputStreamReader(inputStream);
 							IBaseResource resource = null;
 							try {
-								resource = ctx.newXmlParser().parseResource(reader);
+								String sResource = IOUtils.toString(inputStream,  "UTF-8");
+								sResource = sResource.replaceAll("[^\\x20-\\x7e]", "");
+								resource = ctx.newXmlParser().parseResource(sResource);
 							} catch (Exception ex) {
 								try {
+									System.out.println(ex.getMessage());
 									System.out.println("WARNING - XML Parse error " + file.getName());
 									resource = ctx.newJsonParser().parseResource(reader);
 								} catch (Exception ec1) {
