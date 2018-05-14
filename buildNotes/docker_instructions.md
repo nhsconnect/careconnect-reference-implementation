@@ -99,3 +99,13 @@ Navigate into logs folder and run tail command on the log file. This is usually 
 cd logs
 tail -f catalina.out
 ```
+
+To remove old log files 
+
+sudo find /var/lib/docker/volumes/ccriserver_tomcat-log-volume/_data -type f -mtime +7 -name '*.txt' -execdir rm -- '{}' \; 
+sudo find /var/lib/docker/volumes/ccriserver_gatewayssl-log-volume/_data -type f -mtime +7 -name '*.txt' -execdir rm -- '{}' \;
+sudo find /var/lib/docker/volumes/ccriserver_gateway-log-volume/_data -type f -mtime +7 -name '*.txt' -execdir rm -- '{}' \;
+
+sudo find /var/lib/docker/volumes/ccriserver_tomcat-log-volume/_data -type f -mtime +7 -name '*.log' -execdir rm -- '{}' \; 
+sudo find /var/lib/docker/volumes/ccriserver_gatewayssl-log-volume/_data -type f -mtime +7 -name '*.log' -execdir rm -- '{}' \;
+sudo find /var/lib/docker/volumes/ccriserver_gateway-log-volume/_data -type f -mtime +7 -name '*.log' -execdir rm -- '{}' \;
