@@ -64,9 +64,11 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
         if (conditionEntity.getOnsetDateTime() != null) {
             condition.setOnset(new DateTimeType().setValue(conditionEntity.getOnsetDateTime()));
         }
+        /* Removed from CareConnect Profile 14/May/2018
         if (conditionEntity.getVerificationStatus()!=null) {
             condition.setVerificationStatus(conditionEntity.getVerificationStatus());
         }
+        */
         if (conditionEntity.getAssertedDateTime() != null) {
             condition.setAssertedDate(conditionEntity.getAssertedDateTime());
         }
