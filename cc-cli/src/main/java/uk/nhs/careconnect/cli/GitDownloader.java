@@ -97,7 +97,9 @@ public class GitDownloader extends BaseCommand {
 			try {
 
 				callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease1");
+                callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease2");
 				callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "develop");
+                callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "release/Transfer_of_care_2.2.0-Alpha");
 
 				File file = new File(targetServer + "/profile/profiles-resources.xml");
 
