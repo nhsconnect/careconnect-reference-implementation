@@ -2,7 +2,7 @@
     <id value="24964"/>
     <meta>
         <lastUpdated value="2017-06-02T09:20:13.289+01:00"/>
-        <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Observation-1"/>
+        <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-ITK-Observation-1"/>
     </meta>
     <status value="final"/>
     <category>

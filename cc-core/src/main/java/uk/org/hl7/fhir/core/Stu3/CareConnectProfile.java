@@ -10,7 +10,7 @@ public class CareConnectProfile {
 
     public static final String Location_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1";
 
-    public static final String Observation_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Observation-1";
+
     public static final String Organization_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1";
 
     public static final String Patient_1 = "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1";

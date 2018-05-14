@@ -17,6 +17,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
+import uk.org.hl7.fhir.core.Stu3.CareConnectITKProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
@@ -3266,7 +3267,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
 
         observation = new Observation();
-        observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
+        observation.setMeta(new Meta().addProfile(CareConnectITKProfile.Observation_1));
         observation.setStatus(Observation.ObservationStatus.FINAL);
         CodeableConcept category = observation.addCategory();
         category.addCoding().setSystem(categorySystem).setCode(categoryCode).setDisplay(categoryDesc);
@@ -3300,7 +3301,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             }
 
 
-        observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
+        observation.setMeta(new Meta().addProfile(CareConnectITKProfile.Observation_1));
         observation.setStatus(Observation.ObservationStatus.FINAL);
         CodeableConcept category = observation.addCategory();
         category.addCoding().setSystem(categorySystem).setCode(categoryCode).setDisplay(categoryDesc);

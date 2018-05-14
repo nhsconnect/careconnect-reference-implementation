@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import uk.org.hl7.fhir.core.Stu3.CareConnectITKProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.ServletContext;
@@ -210,7 +211,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                         resource.getProfile().setReference(CareConnectProfile.Location_1);
                         break;
                     case "Observation":
-                        resource.getProfile().setReference(CareConnectProfile.Observation_1);
+                        resource.getProfile().setReference(CareConnectITKProfile.Observation_1);
                         break;
                     case "Encounter":
                         resource.getProfile().setReference(CareConnectProfile.Encounter_1);

@@ -38,6 +38,8 @@ public class GitDownloader extends BaseCommand {
 
     private Map<String,Practitioner> docMap = new HashMap<>();
 
+    private Map<String,String> resources = new HashMap<>();
+
     FhirContext ctx ;
 
     IGenericClient client;
@@ -93,7 +95,7 @@ public class GitDownloader extends BaseCommand {
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 
 			try {
-				//callGits("https://github.com/nhsconnect/CareConnect-profiles.git", "feature/stu3");
+
 				callGits("https://github.com/nhsconnect/CareConnect-profiles-STU3.git", "draftprofilesrelease1");
 				callGits("https://github.com/nhsconnect/STU3-FHIR-Assets.git", "develop");
 
@@ -180,16 +182,33 @@ public class GitDownloader extends BaseCommand {
 								}
 							}
 							if (resource instanceof ValueSet) {
-								//    System.out.println("ValueSet");
-								valueSet.addEntry().setResource((ValueSet) resource);
+
+								ValueSet valueSetR = (ValueSet) resource;
+                                if (!resources.containsKey(file.getName())) {
+                                    valueSet.addEntry().setResource(valueSetR);
+                                    resources.put(file.getName(), file.getName());
+                                } else {
+                                    System.out.println("Duplicate CodeSystem ** "+file.getName());
+                                }
 							}
 							if (resource instanceof CodeSystem) {
-								//    System.out.println("ValueSet");
-								valueSet.addEntry().setResource((CodeSystem) resource);
+
+								CodeSystem codeSystem= (CodeSystem) resource;
+                                if (!resources.containsKey(file.getName())) {
+                                    valueSet.addEntry().setResource(codeSystem);
+                                    resources.put(file.getName(), file.getName());
+                                } else {
+                                    System.out.println("Duplicate CodeSystem ** "+file.getName());
+                                }
 							}
 							if (resource instanceof StructureDefinition) {
-								//   System.out.println("StructuredDefinition");
-								structuredDefinition.addEntry().setResource((StructureDefinition) resource);
+								StructureDefinition structureDefinition = (StructureDefinition) resource;
+                                if (!resources.containsKey(file.getName())) {
+                                    structuredDefinition.addEntry().setResource(structureDefinition);
+                                    resources.put(file.getName(), file.getName());
+                                } else {
+                                    System.out.println("Duplicate StrutureDefinition ** "+file.getName());
+                                }
 							}
 						}
 					}
