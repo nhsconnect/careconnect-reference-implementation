@@ -64,6 +64,14 @@ public class ValidateTest {
                 ,"-n",resourcePath});
     }
 
+	@Test
+	public void testValidateTOC() {
+		String resourcePath = ValidateTest.class.getResource("/edischarge_full_payload_example-01.xml").getFile();
+		ourLog.info(resourcePath);
+
+		App.main(new String[] {"validate", "-p", "-x"
+				,"-n",resourcePath});
+	}
 
 
 	@Test

@@ -11,6 +11,8 @@ import org.fusesource.jansi.Ansi.Color;
 import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
@@ -36,6 +38,8 @@ public class ValidateCommand extends BaseCommand {
 	public String getCommandName() {
 		return "validate";
 	}
+
+	FhirValidator val;
 
 	@Override
 	public Options getOptions() {
@@ -83,7 +87,7 @@ public class ValidateCommand extends BaseCommand {
 		}
 
 		FhirContext ctx = getSpecVersionContext(theCommandLine);
-		FhirValidator val = ctx.newValidator();
+		val = ctx.newValidator();
 
 		IBaseResource localProfileResource = null;
 		if (theCommandLine.hasOption("l")) {
@@ -129,19 +133,52 @@ public class ValidateCommand extends BaseCommand {
 
 		val.setValidateAgainstStandardSchema(theCommandLine.hasOption("x"));
 		val.setValidateAgainstStandardSchematron(theCommandLine.hasOption("s"));
+		IBaseResource resource = null;
+		try {
+			resource = ctx.newXmlParser().parseResource(contents);
+		} catch (Exception ex) {
+			try {
+				if (ex.getMessage().contains("Failed to parse XML content")) {
+					resource = ctx.newJsonParser().parseResource(contents);
+				}
+			} catch (Exception ex1) {
+				System.out.println(ex.getMessage());
+				System.out.println(ex1.getMessage());
+			}
+		}
 
-		ValidationResult results = val.validateWithResult(contents);
+		if (resource != null) {
+			if (resource instanceof Bundle) {
+				Bundle bundle = (Bundle) resource;
+				for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+					validateResource(entry.getResource(),null);
+				}
+			} else {
+				validateResource((Resource) resource, null);
+			}
+		} else {
+			validateResource(null, contents);
+		}
+
+	}
+	private void validateResource(Resource resource, String contents ) {
+		ValidationResult results = null;
+		if (resource != null ) {
+			results = val.validateWithResult(resource);
+		} else {
+			results = val.validateWithResult(contents);
+		}
 
 		StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
 		int count = 0;
 		for (SingleValidationMessage next : results.getMessages()) {
 
 			if (next.getMessage().contains("and a code from this value set is required") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-			//	System.out.println("match **");
+				//	System.out.println("match **");
 			} else if (next.getMessage().contains("a code is required from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-			//	System.out.println("match ** ** ");
+				//	System.out.println("match ** ** ");
 			} else if (next.getMessage().contains("and a code is recommended to come from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-			//	System.out.println("match ** ** **" );
+				//	System.out.println("match ** ** **" );
 			}else {
 
 				count++;
@@ -162,14 +199,14 @@ public class ValidateCommand extends BaseCommand {
 					b.append(leftPad("", leftWidth)).append(line);
 				}
 				ourLog.info(message.toString());
-			}
+		}
 
 		}
 		b.append(App.LINESEP);
 
 		if (count > 0) {
 			ourLog.info(b.toString());
-            System.out.println(b.toString());
+			System.out.println(b.toString());
 		}
 
 		if (results.isSuccessful()) {
@@ -178,4 +215,5 @@ public class ValidateCommand extends BaseCommand {
 			ourLog.warn("Validation FAILED");
 		}
 	}
+
 }

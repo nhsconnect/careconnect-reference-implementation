@@ -38,7 +38,7 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
 
   private void logD(String message) {
       log.debug(message);
-    //  System.out.println(message);
+      //System.out.println(message);
   }
 
     private void logW(String message) {
@@ -82,13 +82,13 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    logD("SNOMEDMOCK fetchCodeSystem "+theSystem);
+    //logD("SNOMEDMOCK fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("SNOMEDMOCK fetchCodeSystemOrValueSet: system="+theSystem);
+     // logD("SNOMEDMOCK fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
