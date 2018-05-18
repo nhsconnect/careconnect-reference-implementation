@@ -51,7 +51,7 @@ public class CamelRoute extends RouteBuilder {
 		CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
 
 		BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
-
+/*
 		// OAuth endpoint
 
 		restConfiguration()
@@ -72,7 +72,7 @@ public class CamelRoute extends RouteBuilder {
 				.to(oauthBase)
 				.process(camelPostProcessor)
 				.to("log:uk.nhs.careconnect.smartOnFhir.POST?level=INFO&showHeaders=true&showExchangeId=true");
-
+*/
 		// Validation Service
 
 		from("direct:FHIRBundleValidate")

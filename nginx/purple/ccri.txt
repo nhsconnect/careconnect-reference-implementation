@@ -81,7 +81,7 @@ server {
 # -------------------------------------------------
 server {
     listen 443;
-    server_name purple.testlabs.nhs.uk;
+    server_name purple.testlab.nhs.uk;
 
     ssl_certificate           /etc/letsencrypt/live/purple.testlab.nhs.uk/fullch                                                     ain.pem;
     ssl_certificate_key       /etc/letsencrypt/live/purple.testlab.nhs.uk/privke                                                     y.pem;
@@ -104,6 +104,32 @@ server {
 
         proxy_http_version      1.1;
         proxy_request_buffering off;
+#       try_files $uri /docview;
+    }
+    location /docview {
+
+        proxy_pass              https://ccri-f0694.firebaseapp.com;
+#       proxy_set_header X-Real-IP      $remote_addr;
+#       proxy_set_header X-Forwarded-Server $host;
+#       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_redirect          off;
+        proxy_read_timeout      90;
+        proxy_http_version      1.1;
+        proxy_request_buffering off;
+
+    }
+
+    location /smart {
+        rewrite /smart/(.*) /$1 break;
+        proxy_pass              http://purple.testlab.nhs.uk:20080;
+#       proxy_set_header X-Real-IP      $remote_addr;
+#       proxy_set_header X-Forwarded-Server $host;
+#       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout      90;
+        proxy_http_version      1.1;
+        proxy_request_buffering off;
+#       sub_filter      "http://purple.testlab.nhs.uk:20080/" "https://purple.testlab.nhs.uk/smart/";
+#       sub_filter_once         off;
     }
 
 }
