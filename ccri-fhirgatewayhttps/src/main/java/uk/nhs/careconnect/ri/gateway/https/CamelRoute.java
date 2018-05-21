@@ -29,8 +29,8 @@ public class CamelRoute extends RouteBuilder {
 	@Value("${fhir.restserver.edmsBase}")
 	private String edmsBase;
 
-	@Value("${fhir.restserver.oauth}")
-	private String oauthBase;
+//	@Value("${fhir.restserver.oauth}")
+//	private String oauthBase;
 
 	@Value("${fhir.restserver.tieBase}")
 	private String tieBase;
