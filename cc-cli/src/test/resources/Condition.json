@@ -7,14 +7,13 @@
     ]
   },
   "clinicalStatus": "active",
-  "verificationStatus": "confirmed",
   "category": [
     {
       "coding": [
         {
           "system": "https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1",
-          "code": "diagnosis",
-          "display": "Diagnosis"
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
         }
       ]
     }
