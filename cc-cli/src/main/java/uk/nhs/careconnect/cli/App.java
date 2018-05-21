@@ -37,7 +37,7 @@ public class App  {
     static {
         ourCommands = new ArrayList<BaseCommand>();
 
-            ourCommands.add(new ValidationDataUploader());
+         // TODO    ourCommands.add(new ValidationDataUploader());
             ourCommands.add(new ValidateCommand());
 
             ourCommands.add(new ODSUploader());

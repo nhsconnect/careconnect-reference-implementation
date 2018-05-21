@@ -263,7 +263,7 @@ public class FHIRServerResourceRESTfulSteps {
              FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
              validator.registerValidatorModule(instanceValidator);
 
-             ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), new CareConnectProfileValidationSupport());
+             ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), new CareConnectProfileValidationSupport(ctxFHIR));
              instanceValidator.setValidationSupport(support);
 
 

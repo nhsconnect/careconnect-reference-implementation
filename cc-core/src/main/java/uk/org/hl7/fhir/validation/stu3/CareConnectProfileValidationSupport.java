@@ -1,9 +1,8 @@
 package uk.org.hl7.fhir.validation.stu3;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import org.apache.commons.io.Charsets;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
@@ -12,36 +11,73 @@ import org.hl7.fhir.dstu3.model.CodeSystem.ConceptDefinitionComponent;
 import org.hl7.fhir.dstu3.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.dstu3.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionComponent;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
-import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.*;
 
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 
 public class CareConnectProfileValidationSupport implements IValidationSupport {
 
-  private static final String URL_PREFIX_VALUE_SET = "https://fhir.hl7.org.uk/STU3/ValueSet/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION = "https://fhir.hl7.org.uk/STU3/StructureDefinition/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "https://fhir.hl7.org.uk/STU3/";
+    // KGM 21st May 2018 Incorporated Tim Coates code to use UK FHIR Reference Servers.
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport .class);
+    private static final int CACHE_MINUTES = 10;
 
-  private Map<String, CodeSystem> myCodeSystems;
-  private Map<String, StructureDefinition> myStructureDefinitions;
-  private Map<String, ValueSet> myValueSets;
+    /**
+     * Milliseconds we'll wait for an http connection.
+     */
+    private static final int CONNECT_TIMEOUT_MILLIS = 50000;
 
-  private void logD(String message) {
-      log.debug(message);
-      //System.out.println(message);
-  }
+    private static int SC_OK = 200;
+
+    private FhirContext ctx = null;
+
+    private IParser parser;
+    /**
+     * Milliseconds we'll wait to read data over http.
+     */
+    private static final int READ_TIMEOUT_MILLIS = 50000;
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport .class);
+
+    private Map<String, IBaseResource> cachedResource ;
+
+
+    public CareConnectProfileValidationSupport(final FhirContext theCtx) {
+        this.ctx = theCtx;
+        this.cachedResource = new HashMap<String, IBaseResource>();
+        parser = ctx.newXmlParser();
+    }
+
+      private void logD(String message) {
+          log.debug(message);
+       //   System.out.printf(message);
+      }
+    private void logD(String message,Object value) {
+        log.debug(String.format(message, value));
+     //   System.out.printf(message,value);
+    }
+
+    private void logW(String message,Object value) {
+        log.warn(String.format(message, value));
+     //   System.out.printf(message,value);
+    }
 
     private void logW(String message) {
         log.warn(message);
-      //  System.out.println(message);
+       // System.out.println(message);
     }
   @Override
   public ValueSetExpansionComponent expandValueSet(FhirContext theContext, ConceptSetComponent theInclude) {
@@ -68,84 +104,185 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   @Override
   public List<IBaseResource> fetchAllConformanceResources(FhirContext theContext) {
     ArrayList<IBaseResource> retVal = new ArrayList<>();
-    retVal.addAll(myCodeSystems.values());
-    retVal.addAll(myStructureDefinitions.values());
-    retVal.addAll(myValueSets.values());
+    retVal.addAll(cachedResource.values());
+
     return retVal;
   }
 
   @Override
   public List<StructureDefinition> fetchAllStructureDefinitions(FhirContext theContext) {
-    return new ArrayList<StructureDefinition>(provideStructureDefinitionMap(theContext).values());
+
+    return new ArrayList<StructureDefinition>();
+
   }
 
+  /*
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
     logD("CareConnect fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
+  */
+
+    /**
+     * Method to fetch a CodeSystem based on a provided URL. Tries to fetch it
+     * from remote server. If it succeeds, it caches it in our global cache.
+     *
+     * @param theContext FHIR Context
+     * @param theSystem The CodeSystem URL
+     * @return Returns the retrieved FHIR Resource object or null
+     */
+    @Override
+    public final CodeSystem fetchCodeSystem(
+            final FhirContext theContext, final String theSystem) {
+        logD(
+                "MyInstanceValidator asked to fetch Code System: %s%n",
+                theSystem);
+
+
+        if (!isSupported(theSystem)) {
+            log.trace("  Returning null as it's an HL7 one");
+            return null;
+        }
+
+        CodeSystem newCS;
+
+        if (cachedResource.get(theSystem) == null) {
+            log.trace(" Not cached");
+            IBaseResource response = fetchURL(theSystem);
+            if (response != null) {
+                log.trace("  Retrieved");
+                cachedResource.put(theSystem, (CodeSystem) response);
+                log.trace("   Cached");
+            }
+        }
+        if (cachedResource.get(theSystem) == null && cachedResource.get(theSystem) instanceof CodeSystem) {
+            log.trace("  Couldn't fetch it, so returning null");
+            return null;
+        } else {
+            log.trace(" Provided from cache");
+            return newCS = (CodeSystem) cachedResource.get(theSystem);
+
+        }
+        //return newCS;
+    }
+
+    /*
+     * Method to retrieve any old FHIR Resource based on a URL.
+     *
+     * @param <T> The type to return.
+     * @param theContext FHIR Conetxt.
+     * @param theClass The Class type we're being asked for.
+     * @param theUrl The URL to fetch from.
+     * @return Returns an arbitrary FHIR Resource object, or null if it can't be
+     * retrieved.
+     */
+
+    private Boolean isSupported(String theUrl) {
+        if (theUrl.startsWith("http://hl7.org/fhir/")
+                || theUrl.startsWith("https://hl7.org/fhir/")  ||
+                theUrl.startsWith("http://snomed.info/sct")
+
+                ) {
+            log.trace("  Returning null as it's an HL7 one");
+            return false;
+        }
+        if (!theUrl.startsWith("https://fhir.hl7.org.uk")  &&
+                !theUrl.startsWith("https://fhir.nhs.uk")
+                ) {
+
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public final <T extends IBaseResource> T fetchResource(
+            final FhirContext theContext,
+            final Class<T> theClass,
+            final String theUrl) {
+
+
+
+        if (!isSupported(theUrl)) {
+            log.trace("  Returning null as it's an HL7 one");
+            return null;
+        }
+
+        logD(
+                "MyInstanceValidator asked to fetch Resource: %s%n",
+                theUrl);
+
+        if (cachedResource.get(theUrl) == null) {
+            IBaseResource response = fetchURL(theUrl);
+            if (response != null) {
+                log.trace("  About to parse response into a Resource");
+                cachedResource.put(theUrl, response);
+                logD("  Resource added to cache: %s%n", theUrl);
+            } else {
+                logW("  No data returned from: %s%n", theUrl);
+            }
+        } else {
+            logD( "  This URL was already loaded: %s%n", theUrl);
+        }
+
+        return (T) cachedResource.get(theUrl);
+    }
+
+    /**
+     * Method to fetch a remote StructureDefinition resource.
+     *
+     * Caches results.
+     *
+     * @param theCtx FHIR Context
+     * @param theUrl The URL to fetch from
+     * @return The StructureDefinition resource or null
+     */
+    @Override
+    public final StructureDefinition fetchStructureDefinition(
+            final FhirContext theCtx,
+            final String theUrl) {
+        logD(
+                "MyInstanceValidator asked to fetch StructureDefinition: %s%n",
+                theUrl);
+
+        if (!isSupported(theUrl)) {
+            log.trace("  Returning null as it's an HL7 one");
+            return null;
+        }
+
+        if (cachedResource.get(theUrl) == null) {
+            IBaseResource response = fetchURL(theUrl);
+            log.trace("  About to parse response into a StructureDefinition");
+
+            cachedResource.put(theUrl, (StructureDefinition) response);
+            logD("  StructureDefinition now added to the cache: %s%n", theUrl);
+        } else {
+            logD("  This URL was already loaded: %s%n", theUrl);
+        }
+        StructureDefinition sd
+                = (StructureDefinition)
+                cachedResource.get(theUrl);
+        return sd;
+    }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
+      logD("******* CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
 
-      Map<String, CodeSystem> codeSystems = myCodeSystems;
-      Map<String, ValueSet> valueSets = myValueSets;
-      if (codeSystems == null || valueSets == null) {
-        codeSystems = new HashMap<String, CodeSystem>();
-        valueSets = new HashMap<String, ValueSet>();
+      Map<String, IBaseResource> codeSystems = cachedResource;
 
-        loadCodeSystems(theContext, codeSystems, valueSets, "/uk/org/hl7/fhir/stu3/model/valueset/valuesets.xml");
-
-        myCodeSystems = codeSystems;
-        myValueSets = valueSets;
-      }
-
-
-      if (codeSystem) {
-        return codeSystems.get(theSystem);
-      } else {
-        return valueSets.get(theSystem);
-      }
+      return null;
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T extends IBaseResource> T fetchResource(FhirContext theContext, Class<T> theClass, String theUri) {
-    Validate.notBlank(theUri, "theUri must not be null or blank");
-
-    if (theClass.equals(StructureDefinition.class)) {
-      return (T) fetchStructureDefinition(theContext, theUri);
-    }
-
-    if (theClass.equals(ValueSet.class) || theUri.startsWith(URL_PREFIX_VALUE_SET)) {
-      return (T) fetchValueSet(theContext, theUri);
-    }
-
-    return null;
-  }
-
-  @Override
-  public StructureDefinition fetchStructureDefinition(FhirContext theContext, String theUrl) {
-    String url = theUrl;
-    if (url.startsWith(URL_PREFIX_STRUCTURE_DEFINITION)) {
-      // no change
-    } else if (url.indexOf('/') == -1) {
-      url = URL_PREFIX_STRUCTURE_DEFINITION + url;
-    } else if (StringUtils.countMatches(url, '/') == 1) {
-      url = URL_PREFIX_STRUCTURE_DEFINITION_BASE + url;
-    }
-    return provideStructureDefinitionMap(theContext).get(url);
-  }
 
   ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
     return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
   }
 
   public void flush() {
-    myCodeSystems = null;
-    myStructureDefinitions = null;
+    cachedResource = null;
   }
 
   @Override
@@ -154,71 +291,6 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     return cs != null && cs.getContent() != CodeSystemContentMode.NOTPRESENT;
   }
 
-  private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    logD("CareConnect Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
-    InputStream valuesetText = CareConnectProfileValidationSupport.class.getResourceAsStream(theClasspath);
-    if (valuesetText != null) {
-      InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
-
-      Bundle bundle = theContext.newXmlParser().parseResource(Bundle.class, reader);
-      for (BundleEntryComponent next : bundle.getEntry()) {
-        if (next.getResource() instanceof CodeSystem) {
-          CodeSystem nextValueSet = (CodeSystem) next.getResource();
-          nextValueSet.getText().setDivAsString("");
-          String system = nextValueSet.getUrl();
-          if (isNotBlank(system)) {
-            theCodeSystems.put(system, nextValueSet);
-          }
-        } else if (next.getResource() instanceof ValueSet) {
-          ValueSet nextValueSet = (ValueSet) next.getResource();
-          nextValueSet.getText().setDivAsString("");
-          String system = nextValueSet.getUrl();
-          if (isNotBlank(system)) {
-            theValueSets.put(system, nextValueSet);
-          }
-        }
-      }
-    } else {
-      logW("Unable to load resource: "+ theClasspath);
-
-    }
-  }
-
-  private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    logD("CareConnect Loading structure definitions from classpath: "+ theClasspath);
-    InputStream valuesetText = CareConnectProfileValidationSupport.class.getResourceAsStream(theClasspath);
-    if (valuesetText != null) {
-      InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
-
-      Bundle bundle = theContext.newXmlParser().parseResource(Bundle.class, reader);
-      for (BundleEntryComponent next : bundle.getEntry()) {
-        if (next.getResource() instanceof StructureDefinition) {
-          StructureDefinition nextSd = (StructureDefinition) next.getResource();
-          nextSd.getText().setDivAsString("");
-          String system = nextSd.getUrl();
-          if (isNotBlank(system)) {
-            theCodeSystems.put(system, nextSd);
-          }
-        }
-      }
-    } else {
-      log.warn("Unable to load resource: {}", theClasspath);
-    }
-  }
-
-  private Map<String, StructureDefinition> provideStructureDefinitionMap(FhirContext theContext) {
-    Map<String, StructureDefinition> structureDefinitions = myStructureDefinitions;
-    if (structureDefinitions == null) {
-      structureDefinitions = new HashMap<String, StructureDefinition>();
-
-      loadStructureDefinitions(theContext, structureDefinitions, "/uk/org/hl7/fhir/stu3/model/profile/profiles-resources.xml");
-     // loadStructureDefinitions(theContext, structureDefinitions, "/org/hl7/fhir/dstu3/model/profile/profiles-types.xml");
-     // loadStructureDefinitions(theContext, structureDefinitions, "/org/hl7/fhir/dstu3/model/profile/profiles-others.xml");
-
-      myStructureDefinitions = structureDefinitions;
-    }
-    return structureDefinitions;
-  }
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
     logD("CareConnect testIfConceptIsInList: {} code="+ theCode);
@@ -276,6 +348,91 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     }
 
     return new CodeValidationResult(IssueSeverity.WARNING, "CareConnect Unknown code: " + theCodeSystem + " / " + theCode);
+  }
+
+
+
+  private IBaseResource fetchURL(final String theUrl) {
+    logD("  This URL not yet loaded: %s%n", theUrl);
+
+    StringBuilder result = new StringBuilder();
+
+    try {
+      URL url = new URL(theUrl);
+      try {
+        HttpURLConnection conn
+                = (HttpURLConnection) url.openConnection();
+        // We need to supply a header value here. otherwise the
+        // fhir.nhs.uk server assumes we're a browser, and returns us a
+        // pretty html view of the requested resource.
+        conn.setRequestProperty("Accept", "xml");
+        conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
+        conn.setReadTimeout(READ_TIMEOUT_MILLIS);
+        logD("    Connected");
+        try {
+          conn.setRequestMethod("GET");
+          try {
+            BufferedReader rd
+                    = new BufferedReader(
+                    new InputStreamReader(
+                            conn.getInputStream(),
+                            Charset.forName("UTF-8")));
+            try {
+              int httpCode = conn.getResponseCode();
+              if (httpCode == SC_OK) {
+                log.trace("    Got a 200 status");
+                String line;
+                try {
+                  while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                  }
+                  log.trace("    No more data");
+                  rd.close();
+                } catch (IOException ex) {
+                  logW(
+                          "IOException 1 caught trying to read from: %s%n",
+                          theUrl);
+                  log.warn(ex.getMessage());
+                }
+              } else {
+
+                logW(theUrl +"  http status code was: %s%n", httpCode);
+              }
+            } catch (IOException ex) {
+              logW(
+                      "IOException 2 caught trying to fetch: %s%n",
+                      theUrl);
+              log.warn(ex.getMessage());
+            }
+          } catch (IOException ex) {
+            logW(
+                    "IOException 3 caught trying to fetch: %s%n",
+                    theUrl);
+          }
+        } catch (ProtocolException ex) {
+          logW(
+                  "ProtocolException 4 caught trying to fetch: %s%n",
+                  theUrl);
+          log.warn(ex.getMessage());
+        }
+      } catch (IOException ex) {
+        logW(
+                "IOException 5 caught trying to fetch: %s%n",
+                theUrl);
+        log.warn(ex.getMessage());
+      }
+    } catch (MalformedURLException ex) {
+      logW(
+              "MalformedURLException 6 caught trying to fetch: %s%n",
+              theUrl);
+      log.warn(ex.getMessage());
+    }
+    if (result.length() > 0) {
+
+      return parser.parseResource(result.toString());
+    } else {
+      return null;
+    }
   }
 
 }

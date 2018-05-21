@@ -38,16 +38,16 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
 
   private void logD(String message) {
       log.debug(message);
-      //System.out.println(message);
+     // System.out.println(message);
   }
 
     private void logW(String message) {
         log.warn(message);
-      //  System.out.println(message);
+        System.out.println(message);
     }
   @Override
   public ValueSetExpansionComponent expandValueSet(FhirContext theContext, ConceptSetComponent theInclude) {
-    logD("SNOMED MOCK expandValueSet System="+theInclude.getSystem());
+   // logD("SNOMED MOCK expandValueSet System="+theInclude.getSystem());
     ValueSetExpansionComponent retVal = new ValueSetExpansionComponent();
 
     Set<String> wantCodes = new HashSet<String>();
@@ -88,7 +88,7 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-     // logD("SNOMEDMOCK fetchCodeSystemOrValueSet: system="+theSystem);
+      logD("SNOMEDMOCK fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
@@ -220,10 +220,6 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
     Map<String, StructureDefinition> structureDefinitions = myStructureDefinitions;
     if (structureDefinitions == null) {
       structureDefinitions = new HashMap<String, StructureDefinition>();
-
-      loadStructureDefinitions(theContext, structureDefinitions, "/uk/org/hl7/fhir/stu3/model/profile/profiles-resources.xml");
-     // loadStructureDefinitions(theContext, structureDefinitions, "/org/hl7/fhir/dstu3/model/profile/profiles-types.xml");
-     // loadStructureDefinitions(theContext, structureDefinitions, "/org/hl7/fhir/dstu3/model/profile/profiles-others.xml");
 
       myStructureDefinitions = structureDefinitions;
     }

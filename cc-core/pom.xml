@@ -14,12 +14,13 @@
 
     <dependencies>
 
+        <!--
         <dependency>
             <groupId>uk.org.hl7.fhir</groupId>
             <artifactId>cc-fhir-validation-resources-stu3</artifactId>
             <version>3.5.3</version>
         </dependency>
-
+-->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
