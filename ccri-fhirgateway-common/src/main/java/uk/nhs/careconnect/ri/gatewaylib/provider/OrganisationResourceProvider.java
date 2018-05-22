@@ -1,10 +1,9 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -34,6 +33,9 @@ public class OrganisationResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    ValidationProvider val;
+
     private static final Logger log = LoggerFactory.getLogger(OrganisationResourceProvider.class);
 
     @Override
@@ -42,6 +44,12 @@ public class OrganisationResourceProvider implements IResourceProvider {
     }
 
 
+    @Validate
+    public MethodOutcome validate(@ResourceParam Organization resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return val.validate(resource,theMode,theProfile);
+    }
 
     @Read
     public Organization getOrganizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {

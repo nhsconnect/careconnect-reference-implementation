@@ -1,10 +1,9 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -37,6 +36,9 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    ValidationProvider val;
+
     private static final Logger log = LoggerFactory.getLogger(PractitionerRoleResourceProvider.class);
 
     @Override
@@ -44,6 +46,12 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
         return PractitionerRole.class;
     }
 
+    @Validate
+    public MethodOutcome validate(@ResourceParam PractitionerRole resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return val.validate(resource,theMode,theProfile);
+    }
 
 
     @Read

@@ -75,10 +75,12 @@ public class CamelRoute extends RouteBuilder {
 */
 		// Validation Service
 
-		from("direct:FHIRBundleValidate")
-				.routeId("Bundle Validation")
+		from("direct:FHIRValidate")
+				.routeId("FHIR Validation")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.to("direct:TIEServer");
+
+
 
 		// Complex processing
 

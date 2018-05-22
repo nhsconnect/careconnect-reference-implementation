@@ -1,10 +1,9 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -37,9 +36,19 @@ public class ProcedureResourceProvider implements IResourceProvider {
 
     private static final Logger log = LoggerFactory.getLogger(ProcedureResourceProvider.class);
 
+    @Autowired
+    ValidationProvider val;
+
     @Override
     public Class<Procedure> getResourceType() {
         return Procedure.class;
+    }
+
+    @Validate
+    public MethodOutcome validate(@ResourceParam Procedure resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return val.validate(resource,theMode,theProfile);
     }
 
     public Bundle procedureEverythingOperation(

@@ -4,6 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -39,6 +41,9 @@ public class CompositionResourceProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    ValidationProvider val;
+
     private static final Logger log = LoggerFactory.getLogger(CompositionResourceProvider.class);
 
     private ClassLoader getContextClassLoader() {
@@ -51,6 +56,12 @@ public class CompositionResourceProvider implements IResourceProvider {
         return Composition.class;
     }
 
+    @Validate
+    public MethodOutcome validate(@ResourceParam Composition resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return val.validate(resource,theMode,theProfile);
+    }
 
     @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
     public Bundle compositionDocumentOperation(

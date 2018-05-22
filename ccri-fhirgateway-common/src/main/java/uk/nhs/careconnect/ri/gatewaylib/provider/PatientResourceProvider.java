@@ -6,6 +6,8 @@ import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.Constants;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -72,6 +74,10 @@ public class PatientResourceProvider implements IResourceProvider {
     @Autowired
     LocationResourceProvider locationProvider;
 
+    @Autowired
+    ValidationProvider val;
+
+
     private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
     @Override
@@ -79,7 +85,12 @@ public class PatientResourceProvider implements IResourceProvider {
         return Patient.class;
     }
 
-
+    @Validate
+    public MethodOutcome validate(@ResourceParam Patient resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return val.validate(resource,theMode,theProfile);
+    }
 
     @Read
     public Patient getPatientById(HttpServletRequest request, @IdParam IdType internalId) {
