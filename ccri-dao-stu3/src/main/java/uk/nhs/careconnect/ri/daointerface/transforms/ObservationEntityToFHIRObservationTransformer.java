@@ -16,7 +16,7 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
         Observation observation = new Observation();
 
-        Meta meta = new Meta().addProfile(CareConnectITKProfile.Observation_1);
+        Meta meta = new Meta(); //.addProfile(CareConnectITKProfile.Observation_1);
 
         if (observationEntity.getUpdated() != null) {
             meta.setLastUpdated(observationEntity.getUpdated());
