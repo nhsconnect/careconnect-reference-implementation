@@ -44,7 +44,7 @@ public class ValidationProvider {
                 exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(resourceToValidate));
                 exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                exchange.getIn().setHeader(Exchange.HTTP_PATH, resourceToValidate.getClass().getCanonicalName()+"/$validate");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, resourceToValidate.getClass().getSimpleName()+"/$validate");
                 exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
             }
         });
