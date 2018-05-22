@@ -1,7 +1,9 @@
 package uk.nhs.careconnect.cli;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.ResultSeverityEnum;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.commons.cli.*;
@@ -9,12 +11,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.fusesource.jansi.Ansi.Color;
 import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
+
 import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
+
 import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 import uk.org.hl7.fhir.validation.stu3.SNOMEDUKMockValidationSupport;
@@ -56,7 +61,7 @@ public class ValidateCommand extends BaseCommand {
 		retVal.addOption("p", "profile", false, "Validate using Profiles (StructureDefinition / ValueSet)");
 		retVal.addOption("r", "fetch-remote", false,
 				"Allow fetching remote resources (in other words, if a resource being validated refers to an external StructureDefinition, Questionnaire, etc. this flag allows the validator to access the internet to try and fetch this resource)");
-		retVal.addOption(new Option("l", "fetch-local", true, "Fetch a profile locally and use it if referenced"));
+		//retVal.addOption(new Option("l", "fetch-local", true, "Fetch a profile locally and use it if referenced"));
 		retVal.addOption("e", "encoding", false, "File encoding (default is UTF-8)");
 
 		return retVal;
@@ -78,61 +83,49 @@ public class ValidateCommand extends BaseCommand {
 			ourLog.info("Reading file '{}' using encoding {}", fileName, encoding);
 
 			contents = IOUtils.toString(new InputStreamReader(new FileInputStream(fileName), encoding));
-			//ourLog.info("Fully read - Size is {}", FileUtils.getFileSizeDisplay(contents.length()));
+
 		}
+		valRun(contents);
+	}
+
+	public void valRun(String contents) throws ParseException, Exception {
 
 		ca.uhn.fhir.rest.api.EncodingEnum enc = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(defaultString(contents));
 		if (enc == null) {
 			throw new ParseException("Could not detect encoding (json/xml) of contents");
 		}
 
-		FhirContext ctx = getSpecVersionContext(theCommandLine);
+		FhirContext ctx = new FhirContext(FhirVersionEnum.DSTU3);
+
 		val = ctx.newValidator();
 
 		IBaseResource localProfileResource = null;
-		if (theCommandLine.hasOption("l")) {
-			String localProfile = theCommandLine.getOptionValue("l");
-			ourLog.info("Loading profile: {}", localProfile);
-			String input;
-			try {
-				input = IOUtils.toString(new FileReader(new File(localProfile)));
-			} catch (IOException e) {
-				throw new ParseException("Failed to load file '" + localProfile + "' - Error: " + e.toString());
-			}
 
-			localProfileResource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(input).newParser(ctx).parseResource(input);
+
+		FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
+		val.registerValidatorModule(instanceValidator);
+		ValidationSupportChain validationSupport = new ValidationSupportChain(
+				new DefaultProfileValidationSupport()
+				,new CareConnectProfileValidationSupport(ctx)
+				,new SNOMEDUKMockValidationSupport() // This is to disable SNOMED CT Warnings. Mock validation to return ok for SNOMED Concepts
+		);
+		if (localProfileResource != null) {
+			instanceValidator.setStructureDefintion((StructureDefinition) localProfileResource);
 		}
 
-		if (theCommandLine.hasOption("p")) {
-			switch (ctx.getVersion().getVersion()) {
-
-			case DSTU3: {
-				FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
-				val.registerValidatorModule(instanceValidator);
-				ValidationSupportChain validationSupport = new ValidationSupportChain(
-				        new DefaultProfileValidationSupport()
-                       	,new CareConnectProfileValidationSupport(ctx)
-						,new SNOMEDUKMockValidationSupport() // This is to disable SNOMED CT Warnings. Mock validation to return ok for SNOMED Concepts
-                );
-				if (localProfileResource != null) {
-					instanceValidator.setStructureDefintion((StructureDefinition) localProfileResource);
-				}
-
-				if (theCommandLine.hasOption("r")) {
-					validationSupport.addValidationSupport(new LoadingValidationSupportDstu3());
-				}
-                val.setValidateAgainstStandardSchema(true);
-
-				instanceValidator.setValidationSupport(validationSupport);
-				break;
-			}
-			default:
-				throw new ParseException("Profile validation (-p) is not supported for this FHIR version");
-			}
+		/*
+		if (theCommandLine.hasOption("r")) {
+			validationSupport.addValidationSupport(new LoadingValidationSupportDstu3());
 		}
+		*/
+		val.setValidateAgainstStandardSchema(true);
 
-		val.setValidateAgainstStandardSchema(theCommandLine.hasOption("x"));
-		val.setValidateAgainstStandardSchematron(theCommandLine.hasOption("s"));
+		instanceValidator.setValidationSupport(validationSupport);
+
+
+
+		val.setValidateAgainstStandardSchema(true);
+		//val.setValidateAgainstStandardSchematron(theCommandLine.hasOption("s"));
 		IBaseResource resource = null;
 		try {
 			resource = ctx.newXmlParser().parseResource(contents);
@@ -161,7 +154,9 @@ public class ValidateCommand extends BaseCommand {
 		}
 
 	}
-	private void validateResource(Resource resource, String contents ) {
+	private void validateResource(Resource resource, String contents ) throws Exception {
+		Boolean localIsSuccesful = true;
+
 		ValidationResult results = null;
 		if (resource != null ) {
 			results = val.validateWithResult(resource);
@@ -174,15 +169,19 @@ public class ValidateCommand extends BaseCommand {
 		for (SingleValidationMessage next : results.getMessages()) {
 
 			if (next.getMessage().contains("and a code from this value set is required") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-				//	System.out.println("match **");
+				System.out.println("** Code Issue another ValueSet required");
 			} else if (next.getMessage().contains("a code is required from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-				//	System.out.println("match ** ** ");
+				System.out.println("** ** Code Issue ValueSet Required");
 			} else if (next.getMessage().contains("and a code is recommended to come from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-				//	System.out.println("match ** ** **" );
-			}else {
+				System.out.println("** ** ** Code Issue ValueSet recommended" );
+			} else if (next.getMessage().contains("path Patient.name (fhirPath = true and (use memberOf")) {
+				System.out.println("** ** ** Code Issue ValueSet expansion not implemented in instanceValidator" );
+			} else {
 
 				count++;
 				b.append(App.LINESEP);
+				if (!next.getSeverity().equals(ResultSeverityEnum.INFORMATION)) localIsSuccesful = false;
+
 				String leftString = "Issue " + count + ": ";
 				int leftWidth = leftString.length();
 				b.append(ansi().fg(Color.GREEN)).append(leftString);
@@ -209,10 +208,11 @@ public class ValidateCommand extends BaseCommand {
 			System.out.println(b.toString());
 		}
 
-		if (results.isSuccessful()) {
+		if (localIsSuccesful) {
 			ourLog.info("Validation successful!");
 		} else {
 			ourLog.warn("Validation FAILED");
+			throw new ValidationException("Validation Failed");
 		}
 	}
 

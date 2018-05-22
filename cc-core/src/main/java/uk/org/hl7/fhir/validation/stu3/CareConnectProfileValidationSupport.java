@@ -179,6 +179,20 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
      */
 
     private Boolean isSupported(String theUrl) {
+
+        // For extensions not contained in HAPI jar
+        if (theUrl.startsWith("http://hl7.org/fhir/StructureDefinition/")) {
+            log.trace(" *** TEST ");
+            return true;
+        }
+
+        if (theUrl.startsWith("http://hl7.org/fhir/ValueSet/name-use")) {
+            log.trace(" *** TEST ");
+            return true;
+        }
+
+
+
         if (theUrl.startsWith("http://hl7.org/fhir/")
                 || theUrl.startsWith("https://hl7.org/fhir/")  ||
                 theUrl.startsWith("http://snomed.info/sct")
@@ -365,7 +379,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
         // We need to supply a header value here. otherwise the
         // fhir.nhs.uk server assumes we're a browser, and returns us a
         // pretty html view of the requested resource.
-        conn.setRequestProperty("Accept", "xml");
+        conn.setRequestProperty("Accept", "application/xml");
         conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
         conn.setReadTimeout(READ_TIMEOUT_MILLIS);
         logD("    Connected");

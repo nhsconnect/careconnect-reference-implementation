@@ -1,67 +1,77 @@
 package uk.nhs.careconnect.cli.test;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import uk.nhs.careconnect.cli.App;
+import org.junit.rules.ExpectedException;
+import uk.nhs.careconnect.cli.ValidateCommand;
+import uk.nhs.careconnect.cli.ValidationException;
+
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 
 public class ValidateTest {
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ValidateTest.class);
+
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 
 	@Before
 	public void before() {
 		System.setProperty("noexit", "true");
 	}
 
-	@Test
-	public void testExampleUpload() {
+	public void runInvalid(String resourcePath) throws Exception {
+		ValidateCommand validateCommand = new ValidateCommand();
 
-		App.main(new String[] {"upload-examples", "-t"
-				,"http://127.0.0.1:8080/careconnect-ri/STU3/" });
-	}
-	
-	@Test
-	public void testValidatePatientGood() {
-		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Good.xml").getFile();
-		ourLog.info(resourcePath);
-		
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+		exception.expect(ValidationException.class);
+
+		String encoding = "UTF-8";
+		String contents = IOUtils.toString(new InputStreamReader(new FileInputStream(resourcePath), encoding));
+
+		validateCommand.valRun(contents);
 	}
 
+	public void runValid(String resourcePath) throws Exception {
+		ValidateCommand validateCommand = new ValidateCommand();
+
+		String encoding = "UTF-8";
+
+		String contents = IOUtils.toString(new InputStreamReader(new FileInputStream(resourcePath), encoding));
+		validateCommand.valRun(contents);
+	}
+
 	@Test
-	public void testValidatePatientBad() {
+	public void testValidatePatientGood() throws Exception {
+		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Good.json").getFile();
+		runValid(resourcePath);
+	}
+
+	@Test()
+	public void testValidatePatientBad() throws Exception {
 		String resourcePath = ValidateTest.class.getResource("/patient-careconnect-example-Bad.xml").getFile();
-		ourLog.info(resourcePath);
 
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
-	}
-	@Test
-	public void testValidateLocalObservationBloodPressure() {
-		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
-		ourLog.info(resourcePath);
-
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+		runInvalid(resourcePath);
 	}
 
 	@Test
-	public void testValidateLocalOrganizationODS() {
+	public void testValidateLocalObservationBloodPressure()throws Exception {
 		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
-		ourLog.info(resourcePath);
+		runValid(resourcePath);
+	}
 
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+	@Test
+	public void testValidateLocalOrganizationODS() throws Exception{
+		String resourcePath = ValidateTest.class.getResource("/Observation-Blood-Pressure.xml").getFile();
+		runValid(resourcePath);
 	}
 
     @Test
-    public void testValidateCondition() {
+    public void testValidateCondition() throws Exception {
         String resourcePath = ValidateTest.class.getResource("/Condition.json").getFile();
-        ourLog.info(resourcePath);
-
-        App.main(new String[] {"validate", "-p", "-x"
-                ,"-n",resourcePath});
+		runValid(resourcePath);
     }
 
     /*
@@ -79,27 +89,18 @@ public class ValidateTest {
 
 
 	@Test
-	public void testValidateEncounter() {
+	public void testValidateEncounter() throws Exception{
 		String resourcePath = ValidateTest.class.getResource("/EncounterDates.json").getFile();
-		ourLog.info(resourcePath);
-
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+		runValid(resourcePath);
 	}
 	@Test
-	public void testValidateEncounterType() {
+	public void testValidateEncounterType() throws Exception {
 		String resourcePath = ValidateTest.class.getResource("/EncounterType.json").getFile();
-		ourLog.info(resourcePath);
-
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+		runValid(resourcePath);
 	}
 	@Test
-	public void testValidateMedicationRequest() {
+	public void testValidateMedicationRequest() throws Exception{
 		String resourcePath = ValidateTest.class.getResource("/MedicationRequest.json").getFile();
-		ourLog.info(resourcePath);
-
-		App.main(new String[] {"validate", "-p", "-x"
-				,"-n",resourcePath});
+		runValid(resourcePath);
 	}
 }

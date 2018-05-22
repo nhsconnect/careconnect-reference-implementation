@@ -1,10 +1,5 @@
 {
   "resourceType": "Observation",
-  "meta": {
-    "profile": [
-      "https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Observation-1"
-    ]
-  },
   "status": "final",
   "category": [
     {
