@@ -176,6 +176,8 @@ public class ValidateCommand extends BaseCommand {
 				System.out.println("** ** ** Code Issue ValueSet recommended" );
 			} else if (next.getMessage().contains("path Patient.name (fhirPath = true and (use memberOf")) {
 				System.out.println("** ** ** Code Issue ValueSet expansion not implemented in instanceValidator" );
+			} else if (next.getMessage().contains("Error Multiple filters not handled yet")) {
+				System.out.println("** ** ** multiple filters in ValueSet not implemented" );
 			} else {
 
 				count++;

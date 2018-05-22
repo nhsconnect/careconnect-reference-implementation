@@ -1,0 +1,49 @@
+{
+  "resourceType": "Immunization",
+  "id": "1",
+  "meta": {
+    "profile": [
+      "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Immunization-1"
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-DateRecorded-1",
+      "valueDateTime": "2016-03-01T09:30:00+00:00"
+    }
+  ],
+  "status": "completed",
+  "notGiven": false,
+  "vaccineCode": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "396429000",
+        "display": "Measles, mumps and rubella vaccine (substance)"
+      }
+    ]
+  },
+  "patient": {
+    "reference": "Patient/1",
+    "display": "Miss Bernie Kanfeld"
+  },
+  "encounter": {
+    "reference": "Encounter/1"
+  },
+  "date": "2016-03-01T09:30:00+00:00",
+  "primarySource": true,
+  "location": {
+    "reference": "Location/1",
+    "display": "Long Eaton Clinic"
+  },
+  "lotNumber": "63259874",
+  "expirationDate": "2020-01-01",
+  "practitioner": [
+    {
+      "actor": {
+        "reference": "Practitioner/1",
+        "display": "Dr AA Bhatia"
+      }
+    }
+  ]
+}

@@ -74,6 +74,12 @@ public class ValidateTest {
 		runValid(resourcePath);
     }
 
+	@Test
+	public void testValidateImmunization() throws Exception {
+		String resourcePath = ValidateTest.class.getResource("/Immunization.json").getFile();
+		runValid(resourcePath);
+	}
+
     /*
     Too many errors at present
 
