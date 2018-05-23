@@ -3,7 +3,7 @@ package uk.nhs.careconnect.ri.gateway.https;
 
 import ca.uhn.fhir.context.FhirContext;
 
-import org.apache.camel.Exchange;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

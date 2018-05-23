@@ -20,13 +20,6 @@
 	<!-- Servlets -->
 
 	<servlet>
-		<servlet-name>CamelServlet</servlet-name>
-		<servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-
-	<servlet>
 		<servlet-name>fhirServlet</servlet-name>
 		<servlet-class>uk.nhs.careconnect.ri.gateway.https.HAPIRestfulConfig</servlet-class>
 		<init-param>
@@ -37,7 +30,7 @@
 			<param-name>FhirVersion</param-name>
 			<param-value>DSTU3</param-value>
 		</init-param>
-		<load-on-startup>2</load-on-startup>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
@@ -45,10 +38,7 @@
 		<url-pattern>/STU3/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>CamelServlet</servlet-name>
-		<url-pattern>/oauth2/*</url-pattern>
-	</servlet-mapping>
+
 
 	<!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->
 	<filter>
