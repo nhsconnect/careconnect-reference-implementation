@@ -20,11 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class BundleResourceProvider implements IResourceProvider {
@@ -36,7 +31,7 @@ public class BundleResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(BundleResourceProvider.class);
 
@@ -46,10 +41,10 @@ public class BundleResourceProvider implements IResourceProvider {
     }
 
     @Validate
-    public MethodOutcome validate(@ResourceParam Bundle bundle,
+    public MethodOutcome testResource(@ResourceParam Bundle bundle,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(bundle,theMode,theProfile);
+        return resourceTestProvider.testResource(bundle,theMode,theProfile);
     }
 
     @Create

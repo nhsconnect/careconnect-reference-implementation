@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -36,17 +33,17 @@ public class ConditionResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(ConditionResourceProvider.class);
-
+/*
     @Validate
-    public MethodOutcome validate(@ResourceParam Condition resource,
+    public MethodOutcome testResource(@ResourceParam Condition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-
+*/
     @Override
     public Class<Condition> getResourceType() {
         return Condition.class;

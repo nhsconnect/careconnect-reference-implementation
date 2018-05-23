@@ -8,7 +8,6 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
-import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 @Component
-public class ValidationProvider {
+public class ResourceTestProvider {
 
     @Autowired
     CamelContext context;
@@ -29,9 +28,9 @@ public class ValidationProvider {
     @Autowired
     FhirContext ctx;
 
-    private static final Logger log = LoggerFactory.getLogger(ValidationProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceTestProvider.class);
 
-    public MethodOutcome validate(@ResourceParam IBaseResource resourceToValidate,
+    public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
 

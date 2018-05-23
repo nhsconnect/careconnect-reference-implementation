@@ -2,8 +2,6 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -42,15 +40,16 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
     }
 
     @Autowired
-    ValidationProvider val;
-
+    ResourceTestProvider resourceTestProvider;
+/*
     @Validate
-    public MethodOutcome validate(@ResourceParam AllergyIntolerance resource,
+    public MethodOutcome testResource(@ResourceParam AllergyIntolerance resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
+* /
     /*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId

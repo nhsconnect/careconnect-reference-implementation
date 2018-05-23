@@ -2,8 +2,6 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -23,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +34,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(PractitionerRoleResourceProvider.class);
 
@@ -46,13 +43,14 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
         return PractitionerRole.class;
     }
 
+    /*
     @Validate
-    public MethodOutcome validate(@ResourceParam PractitionerRole resource,
+    public MethodOutcome testResource(@ResourceParam PractitionerRole resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-
+*/
 
     @Read
     public PractitionerRole getPractitionerRoleById(HttpServletRequest theRequest, @IdParam IdType internalId) {

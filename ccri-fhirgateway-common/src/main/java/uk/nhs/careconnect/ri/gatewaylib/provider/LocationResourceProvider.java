@@ -2,8 +2,6 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -34,7 +32,7 @@ public class LocationResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(LocationResourceProvider.class);
 
@@ -43,12 +41,14 @@ public class LocationResourceProvider implements IResourceProvider {
         return Location.class;
     }
 
+    /*
     @Validate
-    public MethodOutcome validate(@ResourceParam Location resource,
+    public MethodOutcome testResource(@ResourceParam Location resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
+    */
 
     @Read
     public Location getLocationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {

@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -17,17 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -42,7 +36,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(DocumentReferenceResourceProvider.class);
 
@@ -51,13 +45,14 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     public Class<DocumentReference> getResourceType() {
         return DocumentReference.class;
     }
-
+/*
     @Validate
-    public MethodOutcome validate(@ResourceParam DocumentReference resource,
+    public MethodOutcome testResource(@ResourceParam DocumentReference resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
+    */
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) {
 

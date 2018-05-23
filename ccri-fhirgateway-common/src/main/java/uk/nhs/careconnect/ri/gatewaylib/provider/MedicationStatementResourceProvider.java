@@ -2,8 +2,6 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -35,7 +33,7 @@ public class MedicationStatementResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(MedicationStatementResourceProvider.class);
 
@@ -44,12 +42,14 @@ public class MedicationStatementResourceProvider implements IResourceProvider {
         return MedicationStatement.class;
     }
 
+    /*
     @Validate
-    public MethodOutcome validate(@ResourceParam MedicationStatement resource,
+    public MethodOutcome testResource(@ResourceParam MedicationStatement resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
+    */
 /*
     public Bundle getEverythingOperation(
             @IdParam IdType patientId

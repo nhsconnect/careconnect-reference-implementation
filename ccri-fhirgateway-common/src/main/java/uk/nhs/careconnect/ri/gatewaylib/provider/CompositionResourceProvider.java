@@ -4,23 +4,17 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.apache.camel.*;
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class CompositionResourceProvider implements IResourceProvider {
@@ -42,7 +35,7 @@ public class CompositionResourceProvider implements IResourceProvider {
     FhirContext ctx;
 
     @Autowired
-    ValidationProvider val;
+    ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(CompositionResourceProvider.class);
 
@@ -55,14 +48,14 @@ public class CompositionResourceProvider implements IResourceProvider {
     public Class<Composition> getResourceType() {
         return Composition.class;
     }
-
+/*
     @Validate
-    public MethodOutcome validate(@ResourceParam Composition resource,
+    public MethodOutcome testResource(@ResourceParam Composition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return val.validate(resource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-
+*/
     @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
     public Bundle compositionDocumentOperation(
             @OptionalParam(name = Composition.SP_RES_ID) TokenParam resid,
