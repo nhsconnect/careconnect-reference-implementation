@@ -11,7 +11,7 @@ ADD robots.txt /usr/local/tomcat/webapps/ROOT/robots.txt
 ADD logging.properties /usr/local/tomcat/conf/logging.properties
 ADD server.xml /usr/local/tomcat/conf/server.xml
 
-ADD target/careconnect-gateway-secure.war /usr/local/tomcat/webapps/ROOT.war
+ADD target/careconnect-gateway-secure.war /usr/local/tomcat/webapps/careconnect-ri.war
 ADD .keystore /usr/local/tomcat/.keystore
 
 # See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
