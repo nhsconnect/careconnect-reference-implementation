@@ -57,7 +57,7 @@ public class ObservationResourceProvider implements IResourceProvider {
 
         Bundle bundle = completeBundle.getBundle();
 
-        List<Observation> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null);
+        List<Observation> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null, null);
 
         for (Observation resource : resources) {
             for (Reference reference : resource.getPerformer()) {
@@ -117,6 +117,7 @@ public class ObservationResourceProvider implements IResourceProvider {
                                                @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                                                @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid
+             ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
                                        ) {
 
         List<Observation> results = new ArrayList<Observation>();

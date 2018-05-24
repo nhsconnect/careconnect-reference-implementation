@@ -100,8 +100,9 @@ public class ObservationProvider implements ICCResourceProvider {
                                     @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient,
                                     @OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid
+            ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
                                        ) {
-        return observationDao.search(ctx,category, codes, effectiveDate,patient, identifier,resid);
+        return observationDao.search(ctx,category, codes, effectiveDate,patient, identifier,resid,subject);
     }
 
 

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.base.composite.BaseCodingDt;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -113,7 +114,7 @@ public class ObservationDao implements ObservationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"),null);
+                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"),null,null);
                     for (ObservationEntity con : results) {
                         observationEntity = con;
                         break;
@@ -129,7 +130,7 @@ public class ObservationDao implements ObservationRepository {
                         String[] spiltStr = query.split("%7C");
                         log.debug(spiltStr[1]);
 
-                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"),null);
+                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"),null,null);
                         for (ObservationEntity con : results) {
                             observationEntity = con;
                             break;
@@ -551,9 +552,10 @@ public class ObservationDao implements ObservationRepository {
 
 
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid,
+                                    ReferenceParam subject) {
         List<Observation> results = new ArrayList<Observation>();
-        List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid);
+        List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid,subject);
         log.debug("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
@@ -573,7 +575,14 @@ public class ObservationDao implements ObservationRepository {
     }
 
     @Override
-    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<ObservationEntity> searchEntity(FhirContext ctx
+            ,TokenParam category
+            ,TokenOrListParam codes
+            ,DateRangeParam effectiveDate
+            ,ReferenceParam patient
+            ,TokenParam identifier
+            ,TokenParam resid
+        ,ReferenceParam subject) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -587,6 +596,20 @@ public class ObservationDao implements ObservationRepository {
                 Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
 
                 Predicate p = builder.equal(join.get("id"), patient.getIdPart());
+                predList.add(p);
+            } else {
+                Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
+        }
+        if (subject != null) {
+            // KGM 4/1/2018 only search on patient id
+            if (daoutils.isNumeric(subject.getIdPart())) {
+                Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), subject.getIdPart());
                 predList.add(p);
             } else {
                 Join<ObservationEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);

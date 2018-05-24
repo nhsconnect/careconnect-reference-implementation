@@ -31,6 +31,7 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
             @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
             ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
             );
 
     List<ObservationEntity> searchEntity (FhirContext ctx,
@@ -38,7 +39,9 @@ public interface ObservationRepository extends BaseDao<ObservationEntity,Observa
                               @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
                               @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                               @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
+
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
             ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
     );
 }
