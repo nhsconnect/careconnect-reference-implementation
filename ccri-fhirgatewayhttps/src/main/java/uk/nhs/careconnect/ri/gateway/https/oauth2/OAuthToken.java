@@ -61,7 +61,8 @@ public class OAuthToken {
      * @return A Predicate to find the Scopes which match this Resource.
      */
     private Predicate<String> getScopeFilter(String requiredScoped, String method) {
-        String scopeRegex = String.format("^\\w*/%1s\\..*", requiredScoped);
+        // Match either the resource name or wildcard '*'
+        String scopeRegex = String.format("^\\w*/(?:\\*|%1s)\\..*", requiredScoped);
         return scope -> scope.matches(scopeRegex);
     }
 }
