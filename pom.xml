@@ -12,7 +12,7 @@
 
     <properties>
         <care-connect-version>3.5.4</care-connect-version>
-        <hapi-fhir-version>3.3.0</hapi-fhir-version>
+        <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <derby_version>10.13.1.1</derby_version>
         <slf4j>1.7.25</slf4j>

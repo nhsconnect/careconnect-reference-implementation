@@ -11,10 +11,14 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 @Component
 public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<ProcedureEntity, Procedure> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProcedureEntity.class);
+
 
     @Override
     public Procedure transform(final ProcedureEntity procedureEntity) {
         final Procedure procedure = new Procedure();
+    try {
+
 
         Meta meta = new Meta().addProfile(CareConnectProfile.Procedure_1);
 
@@ -124,7 +128,10 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
                     .setSystem(identifier.getSystem().getUri())
                     .setValue(identifier.getValue());
         }
-
+    }
+    catch (Exception ex) {
+        log.error(ex.getMessage());
+    }
         return procedure;
 
     }

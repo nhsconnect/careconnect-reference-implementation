@@ -19,6 +19,9 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
 
     private final Transformer<BaseAddress, Address> addressTransformer;
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MedicationRequestEntityToFHIRMedicationRequestTransformer.class);
+
+
     public MedicationRequestEntityToFHIRMedicationRequestTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }
@@ -26,7 +29,7 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
     @Override
     public MedicationRequest transform(final MedicationRequestEntity medicationRequestEntity) {
         final MedicationRequest medicationRequest = new MedicationRequest();
-
+    try {
         Meta meta = new Meta().addProfile(CareConnectProfile.MedicationRequest_1);
 
         if (medicationRequestEntity.getUpdated() != null) {
@@ -266,7 +269,10 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
         }
 
         medicationRequest.setId(medicationRequestEntity.getId().toString());
-
+    }
+    catch (Exception ex) {
+        log.error(ex.getMessage());
+    }
         return medicationRequest;
 
     }
