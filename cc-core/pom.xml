@@ -9,7 +9,7 @@
     <version>3.5.4</version>
     <packaging>jar</packaging>
     <properties>
-        <hapi-fhir-version>3.0.0</hapi-fhir-version>
+        <hapi-fhir-version>3.4.0</hapi-fhir-version>
     </properties>
 
     <dependencies>
