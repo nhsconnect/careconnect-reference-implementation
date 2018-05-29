@@ -8,10 +8,12 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 @Component
 public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transformer<EpisodeOfCareEntity, EpisodeOfCare> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EpisodeOfCareEntityToFHIREpisodeOfCareTransformer.class);
 
     @Override
     public EpisodeOfCare transform(final EpisodeOfCareEntity episodeEntity) {

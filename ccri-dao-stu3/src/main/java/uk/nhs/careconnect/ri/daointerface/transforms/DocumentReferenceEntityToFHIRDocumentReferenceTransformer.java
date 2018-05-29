@@ -10,10 +10,12 @@ import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAttachmen
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAuthor;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 @Component
 public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implements Transformer<DocumentReferenceEntity, DocumentReference> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DocumentReferenceEntityToFHIRDocumentReferenceTransformer.class);
 
     @Override
     public DocumentReference transform(final DocumentReferenceEntity documentReferenceEntity) {

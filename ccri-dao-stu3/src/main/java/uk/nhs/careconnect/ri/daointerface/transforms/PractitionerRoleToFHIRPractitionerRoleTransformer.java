@@ -19,6 +19,9 @@ public class PractitionerRoleToFHIRPractitionerRoleTransformer implements Transf
 
     private final Transformer<BaseAddress, Address> addressTransformer;
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PractitionerRoleToFHIRPractitionerRoleTransformer.class);
+
+
     public PractitionerRoleToFHIRPractitionerRoleTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }

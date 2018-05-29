@@ -5,10 +5,12 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 
 import uk.nhs.careconnect.ri.entity.carePlan.*;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 @Component
 public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<CarePlanEntity, CarePlan> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CarePlanEntity.class);
 
 
     @Override

@@ -19,6 +19,9 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
     private final Transformer<BaseAddress, Address> addressTransformer;
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PatientEntityToFHIRPatientTransformer.class);
+
+
     public PatientEntityToFHIRPatientTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }

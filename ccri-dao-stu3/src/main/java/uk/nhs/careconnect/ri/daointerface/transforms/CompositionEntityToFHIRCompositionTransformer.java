@@ -9,10 +9,13 @@ import uk.nhs.careconnect.ri.entity.composition.CompositionSection;
 import uk.nhs.careconnect.ri.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class CompositionEntityToFHIRCompositionTransformer implements Transformer<CompositionEntity, Composition> {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositionEntity.class);
 
 
     @Override

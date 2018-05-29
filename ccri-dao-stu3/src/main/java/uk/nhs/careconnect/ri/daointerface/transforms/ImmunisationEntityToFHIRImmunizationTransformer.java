@@ -5,11 +5,14 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class ImmunisationEntityToFHIRImmunizationTransformer implements Transformer<ImmunisationEntity, Immunization> {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ImmunisationEntityToFHIRImmunizationTransformer.class);
 
 
     @Override

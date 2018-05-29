@@ -10,11 +10,13 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEpisode;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
 public class EncounterEntityToFHIREncounterTransformer implements Transformer<EncounterEntity, Encounter> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EncounterEntityToFHIREncounterTransformer.class);
 
 
     @Override

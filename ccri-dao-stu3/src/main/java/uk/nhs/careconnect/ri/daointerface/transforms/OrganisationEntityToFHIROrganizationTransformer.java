@@ -19,6 +19,9 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
 
     private final Transformer<BaseAddress, Address> addressTransformer;
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OrganisationEntityToFHIROrganizationTransformer.class);
+
+
     public OrganisationEntityToFHIROrganizationTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }

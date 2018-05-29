@@ -18,6 +18,9 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
 
     private final Transformer<BaseAddress, Address> addressTransformer;
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PractitionerEntityToFHIRPractitionerTransformer.class);
+
+
     public PractitionerEntityToFHIRPractitionerTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }

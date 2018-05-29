@@ -17,6 +17,7 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 @Component
 public class MedicationRequestEntityToFHIRMedicationTransformer implements Transformer<MedicationRequestEntity, Medication> {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MedicationRequestEntityToFHIRMedicationTransformer.class);
 
 
     @Override

@@ -8,10 +8,13 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportIdentifier;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportResult;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 
 @Component
 public class DiagnosticReportEntityToFHIRDiagnosticReportTransformer implements Transformer<DiagnosticReportEntity, DiagnosticReport> {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DiagnosticReportEntityToFHIRDiagnosticReportTransformer.class);
 
 
     @Override
