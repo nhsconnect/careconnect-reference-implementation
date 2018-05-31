@@ -432,7 +432,7 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://127.0.0.1:8080/manager/text</url>
+					<url>http://127.0.0.1:9090/manager/text</url>
 					<server>TomcatServer</server>
                     <path>/careconnect-gateway-secure</path>
 				</configuration>

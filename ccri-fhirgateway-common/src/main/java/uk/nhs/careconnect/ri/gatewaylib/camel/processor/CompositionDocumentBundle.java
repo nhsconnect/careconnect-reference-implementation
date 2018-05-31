@@ -113,10 +113,15 @@ public class CompositionDocumentBundle implements AggregationStrategy {
                             documentReference.setCreated(composition.getDate());
                         }
                         DocumentReference.DocumentReferenceContentComponent content = documentReference.addContent();
-                        String[] path = edmsExchange.getIn().getHeader("Location").toString().split("/");
-                        String resourceId = path[path.length - 1];
-                        log.info("Binary resource Id = " + resourceId);
-                        content.getAttachment().setContentType("application/fhir+xml").setUrl(hapiBase + "/Binary/" + resourceId);
+                        if (edmsExchange.getIn().getHeader("Location") != null) {
+
+                            String[] path = edmsExchange.getIn().getHeader("Location").toString().split("/");
+                            String resourceId = path[path.length - 1];
+                            log.info("Binary resource Id = " + resourceId);
+                            content.getAttachment().setContentType("application/fhir+xml").setUrl(hapiBase + "/Binary/" + resourceId);
+                        } else {
+
+                        }
 
                         log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(documentReference));
                         // Add the new DocumentReference to the bundle
