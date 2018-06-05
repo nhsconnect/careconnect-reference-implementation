@@ -316,26 +316,34 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         // Add resource counts from server
         if (serverCapabilityStatement != null) {
             log.trace("Server CS not null");
+
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : retVal.getRest()) {
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
                     log.trace("restResourceComponent.getType - " + restResourceComponent.getType());
                     for (CapabilityStatement.CapabilityStatementRestComponent nextRestServer : serverCapabilityStatement.getRest()) {
                         for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponentServer : nextRestServer.getResource()) {
-                            if (restResourceComponent.getType().equals(restResourceComponentServer.getType())
-                                    && restResourceComponentServer.getExtensionFirstRep() !=null)
-
+                            if (restResourceComponentServer.getExtensionFirstRep() != null) {
+                                if (restResourceComponent.getType().equals(restResourceComponentServer.getType())) {
                                     restResourceComponent.addExtension()
                                             .setUrl(restResourceComponentServer.getExtensionFirstRep().getUrl())
                                             .setValue(restResourceComponentServer.getExtensionFirstRep().getValue());
+                                } else if (restResourceComponent.getType().equals("Binary") && restResourceComponentServer.getType().equals("DocumentReference")) {
+                                    // Set Binary to same value as DocumentReference
+                                    restResourceComponent.addExtension()
+                                            .setUrl(restResourceComponentServer.getExtensionFirstRep().getUrl())
+                                            .setValue(restResourceComponentServer.getExtensionFirstRep().getValue());
+                                }
+                            }
                         }
-
                     }
                     // No extensions found, so add in a zero result to prevent hapiUI display error
                     if (restResourceComponent.getExtension().size() == 0) {
-                        restResourceComponent.addExtension()
-                                .setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
-                                .setValue(new DecimalType(0));
+                            restResourceComponent.addExtension()
+                                    .setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
+                                    .setValue(new DecimalType(0));
+
                     }
+
                 }
             }
 
