@@ -211,7 +211,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                         resource.getProfile().setReference(CareConnectProfile.Location_1);
                         break;
                     case "Observation":
-                        //resource.getProfile().setReference(CareConnectITKProfile.Observation_1);
+                        // Observation is not currently profiled on STU3 Care Connect
+                        // resource.getProfile().setReference(CareConnectITKProfile.Observation_1);
                         break;
                     case "Encounter":
                         resource.getProfile().setReference(CareConnectProfile.Encounter_1);
@@ -387,6 +388,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Composition":
                 case "DocumentReference":
                 case "Medication":
+                case "Binary":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
