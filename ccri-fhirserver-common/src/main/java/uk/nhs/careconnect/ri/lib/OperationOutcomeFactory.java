@@ -27,6 +27,19 @@ public class OperationOutcomeFactory {
         exception.setOperationOutcome(operationOutcome);
         return exception;
     }
+    public static OperationOutcome.IssueType getIssueType(Exception ex) {
+        OperationOutcome.IssueType issueType = OperationOutcome.IssueType.PROCESSING;
+        if (ex instanceof ResourceNotFoundException) issueType=OperationOutcome.IssueType.NOTFOUND;
+        if (ex instanceof AuthenticationException) issueType=OperationOutcome.IssueType.SECURITY;
+        if (ex instanceof InvalidRequestException) issueType=OperationOutcome.IssueType.INVALID;
+        if (ex instanceof InternalErrorException) issueType=OperationOutcome.IssueType.EXCEPTION;
+        if (ex instanceof ForbiddenOperationException) issueType=OperationOutcome.IssueType.FORBIDDEN;
+        if (ex instanceof ResourceVersionConflictException) issueType=OperationOutcome.IssueType. CONFLICT;
+        if (ex instanceof NotImplementedOperationException) issueType=OperationOutcome.IssueType. NOTSUPPORTED;
+        if (ex instanceof PreconditionFailedException) issueType=OperationOutcome.IssueType. DUPLICATE;
+        if (ex instanceof MethodNotAllowedException) issueType=OperationOutcome.IssueType.BUSINESSRULE;
+        return issueType;
+    }
 
     public static void convertToException (OperationOutcome outcome ) throws BaseServerResponseException {
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {

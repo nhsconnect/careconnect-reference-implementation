@@ -47,6 +47,16 @@ public class BundleResourceProvider implements IResourceProvider {
         return resourceTestProvider.testResource(bundle,theMode,theProfile);
     }
 
+    private Exchange buildBundlePost(Exchange exchange, String newXmlResource, String query, String method) {
+        exchange.getIn().setBody(newXmlResource);
+        exchange.getIn().setHeader(Exchange.HTTP_QUERY, query);
+        exchange.getIn().setHeader(Exchange.HTTP_METHOD, method);
+        exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle");
+        // exchange.getIn().setHeader("Prefer", "return=representation");
+        exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+        return exchange;
+    }
+
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Bundle bundle) {
 
@@ -83,12 +93,8 @@ public class BundleResourceProvider implements IResourceProvider {
 
                     Exchange exchangeBundle = template.send("direct:FHIRBundleCollection", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
-                            exchange.getIn().setBody(newXmlResource);
-                            exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
-                            exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                            exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle");
-                           // exchange.getIn().setHeader("Prefer", "return=representation");
-                            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                            exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
+
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
@@ -98,12 +104,8 @@ public class BundleResourceProvider implements IResourceProvider {
                 case DOCUMENT:
                     Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
-                            exchange.getIn().setBody(newXmlResource);
-                            exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
-                            exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                            exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle");
-                           // exchange.getIn().setHeader("Prefer", "return=representation");
-                            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                            exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
+
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
@@ -172,12 +174,8 @@ public class BundleResourceProvider implements IResourceProvider {
 
                     Exchange exchangeBundle = template.send("direct:FHIRBundleCollection", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
-                            exchange.getIn().setBody(newXmlResource);
-                            exchange.getIn().setHeader(Exchange.HTTP_QUERY, conditional);
-                            exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
-                            exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle");
+                            exchange = buildBundlePost(exchange,newXmlResource,conditional,"PUT");
 
-                            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
@@ -187,12 +185,7 @@ public class BundleResourceProvider implements IResourceProvider {
                 case DOCUMENT:
                     Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
-                            exchange.getIn().setBody(newXmlResource);
-                            exchange.getIn().setHeader(Exchange.HTTP_QUERY, conditional);
-                            exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
-                            exchange.getIn().setHeader(Exchange.HTTP_PATH, "Bundle");
-
-                            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                            exchange = buildBundlePost(exchange,newXmlResource,conditional,"PUT");
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018

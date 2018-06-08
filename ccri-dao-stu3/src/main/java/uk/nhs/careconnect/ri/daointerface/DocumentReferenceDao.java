@@ -183,10 +183,10 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                 if (code != null) {
                     documentReferenceEntity.setContextPracticeSetting(code);
                 } else {
-                    log.info("PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem() + " code = " + documentReference.getClass_().getCoding().get(0).getCode());
+                    String logMsg ="PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getCode();
+                    log.info(logMsg);
 
-                    throw new IllegalArgumentException("PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem()
-                            + " code = " + documentReference.getClass_().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException(logMsg);
                 }
             }
             if (documentReference.getContext().hasEncounter()) {
