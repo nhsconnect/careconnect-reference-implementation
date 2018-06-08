@@ -53,17 +53,20 @@ public class BinaryResourceProvider implements IResourceProvider {
         try {
             InputStream inputStream = null;
 
-                Exchange exchange = template.send("direct:FHIRBinary",ExchangePattern.InOut, new Processor() {
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
-                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
-                        exchange.getIn().setHeader(Exchange.HTTP_PATH, internalId.getValue());
-                    }
-                });
-                binary= new Binary();
+            Exchange exchange = template.send("direct:FHIRBinary",ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, internalId.getValue());
+                }
+            });
+            binary= new Binary();
 
-                binary.setContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString());
-                log.info("Return Content-Type = "+binary.getContentType());
+            binary.setContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString());
+            log.trace("Return Content-Type = "+binary.getContentType());
+            log.trace("Response Code "+exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE));
+
+            if (exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).equals(200)) {
 
                 binary.setId(internalId.getValue());
                 if (binary.getContentType().equals("application/fhir+xml")) {
@@ -73,13 +76,14 @@ public class BinaryResourceProvider implements IResourceProvider {
                     inputStream = (InputStream) exchange.getIn().getBody();
                     Reader reader = new InputStreamReader(inputStream);
                     // read the resource
-                    resource = ctx.newXmlParser().parseResource(reader);
+                    IBaseResource resourceT = ctx.newXmlParser().parseResource(reader);
 
-                    String jsonResource = ctx.newJsonParser().encodeResourceToString(resource);
+                    String jsonResource = ctx.newJsonParser().encodeResourceToString(resourceT);
                     binary.setContent(jsonResource.getBytes());
-                    resource = null;
 
                 } else {
+                    //log.info("Content type not application/fhir");
+
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     try {
                         org.apache.commons.io.IOUtils.copyLarge((InputStream) exchange.getIn().getBody(), buffer);
@@ -97,6 +101,25 @@ public class BinaryResourceProvider implements IResourceProvider {
                     Reader reader = new InputStreamReader(inputStream);
                     resource = ctx.newJsonParser().parseResource(reader);
                 }
+            } else {
+                inputStream = (InputStream) exchange.getIn().getBody();
+                Reader reader = new InputStreamReader(inputStream);
+
+                if (binary.getContentType().equals("application/fhir+xml")) {
+
+
+                    resource = ctx.newXmlParser().parseResource(reader);
+                } else {
+                    resource = ctx.newJsonParser().parseResource(reader);
+                }
+                if (resource instanceof OperationOutcome) {
+                    OperationOutcome outcome = (OperationOutcome) resource;
+                    if (outcome.getIssue().size() > 0 && exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).equals(404) ) {
+                        outcome.getIssue().get(0).setCode(OperationOutcome.IssueType.NOTFOUND);
+                    }
+                    OperationOutcomeFactory.convertToException(outcome);
+                }
+            }
 
 
         } catch(Exception ex) {
