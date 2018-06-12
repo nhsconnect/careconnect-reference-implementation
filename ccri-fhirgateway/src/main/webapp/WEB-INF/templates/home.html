@@ -48,7 +48,7 @@
 								<tr>
 									<td>FHIR Base</td>
 									<td>
-										<a th:href="${base}" th:text="${base}"></a>
+										<a th:href="${base}" th:text="${#strings.replace(base,'http:','https:')}"></a>
 									</td>
 								</tr>
 							</tbody>

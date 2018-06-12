@@ -66,7 +66,7 @@
 									</td>
 									<td>
 										<th:block th:text="${action}"/>
-										<a th:href="${requestUrl}" th:utext="${requestUrlText}"/>
+										<a th:href="${requestUrl}" th:utext="${#strings.replace(requestUrlText,'http:','https:')}"/>
 									</td>
 								</tr>
 								<tr th:if="${requestHeaders.length} > 0">
@@ -171,7 +171,7 @@
 																$('#page-next-btn').click(function() {
 																	var btn = $(this);
 																	handleActionButtonClick($(this));
-																	btn.append($('<input />', { type: 'hidden', name: 'page-url', value: [[${bundle.linkNext.value}]] }));
+																	btn.append($('<input />', { type: 'hidden', name: 'page-url', value: ([[${bundle.linkNext.value}]]).replace('https:','http:') }));
 																	$("#outerForm").attr("action", "page").submit();
 																});
 															</script>
