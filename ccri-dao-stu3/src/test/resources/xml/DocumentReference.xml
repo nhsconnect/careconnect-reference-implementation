@@ -44,9 +44,9 @@
         </period> 
         <facilityType> 
             <coding> 
-                <system value="http://www.ihe.net/xds/connectathon/healthcareFacilityTypeCodes"/> 
-                <code value="Outpatient"/> 
-                <display value="Outpatient"/> 
+                <system value="http://snomed.info/sct"/>
+                <code value="700232004"/>
+                <display value="General medical service"/>
             </coding> 
         </facilityType> 
         <practiceSetting> 

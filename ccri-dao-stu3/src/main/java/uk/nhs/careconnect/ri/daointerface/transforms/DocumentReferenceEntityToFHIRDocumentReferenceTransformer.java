@@ -106,6 +106,14 @@ public class DocumentReferenceEntityToFHIRDocumentReferenceTransformer implement
                     .setDisplay(documentReferenceEntity.getContextPracticeSetting().getDisplay())
                     .setSystem(documentReferenceEntity.getContextPracticeSetting().getSystem());
         }
+        // KGM 13/6/2018 Add Facility Type
+        if (documentReferenceEntity.getContextFaciltityType() != null) {
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setCode(documentReferenceEntity.getContextFaciltityType().getCode())
+                    .setDisplay(documentReferenceEntity.getContextFaciltityType().getDisplay())
+                    .setSystem(documentReferenceEntity.getContextFaciltityType().getSystem());
+        }
+
         if (documentReferenceEntity.getContextEncounter() != null) {
             documentReference.getContext().setEncounter(new Reference("Encounter/"+documentReferenceEntity.getContextEncounter().getId()));
         }

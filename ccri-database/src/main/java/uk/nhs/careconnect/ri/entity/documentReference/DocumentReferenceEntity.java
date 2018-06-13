@@ -98,6 +98,11 @@ public class DocumentReferenceEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity contextPracticeSetting;
 
+    @ManyToOne
+    @JoinColumn(name="FACILITY_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_FACILITY_TYPE_CONCEPT_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private ConceptEntity contextFaciltityType;
+
     @OneToMany(mappedBy="documentReference", targetEntity=DocumentReferenceAttachment.class)
     private Set<DocumentReferenceAttachment> attachments = new HashSet<>();
 
@@ -208,6 +213,14 @@ public class DocumentReferenceEntity extends BaseResource {
 
     public void setContextPracticeSetting(ConceptEntity contextPracticeSetting) {
         this.contextPracticeSetting = contextPracticeSetting;
+    }
+
+    public ConceptEntity getContextFaciltityType() {
+        return contextFaciltityType;
+    }
+
+    public void setContextFaciltityType(ConceptEntity contextFaciltityType) {
+        this.contextFaciltityType = contextFaciltityType;
     }
 
     public Long getId() {

@@ -189,6 +189,17 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                     throw new IllegalArgumentException(logMsg);
                 }
             }
+            if (documentReference.getContext().hasFacilityType()) {
+                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getFacilityType().getCoding().get(0));
+                if (code != null) {
+                    documentReferenceEntity.setContextFaciltityType(code);
+                } else {
+                    String logMsg ="FacilityType: Missing System/Code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getCode();
+                    log.info(logMsg);
+
+                    throw new IllegalArgumentException(logMsg);
+                }
+            }
             if (documentReference.getContext().hasEncounter()) {
                 EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(documentReference.getContext().getEncounter().getReference()));
                 if (encounterEntity!=null) documentReferenceEntity.setContextEncounter(encounterEntity);
