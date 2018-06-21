@@ -1,6 +1,6 @@
 
-INSERT INTO System (SYSTEM_ID,SYSTEM_URI,name) VALUES (1002,'https://fhir.yorkhospitals.nhs.uk/Id/episode','York Hospitals Episodes');
-INSERT INTO System (SYSTEM_ID,SYSTEM_URI,name) VALUES (1003,'https://fhir.yorkhospitals.nhs.uk/Id/locations','York Hospitals Locations');
+INSERT INTO System (SYSTEM_ID,SYSTEM_URI,SYSTEM_NAME) VALUES (1002,'https://fhir.yorkhospitals.nhs.uk/Id/episode','York Hospitals Episodes');
+INSERT INTO System (SYSTEM_ID,SYSTEM_URI,SYSTEM_NAME) VALUES (1003,'https://fhir.yorkhospitals.nhs.uk/Id/locations','York Hospitals Locations');
 
 INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('1660001','Plant seeds',9);
 INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('10097211000001102','Insulin glulisine 100units ml solution for injection 3ml pre-filled disposable devices (product)',9);
@@ -23,7 +23,7 @@ INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('44054006','Type 2 diabe
 INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('91175000','Seizure',9);
 INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('923461000000103','Lifestyle education for diabetes',9);
 
-INSERT INTO Location (LOCATION_ID,ENT_NAME,status,MANAGING_ORGANISATION_ID,physicalType,type) VALUES (200000,'York Hospital',0,200001,479,352);
+INSERT INTO Location (LOCATION_ID,ENT_NAME,status,MANAGING_ORGANISATION_ID,physicalType,ENT_TYPE) VALUES (200000,'York Hospital',0,200001,479,352);
 INSERT INTO LocationIdentifier (LOCATION_IDENTIFIER_ID,identifierUse,listOrder,ENT_VALUE,SYSTEM_ID,LOCATION_ID) VALUES (200000,0,NULL,'RC855',2,200000);
 
 INSERT INTO Location (LOCATION_ID,ENT_NAME,status,MANAGING_ORGANISATION_ID,physicalType,ENT_TYPE,PART_OF_LOCATION_ID) VALUES (200001,'Observation Ward',0,200001,480,329,200000);

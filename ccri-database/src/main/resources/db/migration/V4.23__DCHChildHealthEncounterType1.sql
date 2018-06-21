@@ -1,5 +1,5 @@
 
-INSERT INTO CodeSystem (CODESYSTEM_ID,CODE_SYSTEM_URI,SYSTEM_NAME)
+INSERT INTO CodeSystem (CODESYSTEM_ID,CODE_SYSTEM_URI,CODESYSTEM_NAME)
 VALUES (952,'https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEncounterType-1',NULL);
 
 INSERT INTO Concept(CODE,DISPLAY,CODESYSTEM_ID) VALUES ('001','Birth Discharge	For use with the Discharge Details Event message only.',952);

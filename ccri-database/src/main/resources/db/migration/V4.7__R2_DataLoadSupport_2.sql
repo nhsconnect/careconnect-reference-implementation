@@ -1,6 +1,6 @@
 
 
-INSERT INTO CodeSystem (CODESYSTEM_ID,CODE_SYSTEM_URI,SYSTEM_NAME)
+INSERT INTO CodeSystem (CODESYSTEM_ID,CODE_SYSTEM_URI,CODESYSTEM_NAME)
 VALUES(937,'http://hl7.org/fhir/ValueSet/encounter-participant-type','ParticipantType');
 
 INSERT INTO Concept (CODE,DISPLAY,CODESYSTEM_ID)

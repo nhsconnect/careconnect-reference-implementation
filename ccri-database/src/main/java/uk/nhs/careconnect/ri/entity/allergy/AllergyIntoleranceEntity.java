@@ -32,8 +32,8 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @JoinColumn(name="verificationStatus")
     private AllergyIntolerance.AllergyIntoleranceVerificationStatus verificationStatus;
 
+    @Column(name="ENT_TYPE")
     @Enumerated(EnumType.ORDINAL)
-    @JoinColumn(name="type")
     private AllergyIntolerance.AllergyIntoleranceType type;
 
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceCategory.class)
