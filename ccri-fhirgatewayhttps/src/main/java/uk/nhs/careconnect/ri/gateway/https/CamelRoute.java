@@ -80,6 +80,10 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
 				.process(bundleMessage);
 
+		from("direct:FHIRBundleMessage")
+				.routeId("Bundle Message Processing")
+				.process(bundleMessage); // Goes direct to EPR FHIR Server
+
 		from("direct:FHIRDocumentReferenceBundle")
 				.routeId("Bundle Process Binary")
 				.process(binaryResource);
@@ -124,6 +128,10 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:FHIRObservation")
 				.routeId("Gateway Observation")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRBundle")
+				.routeId("Gateway Bundle")
 				.to("direct:HAPIServer");
 
 		from("direct:FHIREncounter")

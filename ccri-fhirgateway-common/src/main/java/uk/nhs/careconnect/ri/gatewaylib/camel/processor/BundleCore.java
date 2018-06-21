@@ -231,6 +231,7 @@ public class BundleCore {
         if (organisation.getPartOf().getReference() != null) {
             Resource resource = searchAddResource(organisation.getPartOf().getReference());
             log.info("Found PartOfOrganization = "+resource.getId());
+            if (resource == null) referenceMissing(organisation, organisation.getPartOf().getReference());
             organisation.setPartOf(getReference(resource));
         }
 
@@ -334,6 +335,7 @@ public class BundleCore {
 
         if (location.getManagingOrganization().getReference() != null) {
             Resource resource = searchAddResource(location.getManagingOrganization().getReference());
+            if (resource == null) referenceMissing(location, location.getManagingOrganization().getReference());
             location.setManagingOrganization(getReference(resource));
         }
 
@@ -422,11 +424,13 @@ public class BundleCore {
 
             Resource resource = searchAddResource(allergyIntolerance.getAsserter().getReference());
             log.info("Found Practitioner = " + resource.getId());
+            if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getAsserter().getReference());
             allergyIntolerance.setAsserter(getReference(resource));
 
         }
         if (allergyIntolerance.getPatient() != null) {
             Resource resource = searchAddResource(allergyIntolerance.getPatient().getReference());
+            if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getPatient().getReference());
             allergyIntolerance.setPatient(getReference(resource));
         }
 
@@ -525,10 +529,12 @@ public class BundleCore {
 
         if (carePlan.getContext().getReference() != null) {
             Resource resource = searchAddResource(carePlan.getContext().getReference());
+            if (resource == null) referenceMissing(carePlan, carePlan.getContext().getReference());
             carePlan.setContext(getReference(resource));
         }
         if (carePlan.getSubject() != null) {
             Resource resource = searchAddResource(carePlan.getSubject().getReference());
+            if (resource == null) referenceMissing(carePlan, carePlan.getSubject().getReference());
             carePlan.setSubject(getReference(resource));
         }
         List<Reference> references = new ArrayList<>();
@@ -644,10 +650,12 @@ public class BundleCore {
 
         if (observation.hasSubject()) {
             Resource resource = searchAddResource(observation.getSubject().getReference());
+            if (resource == null) referenceMissing(observation, observation.getSubject().getReference());
             observation.setSubject(getReference(resource));
         }
         if (observation.hasContext()) {
             Resource resource = searchAddResource(observation.getContext().getReference());
+            if (resource == null) referenceMissing(observation, observation.getContext().getReference());
             observation.setContext(getReference(resource));
         }
 
@@ -754,22 +762,26 @@ public class BundleCore {
 
         for (DiagnosticReport.DiagnosticReportPerformerComponent performer : diagnosticReport.getPerformer()) {
             Resource resource = searchAddResource(performer.getActor().getReference());
+            if (resource == null) referenceMissing(diagnosticReport, performer.getActor().getReference());
             performer.setActor(getReference(resource));
         }
 
 
         if (diagnosticReport.hasSubject()) {
             Resource resource = searchAddResource(diagnosticReport.getSubject().getReference());
+            if (resource == null) referenceMissing(diagnosticReport, diagnosticReport.getSubject().getReference());
             diagnosticReport.setSubject(getReference(resource));
         }
         if (diagnosticReport.hasContext()) {
             Resource resource = searchAddResource(diagnosticReport.getContext().getReference());
+            if (resource == null) referenceMissing(diagnosticReport, diagnosticReport.getContext().getReference());
             diagnosticReport.setContext(getReference(resource));
         }
 
         List<Reference> results = new ArrayList<>();
         for (Reference reference : diagnosticReport.getResult()) {
             Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(diagnosticReport, reference.getReference());
             if (resource!=null) results.add(getReference(resource));
         }
         diagnosticReport.setResult(results);
@@ -877,15 +889,18 @@ public class BundleCore {
 
         for (Immunization.ImmunizationPractitionerComponent reference : immunisation.getPractitioner()) {
             Resource resource = searchAddResource(reference.getActor().getReference());
+
             if (resource!=null) reference.setActor(getReference(resource));
         }
 
         if (immunisation.hasPatient()) {
             Resource resource = searchAddResource(immunisation.getPatient().getReference());
+            if (resource == null) referenceMissing(immunisation, immunisation.getPatient().getReference());
             immunisation.setPatient(getReference(resource));
         }
         if (immunisation.hasEncounter()) {
             Resource resource = searchAddResource(immunisation.getEncounter().getReference());
+            if (resource == null) referenceMissing(immunisation, immunisation.getEncounter().getReference());
             immunisation.setEncounter(getReference(resource));
         }
 
@@ -992,15 +1007,18 @@ public class BundleCore {
 
         if (medicationRequest.hasSubject()) {
             Resource resource = searchAddResource(medicationRequest.getSubject().getReference());
+            if (resource == null) referenceMissing(medicationRequest, medicationRequest.getSubject().getReference());
             medicationRequest.setSubject(getReference(resource));
         }
         if (medicationRequest.hasContext()) {
             Resource resource = searchAddResource(medicationRequest.getContext().getReference());
+            if (resource == null) referenceMissing(medicationRequest, medicationRequest.getContext().getReference());
             medicationRequest.setContext(getReference(resource));
         }
 
         if (medicationRequest.hasRequester()) {
             Resource resource = searchAddResource(medicationRequest.getRequester().getAgent().getReference());
+            if (resource == null) referenceMissing(medicationRequest, medicationRequest.getRequester().getAgent().getReference());
             medicationRequest.getRequester().setAgent(getReference(resource));
         }
 
@@ -1102,15 +1120,18 @@ public class BundleCore {
         if (condition.getAsserter().getReference() != null) {
 
             Resource resource = searchAddResource(condition.getAsserter().getReference());
+            if (resource == null) referenceMissing(condition, condition.getAsserter().getReference());
             log.info("Found Resource = " + resource.getId());
             condition.setAsserter(getReference(resource));
         }
         if (condition.getSubject() != null) {
             Resource resource = searchAddResource(condition.getSubject().getReference());
+            if (resource == null) referenceMissing(condition, condition.getSubject().getReference());
             condition.setSubject(getReference(resource));
         }
         if (condition.getContext().getReference() != null) {
             Resource resource = searchAddResource(condition.getContext().getReference());
+            if (resource == null) referenceMissing(condition, condition.getContext().getReference());
             condition.setContext(getReference(resource));
         }
 
@@ -1232,16 +1253,19 @@ public class BundleCore {
         }
         if (composition.getEncounter().getReference() != null) {
             Resource resource = searchAddResource(composition.getEncounter().getReference());
+            if (resource == null) referenceMissing(composition, composition.getEncounter().getReference());
             composition.setEncounter(getReference(resource));
         }
         if (composition.getCustodian() != null) {
             Resource resource = searchAddResource(composition.getCustodian().getReference());
+            if (resource == null) referenceMissing(composition, composition.getCustodian().getReference());
             composition.setCustodian(getReference(resource));
         }
         for (Composition.SectionComponent section: composition.getSection()) {
             List<Reference> references = new ArrayList<>();
             for (Reference reference : section.getEntry()) {
                 Resource resource = searchAddResource(reference.getReference());
+
                 if (resource!=null) references.add(getReference(resource));
             }
             section.setEntry(references);
@@ -1471,16 +1495,19 @@ public class BundleCore {
         for (Procedure.ProcedurePerformerComponent performer : procedure.getPerformer()) {
             Reference reference = performer.getActor();
             Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(procedure, reference.getReference());
             log.info("Found Resource = " + resource.getId());
             performer.setActor(getReference(resource));
 
         }
         if (procedure.getSubject() != null) {
             Resource resource = searchAddResource(procedure.getSubject().getReference());
+            if (resource == null) referenceMissing(procedure, procedure.getSubject().getReference());
             procedure.setSubject(getReference(resource));
         }
         if (procedure.getLocation().getReference() != null) {
             Resource resource = searchAddResource(procedure.getLocation().getReference());
+            if (resource == null) referenceMissing(procedure, procedure.getLocation().getReference());
             procedure.setLocation(getReference(resource));
         }
         if (procedure.hasContext()) {
@@ -1609,12 +1636,14 @@ public class BundleCore {
 
         if (encounter.getSubject() != null) {
             Resource resource = searchAddResource(encounter.getSubject().getReference());
+            if (resource == null) referenceMissing(encounter, encounter.getSubject().getReference());
             encounter.setSubject(getReference(resource));
         }
 
         for (Encounter.DiagnosisComponent component : encounter.getDiagnosis()) {
             if (component.getCondition().getReference() != null) {
                 Resource resource = searchAddResource(component.getCondition().getReference());
+                if (resource == null) referenceMissing(encounter, component.getCondition().getReference());
                 component.setCondition(getReference(resource));
             }
         }
@@ -1622,17 +1651,20 @@ public class BundleCore {
         for (Encounter.EncounterLocationComponent component : encounter.getLocation()) {
             if (component.getLocation().getReference() != null) {
                 Resource resource = searchAddResource(component.getLocation().getReference());
+                if (resource == null) referenceMissing(encounter, component.getLocation().getReference());
                 component.setLocation(getReference(resource));
             }
         }
         if (encounter.hasHospitalization()) {
             if (encounter.getHospitalization().getDestination().getReference() !=null) {
                 Resource resource = searchAddResource(encounter.getHospitalization().getDestination().getReference());
+                if (resource == null) referenceMissing(encounter, encounter.getHospitalization().getDestination().getReference());
                 encounter.getHospitalization().setDestination(getReference(resource));
             }
         }
         if (encounter.hasServiceProvider()) {
             Resource resource = searchAddResource(encounter.getServiceProvider().getReference());
+            if (resource == null) referenceMissing(encounter, encounter.getServiceProvider().getReference());
             encounter.setServiceProvider(getReference(resource));
         }
         if (encounter.hasClass_()) {
@@ -1754,10 +1786,12 @@ public class BundleCore {
         if (patient.getManagingOrganization().getReference() != null) {
             Resource resource = searchAddResource(patient.getManagingOrganization().getReference());
             log.info("Found ManagingOrganization = "+resource.getId());
+            if (resource == null) referenceMissing(patient, patient.getManagingOrganization().getReference());
             patient.setManagingOrganization(getReference(resource));
         }
         for (Reference reference : patient.getGeneralPractitioner()) {
             Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(patient, reference.getReference());
             log.info("Found Patient Practitioner = "+reference.getId());
             // This resets the first gp only (should only be one gp)
             patient.getGeneralPractitioner().get(0).setReference(getReference(resource).getReference());
@@ -1795,6 +1829,20 @@ public class BundleCore {
 
 
         return eprPatient;
+    }
+
+    private void referenceMissing(Resource resource, String reference) {
+        String errMsg = "Unable to resolve reference: "+reference+" In resource "+resource.getClass().getSimpleName()+" id "+resource.getId();
+        log.error(errMsg);
+        OperationOutcome outcome = new OperationOutcome();
+        outcome.addIssue()
+                .setCode(OperationOutcome.IssueType.BUSINESSRULE)
+                .setSeverity(OperationOutcome.IssueSeverity.FATAL)
+                .setDiagnostics(errMsg)
+                .setDetails(
+                        new CodeableConcept().setText("Invalid Reference")
+                );
+        OperationOutcomeFactory.convertToException(outcome);
     }
 
     private void processOperationOutcome(OperationOutcome operationOutcome) {

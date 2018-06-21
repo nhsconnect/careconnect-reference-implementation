@@ -89,8 +89,10 @@ public class BundleResourceProvider implements IResourceProvider {
 
             switch (bundle.getType()) {
                 case COLLECTION:
-                case MESSAGE:
+                    // ASync for speed
 
+                    // ASync This uses a queue direct:FHIRBundleCollection
+                    // Sync Direct flow direct:FHIRBundleMessage
                     Exchange exchangeBundle = template.send("direct:FHIRBundleCollection", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
@@ -99,6 +101,34 @@ public class BundleResourceProvider implements IResourceProvider {
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
                     resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
+                    break;
+
+                case MESSAGE:
+                    // Sync to get response
+
+                    // ASync This uses a queue direct:FHIRBundleCollection
+                    // Sync Direct flow direct:FHIRBundleMessage
+                    Exchange exchangeMessage = template.send("direct:FHIRBundleMessage", ExchangePattern.InOut, new Processor() {
+                        public void process(Exchange exchange) throws Exception {
+                            exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
+
+                        }
+                    });
+                    log.trace("IN MESSAGE POST HANDLING");
+                    // This response is coming from an external FHIR Server, so uses inputstream
+                    if (exchangeMessage.getIn().getBody() instanceof InputStream) {
+                        log.trace("RESPONSE InputStream");
+                        inputStream = (InputStream) exchangeMessage.getIn().getBody();
+                        Reader reader = new InputStreamReader(inputStream);
+                        resource = ctx.newXmlParser().parseResource(reader);
+                    } else
+                    if (exchangeMessage.getIn().getBody() instanceof String) {
+                        log.trace("RESPONSE String = "+(String) exchangeMessage.getIn().getBody());
+                        resource = ctx.newXmlParser().parseResource((String) exchangeMessage.getIn().getBody());
+                        log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
+                    } else {
+                        log.info("MESSAGE TYPE "+exchangeMessage.getIn().getBody().getClass());
+                    }
                     break;
 
                 case DOCUMENT:
@@ -115,6 +145,7 @@ public class BundleResourceProvider implements IResourceProvider {
                         inputStream = (InputStream) exchangeDocument.getIn().getBody();
                         Reader reader = new InputStreamReader(inputStream);
                         resource = ctx.newXmlParser().parseResource(reader);
+
                     } else
                         if (exchangeDocument.getIn().getBody() instanceof String) {
                             resource = ctx.newXmlParser().parseResource((String) exchangeDocument.getIn().getBody());
@@ -127,13 +158,17 @@ public class BundleResourceProvider implements IResourceProvider {
             log.error("XML Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
         } else if (resource instanceof OperationOutcome) {
-            if(((OperationOutcome) resource).getIssue().size()>0)
+
+            OperationOutcome operationOutcome =(OperationOutcome) resource;
+            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
+            if(operationOutcome.getIssue().size()>0)
             {
-                OperationOutcome operationOutcome = (OperationOutcome) resource;
-                log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+                log.info("Server Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
                 OperationOutcomeFactory.convertToException(operationOutcome);
             }
         }
