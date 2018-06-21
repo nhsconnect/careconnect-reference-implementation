@@ -58,10 +58,10 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         accessRights.put("MedicationStatement","MedicationStatement");
         accessRights.put("Immunization","Immunization");
         accessRights.put("Medication","Medication");
-                // TODO Reenable once keycloak cat tool deployed # ALP4-319
-      //  accessRights.put("DocumentReference","DocumentReference");
-      //  accessRights.put("Binary","Binary");
-      //  accessRights.put("Bundle","Bundle");
+
+        accessRights.put("DocumentReference","DocumentReference");
+        accessRights.put("Binary","Binary");
+        accessRights.put("Bundle","Bundle");
         return accessRights;
     }
 
