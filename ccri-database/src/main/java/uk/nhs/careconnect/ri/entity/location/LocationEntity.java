@@ -41,7 +41,7 @@ public class LocationEntity extends BaseResource {
 	private List<LocationTelecom> telecoms;
 
 	@ManyToOne
-	@JoinColumn(name="managingOrganisation",foreignKey= @ForeignKey(name="FK_LOCATION_ORGANISATION"))
+	@JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ORGANISATION"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private OrganisationEntity managingOrganisation;
 

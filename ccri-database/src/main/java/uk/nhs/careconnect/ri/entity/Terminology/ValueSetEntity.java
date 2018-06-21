@@ -38,7 +38,7 @@ public class ValueSetEntity extends BaseResource {
 		{  this.title = title; }
 		public String getTitle()  {  return this.title;  }
 		
-		@Column(name = "name")
+		@Column(name = "VALUESET_NAME")
 		private String name;
 		public void setName(String name)
 		{  this.name = name; }

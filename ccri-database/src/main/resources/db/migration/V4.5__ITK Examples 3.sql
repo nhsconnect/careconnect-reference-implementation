@@ -32,11 +32,11 @@ INSERT INTO ProcedurePerformer (PROCEDURE_PERFORMER_ID,ACTOR_ORGNANISATION,ACTOR
 VALUES (2,200001,null,null,2,null);
 
 INSERT INTO AllergyIntolerance
-(ALLERGY_ID,PATIENT_ID,assertedDateTime,clinicalStatus,criticality,lastOccurenceDateTime,note,onsetDateTime,type,verificationStatus,ASSERTER_PATIENT_ID,ASSERTER_PRACTITIONER_ID,CODE_CONCEPT_ID,RECORDER_PATIENT_ID,RECORDER_PRACTITIONER_ID)
+(ALLERGY_ID,PATIENT_ID,assertedDateTime,clinicalStatus,criticality,lastOccurenceDateTime,note,onsetDateTime,ENT_TYPE,verificationStatus,ASSERTER_PATIENT_ID,ASSERTER_PRACTITIONER_ID,CODE_CONCEPT_ID,RECORDER_PATIENT_ID,RECORDER_PRACTITIONER_ID)
 select 1,1,'2014-10-09T14:58:00',0,1,'2012-06-01',null,'2012-06-12',0,1,null,1,CONCEPT_ID,null,1  FROM Concept where CODE = '1660001' ;
 
 INSERT INTO AllergyIntolerance
-(ALLERGY_ID,PATIENT_ID,assertedDateTime,clinicalStatus,criticality,lastOccurenceDateTime,note,onsetDateTime,type,verificationStatus,ASSERTER_PATIENT_ID,ASSERTER_PRACTITIONER_ID,CODE_CONCEPT_ID,RECORDER_PATIENT_ID,RECORDER_PRACTITIONER_ID)
+(ALLERGY_ID,PATIENT_ID,assertedDateTime,clinicalStatus,criticality,lastOccurenceDateTime,note,onsetDateTime,ENT_TYPE,verificationStatus,ASSERTER_PATIENT_ID,ASSERTER_PRACTITIONER_ID,CODE_CONCEPT_ID,RECORDER_PATIENT_ID,RECORDER_PRACTITIONER_ID)
 select 2,4,'1998-07-01 17:55:00',0,1,'1998-07-01 17:55:00',null,'1998-07-01 17:55:00',0,1,4,null,CONCEPT_ID,null,200000 FROM Concept where CODE = '441321000000103' ;
 
 

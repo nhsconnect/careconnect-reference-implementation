@@ -14,9 +14,11 @@ public class BaseContactPoint extends BaseResource {
     @Column(name = "ENT_VALUE")
     private String value;
 
+    @Column(name = "TELECOM_USE")
 	@Enumerated(EnumType.ORDINAL)
     ContactPoint.ContactPointUse telecomUse;
 
+	@Column(name = "SYSTEM_ID")
     @Enumerated(EnumType.ORDINAL)
     ContactPoint.ContactPointSystem system;
 

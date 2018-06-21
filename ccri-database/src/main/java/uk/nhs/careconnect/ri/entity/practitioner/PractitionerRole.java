@@ -24,7 +24,7 @@ public class PractitionerRole extends BaseResource {
     private PractitionerEntity practitionerEntity;
 
     @ManyToOne
-    @JoinColumn(name="managingOrganisation",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_ORGANISATION_ID"))
+    @JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_ORGANISATION_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity managingOrganisation;
 

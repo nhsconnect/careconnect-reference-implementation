@@ -38,7 +38,7 @@ public class CodeSystemEntity extends BaseResource {
 	}
 
 
-	@Column(name="SYSTEM_NAME", nullable=true)
+	@Column(name="CODESYSTEM_NAME", nullable=true)
 	private String name;
 	public String getName() {
 		return name;
