@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "Location",indexes =
 		{
-				@Index(name = "IDX_LOCATION_NAME", columnList="name")
+				@Index(name = "IDX_LOCATION_NAME", columnList="ENT_NAME")
 
 		})
 public class LocationEntity extends BaseResource {
@@ -25,7 +25,7 @@ public class LocationEntity extends BaseResource {
 	private Long id;
 
     
-    @Column(name = "name")
+    @Column(name = "ENT_NAME")
 	private String name;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
@@ -46,7 +46,7 @@ public class LocationEntity extends BaseResource {
 	private OrganisationEntity managingOrganisation;
 
 	@ManyToOne
-	@JoinColumn(name="type",foreignKey= @ForeignKey(name="FK_LOCATION_TYPE_CONCEPT"))
+	@JoinColumn(name="ENT_TYPE",foreignKey= @ForeignKey(name="FK_LOCATION_TYPE_CONCEPT"))
 	private ConceptEntity type;
 
 	@ManyToOne

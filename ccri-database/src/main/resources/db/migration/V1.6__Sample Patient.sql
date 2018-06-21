@@ -1,22 +1,22 @@
-INSERT INTO Patient (`PATIENT_ID`,`RES_DELETED`,`RES_CREATED`,`RES_MESSAGE_REF`,`RES_UPDATED`,`date_of_birth`,`gender`,`registration_end`,`registration_start`,`NHSverification`,`ethnic`,`GP_ID`,`marital`,`PRACTICE_ID`)
+INSERT INTO Patient (PATIENT_ID,RES_DELETED,RES_CREATED,RES_MESSAGE_REF,RES_UPDATED,date_of_birth,gender,registration_end,registration_start,NHSverification,ethnic,GP_ID,marital,PRACTICE_ID)
 VALUES (1,NULL,NULL,NULL,NULL,'1998-03-19','FEMALE',NULL,NULL,79,11,1,7,1);
 
-INSERT INTO PatientName (`PATIENT_ID`,`PATIENT_NAME_ID`,`family_name`,`given_name`,`prefix`,`nameUse`)
+INSERT INTO PatientName (PATIENT_ID,PATIENT_NAME_ID,family_name,given_name,prefix,nameUse)
 VALUES (1,1,'Kanfeld','Bernie','Miss',0);
 
 
 INSERT INTO PatientIdentifier
-(`PATIENT_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PATIENT_ID`)
+(PATIENT_IDENTIFIER_ID,ENT_VALUE,SYSTEM_ID,PATIENT_ID)
 VALUES (1,'9876543210', 1, 1);
-INSERT INTO PatientIdentifier(`PATIENT_IDENTIFIER_ID`,`value`,`SYSTEM_ID`,`PATIENT_ID`)
+INSERT INTO PatientIdentifier(PATIENT_IDENTIFIER_ID,ENT_VALUE,SYSTEM_ID,PATIENT_ID)
 VALUES(2,'ABC8650149', 1001, 1);
 
 
-INSERT INTO PatientTelecom(`PATIENT_TELECOM_ID`,`value`,`telecomUse`,`system`,`PATIENT_ID`)
+INSERT INTO PatientTelecom(PATIENT_TELECOM_ID,ENT_VALUE,telecomUse,system,PATIENT_ID)
 VALUES (1,'0115 9737320',0, 0, 1);
-INSERT INTO `PatientTelecom` (`PATIENT_TELECOM_ID`,`system`,`telecomUse`,`value`,`PATIENT_ID`)
+INSERT INTO PatientTelecom (PATIENT_TELECOM_ID,system,telecomUse,ENT_VALUE,PATIENT_ID)
 VALUES (2,2,0,'bernie.kanfeld@nhsdigital.nhs.uk',1);
 
  
-INSERT INTO PatientAddress (`PATIENT_ADDRESS_ID`,`ADDRESS_ID`,`PATIENT_ID`,`addressUse`)
+INSERT INTO PatientAddress (PATIENT_ADDRESS_ID,ADDRESS_ID,PATIENT_ID,addressUse)
 VALUES(1,5,1,1);

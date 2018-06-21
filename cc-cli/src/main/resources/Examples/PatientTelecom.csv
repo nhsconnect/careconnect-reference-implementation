@@ -1,4 +1,4 @@
-PATIENT_TELECOM_ID,system,telecomUse,value,PATIENT_ID
+PATIENT_TELECOM_ID,system,telecomUse,ENT_VALUE,PATIENT_ID
 5002,0,0,(0113) 574 3265,1002
 5003,0,0,(0113) 211 8604,1003
 5004,0,0,(01937) 722822,1004
@@ -129,7 +129,7 @@ PATIENT_TELECOM_ID,system,telecomUse,value,PATIENT_ID
 5140,2,0,Danny.Rho@gover.org,1040
 5141,2,0,Fra.Wolfe@persial.net,1041
 5142,2,0,An_Rodgers@altered.co.uk,1042
-5143,2,0,L‰ndinaJ@four.org,1043
+5143,2,0,Lï¿½ndinaJ@four.org,1043
 5144,2,0,Dorothy-Poole@different.com,1044
 5145,2,0,Terence_Powell@games.co.uk,1045
 5146,2,0,R.Alvarado@polyhedral.net,1046

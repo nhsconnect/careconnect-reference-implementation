@@ -10,7 +10,7 @@ import javax.persistence.*;
 		uniqueConstraints= @UniqueConstraint(name="PK_PRACTITIONER_ROLE_IDENTIFIER", columnNames={"PRACTITIONER_ROLE_IDENTIFIER_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_PRACTITIONER_ROLE_IDENTIFER", columnList="value,SYSTEM_ID")
+				@Index(name = "IDX_PRACTITIONER_ROLE_IDENTIFER", columnList="ENT_VALUE,SYSTEM_ID")
 
 		})
 public class PractitionerRoleIdentifier extends BaseIdentifier {

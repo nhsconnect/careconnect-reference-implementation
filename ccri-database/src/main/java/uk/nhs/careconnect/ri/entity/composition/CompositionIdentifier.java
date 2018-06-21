@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name="CompositionIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_COMPOSITION_IDENTIFIER", columnNames={"COMPOSITION_IDENTIFIER_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_COMPOSITION_IDENTIFER", columnList="value,SYSTEM_ID")
+				@Index(name = "IDX_COMPOSITION_IDENTIFER", columnList="ENT_VALUE,SYSTEM_ID")
 
 		})
 public class CompositionIdentifier extends BaseIdentifier {

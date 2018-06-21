@@ -35,7 +35,7 @@ public class SystemEntity extends BaseResource {
 	}
 
 
-	@Column(name="name", nullable=true)
+	@Column(name="SYSTEM_NAME", nullable=true)
 	private String name;
 
 	public String getName() {

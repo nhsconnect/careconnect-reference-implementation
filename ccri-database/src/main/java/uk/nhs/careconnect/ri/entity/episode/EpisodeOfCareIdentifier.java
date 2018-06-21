@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name="EpisodeOfCareIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_EPISODE_IDENTIFIER", columnNames={"EPISODE_IDENTIFIER_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_EPISODE_IDENTIFER", columnList="value,SYSTEM_ID")
+				@Index(name = "IDX_EPISODE_IDENTIFER", columnList="ENT_VALUE,SYSTEM_ID")
 
 		})
 public class EpisodeOfCareIdentifier extends BaseIdentifier {

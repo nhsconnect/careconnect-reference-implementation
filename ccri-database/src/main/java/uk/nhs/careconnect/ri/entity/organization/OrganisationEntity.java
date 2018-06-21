@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "Organisation",indexes =
         {
-                @Index(name = "IDX_ORGANISATION_NAME", columnList="name")
+                @Index(name = "IDX_ORGANISATION_NAME", columnList="ENT_NAME")
 
         })
 public class OrganisationEntity extends BaseResource {
@@ -23,7 +23,7 @@ public class OrganisationEntity extends BaseResource {
     private Long id;
 
 
-    @Column(name = "name")
+    @Column(name = "ENT_NAME")
     private String name;
 
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -37,7 +37,7 @@ public class OrganisationEntity extends BaseResource {
 
     @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
-    @JoinColumn(name="type",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
+    @JoinColumn(name="ENT_TYPE",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
     private ConceptEntity type;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)

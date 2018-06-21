@@ -14,7 +14,7 @@ public class BaseIdentifier extends BaseResource {
 	@JoinColumn(name = "SYSTEM_ID")
 	private SystemEntity systemEntity;
 
-    @Column(name = "value")
+    @Column(name = "ENT_VALUE")
     private String value;
 
 

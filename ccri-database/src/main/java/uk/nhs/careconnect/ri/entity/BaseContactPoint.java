@@ -11,7 +11,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class BaseContactPoint extends BaseResource {
 
-    @Column(name = "value")
+    @Column(name = "ENT_VALUE")
     private String value;
 
 	@Enumerated(EnumType.ORDINAL)
