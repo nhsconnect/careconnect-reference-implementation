@@ -27,7 +27,7 @@ import java.util.*;
 })
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ConceptEntity extends BaseResource {
+public class 	ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
 
 	@LazyCollection(LazyCollectionOption.TRUE)
