@@ -122,37 +122,37 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
             System.out.println("National Health Service Trust");
             handler = new OrgHandler("930621000000104","National Health Service Trust");
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv","https://digital.nhs.uk/media/352/etr/zip/etr");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "etr.zip", "etr.csv");
             uploadOrganisation();
 
             System.out.println("Health Authority (CCG)");
             handler = new OrgHandler("394747008","Health Authority");
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv", "https://digital.nhs.uk/media/354/eccg/zip/eccg");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "eccg.zip", "eccg.csv");
             uploadOrganisation();
 
             System.out.println("General practice");
             handler = new OrgHandler("394745000","General practice");
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv", "https://digital.nhs.uk/media/372/epraccur/zip/epraccur");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "epraccur.zip", "epraccur.csv");
             uploadOrganisation();
 
             System.out.println("National Health Service Trust site");
             handler = new LocationHandler("930631000000102", "National Health Service Trust site");
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv", "https://digital.nhs.uk/media/351/ets/zip/ets");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ets.zip", "ets.csv");
             uploadLocation();
 
             System.out.println("GP practice site");
             handler = new LocationHandler("394761003", "GP practice site");
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv", "https://digital.nhs.uk/media/393/ebranchs/zip/ebranchs");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "ebranchs.zip", "ebranchs.csv");
             uploadLocation();
 
             System.out.println("GP");
             handler = new PractitionerHandler();
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv","https://digital.nhs.uk/media/370/egpcur/zip/egpcur");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "egpcur.zip", "egpcur.csv");
             uploadPractitioner();
 
             System.out.println("Consultants");
             handler = new ConsultantHandler();
-            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv","https://digital.nhs.uk/media/450/econcur/zip/econcur");
+            uploadODSStu3(handler, targetServer, ctx, ',', QuoteMode.NON_NUMERIC, "econcur.zip", "econcur.csv");
             uploadPractitioner();
 
 
@@ -222,19 +222,15 @@ http://127.0.0.1:8080/careconnect-ri/STU3
     }
 
 
-	private void uploadODSStu3(IRecordHandler handler, String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart, String webSite) throws CommandFailureException {
+	private void uploadODSStu3(IRecordHandler handler, String targetServer, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, String fileName, String fileNamePart) throws CommandFailureException {
 
 
 	    Boolean found = false;
 	    try {
+            ClassLoader classLoader = getClass().getClassLoader();
 
-            URL website = new URL(webSite);
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-
-            FileOutputStream fos = new FileOutputStream(fileName);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             List<byte[]> theZipBytes = new ArrayList<>();
-            byte[] nextData = IOUtils.toByteArray(new FileInputStream(fileName));
+            byte[] nextData = IOUtils.toByteArray(classLoader.getResourceAsStream("ods/"+fileName));
             theZipBytes.add(nextData);
 
 
