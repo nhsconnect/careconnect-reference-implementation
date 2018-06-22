@@ -56,6 +56,9 @@ public class DataSourceConfig {
     @Value("${datasource.driver:org.apache.derby.jdbc.EmbeddedDriver}")
     private String driverName;
 
+    @Value("${flyway.locations}")
+    private String flywayLocations;
+
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
 
 
@@ -83,7 +86,8 @@ public class DataSourceConfig {
 
         Flyway flyway = new Flyway();
         flyway.setBaselineOnMigrate(true);
-      //  flyway.setLocations("filesystem:/path/to/migrations/");
+        log.info("FLYWAY Locations = "+ flywayLocations);
+        flyway.setLocations(flywayLocations);
         flyway.setDataSource(dataSource());
         flyway.repair();
         return flyway;
