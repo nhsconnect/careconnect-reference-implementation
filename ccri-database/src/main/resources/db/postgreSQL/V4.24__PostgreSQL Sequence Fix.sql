@@ -5,6 +5,11 @@ SELECT setval('concept_concept_id_seq', COALESCE((SELECT MAX(concept_id)+1 FROM 
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 COMMIT;
 
+LOCK TABLE ConceptParentChildLink IN EXCLUSIVE MODE;
+SELECT setval('conceptparentchildlink_concept_parent_child_id_seq', COALESCE((SELECT MAX(concept_parent_child_id)+1 FROM ConceptParentChildLink), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+COMMIT;
+
 -- Address
 
 LOCK TABLE address IN EXCLUSIVE MODE;
