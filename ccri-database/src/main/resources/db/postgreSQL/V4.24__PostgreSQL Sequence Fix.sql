@@ -16,6 +16,57 @@ LOCK TABLE address IN EXCLUSIVE MODE;
 SELECT setval('address_address_id_seq', COALESCE((SELECT MAX(address_id)+1 FROM address), 1), false)
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 
+-- MedicationRequest 
+
+LOCK TABLE medicationrequest IN EXCLUSIVE MODE;
+SELECT setval('medicationrequest_prescription_id_seq', COALESCE((SELECT MAX(prescription_id)+1 FROM medicationrequest), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE medicationrequestidentifier IN EXCLUSIVE MODE;
+SELECT setval('medicationrequestidentifier_prescription_identifier_id_seq', COALESCE((SELECT MAX(prescription_identifier_id)+1 FROM medicationrequestidentifier), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE medicationrequestdosage IN EXCLUSIVE MODE;
+SELECT setval('medicationrequestdosage_prescription_dosage_id_seq', COALESCE((SELECT MAX(prescription_dosage_id)+1 FROM medicationrequestdosage), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+-- Procedure 
+
+LOCK TABLE immunisation IN EXCLUSIVE MODE;
+SELECT setval('immunisation_immunisation_id_seq', COALESCE((SELECT MAX(immunisation_id)+1 FROM immunisation), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE procedureidentifier IN EXCLUSIVE MODE;
+SELECT setval('immunizationidentifier_immunisation_identifier_id_seq', COALESCE((SELECT MAX(immunisation_identifier_id)+1 FROM immunizationidentifier), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+
+
+-- Procedure 
+
+LOCK TABLE procedure_ IN EXCLUSIVE MODE;
+SELECT setval('procedure__procedure_id_seq', COALESCE((SELECT MAX(procedure_id)+1 FROM procedure_), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE procedureidentifier IN EXCLUSIVE MODE;
+SELECT setval('procedureidentifier_procedure_identifier_id_seq', COALESCE((SELECT MAX(procedure_identifier_id)+1 FROM procedureidentifier), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE procedureperformer IN EXCLUSIVE MODE;
+SELECT setval('procedureperformer_procedure_performer_id_seq', COALESCE((SELECT MAX(procedure_performer_id)+1 FROM procedureperformer), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+-- Condition 
+
+LOCK TABLE condition_ IN EXCLUSIVE MODE;
+SELECT setval('condition__condition_id_seq', COALESCE((SELECT MAX(condition_id)+1 FROM condition_), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE conditionidentifier IN EXCLUSIVE MODE;
+SELECT setval('conditionidentifier_condition_identifier_id_seq', COALESCE((SELECT MAX(condition_identifier_id)+1 FROM conditionidentifier), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
+LOCK TABLE conditioncategory IN EXCLUSIVE MODE;
+SELECT setval('conditioncategory_condition_category_id_seq', COALESCE((SELECT MAX(condition_category_id)+1 FROM conditioncategory), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 
 -- AllergyIntolerance 
 
