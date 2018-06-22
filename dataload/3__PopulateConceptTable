@@ -1,0 +1,6 @@
+insert into Concept (CODE, CODESYSTEM_ID, active)
+SELECT
+	distinct c.id, 9, 1
+FROM
+	careconnect.tempConcept c
+	where active = 1 and id not in (select code from careconnect.Concept where CODESYSTEM_ID=9);

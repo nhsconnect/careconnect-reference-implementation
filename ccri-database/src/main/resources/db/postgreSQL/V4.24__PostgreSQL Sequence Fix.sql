@@ -30,6 +30,10 @@ LOCK TABLE allergyintolerancemanifestation IN EXCLUSIVE MODE;
 SELECT setval('allergyintolerancemanifestation_allergy_manifestation_id_seq', COALESCE((SELECT MAX(allergy_manifestation_id)+1 FROM allergyintolerancemanifestation), 1), false)
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 
+LOCK TABLE allergyintolerancereaction IN EXCLUSIVE MODE;
+SELECT setval('allergyintolerancereaction_allergy_reaction_id_seq', COALESCE((SELECT MAX(allergy_reaction_id)+1 FROM allergyintolerancereaction), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+
 -- Patient 
 
 LOCK TABLE patient IN EXCLUSIVE MODE;
