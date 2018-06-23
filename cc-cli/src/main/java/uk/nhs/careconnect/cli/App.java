@@ -12,6 +12,8 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ import static org.fusesource.jansi.Ansi.ansi;
  * Created by kevinmayfield on 27/04/2017.
  */
 @SpringBootApplication
+@PropertySource("classpath:application.properties")
+@ComponentScan("uk.nhs.careconnect.cli")
 public class App  {
 
 
@@ -44,6 +48,7 @@ public class App  {
             ourCommands.add(new ITKSRPDataUploader());
             ourCommands.add(new GitDownloader());
             ourCommands.add(new UploadExamples());
+            ourCommands.add(new CodeSystemImport());
 
         // disabled due to performance issues   ourCommands.add(new UploadTerminologyCommand());
 
