@@ -46,7 +46,7 @@ public class LocationEntity extends BaseResource {
 	private OrganisationEntity managingOrganisation;
 
 	@ManyToOne
-	@JoinColumn(name="ENT_TYPE",foreignKey= @ForeignKey(name="FK_LOCATION_TYPE_CONCEPT"))
+	@JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_LOCATION_TYPE_CONCEPT"))
 	private ConceptEntity type;
 
 	@ManyToOne

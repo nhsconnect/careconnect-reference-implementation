@@ -37,7 +37,7 @@ public class OrganisationEntity extends BaseResource {
 
     @LazyCollection(LazyCollectionOption.TRUE)
     @ManyToOne
-    @JoinColumn(name="ENT_TYPE",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
+    @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
     private ConceptEntity type;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)

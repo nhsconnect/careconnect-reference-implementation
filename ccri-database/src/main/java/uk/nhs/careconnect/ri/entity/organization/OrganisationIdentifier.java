@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="OrganisationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_ORGANISATION_IDENTIFIER", columnNames={"ORGANISATION_IDENTIFIER_ID"}),indexes =
 		{
-				@Index(name = "IDX_ORGANISATION_IDENTIFER", columnList="ENT_VALUE,SYSTEM_ID")
+				@Index(name = "IDX_ORGANISATION_IDENTIFER", columnList="IDENTIFIER_VALUE,SYSTEM_ID")
 
 		})
 public class OrganisationIdentifier extends BaseIdentifier {

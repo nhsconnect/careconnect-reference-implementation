@@ -32,7 +32,7 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @JoinColumn(name="verificationStatus")
     private AllergyIntolerance.AllergyIntoleranceVerificationStatus verificationStatus;
 
-    @Column(name="ENT_TYPE")
+    @Column(name="TYPE_ID")
     @Enumerated(EnumType.ORDINAL)
     private AllergyIntolerance.AllergyIntoleranceType type;
 

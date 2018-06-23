@@ -11,7 +11,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class BaseContactPoint extends BaseResource {
 
-    @Column(name = "ENT_VALUE")
+    @Column(name = "CONTACT_VALUE")
     private String value;
 
     @Column(name = "TELECOM_USE")
