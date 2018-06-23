@@ -1475,7 +1475,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             CodeableConcept code = observation.getCode();
             code.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("Code")).setDisplay(theRecord.get("CodeDisplay"));
 
-            observation.setSubject(new Reference("Patient/"+theRecord.get("PatientID")));
+            observation.setSubject(new Reference("Patient/"+getPatientId(theRecord.get("PatientID"))));
             if (!theRecord.get("ValueQuantity").isEmpty()) {
                 Quantity quantity = new Quantity();
                 quantity
@@ -1625,7 +1625,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
             encounter.setPeriod(period);
-            encounter.setSubject(new Reference("Patient/"+theRecord.get("patientID")));
+            encounter.setSubject(new Reference("Patient/"+getPatientId(theRecord.get("patientID"))));
 
             /* TODO
             if (!theRecord.get("status").isEmpty()) {
@@ -1721,7 +1721,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                    .setSystem("https://fhir.leedsth.nhs.uk/Id/condition")
                    .setValue(theRecord.get("identifier"));
 
-           condition.setSubject(new Reference("Patient/" + theRecord.get("patient ID")));
+           condition.setSubject(new Reference("Patient/" + getPatientId(theRecord.get("patient ID"))));
 
             if (!theRecord.get("encounter").isEmpty()) {
                 Bundle results = client
@@ -1851,7 +1851,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     .setSystem("https://fhir.leedsth.nhs.uk/Id/allergy")
                     .setValue(theRecord.get("identifier"));
 
-            allergy.setPatient(new Reference("Patient/" + theRecord.get("patient")));
+            allergy.setPatient(new Reference("Patient/" + getPatientId(theRecord.get("patient"))));
 
             if (!theRecord.get("encounter").isEmpty()) {
                 Bundle results = client
@@ -1998,6 +1998,22 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
+    public String getPatientId(String ppmId ) {
+        String patientId = null;
+
+	    Bundle results = client
+                .search()
+                .forResource(Patient.class)
+                .where(Practitioner.IDENTIFIER.exactly().systemAndCode("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier" ,ppmId))
+                .returnBundle(Bundle.class)
+                .execute();
+        //   System.out.println(results.getEntry().size());
+        if (results.getEntry().size() > 0) {
+            patientId = results.getEntry().get(0).getResource().getId();
+        }
+        return patientId;
+    }
+
     public class ProcedureHandler implements  IRecordHandler {
         @Override
         public void accept(CSVRecord theRecord) {
@@ -2007,7 +2023,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     .setSystem("https://fhir.leedsth.nhs.uk/Id/procedure")
                     .setValue(theRecord.get("identifier"));
 
-            procedure.setSubject(new Reference("Patient/" + theRecord.get("subject")));
+            procedure.setSubject(new Reference("Patient/" + getPatientId(theRecord.get("subject"))));
             if (!theRecord.get("status").isEmpty()) {
                 switch (theRecord.get("status")) {
                     case "Completed" :
@@ -2149,7 +2165,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                         .setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation")
                         .setValue(theRecord.get("identifier"));
 
-                immunisation.setPatient(new Reference("Patient/" + theRecord.get("patientID")));
+                immunisation.setPatient(new Reference("Patient/" + getPatientId(theRecord.get("patientID"))));
 
 
 
@@ -2847,7 +2863,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             }
             if (!theRecord.get("subject (patientID)").isEmpty()) {
 
-                prescription.setSubject(new Reference("Patient/" + theRecord.get("subject (patientID)")));
+                prescription.setSubject(new Reference("Patient/" + getPatientId(theRecord.get("subject (patientID)"))));
             }
             if (!theRecord.get("status").isEmpty()) {
                 switch (theRecord.get("status")) {
