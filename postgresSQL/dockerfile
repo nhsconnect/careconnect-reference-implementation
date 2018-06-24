@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM postgres:10.4
 
 RUN mkdir /mysql_exp
 
@@ -14,5 +14,4 @@ ADD /mysql_exp/DMD/tempDescription.txt /mysql_exp/DMD/tempDescription.txt
 ADD /mysql_exp/DMD/tempSimple.txt /mysql_exp/DMD/tempSimple.txt
 ADD /mysql_exp/DMD/tempRelationship.txt /mysql_exp/DMD/tempRelationship.txt
 
-VOLUME /mysql_exp
 

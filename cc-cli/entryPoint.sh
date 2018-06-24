@@ -21,6 +21,6 @@ java -jar cc-cli.jar codesystem -u ${POSTGRES_USERNAME} -p ${POSTGRES_PASSWORD} 
 
 java -jar cc-cli.jar upload-ods -t ${FHIR_SERVER}
 
-java -jar cc-cli.jar upload-examples -t : ${FHIR_SERVER} -a
+java -jar cc-cli.jar upload-examples -t ${FHIR_SERVER} -a
 
 exec "$@"
