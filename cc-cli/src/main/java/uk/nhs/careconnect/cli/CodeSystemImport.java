@@ -54,26 +54,11 @@ public class CodeSystemImport extends BaseCommand {
 	//@Value("${flyway.locations:filesystem:/mysql_exp}")
 	private String flywayLocations = "db/dataload";
 
-	@Value("${datasource.vendor:h2}")
-	private String vendor = "postgresql";
+	private String jdbc = "postgresql://localhost:5432/careconnect";
 
-	@Value("${datasource.host:mem}")
-	private String host= "//localhost";
-
-	@Value("${datasource.path:db1}")
-	private String path = "5432/careconnect";
-
-	@Value("${datasource.username:}")
 	private String username ="fhirjpa";
 
-	@Value("${datasource.password:}")
 	private String password = "fhirjpa";
-
-	@Value("${datasource.showSql:false}")
-	private boolean showSql = false;
-
-	@Value("${datasource.showDdl:true}")
-	private boolean showDdl = true;
 
 
 
@@ -83,15 +68,40 @@ public class CodeSystemImport extends BaseCommand {
 
 	@Override
 	public Options getOptions() {
-		Options retVal = new Options();
-		addFhirVersionOption(retVal);
+		Options options = new Options();
 
-		return retVal;
+		Option opt;
+		addFhirVersionOption(options);
+
+		opt = new Option("j", "jdbc", true, "jdbc settings for database server");
+		opt.setRequired(true);
+		options.addOption(opt);
+
+		opt = new Option("u", "username", true, "username for database");
+		opt.setRequired(true);
+		options.addOption(opt);
+
+		opt = new Option("p", "password", true, "password for database");
+		opt.setRequired(true);
+		options.addOption(opt);
+
+		return options;
 	}
 
 	@Override
 	public void run(CommandLine theCommandLine) throws ParseException, Exception {
-
+		this.jdbc = theCommandLine.getOptionValue("j");
+		if (isBlank(jdbc)) {
+			throw new ParseException("No jdbc url (-j) specified");
+		}
+		this.username = theCommandLine.getOptionValue("u");
+		if (isBlank(username)) {
+			throw new ParseException("No username (-u) specified");
+		}
+		this.password = theCommandLine.getOptionValue("u");
+		if (isBlank(password)) {
+			throw new ParseException("No password (-p) specified");
+		}
 		loadRun();
 	}
 
@@ -111,15 +121,13 @@ public class CodeSystemImport extends BaseCommand {
 		final DataSource dataSource = new DataSource();
 		System.out.println("In Data Source");
 		dataSource.setDriverClassName(driverName);
-		dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
+		dataSource.setUrl("jdbc:" + jdbc);
 
 		System.out.println(dataSource.getUrl());
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);
 
 		dataSource.setValidationQuery("select 1 as dbcp_connection_test");
-
-
 
 		return dataSource;
 	}
