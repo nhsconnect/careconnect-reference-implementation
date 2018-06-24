@@ -10,6 +10,11 @@ SELECT setval('conceptparentchildlink_concept_parent_child_id_seq', COALESCE((SE
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 COMMIT;
 
+LOCK TABLE system IN EXCLUSIVE MODE;
+SELECT setval('system_system_id_seq', COALESCE((SELECT MAX(system_id)+1 FROM system), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+COMMIT;
+
 -- Address
 
 LOCK TABLE address IN EXCLUSIVE MODE;
