@@ -72,6 +72,7 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRBundleDocument")
 				.routeId("Bundle Document")
 				.process(camelProcessor) // Add in correlation Id if not present
+				//.wireTap("seda:FHIRBundleMessageQueue") // Send a copy to EPR for main CCRI load
 				.enrich("direct:EDMSServer", compositionDocumentBundle);
 
 
@@ -79,6 +80,10 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Bundle Processing")
 				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
 				.process(bundleMessage);
+
+		from("seda:FHIRBundleMessageQueue")
+				.routeId("Bundle Message Processing Queue")
+				.process(bundleMessage); // Goes direct to EPR FHIR Server
 
 		from("direct:FHIRBundleMessage")
 				.routeId("Bundle Message Processing")

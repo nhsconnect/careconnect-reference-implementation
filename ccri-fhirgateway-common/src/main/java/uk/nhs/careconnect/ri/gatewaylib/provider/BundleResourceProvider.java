@@ -132,6 +132,13 @@ public class BundleResourceProvider implements IResourceProvider {
                     break;
 
                 case DOCUMENT:
+                    // Send a copy for EPR processing
+                    Exchange exchangeMessageSeda = template.send("seda:FHIRBundleMessageQueue", ExchangePattern.InOut, new Processor() {
+                        public void process(Exchange exchange) throws Exception {
+                            exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
+                        }
+                    });
+                    // Main Message send to EDMS
                     Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
