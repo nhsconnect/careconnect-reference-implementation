@@ -118,6 +118,8 @@ public class CompositionDocumentBundle implements AggregationStrategy {
                                     documentReference.setCreated(composition.getDate());
                                 }
                                 DocumentReference.DocumentReferenceContentComponent content = documentReference.addContent();
+                                //log.info("### Content-Location = " + edmsExchange.getIn().getHeader("Content-Location"));
+                                //log.info("### Location = " + edmsExchange.getIn().getHeader("Location"));
                                 if (edmsExchange.getIn().getHeader("Location") != null) {
 
                                     String[] path = edmsExchange.getIn().getHeader("Location").toString().split("/");
@@ -125,7 +127,13 @@ public class CompositionDocumentBundle implements AggregationStrategy {
                                     log.info("Binary resource Id = " + resourceId);
                                     content.getAttachment().setContentType("application/fhir+xml").setUrl(hapiBase + "/Binary/" + resourceId);
                                 } else {
+                                    if (edmsExchange.getIn().getHeader("Content-Location") != null) {
 
+                                        String[] path = edmsExchange.getIn().getHeader("Content-Location").toString().split("/");
+                                        String resourceId = path[path.length - 1];
+                                        log.info("Binary resource Id = " + resourceId);
+                                        content.getAttachment().setContentType("application/fhir+xml").setUrl(hapiBase + "/Binary/" + resourceId);
+                                    }
                                 }
 
                                 log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(documentReference));
