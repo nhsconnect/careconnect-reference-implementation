@@ -179,10 +179,11 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             for (ObservationEntity componentEntity : observationEntity.getComponents()) {
 
                 // Components only
-
+                log.trace("OBS Component found");
                 if (componentEntity.getObservationType() == null || componentEntity.getObservationType().equals(ObservationEntity.ObservationType.component)) {
                     Observation.ObservationComponentComponent component = new Observation.ObservationComponentComponent();
                     if (componentEntity.getCode() != null) {
+                        log.trace("OBS Code found");
                         component.getCode().addCoding()
                                 .setCode(componentEntity.getCode().getCode())
                                 .setSystem(componentEntity.getCode().getSystem())
@@ -192,12 +193,15 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                     // Component Values simple
 
                     if (componentEntity.getValueQuantity() != null) {
+                        log.trace("OBS Value found");
                         Quantity quantity = new Quantity();
-                        quantity.setValue(componentEntity.getValueQuantity())
-                                .setCode(componentEntity.getValueUnitOfMeasure().getCode())
-                                .setSystem(componentEntity.getValueUnitOfMeasure().getSystem())
-                                .setUnit(componentEntity.getValueUnitOfMeasure().getCode());
+                        quantity.setValue(componentEntity.getValueQuantity());
 
+                        if (componentEntity.getValueUnitOfMeasure() != null) {
+                                quantity.setCode(componentEntity.getValueUnitOfMeasure().getCode())
+                                    .setSystem(componentEntity.getValueUnitOfMeasure().getSystem())
+                                    .setUnit(componentEntity.getValueUnitOfMeasure().getCode());
+                        }
                         component.setValue(quantity);
                     }
 
@@ -213,12 +217,14 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                             component.setValue(concept);
                         }
                     }
-                    observation.getComponent().add(component);
+                    log.trace("OBS addComponent");
+                    observation.addComponent(component);
                 }
 
                 // Value Quantity
 
                 if (componentEntity.getObservationType() != null && componentEntity.getObservationType().equals(ObservationEntity.ObservationType.valueQuantity)) {
+                    log.trace("OBS valueQuantity");
                     CodeableConcept concept = new CodeableConcept();
                     concept.addCoding()
                             .setDisplay(componentEntity.getCode().getDisplay())
@@ -237,7 +243,7 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             }
         }
         catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error("Transformation Error = "+ex.getMessage());
         }
         return observation;
     }
