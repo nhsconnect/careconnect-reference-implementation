@@ -65,6 +65,12 @@
             <version>${care-connect-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
+
 
 
         <!-- This dependency is used for the "HAPIComponent Tester" web app overlay -->

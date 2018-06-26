@@ -3,15 +3,13 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
+
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
-import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
+
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
-import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
+
 
 
 @Component

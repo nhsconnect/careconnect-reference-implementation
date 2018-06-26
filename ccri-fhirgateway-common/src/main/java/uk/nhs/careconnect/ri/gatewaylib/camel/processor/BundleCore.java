@@ -7,6 +7,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.careconnect.ri.gatewaylib.transform.FHIRMedicationStatementToFHIRMedicationRequestTransformer;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import java.io.InputStream;
@@ -23,12 +24,16 @@ public class BundleCore {
         this.ctx = ctx;
         this.bundle = bundle;
         this.context = camelContext;
-        new HashMap<>();
+
     }
 
     CamelContext context;
 
     FhirContext ctx;
+
+
+    private FHIRMedicationStatementToFHIRMedicationRequestTransformer
+            fhirMedicationStatementToFHIRMedicationRequestTransformer = new  FHIRMedicationStatementToFHIRMedicationRequestTransformer();
 
     private Map<String,Resource> resourceMap = new HashMap<>();;
 
@@ -42,6 +47,8 @@ public class BundleCore {
 
         return reference;
     }
+
+
 
     public Bundle getBundle() {
         return bundle;
@@ -77,6 +84,11 @@ public class BundleCore {
                 else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId, (Composition) iResource); }
                 else if (iResource instanceof DiagnosticReport) { resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource); }
                 else if (iResource instanceof MedicationRequest) { resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource); }
+                else if (iResource instanceof MedicationStatement) { resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource); }
+                else if (iResource instanceof Medication) {
+                    // We don't store medication, so return the resource as is 26th June 2018 KGM
+                    resource = iResource; }
+                    else if (iResource instanceof ListResource) { resource = searchAddList(referenceId, (ListResource) iResource); }
                 else if (iResource instanceof Immunization) { resource = searchAddImmunization(referenceId, (Immunization) iResource); }
                 else if (iResource instanceof CarePlan) { resource = searchAddCarePlan(referenceId, (CarePlan) iResource); }
                 else if (iResource instanceof DocumentReference) { resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource); }
@@ -86,6 +98,28 @@ public class BundleCore {
             }
         }
         if (resource==null) log.info("Search Not Found "+referenceId);
+        return resource;
+    }
+
+    public Resource searchAddList(String listId, ListResource list) {
+
+        log.info("searchAddList "+listId);
+        if (listId == null) {
+            return null; //throw new InternalErrorException("Null Reference");
+        }
+        Resource resource = resourceMap.get(listId);
+        // Don't process, if already processed.
+        if (resource !=null)
+        {
+            log.info("Already Processed "+resource.getId());
+            return resource;
+        }
+        for (ListResource.ListEntryComponent listEntry : list.getEntry()) {
+            if (listEntry.hasItem()) {
+                searchAddResource(listEntry.getItem().getReference());
+            }
+        }
+
         return resource;
     }
 
@@ -1022,6 +1056,28 @@ public class BundleCore {
             medicationRequest.getRequester().setAgent(getReference(resource));
         }
 
+        if (medicationRequest.hasMedicationReference()) {
+            Resource resource = null;
+            String reference = "";
+            try {
+                reference = medicationRequest.getMedicationReference().getReference();
+                resource = searchAddResource(reference);
+            } catch (Exception exMed) {}
+            if (resource == null ) {
+                referenceMissing(medicationRequest, reference);
+            } else {
+                if (resource instanceof Medication) {
+                    Medication medication = (Medication) resource;
+                    // Remove coded profiling
+                    if (medication.hasCode()) {
+                        medicationRequest.setMedication(medication.getCode());
+                    } else {
+                        // TODO should abort here, we can't handle uncoded references
+                    }
+                }
+            }
+        }
+
         IBaseResource iResource = null;
 
         String xhttpMethod = "POST";
@@ -1068,6 +1124,19 @@ public class BundleCore {
 
         return eprMedicationRequest;
     }
+
+    public MedicationRequest searchAddMedicationStatement(String medicationStatementId,MedicationStatement medicationStatement) {
+        log.info("MedicationStatement searchAdd " +medicationStatementId);
+
+        if (medicationStatement == null) throw new InternalErrorException("Bundle processing error");
+
+        MedicationRequest medicationRequest = fhirMedicationStatementToFHIRMedicationRequestTransformer.transform(medicationStatement);
+
+        MedicationRequest eprMedicationRequest = searchAddMedicationRequest(medicationStatementId, medicationRequest);
+
+        return eprMedicationRequest;
+    }
+
 
     public Condition searchAddCondition(String conditionId, Condition condition) {
         log.info("Condition searchAdd " +conditionId);
