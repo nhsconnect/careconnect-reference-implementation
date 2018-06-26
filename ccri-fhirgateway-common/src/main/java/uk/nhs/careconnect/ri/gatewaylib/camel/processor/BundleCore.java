@@ -1733,8 +1733,13 @@ public class BundleCore {
         }
         if (encounter.hasServiceProvider()) {
             Resource resource = searchAddResource(encounter.getServiceProvider().getReference());
-            if (resource == null) referenceMissing(encounter, encounter.getServiceProvider().getReference());
-            encounter.setServiceProvider(getReference(resource));
+            if (resource == null) {
+                // Ideally would be an error but not currently supporting ServiceProvider
+                referenceMissingWarn(encounter, encounter.getServiceProvider().getReference());
+                encounter.setServiceProvider(null);
+            } else {
+                encounter.setServiceProvider(getReference(resource));
+            }
         }
         if (encounter.hasClass_()) {
             if (encounter.getClass_().getSystem() == null) {
@@ -1899,7 +1904,11 @@ public class BundleCore {
 
         return eprPatient;
     }
+    private void referenceMissingWarn(Resource resource, String reference) {
+        String errMsg = "Unable to resolve reference: "+reference+" In resource "+resource.getClass().getSimpleName()+" id "+resource.getId();
+        log.warn(errMsg);
 
+    }
     private void referenceMissing(Resource resource, String reference) {
         String errMsg = "Unable to resolve reference: "+reference+" In resource "+resource.getClass().getSimpleName()+" id "+resource.getId();
         log.error(errMsg);
