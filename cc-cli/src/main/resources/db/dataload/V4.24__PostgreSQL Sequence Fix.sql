@@ -15,6 +15,11 @@ SELECT setval('system_system_id_seq', COALESCE((SELECT MAX(system_id)+1 FROM sys
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 COMMIT;
 
+LOCK TABLE codesystem IN EXCLUSIVE MODE;
+SELECT setval('codesystem_codesystem_id_seq', COALESCE((SELECT MAX(codesystem_id)+1 FROM codesystem), 1), false)
+WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
+COMMIT;
+
 -- Address
 
 LOCK TABLE address IN EXCLUSIVE MODE;
