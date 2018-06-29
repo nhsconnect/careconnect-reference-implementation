@@ -7,8 +7,11 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "ReferralRequest")
@@ -37,6 +40,31 @@ public class ReferralRequestEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity requesterPractitioner;
 
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestIdentifier.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<ReferralRequestIdentifier> identifiers = new HashSet<>();
+
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestRecipient.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<ReferralRequestRecipient> recipients = new HashSet<>();
+
+    public Set<ReferralRequestIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public ReferralRequestEntity setIdentifiers(Set<ReferralRequestIdentifier> identifiers) {
+        this.identifiers = identifiers;
+        return this;
+    }
+
+    public Set<ReferralRequestRecipient> getRecipients() {
+        return recipients;
+    }
+
+    public ReferralRequestEntity setRecipients(Set<ReferralRequestRecipient> recipients) {
+        this.recipients = recipients;
+        return this;
+    }
 
     public Long getId() {
         return id;

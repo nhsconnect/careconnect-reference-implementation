@@ -47,6 +47,19 @@ public class HealthcareServiceEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<HealthcareServiceSpecialty> locations = new HashSet<>();
 
+    @OneToMany(mappedBy="service", targetEntity = HealthcareServiceType.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    Set<HealthcareServiceType> types = new HashSet<>();
+
+    public Set<HealthcareServiceType> getTypes() {
+        return types;
+    }
+
+    public HealthcareServiceEntity setTypes(Set<HealthcareServiceType> types) {
+        this.types = types;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
