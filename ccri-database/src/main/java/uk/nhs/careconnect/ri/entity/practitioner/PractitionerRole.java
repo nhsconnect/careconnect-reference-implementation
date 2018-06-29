@@ -41,6 +41,50 @@ public class PractitionerRole extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<PractitionerRoleIdentifier> identifiers;
 
+    @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerLocation.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private List<PractitionerLocation> locations;
+
+    @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerHealthcareService.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private List<PractitionerHealthcareService> services;
+
+    public PractitionerEntity getPractitionerEntity() {
+        return practitionerEntity;
+    }
+
+    public PractitionerRole setPractitionerEntity(PractitionerEntity practitionerEntity) {
+        this.practitionerEntity = practitionerEntity;
+        return this;
+    }
+
+    public OrganisationEntity getManagingOrganisation() {
+        return managingOrganisation;
+    }
+
+    public PractitionerRole setManagingOrganisation(OrganisationEntity managingOrganisation) {
+        this.managingOrganisation = managingOrganisation;
+        return this;
+    }
+
+    public List<PractitionerLocation> getLocations() {
+        return locations;
+    }
+
+    public PractitionerRole setLocations(List<PractitionerLocation> locations) {
+        this.locations = locations;
+        return this;
+    }
+
+    public List<PractitionerHealthcareService> getServices() {
+        return services;
+    }
+
+    public PractitionerRole setServices(List<PractitionerHealthcareService> services) {
+        this.services = services;
+        return this;
+    }
+
     public List<PractitionerSpecialty> getSpecialties() {
         if (specialties ==null) {
             specialties = new ArrayList<>();
