@@ -92,6 +92,8 @@ public class BundleCore {
                 else if (iResource instanceof Immunization) { resource = searchAddImmunization(referenceId, (Immunization) iResource); }
                 else if (iResource instanceof CarePlan) { resource = searchAddCarePlan(referenceId, (CarePlan) iResource); }
                 else if (iResource instanceof DocumentReference) { resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource); }
+                else if (iResource instanceof HealthcareService) { resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource); }
+                else if (iResource instanceof ReferralRequest) { resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource); }
                 else {
                     log.info( "Found in Bundle. Not processed (" + iResource.getClass());
                 }
@@ -311,6 +313,116 @@ public class BundleCore {
 
 
         return eprOrganization;
+    }
+
+    public HealthcareService searchAddHealthcareService(String serviceId,HealthcareService service) {
+        log.info("HealthcareService searchAdd " +serviceId);
+
+        if (service== null) throw new InternalErrorException("Bundle processing error");
+
+        HealthcareService eprService = (HealthcareService) resourceMap.get(serviceId);
+
+        // HealthcareService already processed, quit with HealthcareService
+        if (eprService != null) return eprService;
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : service.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRHealthcareService", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "HealthcareService");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprService = (HealthcareService) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found HealthcareService = " + eprService.getId());
+                }
+            }
+        }
+        // HealthcareService found do not add
+        if (eprService != null) {
+            setResourceMap(serviceId,eprService);
+            return eprService;
+        }
+
+        // HealthcareService not found. Add to database
+
+        if (service.getProvidedBy().getReference() != null) {
+            Resource resource = searchAddResource(service.getProvidedBy().getReference());
+            log.info("Found PartOf HealthcareService = "+resource.getId());
+            if (resource == null) referenceMissing(service, service.getProvidedBy().getReference());
+            service.setProvidedBy(getReference(resource));
+        }
+
+        List<Reference> locations = new ArrayList<>();
+        for (Reference reference : service.getLocation()) {
+            if (reference.getReference() != null) {
+                Resource resource = searchAddResource(reference.getReference());
+                log.info("Found Location Reference HealthcareService = " + resource.getId());
+                if (resource == null) referenceMissing(service, reference.getReference());
+                locations.add(getReference(resource));
+            }
+        }
+        eprService.setLocation(locations);
+
+
+        IBaseResource iResource = null;
+        String jsonResource = ctx.newJsonParser().encodeResourceToString(service);
+        Exchange exchange = null;
+        try {
+            exchange = template.send("direct:FHIRservice", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "HealthcareService");
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(jsonResource);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            if (exchange !=null) {
+                try {
+                    String string = (String) exchange.getIn().getBody();
+                    log.error("JSON Parse part 1 = "+string);
+                } catch (Exception ex1) {
+
+                }
+            }
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof HealthcareService) {
+            eprService = (HealthcareService) iResource;
+            setResourceMap(serviceId,eprService);
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+
+        return eprService;
     }
 
     public Location searchAddLocation(String locationId,Location location) {
@@ -1636,6 +1748,152 @@ public class BundleCore {
         }
 
         return eprProcedure;
+    }
+
+    public ReferralRequest searchAddReferralRequest(String referralRequestId,ReferralRequest referralRequest) {
+        log.info("ReferralRequest searchAdd " +referralRequestId);
+
+        if (referralRequest == null) throw new InternalErrorException("Bundle processing error");
+
+        ReferralRequest eprReferralRequest = (ReferralRequest) resourceMap.get(referralRequestId);
+
+        // Organization already processed, quit with Organization
+        if (eprReferralRequest != null) return eprReferralRequest;
+
+        // Prevent re-adding the same Practitioner
+        if (referralRequest.getIdentifier().size() == 0) {
+            referralRequest.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(referralRequest.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : referralRequest.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRReferralRequest", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "ReferralRequest");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprReferralRequest = (ReferralRequest) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found ReferralRequest = " + eprReferralRequest.getId());
+                }
+            }
+        }
+
+        // Location not found. Add to database
+
+
+        if (referralRequest.getSubject() != null) {
+            Resource resource = searchAddResource(referralRequest.getSubject().getReference());
+            if (resource == null) referenceMissing(referralRequest, referralRequest.getSubject().getReference());
+            referralRequest.setSubject(getReference(resource));
+        }
+
+        if (referralRequest.getContext().getReference() != null) {
+            Resource resource = searchAddResource(referralRequest.getContext().getReference());
+            if (resource == null) referenceMissing(referralRequest, referralRequest.getContext().getReference());
+            referralRequest.setContext(getReference(resource));
+        }
+
+        if (referralRequest.getRequester().hasAgent()) {
+            Resource resource = searchAddResource(referralRequest.getRequester().getAgent().getReference());
+            if (resource == null) referenceMissing(referralRequest, referralRequest.getRequester().getAgent().getReference());
+            referralRequest.getRequester().setAgent(getReference(resource));
+        }
+
+        if (referralRequest.getRequester().hasOnBehalfOf()) {
+            Resource resource = searchAddResource(referralRequest.getRequester().getOnBehalfOf().getReference());
+            if (resource == null) referenceMissing(referralRequest, referralRequest.getRequester().getOnBehalfOf().getReference());
+            referralRequest.getRequester().setOnBehalfOf(getReference(resource));
+        }
+
+        List<Reference> recipients = new ArrayList<>();
+        for (Reference reference : referralRequest.getRecipient()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(referralRequest, reference.getReference());
+            if (resource != null) recipients.add(getReference(resource));
+        }
+        referralRequest.setRecipient(recipients);
+
+        List<Reference> supportingInfo = new ArrayList<>();
+        for (Reference reference : referralRequest.getSupportingInfo()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(referralRequest, reference.getReference());
+            if (resource != null) recipients.add(getReference(resource));
+        }
+        referralRequest.setSupportingInfo(supportingInfo);
+
+
+        List<Reference> reasons = new ArrayList<>();
+        for (Reference reference : referralRequest.getReasonReference()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(referralRequest, reference.getReference());
+            if (resource != null) reasons.add(getReference(resource));
+        }
+        referralRequest.setReasonReference(reasons);
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "ReferralRequest";
+        // Location found do not add
+        if (eprReferralRequest != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "ReferralRequest/"+eprReferralRequest.getIdElement().getIdPart();
+            referralRequest.setId(eprReferralRequest.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(referralRequest);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRReferralRequest", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof ReferralRequest) {
+            eprReferralRequest = (ReferralRequest) iResource;
+            setResourceMap(eprReferralRequest.getId(),eprReferralRequest);
+
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprReferralRequest;
     }
 
     public Encounter searchAddEncounter(String encounterId,Encounter encounter) {

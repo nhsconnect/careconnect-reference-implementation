@@ -78,10 +78,13 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(DocumentReferenceResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(BinaryResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(MedicationResourceProvider.class)
-				,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
-				,myAppCtx.getBean(ReferralRequestResourceProvider.class)
-			// Not supported on insecure	,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
-				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
+
+				// Not supported on plain FHIR Server (OAuth2 only)
+
+				//,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
+				//,myAppCtx.getBean(ReferralRequestResourceProvider.class)
+				//,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
+				//,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 
         // Replace built in conformance provider (CapabilityStatement)
