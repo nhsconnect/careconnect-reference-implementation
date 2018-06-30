@@ -387,7 +387,7 @@ public class BundleCore {
         String jsonResource = ctx.newJsonParser().encodeResourceToString(service);
         Exchange exchange = null;
         try {
-            exchange = template.send("direct:FHIRservice", ExchangePattern.InOut, new Processor() {
+            exchange = template.send("direct:FHIRHealthcareService", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
