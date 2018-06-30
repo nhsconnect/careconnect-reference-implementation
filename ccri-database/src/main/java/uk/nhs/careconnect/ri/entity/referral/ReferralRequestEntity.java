@@ -2,14 +2,17 @@ package uk.nhs.careconnect.ri.entity.referral;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hl7.fhir.dstu3.model.ReferralRequest;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureIdentifier;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,9 +29,33 @@ public class ReferralRequestEntity extends BaseResource {
     @LazyCollection(LazyCollectionOption.TRUE)
     private PatientEntity patient;
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="STATUS")
+    private ReferralRequest.ReferralRequestStatus status;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="INTENT")
+    private ReferralRequest.ReferralCategory intent;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="PRIORITY")
+    private ReferralRequest.ReferralPriority priority;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "authoredOn")
+    private Date authoredOn;
+
+    @ManyToOne
+    @JoinColumn(name="SPECIALTY_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ENCOUNTERT"))
+    private EncounterEntity encounterContext;
+
     @ManyToOne
     @JoinColumn(name="SPECIALTY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_SPECIALTY_CONCEPT"))
     private ConceptEntity specialty;
+
+    @ManyToOne
+    @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_TYPE_CONCEPT"))
+    private ConceptEntity type;
 
     @ManyToOne
     @JoinColumn(name="REQUESTOR_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ORGANISATION"))
@@ -36,9 +63,19 @@ public class ReferralRequestEntity extends BaseResource {
     private OrganisationEntity requesterOrganisation;
 
     @ManyToOne
+    @JoinColumn(name="ONBEHALF_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_ONBEHALF_ORGANISATION"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private OrganisationEntity onBehalfOrganisation;
+
+    @ManyToOne
     @JoinColumn(name="REQUESTOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PRACTITIONER"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private PractitionerEntity requesterPractitioner;
+
+    @ManyToOne
+    @JoinColumn(name="REQUESTOR_PATIENT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PATIENT"))
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private PatientEntity requesterPatient;
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestIdentifier.class)
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -47,6 +84,74 @@ public class ReferralRequestEntity extends BaseResource {
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestRecipient.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<ReferralRequestRecipient> recipients = new HashSet<>();
+
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestReason.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<ReferralRequestReason> reasons = new HashSet<>();
+
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestServiceRequested.class)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<ReferralRequestServiceRequested> services = new HashSet<>();
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ReferralRequest.ReferralRequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReferralRequest.ReferralRequestStatus status) {
+        this.status = status;
+    }
+
+    public Date getAuthoredOn() {
+        return authoredOn;
+    }
+
+    public void setAuthoredOn(Date authoredOn) {
+        this.authoredOn = authoredOn;
+    }
+
+    public EncounterEntity getEncounterContext() {
+        return encounterContext;
+    }
+
+    public void setEncounterContext(EncounterEntity encounterContext) {
+        this.encounterContext = encounterContext;
+    }
+
+    public Set<ReferralRequestReason> getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(Set<ReferralRequestReason> reasons) {
+        this.reasons = reasons;
+    }
+
+    public Set<ReferralRequestServiceRequested> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<ReferralRequestServiceRequested> services) {
+        this.services = services;
+    }
+
+    public ReferralRequest.ReferralCategory getIntent() {
+        return intent;
+    }
+
+    public void setIntent(ReferralRequest.ReferralCategory intent) {
+        this.intent = intent;
+    }
+
+    public ReferralRequest.ReferralPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(ReferralRequest.ReferralPriority priority) {
+        this.priority = priority;
+    }
 
     public Set<ReferralRequestIdentifier> getIdentifiers() {
         return identifiers;
@@ -79,6 +184,15 @@ public class ReferralRequestEntity extends BaseResource {
         return this;
     }
 
+    public ConceptEntity getType() {
+        return type;
+    }
+
+    public ReferralRequestEntity setType(ConceptEntity type) {
+        this.type = type;
+        return this;
+    }
+
     public ConceptEntity getSpecialty() {
         return specialty;
     }
@@ -104,5 +218,21 @@ public class ReferralRequestEntity extends BaseResource {
     public ReferralRequestEntity setRequesterPractitioner(PractitionerEntity requesterPractitioner) {
         this.requesterPractitioner = requesterPractitioner;
         return this;
+    }
+
+    public PatientEntity getRequesterPatient() {
+        return requesterPatient;
+    }
+
+    public void setRequesterPatient(PatientEntity requesterPatient) {
+        this.requesterPatient = requesterPatient;
+    }
+
+    public OrganisationEntity getOnBehalfOrganisation() {
+        return onBehalfOrganisation;
+    }
+
+    public void setOnBehalfOrganisation(OrganisationEntity onBehalfOrganisation) {
+        this.onBehalfOrganisation = onBehalfOrganisation;
     }
 }

@@ -1,0 +1,80 @@
+{
+    "resourceType": "ReferralRequest",
+    "meta": {
+      "profile": [
+        "https://fhir.nhs.uk/STU3/StructureDefinition/DCH-ReferralRequest-1"
+      ]
+    },
+    "extension": [
+      {
+        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-ReferralRequestMethod-1",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "https://fhir.nhs.uk/STU3/CodeSystem/DCH-ReferralRequestMethod-1",
+              "code": "6",
+              "display": "NHS E-Referral Service"
+            }
+          ]
+        }
+      },
+      {
+        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-SourceOfReferral-1",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "https://fhir.nhs.uk/STU3/CodeSystem/DCH-SourceOfReferral-1",
+              "code": "1",
+              "display": "General Medical Practitioner Practice"
+            }
+          ]
+        }
+      }
+    ],
+    "identifier": [
+      {
+        "system": "https://tools.ietf.org/html/rfc4122",
+        "value": "6819026b-af11-4378-897e-67c3f520f342"
+      }
+    ],
+    "status": "active",
+    "intent": "proposal",
+    "priority": "routine",
+    "serviceRequested": [
+      {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "309625004",
+            "display": "Referral to psychology service"
+          }
+        ]
+      }
+    ],
+    "subject": {
+      "reference": "Patient/4"
+    },
+    "context": {
+      "reference": "Encounter/3"
+    },
+    "authoredOn": "2018-02-15",
+    "requester": {
+      "agent": {
+        "reference": "Practitioner/3"
+      },
+      "onBehalfOf": {
+        "reference": "Organization/2"
+      }
+    },
+    "reasonCode": [
+      {
+        "coding": [
+          {
+            "system": "https://fhir.nhs.uk/STU3/CodeSystem/DCH-ReasonForReferral-1",
+            "code": "60",
+            "display": "Sleep Problems"
+          }
+        ]
+      }
+    ]
+  }

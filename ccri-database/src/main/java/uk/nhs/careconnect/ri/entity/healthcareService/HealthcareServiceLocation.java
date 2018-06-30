@@ -5,7 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole;
+
 
 import javax.persistence.*;
 
@@ -41,11 +41,11 @@ public class HealthcareServiceLocation extends BaseResource {
         return this.service;
     }
 
-    public HealthcareServiceEntity getPractitionerRole() {
+    public HealthcareServiceEntity getHealthcareService() {
         return service;
     }
 
-    public HealthcareServiceLocation setPractitionerRole(HealthcareServiceEntity service) {
+    public HealthcareServiceLocation setHealthcareService(HealthcareServiceEntity service) {
         this.service = service;
         return this;
     }

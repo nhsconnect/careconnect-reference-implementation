@@ -27,9 +27,13 @@ public class HealthcareServiceEntity extends BaseResource {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SPECIALTY_SPECIALTY_ORGANISATION_ID"))
+    @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SPECIALTY_ORGANISATION_ID"))
     @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity providedBy;
+
+    @ManyToOne
+    @JoinColumn(name="CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_SERVICE_CATEGORY_CONCEPT"))
+    private ConceptEntity category;
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceTelecom.class)
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -45,11 +49,19 @@ public class HealthcareServiceEntity extends BaseResource {
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceLocation.class)
     @LazyCollection(LazyCollectionOption.TRUE)
-    Set<HealthcareServiceSpecialty> locations = new HashSet<>();
+    Set<HealthcareServiceLocation> locations = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceType.class)
     @LazyCollection(LazyCollectionOption.TRUE)
     Set<HealthcareServiceType> types = new HashSet<>();
+
+    public ConceptEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(ConceptEntity category) {
+        this.category = category;
+    }
 
     public Set<HealthcareServiceType> getTypes() {
         return types;
@@ -69,11 +81,11 @@ public class HealthcareServiceEntity extends BaseResource {
         return this;
     }
 
-    public Set<HealthcareServiceSpecialty> getLocations() {
+    public Set<HealthcareServiceLocation> getLocations() {
         return locations;
     }
 
-    public HealthcareServiceEntity setLocations(Set<HealthcareServiceSpecialty> locations) {
+    public HealthcareServiceEntity setLocations(Set<HealthcareServiceLocation> locations) {
         this.locations = locations;
         return this;
     }

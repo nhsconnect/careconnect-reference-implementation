@@ -1,0 +1,38 @@
+{
+    "resourceType": "HealthcareService",
+    "meta": {
+      "profile": [
+        "https://fhir.nhs.uk/STU3/StructureDefinition/DCH-HealthcareService-1"
+      ]
+    },
+    "identifier": [
+      {
+        "system": "https://tools.ietf.org/html/rfc4122",
+        "value": "2db9a96b-393f-4817-868f-3e064296f1f9"
+      }
+    ],
+    "providedBy": {
+      "reference": "Organization/1"
+    },
+    "specialty": [
+      {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "408470005"
+          }
+        ]
+      }
+    ],
+    "location": [
+      {
+        "reference": "Location/1"
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "0191 1231234"
+      }
+    ]
+  }

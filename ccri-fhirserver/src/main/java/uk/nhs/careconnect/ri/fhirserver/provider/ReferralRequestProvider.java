@@ -57,8 +57,6 @@ public class ReferralRequestProvider implements ICCResourceProvider {
         method.setId(newReferralRequest.getIdElement());
         method.setResource(newReferralRequest);
 
-
-
         return method;
     }
 
@@ -83,9 +81,10 @@ public class ReferralRequestProvider implements ICCResourceProvider {
     public List<ReferralRequest> searchReferralRequest(HttpServletRequest theRequest,
                @OptionalParam(name = ReferralRequest.SP_IDENTIFIER) TokenParam identifier,
                @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
-               @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id
+               @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
+               @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
     ) {
-        return referralDao.searchReferralRequest(ctx, identifier,codes,id);
+        return referralDao.searchReferralRequest(ctx, identifier,codes,id,patient);
     }
 
     @Read()

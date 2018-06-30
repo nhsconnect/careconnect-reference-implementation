@@ -45,8 +45,8 @@ public class HealthcareServiceSpecialty extends BaseResource {
         return this;
     }
 
-    public HealthcareServiceSpecialty setSpecialty(ConceptEntity specialty) {
+    public HealthcareServiceEntity setSpecialty(ConceptEntity specialty) {
         this.specialty = specialty;
-        return this;
+        return this.getHealthcareService();
     }
 }

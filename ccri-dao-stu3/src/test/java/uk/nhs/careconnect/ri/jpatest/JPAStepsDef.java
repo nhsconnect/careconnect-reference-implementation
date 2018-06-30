@@ -84,6 +84,12 @@ public class JPAStepsDef {
     @Autowired
     DocumentReferenceRepository documentReferenceRepository;
 
+    @Autowired
+    ReferralRequestRepository referralRequestRepository;
+
+    @Autowired
+    HealthcareServiceRepository serviceRepository;
+
 
     @Autowired
     TerminologyLoader myTermSvc;
@@ -1020,6 +1026,30 @@ PROCEDURE
             DocumentReference documentReference = ctx.newXmlParser().parseResource(DocumentReference.class, reader);
             try {
                 documentReference = documentReferenceRepository.create(ctx,documentReference,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/HealthcareService.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            HealthcareService healthcareService = ctx.newJsonParser().parseResource(HealthcareService.class, reader);
+            try {
+                healthcareService = serviceRepository.create(ctx,healthcareService,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("json/ReferralRequest.json");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            ReferralRequest referralRequest = ctx.newJsonParser().parseResource(ReferralRequest.class, reader);
+            try {
+                referralRequest = referralRequestRepository.create(ctx,referralRequest,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

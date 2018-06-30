@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.ReferralRequest;
@@ -27,7 +28,8 @@ public interface ReferralRequestRepository extends BaseDao<ReferralRequestEntity
 
         @OptionalParam(name = ReferralRequest.SP_IDENTIFIER) TokenParam identifier,
         @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
-        @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id
+        @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
+        @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
 
     );
 
@@ -35,6 +37,7 @@ public interface ReferralRequestRepository extends BaseDao<ReferralRequestEntity
 
         @OptionalParam(name = ReferralRequest.SP_IDENTIFIER) TokenParam identifier,
         @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
-        @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id
+        @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
+        @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
     );
 }

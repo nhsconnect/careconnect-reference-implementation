@@ -41,5 +41,19 @@ public class HealthcareServiceType extends BaseResource {
         return this;
     }
 
+    public HealthcareServiceEntity getService() {
+        return service;
+    }
 
+    public void setService(HealthcareServiceEntity service) {
+        this.service = service;
+    }
+
+    public ConceptEntity getType_() {
+        return type_;
+    }
+
+    public void setType_(ConceptEntity type_) {
+        this.type_ = type_;
+    }
 }

@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gateway.http;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -77,6 +78,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(DocumentReferenceResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(BinaryResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(MedicationResourceProvider.class)
+				,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
+				,myAppCtx.getBean(ReferralRequestResourceProvider.class)
 			// Not supported on insecure	,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
 				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));

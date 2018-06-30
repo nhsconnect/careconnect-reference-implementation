@@ -179,8 +179,17 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:HAPIServer");
 
 		from("direct:FHIRBinary")
-				.routeId("Gateway Binary")
-				.to("direct:EDMSServer");
+			.routeId("Gateway Binary")
+			.to("direct:EDMSServer");
+
+		from("direct:FHIRReferralRequest")
+				.routeId("Gateway ReferralRequest")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRHealthcareService")
+				.routeId("Gateway HealthcareService")
+				.to("direct:HAPIServer");
+
 
 		from("direct:EDMSServer")
 				.routeId("EDMS FHIR Server")

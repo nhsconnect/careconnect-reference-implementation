@@ -60,4 +60,35 @@ public class ReferralRequestRecipient {
         return this;
     }
 
+    public ReferralRequestEntity getReferral() {
+        return referral;
+    }
+
+    public void setReferral(ReferralRequestEntity referral) {
+        this.referral = referral;
+    }
+
+    public PractitionerEntity getPractitioner() {
+        return practitioner;
+    }
+
+    public void setPractitioner(PractitionerEntity practitioner) {
+        this.practitioner = practitioner;
+    }
+
+    public OrganisationEntity getOrganisation() {
+        return organisation;
+    }
+
+    public void setOrganisation(OrganisationEntity organisation) {
+        this.organisation = organisation;
+    }
+
+    public HealthcareServiceEntity getService() {
+        return service;
+    }
+
+    public void setService(HealthcareServiceEntity service) {
+        this.service = service;
+    }
 }
