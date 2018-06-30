@@ -46,6 +46,8 @@ public class OperationOutcomeFactory {
 
             // TODO Revist the mapping here.
             String text = null;
+            String diagnostics = "";
+            if (issue.getDiagnostics() != null ) diagnostics = issue.getDiagnostics();
             if (issue.getDetails() != null) text =issue.getDetails().getText();
 
             if (text ==null && issue.getDiagnostics() !=null) text = issue.getDiagnostics();
@@ -57,7 +59,7 @@ public class OperationOutcomeFactory {
                     throw new ResourceNotFoundException(text,outcome);
                 case PROCESSING:
 
-                    if (issue.getDiagnostics().contains("The FHIR endpoint on this server does not know how to handle")) {
+                    if (diagnostics.contains("The FHIR endpoint on this server does not know how to handle")) {
                         throw new NotImplementedOperationException(text,outcome);
                     } else {
                         throw new UnprocessableEntityException(text, outcome);
