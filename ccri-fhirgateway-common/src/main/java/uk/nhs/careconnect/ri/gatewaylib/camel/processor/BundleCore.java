@@ -329,6 +329,7 @@ public class BundleCore {
 
         InputStream inputStream = null;
 
+        log.info("Looking up HealthcareService Service " +serviceId);
         for (Identifier identifier : service.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRHealthcareService", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
@@ -354,6 +355,7 @@ public class BundleCore {
                 }
             }
         }
+        log.info("Adding HealthcareService Service " +serviceId);
         // HealthcareService found do not add
         if (eprService != null) {
             setResourceMap(serviceId,eprService);
