@@ -175,7 +175,7 @@ public class BundleResourceProvider implements IResourceProvider {
             log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
             if(operationOutcome.getIssue().size()>0)
             {
-                log.info("Server Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
                 OperationOutcomeFactory.convertToException(operationOutcome);
             }
         }
