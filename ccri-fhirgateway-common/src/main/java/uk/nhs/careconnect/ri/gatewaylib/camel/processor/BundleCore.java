@@ -39,7 +39,7 @@ public class BundleCore {
 
     private Bundle bundle;
 
-    private static final Logger log = LoggerFactory.getLogger(BundleMessage.class);
+    private static final Logger log = LoggerFactory.getLogger(BundleCore.class);
 
     public Reference getReference(Resource resource) {
         Reference reference = new Reference();
@@ -380,7 +380,7 @@ public class BundleCore {
                 locations.add(getReference(resource));
             }
         }
-        eprService.setLocation(locations);
+        service.setLocation(locations);
 
 
         IBaseResource iResource = null;
@@ -416,6 +416,7 @@ public class BundleCore {
         if (iResource instanceof HealthcareService) {
             eprService = (HealthcareService) iResource;
             setResourceMap(serviceId,eprService);
+            return eprService;
         } else if (iResource instanceof OperationOutcome)
         {
             processOperationOutcome((OperationOutcome) iResource);
@@ -424,7 +425,7 @@ public class BundleCore {
         }
 
 
-        return eprService;
+        return null;
     }
 
     public Location searchAddLocation(String locationId,Location location) {

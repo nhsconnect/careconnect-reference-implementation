@@ -37,7 +37,7 @@ public class CompositionDocumentBundle implements AggregationStrategy {
     private Patient patient;
     private Composition composition;
 
-    private static final Logger log = LoggerFactory.getLogger(BundleMessage.class);
+    private static final Logger log = LoggerFactory.getLogger(CompositionDocumentBundle.class);
 
     private String hapiBase;
 
