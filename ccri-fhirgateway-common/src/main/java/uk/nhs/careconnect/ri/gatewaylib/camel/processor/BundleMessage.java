@@ -50,10 +50,16 @@ public class BundleMessage implements Processor {
                 // These should be using well known identifiers and ideally will be present on our system.
 
                 if (resource.getId() != null) {
-                    bundleCore.searchAddResource(resource.getId());
+                    Resource resourceSearch = bundleCore.searchAddResource(resource.getId());
+                    if (resourceSearch instanceof OperationOutcome) {
+                        setExchange(exchange,(OperationOutcome) resourceSearch);
+                    }
                 } else {
                     resource.setId(java.util.UUID.randomUUID().toString());
-                    bundleCore.searchAddResource(resource.getId());
+                    Resource resourceSearch = bundleCore.searchAddResource(resource.getId());
+                    if (resourceSearch instanceof OperationOutcome) {
+                        setExchange(exchange,(OperationOutcome) resourceSearch);
+                    }
                 }
 
             }
@@ -68,11 +74,16 @@ public class BundleMessage implements Processor {
                     .setSeverity(OperationOutcome.IssueSeverity.ERROR)
                     .setCode(issueType)
                     .setDiagnostics(ex.getMessage());
-            exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(operationOutcome));
+            setExchange(exchange,operationOutcome);
         }
         log.info("Finishing Message Bundle Processing");
 
     }
+
+    private void setExchange(Exchange exchange, OperationOutcome operationOutcome) {
+        exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(operationOutcome));
+    }
+
 
 
 }

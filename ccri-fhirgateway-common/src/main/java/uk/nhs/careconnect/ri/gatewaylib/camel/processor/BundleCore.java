@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.camel.processor;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
@@ -39,6 +40,8 @@ public class BundleCore {
 
     private Bundle bundle;
 
+    private OperationOutcome operationOutcome = null;
+
     private static final Logger log = LoggerFactory.getLogger(BundleCore.class);
 
     public Reference getReference(Resource resource) {
@@ -55,52 +58,85 @@ public class BundleCore {
     }
 
     public Resource searchAddResource(String referenceId) {
+        try {
+            log.info("searchAddResource " + referenceId);
+            if (referenceId == null) {
+                return null; //throw new InternalErrorException("Null Reference");
+            }
+            Resource resource = resourceMap.get(referenceId);
+            // Don't process, if already processed.
+            if (resource != null) {
+                log.info("Already Processed " + resource.getId());
+                return resource;
+            }
 
-        log.info("searchAddResource "+referenceId);
-        if (referenceId == null) {
-            return null; //throw new InternalErrorException("Null Reference");
-        }
-        Resource resource = resourceMap.get(referenceId);
-        // Don't process, if already processed.
-        if (resource !=null)
-        {
-            log.info("Already Processed "+resource.getId());
-            return resource;
-        }
-
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            Resource iResource = null;
-            if ((entry.getFullUrl() !=null && entry.getFullUrl().equals(referenceId)) || (iResource == null && entry.getResource() !=null && entry.getResource().getId() !=null && entry.getResource().getId().equals(referenceId) )) {
-                iResource = entry.getResource();
-                if (iResource instanceof Patient) { resource = searchAddPatient(referenceId, (Patient) iResource); }
-                else if (iResource instanceof Practitioner) { resource = searchAddPractitioner(referenceId, (Practitioner) iResource); }
-                else if (iResource instanceof Encounter) { resource = searchAddEncounter(referenceId, (Encounter) iResource); }
-                else if (iResource instanceof Organization) { resource = searchAddOrganisation(referenceId, (Organization) iResource); }
-                else if (iResource instanceof Location) { resource = searchAddLocation(referenceId, (Location) iResource); }
-                else if (iResource instanceof Observation) { resource = searchAddObservation(referenceId, (Observation) iResource); }
-                else if (iResource instanceof AllergyIntolerance) { resource = searchAddAllergyIntolerance(referenceId, (AllergyIntolerance) iResource); }
-                else if (iResource instanceof Condition) { resource = searchAddCondition(referenceId, (Condition) iResource); }
-                else if (iResource instanceof Procedure) { resource = searchAddProcedure(referenceId, (Procedure) iResource); }
-                else if (iResource instanceof Composition) { resource = searchAddComposition(referenceId, (Composition) iResource); }
-                else if (iResource instanceof DiagnosticReport) { resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource); }
-                else if (iResource instanceof MedicationRequest) { resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource); }
-                else if (iResource instanceof MedicationStatement) { resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource); }
-                else if (iResource instanceof Medication) {
-                    // We don't store medication, so return the resource as is 26th June 2018 KGM
-                    resource = iResource; }
-                    else if (iResource instanceof ListResource) { resource = searchAddList(referenceId, (ListResource) iResource); }
-                else if (iResource instanceof Immunization) { resource = searchAddImmunization(referenceId, (Immunization) iResource); }
-                else if (iResource instanceof CarePlan) { resource = searchAddCarePlan(referenceId, (CarePlan) iResource); }
-                else if (iResource instanceof DocumentReference) { resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource); }
-                else if (iResource instanceof HealthcareService) { resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource); }
-                else if (iResource instanceof ReferralRequest) { resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource); }
-                else {
-                    log.info( "Found in Bundle. Not processed (" + iResource.getClass());
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                Resource iResource = null;
+                if ((entry.getFullUrl() != null && entry.getFullUrl().equals(referenceId)) || (iResource == null && entry.getResource() != null && entry.getResource().getId() != null && entry.getResource().getId().equals(referenceId))) {
+                    iResource = entry.getResource();
+                    if (iResource instanceof Patient) {
+                        resource = searchAddPatient(referenceId, (Patient) iResource);
+                    } else if (iResource instanceof Practitioner) {
+                        resource = searchAddPractitioner(referenceId, (Practitioner) iResource);
+                    } else if (iResource instanceof Encounter) {
+                        resource = searchAddEncounter(referenceId, (Encounter) iResource);
+                    } else if (iResource instanceof Organization) {
+                        resource = searchAddOrganisation(referenceId, (Organization) iResource);
+                    } else if (iResource instanceof Location) {
+                        resource = searchAddLocation(referenceId, (Location) iResource);
+                    } else if (iResource instanceof Observation) {
+                        resource = searchAddObservation(referenceId, (Observation) iResource);
+                    } else if (iResource instanceof AllergyIntolerance) {
+                        resource = searchAddAllergyIntolerance(referenceId, (AllergyIntolerance) iResource);
+                    } else if (iResource instanceof Condition) {
+                        resource = searchAddCondition(referenceId, (Condition) iResource);
+                    } else if (iResource instanceof Procedure) {
+                        resource = searchAddProcedure(referenceId, (Procedure) iResource);
+                    } else if (iResource instanceof Composition) {
+                        resource = searchAddComposition(referenceId, (Composition) iResource);
+                    } else if (iResource instanceof DiagnosticReport) {
+                        resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource);
+                    } else if (iResource instanceof MedicationRequest) {
+                        resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
+                    } else if (iResource instanceof MedicationStatement) {
+                        resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource);
+                    } else if (iResource instanceof Medication) {
+                        // We don't store medication, so return the resource as is 26th June 2018 KGM
+                        resource = iResource;
+                    } else if (iResource instanceof ListResource) {
+                        resource = searchAddList(referenceId, (ListResource) iResource);
+                    } else if (iResource instanceof Immunization) {
+                        resource = searchAddImmunization(referenceId, (Immunization) iResource);
+                    } else if (iResource instanceof CarePlan) {
+                        resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
+                    } else if (iResource instanceof DocumentReference) {
+                        resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
+                    } else if (iResource instanceof HealthcareService) {
+                        resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
+                    }
+                    //else if (iResource instanceof PractitionerRole) {
+                    //    resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
+                    //}
+                    else if (iResource instanceof ReferralRequest) {
+                        resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
+                    } else {
+                        log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                    }
                 }
             }
+            if (resource == null) log.info("Search Not Found " + referenceId);
+            if (this.operationOutcome != null) return operationOutcome;
+            return resource;
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            if (ex instanceof BaseServerResponseException) {
+                return this.operationOutcome;
+            } else {
+                throw ex;
+            }
+
         }
-        if (resource==null) log.info("Search Not Found "+referenceId);
-        return resource;
+        //return null;
     }
 
     public Resource searchAddList(String listId, ListResource list) {
@@ -2070,98 +2106,98 @@ public class BundleCore {
 
 
     public Patient searchAddPatient(String patientId, Patient patient) {
-        log.info("Patient searchAdd " +patientId);
 
-        if (patient == null) throw new InternalErrorException("Bundle processing error");
+            log.info("Patient searchAdd " + patientId);
 
-        Patient eprPatient = (Patient) resourceMap.get(patientId);
+            if (patient == null) throw new InternalErrorException("Bundle processing error");
 
-        // Patient already processed, quit with Patient
-        if (eprPatient != null) return eprPatient;
+            Patient eprPatient = (Patient) resourceMap.get(patientId);
 
-        ProducerTemplate template = context.createProducerTemplate();
+            // Patient already processed, quit with Patient
+            if (eprPatient != null) return eprPatient;
 
-        InputStream inputStream = null;
+            ProducerTemplate template = context.createProducerTemplate();
 
-        for (Identifier identifier : patient.getIdentifier()) {
-            Exchange exchange = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
-                public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
+            InputStream inputStream = null;
+
+            for (Identifier identifier : patient.getIdentifier()) {
+                Exchange exchange = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+                Reader reader = new InputStreamReader(inputStream);
+                IBaseResource iresource = null;
+                try {
+                    iresource = ctx.newJsonParser().parseResource(reader);
+                } catch (Exception ex) {
+                    log.error("JSON Parse failed " + ex.getMessage());
+                    throw new InternalErrorException(ex.getMessage());
                 }
-            });
-            inputStream = (InputStream) exchange.getIn().getBody();
-            Reader reader = new InputStreamReader(inputStream);
-            IBaseResource iresource = null;
+                if (iresource instanceof Bundle) {
+                    Bundle returnedBundle = (Bundle) iresource;
+                    if (returnedBundle.getEntry().size() > 0) {
+                        eprPatient = (Patient) returnedBundle.getEntry().get(0).getResource();
+                        log.info("Found Patient = " + eprPatient.getId());
+                        // KGM 31/Jan/2018 Missing break on finding patient
+                        break;
+                    }
+                }
+            }
+            // Patient found do not add
+            if (eprPatient != null) {
+                setResourceMap(patientId, eprPatient);
+                return eprPatient;
+            }
+
+            // Location not found. Add to database
+
+            if (patient.getManagingOrganization().getReference() != null) {
+                Resource resource = searchAddResource(patient.getManagingOrganization().getReference());
+                log.info("Found ManagingOrganization = " + resource.getId());
+                if (resource == null) referenceMissing(patient, patient.getManagingOrganization().getReference());
+                patient.setManagingOrganization(getReference(resource));
+            }
+            for (Reference reference : patient.getGeneralPractitioner()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(patient, reference.getReference());
+                log.info("Found Patient Practitioner = " + reference.getId());
+                // This resets the first gp only (should only be one gp)
+                patient.getGeneralPractitioner().get(0).setReference(getReference(resource).getReference());
+            }
+
+            IBaseResource iResource = null;
+            String jsonResource = ctx.newJsonParser().encodeResourceToString(patient);
             try {
-                iresource = ctx.newJsonParser().parseResource(reader);
-            } catch(Exception ex) {
+                Exchange exchange = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                        exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                        exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
+                        exchange.getIn().setHeader("Prefer", "return=representation");
+                        exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                        exchange.getIn().setBody(jsonResource);
+                    }
+                });
+                inputStream = (InputStream) exchange.getIn().getBody();
+
+                Reader reader = new InputStreamReader(inputStream);
+                iResource = ctx.newJsonParser().parseResource(reader);
+            } catch (Exception ex) {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
-                Bundle returnedBundle = (Bundle) iresource;
-                if (returnedBundle.getEntry().size() > 0) {
-                    eprPatient = (Patient) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Patient = " + eprPatient.getId());
-                    // KGM 31/Jan/2018 Missing break on finding patient
-                    break;
-                }
+            if (iResource instanceof Patient) {
+                eprPatient = (Patient) iResource;
+                setResourceMap(patientId, eprPatient);
+            } else if (iResource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iResource);
+            } else {
+                throw new InternalErrorException("Unknown Error");
             }
-        }
-        // Patient found do not add
-        if (eprPatient != null) {
-            setResourceMap(patientId,eprPatient);
-            return eprPatient;
-        }
-
-        // Location not found. Add to database
-
-        if (patient.getManagingOrganization().getReference() != null) {
-            Resource resource = searchAddResource(patient.getManagingOrganization().getReference());
-            log.info("Found ManagingOrganization = "+resource.getId());
-            if (resource == null) referenceMissing(patient, patient.getManagingOrganization().getReference());
-            patient.setManagingOrganization(getReference(resource));
-        }
-        for (Reference reference : patient.getGeneralPractitioner()) {
-            Resource resource = searchAddResource(reference.getReference());
-            if (resource == null) referenceMissing(patient, reference.getReference());
-            log.info("Found Patient Practitioner = "+reference.getId());
-            // This resets the first gp only (should only be one gp)
-            patient.getGeneralPractitioner().get(0).setReference(getReference(resource).getReference());
-        }
-
-        IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(patient);
-        try {
-            Exchange exchange = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
-                public void process(Exchange exchange) throws Exception {
-                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
-                    exchange.getIn().setHeader("Prefer","return=representation");
-                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
-                }
-            });
-            inputStream = (InputStream) exchange.getIn().getBody();
-
-            Reader reader = new InputStreamReader(inputStream);
-            iResource = ctx.newJsonParser().parseResource(reader);
-        } catch(Exception ex) {
-            log.error("JSON Parse failed " + ex.getMessage());
-            throw new InternalErrorException(ex.getMessage());
-        }
-        if (iResource instanceof Patient) {
-            eprPatient = (Patient) iResource;
-            setResourceMap(patientId,eprPatient);
-        } else if (iResource instanceof OperationOutcome) {
-            processOperationOutcome((OperationOutcome) iResource);
-        } else {
-            throw new InternalErrorException("Unknown Error");
-        }
-
 
         return eprPatient;
     }
@@ -2185,7 +2221,7 @@ public class BundleCore {
     }
 
     private void processOperationOutcome(OperationOutcome operationOutcome) {
-
+        this.operationOutcome = operationOutcome;
         log.info("Server Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
         OperationOutcomeFactory.convertToException(operationOutcome);
     }
