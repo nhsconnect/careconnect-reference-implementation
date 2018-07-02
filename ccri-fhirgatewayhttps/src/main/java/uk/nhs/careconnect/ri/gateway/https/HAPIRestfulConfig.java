@@ -109,6 +109,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
 
+
 		FhirContext ctx = getFhirContext();
 		// Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 	}

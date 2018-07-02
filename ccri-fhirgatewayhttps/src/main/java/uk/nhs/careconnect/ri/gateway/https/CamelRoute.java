@@ -66,14 +66,24 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.wireTap("seda:FHIRBundleCollection");
+				//.wireTap("seda:FHIRBundleCollection");
+				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
+				.process(bundleMessage);
 
 		// This bundle goes to the EDMS Server. See also Binary
-		from("direct:FHIRBundleDocument")
-				.routeId("Bundle Document")
+		from("direct:FHIRBundleDocumentCreate")
+				.routeId("Bundle Document Create")
 				.process(camelProcessor) // Add in correlation Id if not present
-				//.wireTap("seda:FHIRBundleMessageQueue") // Send a copy to EPR for main CCRI load
-				.enrich("direct:EDMSServer", compositionDocumentBundle);
+				.wireTap("seda:FHIRBundleMessageQueue") // Send a copy to EPR for main CCRI load
+				.enrich("direct:EDMSServer", compositionDocumentBundle)
+				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentCreate?level=INFO&showHeaders=true&showExchangeId=true");
+		;
+
+		from("direct:FHIRBundleDocumentUpdate")
+				.routeId("Bundle Document Update")
+				.process(camelProcessor) // Add in correlation Id if not present
+				.enrich("direct:EDMSServer", compositionDocumentBundle)
+				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentUpdate?level=INFO&showHeaders=true&showExchangeId=true");
 
 
 		from("seda:FHIRBundleCollection")
@@ -87,7 +97,9 @@ public class CamelRoute extends RouteBuilder {
 
 		from("direct:FHIRBundleMessage")
 				.routeId("Bundle Message Processing")
-				.process(bundleMessage); // Goes direct to EPR FHIR Server
+				.process(bundleMessage)
+				.to("log:uk.nhs.careconnect.FHIRGateway.direct:FHIRBundleMessage?level=INFO&showHeaders=true&showExchangeId=true");
+
 
 		from("direct:FHIRDocumentReferenceBundle")
 				.routeId("Bundle Process Binary")

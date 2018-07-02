@@ -46,7 +46,6 @@ public class PractitionerProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
         Practitioner newPractitioner = practitionerDao.create(ctx,practitioner, theId, theConditional);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);

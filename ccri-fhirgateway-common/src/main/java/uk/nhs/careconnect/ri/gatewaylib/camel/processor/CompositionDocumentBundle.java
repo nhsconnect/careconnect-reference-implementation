@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.camel.processor;
 
 import ca.uhn.fhir.context.FhirContext;
+import com.phloc.commons.state.EChange;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
@@ -136,15 +137,17 @@ public class CompositionDocumentBundle implements AggregationStrategy {
                                     }
                                 }
 
-                                log.trace(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(documentReference));
                                 // Add the new DocumentReference to the bundle
                                 bundleCore.getBundle().addEntry().setResource(documentReference);
                                 bundleCore.searchAddResource(documentReference.getId());
-                                edmsExchange.getIn().setHeader("Location","DocumentReference/"+documentReference.getId());
+
+                                log.trace("Document Reference Location " + documentReference.getId());
+                                edmsExchange.getIn().setHeader("Location", documentReference.getId());
+                                edmsExchange.getIn().setHeader("Content-Location", documentReference.getId());
                             }
 
                         }
-                        edmsExchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
+                        edmsExchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getUpdatedBundle()));
 
                         //log.info(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
                     } catch (Exception ex) {

@@ -47,11 +47,29 @@ public class BundleCore {
     public Reference getReference(Resource resource) {
         Reference reference = new Reference();
         reference.setReference(resource.getId());
-
         return reference;
     }
 
 
+    public Bundle getUpdatedBundle() {
+        //
+        Bundle updatedBundle = new Bundle();
+        updatedBundle.setType(this.bundle.getType());
+        updatedBundle.setIdentifier(this.bundle.getIdentifier());
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Resource iResource = resourceMap.get(entry.getResource().getId());
+            if (iResource == null) {
+                iResource = searchAddResource(entry.getResource().getId());
+            }
+            if (iResource != null) {
+                updatedBundle.addEntry().setResource(iResource);
+            } else {
+                log.error("Not found "+entry.getResource().getClass().getSimpleName() + " Reference " + entry.getResource().getId());
+                updatedBundle.addEntry().setResource(entry.getResource());
+            }
+        }
+        return updatedBundle;
+    }
 
     public Bundle getBundle() {
         return bundle;
@@ -2150,6 +2168,7 @@ public class BundleCore {
             // Patient found do not add
             if (eprPatient != null) {
                 setResourceMap(patientId, eprPatient);
+
                 return eprPatient;
             }
 

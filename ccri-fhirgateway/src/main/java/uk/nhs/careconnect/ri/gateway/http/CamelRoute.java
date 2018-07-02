@@ -63,10 +63,15 @@ public class CamelRoute extends RouteBuilder {
 				.wireTap("seda:FHIRBundleCollection");
 
 		// This bundle goes to the EDMS Server. See also Binary
-		from("direct:FHIRBundleDocument")
+		from("direct:FHIRBundleDocumentCreate")
 				.routeId("Bundle Document")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.wireTap("seda:FHIRBundleMessageQueue") // Send a copy to EPR for main CCRI load
+				.enrich("direct:EDMSServer", compositionDocumentBundle);
+
+		from("direct:FHIRBundleDocumentUpdate")
+				.routeId("Bundle Document Update")
+				.process(camelProcessor) // Add in correlation Id if not present
 				.enrich("direct:EDMSServer", compositionDocumentBundle);
 
 

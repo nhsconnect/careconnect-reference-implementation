@@ -81,9 +81,10 @@ public class PatientProvider implements ICCResourceProvider {
             newPatient = patientDao.update(ctx, patient, theId, theConditional);
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            method.setId(newPatient.getIdElement());
-            method.setResource(newPatient);
         }
+        method.setId(newPatient.getIdElement());
+        method.setResource(newPatient);
+
 
         log.debug("called update Patient method");
 

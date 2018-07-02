@@ -61,9 +61,14 @@ public class BundleMessage implements Processor {
                         setExchange(exchange,(OperationOutcome) resourceSearch);
                     }
                 }
+                if (resource instanceof DocumentReference) {
+                    log.info("Document Reference Location " + resource.getId());
+                    exchange.getIn().setHeader("Location",resource.getId());
+                    exchange.getIn().setHeader("Content-Location",resource.getId());
+                }
 
             }
-            exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
+            exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getUpdatedBundle()));
             //log.info(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
 
         } catch (Exception ex) {

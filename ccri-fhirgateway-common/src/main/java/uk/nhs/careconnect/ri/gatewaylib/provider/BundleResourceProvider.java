@@ -133,13 +133,9 @@ public class BundleResourceProvider implements IResourceProvider {
 
                 case DOCUMENT:
                     // Send a copy for EPR processing - Consider moving to camel route
-                    Exchange exchangeMessageSeda = template.send("seda:FHIRBundleMessageQueue", ExchangePattern.InOut, new Processor() {
-                        public void process(Exchange exchange) throws Exception {
-                            exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
-                        }
-                    });
+
                     // Main Message send to EDMS
-                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
+                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocumentCreate", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
 
@@ -184,17 +180,21 @@ public class BundleResourceProvider implements IResourceProvider {
         }
 
         MethodOutcome method = new MethodOutcome();
-        method.setCreated(true);
 
-        OperationOutcome opOutcome = null;
+
+
         if (resource instanceof OperationOutcome) {
-            opOutcome = (OperationOutcome) resource;
+            OperationOutcome opOutcome = (OperationOutcome) resource;
+            method.setOperationOutcome(opOutcome);
+            method.setCreated(false);
         } else {
-            method.setResource(resource);
+            method.setCreated(true);
+            OperationOutcome opOutcome = new OperationOutcome();
+            method.setOperationOutcome(opOutcome);
             method.setId(resource.getIdElement());
-            opOutcome = new OperationOutcome();
+            method.setResource(resource);
         }
-        method.setOperationOutcome(opOutcome);
+
         return method;
     }
 
@@ -224,7 +224,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     break;
 
                 case DOCUMENT:
-                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
+                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocumentUpdate", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,conditional,"PUT");
                         }
@@ -262,19 +262,22 @@ public class BundleResourceProvider implements IResourceProvider {
             throw new InternalErrorException("Unknown Error");
         }
 
-        MethodOutcome method = new MethodOutcome();
-        method.setCreated(true);
 
-        OperationOutcome opOutcome = null;
+        MethodOutcome method = new MethodOutcome();
+
         if (resource instanceof OperationOutcome) {
-            opOutcome = (OperationOutcome) resource;
+            OperationOutcome opOutcome = (OperationOutcome) resource;
+            method.setOperationOutcome(opOutcome);
+            method.setCreated(false);
         } else {
-            method.setResource(resource);
+            method.setCreated(true);
+            OperationOutcome opOutcome = new OperationOutcome();
+            method.setOperationOutcome(opOutcome);
             method.setId(resource.getIdElement());
-            opOutcome = new OperationOutcome();
+            method.setResource(resource);
         }
 
-        method.setOperationOutcome(opOutcome);
+
 
         return method;
     }
