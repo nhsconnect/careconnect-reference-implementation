@@ -64,7 +64,7 @@ public class BundleCore {
             if (iResource != null) {
                 updatedBundle.addEntry().setResource(iResource);
             } else {
-                log.error("Not found "+entry.getResource().getClass().getSimpleName() + " Reference " + entry.getResource().getId());
+                log.warn("Not found "+entry.getResource().getClass().getSimpleName() + " Reference " + entry.getResource().getId());
                 updatedBundle.addEntry().setResource(entry.getResource());
             }
         }
