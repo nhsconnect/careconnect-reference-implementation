@@ -63,6 +63,9 @@ public class BundleMessage implements Processor {
                 }
 
             }
+            exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
+            //log.info(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
+
         } catch (Exception ex) {
             // A number of the HAPI related function will return exceptions.
             // Convert to operational outcomes

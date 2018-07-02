@@ -132,7 +132,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     break;
 
                 case DOCUMENT:
-                    // Send a copy for EPR processing
+                    // Send a copy for EPR processing - Consider moving to camel route
                     Exchange exchangeMessageSeda = template.send("seda:FHIRBundleMessageQueue", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
@@ -191,11 +191,10 @@ public class BundleResourceProvider implements IResourceProvider {
             opOutcome = (OperationOutcome) resource;
         } else {
             method.setResource(resource);
+            method.setId(resource.getIdElement());
             opOutcome = new OperationOutcome();
         }
-
         method.setOperationOutcome(opOutcome);
-
         return method;
     }
 
@@ -271,6 +270,7 @@ public class BundleResourceProvider implements IResourceProvider {
             opOutcome = (OperationOutcome) resource;
         } else {
             method.setResource(resource);
+            method.setId(resource.getIdElement());
             opOutcome = new OperationOutcome();
         }
 

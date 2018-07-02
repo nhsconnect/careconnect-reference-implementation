@@ -140,9 +140,13 @@ public class CompositionDocumentBundle implements AggregationStrategy {
                                 // Add the new DocumentReference to the bundle
                                 bundleCore.getBundle().addEntry().setResource(documentReference);
                                 bundleCore.searchAddResource(documentReference.getId());
+                                edmsExchange.getIn().setHeader("Location","DocumentReference/"+documentReference.getId());
                             }
 
                         }
+                        edmsExchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
+
+                        //log.info(ctx.newXmlParser().encodeResourceToString(bundleCore.getBundle()));
                     } catch (Exception ex) {
                         // A number of the HAPI related function will return exceptions.
                         // Convert to operational outcomes
