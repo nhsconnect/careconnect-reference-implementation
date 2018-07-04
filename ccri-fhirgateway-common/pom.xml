@@ -40,8 +40,6 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
 
-
-
             </exclusions>
         </dependency>
         <dependency>
