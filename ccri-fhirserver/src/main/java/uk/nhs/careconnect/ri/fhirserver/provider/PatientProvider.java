@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.PatientDao;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
@@ -80,7 +81,15 @@ public class PatientProvider implements ICCResourceProvider {
         try {
             newPatient = patientDao.update(ctx, patient, theId, theConditional);
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
         }
         method.setId(newPatient.getIdElement());
         method.setResource(newPatient);
@@ -107,7 +116,16 @@ public class PatientProvider implements ICCResourceProvider {
             method.setId(newPatient.getIdElement());
             method.setResource(newPatient);
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
         }
 
         log.debug("called create Patient method");

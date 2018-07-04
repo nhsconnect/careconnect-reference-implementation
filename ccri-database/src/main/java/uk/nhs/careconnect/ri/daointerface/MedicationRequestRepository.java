@@ -11,16 +11,17 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Reference;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 
 import java.util.List;
 
 public interface MedicationRequestRepository extends BaseDao<MedicationRequestEntity, MedicationRequest> {
-    void save(FhirContext ctx,MedicationRequestEntity prescription);
+    void save(FhirContext ctx,MedicationRequestEntity prescription) throws OperationOutcomeException;
 
     MedicationRequest read(FhirContext ctx, IdType theId);
 
-    MedicationRequest create(FhirContext ctx,MedicationRequest prescription, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    MedicationRequest create(FhirContext ctx,MedicationRequest prescription, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

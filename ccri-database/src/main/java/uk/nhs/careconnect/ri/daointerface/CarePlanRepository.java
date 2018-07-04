@@ -9,12 +9,13 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.CarePlan;
 import org.hl7.fhir.dstu3.model.IdType;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 
 import java.util.List;
 
 public interface CarePlanRepository extends BaseDao<CarePlanEntity,CarePlan> {
-    void save(FhirContext ctx, CarePlanEntity allergy);
+    void save(FhirContext ctx, CarePlanEntity allergy) throws OperationOutcomeException;
 
     CarePlan read(FhirContext ctx, IdType theId);
 

@@ -9,19 +9,20 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import java.util.List;
 
 public interface PractitionerRepository extends BaseDao<PractitionerEntity,Practitioner> {
 
-    void save(FhirContext ctx,PractitionerEntity practitioner);
+    void save(FhirContext ctx,PractitionerEntity practitioner) throws OperationOutcomeException;
 
     Practitioner read(FhirContext ctx, IdType theId);
 
     PractitionerEntity readEntity(FhirContext ctx, IdType theId);
 
-    Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
     List<Practitioner> searchPractitioner (FhirContext ctx,

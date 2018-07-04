@@ -10,12 +10,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.DocumentReference;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 
 import java.util.List;
 
 public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEntity,DocumentReference> {
-    void save(FhirContext ctx, DocumentReferenceEntity composition);
+    void save(FhirContext ctx, DocumentReferenceEntity composition) throws OperationOutcomeException;
 
     DocumentReference read(FhirContext ctx, IdType theId);
 

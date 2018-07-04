@@ -50,6 +50,14 @@ public class BundleCore {
         return reference;
     }
 
+    public OperationOutcome getOperationOutcome() {
+        return operationOutcome;
+    }
+
+    public Resource setOperationOutcome(OperationOutcome operationOutcome) {
+        this.operationOutcome = operationOutcome;
+        return null;
+    }
 
     public Bundle getUpdatedBundle() {
         //
@@ -73,6 +81,41 @@ public class BundleCore {
 
     public Bundle getBundle() {
         return bundle;
+    }
+
+    public Boolean checkCircularReference(Encounter encounter) {
+        Boolean found = false;
+        log.info("Checking Encounter id="+encounter.getId());
+        log.info("Checking Encounter idElement="+encounter.getIdElement());
+        if (encounter.hasDiagnosis()) {
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                if (entry.getResource() instanceof Condition) {
+                    Condition condition = (Condition) entry.getResource();
+                    log.info("Check condition = "+condition.getId());
+                    if (condition.hasContext()) {
+                        for (Encounter.DiagnosisComponent diagnosis : encounter.getDiagnosis()) {
+                            log.info("Check encounter.diagnosis = "+diagnosis.getCondition().getReference());
+                            if (diagnosis.getCondition().getReference().equals(condition.getId())) {
+
+                                if (condition.getContext().getReference().equals(encounter.getId())) {
+                                    OperationOutcome outcome = new OperationOutcome();
+                                    outcome.addIssue()
+                                            .setCode(OperationOutcome.IssueType.BUSINESSRULE)
+                                            .setSeverity(OperationOutcome.IssueSeverity.FATAL)
+                                            .setDiagnostics("Encounter "+encounter.getId()+" has a circular diagnosis reference to Condition "+condition.getId())
+                                            .setDetails(
+                                                    new CodeableConcept().setText("Circular Reference")
+                                            );
+                                    setOperationOutcome(outcome);
+                                    OperationOutcomeFactory.convertToException(outcome);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return found;
     }
 
     public Resource searchAddResource(String referenceId) {
@@ -146,14 +189,24 @@ public class BundleCore {
             if (this.operationOutcome != null) return operationOutcome;
             return resource;
         } catch (Exception ex) {
-            log.error(ex.getMessage());
-            if (ex instanceof BaseServerResponseException) {
-                return this.operationOutcome;
-            } else {
-                throw ex;
-            }
 
+            String errorMessage = "Exception while processing reference "+referenceId;
+            if (ex instanceof BaseServerResponseException) {
+                //log.error("HAPI Exception " +ex.getClass().getSimpleName() );
+
+                errorMessage = errorMessage + " Diagnostics: " + this.operationOutcome.getIssueFirstRep().getDiagnostics();
+            } else {
+                if (ex.getMessage() != null) {
+                    errorMessage = errorMessage + " getMessage: " +ex.getMessage();
+                } else {
+                    errorMessage = errorMessage + " ExceptionClassname: " +ex.getClass().getSimpleName();
+                }
+
+            }
+            log.error(errorMessage);
+            throw ex;
         }
+
         //return null;
     }
 
@@ -218,7 +271,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size() > 0) {
                     eprPractitioner = (Practitioner) returnedBundle.getEntry().get(0).getResource();
@@ -302,7 +357,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprOrganization = (Organization) returnedBundle.getEntry().get(0).getResource();
@@ -321,6 +378,7 @@ public class BundleCore {
         if (organisation.getPartOf().getReference() != null) {
             Resource resource = searchAddResource(organisation.getPartOf().getReference());
             log.info("Found PartOfOrganization = "+resource.getId());
+
             if (resource == null) referenceMissing(organisation, organisation.getPartOf().getReference());
             organisation.setPartOf(getReference(resource));
         }
@@ -401,7 +459,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else  {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprService = (HealthcareService) returnedBundle.getEntry().get(0).getResource();
@@ -420,6 +480,7 @@ public class BundleCore {
 
         if (service.getProvidedBy().getReference() != null) {
             Resource resource = searchAddResource(service.getProvidedBy().getReference());
+
             log.info("Found PartOf HealthcareService = "+resource.getId());
             if (resource == null) referenceMissing(service, service.getProvidedBy().getReference());
             service.setProvidedBy(getReference(resource));
@@ -429,6 +490,7 @@ public class BundleCore {
         for (Reference reference : service.getLocation()) {
             if (reference.getReference() != null) {
                 Resource resource = searchAddResource(reference.getReference());
+
                 log.info("Found Location Reference HealthcareService = " + resource.getId());
                 if (resource == null) referenceMissing(service, reference.getReference());
                 locations.add(getReference(resource));
@@ -520,7 +582,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprLocation = (Location) returnedBundle.getEntry().get(0).getResource();
@@ -538,6 +602,7 @@ public class BundleCore {
 
         if (location.getManagingOrganization().getReference() != null) {
             Resource resource = searchAddResource(location.getManagingOrganization().getReference());
+
             if (resource == null) referenceMissing(location, location.getManagingOrganization().getReference());
             location.setManagingOrganization(getReference(resource));
         }
@@ -614,6 +679,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -626,6 +694,7 @@ public class BundleCore {
         if (allergyIntolerance.getAsserter().getReference() != null) {
 
             Resource resource = searchAddResource(allergyIntolerance.getAsserter().getReference());
+
             log.info("Found Practitioner = " + resource.getId());
             if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getAsserter().getReference());
             allergyIntolerance.setAsserter(getReference(resource));
@@ -633,6 +702,7 @@ public class BundleCore {
         }
         if (allergyIntolerance.getPatient() != null) {
             Resource resource = searchAddResource(allergyIntolerance.getPatient().getReference());
+
             if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getPatient().getReference());
             allergyIntolerance.setPatient(getReference(resource));
         }
@@ -721,6 +791,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -732,17 +805,20 @@ public class BundleCore {
 
         if (carePlan.getContext().getReference() != null) {
             Resource resource = searchAddResource(carePlan.getContext().getReference());
+
             if (resource == null) referenceMissing(carePlan, carePlan.getContext().getReference());
             carePlan.setContext(getReference(resource));
         }
         if (carePlan.getSubject() != null) {
             Resource resource = searchAddResource(carePlan.getSubject().getReference());
+
             if (resource == null) referenceMissing(carePlan, carePlan.getSubject().getReference());
             carePlan.setSubject(getReference(resource));
         }
         List<Reference> references = new ArrayList<>();
         for (Reference reference : carePlan.getAddresses()) {
             Resource resource = searchAddResource(reference.getReference());
+
             if (resource!=null) references.add(getReference(resource));
         }
         carePlan.setAddresses(references);
@@ -832,6 +908,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -853,11 +932,13 @@ public class BundleCore {
 
         if (observation.hasSubject()) {
             Resource resource = searchAddResource(observation.getSubject().getReference());
+
             if (resource == null) referenceMissing(observation, observation.getSubject().getReference());
             observation.setSubject(getReference(resource));
         }
         if (observation.hasContext()) {
             Resource resource = searchAddResource(observation.getContext().getReference());
+
             if (resource == null) referenceMissing(observation, observation.getContext().getReference());
             observation.setContext(getReference(resource));
         }
@@ -950,7 +1031,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
-            if (iresource instanceof Bundle) {
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            }  else {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprDiagnosticReport = (DiagnosticReport) returnedBundle.getEntry().get(0).getResource();
@@ -965,6 +1048,7 @@ public class BundleCore {
 
         for (DiagnosticReport.DiagnosticReportPerformerComponent performer : diagnosticReport.getPerformer()) {
             Resource resource = searchAddResource(performer.getActor().getReference());
+
             if (resource == null) referenceMissing(diagnosticReport, performer.getActor().getReference());
             performer.setActor(getReference(resource));
         }
@@ -972,6 +1056,7 @@ public class BundleCore {
 
         if (diagnosticReport.hasSubject()) {
             Resource resource = searchAddResource(diagnosticReport.getSubject().getReference());
+
             if (resource == null) referenceMissing(diagnosticReport, diagnosticReport.getSubject().getReference());
             diagnosticReport.setSubject(getReference(resource));
         }
@@ -1077,6 +1162,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -1194,6 +1282,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -1345,6 +1436,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -1462,6 +1556,9 @@ public class BundleCore {
             log.error("JSON Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
+        if (iresource instanceof OperationOutcome) {
+            processOperationOutcome((OperationOutcome) iresource);
+        } else
         if (iresource instanceof Bundle) {
             Bundle returnedBundle = (Bundle) iresource;
             if (returnedBundle.getEntry().size()>0) {
@@ -1596,6 +1693,9 @@ public class BundleCore {
             log.error("JSON Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
+        if (iresource instanceof OperationOutcome) {
+            processOperationOutcome((OperationOutcome) iresource);
+        } else
         if (iresource instanceof Bundle) {
             Bundle returnedBundle = (Bundle) iresource;
             if (returnedBundle.getEntry().size()>0) {
@@ -1719,6 +1819,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -1845,6 +1948,9 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -1958,6 +2064,9 @@ public class BundleCore {
 
         if (encounter == null) throw new InternalErrorException("Bundle processing error");
 
+        // To prevent infinite loop
+        checkCircularReference(encounter);
+
         Encounter eprEncounter = (Encounter) resourceMap.get(encounterId);
 
         // Organization already processed, quit with Organization
@@ -1991,6 +2100,12 @@ public class BundleCore {
                 log.error("JSON Parse failed " + ex.getMessage());
                 throw new InternalErrorException(ex.getMessage());
             }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
             if (iresource instanceof Bundle) {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
@@ -2026,10 +2141,11 @@ public class BundleCore {
 
         for (Encounter.DiagnosisComponent component : encounter.getDiagnosis()) {
             if (component.getCondition().getReference() != null) {
-                Resource resource = searchAddResource(component.getCondition().getReference());
-                if (resource == null) referenceMissing(encounter, component.getCondition().getReference());
-                component.setCondition(getReference(resource));
-            }
+
+                    Resource resource = searchAddResource(component.getCondition().getReference());
+                    if (resource == null) referenceMissing(encounter, component.getCondition().getReference());
+                    component.setCondition(getReference(resource));
+                }
         }
 
         for (Encounter.EncounterLocationComponent component : encounter.getLocation()) {
@@ -2155,6 +2271,9 @@ public class BundleCore {
                     log.error("JSON Parse failed " + ex.getMessage());
                     throw new InternalErrorException(ex.getMessage());
                 }
+                if (iresource instanceof OperationOutcome) {
+                    processOperationOutcome((OperationOutcome) iresource);
+                } else
                 if (iresource instanceof Bundle) {
                     Bundle returnedBundle = (Bundle) iresource;
                     if (returnedBundle.getEntry().size() > 0) {
@@ -2236,6 +2355,7 @@ public class BundleCore {
                 .setDetails(
                         new CodeableConcept().setText("Invalid Reference")
                 );
+        setOperationOutcome(outcome);
         OperationOutcomeFactory.convertToException(outcome);
     }
 

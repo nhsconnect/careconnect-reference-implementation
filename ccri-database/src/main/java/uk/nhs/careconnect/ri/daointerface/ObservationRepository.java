@@ -11,13 +11,14 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import java.util.List;
 
 public interface ObservationRepository extends BaseDao<ObservationEntity,Observation> {
 
-    Observation save(FhirContext ctx, Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws IllegalArgumentException;
+    Observation save(FhirContext ctx, Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     Observation read(FhirContext ctx, IdType theId);
 

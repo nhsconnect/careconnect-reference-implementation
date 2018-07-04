@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 
 import java.util.List;
@@ -16,10 +17,10 @@ import java.util.List;
 
 public interface OrganisationRepository extends BaseDao<OrganisationEntity,Organization> {
 
-   void save(FhirContext ctx, OrganisationEntity organization);
+   void save(FhirContext ctx, OrganisationEntity organization) throws OperationOutcomeException;
    Organization read(FhirContext ctx,IdType theId);
 
-    Organization create(FhirContext ctx,Organization organization, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Organization create(FhirContext ctx,Organization organization, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     OrganisationEntity readEntity(FhirContext ctx,IdType theId);
 

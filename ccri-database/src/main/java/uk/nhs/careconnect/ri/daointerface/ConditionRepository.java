@@ -10,12 +10,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
 public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> {
-    void save(FhirContext ctx,ConditionEntity condition);
+    void save(FhirContext ctx,ConditionEntity condition) throws OperationOutcomeException;
 
     Condition read(FhirContext ctx, IdType theId);
 

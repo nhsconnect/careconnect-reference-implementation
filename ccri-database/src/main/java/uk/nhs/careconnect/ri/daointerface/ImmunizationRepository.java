@@ -10,12 +10,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 
 import java.util.List;
 
 public interface ImmunizationRepository extends BaseDao<ImmunisationEntity, Immunization>  {
-    void save(FhirContext ctx,ImmunisationEntity immunisation);
+    void save(FhirContext ctx,ImmunisationEntity immunisation) throws OperationOutcomeException;
 
     Immunization read(FhirContext ctx, IdType theId);
 

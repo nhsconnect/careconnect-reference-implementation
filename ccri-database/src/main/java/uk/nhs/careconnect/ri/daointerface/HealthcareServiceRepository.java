@@ -9,12 +9,13 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.healthcareService.HealthcareServiceEntity;
 
 import java.util.List;
 
 public interface HealthcareServiceRepository extends BaseDao<HealthcareServiceEntity,HealthcareService> {
-    void save(FhirContext ctx, HealthcareServiceEntity location);
+    void save(FhirContext ctx, HealthcareServiceEntity location) throws OperationOutcomeException;
 
     HealthcareService read(FhirContext ctx, IdType theId);
 

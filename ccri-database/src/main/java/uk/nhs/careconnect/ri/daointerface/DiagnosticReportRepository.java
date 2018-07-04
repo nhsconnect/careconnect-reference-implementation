@@ -10,13 +10,14 @@ import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.DiagnosticReport;
 import org.hl7.fhir.dstu3.model.IdType;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 
 import java.util.List;
 
 public interface DiagnosticReportRepository extends BaseDao<DiagnosticReportEntity,DiagnosticReport> {
-    void save(FhirContext ctx, DiagnosticReportEntity diagnosticReport);
+    void save(FhirContext ctx, DiagnosticReportEntity diagnosticReport) throws OperationOutcomeException;
 
     DiagnosticReport read(FhirContext ctx, IdType theId);
 

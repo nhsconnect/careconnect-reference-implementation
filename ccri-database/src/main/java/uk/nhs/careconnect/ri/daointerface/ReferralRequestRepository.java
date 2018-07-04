@@ -9,18 +9,19 @@ import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.ReferralRequest;
 import org.hl7.fhir.dstu3.model.IdType;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.referral.ReferralRequestEntity;
 
 import java.util.List;
 
 public interface ReferralRequestRepository extends BaseDao<ReferralRequestEntity,ReferralRequest> {
-    void save(FhirContext ctx, ReferralRequestEntity referral);
+    void save(FhirContext ctx, ReferralRequestEntity referral) throws OperationOutcomeException;
 
     ReferralRequest read(FhirContext ctx, IdType theId);
 
     ReferralRequestEntity readEntity(FhirContext ctx, IdType theId);
 
-    ReferralRequest create(FhirContext ctx, ReferralRequest referral, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    ReferralRequest create(FhirContext ctx, ReferralRequest referral, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

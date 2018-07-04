@@ -10,12 +10,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import java.util.List;
 
 public interface EpisodeOfCareRepository extends BaseDao<EpisodeOfCareEntity,EpisodeOfCare> {
-    void save(FhirContext ctx,EpisodeOfCare episode);
+    void save(FhirContext ctx,EpisodeOfCare episode) throws OperationOutcomeException;
 
     EpisodeOfCare read(FhirContext ctx, IdType theId);
 

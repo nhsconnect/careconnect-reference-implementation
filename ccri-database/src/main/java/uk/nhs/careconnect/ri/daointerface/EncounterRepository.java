@@ -13,19 +13,20 @@ import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Resource;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 
 import java.util.List;
 import java.util.Set;
 
 public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter> {
-    void save(FhirContext ctx,EncounterEntity encounter);
+    void save(FhirContext ctx,EncounterEntity encounter) throws OperationOutcomeException;
 
     Encounter read(FhirContext ctx, IdType theId);
 
     EncounterEntity readEntity(FhirContext ctx, IdType theId);
 
-    Encounter create(FhirContext ctx,Encounter encounter, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Encounter create(FhirContext ctx,Encounter encounter, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<Resource> search(FhirContext ctx,
 

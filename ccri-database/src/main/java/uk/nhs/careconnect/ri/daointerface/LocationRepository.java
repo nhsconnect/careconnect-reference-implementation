@@ -9,18 +9,19 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import java.util.List;
 
 public interface LocationRepository extends BaseDao<LocationEntity,Location> {
-    void save(FhirContext ctx,LocationEntity location);
+    void save(FhirContext ctx,LocationEntity location) throws OperationOutcomeException;
 
     Location read(FhirContext ctx, IdType theId);
 
     LocationEntity readEntity(FhirContext ctx,IdType theId);
 
-    Location create(FhirContext ctx,Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Location create(FhirContext ctx,Location location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

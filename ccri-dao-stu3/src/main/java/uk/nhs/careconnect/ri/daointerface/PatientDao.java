@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -140,7 +141,7 @@ public class PatientDao implements PatientRepository {
     }
 
     @Override
-    public Patient update(FhirContext ctx, Patient patient, IdType theId, String theConditional) {
+    public Patient update(FhirContext ctx, Patient patient, IdType theId, String theConditional) throws OperationOutcomeException {
 
         PatientEntity patientEntity = null;
         log.info("Started patient updated");
@@ -199,8 +200,9 @@ public class PatientDao implements PatientRepository {
                         ConceptEntity code = conceptDao.findCode(ethnic.getCoding().get(0));
                         if (code != null) { patientEntity.setEthnicCode(code); }
                         else {
-                            log.info("Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
-                            throw new IllegalArgumentException("Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode());
+                            String message = "Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode();
+                            log.error(message);
+                            throw new OperationOutcomeException(message,"Patient "+patient.getId(),OperationOutcome.IssueType.CODEINVALID);
                         }
                         break;
                 }

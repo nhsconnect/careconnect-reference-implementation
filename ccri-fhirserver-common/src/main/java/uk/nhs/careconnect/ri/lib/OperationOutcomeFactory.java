@@ -27,6 +27,20 @@ public class OperationOutcomeFactory {
         exception.setOperationOutcome(operationOutcome);
         return exception;
     }
+
+    public static OperationOutcome createOperationOutcome (String message) {
+        OperationOutcome outcome = new OperationOutcome();
+
+        outcome.addIssue()
+                .setCode(OperationOutcome.IssueType.EXCEPTION)
+                .setSeverity(OperationOutcome.IssueSeverity.FATAL)
+                .setDiagnostics(message)
+                .setDetails(
+                        new CodeableConcept().setText(message)
+                );
+        return outcome;
+    }
+
     public static OperationOutcome.IssueType getIssueType(Exception ex) {
         OperationOutcome.IssueType issueType = OperationOutcome.IssueType.PROCESSING;
         if (ex instanceof ResourceNotFoundException) issueType=OperationOutcome.IssueType.NOTFOUND;

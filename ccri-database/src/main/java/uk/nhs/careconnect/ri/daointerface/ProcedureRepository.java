@@ -10,16 +10,17 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Procedure;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import java.util.List;
 
 public interface ProcedureRepository extends BaseDao<ProcedureEntity,Procedure> {
-    void save(FhirContext ctx,ProcedureEntity procedure);
+    void save(FhirContext ctx,ProcedureEntity procedure) throws OperationOutcomeException;
 
     Procedure read(FhirContext ctx, IdType theId);
 
-    Procedure create(FhirContext ctx,Procedure procedure, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Procedure create(FhirContext ctx,Procedure procedure, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     ProcedureEntity readEntity(FhirContext ctx, IdType theId);
 

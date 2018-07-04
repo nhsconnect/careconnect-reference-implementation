@@ -10,12 +10,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Patient;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 
 import java.util.List;
 
 public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntoleranceEntity,AllergyIntolerance> {
-    void save(FhirContext ctx,AllergyIntoleranceEntity allergy);
+    void save(FhirContext ctx,AllergyIntoleranceEntity allergy) throws OperationOutcomeException;
 
     AllergyIntolerance read(FhirContext ctx, IdType theId);
 

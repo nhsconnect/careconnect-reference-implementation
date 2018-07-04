@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ri.gateway.https;
 import ca.uhn.fhir.context.FhirContext;
 
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import uk.nhs.careconnect.ri.gatewaylib.camel.interceptor.GatewayPreProcessor;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BinaryResource;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.BundleMessage;
 import uk.nhs.careconnect.ri.gatewaylib.camel.processor.CompositionDocumentBundle;
+import uk.nhs.careconnect.ri.gatewaylib.camel.processor.OperationOutcomeCheckAggregator;
 
 import java.io.InputStream;
 
@@ -49,6 +51,7 @@ public class CamelRoute extends RouteBuilder {
 		FhirContext ctx = FhirContext.forDstu3();
 		BundleMessage bundleMessage = new BundleMessage(ctx);
 		CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
+		OperationOutcomeCheckAggregator outcomeCheck = new OperationOutcomeCheckAggregator(ctx,hapiBase);
 
 		BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
@@ -72,17 +75,28 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRBundleDocumentCreate")
 				.routeId("Bundle Document Create")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.enrich("direct:FhirEPRBundle") // Send a copy to EPR for main CCRI load
+				.log("Sending to EPR")
+				.enrich("direct:FhirEPRBundle",outcomeCheck) // Send a copy to EPR for main CCRI load
+				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentCreateEPR?level=INFO&showHeaders=true&showExchangeId=true")
+				.choice()
+				.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(200))
+					.to("direct:FHIRBundleEDMS")
+				.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(201))
+					.to("direct:FHIRBundleEDMS")
+				.endChoice();
+
+
+		from("direct:FHIRBundleEDMS")
+				.routeId("Bundle Document EDMS")
+				.log("Sending to EDMS")
 				.enrich("direct:EDMSServer", compositionDocumentBundle)
-				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentCreate?level=INFO&showHeaders=true&showExchangeId=true");
-		;
+				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentCreateEDMS?level=INFO&showHeaders=true&showExchangeId=true");
 
 		from("direct:FHIRBundleDocumentUpdate")
 				.routeId("Bundle Document Update")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.enrich("direct:EDMSServer", compositionDocumentBundle)
 				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentUpdate?level=INFO&showHeaders=true&showExchangeId=true");
-		
 
 		from("direct:FhirEPRBundle")
 				.routeId("EPR Bundle")
@@ -94,7 +108,7 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("EDMS Bundle")
 				.process(binaryResource)
 				.to("log:uk.nhs.careconnect.FHIRGateway.EDMSBundle?level=INFO&showHeaders=true&showExchangeId=true");
-		;
+
 
 		// Integration Server (TIE)
 

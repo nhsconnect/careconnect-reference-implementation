@@ -11,13 +11,14 @@ import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.DocumentReference;
 import org.hl7.fhir.dstu3.model.IdType;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
 public interface CompositionRepository extends BaseDao<CompositionEntity,Composition> {
-    void save(FhirContext ctx, CompositionEntity composition);
+    void save(FhirContext ctx, CompositionEntity composition) throws OperationOutcomeException;
 
     Composition read(FhirContext ctx, IdType theId);
 

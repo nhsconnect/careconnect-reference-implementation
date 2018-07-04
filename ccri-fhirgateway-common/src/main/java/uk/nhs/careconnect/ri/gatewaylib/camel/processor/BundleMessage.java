@@ -39,8 +39,9 @@ public class BundleMessage implements Processor {
 
         IParser parser = ctx.newXmlParser();
         bundle = parser.parseResource(Bundle.class,bundleString);
+        BundleCore bundleCore = new BundleCore(ctx,context,bundle);
         try {
-            BundleCore bundleCore = new BundleCore(ctx,context,bundle);
+
 
             // Process resources
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -74,14 +75,26 @@ public class BundleMessage implements Processor {
         } catch (Exception ex) {
             // A number of the HAPI related function will return exceptions.
             // Convert to operational outcomes
-            log.error(ex.getMessage());
-            OperationOutcome operationOutcome = new OperationOutcome();
-            OperationOutcome.IssueType issueType = OperationOutcomeFactory.getIssueType(ex);
+            String errorMessage;
+            if (ex.getMessage()!= null) {
+                errorMessage = ex.getMessage();
+            } else {
+                errorMessage = "BundleMessage Exception"+ex.getClass().getSimpleName();
+            }
+            log.error(errorMessage);
+            OperationOutcome operationOutcome = null;
+            if (bundleCore != null && bundleCore.getOperationOutcome() != null) {
+                operationOutcome = bundleCore.getOperationOutcome();
+            } else {
+                operationOutcome=new OperationOutcome();
+                OperationOutcome.IssueType issueType = OperationOutcomeFactory.getIssueType(ex);
 
-            operationOutcome.addIssue()
-                    .setSeverity(OperationOutcome.IssueSeverity.ERROR)
-                    .setCode(issueType)
-                    .setDiagnostics(ex.getMessage());
+                operationOutcome.addIssue()
+                        .setSeverity(OperationOutcome.IssueSeverity.ERROR)
+                        .setCode(issueType)
+                        .setDiagnostics(errorMessage);
+            }
+
             setExchange(exchange,operationOutcome);
         }
         log.info("Finishing Message Bundle Processing");
