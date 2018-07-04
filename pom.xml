@@ -17,7 +17,7 @@
 
         <slf4j>1.7.25</slf4j>
         <spring-boot>1.5.7.RELEASE</spring-boot>
-        <spring-version>5.0.3.RELEASE</spring-version>
+        <spring-version>5.0.7.RELEASE</spring-version>
 
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
 
