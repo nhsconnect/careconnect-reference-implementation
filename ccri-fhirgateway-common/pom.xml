@@ -12,8 +12,8 @@
     <artifactId>ccri-fhirgateway-common</artifactId>
 
     <properties>
-        <spring_version>5.0.7.RELEASE</spring_version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <spring_version>4.3.12.RELEASE</spring_version>
+        <hapi-fhir-version>3.0.0</hapi-fhir-version>
     </properties>
 
     <dependencies>
@@ -39,6 +39,9 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+
+
+
             </exclusions>
         </dependency>
         <dependency>
@@ -81,6 +84,7 @@
             <version>${hapi-fhir-version}</version>
             <type>war</type>
             <scope>provided</scope>
+
         </dependency>
 
 

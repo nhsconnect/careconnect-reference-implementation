@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.common.config;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.flywaydb.core.Flyway;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,9 +65,9 @@ public class DataSourceConfig {
 
 
 
-    @Bean(destroyMethod = "close")
+    @Bean()
     public DataSource dataSource() {
-        final DataSource dataSource = new DataSource();
+        final BasicDataSource dataSource = new BasicDataSource();
         System.out.println("In Data Source");
         dataSource.setDriverClassName(driverName);
         dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);

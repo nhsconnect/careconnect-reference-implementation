@@ -25,14 +25,14 @@
 	<properties>
 
 		<hapi-fhir-version>3.4.0</hapi-fhir-version>
-		<spring_version>5.0.7.RELEASE</spring_version>
+		<spring_version>5.0.3.RELEASE</spring_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
 
         <jetty_version>9.4.10.v20180503</jetty_version>
-        <hibernate_version>5.3.1.Final</hibernate_version>
-        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
+		<hibernate_version>5.2.17.Final</hibernate_version>
+		<hibernate_validator_version>6.0.10.Final</hibernate_validator_version>
 
         <maven_assembly_plugin_version>2.5.3</maven_assembly_plugin_version>
         <maven_license_plugin_version>1.8</maven_license_plugin_version>
@@ -121,6 +121,7 @@
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
+
             </exclusions>
 		</dependency>
 

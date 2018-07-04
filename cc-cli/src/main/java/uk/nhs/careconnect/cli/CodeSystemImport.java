@@ -7,9 +7,10 @@ import ca.uhn.fhir.validation.ResultSeverityEnum;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.commons.cli.*;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.apache.tomcat.jdbc.pool.DataSource;
+
 import org.flywaydb.core.Flyway;
 import org.fusesource.jansi.Ansi.Color;
 import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
@@ -27,6 +28,7 @@ import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
 import uk.org.hl7.fhir.validation.stu3.SNOMEDUKMockValidationSupport;
 
+import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
@@ -118,7 +120,7 @@ public class CodeSystemImport extends BaseCommand {
 
 
 	public DataSource dataSource() {
-		final DataSource dataSource = new DataSource();
+		final BasicDataSource dataSource = new BasicDataSource();
 		System.out.println("In Data Source");
 		dataSource.setDriverClassName(driverName);
 		dataSource.setUrl("jdbc:" + jdbc);

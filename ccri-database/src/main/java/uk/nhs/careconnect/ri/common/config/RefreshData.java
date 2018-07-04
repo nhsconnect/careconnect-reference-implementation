@@ -1,13 +1,15 @@
 package uk.nhs.careconnect.ri.common.config;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RefreshData {
-    private static final Logger LOG = Logger.getLogger(RefreshData.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RefreshData.class);
 
     @Value("${config.path}")
     private String configPath;

@@ -10,14 +10,16 @@
     <packaging>pom</packaging>
 
 
+     <!-- https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/html/appendix-dependency-versions.html -->
+
     <properties>
         <care-connect-version>3.6.0</care-connect-version>
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
 
         <slf4j>1.7.25</slf4j>
-        <spring-boot>1.5.7.RELEASE</spring-boot>
-        <spring-version>5.0.7.RELEASE</spring-version>
+        <spring-boot>2.0.3.RELEASE</spring-boot>
+        <spring-version>5.0.3.RELEASE</spring-version>
 
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
 
@@ -27,7 +29,7 @@
         <hamcrest-version>2.0.0.0</hamcrest-version>
         <mockito-version>1.10.19</mockito-version>
 
-        <camel-version>2.22.0</camel-version>
+        <camel-version>2.21.1</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->

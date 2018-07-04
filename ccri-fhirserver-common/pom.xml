@@ -11,7 +11,7 @@
 
     <artifactId>ccri-fhirserver-common</artifactId>
     <properties>
-        <spring_version>5.0.7.RELEASE</spring_version>
+        <spring_version>5.0.3.RELEASE</spring_version>
     </properties>
 
 
