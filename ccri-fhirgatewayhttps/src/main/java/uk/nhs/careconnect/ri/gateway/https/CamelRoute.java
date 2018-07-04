@@ -60,21 +60,19 @@ public class CamelRoute extends RouteBuilder {
 				.to("direct:TIEServer");
 
 
-
 		// Complex processing
 
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
 				.process(camelProcessor) // Add in correlation Id if not present
-				//.wireTap("seda:FHIRBundleCollection");
-				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
-				.process(bundleMessage);
+				.to("direct:FhirEDMSBundle") //, documentReferenceDocumentBundle)
+				.to("direct:FhirEPRBundle");
 
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocumentCreate")
 				.routeId("Bundle Document Create")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.wireTap("seda:FHIRBundleMessageQueue") // Send a copy to EPR for main CCRI load
+				.enrich("direct:FhirEPRBundle") // Send a copy to EPR for main CCRI load
 				.enrich("direct:EDMSServer", compositionDocumentBundle)
 				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentCreate?level=INFO&showHeaders=true&showExchangeId=true");
 		;
@@ -84,26 +82,19 @@ public class CamelRoute extends RouteBuilder {
 				.process(camelProcessor) // Add in correlation Id if not present
 				.enrich("direct:EDMSServer", compositionDocumentBundle)
 				.to("log:uk.nhs.careconnect.FHIRGateway.FHIRBundleDocumentUpdate?level=INFO&showHeaders=true&showExchangeId=true");
+		
 
-
-		from("seda:FHIRBundleCollection")
-				.routeId("Bundle Processing")
-				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
-				.process(bundleMessage);
-
-		from("seda:FHIRBundleMessageQueue")
-				.routeId("Bundle Message Processing Queue")
-				.process(bundleMessage); // Goes direct to EPR FHIR Server
-
-		from("direct:FHIRBundleMessage")
-				.routeId("Bundle Message Processing")
+		from("direct:FhirEPRBundle")
+				.routeId("EPR Bundle")
 				.process(bundleMessage)
-				.to("log:uk.nhs.careconnect.FHIRGateway.direct:FHIRBundleMessage?level=INFO&showHeaders=true&showExchangeId=true");
+				.to("log:uk.nhs.careconnect.FHIRGateway.EPRBundle?level=INFO&showHeaders=true&showExchangeId=true");
 
 
-		from("direct:FHIRDocumentReferenceBundle")
-				.routeId("Bundle Process Binary")
-				.process(binaryResource);
+		from("direct:FhirEDMSBundle")
+				.routeId("EDMS Bundle")
+				.process(binaryResource)
+				.to("log:uk.nhs.careconnect.FHIRGateway.EDMSBundle?level=INFO&showHeaders=true&showExchangeId=true");
+		;
 
 		// Integration Server (TIE)
 

@@ -19,12 +19,12 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.5</version>
     </parent>
 
 	<properties>
-		<hapi-fhir-version>3.0.0</hapi-fhir-version>
-		<spring_version>4.3.12.RELEASE</spring_version>
+		<hapi-fhir-version>3.4.0</hapi-fhir-version>
+		<spring_version>5.0.7.RELEASE</spring_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
@@ -39,7 +39,7 @@
         <phloc_schematron_version>2.7.1</phloc_schematron_version>
         <phloc_commons_version>4.4.6</phloc_commons_version>
 
-		<hapi-fhir-version>3.0.0</hapi-fhir-version>
+		<hapi-fhir-version>3.4.0</hapi-fhir-version>
         <xmlunit_version>1.6</xmlunit_version>
 
 

@@ -327,21 +327,12 @@ public class PatientDao implements PatientRepository {
         for (Address address : patient.getAddress()) {
             PatientAddress patientAdr = null;
             for (PatientAddress adrSearch : patientEntity.getAddresses()) {
-                // look for matching postcode
+                // look for matching postcode and first line of address
                 if (adrSearch.getAddress().getPostcode().equals(address.getPostalCode())) {
-                    patientAdr = adrSearch;
-                    break;
-                    /* TODO increase address match
-                    if (address.getLine().size()> 0) {
-                        if (address.getLine().get(0).equals(adrSearch.getAddress().getAddress1())) {
-                            patientAdr = adrSearch;
-                            break;
-                        }
-                    } else {
+                    if (address.hasLine() && address.getLine().get(0)!=null && adrSearch.getAddress().getAddress1().equals(address.getLine().get(0))) {
                         patientAdr = adrSearch;
                         break;
                     }
-                    */
                 }
             }
             if (patientAdr == null) {
@@ -394,11 +385,11 @@ public class PatientDao implements PatientRepository {
 
         Patient newPatient = null;
 
-        if (patientEntity !=null) {
-            newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
-            patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
-            em.persist(patientEntity);
-        }
+
+        newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
+        patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
+        em.persist(patientEntity);
+
 
         return newPatient;
     }
@@ -426,7 +417,7 @@ public class PatientDao implements PatientRepository {
 
         for (PatientEntity patientEntity : qryResults)
         {
-            Patient patient = null;
+            Patient patient;
             if (patientEntity.getResource() != null) {
                 patient = (Patient) ctx.newJsonParser().parseResource(patientEntity.getResource());
             } else {

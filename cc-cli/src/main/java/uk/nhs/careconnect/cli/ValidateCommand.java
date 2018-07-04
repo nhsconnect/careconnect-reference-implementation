@@ -178,7 +178,10 @@ public class ValidateCommand extends BaseCommand {
 				System.out.println("** ** ** Code Issue ValueSet expansion not implemented in instanceValidator" );
 			} else if (next.getMessage().contains("Error Multiple filters not handled yet")) {
 				System.out.println("** ** ** multiple filters in ValueSet not implemented" );
-			} else {
+			} else if (next.getMessage().contains("is incomplete validating") && next.getMessage().contains("snomed")) {
+				System.out.println("** ** ** ignoring SNOMED incomplete warning" );
+			}
+			else {
 
 				count++;
 				b.append(App.LINESEP);

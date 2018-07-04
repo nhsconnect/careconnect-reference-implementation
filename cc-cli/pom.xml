@@ -20,7 +20,7 @@
   
     <groupId>uk.nhs.careconnect</groupId>
     <artifactId>cc-cli</artifactId>
-    <version>3.5.4</version>
+    <version>3.5.5</version>
 
     <repositories>
         <repository>
@@ -44,8 +44,8 @@
     <properties>
     	<category>Rest</category>
 
-        <care-connect-version>3.5.4</care-connect-version>
-        <hapi-fhir-version>3.3.0</hapi-fhir-version>
+        <care-connect-version>3.5.5</care-connect-version>
+        <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <junit-version>4.12</junit-version>
         <spring-boot-version>1.5.7.RELEASE</spring-boot-version>
         <phloc_schematron_version>2.7.1</phloc_schematron_version>
@@ -87,7 +87,7 @@
       <dependency>
           <groupId>uk.org.hl7.fhir</groupId>
           <artifactId>cc-core</artifactId>
-          <version>3.5.4</version>
+          <version>3.5.5</version>
       </dependency>
 
       <dependency>
@@ -105,7 +105,7 @@
       <dependency>
           <groupId>uk.org.hl7.fhir</groupId>
           <artifactId>cc-fhir-validation-resources-stu3</artifactId>
-          <version>3.5.4</version>
+          <version>3.5.5</version>
       </dependency>
 -->
    <!-- HL7 HAPI FHIR -->
