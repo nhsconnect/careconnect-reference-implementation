@@ -12,9 +12,13 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.EncounterRepository;
+import uk.nhs.careconnect.ri.daointerface.PatientDao;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +35,7 @@ public class EncounterProvider implements ICCResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    private static final Logger log = LoggerFactory.getLogger(EncounterProvider.class);
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return Encounter.class;
@@ -47,11 +52,22 @@ public class EncounterProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
+        try {
+            Encounter newEncounter = encounterDao.create(ctx, encounter, theId, theConditional);
+            method.setId(newEncounter.getIdElement());
+            method.setResource(newEncounter);
+        } catch (Exception ex) {
 
-        Encounter newEncounter = encounterDao.create(ctx, encounter, theId, theConditional);
-        method.setId(newEncounter.getIdElement());
-        method.setResource(newEncounter);
-
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
         return method;
@@ -67,11 +83,22 @@ public class EncounterProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
+        try {
+            Encounter newEncounter = encounterDao.create(ctx, encounter, null, null);
+            method.setId(newEncounter.getIdElement());
+            method.setResource(newEncounter);
+        } catch (Exception ex) {
 
-        Encounter newEncounter = encounterDao.create(ctx, encounter, null, null);
-        method.setId(newEncounter.getIdElement());
-        method.setResource(newEncounter);
-
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
         return method;

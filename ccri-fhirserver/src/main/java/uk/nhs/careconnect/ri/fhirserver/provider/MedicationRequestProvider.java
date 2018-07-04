@@ -11,8 +11,11 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.MedicationRequestRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -28,6 +31,8 @@ public class MedicationRequestProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
     public Long count() {
@@ -50,10 +55,22 @@ public class MedicationRequestProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+        try {
         MedicationRequest newMedicationRequest = prescriptionDao.create(ctx,prescription, theId, theConditional);
         method.setId(newMedicationRequest.getIdElement());
         method.setResource(newMedicationRequest);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
 
@@ -70,10 +87,22 @@ public class MedicationRequestProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+        try {
         MedicationRequest newMedicationRequest = prescriptionDao.create(ctx,prescription, null,null);
         method.setId(newMedicationRequest.getIdElement());
         method.setResource(newMedicationRequest);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
 

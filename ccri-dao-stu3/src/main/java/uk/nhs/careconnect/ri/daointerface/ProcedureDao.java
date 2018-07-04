@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.ProcedureEntityToFHIRProcedureTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -106,7 +107,7 @@ public class ProcedureDao implements ProcedureRepository {
 
 
     @Override
-    public Procedure create(FhirContext ctx,Procedure procedure, IdType theId, String theConditional) {
+    public Procedure create(FhirContext ctx,Procedure procedure, IdType theId, String theConditional) throws OperationOutcomeException {
 
         log.debug("Condition.save");
         //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
@@ -208,7 +209,7 @@ public class ProcedureDao implements ProcedureRepository {
                     procedureEntity.setPerformedEndDate(procedure.getPerformedPeriod().getEnd());
                 }
             } catch (Exception ex) {
-                throw new IllegalArgumentException("Invalid Date Time: "+ex.getMessage());
+                throw new OperationOutcomeException("Procedure","Invalid Date Time: "+ex.getMessage(),OperationOutcome.IssueType.CODEINVALID);
             }
         }
         if (procedure.hasContext() && procedure.getContext().getReference().contains("Encounter")) {

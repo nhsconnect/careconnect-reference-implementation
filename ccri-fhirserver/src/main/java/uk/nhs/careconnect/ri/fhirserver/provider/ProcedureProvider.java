@@ -14,8 +14,11 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Procedure;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.ProcedureRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -31,6 +34,8 @@ public class ProcedureProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
     public Class<? extends IBaseResource> getResourceType() {
@@ -52,10 +57,23 @@ public class ProcedureProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+        try {
         Procedure newProcedure = procedureDao.create(ctx,procedure, theId, theConditional);
         method.setId(newProcedure.getIdElement());
         method.setResource(newProcedure);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
 
 
 
@@ -72,10 +90,23 @@ public class ProcedureProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+        try {
         Procedure newProcedure = procedureDao.create(ctx,procedure, null,null);
         method.setId(newProcedure.getIdElement());
         method.setResource(newProcedure);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
 
 
 

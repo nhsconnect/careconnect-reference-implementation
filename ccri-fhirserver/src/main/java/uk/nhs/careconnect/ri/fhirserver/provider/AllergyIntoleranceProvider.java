@@ -14,8 +14,11 @@ import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.AllergyIntoleranceRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -30,6 +33,8 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
     public Class<? extends IBaseResource> getResourceType() {
@@ -50,10 +55,23 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+        try {
         AllergyIntolerance newAllergyIntolerance = allergyDao.create(ctx,allergy, theId, theConditional);
         method.setId(newAllergyIntolerance.getIdElement());
         method.setResource(newAllergyIntolerance);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
 
 
 

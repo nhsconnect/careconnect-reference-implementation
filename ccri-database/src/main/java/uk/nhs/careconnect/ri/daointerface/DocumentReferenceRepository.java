@@ -22,7 +22,10 @@ public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEn
 
     DocumentReferenceEntity readEntity(FhirContext ctx, IdType theId);
 
-    DocumentReference create(FhirContext ctx, DocumentReference composition, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    DocumentReference create(FhirContext ctx,
+                             DocumentReference composition,
+                             @IdParam IdType theId,
+                             @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<DocumentReference> search(FhirContext ctx,
 

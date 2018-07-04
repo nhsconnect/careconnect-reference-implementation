@@ -202,7 +202,7 @@ public class PatientDao implements PatientRepository {
                         else {
                             String message = "Ethnic: Missing System/Code = "+ ethnic.getCoding().get(0).getSystem() +" code = "+ethnic.getCoding().get(0).getCode();
                             log.error(message);
-                            throw new OperationOutcomeException(message,"Patient "+patient.getId(),OperationOutcome.IssueType.CODEINVALID);
+                            throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
                         }
                         break;
                 }
@@ -248,8 +248,9 @@ public class PatientDao implements PatientRepository {
             ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0));
             if (code != null) { patientEntity.setMaritalCode(code); }
             else {
-                log.info("Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
-                throw new IllegalArgumentException("Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode());
+                String message = "Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode();
+                log.error(message);
+                throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
             }
         }
 
@@ -274,8 +275,10 @@ public class PatientDao implements PatientRepository {
                 ConceptEntity code = conceptDao.findCode(nhsVerification.getCoding().get(0));
                 if (code != null) { patientEntity.setNHSVerificationCode(code); }
                 else {
-                    log.info("NHS Verfication: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode());
+
+                    String message = "NHS Verification: Missing System/Code = "+ nhsVerification.getCoding().get(0).getSystem() +" code = "+nhsVerification.getCoding().get(0).getCode();
+                    log.error(message);
+                    throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
                 }
             }
             PatientIdentifier patientIdentifier = null;

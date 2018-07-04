@@ -13,8 +13,11 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.LocationRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -36,6 +39,8 @@ public class LocationProvider implements ICCResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
+
     @Override
     public Long count() {
         return locationDao.count();
@@ -51,11 +56,23 @@ public class LocationProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
+    try {
         Location newLocation = locationDao.create(ctx, location, theId, theConditional);
         method.setId(newLocation.getIdElement());
         method.setResource(newLocation);
 
+    } catch (Exception ex) {
+
+        if (ex instanceof OperationOutcomeException) {
+            OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+            method.setOperationOutcome(outcomeException.getOutcome());
+            method.setCreated(false);
+        } else {
+            log.error(ex.getMessage());
+            method.setCreated(false);
+            method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+        }
+    }
 
 
         return method;
@@ -70,10 +87,22 @@ public class LocationProvider implements ICCResourceProvider {
         OperationOutcome opOutcome = new OperationOutcome();
 
         method.setOperationOutcome(opOutcome);
-
+        try {
         Location newLocation = locationDao.create(ctx, location,null,null);
         method.setId(newLocation.getIdElement());
         method.setResource(newLocation);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
         return method;
     }

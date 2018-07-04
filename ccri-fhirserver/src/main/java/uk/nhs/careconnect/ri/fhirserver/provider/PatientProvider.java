@@ -51,7 +51,7 @@ public class PatientProvider implements ICCResourceProvider {
         return Patient.class;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
 
     @Read

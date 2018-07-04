@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
@@ -151,7 +152,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public Encounter create(FhirContext ctx,Encounter encounter, IdType theId, String theConditional) {
+    public Encounter create(FhirContext ctx,Encounter encounter, IdType theId, String theConditional) throws OperationOutcomeException {
         log.debug("Encounter.save");
       //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
         EncounterEntity encounterEntity = null;
@@ -237,9 +238,9 @@ public class  EncounterDao implements EncounterRepository {
                     if (code != null) {
                         encounterEntity.setParticipantType(code);
                     } else {
-                        log.info("Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
-
-                        throw new IllegalArgumentException("Missing System/Code = "+ participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode());
+                        String message = "Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode();
+                        log.error(message);
+                        throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
                     }
 
                 }
@@ -265,9 +266,11 @@ public class  EncounterDao implements EncounterRepository {
             ConceptEntity code = conceptDao.findCode(encounter.getPriority().getCoding().get(0));
             if (code != null) { encounterEntity.setPriority(code); }
             else {
-                log.info("Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode());
+                String message = "Code: Missing System/Code = "+encounter.getPriority().getCoding().get(0).getSystem() +" code = "+encounter.getPriority().getCoding().get(0).getCode();
+                log.error(message);
+                throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
+
             }
         }
 

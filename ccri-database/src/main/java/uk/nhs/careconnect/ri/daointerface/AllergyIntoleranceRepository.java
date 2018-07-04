@@ -22,7 +22,10 @@ public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntolerance
 
     AllergyIntoleranceEntity readEntity(FhirContext ctx, IdType theId);
 
-    AllergyIntolerance create(FhirContext ctx,AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    AllergyIntolerance create(FhirContext ctx,
+                              AllergyIntolerance allergy,
+                              @IdParam IdType theId,
+                              @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

@@ -8,8 +8,11 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.PractitionerRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
@@ -25,6 +28,7 @@ public class PractitionerProvider implements ICCResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
     public Class<Practitioner> getResourceType() {
@@ -45,10 +49,22 @@ public class PractitionerProvider implements ICCResourceProvider {
         OperationOutcome opOutcome = new OperationOutcome();
 
         method.setOperationOutcome(opOutcome);
-
+        try {
         Practitioner newPractitioner = practitionerDao.create(ctx,practitioner, theId, theConditional);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
 
@@ -64,10 +80,23 @@ public class PractitionerProvider implements ICCResourceProvider {
         OperationOutcome opOutcome = new OperationOutcome();
 
         method.setOperationOutcome(opOutcome);
-
+        try {
         Practitioner newPractitioner = practitionerDao.create(ctx,practitioner, null, null);
         method.setId(newPractitioner.getIdElement());
         method.setResource(newPractitioner);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
 
         return method;
     }

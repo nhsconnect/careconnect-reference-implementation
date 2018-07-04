@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
@@ -106,7 +107,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public AllergyIntolerance create(FhirContext ctx, AllergyIntolerance allergy, IdType theId, String theConditional) {
+    public AllergyIntolerance create(FhirContext ctx, AllergyIntolerance allergy, IdType theId, String theConditional) throws OperationOutcomeException {
 
         log.debug("Allergy.save");
         //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
@@ -169,10 +170,10 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             ConceptEntity code = conceptDao.findAddCode(allergy.getCode().getCoding().get(0));
             if (code != null) { allergyEntity.setCode(code); }
             else {
-                log.info("Code: Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem() +" code = "+allergy.getCode().getCoding().get(0).getCode());
+                String message = "Code: Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem() +" code = "+allergy.getCode().getCoding().get(0).getCode();
 
-                throw new IllegalArgumentException("Missing System/Code = "+ allergy.getCode().getCoding().get(0).getSystem()
-                        +" code = "+allergy.getCode().getCoding().get(0).getCode());
+                log.error(message);
+                throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
             }
         }
         if (allergy.hasAssertedDate()) {
@@ -243,10 +244,9 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
                 em.persist(allergyReaction);
             }
             else {
-                log.info("Code: Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem() +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
-
-                throw new IllegalArgumentException("Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem()
-                        +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode());
+                String message = "Code: Missing System/Code = "+ reaction.getManifestationFirstRep().getCoding().get(0).getSystem() +" code = "+reaction.getManifestationFirstRep().getCoding().get(0).getCode();
+                log.error(message);
+                throw new OperationOutcomeException("AllergyIntolerance",message, OperationOutcome.IssueType.CODEINVALID);
             }
         }
 

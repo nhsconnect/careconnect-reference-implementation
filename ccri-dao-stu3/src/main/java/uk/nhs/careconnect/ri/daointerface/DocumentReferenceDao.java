@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.DocumentReferenceEntityToFHIRDocumentReferenceTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceAttachment;
@@ -103,7 +104,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public DocumentReference create(FhirContext ctx, DocumentReference documentReference, IdType theId, String theConditional) {
+    public DocumentReference create(FhirContext ctx, DocumentReference documentReference, IdType theId, String theConditional) throws OperationOutcomeException {
         log.debug("DocumentReference.save");
 
         DocumentReferenceEntity documentReferenceEntity = null;
@@ -150,10 +151,11 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             ConceptEntity code = conceptDao.findCode(documentReference.getType().getCoding().get(0));
             if (code != null) { documentReferenceEntity.setType(code); }
             else {
-                log.info("Type: Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem() +" code = "+documentReference.getType().getCoding().get(0).getCode());
+                String message = "Type: Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem() +" code = "+documentReference.getType().getCoding().get(0).getCode();
+                log.error(message);
+                throw new OperationOutcomeException("DocumentReference",message, OperationOutcome.IssueType.CODEINVALID);
 
-                throw new IllegalArgumentException("Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem()
-                        +" code = "+documentReference.getType().getCoding().get(0).getCode());
+
             }
         }
 
@@ -183,10 +185,9 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                 if (code != null) {
                     documentReferenceEntity.setContextPracticeSetting(code);
                 } else {
-                    String logMsg ="PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getCode();
-                    log.info(logMsg);
-
-                    throw new IllegalArgumentException(logMsg);
+                    String message ="PracticeSetting: Missing System/Code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getPracticeSetting().getCoding().get(0).getCode();
+                    log.error(message);
+                    throw new OperationOutcomeException("DocumentReference",message, OperationOutcome.IssueType.CODEINVALID);
                 }
             }
             if (documentReference.getContext().hasFacilityType()) {
@@ -194,10 +195,9 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                 if (code != null) {
                     documentReferenceEntity.setContextFaciltityType(code);
                 } else {
-                    String logMsg ="FacilityType: Missing System/Code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getCode();
-                    log.info(logMsg);
-
-                    throw new IllegalArgumentException(logMsg);
+                    String message ="FacilityType: Missing System/Code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getSystem() + " code = " + documentReference.getContext().getFacilityType().getCoding().get(0).getCode();
+                    log.error(message);
+                    throw new OperationOutcomeException("DocumentReference",message, OperationOutcome.IssueType.CODEINVALID);
                 }
             }
             if (documentReference.getContext().hasEncounter()) {
