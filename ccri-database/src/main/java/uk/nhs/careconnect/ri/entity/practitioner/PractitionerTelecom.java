@@ -9,7 +9,8 @@ import javax.persistence.*;
 @Table(name="PractitionerTelecom", uniqueConstraints= @UniqueConstraint(name="PK_PRACTITIONER_TELECOM", columnNames={"PRACTITIONER_TELECOM_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_PRACTITIONER_TELECOM", columnList="CONTACT_VALUE,SYSTEM_ID")
+				@Index(name = "IDX_PRACTITIONER_TELECOM", columnList="CONTACT_VALUE,SYSTEM_ID"),
+				@Index(name = "IDX_PRACTITIONER_TELECOM_PRACTITIONER_ID", columnList="PRACTITIONER_ID")
 		})
 public class PractitionerTelecom extends BaseContactPoint {
 

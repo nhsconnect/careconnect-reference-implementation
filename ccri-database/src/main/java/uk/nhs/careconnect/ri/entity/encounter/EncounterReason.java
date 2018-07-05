@@ -8,7 +8,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="EncounterReason", uniqueConstraints= @UniqueConstraint(name="PK_ENCOUNTER_REASON", columnNames={"ENCOUNTER_REASON_ID"})
-        ,indexes = { @Index(name="IDX_ENCOUNTER_REASON", columnList = "REASON_CONCEPT_ID")}
+        ,indexes = {
+        @Index(name="IDX_ENCOUNTER_REASON", columnList = "REASON_CONCEPT_ID"),
+        @Index(name="IDX_ENCOUNTER_REASON_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
+}
 )
 public class EncounterReason {
 

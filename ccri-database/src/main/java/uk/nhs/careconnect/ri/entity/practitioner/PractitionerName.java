@@ -7,8 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PractitionerName",indexes =
         {
-                @Index(name = "IDX_PRACTITIONER_FAMILY", columnList="family_name")
-                , @Index(name = "IDX_PRACTIONER_GIVEN", columnList="given_name")
+                @Index(name = "IDX_PRACTITIONER_NAME_PRACTITIONER_ID", columnList="PRACTITIONER_ID")
         })
 public class PractitionerName extends BaseHumanName {
     @Id

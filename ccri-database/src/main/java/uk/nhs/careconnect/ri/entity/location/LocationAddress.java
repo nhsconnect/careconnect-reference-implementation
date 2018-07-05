@@ -9,7 +9,11 @@ import uk.nhs.careconnect.ri.entity.BaseAddress;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "LocationAddress")
+@Table(name = "LocationAddress",indexes =
+        {
+                @Index(name = "IDX_LOCATION_ADDRESS_LOCATION_ID", columnList="LOCATION_ID"),
+                @Index(name = "IDX_LOCATION_ADDRESS_ADDRESS_ID", columnList="ADDRESS_ID")
+        })
 public class LocationAddress extends BaseAddress {
 
     @Id

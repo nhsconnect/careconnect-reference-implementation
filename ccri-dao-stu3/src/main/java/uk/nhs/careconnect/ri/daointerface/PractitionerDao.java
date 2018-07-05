@@ -291,7 +291,7 @@ public class PractitionerDao implements PractitionerRepository {
                 Join<PractitionerAddress, AddressEntity> joinAdrTable = joinAdr.join("address", JoinType.LEFT);
                 if (postCode!=null) {
                     Predicate p = builder.like(
-                            builder.upper(joinAdrTable.get("postcode").as(String.class)),
+                            joinAdrTable.get("postcode").as(String.class),
                             builder.upper(builder.literal(postCode.getValue()+"%"))
                     );
                     predList.add(p);

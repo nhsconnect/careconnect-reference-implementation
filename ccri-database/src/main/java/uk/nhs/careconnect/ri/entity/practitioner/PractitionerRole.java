@@ -11,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "PractitionerRole")
+@Table(name = "PractitionerRole",indexes =
+        {
+
+
+                @Index(name = "IDX_PRACTITIONER_ROLE_PRACTITIONER_ID", columnList="PRACTITIONER_ID"),
+                @Index(name = "IDX_PRACTITIONER_ROLE_ORGANISATION_ID", columnList="MANAGING_ORGANISATION_ID")
+        })
 public class PractitionerRole extends BaseResource {
 
     @Id

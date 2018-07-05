@@ -10,6 +10,8 @@ import javax.persistence.*;
 		,indexes =
 		{
 				@Index(name = "IDX_ENCOUNTER_IDENTIFER", columnList="IDENTIFIER_VALUE,SYSTEM_ID")
+				,
+				@Index(name="IDX_ENCOUNTER_IDENTIFIER_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
 
 		})
 public class EncounterIdentifier extends BaseIdentifier {

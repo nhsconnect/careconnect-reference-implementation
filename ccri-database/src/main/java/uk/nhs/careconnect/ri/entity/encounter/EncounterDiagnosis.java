@@ -1,12 +1,17 @@
 package uk.nhs.careconnect.ri.entity.encounter;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="EncounterDiagnosis", uniqueConstraints= @UniqueConstraint(name="PK_ENCOUNTER_REASON", columnNames={"ENCOUNTER_REASON_ID"})
-        ,indexes = { @Index(name="IDX_ENCOUNTER_CONDITION", columnList = "DIAGNOSIS_CONDITION_ID")}
+        ,indexes = {
+        @Index(name="IDX_ENCOUNTER_CONDITION", columnList = "DIAGNOSIS_CONDITION_ID"),
+        @Index(name="IDX_ENCOUNTER_DIAGNOSIS_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
+}
 )
 public class EncounterDiagnosis {
 
@@ -17,11 +22,13 @@ public class EncounterDiagnosis {
 
     @ManyToOne
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_ENCOUNTER_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EncounterEntity encounter;
 
 
     @ManyToOne
     @JoinColumn (name = "DIAGNOSIS_CONDITION_ID", nullable = false, foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_CONDITION_ID"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private ConditionEntity condition;
 
 

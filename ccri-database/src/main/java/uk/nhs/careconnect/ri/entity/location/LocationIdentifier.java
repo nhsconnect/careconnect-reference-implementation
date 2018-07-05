@@ -9,7 +9,9 @@ import javax.persistence.*;
 @Table(name="LocationIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_LOCATION_IDENTIFIER", columnNames={"LOCATION_IDENTIFIER_ID"})
 		,indexes =
 		{
-				@Index(name = "IDX_LOCATION_IDENTIFER", columnList="IDENTIFIER_VALUE,SYSTEM_ID")
+				@Index(name = "IDX_LOCATION_IDENTIFER", columnList="IDENTIFIER_VALUE,SYSTEM_ID"),
+				@Index(name = "IDX_LOCATION_IDENTIFER_LOCATION_ID", columnList="LOCATION_ID")
+
 
 		})
 public class LocationIdentifier extends BaseIdentifier {

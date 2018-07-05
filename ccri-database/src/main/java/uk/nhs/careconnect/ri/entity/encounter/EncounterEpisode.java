@@ -1,12 +1,17 @@
 package uk.nhs.careconnect.ri.entity.encounter;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="EncounterEpisodeOfCare")
+@Table(name="EncounterEpisodeOfCare" ,indexes = {
+
+        @Index(name="IDX_ENCOUNTER_EPISODE_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
+})
 public class EncounterEpisode extends BaseResource {
 
     @javax.persistence.Id
@@ -20,6 +25,7 @@ public class EncounterEpisode extends BaseResource {
 
     @ManyToOne
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_EPISODE_EPISODE"))
+    @LazyCollection(LazyCollectionOption.TRUE)
     private EpisodeOfCareEntity episode;
 
 
