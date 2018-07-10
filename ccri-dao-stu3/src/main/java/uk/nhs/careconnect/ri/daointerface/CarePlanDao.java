@@ -110,7 +110,7 @@ public class CarePlanDao implements CarePlanRepository {
     @Override
     public CarePlan create(FhirContext ctx, CarePlan carePlan, IdType theId, String theConditional) {
 
-        log.debug("Allergy.save");
+        log.debug("CarePlan.save");
         //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
         CarePlanEntity carePlanEntity = null;
 
@@ -350,33 +350,27 @@ public class CarePlanDao implements CarePlanRepository {
                 log.debug("Lower Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
 
                 switch (dateParam.getPrefix()) {
-                   /* case GREATERTHAN: {
-                        Predicate p = builder.greaterThan(root.<Date>get("assertedDateTime"), parameterLower);
-                        predList.add(p);
 
-                        break;
-                    }
-                    */
                     case GREATERTHAN:
                     case GREATERTHAN_OR_EQUALS: {
-                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterLower);
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("periodStartDateTime"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case APPROXIMATE:
                     case EQUAL: {
 
-                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterLower);
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("periodStartDateTime"), parameterLower);
                         predList.add(plow);
                         break;
                     }
                     case NOT_EQUAL: {
-                        Predicate p = builder.notEqual(root.<Date>get("assertedDateTime"), parameterLower);
+                        Predicate p = builder.notEqual(root.<Date>get("periodStartDateTime"), parameterLower);
                         predList.add(p);
                         break;
                     }
                     case STARTS_AFTER: {
-                        Predicate p = builder.greaterThan(root.<Date>get("assertedDateTime"), parameterLower);
+                        Predicate p = builder.greaterThan(root.<Date>get("periodStartDateTime"), parameterLower);
                         predList.add(p);
                         break;
 
@@ -394,19 +388,19 @@ public class CarePlanDao implements CarePlanRepository {
                 switch (dateParam.getPrefix()) {
                     case APPROXIMATE:
                     case EQUAL: {
-                        Predicate pupper = builder.lessThan(root.<Date>get("assertedDateTime"), parameterUpper);
+                        Predicate pupper = builder.lessThan(root.<Date>get("periodStartDateTime"), parameterUpper);
                         predList.add(pupper);
                         break;
                     }
 
                     case LESSTHAN_OR_EQUALS: {
-                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("assertedDateTime"), parameterUpper);
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("periodStartDateTime"), parameterUpper);
                         predList.add(p);
                         break;
                     }
                     case ENDS_BEFORE:
                     case LESSTHAN: {
-                        Predicate p = builder.lessThan(root.<Date>get("assertedDateTime"), parameterUpper);
+                        Predicate p = builder.lessThan(root.<Date>get("periodStartDateTime"), parameterUpper);
                         predList.add(p);
 
                         break;
@@ -430,7 +424,7 @@ public class CarePlanDao implements CarePlanRepository {
         {
             criteria.select(root);
         }
-        criteria.orderBy(builder.desc(root.get("assertedDateTime")));
+        criteria.orderBy(builder.desc(root.get("periodStartDateTime")));
 
         TypedQuery<CarePlanEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 

@@ -89,18 +89,28 @@ public class BundleResourceProvider implements IResourceProvider {
 
             switch (bundle.getType()) {
                 case COLLECTION:
-                    // ASync for speed
 
-                    // ASync This uses a queue direct:FHIRBundleCollection
-                    // Sync Direct flow direct:FHIRBundleMessage
                     Exchange exchangeBundle = template.send("direct:FHIRBundleCollection", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
 
                         }
                     });
-                    // TODO need proper responses from the camel processor. KGM 18/Apr/2018
-                    resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
+                    log.trace("IN MESSAGE POST HANDLING");
+                    // This response is coming from an external FHIR Server, so uses inputstream
+                    if (exchangeBundle.getIn().getBody() instanceof InputStream) {
+                        log.trace("RESPONSE InputStream");
+                        inputStream = (InputStream) exchangeBundle.getIn().getBody();
+                        Reader reader = new InputStreamReader(inputStream);
+                        resource = ctx.newXmlParser().parseResource(reader);
+                    } else
+                    if (exchangeBundle.getIn().getBody() instanceof String) {
+                        log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
+                        resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
+                        log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
+                    } else {
+                        log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
+                    }
                     break;
 
                 case MESSAGE:

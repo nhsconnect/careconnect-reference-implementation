@@ -5,7 +5,9 @@ import ca.uhn.fhir.context.FhirContext;
 
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -55,6 +57,26 @@ public class CamelRoute extends RouteBuilder {
 
 		BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
+
+		onException(Exception.class)
+				.handled(true)
+				.log("Exception in Camel")
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+						OperationOutcome outcome = new OperationOutcome();
+						String errorText = "";
+						if (exception != null && exception.getMessage() != null) {
+							errorText = exception.getMessage();
+						}
+						outcome.addIssue()
+								.setCode(OperationOutcome.IssueType.EXCEPTION)
+								.setDiagnostics(errorText);
+						exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(outcome));
+						exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 522);
+						//log, email, reroute, etc.
+					}
+				});
 		// Validation Service
 
 		from("direct:FHIRValidate")
@@ -66,10 +88,26 @@ public class CamelRoute extends RouteBuilder {
 		// Complex processing
 
 		from("direct:FHIRBundleCollection")
-				.routeId("Bundle Collection Queue")
+				.routeId("Bundle Collection Direct")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.to("direct:FhirEDMSBundle") //, documentReferenceDocumentBundle)
-				.to("direct:FhirEPRBundle");
+				.choice()
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(200))
+						.to("direct:FhirEPRBundle")
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(201))
+						.to("direct:FhirEPRBundle")
+				.endChoice();
+
+		from("direct:FHIRBundleMessage")
+				.routeId("Bundle Message Direct")
+				.process(camelProcessor) // Add in correlation Id if not present
+				.to("direct:FhirEDMSBundle") //, documentReferenceDocumentBundle)
+				.choice()
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(200))
+						.to("direct:FhirEPRBundle")
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(201))
+						.to("direct:FhirEPRBundle")
+				.endChoice();
 
 		// This bundle goes to the EDMS Server. See also Binary
 		from("direct:FHIRBundleDocumentCreate")

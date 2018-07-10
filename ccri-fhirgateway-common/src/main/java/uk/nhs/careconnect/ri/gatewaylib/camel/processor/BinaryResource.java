@@ -62,6 +62,7 @@ public class BinaryResource implements Processor {
                 }
                 String newBundle = ctx.newXmlParser().encodeResourceToString(bundle);
                 exchange.getIn().setBody(newBundle);
+                exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
             }
         }
 
