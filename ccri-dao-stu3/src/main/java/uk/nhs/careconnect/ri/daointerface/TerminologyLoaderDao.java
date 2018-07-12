@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -157,7 +158,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
         return retVal;
     }
 
-    private ConceptEntity getOrCreateConcept(CodeSystemEntity codeSystemVersion, Map<String, ConceptEntity> id2concept,Map<String, ConceptEntity> code2concept, String  id, String conceptId) {
+    private ConceptEntity getOrCreateConcept(CodeSystemEntity codeSystemVersion, Map<String, ConceptEntity> id2concept,Map<String, ConceptEntity> code2concept, String  id, String conceptId) throws OperationOutcomeException {
         ConceptEntity concept = id2concept.get(id);
         if (concept==null) {
             ourLog.trace("Fnd in map id="+id);
@@ -239,7 +240,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
     }
 
     @Override
-    public UploadStatistics loadLoinc(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+    public UploadStatistics loadLoinc(List<byte[]> theZipBytes, RequestDetails theRequestDetails) throws OperationOutcomeException {
         List<String> expectedFilenameFragments = Arrays.asList(LOINC_FILE, LOINC_HIERARCHY_FILE);
 
         extractFiles(theZipBytes, expectedFilenameFragments);
@@ -291,7 +292,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
     */
 
 
-    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion) {
+    public void storeCodeSystem(RequestDetails theRequestDetails, final CodeSystemEntity codeSystemVersion) throws OperationOutcomeException {
 
         codeSvc.storeNewCodeSystemVersion(codeSystemVersion,theRequestDetails );
 
@@ -299,7 +300,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
 
 
     @Override
-    public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails)  {
+    public UploadStatistics loadSnomedCt(List<byte[]> theZipBytes, RequestDetails theRequestDetails)  throws OperationOutcomeException {
 
         session = codeSvc.getSession();
         tx = codeSvc.getTransaction(session);
@@ -314,7 +315,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
         return stats;
     }
 
-    public UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+    public UploadStatistics processLoincFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) throws OperationOutcomeException {
             String url = LOINC_URL;
             final CodeSystemEntity codeSystemVersion = codeSvc.findBySystem(url);
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
@@ -350,7 +351,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
 
 
 
-       public  UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) {
+       public  UploadStatistics processSnomedCtFiles(List<byte[]> theZipBytes, RequestDetails theRequestDetails) throws OperationOutcomeException {
             final CodeSystemEntity codeSystemVersion = codeSvc.findBySystem(CareConnectSystem.SNOMEDCT); // new CodeSystemEntity();
             final Map<String, ConceptEntity> id2concept = new HashMap<String, ConceptEntity>();
             final Map<String, ConceptEntity> code2concept = new HashMap<String, ConceptEntity>();
@@ -522,7 +523,7 @@ public class TerminologyLoaderDao implements TerminologyLoader {
         }
 
         @Override
-        public void accept(CSVRecord theRecord) {
+        public void accept(CSVRecord theRecord)  {
             String id = theRecord.get("id");
             boolean active = "1".equals(theRecord.get("active"));
             if (!active) {
@@ -537,49 +538,53 @@ public class TerminologyLoaderDao implements TerminologyLoader {
 
             String typeId = theRecord.get("typeId");
 
-            ConceptEntity concept = getOrCreateConcept(myCodeSystemVersion, myId2concept,myCode2concept, id,conceptId);
-            concept.setCode(conceptId);
-            myCodeSystemVersion.getConcepts().add(concept);
+            try {
+                ConceptEntity concept = getOrCreateConcept(myCodeSystemVersion, myId2concept, myCode2concept, id, conceptId);
 
-            //codeSvc.save(concept);
+                concept.setCode(conceptId);
+                myCodeSystemVersion.getConcepts().add(concept);
 
-            ConceptDesignation designation =null;
-            for (ConceptDesignation designationSearch : concept.getDesignations()) {
-                if (designationSearch.getDesignationId().equals(id)) {
-                    designation = designationSearch;
-                    break;
+                //codeSvc.save(concept);
+
+                ConceptDesignation designation = null;
+                for (ConceptDesignation designationSearch : concept.getDesignations()) {
+                    if (designationSearch.getDesignationId().equals(id)) {
+                        designation = designationSearch;
+                        break;
+                    }
                 }
-            }
-            if (designation == null) {
-                designation = new ConceptDesignation();
-                designation.setDesignationId(id);
-                designation.setConceptEntity(concept);
-                concept.getDesignations().add(designation);
+                if (designation == null) {
+                    designation = new ConceptDesignation();
+                    designation.setDesignationId(id);
+                    designation.setConceptEntity(concept);
+                    concept.getDesignations().add(designation);
 
-            }
-            designation.setTerm(term);
-            if (concept.getDisplay() == null) {
-                concept.setDisplay(term);
-            }
-            switch (typeId) {
-                case "900000000000003001":
-                    designation.setUse(ConceptDesignation.DesignationUse.FullySpecifiedName);
+                }
+                designation.setTerm(term);
+                if (concept.getDisplay() == null) {
                     concept.setDisplay(term);
-                    break;
-                case "900000000000013009":
-                    designation.setUse(ConceptDesignation.DesignationUse.Synonym);
-                    break;
-                case "900000000000550004":
-                    designation.setUse(ConceptDesignation.DesignationUse.Definition);
-                    concept.setDisplay(term);
-                    break;
-                default :
-                     ourLog.info("Unknown typeId="+typeId);
+                }
+                switch (typeId) {
+                    case "900000000000003001":
+                        designation.setUse(ConceptDesignation.DesignationUse.FullySpecifiedName);
+                        concept.setDisplay(term);
+                        break;
+                    case "900000000000013009":
+                        designation.setUse(ConceptDesignation.DesignationUse.Synonym);
+                        break;
+                    case "900000000000550004":
+                        designation.setUse(ConceptDesignation.DesignationUse.Definition);
+                        concept.setDisplay(term);
+                        break;
+                    default:
+                        ourLog.info("Unknown typeId=" + typeId);
+                }
+
+
+                codeSvc.save(designation);
+            } catch (Exception ex) {
+                ourLog.error(ex.getMessage());
             }
-
-
-           codeSvc.save(designation);
-
 
         }
     }

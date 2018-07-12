@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Duration;
 import org.hl7.fhir.dstu3.model.Quantity;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -23,17 +24,17 @@ public interface ConceptRepository {
 
     ConceptEntity findCode(CodeSystemEntity codeSystemUri, String code);
 
-    ConceptEntity save(ConceptEntity conceptEntity);
+    ConceptEntity save(ConceptEntity conceptEntity) throws OperationOutcomeException;
 
     //public ConceptEntity saveTransactional(ConceptEntity conceptEntity);
 
-    void save(ConceptParentChildLink conceptParentChildLink);
+    void save(ConceptParentChildLink conceptParentChildLink) throws OperationOutcomeException;
 
-    void persistLinks(ConceptEntity conceptEntity);
+    void persistLinks(ConceptEntity conceptEntity) throws OperationOutcomeException;
 
-    void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails);
+    void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystemVersion, RequestDetails theRequestDetails) throws OperationOutcomeException;
 
-    ConceptDesignation save(ConceptDesignation conceptDesignation);
+    ConceptDesignation save(ConceptDesignation conceptDesignation) throws OperationOutcomeException;
 
     Session getSession();
 

@@ -21,7 +21,7 @@ public interface CarePlanRepository extends BaseDao<CarePlanEntity,CarePlan> {
 
     CarePlanEntity readEntity(FhirContext ctx, IdType theId);
 
-    CarePlan create(FhirContext ctx, CarePlan allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    CarePlan create(FhirContext ctx, CarePlan allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
     List<CarePlan> search(

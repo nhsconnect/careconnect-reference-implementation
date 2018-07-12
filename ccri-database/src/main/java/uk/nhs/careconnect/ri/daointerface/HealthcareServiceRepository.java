@@ -21,7 +21,7 @@ public interface HealthcareServiceRepository extends BaseDao<HealthcareServiceEn
 
     HealthcareServiceEntity readEntity(FhirContext ctx, IdType theId);
 
-    HealthcareService create(FhirContext ctx, HealthcareService location, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    HealthcareService create(FhirContext ctx, HealthcareService location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

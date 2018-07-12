@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerEntityToFHIRPractitionerTransformer;
 import uk.nhs.careconnect.ri.entity.AddressEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.*;
@@ -84,7 +85,7 @@ public class PractitionerDao implements PractitionerRepository {
     }
 
     @Override
-    public Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional){
+    public Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException {
         PractitionerEntity practitionerEntity = null;
 
         if (practitioner.hasId()) {

@@ -22,7 +22,7 @@ public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> 
 
     ConditionEntity readEntity(FhirContext ctx, IdType theId);
 
-    Condition create(FhirContext ctx,Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Condition create(FhirContext ctx,Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<Condition> search(FhirContext ctx,
 

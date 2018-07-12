@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.ConditionEntityToFHIRConditionTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionCategory;
@@ -104,7 +105,8 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public Condition create(FhirContext ctx,Condition condition, IdType theId, String theConditional) {
+    public Condition create(FhirContext ctx,Condition condition, IdType theId, String theConditional) throws OperationOutcomeException
+    {
 
         log.debug("Condition.save");
         //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));

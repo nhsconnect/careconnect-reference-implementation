@@ -22,7 +22,7 @@ public interface ImmunizationRepository extends BaseDao<ImmunisationEntity, Immu
 
     ImmunisationEntity readEntity(FhirContext ctx, IdType theId);
 
-    Immunization create(FhirContext ctx,Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theImmunizational);
+    Immunization create(FhirContext ctx,Immunization immunisation, @IdParam IdType theId, @ConditionalUrlParam String theImmunizational) throws OperationOutcomeException;
 
 
     List<Immunization> search(FhirContext ctx,

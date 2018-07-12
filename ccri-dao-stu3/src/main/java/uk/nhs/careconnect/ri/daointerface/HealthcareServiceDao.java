@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.HealthcareServiceEntityToFHIRHealthcareServiceTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.healthcareService.*;
@@ -88,7 +89,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public HealthcareService create(FhirContext ctx, HealthcareService service, IdType theId, String theConditional) {
+    public HealthcareService create(FhirContext ctx, HealthcareService service, IdType theId, String theConditional) throws OperationOutcomeException  {
         log.debug("HealthcareService.save");
 
         HealthcareServiceEntity serviceEntity = null;

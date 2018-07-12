@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptParentChildLink;
@@ -126,8 +128,11 @@ public class CodeSystemDao implements CodeSystemRepository {
 
     @Override
     @Transactional
-    public SystemEntity findSystem(String system) {
+    public SystemEntity findSystem(String system) throws OperationOutcomeException {
 
+        if (system==null || system.isEmpty()) {
+            throw new OperationOutcomeException("System is required","System is required",OperationOutcome.IssueType.INVALID);
+        }
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
         SystemEntity systemEntity = null;

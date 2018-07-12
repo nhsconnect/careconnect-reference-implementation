@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.DiagnosticReportEntityToFHIRDiagnosticReportTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
@@ -98,7 +99,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
     }
 
     @Override
-    public DiagnosticReport create(FhirContext ctx, DiagnosticReport diagnosticReport, IdType theId, String theConditional) {
+    public DiagnosticReport create(FhirContext ctx, DiagnosticReport diagnosticReport, IdType theId, String theConditional) throws OperationOutcomeException {
         log.debug("DiagnosticReport.save");
 
         DiagnosticReportEntity diagnosticReportEntity = null;

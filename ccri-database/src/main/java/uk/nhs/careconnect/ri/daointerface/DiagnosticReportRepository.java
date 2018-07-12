@@ -23,7 +23,7 @@ public interface DiagnosticReportRepository extends BaseDao<DiagnosticReportEnti
 
     DiagnosticReportEntity readEntity(FhirContext ctx, IdType theId);
 
-    DiagnosticReport create(FhirContext ctx, DiagnosticReport diagnosticReport, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    DiagnosticReport create(FhirContext ctx, DiagnosticReport diagnosticReport, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<DiagnosticReport> search(FhirContext ctx,
 

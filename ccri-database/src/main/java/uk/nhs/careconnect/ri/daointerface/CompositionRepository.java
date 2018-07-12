@@ -24,7 +24,7 @@ public interface CompositionRepository extends BaseDao<CompositionEntity,Composi
 
     CompositionEntity readEntity(FhirContext ctx, IdType theId);
 
-    Composition create(FhirContext ctx, Composition composition, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    Composition create(FhirContext ctx, Composition composition, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<Composition> search(FhirContext ctx,
 

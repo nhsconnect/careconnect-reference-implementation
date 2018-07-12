@@ -20,7 +20,7 @@ public interface EpisodeOfCareRepository extends BaseDao<EpisodeOfCareEntity,Epi
 
     EpisodeOfCare read(FhirContext ctx, IdType theId);
 
-    EpisodeOfCare create(FhirContext ctx,EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional);
+    EpisodeOfCare create(FhirContext ctx,EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
 

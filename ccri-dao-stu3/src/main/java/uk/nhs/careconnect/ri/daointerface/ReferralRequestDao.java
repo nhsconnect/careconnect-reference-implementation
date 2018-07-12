@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.ReferralRequestEntityToFHIRReferralRequestTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -166,7 +167,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
     }
 
     @Override
-    public ReferralRequest create(FhirContext ctx, ReferralRequest referralRequest, IdType theId, String theConditional) {
+    public ReferralRequest create(FhirContext ctx, ReferralRequest referralRequest, IdType theId, String theConditional) throws OperationOutcomeException {
         log.debug("ReferralRequest.save");
 
         ReferralRequestEntity referralRequestEntity = null;

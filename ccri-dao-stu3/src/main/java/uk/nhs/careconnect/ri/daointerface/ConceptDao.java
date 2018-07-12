@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptDesignation;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -73,7 +74,7 @@ public class ConceptDao implements ConceptRepository {
 
     @Override
 
-    public void save(ConceptParentChildLink conceptParentChildLink) {
+    public void save(ConceptParentChildLink conceptParentChildLink) throws OperationOutcomeException {
         em.persist(conceptParentChildLink);
         //sessionEntityManager.flush();
         /*
@@ -93,7 +94,7 @@ public class ConceptDao implements ConceptRepository {
 
     @Override
 
-    public ConceptEntity save(ConceptEntity conceptEntity){
+    public ConceptEntity save(ConceptEntity conceptEntity) throws OperationOutcomeException {
         em.persist(conceptEntity);
         for (ConceptParentChildLink child: conceptEntity.getChildren()) {
             child.setParent(conceptEntity);
@@ -113,14 +114,14 @@ public class ConceptDao implements ConceptRepository {
     }
 */
     @Override
-    public ConceptDesignation save(ConceptDesignation conceptDesignation){
+    public ConceptDesignation save(ConceptDesignation conceptDesignation) throws OperationOutcomeException{
         sessionEntityManager.persist(conceptDesignation);
         sessionEntityManager.flush();
         return conceptDesignation;
     }
 
     @Override
-    public void persistLinks(ConceptEntity conceptEntity) {
+    public void persistLinks(ConceptEntity conceptEntity) throws OperationOutcomeException {
 
         for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
             if (childLink.getId() == null) {
@@ -136,7 +137,7 @@ public class ConceptDao implements ConceptRepository {
 
     @Override
     @Transactional
-    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) {
+    public void storeNewCodeSystemVersion(CodeSystemEntity theCodeSystem, RequestDetails theRequestDetails) throws OperationOutcomeException {
 
 
 
@@ -152,7 +153,7 @@ public class ConceptDao implements ConceptRepository {
         log.info("Finished Code Processing");
     }
 
-    private void saveChildConcepts(ConceptEntity conceptEntity) {
+    private void saveChildConcepts(ConceptEntity conceptEntity) throws OperationOutcomeException {
         for (ConceptParentChildLink childLink : conceptEntity.getChildren()) {
             save(childLink.getChild());
             saveChildConcepts(childLink.getChild());
@@ -162,7 +163,7 @@ public class ConceptDao implements ConceptRepository {
 
 
     @Override
-    public CodeSystemEntity findBySystem(String system) {
+    public CodeSystemEntity findBySystem(String system)  {
 
         CriteriaBuilder builder = sessionEntityManager.getCriteriaBuilder();
 

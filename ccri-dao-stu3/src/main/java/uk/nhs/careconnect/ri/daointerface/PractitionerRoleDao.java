@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.PractitionerRoleToFHIRPractitionerRoleTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
@@ -91,7 +92,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
 
     @Override
-    public org.hl7.fhir.dstu3.model.PractitionerRole create(FhirContext ctx, org.hl7.fhir.dstu3.model.PractitionerRole practitionerRole, IdType theId, String theConditional) {
+    public org.hl7.fhir.dstu3.model.PractitionerRole create(FhirContext ctx, org.hl7.fhir.dstu3.model.PractitionerRole practitionerRole, IdType theId, String theConditional) throws OperationOutcomeException  {
 
         PractitionerRole roleEntity = null;
         if (practitionerRole.hasId()) {

@@ -9,6 +9,7 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationStatement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationStatementTransformer;
 import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.medication.MedicationStatementEntity;
@@ -61,7 +62,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public MedicationStatement create(FhirContext ctx,MedicationStatement statement, IdType theId, String theConditional) {
+    public MedicationStatement create(FhirContext ctx,MedicationStatement statement, IdType theId, String theConditional) throws OperationOutcomeException {
 
         return null;
     }
