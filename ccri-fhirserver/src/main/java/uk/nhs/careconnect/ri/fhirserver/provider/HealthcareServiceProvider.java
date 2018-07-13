@@ -58,9 +58,9 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
         try {
-        HealthcareService newHealthcareService = serviceDao.create(ctx, service, theId, theConditional);
-        method.setId(newHealthcareService.getIdElement());
-        method.setResource(newHealthcareService);
+            HealthcareService newHealthcareService = serviceDao.create(ctx, service, theId, theConditional);
+            method.setId(newHealthcareService.getIdElement());
+            method.setResource(newHealthcareService);
         } catch (Exception ex) {
 
             if (ex instanceof OperationOutcomeException) {
@@ -73,8 +73,6 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
                 method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
             }
         }
-
-
 
 
         return method;
@@ -90,9 +88,23 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-        HealthcareService newHealthcareService = serviceDao.create(ctx, service,null,null);
-        method.setId(newHealthcareService.getIdElement());
-        method.setResource(newHealthcareService);
+        try {
+            HealthcareService newHealthcareService = serviceDao.create(ctx, service,null,null);
+            method.setId(newHealthcareService.getIdElement());
+            method.setResource(newHealthcareService);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
 
         return method;
     }

@@ -57,9 +57,9 @@ public class CompositionProvider implements ICCResourceProvider {
         OperationOutcome opOutcome = new OperationOutcome();
         method.setOperationOutcome(opOutcome);
         try {
-        Composition newComposition = compositionDao.create(ctx,composition, theId, theConditional);
-        method.setId(newComposition.getIdElement());
-        method.setResource(newComposition);
+            Composition newComposition = compositionDao.create(ctx,composition, theId, theConditional);
+            method.setId(newComposition.getIdElement());
+            method.setResource(newComposition);
         } catch (Exception ex) {
 
             if (ex instanceof OperationOutcomeException) {
@@ -84,10 +84,22 @@ public class CompositionProvider implements ICCResourceProvider {
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
         method.setOperationOutcome(opOutcome);
+        try {
+            Composition newComposition = compositionDao.create(ctx,composition, null,null);
+            method.setId(newComposition.getIdElement());
+            method.setResource(newComposition);
+        } catch (Exception ex) {
 
-        Composition newComposition = compositionDao.create(ctx,composition, null,null);
-        method.setId(newComposition.getIdElement());
-        method.setResource(newComposition);
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
         return method;
     }

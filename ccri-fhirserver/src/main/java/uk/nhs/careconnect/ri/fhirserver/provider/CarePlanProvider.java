@@ -55,9 +55,9 @@ public class CarePlanProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
         try {
-        CarePlan newCarePlan = carePlanDao.create(ctx,carePlan, theId, theConditional);
-        method.setId(newCarePlan.getIdElement());
-        method.setResource(newCarePlan);
+            CarePlan newCarePlan = carePlanDao.create(ctx,carePlan, theId, theConditional);
+            method.setId(newCarePlan.getIdElement());
+            method.setResource(newCarePlan);
         } catch (Exception ex) {
 
             if (ex instanceof OperationOutcomeException) {
@@ -87,11 +87,21 @@ public class CarePlanProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-
-        CarePlan newCarePlan = carePlanDao.create(ctx,carePlan, null,null);
-        method.setId(newCarePlan.getIdElement());
-        method.setResource(newCarePlan);
-
+        try {
+            CarePlan newCarePlan = carePlanDao.create(ctx,carePlan, null,null);
+            method.setId(newCarePlan.getIdElement());
+            method.setResource(newCarePlan);
+        } catch (Exception ex) {
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
 
 
         return method;
