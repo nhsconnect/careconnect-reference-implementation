@@ -45,7 +45,7 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
 
         endpoint.setId(endpointEntity.getId().toString());
 
-        log.info("endpoint tfm3");
+        log.trace("endpoint tfm3");
         if (endpointEntity.getName() != null) {
             endpoint.setName(endpointEntity.getName());
         }
@@ -54,19 +54,19 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
             endpoint.setManagingOrganization(new Reference("Organization/"+endpointEntity.getManagingOrganisation().getId()));
             endpoint.getManagingOrganization().setDisplay(endpointEntity.getManagingOrganisation().getName());
         }
-        log.info("endpoint tfm4");
+        log.trace("endpoint tfm4");
         if (endpointEntity.getConnectionType()!=null) {
             endpoint.getConnectionType()
                     .setCode(endpointEntity.getConnectionType().getCode())
                     .setDisplay(endpointEntity.getConnectionType().getDisplay())
                     .setSystem(endpointEntity.getConnectionType().getSystem());
         }
-        log.info("endpoint tfm5");
+        log.trace("endpoint tfm5");
         if (endpointEntity.getAddress() != null) {
             endpoint.setAddress(endpointEntity.getAddress());
         }
 
-        log.info("endpoint tfm6");
+        log.trace("endpoint tfm6");
 
         return endpoint;
     }
