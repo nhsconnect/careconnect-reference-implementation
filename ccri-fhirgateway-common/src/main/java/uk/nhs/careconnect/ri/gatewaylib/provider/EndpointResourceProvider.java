@@ -59,9 +59,12 @@ public class EndpointResourceProvider implements IResourceProvider {
 
             Exchange exchangeBundle = template.send("direct:FHIREndpoint", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Endpoint");
                 }
             });
 
