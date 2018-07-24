@@ -35,7 +35,7 @@ public class UIOverlayConfig {
 	 * deploying your server to a place with a fully qualified domain name, 
 	 * you might want to use that instead of using the variable.
 	 */
-	@Value("${fhir.resource.serverBase}")
+	@Value("${datasource.ui.serverBase}")
 	private String serverBase;
 
 	@Bean
