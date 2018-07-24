@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.nhs.careconnect.ri</groupId>
-    <artifactId>ccri</artifactId>
+    <artifactId>ccri-parent</artifactId>
     <version>3.6.0</version>
     <packaging>pom</packaging>
 
@@ -153,8 +153,9 @@
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver-common</module>
         <module>ccri-fhirgateway-common</module>
-        <module>ccri-fhirgateway</module>
-        <module>ccri-fhirgatewayhttps</module>
+        <module>ccri</module>
+        <module>ccri-fhir</module>
+        <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
     </modules>
 

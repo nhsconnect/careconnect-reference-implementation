@@ -1,0 +1,21 @@
+FROM tomcat:8.0.46-jre8
+
+ENV JAVA_OPTS="-Xms128m -Xmx512m"
+
+RUN rm -rf /usr/local/tomcat/webapps/*;
+
+RUN  mkdir /usr/local/tomcat/webapps/ROOT;
+
+ADD index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
+ADD robots.txt /usr/local/tomcat/webapps/ROOT/robots.txt
+ADD logging.properties /usr/local/tomcat/conf/logging.properties
+ADD server.xml /usr/local/tomcat/conf/server.xml
+
+ADD target/ccri-smartonfhir.war /usr/local/tomcat/webapps/ccri-smartonfhir.war
+ADD .keystore /usr/local/tomcat/.keystore
+
+# See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
+EXPOSE 8443
+
+CMD ["catalina.sh", "run"]
+

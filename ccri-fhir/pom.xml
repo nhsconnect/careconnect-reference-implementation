@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>ccri-fhirserver</artifactId>
+	<artifactId>ccri-fhir</artifactId>
 	<packaging>war</packaging>
 
-	<name>ccri-fhirserver</name>
+	<name>ccri-fhir</name>
 
  
 	<repositories>
@@ -23,18 +23,15 @@
     </parent>
 
 	<properties>
-
-
+		<spring_version>4.3.12.RELEASE</spring_version>
+		<hapi-fhir-version>3.0.0</hapi-fhir-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-
 
 		<ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
 
         <jetty_version>9.4.5.v20170502</jetty_version>
-
-		<hibernate_version>5.2.11.Final</hibernate_version>
-		<hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
+        <hibernate_version>5.2.11.Final</hibernate_version>
+        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
 
         <maven_assembly_plugin_version>2.5.3</maven_assembly_plugin_version>
         <maven_license_plugin_version>1.8</maven_license_plugin_version>
@@ -42,15 +39,40 @@
         <phloc_schematron_version>2.7.1</phloc_schematron_version>
         <phloc_commons_version>4.4.6</phloc_commons_version>
 
-
         <xmlunit_version>1.6</xmlunit_version>
 
 
 	</properties>
 	<dependencies>
 
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-javaconfig</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http4</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jms</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
 
-        <dependency>
+
+		<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit-version}</version>
@@ -71,33 +93,33 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-backward-codecs</artifactId>
-            <version>5.5.4</version>
-        </dependency>
 
-
-        <!-- JPA Server POM -->
-<!--
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.44</version>
-        </dependency> -->
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.2</version>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-server</artifactId>
+			<version>${hapi-fhir-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+				</exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+
+            </exclusions>
 		</dependency>
 
-		<!-- Use h2 for testing but dont include in final package -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.196</version>
-			<scope>test</scope>
-		</dependency>
+
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -106,34 +128,11 @@
 
 		</dependency>
 
-		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-testpage-overlay</artifactId>
-			<version>${hapi-fhir-version}</version>
-			<type>war</type>
-			<scope>provided</scope>
-		</dependency>
-
-		
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-testpage-overlay</artifactId>
-			<version>${hapi-fhir-version}</version>
-			<classifier>classes</classifier>
-			<scope>provided</scope>
-
-		</dependency>
 
 		<!-- Flyway for database migrations. This is used by hspc for openid
 
 -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-			<version>4.2.0</version>
-		</dependency>
 
 
 		<!-- Needed for JEE/Servlet support -->
@@ -187,7 +186,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring_version}</version>
         </dependency>
 
 		<dependency>
@@ -216,7 +215,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring-version}</version>
+			<version>${spring_version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -281,27 +280,32 @@
         </dependency>
 
 		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<version>${hapi-fhir-version}</version>
+			<type>war</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<version>${hapi-fhir-version}</version>
+			<classifier>classes</classifier>
+			<scope>provided</scope>
+		</dependency>
+
+			<dependency>
 			<groupId>uk.nhs.careconnect.ri</groupId>
-			<artifactId>ccri-dao-stu3</artifactId>
+			<artifactId>ccri-fhirserver-common</artifactId>
 			<version>${care-connect-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.nhs.careconnect.ri</groupId>
-			<artifactId>ccri-database</artifactId>
+			<artifactId>ccri-fhirgateway-common</artifactId>
 			<version>${care-connect-version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>uk.org.hl7.fhir</groupId>
-			<artifactId>cc-core</artifactId>
-			<version>${care-connect-version}</version>
-		</dependency>
-
-        <dependency>
-            <groupId>uk.nhs.careconnect.ri</groupId>
-            <artifactId>ccri-fhirserver-common</artifactId>
-            <version>${care-connect-version}</version>
-        </dependency>
 
 
 
@@ -311,7 +315,7 @@
 	<build>
 
 		<!-- Tells Maven to name the generated WAR file as hapi-fhir-jpaserver-example.war -->
-		<finalName>careconnect-ri</finalName>
+		<finalName>ccri-fhir</finalName>
 
 		<!-- The following is not required for the application to build, but allows you to test it by issuing "mvn jetty:run" from the command line. -->
 		<pluginManagement>
@@ -321,11 +325,12 @@
 					<artifactId>jetty-maven-plugin</artifactId>
 					<configuration>
 						<webApp>
-							<contextPath>/careconnect-ri</contextPath>
+							<contextPath>/ccri-fhir</contextPath>
 							<allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
 						</webApp>
 					</configuration>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 
@@ -344,7 +349,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+			<!-- The configuration here tells the WAR plugin to include the HAPIComponent Tester overlay. You can omit it if you are not using that feature. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -364,14 +369,33 @@
 					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			
 
-			<!-- This is to run the integration tests
-			     This will execute all test classes which have a name which ends in IT -->
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.0</version>
-      </plugin>
+			<!-- This is to run the integration tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.22.0</version>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
@@ -380,9 +404,10 @@
 				<configuration>
 					<url>http://127.0.0.1:9090/manager/text</url>
 					<server>TomcatServer</server>
-					<path>/careconnect-ri</path>
+                    <path>/ccri-fhir</path>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
@@ -390,7 +415,7 @@
 		<repository>
 			<id>bintray-kevinmayfield-careconnect</id>
 			<name>kevinmayfield-careconnect</name>
-			<url>https://api.bintray.com/maven/kevinmayfield/careconnect/ccri-fhirserver/;publish=1</url>
+			<url>https://api.bintray.com/maven/kevinmayfield/careconnect/ccri-fhir/;publish=1</url>
 		</repository>
 	</distributionManagement>
 
