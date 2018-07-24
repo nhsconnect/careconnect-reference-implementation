@@ -1,7 +1,7 @@
 version: '3'
 services:
-  ccri:
-    container_name: ccri
+  ccriserver:
+    container_name: ccriserver
     build: ccri-fhirserver
     image: thorlogic/ccri-fhirserver:${CRRI_VERSION}
     depends_on:
@@ -56,17 +56,17 @@ services:
       - ccri_net
     command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --innodb_lock_wait_timeout=300 --transaction-isolation=READ-UNCOMMITTED
 
-  ccrigateway:
-    container_name: ccrigateway
-    build: ccri-fhirgateway
-    image: thorlogic/ccri-fhirgateway:${CRRI_VERSION}
+  ccrifhir:
+    container_name: ccrifhir
+    build: ccri-fhir
+    image: thorlogic/ccri-fhir:${CRRI_VERSION}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccr-fhir/STU3
       - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
-      - ccri
+      - ccriserver
     ports:
       - 80:80
     extra_hosts:
@@ -77,13 +77,13 @@ services:
     networks:
       - ccri_net
 
-  ccrigatewayhttps:
-    container_name: ccrigatewayhttps
-    build: ccri-fhirgatewayhttps
-    image: thorlogic/ccri-fhirgatewayhttps:${CRRI_VERSION}
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    build: ccri-smartonfhir
+    image: thorlogic/ccri-smartonfhir:${CRRI_VERSION}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
       - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
@@ -91,7 +91,7 @@ services:
       - fhir.oauth2.token=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/token
       - fhir.oauth2.register=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/register
     depends_on:
-      - ccri
+      - ccriserver
     ports:
       - 443:8443
     extra_hosts:
