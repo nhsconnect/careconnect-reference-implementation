@@ -77,24 +77,24 @@ services:
     networks:
       - ccri_net
 
-    ccriui:
-        container_name: ccriui
-        build: ccri
-        image: thorlogic/ccri-ui:${CRRI_VERSION}
-        environment:
-          - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-          - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-          - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-          - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-        depends_on:
-          - ccriserver
-        ports:
-          - 80:80
-        extra_hosts:
-          # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
-          - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
-        networks:
-          - ccri_net
+  ccriui:
+    container_name: ccriui
+    build: ccri
+    image: thorlogic/ccri-ui:${CRRI_VERSION}
+    environment:
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccriserver
+    ports:
+      - 80:80
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+    networks:
+      - ccri_net
 
   ccrismartonfhir:
     container_name: ccrismartonfhir
