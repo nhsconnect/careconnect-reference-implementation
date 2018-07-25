@@ -3,13 +3,12 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRFormatError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestDosage;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 
@@ -116,12 +115,12 @@ public class MedicationRequestEntityToFHIRMedicationStatementTransformer impleme
 
         if (medicationRequestEntity.getMedicationCode() != null) {
 
-                CodeableConcept medication = new CodeableConcept();
-                medication.addCoding()
+                CodeableConcept medicationRequest = new CodeableConcept();
+                medicationRequest.addCoding()
                     .setDisplay(medicationRequestEntity.getMedicationCode().getDisplay())
                     .setSystem(medicationRequestEntity.getMedicationCode().getSystem())
                     .setCode(medicationRequestEntity.getMedicationCode().getCode());
-                medicationStatement.setMedication(medication);
+                medicationStatement.setMedication(medicationRequest);
 
         } else if (medicationRequestEntity.getMedicationEntity() != null) {
             medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())

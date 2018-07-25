@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -16,9 +15,9 @@ import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFH
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestDosage;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestIdentifier;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;

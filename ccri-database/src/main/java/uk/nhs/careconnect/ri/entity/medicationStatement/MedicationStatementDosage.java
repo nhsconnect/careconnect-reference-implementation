@@ -1,37 +1,38 @@
-package uk.nhs.careconnect.ri.entity.medication;
+package uk.nhs.careconnect.ri.entity.medicationStatement;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 
 @Entity
-@Table(name="MedicationRequestDosage")
-public class MedicationRequestDosage extends BaseResource {
+@Table(name="MedicationStatementDosage")
+public class MedicationStatementDosage extends BaseResource {
 
-	public MedicationRequestDosage() {
+	public MedicationStatementDosage() {
 
 	}
 
-	public MedicationRequestDosage(MedicationRequestEntity prescription) {
-		this.prescription = prescription;
+	public MedicationStatementDosage(MedicationStatementEntity statement) {
+		this.statement = statement;
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name= "PRESCRIPTION_DOSAGE_ID")
+	@Column(name= "MEDICATION_STATEMENT_DOSAGE_ID")
 	private Long dosageId;
 
 	@ManyToOne
-	@JoinColumn (name = "PRESCRIPTION_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_PRESCRIPTION_DOSAGE"))
-	private MedicationRequestEntity prescription;
+	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_DOSAGE"))
+	private MedicationStatementEntity statement;
 
 	@ManyToOne
-	@JoinColumn(name = "ADDITIONAL_INSTRUCTION_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ADDITIONAL_INSTRUCTION_CONCEPT"))
+	@JoinColumn(name = "ADDITIONAL_INSTRUCTION_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_ADDITIONAL_INSTRUCTION_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity additionalInstructionCode;
 
@@ -49,7 +50,7 @@ public class MedicationRequestDosage extends BaseResource {
 	// TODO TIMING
 
 	@ManyToOne
-	@JoinColumn(name = "ASNEEDED_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_AS_NEEDED_CONCEPT"))
+	@JoinColumn(name = "ASNEEDED_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_AS_NEEDED_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity asNeededCode;
 
@@ -57,17 +58,17 @@ public class MedicationRequestDosage extends BaseResource {
 	Boolean asNeededBoolean;
 
 	@ManyToOne
-	@JoinColumn(name = "SITE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_SITE_CONCEPT"))
+	@JoinColumn(name = "SITE_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_SITE_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity siteCode;
 
 	@ManyToOne
-	@JoinColumn(name = "ROUTE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ROUTE_CONCEPT"))
+	@JoinColumn(name = "ROUTE_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_ROUTE_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity routeCode;
 
 	@ManyToOne
-	@JoinColumn(name = "METHOD_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_METHOD_CONCEPT"))
+	@JoinColumn(name = "METHOD_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_METHOD_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	ConceptEntity methodCode;
 
@@ -81,30 +82,30 @@ public class MedicationRequestDosage extends BaseResource {
 	private BigDecimal doseQuantity;
 
 	@ManyToOne
-	@JoinColumn(name="DOSE_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_UNITS_CONCEPT"))
+	@JoinColumn(name="DOSE_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_UNITS_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private ConceptEntity doseUnitOfMeasure;
 
 	@ManyToOne
-	@JoinColumn(name="DOSE_LOW_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_LOW_UNITS_CONCEPT"))
+	@JoinColumn(name="DOSE_LOW_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_LOW_UNITS_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private ConceptEntity doseLowUnitOfMeasure;
 
 
 
 	@ManyToOne
-	@JoinColumn(name="DOSE_HIGH_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_HIGH_UNITS_CONCEPT"))
+	@JoinColumn(name="DOSE_HIGH_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_DOSE_HIGH_UNITS_CONCEPT"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private ConceptEntity doseHighUnitOfMeasure;
 
 
 
-	public MedicationRequestEntity getMedicationRequest() {
-	        return this.prescription;
+	public MedicationStatementEntity getMedicationStatement() {
+	        return this.statement;
 	}
 
-	public MedicationRequestDosage setMedicationRequest(MedicationRequestEntity prescription) {
-	        this.prescription = prescription;
+	public MedicationStatementDosage setMedicationStatement(MedicationStatementEntity statement) {
+	        this.statement = statement;
         return this;
 	}
 
@@ -112,17 +113,17 @@ public class MedicationRequestDosage extends BaseResource {
 		return dosageId;
 	}
 
-	public MedicationRequestDosage setDosageId(Long dosageId) {
+	public MedicationStatementDosage setDosageId(Long dosageId) {
 		this.dosageId = dosageId;
         return this;
 	}
 
-	public MedicationRequestEntity getPrescription() {
-		return prescription;
+	public MedicationStatementEntity getPrescription() {
+		return statement;
 	}
 
-	public MedicationRequestDosage setPrescription(MedicationRequestEntity prescription) {
-		this.prescription = prescription;
+	public MedicationStatementDosage setPrescription(MedicationStatementEntity statement) {
+		this.statement = statement;
 		return this;
 	}
 
@@ -130,7 +131,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return additionalInstructionCode;
 	}
 
-	public MedicationRequestDosage setAdditionalInstructionCode(ConceptEntity additionalInstructionCode) {
+	public MedicationStatementDosage setAdditionalInstructionCode(ConceptEntity additionalInstructionCode) {
 		this.additionalInstructionCode = additionalInstructionCode;
         return this;
 	}
@@ -139,7 +140,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return sequence;
 	}
 
-	public MedicationRequestDosage setSequence(Integer sequence) {
+	public MedicationStatementDosage setSequence(Integer sequence) {
 		this.sequence = sequence;
         return this;
 	}
@@ -148,7 +149,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return patientInstruction;
 	}
 
-	public MedicationRequestDosage setPatientInstruction(String patientInstruction) {
+	public MedicationStatementDosage setPatientInstruction(String patientInstruction) {
 		this.patientInstruction = patientInstruction;
         return this;
 	}
@@ -157,7 +158,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return asNeededCode;
 	}
 
-	public MedicationRequestDosage setAsNeededCode(ConceptEntity asNeededCode) {
+	public MedicationStatementDosage setAsNeededCode(ConceptEntity asNeededCode) {
 		this.asNeededCode = asNeededCode;
         return this;
 	}
@@ -166,7 +167,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return asNeededBoolean;
 	}
 
-	public MedicationRequestDosage setAsNeededBoolean(Boolean asNeededBoolean) {
+	public MedicationStatementDosage setAsNeededBoolean(Boolean asNeededBoolean) {
 		this.asNeededBoolean = asNeededBoolean;
         return this;
 	}
@@ -175,7 +176,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return siteCode;
 	}
 
-	public MedicationRequestDosage setSiteCode(ConceptEntity siteCode) {
+	public MedicationStatementDosage setSiteCode(ConceptEntity siteCode) {
 		this.siteCode = siteCode;
         return this;
 	}
@@ -184,7 +185,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return routeCode;
 	}
 
-	public MedicationRequestDosage setRouteCode(ConceptEntity routeCode) {
+	public MedicationStatementDosage setRouteCode(ConceptEntity routeCode) {
 		this.routeCode = routeCode;
         return this;
 	}
@@ -193,7 +194,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return methodCode;
 	}
 
-	public MedicationRequestDosage setMethodCode(ConceptEntity methodCode) {
+	public MedicationStatementDosage setMethodCode(ConceptEntity methodCode) {
 		this.methodCode = methodCode;
         return this;
 	}
@@ -202,7 +203,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return doseRangeLow;
 	}
 
-	public MedicationRequestDosage setDoseRangeLow(BigDecimal doseRangeLow) {
+	public MedicationStatementDosage setDoseRangeLow(BigDecimal doseRangeLow) {
 		this.doseRangeLow = doseRangeLow;
         return this;
 	}
@@ -211,7 +212,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return doseRangeHigh;
 	}
 
-	public MedicationRequestDosage setDoseRangeHigh(BigDecimal doseRangeHigh) {
+	public MedicationStatementDosage setDoseRangeHigh(BigDecimal doseRangeHigh) {
 		this.doseRangeHigh = doseRangeHigh;
         return this;
 	}
@@ -220,7 +221,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return doseQuantity;
 	}
 
-	public MedicationRequestDosage setDoseQuantity(BigDecimal doseQuantity) {
+	public MedicationStatementDosage setDoseQuantity(BigDecimal doseQuantity) {
 		this.doseQuantity = doseQuantity;
         return this;
 	}
@@ -229,7 +230,7 @@ public class MedicationRequestDosage extends BaseResource {
 		return doseUnitOfMeasure;
 	}
 
-	public MedicationRequestDosage setDoseUnitOfMeasure(ConceptEntity doseUnitOfMeasure) {
+	public MedicationStatementDosage setDoseUnitOfMeasure(ConceptEntity doseUnitOfMeasure) {
 		this.doseUnitOfMeasure = doseUnitOfMeasure;
         return this;
 	}

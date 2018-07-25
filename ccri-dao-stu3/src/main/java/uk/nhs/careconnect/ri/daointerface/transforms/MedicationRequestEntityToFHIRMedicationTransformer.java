@@ -6,7 +6,7 @@ import org.hl7.fhir.dstu3.model.*;
 
 import org.springframework.stereotype.Component;
 
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 

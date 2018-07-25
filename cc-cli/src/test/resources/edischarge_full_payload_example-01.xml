@@ -625,7 +625,7 @@ LUCs						0.2			x10*9/L			&lt; 0.4
        </table>
       </div>
      </text>
-     <!--Reference to medication list-->
+     <!--Reference to medicationRequest list-->
      <entry>
       <reference value="urn:uuid:d0710501-2e32-4cbd-bd63-a14354bbcd0f"/>
      </entry>

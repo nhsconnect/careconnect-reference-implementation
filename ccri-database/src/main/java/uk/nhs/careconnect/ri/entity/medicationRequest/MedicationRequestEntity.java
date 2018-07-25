@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.entity.medication;
+package uk.nhs.careconnect.ri.entity.medicationRequest;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;

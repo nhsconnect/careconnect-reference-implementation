@@ -1,0 +1,34 @@
+<MedicationStatement xmlns="http://hl7.org/fhir">
+    <id value="1"/>
+    <meta>
+        <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-MedicationStatement-1"/>
+    </meta>
+    <context>
+        <reference value="Encounter/1"/>
+    </context>
+    <status value="completed"/>
+    <medicationReference>
+        <reference value="Medication/1"/>
+        <display value="Insulin glulisine 100units/ml solution for injection 3ml pre-filled disposable devices (product)"/>
+    </medicationReference>
+    <effectiveDateTime value="2017-05-25T00:00:00+00:00"/>
+    <subject>
+        <reference value="Patient/1"/>
+    </subject>
+    <derivedFrom>
+        <reference value="MedicationRequest/1"/>
+    </derivedFrom>
+    <taken value="y"/>
+    <dosage>
+        <text value="Please explain to Bernie how to use injector."/>
+        <additionalInstruction>
+            <coding>
+                <system value="http://snomed.info/sct"/>
+                <code value="1521000175104"/>
+                <display value="After dinner (qualifier value)"/>
+            </coding>
+        </additionalInstruction>
+        <patientInstruction value="Three times a day"/>
+        <asNeededBoolean value="false"/>
+    </dosage>
+</MedicationStatement>

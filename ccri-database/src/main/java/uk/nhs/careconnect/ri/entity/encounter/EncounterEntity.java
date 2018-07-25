@@ -9,7 +9,7 @@ import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;

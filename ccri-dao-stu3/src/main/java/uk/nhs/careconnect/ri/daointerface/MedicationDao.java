@@ -1,40 +1,21 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationRequestTransformer;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationTransformer;
-import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
-import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
-import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
-import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.net.URI;
 import java.util.*;
-
-import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
 
 @Repository
 @Transactional
@@ -97,7 +78,7 @@ public class MedicationDao implements MedicationRepository {
 
             if (medicationEntity == null) return null;
 
-            Medication medication = new Medication();
+            Medication medicationRequest = new Medication();
 
             Meta meta = new Meta().addProfile(CareConnectProfile.Medication_1);
 
@@ -109,15 +90,15 @@ public class MedicationDao implements MedicationRepository {
                     meta.setLastUpdated(medicationEntity.getCreated());
                 }
             }
-            medication.setMeta(meta);
+            medicationRequest.setMeta(meta);
 
-            medication.setId(medicationEntity.getId().toString());
-            medication.getCode()
+            medicationRequest.setId(medicationEntity.getId().toString());
+            medicationRequest.getCode()
                     .addCoding()
                         .setCode(medicationEntity.getMedicationCode().getCode())
                         .setSystem(medicationEntity.getMedicationCode().getSystem())
                         .setDisplay(medicationEntity.getMedicationCode().getDisplay());
-            return medication;
+            return medicationRequest;
             */
 
 

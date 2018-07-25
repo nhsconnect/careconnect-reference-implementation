@@ -9,10 +9,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.MedicationStatement;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +42,37 @@ public class MedicationStatementProvider implements ICCResourceProvider {
     @Override
     public Long count() {
         return statementDao.count();
+    }
+
+
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam MedicationStatement statement) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        try {
+            MedicationStatement newMedicationStatement = statementDao.create(ctx,statement, null,null);
+            method.setId(newMedicationStatement.getIdElement());
+            method.setResource(newMedicationStatement);
+        } catch (Exception ex) {
+
+            if (ex instanceof OperationOutcomeException) {
+                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
+                method.setOperationOutcome(outcomeException.getOutcome());
+                method.setCreated(false);
+            } else {
+                log.error(ex.getMessage());
+                method.setCreated(false);
+                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            }
+        }
+
+        return method;
     }
 
     @Update
@@ -85,8 +113,9 @@ public class MedicationStatementProvider implements ICCResourceProvider {
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationStatement.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = MedicationStatement.SP_IDENTIFIER) TokenParam identifier
     ) {
-        return statementDao.search(ctx,patient, effectiveDate, status,resid);
+        return statementDao.search(ctx,patient, effectiveDate, status,resid, identifier);
     }
 
     @Read()

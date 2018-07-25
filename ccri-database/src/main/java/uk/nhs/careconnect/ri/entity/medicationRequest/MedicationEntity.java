@@ -1,23 +1,12 @@
-package uk.nhs.careconnect.ri.entity.medication;
+package uk.nhs.careconnect.ri.entity.medicationRequest;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
-import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
-import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
-import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "Medication")

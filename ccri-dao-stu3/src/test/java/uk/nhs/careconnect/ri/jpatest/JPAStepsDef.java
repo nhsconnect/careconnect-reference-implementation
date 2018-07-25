@@ -660,6 +660,11 @@ public class JPAStepsDef {
         assertNotNull(prescribingRepository.read(ctx,new IdType(1)));
     }
 
+    @Given("^I have one MedicationStatement resource loaded$")
+    public void i_have_one_MedicationStatement_resource_loaded() throws Throwable {
+        assertNotNull(statementRepository.read(ctx,new IdType(1)));
+    }
+
     @When("^I search MedicationRequest on Patient ID = (\\d+)$")
     public void i_search_MedicationRequest_on_Patient_ID(int patient) throws Throwable {
         prescribingList = prescribingRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null, null,null, null);
@@ -738,6 +743,11 @@ PROCEDURE
 
     @Then("^I should get a MedicationRequest resource$")
     public void i_should_get_a_MedicationRequest_resource() throws Throwable {
+        Assert.assertThat(resource,instanceOf(MedicationRequest.class));
+    }
+
+    @Then("^I should get a MedicationStatement resource$")
+    public void i_should_get_a_MedicationStatement_resource() throws Throwable {
         Assert.assertThat(resource,instanceOf(MedicationStatement.class));
     }
 
@@ -1050,6 +1060,18 @@ PROCEDURE
             ReferralRequest referralRequest = ctx.newJsonParser().parseResource(ReferralRequest.class, reader);
             try {
                 referralRequest = referralRequestRepository.create(ctx,referralRequest,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/MedicationStatement.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            MedicationStatement statement = ctx.newXmlParser().parseResource(MedicationStatement.class, reader);
+            try {
+                statement = statementRepository.create(ctx,statement,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

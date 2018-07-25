@@ -6,9 +6,9 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestDosage;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medication.MedicationRequestIdentifier;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestDosage;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
@@ -86,15 +86,15 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
 
         if (medicationRequestEntity.getMedicationCode() != null) {
 
-                CodeableConcept medication = new CodeableConcept();
-                medication.addCoding()
+                CodeableConcept medicationRequest = new CodeableConcept();
+                medicationRequest.addCoding()
                     .setDisplay(medicationRequestEntity.getMedicationCode().getDisplay())
                     .setSystem(medicationRequestEntity.getMedicationCode().getSystem())
                     .setCode(medicationRequestEntity.getMedicationCode().getCode());
-                medicationRequest.setMedication(medication);
+                medicationStatement.setMedication(medicationRequest);
 
         } else if (medicationRequestEntity.getMedicationEntity() != null) {
-            medicationRequest.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
+            medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
                     .setDisplay(medicationRequestEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
         */
