@@ -1,6 +1,6 @@
 <html>
     <%
-    String redirectURL = "/careconnect-ri/";
+    String redirectURL = "/ccri/";
     response.sendRedirect(redirectURL);
 %>
 </html>

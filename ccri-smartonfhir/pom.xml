@@ -361,7 +361,7 @@
 					<artifactId>jetty-maven-plugin</artifactId>
 					<configuration>
 						<webApp>
-							<contextPath>/careconnect-ri</contextPath>
+							<contextPath>/ccri-smartonfhir</contextPath>
 							<allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
 						</webApp>
 					</configuration>
