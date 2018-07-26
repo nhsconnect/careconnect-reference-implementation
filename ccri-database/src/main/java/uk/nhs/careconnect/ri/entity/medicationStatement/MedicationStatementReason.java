@@ -52,7 +52,35 @@ public class MedicationStatementReason {
 	        this.statement = statement;
 	}
 
+	public Long getIdentifierId() {
+		return identifierId;
+	}
 
+	public void setIdentifierId(Long identifierId) {
+		this.identifierId = identifierId;
+	}
 
+	public MedicationStatementEntity getStatement() {
+		return statement;
+	}
 
+	public void setStatement(MedicationStatementEntity statement) {
+		this.statement = statement;
+	}
+
+	public ObservationEntity getObservation() {
+		return observation;
+	}
+
+	public void setObservation(ObservationEntity observation) {
+		this.observation = observation;
+	}
+
+	public ConditionEntity getCondition() {
+		return condition;
+	}
+
+	public void setCondition(ConditionEntity condition) {
+		this.condition = condition;
+	}
 }

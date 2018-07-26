@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -11,24 +12,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.daointerface.transforms.MedicationRequestEntityToFHIRMedicationStatementTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.MedicationStatementEntityToFHIRMedicationStatementTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementDosage;
-import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntity;
-import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementIdentifier;
+import uk.nhs.careconnect.ri.entity.medicationStatement.*;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+
+import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
 
 @Repository
 @Transactional
@@ -59,13 +64,22 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     EncounterRepository encounterDao;
 
     @Autowired
+    ConditionRepository conditionDao;
+
+    @Autowired
+    ObservationRepository observationDao;
+
+    @Autowired
+    ProcedureRepository procedureDao;
+
+    @Autowired
     EpisodeOfCareRepository episodeDao;
 
     private static final Logger log = LoggerFactory.getLogger(MedicationStatementDao.class);
 
     @Autowired
-    private MedicationRequestEntityToFHIRMedicationStatementTransformer
-            medicationRequestEntityToFHIRMedicationStatementTransformer;
+    private MedicationStatementEntityToFHIRMedicationStatementTransformer
+            medicationStatementEntityToFHIRMedicationStatementTransformer;
 
     @Override
     public void save(FhirContext ctx, MedicationStatementEntity statement) {
@@ -74,24 +88,25 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
     @Override
     public Long count() {
-        // TODO this is a work around while the data examples are minimal
-      return prescriptionDao.count();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(MedicationStatementEntity.class)));
+        return em.createQuery(cq).getSingleResult();
     }
 
 
     @Override
     public MedicationStatementEntity readEntity(FhirContext ctx, IdType theId) {
-        return null;
-
+        return em.find(MedicationStatementEntity.class, Long.parseLong(theId.getIdPart()));
     }
 
 
     @Override
     public MedicationStatement read(FhirContext ctx,IdType theId) {
 
-        MedicationRequestEntity statementEntity = prescriptionDao.readEntity(ctx, theId);
+        MedicationStatementEntity statementEntity =  em.find(MedicationStatementEntity.class, Long.parseLong(theId.getIdPart()));
 
-        return (statementEntity == null) ? null : medicationRequestEntityToFHIRMedicationStatementTransformer.transform(statementEntity);
+        return (statementEntity == null) ? null : medicationStatementEntityToFHIRMedicationStatementTransformer.transform(statementEntity);
     }
 
     @Override
@@ -388,19 +403,121 @@ public class MedicationStatementDao implements MedicationStatementRepository {
             }
             em.persist(dosageEntity);
         }
-        
-        return null;
+
+        // Derives
+
+        for ( MedicationStatementDerivedFrom derivedFromEntity : statementEntity.getDerives()) {
+            em.remove(derivedFromEntity);
+        }
+        statementEntity.setDerives(new HashSet<>());
+        em.persist(statementEntity);
+
+        for (Reference reference : statement.getDerivedFrom()) {
+            // NOT YET IMPLEMENTED
+        }
+
+        // Reasons
+
+        for ( MedicationStatementReason reasonEntity : statementEntity.getReasons()) {
+            em.remove(reasonEntity);
+        }
+        statementEntity.setReasons(new HashSet<>());
+        for (Reference reference : statement.getReasonReference()) {
+            if (reference.getReference().contains("Condition")) {
+                ConditionEntity conditionEntity = conditionDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (conditionEntity != null) {
+                    MedicationStatementReason reasonEntity = new MedicationStatementReason();
+                    reasonEntity.setMedicationStatement(statementEntity);
+                    reasonEntity.setCondition(conditionEntity);
+                    em.persist(reasonEntity);
+                    statementEntity.getReasons().add(reasonEntity);
+                }
+            }
+            if (reference.getReference().contains("Observation")) {
+                ObservationEntity observationEntity = observationDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (observationEntity != null) {
+                    MedicationStatementReason reasonEntity = new MedicationStatementReason();
+                    reasonEntity.setMedicationStatement(statementEntity);
+                    reasonEntity.setObservation(observationEntity);
+                    em.persist(reasonEntity);
+                    statementEntity.getReasons().add(reasonEntity);
+                }
+            }
+        }
+        em.persist(statementEntity);
+
+        // PartOf
+
+        for ( MedicationStatementPartOf partOfEntity : statementEntity.getPartOfs()) {
+            em.remove(partOfEntity);
+        }
+        statementEntity.setReasons(new HashSet<>());
+        em.persist(statementEntity);
+        for (Reference reference : statement.getPartOf()) {
+            if (reference.getReference().contains("Observation")) {
+                ObservationEntity observationEntity = observationDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (observationEntity != null) {
+                    MedicationStatementPartOf partOfEntity = new MedicationStatementPartOf();
+                    partOfEntity.setMedicationStatement(statementEntity);
+                    partOfEntity.setObservation(observationEntity);
+                    em.persist(partOfEntity);
+                    statementEntity.getPartOfs().add(partOfEntity);
+                }
+            }
+            if (reference.getReference().contains("Procedure")) {
+                ProcedureEntity procedureEntity = procedureDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (procedureEntity != null) {
+                    MedicationStatementPartOf partOfEntity = new MedicationStatementPartOf();
+                    partOfEntity.setMedicationStatement(statementEntity);
+                    partOfEntity.setProcedure(procedureEntity);
+                    em.persist(partOfEntity);
+                    statementEntity.getPartOfs().add(partOfEntity);
+                }
+            }
+            if (reference.getReference().contains("MedicationStatement")) {
+                MedicationStatementEntity statementEntityPartOf = readEntity(ctx,new IdType(reference.getReference()));
+                if (statementEntityPartOf != null) {
+                    MedicationStatementPartOf partOfEntity = new MedicationStatementPartOf();
+                    partOfEntity.setMedicationStatement(statementEntity);
+                    partOfEntity.setMedicationStatement(statementEntityPartOf);
+                    em.persist(partOfEntity);
+                    statementEntity.getPartOfs().add(partOfEntity);
+                }
+            }
+        }
+
+        // BasedOn
+
+        for ( MedicationStatementBasedOn basedOnEntity : statementEntity.getBasedOn()) {
+            em.remove(basedOnEntity);
+        }
+        statementEntity.setReasons(new HashSet<>());
+        em.persist(statementEntity);
+        for (Reference reference : statement.getBasedOn()) {
+            if (reference.getReference().contains("MedicationRequest")) {
+                MedicationRequestEntity requestEntity = prescriptionDao.readEntity(ctx,new IdType(reference.getReference()));
+                if (requestEntity != null) {
+                    MedicationStatementBasedOn basedOnEntity = new MedicationStatementBasedOn();
+                    basedOnEntity.setMedicationStatement(statementEntity);
+                    basedOnEntity.setPrescription(requestEntity);
+                    em.persist(basedOnEntity);
+                    statementEntity.getBasedOn().add(basedOnEntity);
+                }
+            }
+        }
+
+        return medicationStatementEntityToFHIRMedicationStatementTransformer.transform(statementEntity);
     }
 
     @Override
     public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
-        List<MedicationRequestEntity> prescriptions = prescriptionDao.searchEntity(ctx,patient,null,effectiveDate,status,null,resid,null);
+        List<MedicationStatementEntity> statementEntities = searchEntity(ctx,patient,effectiveDate,status,resid,identifier);
         List<MedicationStatement> results = new ArrayList<>();
 
-        for (MedicationRequestEntity statementEntity : prescriptions)
+        for (MedicationStatementEntity statementEntity : statementEntities)
         {
             // log.trace("HAPI Custom = "+doc.getId());
-            MedicationStatement medicationStatement =  medicationRequestEntityToFHIRMedicationStatementTransformer.transform(statementEntity);
+            MedicationStatement medicationStatement =  medicationStatementEntityToFHIRMedicationStatementTransformer.transform(statementEntity);
             results.add(medicationStatement);
         }
         return results;
@@ -409,6 +526,183 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
     @Override
     public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
-        return null;
+        List<MedicationStatementEntity> qryResults = null;
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<MedicationStatementEntity> criteria = builder.createQuery(MedicationStatementEntity.class);
+        Root<MedicationStatementEntity> root = criteria.from(MedicationStatementEntity.class);
+
+        List<Predicate> predList = new LinkedList<Predicate>();
+        List<MedicationStatement> results = new ArrayList<MedicationStatement>();
+
+        if (patient != null) {
+            // KGM 4/1/2018 only search on patient id
+            if (daoutils.isNumeric(patient.getIdPart())) {
+                Join<MedicationStatementEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), patient.getIdPart());
+                predList.add(p);
+            } else {
+                Join<MedicationStatementEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
+        }
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid.getValue());
+            predList.add(p);
+        }
+        // REVISIT KGM 28/2/2018 Added Medication search. This is using itself not Medication table
+        
+        if (identifier !=null)
+        {
+            Join<MedicationStatementEntity, MedicationStatementIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
+        }
+
+        if (status != null) {
+            Integer presstatus = null;
+            switch (status.getValue().toLowerCase()) {
+                case "active":
+                    presstatus = 0;
+                    break;
+                case "on-hold":
+                    presstatus = 1;
+                    break;
+                case "cancelled":
+                    presstatus = 2;
+                    break;
+                case "completed":
+                    presstatus = 3;
+                    break;
+                case "entered-in-error":
+                    presstatus = 4;
+                    break;
+                case "stopped":
+                    presstatus = 5;
+                    break;
+                case "draft":
+                    presstatus = 6;
+                    break;
+                case "unknown":
+                    presstatus = 7;
+                    break;
+
+            }
+
+            Predicate p = builder.equal(root.get("status"), presstatus);
+            predList.add(p);
+
+        }
+
+
+        ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
+        ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
+
+        if (effectiveDate !=null)
+        {
+
+
+            if (effectiveDate.getLowerBound() != null) {
+
+                DateParam dateParam = effectiveDate.getLowerBound();
+
+
+                switch (dateParam.getPrefix()) {
+                    case GREATERTHAN: /*{
+                        Predicate p = builder.greaterThan(root.<Date>get("effectiveStartDate"), parameterLower);
+                        predList.add(p);
+
+                        break;
+                    }*/
+                    case GREATERTHAN_OR_EQUALS: {
+                        Predicate p = builder.greaterThanOrEqualTo(root.<Date>get("effectiveStartDate"), parameterLower);
+                        predList.add(p);
+                        break;
+                    }
+                    case APPROXIMATE:
+                    case EQUAL: {
+
+                        Predicate plow = builder.greaterThanOrEqualTo(root.<Date>get("effectiveStartDate"), parameterLower);
+                        predList.add(plow);
+                        break;
+                    }
+                    case NOT_EQUAL: {
+                        Predicate p = builder.notEqual(root.<Date>get("effectiveStartDate"), parameterLower);
+                        predList.add(p);
+                        break;
+                    }
+                    case STARTS_AFTER: {
+                        Predicate p = builder.greaterThan(root.<Date>get("effectiveStartDate"), parameterLower);
+                        predList.add(p);
+                        break;
+
+                    }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + effectiveDate.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+            if (effectiveDate.getUpperBound() != null) {
+
+                DateParam dateParam = effectiveDate.getUpperBound();
+
+                log.debug("Upper Param - " + dateParam.getValue() + " Prefix - " + dateParam.getPrefix());
+
+                switch (dateParam.getPrefix()) {
+                    case APPROXIMATE:
+                    case EQUAL: {
+                        Predicate pupper = builder.lessThan(root.<Date>get("effectiveStartDate"), parameterUpper);
+                        predList.add(pupper);
+                        break;
+                    }
+
+                    case LESSTHAN_OR_EQUALS: {
+                        Predicate p = builder.lessThanOrEqualTo(root.<Date>get("effectiveStartDate"), parameterUpper);
+                        predList.add(p);
+                        break;
+                    }
+                    case ENDS_BEFORE:
+                    case LESSTHAN: {
+                        Predicate p = builder.lessThan(root.<Date>get("effectiveStartDate"), parameterUpper);
+                        predList.add(p);
+
+                        break;
+                    }
+                    default:
+                        log.trace("DEFAULT DATE(0) Prefix = " + effectiveDate.getValuesAsQueryTokens().get(0).getPrefix());
+                }
+            }
+
+        }
+
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+        if (predList.size()>0)
+        {
+            criteria.select(root).where(predArray);
+        }
+        else
+        {
+            criteria.select(root);
+        }
+        criteria.orderBy(builder.desc(root.get("effectiveStartDate")));
+        TypedQuery<MedicationStatementEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
+
+        if (effectiveDate != null) {
+            if (effectiveDate.getLowerBound() != null)
+                typedQuery.setParameter(parameterLower, effectiveDate.getLowerBoundAsInstant(), TemporalType.TIMESTAMP);
+            if (effectiveDate.getUpperBound() != null)
+                typedQuery.setParameter(parameterUpper, effectiveDate.getUpperBoundAsInstant(), TemporalType.TIMESTAMP);
+        }
+        qryResults = typedQuery.getResultList();
+        return qryResults;
     }
+
 }
