@@ -151,15 +151,9 @@ public class MedicationStatementEntityToFHIRMedicationStatementTransformer imple
                         .setDisplay(medicationStatementEntity.getNotTakenCode().getDisplay());
                 medicationStatement.getReasonNotTaken().add(code);
             }
-            if (medicationStatementEntity.getTakenCode() != null) {
-                CodeableConcept code = new CodeableConcept();
-                code.addCoding()
-                        .setCode(medicationStatementEntity.getTakenCode().getCode())
-                        .setSystem(medicationStatementEntity.getTakenCode().getDisplay())
-                        .setDisplay(medicationStatementEntity.getTakenCode().getDisplay());
-                medicationStatement.getReasonCode().add(code);
+            if (medicationStatementEntity.getTaken() != null) {
+                medicationStatement.setTaken(medicationStatementEntity.getTaken());
             }
-
 
             for (MedicationStatementDosage dosageEntity : medicationStatementEntity.getDosages()) {
                 Dosage dosage = medicationStatement.addDosage();

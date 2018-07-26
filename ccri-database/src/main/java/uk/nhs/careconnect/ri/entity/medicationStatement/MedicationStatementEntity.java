@@ -102,10 +102,14 @@ public class MedicationStatementEntity extends BaseResource {
     Set<MedicationStatementDerivedFrom> derives = new HashSet<>();
 
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "taken")
+    MedicationStatement.MedicationStatementTaken taken;
+
     @ManyToOne
-    @JoinColumn(name = "TAKEN_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_TAKEN_CONCEPT"))
+    @JoinColumn(name = "REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_REASON_CONCEPT"))
     @LazyCollection(LazyCollectionOption.TRUE)
-    ConceptEntity takenCode;
+    ConceptEntity reasonCode;
 
     @ManyToOne
     @JoinColumn(name = "NOT_TAKEN_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_NOT_TAKEN_CONCEPT"))
@@ -251,13 +255,12 @@ public class MedicationStatementEntity extends BaseResource {
         return this;
     }
 
-    public ConceptEntity getTakenCode() {
-        return takenCode;
+    public MedicationStatement.MedicationStatementTaken getTaken() {
+        return taken;
     }
 
-    public MedicationStatementEntity setTakenCode(ConceptEntity takenCode) {
-        this.takenCode = takenCode;
-        return this;
+    public void setTaken(MedicationStatement.MedicationStatementTaken taken) {
+        this.taken = taken;
     }
 
     public ConceptEntity getNotTakenCode() {
@@ -322,5 +325,13 @@ public class MedicationStatementEntity extends BaseResource {
     public MedicationStatementEntity setReasons(Set<MedicationStatementReason> reasons) {
         this.reasons = reasons;
         return this;
+    }
+
+    public ConceptEntity getReasonCode() {
+        return reasonCode;
+    }
+
+    public void setReasonCode(ConceptEntity reasonCode) {
+        this.reasonCode = reasonCode;
     }
 }

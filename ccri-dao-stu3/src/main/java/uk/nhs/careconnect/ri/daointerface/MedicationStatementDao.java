@@ -234,9 +234,13 @@ public class MedicationStatementDao implements MedicationStatementRepository {
         }
 
         if (statement.hasTaken()) {
-            Coding code = new Coding().setCode(statement.getTaken().toCode()).setSystem(statement.getTaken().getSystem());
+            statementEntity.setTaken(statement.getTaken());
+        }
+
+        if (statement.hasReasonCode()) {
+            Coding code = new Coding().setCode(statement.getReasonCode().get(0).getCodingFirstRep().getCode()).setSystem(statement.getReasonCode().get(0).getCodingFirstRep().getSystem());
             ConceptEntity codeEntity = conceptDao.findAddCode(code);
-            if (codeEntity != null) statementEntity.setTakenCode(codeEntity);
+            if (codeEntity != null) statementEntity.setReasonCode(codeEntity);
         }
 
         if (statement.hasReasonNotTaken()) {
