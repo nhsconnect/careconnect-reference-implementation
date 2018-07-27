@@ -394,6 +394,23 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     }
                     resources.clear();
 
+                    handler = new StatementHandler();
+
+                    processPrescriptionCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/MedicationRequest.csv"));
+
+                    for (IBaseResource resource : resources) {
+
+                        MedicationStatement statement = (MedicationStatement) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("MedicationStatement?identifier=" + statement.getIdentifier().get(0).getSystem() + "%7C" +statement.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            statement.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
 
                 } catch (Exception ex) {
                     ourLog.error(ex.getMessage());
@@ -1355,6 +1372,8 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             System.out.println(ex.getMessage());
         }
     }
+
+
 
 
     private void processActivitiesCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
@@ -3092,6 +3111,215 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
         }
     }
+
+    public class StatementHandler implements  IRecordHandler {
+
+
+
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+
+            MedicationStatement statement = new MedicationStatement();
+
+            if (!theRecord.get("identifier").isEmpty()) {
+
+                statement.addIdentifier()
+                        .setSystem("https://fhir.leedsth.nhs.uk/Id/statement")
+                        .setValue(theRecord.get("identifier"));
+            }
+            if (!theRecord.get("subject (patientID)").isEmpty()) {
+
+                statement.setSubject(new Reference("Patient/" + getPatientId(theRecord.get("subject (patientID)"))));
+            }
+            if (!theRecord.get("status").isEmpty()) {
+                switch (theRecord.get("status")) {
+                    case "completed" :
+                        statement.setStatus(MedicationStatement.MedicationStatementStatus.COMPLETED);
+                }
+
+            }
+            if (!theRecord.get("intent").isEmpty()) {
+                switch (theRecord.get("intent")) {
+                    case "order" :
+                        statement.setStatus(MedicationStatement.MedicationStatementStatus.INTENDED);
+                }
+
+            }
+
+            if (!theRecord.get("medication").isEmpty()) {
+                CodeableConcept med = new CodeableConcept();
+                med.addCoding().setCode(theRecord.get("medication")).setSystem(CareConnectSystem.SNOMEDCT);
+
+                statement.setMedication(med);
+            }
+            if (!theRecord.get("context").isEmpty()) {
+                Bundle results = client
+                        .search()
+                        .forResource(Encounter.class)
+                        .where(Encounter.IDENTIFIER.exactly().code(theRecord.get("context")))
+                        .returnBundle(Bundle.class)
+                        .execute();
+
+                if (results.getEntry().size() > 0) {
+                    Encounter encounter = (Encounter) results.getEntry().get(0).getResource();
+
+                    statement.setContext(new Reference("Encounter/" + encounter.getIdElement().getIdPart()));
+                }
+            }
+
+            String dateString = theRecord.get("authoredOn Date");
+            if (!theRecord.get("authoredOn Time").isEmpty()) dateString = dateString + " " +"authoredOn Time";
+
+            if (!dateString.isEmpty()) {
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    // turn off set linient
+                    statement.setEffective(new DateTimeType(format.parse(dateString)));
+                } catch (Exception e) {
+                    try {
+                        //  System.out.println(dateString);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        statement.setEffective(new DateTimeType(format.parse(dateString)));
+                    } catch (Exception e2) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    // Set to date of data load
+            statement.setDateAsserted(new Date());
+
+            if (!theRecord.get("requester.agent type").isEmpty() && !theRecord.get("requester.agent").isEmpty()) {
+                switch (theRecord.get("requester.agent type")) {
+                    case "Practitioner":
+                        Bundle results = client
+                                .search()
+                                .forResource(Practitioner.class)
+                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
+
+                            statement.setInformationSource(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                        }
+                        break;
+
+                    case "Organization":
+                        results = client
+                                .search()
+                                .forResource(Organization.class)
+                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Organization organization = (Organization) results.getEntry().get(0).getResource();
+
+                            statement.setInformationSource(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                        }
+                        break;
+
+                }
+            }
+            if (!theRecord.get("reasonCode Type").isEmpty() && !theRecord.get("reasonCode").isEmpty()) {
+                switch (theRecord.get("reasonCode Type")) {
+                    case "Condition":
+                        Bundle results = client
+                                .search()
+                                .forResource(Condition.class)
+                                .where(Condition.IDENTIFIER.exactly().code(theRecord.get("reasonCode")))
+                                .returnBundle(Bundle.class)
+                                .execute();
+
+                        if (results.getEntry().size() > 0) {
+                            Condition condition = (Condition) results.getEntry().get(0).getResource();
+
+                            statement.addReasonReference(new Reference("Condition/" + condition.getIdElement().getIdPart()));
+                        }
+                        break;
+                }
+            }
+            Dosage dosage= statement.addDosage();
+
+            if (!theRecord.get("dosage.text").isEmpty()) {
+                dosage.setText(theRecord.get("dosage.text"));
+            }
+            if (!theRecord.get("dosage.additionalInstruction").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.additionalInstruction"));
+                dosage.getAdditionalInstruction().add(additional);
+            }
+
+            if (!theRecord.get("dosage.asNeeded.asNeededBoolean").isEmpty()) {
+                switch (theRecord.get("dosage.asNeeded.asNeededBoolean")) {
+                    case "FALSE":
+                        dosage.setAsNeeded(new BooleanType(false));
+                        break;
+                    case "TRUE":
+                        dosage.setAsNeeded(new BooleanType(true));
+                        break;
+                }
+            }
+            if (!theRecord.get("dosage.asNeeded.asNeededCodableConcept").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.asNeeded.asNeededCodableConcept"));
+                dosage.setAsNeeded(additional);
+            }
+            if (!theRecord.get("dosage.route").isEmpty()) {
+                CodeableConcept additional  = new CodeableConcept();
+                additional.addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode(theRecord.get("dosage.route"));
+                dosage.setRoute(additional);
+            }
+            Range range = new Range();
+            dosage.setDose(range);
+
+            if (!theRecord.get("dosage.dose.doseRange.low.value").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseRange.low.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseRange.low.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                range.setLow(qty);
+            }
+
+            if (!theRecord.get("dosage.dose.doseRange.high.value").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseRange.high.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseRange.high.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                range.setHigh(qty);
+            }
+            if (!theRecord.get("dosage.dose.doseQuantity.value").isEmpty() && !theRecord.get("dosage.dose.doseQuantity.units").isEmpty()) {
+                SimpleQuantity qty = new SimpleQuantity();
+                qty.setValue(new BigDecimal(theRecord.get("dosage.dose.doseQuantity.value")));
+                qty.setCode(theRecord.get("dosage.dose.doseQuantity.units"));
+                qty.setSystem(CareConnectSystem.SNOMEDCT);
+                dosage.setDose(qty);
+            }
+
+            switch (statement.getStatus()) {
+                case COMPLETED: statement.setTaken(MedicationStatement.MedicationStatementTaken.Y);
+                    break;
+                case INTENDED: statement.setTaken(MedicationStatement.MedicationStatementTaken.NA);
+                default:
+                    statement.setTaken(MedicationStatement.MedicationStatementTaken.UNK);
+            }
+            /*
+    TODO                              ,"dosage.timing"
+             */
+
+            //     System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(statement));
+
+            resources.add(statement);
+
+        }
+    }
+
+
 
     public class BloodPressureHandler implements IRecordHandler {
         @Override
