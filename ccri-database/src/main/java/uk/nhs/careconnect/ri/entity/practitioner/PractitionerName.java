@@ -15,7 +15,7 @@ public class PractitionerName extends BaseHumanName {
     @Column(name="PRACTITIONER_NAME_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_PRACTITIONER_NAME"))
     private PractitionerEntity practitionerEntity;
 

@@ -48,7 +48,7 @@ public class CodeSystemEntity extends BaseResource {
 	}
 
 	// ValueSet CONTENT
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	@OneToMany(mappedBy="codeSystemEntity", targetEntity=ConceptEntity.class)
 	private List<ConceptEntity> conceptEntities;
 

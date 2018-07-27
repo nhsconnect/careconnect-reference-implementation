@@ -18,13 +18,13 @@ public class PractitionerLocation extends BaseResource {
     @Column(name="PRACTITIONER_LOCATION_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_LOCATION_PRACTITIONER_ROLE_ID"))
     private PractitionerRole practitionerRole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_LOCATION_LOCATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private LocationEntity location;
 
     public Long getId()

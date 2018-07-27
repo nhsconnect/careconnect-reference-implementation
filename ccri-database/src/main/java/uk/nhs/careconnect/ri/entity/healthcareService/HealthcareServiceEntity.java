@@ -26,33 +26,33 @@ public class HealthcareServiceEntity extends BaseResource {
     @Column(name="NAME")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SPECIALTY_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity providedBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_SERVICE_CATEGORY_CONCEPT"))
     private ConceptEntity category;
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceTelecom.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<HealthcareServiceTelecom> telecoms = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<HealthcareServiceIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceSpecialty.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<HealthcareServiceSpecialty> specialties = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceLocation.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<HealthcareServiceLocation> locations = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceType.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<HealthcareServiceType> types = new HashSet<>();
 
     public ConceptEntity getCategory() {

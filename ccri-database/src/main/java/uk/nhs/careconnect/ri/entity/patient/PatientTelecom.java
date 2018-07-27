@@ -27,7 +27,7 @@ public class PatientTelecom extends BaseContactPoint {
 	@Column(name= "PATIENT_TELECOM_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_TELECOM"))
 	private PatientEntity patientEntity;
 

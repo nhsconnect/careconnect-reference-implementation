@@ -27,7 +27,7 @@ public class OrganisationIdentifier extends BaseIdentifier {
 	private Integer identifierId;
 
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ORGANISATION_IDENTIFIER"))
 	private OrganisationEntity organisationEntity;
 

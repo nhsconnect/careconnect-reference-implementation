@@ -17,13 +17,13 @@ public class PractitionerSpecialty extends BaseResource {
     @Column(name="PRACTITIONER_SPECIALTY_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SPECIALTY_PRACTITIONER_ROLE_ID"))
     private PractitionerRole practitionerRole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="specialty",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SPECIALTY_SPECIALTY_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity specialty;
 
     public Long getId()

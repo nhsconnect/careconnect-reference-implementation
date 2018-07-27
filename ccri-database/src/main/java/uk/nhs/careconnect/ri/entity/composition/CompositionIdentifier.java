@@ -27,7 +27,7 @@ public class CompositionIdentifier extends BaseIdentifier {
 	@Column(name= "COMPOSITION_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "COMPOSITION_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_COMPOSITION_IDENTIFIER"))
 	private CompositionEntity composition;
 

@@ -24,16 +24,16 @@ public class ConceptDesignation extends BaseResource {
     @Column(name= "CONCEPT_DESIGNATION_ID")
     private Long Id;
 
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONCEPT_CONCEPT_DESIGNATION"))
     private ConceptEntity conceptEntity;
 
     @Enumerated(EnumType.ORDINAL)
     private DesignationUse designationUse;
 
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="language",foreignKey= @ForeignKey(name="FK_CONCEPTDESIGNATION_LANGUAGE_CONCEPT"))
     private ConceptEntity language;
 

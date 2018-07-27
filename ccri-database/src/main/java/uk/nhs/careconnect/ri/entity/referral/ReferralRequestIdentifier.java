@@ -28,7 +28,7 @@ public class ReferralRequestIdentifier extends BaseIdentifier {
 	@Column(name= "REFERRAL_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "REFERRAL_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REFERRAL_IDENTIFIER"))
 	private ReferralRequestEntity referral;
 

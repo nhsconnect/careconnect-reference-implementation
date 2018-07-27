@@ -24,9 +24,9 @@ public class DocumentReferenceIdentifier extends BaseIdentifier {
 	@Column(name= "DOCUMENT_REFERENCE_IDENTIFIER_ID")
     private Long identifierId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "DOCUMENT_REFERENCE_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_IDENTIFIER_DOCUMENT_REFERENCE_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
     private DocumentReferenceEntity documentReference;
 
 

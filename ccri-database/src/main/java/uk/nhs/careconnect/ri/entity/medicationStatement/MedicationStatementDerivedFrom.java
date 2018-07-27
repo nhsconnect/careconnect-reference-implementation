@@ -26,7 +26,7 @@ public class MedicationStatementDerivedFrom {
 	@Column(name= "MEDICATION_STATEMENT_DERIVEDFROM_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_DERIVEDFROM"))
 	private MedicationStatementEntity statement;
 

@@ -27,7 +27,7 @@ public class ImmunisationIdentifier extends BaseIdentifier {
 	@Column(name= "IMMUNISATION_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "IMMUNISATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_IMMUNISATION_IDENTIFIER"))
 	private ImmunisationEntity immunisation;
 

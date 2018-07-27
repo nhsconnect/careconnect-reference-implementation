@@ -14,11 +14,11 @@ public class EpisodeOfCareReferral extends BaseResource {
     @Column(name= "EPISODE_REFERRAL_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_EPISODE_REFERRAL_EPISODE"))
     private EpisodeOfCareEntity episode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REFERRAL_ID",foreignKey= @ForeignKey(name="FK_EPISODE_REFERRAL_REFERRAL"))
     private ReferralRequestEntity referral;
 

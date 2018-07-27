@@ -24,7 +24,7 @@ public class HealthcareServiceIdentifier extends BaseIdentifier {
 	@Column(name= "SERVICE_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "SERVICE_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SERVICE_IDENTIFIER"))
 	private HealthcareServiceEntity service;
 

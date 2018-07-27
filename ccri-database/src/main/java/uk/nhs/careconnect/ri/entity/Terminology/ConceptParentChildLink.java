@@ -14,15 +14,15 @@ import javax.persistence.*;
 public class ConceptParentChildLink {
 
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CHILD_CONCEPT_ID", nullable=false, referencedColumnName="CONCEPT_ID", foreignKey=@ForeignKey(name="FK_TERM_CONCEPTPC_CHILD"))
 	private ConceptEntity child;
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CODESYSTEM_ID", nullable=false, foreignKey=@ForeignKey(name="FK_TERM_CONCEPTPC_CS"))
 	private CodeSystemEntity myCodeSystem;
 
-	@ManyToOne(fetch = FetchType.EAGER,cascade= {})
+	@ManyToOne(fetch = FetchType.LAZY, cascade= {})
 	@JoinColumn(name="PARENT_CONCEPT_ID", nullable=false, referencedColumnName="CONCEPT_ID", foreignKey=@ForeignKey(name="FK_TERM_CONCEPTPC_PARENT"))
 	private ConceptEntity parent;
 

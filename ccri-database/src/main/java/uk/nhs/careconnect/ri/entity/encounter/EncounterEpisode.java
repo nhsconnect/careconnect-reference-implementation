@@ -19,13 +19,13 @@ public class EncounterEpisode extends BaseResource {
     @Column(name= "ENCOUNTER_EPISODE_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_EPISODE_ENCOUNTER"))
     private EncounterEntity encounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_EPISODE_EPISODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EpisodeOfCareEntity episode;
 
 

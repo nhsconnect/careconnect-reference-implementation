@@ -19,27 +19,27 @@ public class ProcedurePerformer {
     @Column(name= "PROCEDURE_PERFORMER_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_PROCEDURE_PERFORMER"))
     private ProcedureEntity procedure;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ROLE_CONCEPT_ID")
     private ConceptEntity role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ACTOR_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity actorPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ACTOR_ORGNANISATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_ORGNANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity actorOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ON_BEHALF_OF_ORGANISATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity onBehalfOrganisation;
 
     public void setId(Long id) {

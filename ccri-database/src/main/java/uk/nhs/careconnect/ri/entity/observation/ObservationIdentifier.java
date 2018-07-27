@@ -24,9 +24,9 @@ public class ObservationIdentifier extends BaseIdentifier {
 	@Column(name= "OBSERVATION_IDENTIFIER_ID")
     private Long identifierId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_IDENTIFIER_OBSERVATION_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
     private ObservationEntity observation;
 
 

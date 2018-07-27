@@ -17,20 +17,23 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "Procedure_")
+@Table(name = "Procedure_",
+        indexes = {
+                @Index(name = "IDX_PROCEDURE_DATE", columnList="performedDate"),
+        })
 public class ProcedureEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="PROCEDURE_ID")
     private Long id;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "BASED_ON_REFERRAL_REQUEST_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_REFERRAL_ID"))
     private ReferralRequestEntity basedOnReferral;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "PART_OF_PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_PROCEDURE"))
     private ProcedureEntity partOfProcedure;
 
@@ -42,34 +45,34 @@ public class ProcedureEntity extends BaseResource {
     @Column(name = "notDone")
     private Boolean notDone;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "NOT_DONE_REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_NOT_DONE_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity notDoneReason;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_CATEGORY_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable=false,foreignKey= @ForeignKey(name="FK_PATIENT_PROCEDURE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_OF_CARE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_EPISODE_OF_CARE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EpisodeOfCareEntity contextEpisode;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -89,41 +92,41 @@ public class ProcedureEntity extends BaseResource {
     private Date performedEndDate;
 
     @OneToMany(mappedBy="procedure", targetEntity=ProcedurePerformer.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<ProcedurePerformer> performers = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PROCEDURE_LOCATION_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_LOCATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private LocationEntity location;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_CONCEPT"))
     private ConceptEntity reason;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "REASON_OBSERVATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_OBSERVATION"))
     private ObservationEntity reasonObservation;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "REASON_CONDITION",foreignKey= @ForeignKey(name="FK_PROCEDURE_REASON_CONDITION"))
     private ConditionEntity reasonCondition;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_BODY_SITE_CONCEPT"))
     private ConceptEntity bodySite;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "OUTCOME_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_OUTCOME_CONCEPT"))
     private ConceptEntity outcome;
 
     @OneToMany(mappedBy="procedure", targetEntity=ProcedureIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ProcedureIdentifier> identifiers = new HashSet<>();
 
     public Long getId() {

@@ -21,26 +21,26 @@ public class ObservationPerformer {
     @Column(name= "OBSERVATION_PERFORMER_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_OBSERVATION_ID"))
     private ObservationEntity observation;
 
     @Enumerated(EnumType.ORDINAL)
     private performer performerType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="performerPractitioner",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity performerPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="performerPatient",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_PATIENT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity performerPatient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="performerOrganisation",foreignKey= @ForeignKey(name="FK_OBSERVATION_PERFORMER_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity performerOrganisation;
 
     public void setId(Long id) {

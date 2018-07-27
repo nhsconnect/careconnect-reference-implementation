@@ -16,11 +16,11 @@ public class ReferralRequestReason {
     @Column(name= "REFERRAL_REASON_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REFERRAL_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REASON_REFERRAL_ID"))
     private ReferralRequestEntity referral;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REASON_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REASON_REASON_CONCEPT_ID"))
     private ConceptEntity reason;
 

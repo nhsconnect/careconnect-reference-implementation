@@ -27,7 +27,7 @@ public class ConditionIdentifier extends BaseIdentifier {
 	@Column(name= "CONDITION_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "CONDITION_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CONDITION_IDENTIFIER"))
 	private ConditionEntity condition;
 

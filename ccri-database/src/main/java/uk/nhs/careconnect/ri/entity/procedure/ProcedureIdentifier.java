@@ -27,7 +27,7 @@ public class ProcedureIdentifier extends BaseIdentifier {
 	@Column(name= "PROCEDURE_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_PROCEDURE_IDENTIFIER"))
 	private ProcedureEntity procedure;
 

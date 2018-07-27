@@ -18,11 +18,11 @@ public class ValueSetIncludeConcept {
 	@Column(name= "VALUESET_INCLUDE_CONCEPT_ID")
 	private Integer contentId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CONCEPT_ID")
 	private ConceptEntity concept;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="VALUESET_INCLUDE_ID")
 	private ValueSetInclude include;
 

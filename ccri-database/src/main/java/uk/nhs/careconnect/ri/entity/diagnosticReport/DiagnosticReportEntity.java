@@ -30,35 +30,35 @@ public class DiagnosticReportEntity extends BaseResource {
 
 
     @OneToMany(mappedBy="diagnosticReport", targetEntity = DiagnosticReportIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<DiagnosticReportIdentifier> identifiers = new HashSet<>();
 
     @Column(name="status")
     DiagnosticReport.DiagnosticReportStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_CATEGORY"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_DIAGNOSTIC_REPORT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONTEXT_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_CONTEXT_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONTEXT_EPISODE_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_CONTEXT_EPISODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,25 +69,25 @@ public class DiagnosticReportEntity extends BaseResource {
     @Column(name = "issued")
     private Date issued;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PERFORMER_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_PERFORMER_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity performerPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PERFORMER_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_PERFORMER_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity performerOrganisation;
 
     @Column(name="CONCLUSION_REPORT",length = MAX_DESC_LENGTH,nullable = true)
     private String conclusion;
 
     @OneToMany(mappedBy="diagnosticReport", targetEntity = DiagnosticReportResult.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<DiagnosticReportResult> results = new HashSet<>();
 
     @OneToMany(mappedBy="diagnosticReport", targetEntity = DiagnosticReportDiagnosis.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<DiagnosticReportDiagnosis> diagnosises = new HashSet<>();
 
     @Override

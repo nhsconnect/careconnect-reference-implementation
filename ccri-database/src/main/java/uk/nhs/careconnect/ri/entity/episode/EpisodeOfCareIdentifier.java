@@ -27,7 +27,7 @@ public class EpisodeOfCareIdentifier extends BaseIdentifier {
 	@Column(name= "EPISODE_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_EPISODE_EPISODE_IDENTIFIER"))
 	private EpisodeOfCareEntity episode;
 

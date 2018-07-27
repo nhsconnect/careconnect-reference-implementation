@@ -15,7 +15,10 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "AllergyIntolerance")
+@Table(name = "AllergyIntolerance",
+        indexes = {
+                @Index(name = "IDX_ALLERGY_DATE", columnList="assertedDateTime"),
+        })
 public class AllergyIntoleranceEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,21 +40,21 @@ public class AllergyIntoleranceEntity extends BaseResource {
     private AllergyIntolerance.AllergyIntoleranceType type;
 
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceCategory.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<AllergyIntoleranceCategory> categories = new ArrayList<>();
 
     @Enumerated(EnumType.ORDINAL)
     @JoinColumn(name="criticality")
     private AllergyIntolerance.AllergyIntoleranceCriticality criticality;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ALLERGY"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -62,24 +65,24 @@ public class AllergyIntoleranceEntity extends BaseResource {
     @Column(name = "assertedDateTime")
     private Date assertedDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="RECORDER_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_RECORDER_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity recorderPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="RECORDER_PATIENT_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_RECORDER_PATIENT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity recorderPatient;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ASSERTER_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity asserterPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ASSERTER_PATIENT_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_PATIENT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity asserterPatient;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -90,13 +93,13 @@ public class AllergyIntoleranceEntity extends BaseResource {
     private String note;
 
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceReaction.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<AllergyIntoleranceReaction> reactions = new ArrayList<>();
 
 
 
     @OneToMany(mappedBy="allergy", targetEntity=AllergyIntoleranceIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<AllergyIntoleranceIdentifier> identifiers = new ArrayList<>();
 
     public EncounterEntity getAssociatedEncounter() {
@@ -107,9 +110,9 @@ public class AllergyIntoleranceEntity extends BaseResource {
         this.associatedEncounter = associatedEncounter;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity associatedEncounter;
     
     public Long getId() {

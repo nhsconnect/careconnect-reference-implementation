@@ -17,7 +17,7 @@ public class ObservationRange extends BaseResource {
     @Column(name= "OBSERVATION_RANGE_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_OBSERVATION_ID"))
     private ObservationEntity observation;
 
@@ -27,9 +27,9 @@ public class ObservationRange extends BaseResource {
     @Column(name="highQuantity")
     private BigDecimal highQuantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_TYPE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity type;
 
     @Column(name="lowAgeRange")

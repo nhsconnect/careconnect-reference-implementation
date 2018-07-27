@@ -13,15 +13,15 @@ public class EpisodeOfCareDiagnosis {
     @Column(name= "EPISODE_DIAGNOSIS_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_EPISODE_DIAGNOSIS_EPISODE"))
     private EpisodeOfCareEntity episode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONDITION_ID",foreignKey= @ForeignKey(name="FK_EPISODE_DIAGNOSIS_CONDITION"))
     private ConditionEntity condition;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ROLE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_DIAGNOSIS_ROLE"))
     private ConceptEntity role;
 

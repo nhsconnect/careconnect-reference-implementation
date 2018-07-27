@@ -21,11 +21,11 @@ public class AllergyIntoleranceReaction {
     @Column(name= "ALLERGY_REACTION_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ALLERGY_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_ALLERGY_REACTION"))
     private AllergyIntoleranceEntity allergy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SUBSTANCE_CONCEPT_ID")
     private ConceptEntity substance;
 
@@ -44,12 +44,12 @@ public class AllergyIntoleranceReaction {
     @JoinColumn(name="severity")
     private AllergyIntolerance.AllergyIntoleranceSeverity severity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EXPOSURE_ROUTE_CONCEPT_ID")
     private ConceptEntity exposureRoute;
 
     @OneToMany(mappedBy="allergyReaction", targetEntity=AllergyIntoleranceManifestation.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<AllergyIntoleranceManifestation> manifestations = new ArrayList<>();
 
 

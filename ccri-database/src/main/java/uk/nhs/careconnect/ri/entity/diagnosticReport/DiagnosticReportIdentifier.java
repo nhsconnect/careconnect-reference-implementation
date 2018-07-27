@@ -27,7 +27,7 @@ public class DiagnosticReportIdentifier extends BaseIdentifier {
 	@Column(name= "DIAGNOSTIC_REPORT_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "DIAGNOSTIC_REPORT_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_DIAGNOSTIC_REPORT_IDENTIFIER"))
 	private DiagnosticReportEntity diagnosticReport;
 

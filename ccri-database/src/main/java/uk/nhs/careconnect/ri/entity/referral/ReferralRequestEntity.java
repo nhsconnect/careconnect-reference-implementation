@@ -17,16 +17,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "ReferralRequest")
+@Table(name = "ReferralRequest",
+        indexes = {
+                @Index(name = "IDX_REFERRAL_DATE", columnList="authoredOn"),
+        })
 public class ReferralRequestEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="REFERRAL_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_REFERRAL"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
     @Enumerated(EnumType.ORDINAL)
@@ -45,52 +48,52 @@ public class ReferralRequestEntity extends BaseResource {
     @Column(name = "authoredOn")
     private Date authoredOn;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SPECIALTY_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ENCOUNTERT"))
     private EncounterEntity encounterContext;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SPECIALTY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_SPECIALTY_CONCEPT"))
     private ConceptEntity specialty;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_TYPE_CONCEPT"))
     private ConceptEntity type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity requesterOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ONBEHALF_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_ONBEHALF_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity onBehalfOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity requesterPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_PATIENT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PATIENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity requesterPatient;
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ReferralRequestIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestRecipient.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ReferralRequestRecipient> recipients = new HashSet<>();
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestReason.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ReferralRequestReason> reasons = new HashSet<>();
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestServiceRequested.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ReferralRequestServiceRequested> services = new HashSet<>();
 
     public void setId(Long id) {

@@ -17,10 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "CarePlan", indexes = {
-
-
-})
+@Table(name = "CarePlan",
+        indexes = {
+                @Index(name = "IDX_CAREPLAN_DATE", columnList="periodStartDateTime"),
+        })
 public class CarePlanEntity extends BaseResource {
 
     private static final int MAX_DESC_LENGTH = 4096;
@@ -35,8 +35,8 @@ public class CarePlanEntity extends BaseResource {
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanIdentifier.class)
     private Set<CarePlanIdentifier> identifiers = new HashSet<>();
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name="PARENT_CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_PARENT_CAREPLAN_ID"))
     private CarePlanEntity partOfCarePlan;
 
@@ -59,19 +59,19 @@ public class CarePlanEntity extends BaseResource {
     @Column(name="DESCRIPTION",length = MAX_DESC_LENGTH,nullable = true)
     private String description;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_PATIENT_ID"))
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_ENCOUNTER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_EPISODE_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EpisodeOfCareEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)

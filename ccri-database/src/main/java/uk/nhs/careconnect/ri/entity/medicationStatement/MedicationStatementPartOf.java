@@ -28,23 +28,23 @@ public class MedicationStatementPartOf {
 	@Column(name= "MEDICATION_STATEMENT_PARTOF_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_PARTOF"))
 	private MedicationStatementEntity statement;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_MEDICATION_STATEMENT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ObservationEntity observation;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_MEDICATION_STATEMENT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ProcedureEntity procedure;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PARTOF_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_STATEMENT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private MedicationStatementEntity statementPartOf;;
 
 

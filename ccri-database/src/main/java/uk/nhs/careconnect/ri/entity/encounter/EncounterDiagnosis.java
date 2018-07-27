@@ -20,15 +20,15 @@ public class EncounterDiagnosis {
     @Column(name= "ENCOUNTER_REASON_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_ENCOUNTER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity encounter;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "DIAGNOSIS_CONDITION_ID", nullable = false, foreignKey= @ForeignKey(name="FK_ENCOUNTER_DIAGNOSIS_CONDITION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConditionEntity condition;
 
 

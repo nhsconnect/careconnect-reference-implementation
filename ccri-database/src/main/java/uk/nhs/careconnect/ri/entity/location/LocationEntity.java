@@ -29,33 +29,33 @@ public class LocationEntity extends BaseResource {
 	private String name;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationIdentifier.class)
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private List<LocationIdentifier> identifiers;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationAddress.class)
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private List<LocationAddress> addresses;
 
 	@OneToMany(mappedBy="locationEntity", targetEntity=LocationTelecom.class)
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private List<LocationTelecom> telecoms;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ORGANISATION"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private OrganisationEntity managingOrganisation;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_LOCATION_TYPE_CONCEPT"))
 	private ConceptEntity type;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="physicalType",foreignKey= @ForeignKey(name="FK_LOCATION_PHYSCIAL_TYPE_CONCEPT"))
 	private ConceptEntity physicalType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="PART_OF_LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_PARTOF_LOCATION"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private LocationEntity partOf;
 
 	@Enumerated(EnumType.ORDINAL)

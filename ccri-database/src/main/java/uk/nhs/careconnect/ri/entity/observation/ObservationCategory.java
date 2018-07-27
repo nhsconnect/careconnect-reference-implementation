@@ -15,11 +15,11 @@ public class ObservationCategory {
     @Column(name= "OBSERVATION_CATEGORY_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_CATEGORY_OBSERVATION_ID"))
     private ObservationEntity observation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_OBSERVATION_CATEGORY_CATEGORY_CONCEPT_ID"))
     private ConceptEntity category;
 

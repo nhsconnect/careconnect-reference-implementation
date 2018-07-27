@@ -26,7 +26,7 @@ public class OrganisationTelecom extends BaseContactPoint {
 	@Column(name= "ORGANISATION_TELECOM_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ORGANISATION_TELECOM"))
 	private OrganisationEntity organisationEntity;
 

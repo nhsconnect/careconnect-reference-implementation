@@ -25,9 +25,9 @@ public class CarePlanIdentifier extends BaseIdentifier {
 	@Column(name= "CAREPLAN_IDENTIFIER_ID")
     private Long identifierId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_IDENTIFIER_CAREPLAN_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
     private CarePlanEntity carePlan;
 
 

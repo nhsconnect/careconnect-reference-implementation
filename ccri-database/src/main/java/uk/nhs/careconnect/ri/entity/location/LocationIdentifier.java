@@ -29,7 +29,7 @@ public class LocationIdentifier extends BaseIdentifier {
 	@Column(name= "LOCATION_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_LOCATION_IDENTIFIER"))
 	private LocationEntity locationEntity;
 

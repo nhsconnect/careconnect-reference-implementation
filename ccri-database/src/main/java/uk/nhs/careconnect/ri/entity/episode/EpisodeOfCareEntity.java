@@ -26,22 +26,22 @@ public class EpisodeOfCareEntity extends BaseResource {
     EpisodeOfCare.EpisodeOfCareStatus status;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_EPISODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_EPISODE_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity managingOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_EPISODE_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity careManager;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_EPISODE_TYPE_CONCEPT"))
     private ConceptEntity type;
 
@@ -54,7 +54,7 @@ public class EpisodeOfCareEntity extends BaseResource {
     private Date periodEndDate;
 
     @OneToMany(mappedBy="episode", targetEntity = EpisodeOfCareIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<EpisodeOfCareIdentifier> identifiers = new HashSet<>();
 
     public Long getId() {

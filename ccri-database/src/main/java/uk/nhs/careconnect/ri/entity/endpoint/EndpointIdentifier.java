@@ -29,7 +29,7 @@ public class EndpointIdentifier extends BaseIdentifier {
 	@Column(name= "ENDPOINT_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ENDPOINT_ID",foreignKey= @ForeignKey(name="FK_ENDPOINT_ENDPOINT_IDENTIFIER"))
 	private EndpointEntity endpointEntity;
 

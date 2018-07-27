@@ -20,24 +20,24 @@ public class ReferralRequestRecipient {
     @Column(name= "REFERRAL_RECIPIENT_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REFERRAL_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REFERRAL_RECIPIENT"))
     private ReferralRequestEntity referral;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_RECIPIENT_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity practitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGNANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_RECIPIENT_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity organisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SERVICE_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_RECIPIENT_SERVICE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private HealthcareServiceEntity service;
 
     public void setId(Long id) {

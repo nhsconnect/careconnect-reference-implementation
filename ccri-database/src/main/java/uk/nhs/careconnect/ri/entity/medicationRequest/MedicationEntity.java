@@ -21,9 +21,9 @@ public class MedicationEntity extends BaseResource {
         return id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_MEDICATION_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity medicationCode;
 
     public void setId(Long id) {

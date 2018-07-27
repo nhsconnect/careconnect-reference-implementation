@@ -15,7 +15,7 @@ public class DocumentReferenceAttachment {
     @Column(name= "DOCUMENT_REFERENCE_ATTACHMENT_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "DOCUMENT_REFERENCE_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_ATTACHMENT_DOCUMENT_REFERENCE_ID"))
     private DocumentReferenceEntity documentReference;
 

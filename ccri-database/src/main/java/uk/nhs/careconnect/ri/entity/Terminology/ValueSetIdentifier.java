@@ -23,7 +23,7 @@ public class ValueSetIdentifier extends BaseIdentifier {
 	@Column(name= "VALUESET_IDENTIFIER_ID")
 	private Integer identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "VALUESET_ID",foreignKey= @ForeignKey(name="FK_VALUESET_VALUESET_IDENTIFIER"))
 	private ValueSetEntity valueSetEntity;
 

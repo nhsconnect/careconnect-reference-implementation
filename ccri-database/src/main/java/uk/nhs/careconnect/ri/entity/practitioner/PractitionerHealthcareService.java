@@ -18,13 +18,13 @@ public class PractitionerHealthcareService extends BaseResource {
     @Column(name="PRACTITIONER_SERVICE_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SERVICE_PRACTITIONER_ROLE_ID"))
     private PractitionerRole practitionerRole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SERVICE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_SERVICE_SERVICE_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private HealthcareServiceEntity service;
 
     public Long getId()

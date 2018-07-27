@@ -23,13 +23,13 @@ public class OrganisationAddress extends BaseAddress {
     @Column(name="ORGANISATION_ADDRESS_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDRESS_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ADDRESS_ADDRESS_ID"))
     private AddressEntity address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_ADDRESS_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity organisationEntity;
 
 

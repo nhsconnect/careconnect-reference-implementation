@@ -18,13 +18,13 @@ public class HealthcareServiceLocation extends BaseResource {
     @Column(name="SERVICE_LOCATION_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SERVICE_ID",foreignKey= @ForeignKey(name="FK_SERVICE_LOCATION_SERVICE_ID"))
     private HealthcareServiceEntity service;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_LOCATION_LOCATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private LocationEntity location;
 
     public Long getId()

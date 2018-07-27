@@ -41,14 +41,14 @@ public class DocumentReferenceEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private DocumentReference.ReferredDocumentStatus docStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_TYPE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_CLASS_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity class_;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -59,8 +59,8 @@ public class DocumentReferenceEntity extends BaseResource {
     @Column(name = "indexed")
     private Date indexed;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_PATIENT_ID"))
     private PatientEntity patient;
     // subject
@@ -68,39 +68,39 @@ public class DocumentReferenceEntity extends BaseResource {
     @OneToMany(mappedBy="documentReference", targetEntity=DocumentReferenceAuthor.class)
     private Set<DocumentReferenceAuthor> authors = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="AUTHENTICATOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHENTICATOR_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity authenticatorPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="AUTHENTICATOR_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHENTICATOR_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity authenticatorOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CUSTODIAN_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_CUSTODIAN_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity custodian;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="FORMAT_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_FORMAT_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity contentFormat;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CONTEXT_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_ENCOUNTER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTICE_SETTING_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_PRACTICE_SETTING_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity contextPracticeSetting;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="FACILITY_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_FACILITY_TYPE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity contextFaciltityType;
 
     @OneToMany(mappedBy="documentReference", targetEntity=DocumentReferenceAttachment.class)

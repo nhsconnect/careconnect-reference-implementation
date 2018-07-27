@@ -26,12 +26,12 @@ public class ValueSetInclude {
 
 
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CODESYSTEM_PID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_VALUESET_INCLUDE_CODESYSTEM_ID"))
 	private CodeSystemEntity myCodeSystem;
 
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "VALUESET_ID",foreignKey= @ForeignKey(name="FK_VALUESET_VALUESET_INLCUDE"))
 	private ValueSetEntity valueSetEntity;
 

@@ -15,11 +15,11 @@ public class AllergyIntoleranceManifestation {
     @Column(name= "ALLERGY_MANIFESTATION_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ALLERGY_REACTION_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_REACTION_ALLERGY_MANIFESTATION"))
     private AllergyIntoleranceReaction allergyReaction;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="MANIFESTATION_CONCEPT_ID", nullable = false)
     private ConceptEntity manifestation;
 

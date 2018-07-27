@@ -26,13 +26,13 @@ public class DiagnosticReportDiagnosis {
 	@Column(name= "DIAGNOSTIC_REPORT_DIAGNOSIS_ID")
 	private Long diagnosisId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "DIAGNOSTIC_REPORT_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_DIAGNOSTIC_REPORT_DIAGNOSIS"))
 	private DiagnosticReportEntity diagnosticReport;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DIAGNOSTIC_REPORT_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity diagnosis;
 
     public Long getDiagnosisId() { return diagnosisId; }

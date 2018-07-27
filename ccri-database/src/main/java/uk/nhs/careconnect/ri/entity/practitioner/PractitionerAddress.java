@@ -23,12 +23,12 @@ public class PractitionerAddress extends BaseAddress {
     @Column(name="PRACTITIONER_ADDRESS_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDRESS_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ADDRESS_ADDRESS_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private AddressEntity address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ADDRESS_PRACTITIONER_ID"))
     private PractitionerEntity practitionerEntity;
 

@@ -29,20 +29,20 @@ public class EndpointEntity extends BaseResource {
 	private String name;
 
 	@OneToMany(mappedBy="endpointEntity", targetEntity=EndpointIdentifier.class)
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private List<EndpointIdentifier> identifiers;
 
 	@Column(name = "STATUS")
 	@Enumerated(EnumType.ORDINAL)
 	private Endpoint.EndpointStatus status;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CONNECTION_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONNECTION_TYPE_CONCEPT"))
 	private ConceptEntity connectionType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ENDPOINT_ORGANISATION"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private OrganisationEntity managingOrganisation;
 
 	@Column(name = "ADDRESS")

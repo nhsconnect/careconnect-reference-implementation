@@ -21,12 +21,12 @@ public class LocationAddress extends BaseAddress {
     @Column(name="LOCATION_ADDRESS_ID")
     private Long myId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDRESS_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ADDRESS_ADDRESS_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private AddressEntity address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_ADDRESS_LOCATION_ID"))
     private LocationEntity locationEntity;
     public Long getId()

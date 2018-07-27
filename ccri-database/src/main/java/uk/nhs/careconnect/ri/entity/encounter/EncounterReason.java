@@ -20,13 +20,13 @@ public class EncounterReason {
     @Column(name= "ENCOUNTER_REASON_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_REASON_ENCOUNTER_ID"))
     private EncounterEntity encounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REASON_CONCEPT_ID", nullable = false, foreignKey= @ForeignKey(name="FK_ENCOUNTER_REASON_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity reason;
 
     public void setId(Long id) {

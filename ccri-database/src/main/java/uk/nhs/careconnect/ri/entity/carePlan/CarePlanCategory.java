@@ -16,11 +16,11 @@ public class CarePlanCategory {
     @Column(name= "CAREPLAN_CATEGORY_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_CATEGORY_CAREPLAN_ID"))
     private CarePlanEntity carePlan;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_CAREPLAN_CATEGORY_CATEGORY_CONCEPT_ID"))
     private ConceptEntity category;
 

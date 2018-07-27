@@ -26,13 +26,13 @@ public class MedicationStatementBasedOn {
 	@Column(name= "MEDICATION_STATEMENT_BASEDON_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_BASEDON"))
 	private MedicationStatementEntity statement;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PRESCRIPTION_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_STATEMENT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private MedicationRequestEntity prescription;
 
 

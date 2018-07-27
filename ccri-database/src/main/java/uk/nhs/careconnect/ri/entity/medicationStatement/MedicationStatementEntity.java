@@ -20,7 +20,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "MedicationStatement")
+@Table(name = "MedicationStatement",
+        indexes = {
+                @Index(name = "IDX_MEDICATION_STATEMENT_DATE", columnList="effectiveStartDate"),
+        })
 public class MedicationStatementEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,39 +31,39 @@ public class MedicationStatementEntity extends BaseResource {
     private Long id;
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementBasedOn.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementBasedOn> basedOn = new HashSet<>();
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementPartOf.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementPartOf> partOfs = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_STATEMENT_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
     MedicationStatement.MedicationStatementStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_CATEGORY_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity categoryCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity medicationCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name ="MEDICATION_ID", nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private MedicationEntity medicationEntity;
 
     // Use start date for basic date, for periods populate end date
@@ -76,29 +79,29 @@ public class MedicationStatementEntity extends BaseResource {
     @Column(name = "assertedDate")
     private Date assertedDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "INFORMATION_SOURCE_PATIENT_ID",foreignKey= @ForeignKey(name="FK_INFORMATION_PATIENT_MEDICATION_STATEMENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity informationPatient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "INFORMATION_SOURCE_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_INFORMATION_ORGANISATION_MEDICATION_STATEMENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity informationOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "INFORMATION_SOURCE_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_INFORMATION_PRACTITIONER_MEDICATION_STATEMENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity informationPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_MEDICATION_STATEMENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementDerivedFrom.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementDerivedFrom> derives = new HashSet<>();
 
 
@@ -106,18 +109,18 @@ public class MedicationStatementEntity extends BaseResource {
     @Column(name = "taken")
     MedicationStatement.MedicationStatementTaken taken;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_REASON_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity reasonCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "NOT_TAKEN_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_NOT_TAKEN_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity notTakenCode;
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementReason.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementReason> reasons = new HashSet<>();
 
     @Column(name = "note", length=2048)
@@ -125,7 +128,7 @@ public class MedicationStatementEntity extends BaseResource {
 
 
     @OneToMany(mappedBy="statement", targetEntity = MedicationStatementDosage.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationStatementDosage> dosages = new HashSet<>();
 
     public Long getId() {

@@ -25,34 +25,34 @@ public class PractitionerRole extends BaseResource {
     @Column(name="PRACTITIONER_ROLE_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_PRACTITIONER_ID"))
     private PractitionerEntity practitionerEntity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity managingOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="role",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_ROLE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity role;
 
     @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerSpecialty.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PractitionerSpecialty> specialties;
 
     @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerRoleIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PractitionerRoleIdentifier> identifiers;
 
     @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerLocation.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PractitionerLocation> locations;
 
     @OneToMany(mappedBy="practitionerRole", targetEntity=PractitionerHealthcareService.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PractitionerHealthcareService> services;
 
     public PractitionerEntity getPractitionerEntity() {

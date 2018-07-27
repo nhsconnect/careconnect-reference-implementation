@@ -20,16 +20,16 @@ public class CompositionSection {
     @Column(name= "COMPOSITION_SECTION_ID")
     private Long sectionId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "COMPOSITION_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_COMPOSITION_SECTION"))
     private CompositionEntity composition;
 
     @Column
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_SECTION_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
     @Column(name="narrative", length=MAX_DESC_LENGTH, nullable=true)
@@ -38,9 +38,9 @@ public class CompositionSection {
     @Column(name="narrativeStatus", length=MAX_DESC_LENGTH, nullable=true)
     private Narrative.NarrativeStatus narrativeStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ORDERBY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_SECTION_ORDERBY"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity orderBy;
 
     @Column(name="mode")

@@ -29,7 +29,7 @@ public class EncounterIdentifier extends BaseIdentifier {
 	@Column(name= "ENCOUNTER_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_ENCOUNTER_IDENTIFIER"))
 	private EncounterEntity encounter;
 

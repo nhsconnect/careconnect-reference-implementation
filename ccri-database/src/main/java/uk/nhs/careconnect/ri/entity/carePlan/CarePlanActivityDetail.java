@@ -25,20 +25,20 @@ public class CarePlanActivityDetail {
 	@Column(name= "CAREPLAN_ACTIVITY_DETAIL_ID")
     private Long carePlanActivityDetailId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ACTIVITY_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CAREPLAN_ACTIVITY_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
     private CarePlanActivity carePlanActivity;
 
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CATEGORY_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CATEGORY_CONCEPT_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity category;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CODE_CONCEPT_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity code;
 
 	@Enumerated(EnumType.ORDINAL)

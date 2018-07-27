@@ -26,13 +26,13 @@ public class MedicationRequestDosage extends BaseResource {
 	@Column(name= "PRESCRIPTION_DOSAGE_ID")
 	private Long dosageId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PRESCRIPTION_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_PRESCRIPTION_DOSAGE"))
 	private MedicationRequestEntity prescription;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ADDITIONAL_INSTRUCTION_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ADDITIONAL_INSTRUCTION_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	ConceptEntity additionalInstructionCode;
 
 	@Column(name="sequence")
@@ -48,27 +48,27 @@ public class MedicationRequestDosage extends BaseResource {
 
 	// TODO TIMING
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ASNEEDED_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_AS_NEEDED_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	ConceptEntity asNeededCode;
 
 	@Column(name="asNeededBoolean")
 	Boolean asNeededBoolean;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SITE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_SITE_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	ConceptEntity siteCode;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ROUTE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_ROUTE_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	ConceptEntity routeCode;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "METHOD_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_METHOD_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	ConceptEntity methodCode;
 
 	@Column(name="doseRangeLow")
@@ -80,21 +80,21 @@ public class MedicationRequestDosage extends BaseResource {
 	@Column(name="doseQuantity")
 	private BigDecimal doseQuantity;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="DOSE_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_UNITS_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity doseUnitOfMeasure;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="DOSE_LOW_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_LOW_UNITS_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity doseLowUnitOfMeasure;
 
 
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="DOSE_HIGH_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DOSE_HIGH_UNITS_CONCEPT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConceptEntity doseHighUnitOfMeasure;
 
 

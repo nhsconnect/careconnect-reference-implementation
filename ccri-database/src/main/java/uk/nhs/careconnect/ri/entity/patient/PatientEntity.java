@@ -47,29 +47,29 @@ public class PatientEntity extends BaseResource {
     @Column(name = "registration_end")
     private Date registrationEndDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "GP_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity gp;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTICE_ID",foreignKey= @ForeignKey(name="FK_PATIENT_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity practice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ethnic",foreignKey= @ForeignKey(name="FK_PATIENT_ETHNIC_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity ethnicCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="marital",foreignKey= @ForeignKey(name="FK_PATIENT_MARITAL_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity maritalCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="NHSverification",foreignKey= @ForeignKey(name="FK_PATIENT_NHSVERIFICATION_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity NHSVerificationCode;
 
     @Column(name="active")
@@ -77,50 +77,50 @@ public class PatientEntity extends BaseResource {
 
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PatientIdentifier> identifiers = new ArrayList<>();
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PatientAddress> addresses;
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PatientTelecom> telecoms;
 
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<PatientName> names;
 
 
     // For Reverse Includes
 
     @OneToMany(mappedBy="patient", targetEntity = ProcedureEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ProcedureEntity> patientProcedures = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ObservationEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ObservationEntity> patientObservations = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ConditionEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ConditionEntity> patientConditions = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = MedicationRequestEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationRequestEntity> patientMedicationRequests = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = EncounterEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<EncounterEntity> patientEncounters = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity =AllergyIntoleranceEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<AllergyIntoleranceEntity> patientAlelrgies = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ImmunisationEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ImmunisationEntity> patientImmunisations = new HashSet<>();
 
     // Support for reverse includes

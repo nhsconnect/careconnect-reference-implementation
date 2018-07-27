@@ -16,12 +16,12 @@ public class CarePlanCondition {
     @Column(name= "CAREPLAN_REASON_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_CONDITIONS_CAREPLAN_ID"))
     private CarePlanEntity carePlan;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONDITIONS_CONDITION_ID", nullable = false, foreignKey= @ForeignKey(name="FK_CAREPLAN_CONDITIONS_CONDITION_ID"))
     private ConditionEntity condition;
 

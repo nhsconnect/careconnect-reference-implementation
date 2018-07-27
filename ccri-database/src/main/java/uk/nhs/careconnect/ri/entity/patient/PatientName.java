@@ -19,7 +19,7 @@ public class PatientName extends BaseHumanName {
     private Long myId;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_NAME_PATIENT_ID"))
     private PatientEntity patientEntity;
 

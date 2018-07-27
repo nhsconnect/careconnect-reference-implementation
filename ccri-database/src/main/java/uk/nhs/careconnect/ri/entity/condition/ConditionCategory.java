@@ -15,11 +15,11 @@ public class ConditionCategory {
     @Column(name= "CONDITION_CATEGORY_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CONDITION_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CONDITION_CATEGORY"))
     private ConditionEntity condition;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CATEGORY_CONCEPT_ID")
     private ConceptEntity category;
 

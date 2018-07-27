@@ -27,40 +27,40 @@ public class CompositionEntity  extends BaseResource {
     @Column(name="COMPOSITION_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_COMPOSITION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
     @OneToMany(mappedBy="composition", targetEntity = CompositionIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<CompositionIdentifier> identifiers = new HashSet<>();
 
     @Column(name="status")
     Composition.CompositionStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_TYPE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_CLASS"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity class_;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date")
     private Date date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity encounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="AUTHOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity authorPractitioner;
 
     @Column(name="TITLE_COMPOSITION",length = MAX_DESC_LENGTH,nullable = true)
@@ -70,13 +70,13 @@ public class CompositionEntity  extends BaseResource {
     @Column (name = "CONFIDENTIALITY_CODE")
     private Composition.DocumentConfidentiality confidentiality;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CUSTODIAN_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_CUSTODIAN_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity custodianOrganisation;
 
     @OneToMany(mappedBy="composition", targetEntity = CompositionSection.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<CompositionSection> sections = new HashSet<>();
 
     @Override

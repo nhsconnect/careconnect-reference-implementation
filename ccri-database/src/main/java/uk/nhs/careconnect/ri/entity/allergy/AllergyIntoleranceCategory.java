@@ -15,7 +15,7 @@ public class AllergyIntoleranceCategory {
     @Column(name= "ALLERGY_CATEGORY_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ALLERGY_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_ALLERGY_CATEGORY"))
     private AllergyIntoleranceEntity allergy;
 

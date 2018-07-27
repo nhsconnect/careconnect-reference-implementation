@@ -18,25 +18,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "Immunisation")
+@Table(name = "Immunisation",
+        indexes = {
+                @Index(name = "IDX_IMMUNISATION_DATE", columnList="administrationDateTime"),
+        })
 public class ImmunisationEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="IMMUNISATION_ID")
     private Long id;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "PATIENT_ID", nullable = false, foreignKey= @ForeignKey(name="FK_IMMUNISATION_PATIENT"))
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_ID",nullable = false, foreignKey= @ForeignKey(name="FK_IMMUNISATION_VACCINE_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity vacinationCode;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ENCOUNTER"))
     private EncounterEntity encounter;
 
@@ -45,7 +48,7 @@ public class ImmunisationEntity extends BaseResource {
     private Immunization.ImmunizationStatus status;
 
     @OneToMany(mappedBy="immunisation", targetEntity = ImmunisationIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ImmunisationIdentifier> identifiers = new HashSet<>();
 
     @Column(name="notGiven", nullable = false)
@@ -62,55 +65,55 @@ public class ImmunisationEntity extends BaseResource {
     @Column(name="primarySource", nullable = false)
     Boolean primarySource;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REPORT_ORIGIN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REPORT_ORIGIN_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity reportOrigin;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_LOCATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private LocationEntity location;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="MANUFACTURER_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_MANUFACTURER_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity organisation;
 
     @Column(name="lotNumber")
     String lotNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "SITE_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_SITE_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity site;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ROUTE_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ROUTE_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity route;
 
     @Column(name="valueQuantity")
     private BigDecimal valueQuantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="valueUnitOfMeasure_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_valueUnitOfMeasure_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity valueUnitOfMeasure;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity practitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REASON_GIVEN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REASON_GIVEN_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity explanationReasonGiven;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REASON_NOTGIVEN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REASON_NOTGIVEN_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity explanationReasonNotGiven;
 
     @Column(name="note")

@@ -17,7 +17,8 @@ import java.util.Set;
 @Entity
 @Table(name = "Observation", indexes = {
 
-        @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime")
+        @Index(name="IDX_OBSERVATION_DATE", columnList = "effectiveDateTime"),
+        @Index(name="IDX_PARENT_OBSERVATION", columnList = "PARENT_OBSERVATION_ID")
 
 })
 public class ObservationEntity extends BaseResource {
@@ -31,14 +32,14 @@ public class ObservationEntity extends BaseResource {
     @Column(name="OBSERVATION_ID")
     private Long id;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_PATIENT_ID"))
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_OBSERVATION_CODE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
     // The parent should not be null but child observations don't have a status.
@@ -54,17 +55,17 @@ public class ObservationEntity extends BaseResource {
     @Column(name = "issued")
     private Date issued;
 
-    @ManyToOne
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name="PARENT_OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_PARENT_OBSERVATION_ID"))
     private ObservationEntity parentObservation;
 
     @Column(name="valueQuantity")
     private BigDecimal valueQuantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="valueUnitOfMeasure_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_valueUnitOfMeasure_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity valueUnitOfMeasure;
 
     @Enumerated(EnumType.ORDINAL)
@@ -96,30 +97,30 @@ public class ObservationEntity extends BaseResource {
     private Set<ObservationRange> ranges = new HashSet<>();
 
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private Set<ObservationEntity> components = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_BODY_SITE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity bodySite;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="METHOD_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_METHOD_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity method;
 
     @Column(name="valueString")
     private BigDecimal valueString;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_ENCOUNTER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_INTERPRETATION_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity interpretation;
 
 

@@ -27,18 +27,18 @@ public class MedicationStatementReason {
 	@Column(name= "MEDICATION_STATEMENT_REASON_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_REASON"))
 	private MedicationStatementEntity statement;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_MEDICATION_STATEMENT_REASON"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ObservationEntity observation;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "CONDITION_ID",foreignKey= @ForeignKey(name="FK_CONDITION_MEDICATION_STATEMENT"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private ConditionEntity condition;
 
     public Long getReasonId() { return identifierId; }

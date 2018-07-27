@@ -100,7 +100,7 @@ public class ValueSetEntity extends BaseResource {
 		public List<ValueSetInclude> removeInclude(ValueSetInclude content){
 			includes.remove(content); return includes; }
 		
-		@ManyToOne()
+		@ManyToOne(fetch = FetchType.LAZY)
 		@JoinColumn(name = "CODESYSTEM_PID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_VALUESET_PID_CS_PID"))
 		private CodeSystemEntity myCodeSystem;
 		public CodeSystemEntity getCodeSystem() {

@@ -30,7 +30,7 @@ import java.util.*;
 public class 	ConceptEntity extends BaseResource {
 	private static final int MAX_DESC_LENGTH = 400;
 
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	@OneToMany(mappedBy = "parent", cascade= {})
 	private Collection<ConceptParentChildLink> children;
 
@@ -39,7 +39,7 @@ public class 	ConceptEntity extends BaseResource {
 	private String code;
 
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CODESYSTEM_ID",referencedColumnName = "CODESYSTEM_ID", foreignKey = @ForeignKey(name = "FK_CONCEPT_PID_CS_PID"))
 	private CodeSystemEntity codeSystemEntity;
 
@@ -66,7 +66,7 @@ public class 	ConceptEntity extends BaseResource {
 	private String myParentPids;
 
 	@OneToMany(cascade = {}, mappedBy = "child")
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private Collection<ConceptParentChildLink> parents;
 
 	@Column(name = "active")
@@ -75,13 +75,13 @@ public class 	ConceptEntity extends BaseResource {
 	@Column(name = "effectiveDate")
 	private Date effectiveDate;
 
-	@ManyToOne
-	@LazyCollection(LazyCollectionOption.TRUE)
+	@ManyToOne(fetch = FetchType.LAZY)
+
 	@JoinColumn(name = "moduleId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_MODULE"))
 	private ConceptEntity moduleId;
 
-	@ManyToOne
-	@LazyCollection(LazyCollectionOption.TRUE)
+	@ManyToOne(fetch = FetchType.LAZY)
+
 	@JoinColumn (name = "definitionStatusId",foreignKey= @ForeignKey(name="FK_TERM_CONCEPT_DEFINITION"))
 	private ConceptEntity definitionStatusId;
 
@@ -92,7 +92,7 @@ public class 	ConceptEntity extends BaseResource {
     private Boolean abstractCode;
 
 	@OneToMany(mappedBy="conceptEntity", targetEntity=ConceptDesignation.class)
-	@LazyCollection(LazyCollectionOption.TRUE)
+
 	private List<ConceptDesignation> designations;
 
 

@@ -24,7 +24,7 @@ public class PatientIdentifier extends BaseIdentifier {
 	@Column(name= "PATIENT_IDENTIFIER_ID")
     private Long identifierId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_PATIENT_PATIENT_IDENTIFIER"))
     private PatientEntity patientEntity;
 

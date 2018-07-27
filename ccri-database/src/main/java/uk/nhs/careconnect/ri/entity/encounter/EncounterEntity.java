@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.entity.encounter;
 
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.*;
@@ -22,33 +23,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "Encounter")
+@Table(name = "Encounter",
+        indexes = {
+                @Index(name = "IDX_ENCOUNTER_DATE", columnList="periodStartDate"),
+        })
 public class EncounterEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ENCOUNTER_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID", nullable = false,foreignKey= @ForeignKey(name="FK_ENCOUNTER_PATIENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_CLASS_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity _class;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_TYPE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRIORITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PRIORITY_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity priority;
 
 
@@ -56,9 +59,9 @@ public class EncounterEntity extends BaseResource {
     @Column(name="status", nullable = false)
     Encounter.EncounterStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PARTICIPANT_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity participant;
 
     public ConceptEntity getParticipantType() {
@@ -69,9 +72,8 @@ public class EncounterEntity extends BaseResource {
         this.participantType = participantType;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PARTICIPANT_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PARTICIPANT_TYPE_CONCEPT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
     private ConceptEntity participantType;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -83,7 +85,6 @@ public class EncounterEntity extends BaseResource {
     private Date periodEndDate;
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterReason.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterReason> reasons = new HashSet<>();
 
     public Set<ProcedureEntity> getProcedureEncounters() {
@@ -95,56 +96,46 @@ public class EncounterEntity extends BaseResource {
     }
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterDiagnosis.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterDiagnosis> diagnoses = new HashSet<>();
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterEpisode.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<EncounterEpisode> episodes = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_LOCATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
     private LocationEntity location;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
     private OrganisationEntity serviceProvider;
 
     // For Reverse Includes
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = ProcedureEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<ProcedureEntity> procedureEncounters = new HashSet<>();
 
 
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = ObservationEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<ObservationEntity> observationEncounters = new HashSet<>();
 
 
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = ConditionEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<ConditionEntity> conditionEncounters = new HashSet<>();
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationRequestEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<MedicationRequestEntity> medicationRequestEncounters = new HashSet<>();
     // Support for reverse includes
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = DiagnosticReportEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
     Set<DiagnosticReportEntity> diagnosticReports = new HashSet<>();
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = CarePlanEntity.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<CarePlanEntity> carePlans = new HashSet<>();
     // Support for reverse includes
 

@@ -27,7 +27,7 @@ public class PractitionerTelecom extends BaseContactPoint {
 	@Column(name= "PRACTITIONER_TELECOM_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_TELECOM_PRACTITIONER_ID"))
 	private PractitionerEntity practitionerEntity;
 

@@ -26,8 +26,8 @@ public class OrganisationEntity extends BaseResource {
     @Column(name = "ENT_NAME")
     private String name;
 
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="partOf",foreignKey= @ForeignKey(name="FK_ORGANISATION_PART_OF_ORGANISATION"))
     private OrganisationEntity partOf;
 
@@ -35,20 +35,20 @@ public class OrganisationEntity extends BaseResource {
     private Boolean active;
 
 
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ORGANISATION_TYPE_CONCEPT_ID"))
     private ConceptEntity type;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<OrganisationIdentifier> identifiers;
 
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationAddress.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<OrganisationAddress> addresses;
 
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     @OneToMany(mappedBy="organisationEntity", targetEntity=OrganisationTelecom.class)
     private List<OrganisationTelecom> telecoms;
 

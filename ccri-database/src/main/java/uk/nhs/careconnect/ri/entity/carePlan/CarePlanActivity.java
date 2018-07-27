@@ -24,9 +24,9 @@ public class CarePlanActivity  {
 	@Column(name= "CAREPLAN_ACTIVITY_ID")
     private Long carePlanActivity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_CAREPLAN_ID"))
-	@LazyCollection(LazyCollectionOption.TRUE)
+
     private CarePlanEntity carePlan;
 
 	@OneToMany(mappedBy="carePlanActivity", targetEntity=CarePlanActivityDetail.class)

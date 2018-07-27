@@ -27,7 +27,7 @@ public class MedicationStatementIdentifier extends BaseIdentifier {
 	@Column(name= "MEDICATION_STATEMENT_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "MEDICATION_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_MEDICATION_STATEMENT_MEDICATION_STATEMENT_IDENTIFIER"))
 	private MedicationStatementEntity statement;
 

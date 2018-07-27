@@ -14,36 +14,39 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "Condition_")
+@Table(name = "Condition_",
+        indexes = {
+                @Index(name = "IDX_CONDITION_DATE", columnList="assertedDateTime"),
+        })
 public class ConditionEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="CONDITION_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_CONDITION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_CONDITION_EPISODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EpisodeOfCareEntity contextEpisode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity code;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "SEVERITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_SEVERITY_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity severity;
 
     @Enumerated(EnumType.ORDINAL)
@@ -51,7 +54,7 @@ public class ConditionEntity extends BaseResource {
     private Condition.ConditionClinicalStatus clinicalStatus;
 
     @OneToMany(mappedBy="condition", targetEntity=ConditionCategory.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private List<ConditionCategory> categories = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -62,16 +65,16 @@ public class ConditionEntity extends BaseResource {
     @Column(name = "onsetDateTime")
     private Date onsetDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ASSERTER_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity asserterPractitioner;
 
     @Enumerated(EnumType.ORDINAL)
     private Condition.ConditionVerificationStatus verificationStatus;
 
     @OneToMany(mappedBy="condition", targetEntity = ConditionIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<ConditionIdentifier> identifiers = new HashSet<>();
 
     public Set<ConditionIdentifier> getIdentifiers() {

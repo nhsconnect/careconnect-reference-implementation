@@ -23,18 +23,18 @@ public class ValueSetIncludeFilter {
 	@Column(name= "VALUESET_INCLUDE_FILTER_ID")
 	private Integer contentId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="PROPERTY_ID")
 	private ConceptEntity property;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="VALUE_ID")
 	private ConceptEntity value;
 
 	@Enumerated(EnumType.ORDINAL)
 	ValueSet.FilterOperator operator;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="VALUESET_INCLUDE_ID")
 	private ValueSetInclude include;
 

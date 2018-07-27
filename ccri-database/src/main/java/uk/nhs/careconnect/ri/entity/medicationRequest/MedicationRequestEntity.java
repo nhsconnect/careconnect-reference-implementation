@@ -20,36 +20,39 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "MedicationRequest")
+@Table(name = "MedicationRequest",
+        indexes = {
+                @Index(name = "IDX_MEDICATION_REQUEST_DATE", columnList="authoredDate"),
+        })
 public class MedicationRequestEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="PRESCRIPTION_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable =false, foreignKey= @ForeignKey(name="FK_PATIENT_PRESCRIPTION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION_CODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private ConceptEntity medicationCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name ="MEDICATION_ID", nullable = true,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private MedicationEntity medicationEntity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_ENCOUNTER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EncounterEntity contextEncounter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_EPISODE"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private EpisodeOfCareEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,7 +60,7 @@ public class MedicationRequestEntity extends BaseResource {
     private Date writtenDate;
 
     @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestIdentifier.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationRequestIdentifier> identifiers = new HashSet<>();
 
     @Enumerated(EnumType.ORDINAL)
@@ -68,9 +71,9 @@ public class MedicationRequestEntity extends BaseResource {
     @Column(name = "intent", nullable = false)
     MedicationRequest.MedicationRequestIntent intent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_CATEGORY_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity categoryCode;
 
     @Enumerated(EnumType.ORDINAL)
@@ -81,31 +84,31 @@ public class MedicationRequestEntity extends BaseResource {
     @Column(name = "authoredDate")
     private Date authoredDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECORDER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_RECORDER_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     PractitionerEntity recorderPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity reasonCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_OBSERVATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_OBSERVATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ObservationEntity reasonObservation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_CONDITION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONDITION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConditionEntity reasonCondition;
 
     @Column(name = "substitutionAllowed")
     Boolean substitutionAllowed;
 
     @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestDosage.class)
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     Set<MedicationRequestDosage> dosages = new HashSet<>();
 
     public ConceptEntity getSupplyTypeCode() {
@@ -116,30 +119,30 @@ public class MedicationRequestEntity extends BaseResource {
         this.supplyTypeCode = supplyTypeCode;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLY_TYPE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_SUPPLY_TYPE_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity supplyTypeCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PRACTITIONER"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     PractitionerEntity requesterPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     OrganisationEntity requesterOrganisation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_PATIENT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PATIENT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     PatientEntity requesterPatient;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_ONBEHALF_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ONBEHALF_ORGANISATION"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     OrganisationEntity requesterOnBehalfOfOrganisation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -157,9 +160,9 @@ public class MedicationRequestEntity extends BaseResource {
     @Column(name="expectedSupplyDuration")
     private BigDecimal expectedSupplyDuration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DURATION_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DURATION_UNITS_CONCEPT"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     ConceptEntity durationUnitsCode;
 
     public Date getDispenseRequestStart() {

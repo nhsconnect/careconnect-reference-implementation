@@ -27,7 +27,7 @@ public class AllergyIntoleranceIdentifier extends BaseIdentifier {
 	@Column(name= "ALLERGY_IDENTIFIER_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ALLERGY_ID",foreignKey= @ForeignKey(name="FK_ALLERGY_ALLERGY_IDENTIFIER"))
 	private AllergyIntoleranceEntity allergy;
 

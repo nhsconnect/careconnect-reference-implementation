@@ -27,7 +27,7 @@ public class LocationTelecom extends BaseContactPoint {
 	@Column(name= "LOCATION_TELECOM_ID")
 	private Long identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_LOCATION_TELECOM"))
 	private LocationEntity locationEntity;
 

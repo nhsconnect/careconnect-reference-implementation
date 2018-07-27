@@ -28,7 +28,7 @@ public class PractitionerRoleIdentifier extends BaseIdentifier {
 	@Column(name= "PRACTITIONER_ROLE_IDENTIFIER_ID")
 	private Integer identifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PRACTITIONER_ROLE_ID",foreignKey= @ForeignKey(name="FK_PRACTITIONER_ROLE_PRACTITIONER_ROLE_IDENTIFIER"))
 	private PractitionerRole practitionerRole;
 

@@ -21,26 +21,26 @@ public class DocumentReferenceAuthor {
     @Column(name= "DOCUMENT_REFERENCE_AUTHOR_ID")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "DOCUMENT_REFERENCE_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHOR_DOCUMENT_REFERENCE_ID"))
     private DocumentReferenceEntity documentReference;
 
     @Enumerated(EnumType.ORDINAL)
     private author authorType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="authorPractitioner",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHOR_PRACTITIONER_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PractitionerEntity authorPractitioner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="authorPatient",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHOR_PATIENT_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private PatientEntity authorPatient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="authorOrganisation",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_AUTHOR_ORGANISATION_ID"))
-    @LazyCollection(LazyCollectionOption.TRUE)
+
     private OrganisationEntity authorOrganisation;
 
     public void setId(Long id) {
