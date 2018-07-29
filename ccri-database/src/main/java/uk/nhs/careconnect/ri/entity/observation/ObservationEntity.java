@@ -97,17 +97,14 @@ public class ObservationEntity extends BaseResource {
     private Set<ObservationRange> ranges = new HashSet<>();
 
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
-
     private Set<ObservationEntity> components = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_BODY_SITE_CONCEPT_ID"))
-
     private ConceptEntity bodySite;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="METHOD_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_METHOD_CONCEPT_ID"))
-
     private ConceptEntity method;
 
     @Column(name="valueString")
@@ -115,12 +112,10 @@ public class ObservationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_ENCOUNTER_ID"))
-
     private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_INTERPRETATION_CONCEPT_ID"))
-
     private ConceptEntity interpretation;
 
 

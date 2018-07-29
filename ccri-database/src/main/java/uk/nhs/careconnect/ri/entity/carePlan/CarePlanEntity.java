@@ -9,6 +9,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -86,6 +87,9 @@ public class CarePlanEntity extends BaseResource {
 
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanActivity.class)
     private Set<CarePlanActivity> activities = new HashSet<>();
+
+    @OneToMany(mappedBy="carePlan", targetEntity= QuestionnaireResponseEntity.class)
+    private Set<QuestionnaireResponseEntity> assessments = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -221,5 +225,25 @@ public class CarePlanEntity extends BaseResource {
 
     public void setAddresses(Set<CarePlanCondition> addresses) {
         this.addresses = addresses;
+    }
+
+    public static int getMaxDescLength() {
+        return MAX_DESC_LENGTH;
+    }
+
+    public Set<CarePlanGoal> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(Set<CarePlanGoal> goals) {
+        this.goals = goals;
+    }
+
+    public Set<QuestionnaireResponseEntity> getAssessments() {
+        return assessments;
+    }
+
+    public void setAssessments(Set<QuestionnaireResponseEntity> assessments) {
+        this.assessments = assessments;
     }
 }
