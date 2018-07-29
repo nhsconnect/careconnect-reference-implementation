@@ -27,18 +27,15 @@ public class CarePlanActivityDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CAREPLAN_ACTIVITY_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CAREPLAN_ACTIVITY_ID"))
-
     private CarePlanActivity carePlanActivity;
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CATEGORY_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CATEGORY_CONCEPT_ID"))
-
 	private ConceptEntity category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CODE_CONCEPT_ID"))
-
 	private ConceptEntity code;
 
 	@Enumerated(EnumType.ORDINAL)

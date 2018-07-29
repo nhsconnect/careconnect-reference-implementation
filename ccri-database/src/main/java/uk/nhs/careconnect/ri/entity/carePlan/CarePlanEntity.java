@@ -36,7 +36,6 @@ public class CarePlanEntity extends BaseResource {
     private Set<CarePlanIdentifier> identifiers = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name="PARENT_CAREPLAN_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_PARENT_CAREPLAN_ID"))
     private CarePlanEntity partOfCarePlan;
 
@@ -60,18 +59,15 @@ public class CarePlanEntity extends BaseResource {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_PATIENT_ID"))
     private PatientEntity patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_ENCOUNTER_ID"))
-
     private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_CAREPLAN_EPISODE_ID"))
-
     private EpisodeOfCareEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -85,7 +81,8 @@ public class CarePlanEntity extends BaseResource {
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanCondition.class)
     private Set<CarePlanCondition> addresses = new HashSet<>();
 
-    // goal todo
+    @OneToMany(mappedBy="carePlan", targetEntity=CarePlanGoal.class)
+    private Set<CarePlanGoal> goals = new HashSet<>();
 
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanActivity.class)
     private Set<CarePlanActivity> activities = new HashSet<>();
