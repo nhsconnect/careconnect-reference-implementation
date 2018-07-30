@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.entity.questionnaireResponse;
 
+import org.hl7.fhir.dstu3.model.Questionnaire;
 import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
@@ -8,6 +9,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -32,6 +34,10 @@ public class QuestionnaireResponseEntity extends BaseResource {
 
     @OneToMany(mappedBy="form", targetEntity=QuestionnaireResponseIdentifier.class)
     private Set<QuestionnaireResponseIdentifier> identifiers = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "QUESTIONNAIRE_ID",foreignKey= @ForeignKey(name="FK_FORM_QUESTIONNAIRE_ID"))
+    private QuestionnaireEntity questionnaire;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
@@ -175,5 +181,13 @@ public class QuestionnaireResponseEntity extends BaseResource {
 
     public void setAuthorPractitioner(PractitionerEntity authorPractitioner) {
         this.authorPractitioner = authorPractitioner;
+    }
+
+    public QuestionnaireEntity getQuestionnaire() {
+        return questionnaire;
+    }
+
+    public void setQuestionnaire(QuestionnaireEntity questionnaire) {
+        this.questionnaire = questionnaire;
     }
 }

@@ -36,7 +36,6 @@ public class RiskAssessmentEntity extends BaseResource {
     @Column(name="status")
     private RiskAssessment.RiskAssessmentStatus status;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_CODE_CONCEPT_ID"))
     private ConceptEntity riskCode;
@@ -76,8 +75,6 @@ public class RiskAssessmentEntity extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REASON_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_REASON_CONCEPT_ID"))
     private ConceptEntity reasonConcept;
-
-
 
     public Long getId() {
         return id;

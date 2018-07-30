@@ -34,6 +34,9 @@ public class QuestionnaireResponseItem extends BaseResource {
 	@JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_PATIENT_ID"))
 	private PatientEntity patient;
 
+	@Column(name="LINKID",nullable = false)
+	private String linkId;
+
 	@Column(name="TEXT",length = MAX_DESC_LENGTH,nullable = true)
 	private String text;
 
@@ -90,5 +93,13 @@ public class QuestionnaireResponseItem extends BaseResource {
 	@Override
 	public Long getId() {
 		return null;
+	}
+
+	public String getLinkId() {
+		return linkId;
+	}
+
+	public void setLinkId(String linkId) {
+		this.linkId = linkId;
 	}
 }
