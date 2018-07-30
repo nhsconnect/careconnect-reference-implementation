@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +67,84 @@ public class EndpointResourceProvider implements IResourceProvider {
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
                     exchange.getIn().setHeader(Exchange.HTTP_PATH, "Endpoint");
+                }
+            });
+
+            // This response is coming from an external FHIR Server, so uses inputstream
+            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
+                log.trace("RESPONSE InputStream");
+                inputStream = (InputStream) exchangeBundle.getIn().getBody();
+                Reader reader = new InputStreamReader(inputStream);
+                resource = ctx.newXmlParser().parseResource(reader);
+            } else
+            if (exchangeBundle.getIn().getBody() instanceof String) {
+                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
+                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
+                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
+            } else {
+                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
+            }
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Endpoint) {
+            endpoint = (Endpoint) resource;
+        } else if (resource instanceof OperationOutcome) {
+
+            OperationOutcome operationOutcome =(OperationOutcome) resource;
+            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
+            if(operationOutcome.getIssue().size()>0)
+            {
+                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
+                OperationOutcomeFactory.convertToException(operationOutcome);
+            }
+        }
+        else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        if (resource instanceof OperationOutcome) {
+            OperationOutcome opOutcome = (OperationOutcome) resource;
+            method.setOperationOutcome(opOutcome);
+            method.setCreated(false);
+        } else {
+            method.setCreated(true);
+            OperationOutcome opOutcome = new OperationOutcome();
+            method.setOperationOutcome(opOutcome);
+            method.setId(resource.getIdElement());
+            method.setResource(resource);
+        }
+
+        return method;
+    }
+
+    @Update
+    public MethodOutcome updateEndpoint(HttpServletRequest theRequest, @ResourceParam Endpoint endpoint, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(endpoint);
+            //log.info("getId()"+theId.getId());
+            //log.info("getIdValue()"+theId.getValue());
+            //log.info("getIdPart()"+theId.getIdPart());
+
+            Exchange exchangeBundle = template.send("direct:FHIREndpoint", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Endpoint/"+theId.getIdPart());
                 }
             });
 
