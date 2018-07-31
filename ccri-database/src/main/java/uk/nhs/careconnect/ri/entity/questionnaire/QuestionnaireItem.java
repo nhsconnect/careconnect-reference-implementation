@@ -1,11 +1,15 @@
 package uk.nhs.careconnect.ri.entity.questionnaire;
 
+import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Questionnaire;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="QuestionnaireItem", uniqueConstraints= @UniqueConstraint(name="PK_QUESTIONNAIRE_ITEM", columnNames={"QUESTIONNAIRE_ITEM_ID"})
@@ -44,6 +48,9 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="ITEM_TYPE")
 	private Questionnaire.QuestionnaireItemType itemType;
 
+	// Use the extension to lock down References
+	@Column(name="ITEM_RESOURCE_TYPE")
+	private CodeType itemReferenceType;
 
 	@Column(name="required")
 	private Boolean required;
@@ -57,6 +64,13 @@ public class QuestionnaireItem extends BaseResource {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "QUESTIONNAIRE_ITEM_PARENT_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_QUESTIONNAIRE_ITEM_ID"))
 	private QuestionnaireItem questionnaireParentItem;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "OPTIONS_VALUESET_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_OPTIONS_VALUESET_ID"))
+	private ValueSetEntity valueSetOptions;
+
+	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemOptions.class)
+	private Set<QuestionnaireItemOptions> options = new HashSet<>();
 
 	public Long getItemId() { return itemId; }
 	public void setItemId(Long itemId) { this.itemId = itemId; }
@@ -81,6 +95,93 @@ public class QuestionnaireItem extends BaseResource {
 		this.questionnaire = questionnaire;
 	}
 
+	public String getLinkId() {
+		return linkId;
+	}
+
+	public void setLinkId(String linkId) {
+		this.linkId = linkId;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public ConceptEntity getItemCode() {
+		return itemCode;
+	}
+
+	public void setItemCode(ConceptEntity itemCode) {
+		this.itemCode = itemCode;
+	}
+
+	public Questionnaire.QuestionnaireItemType getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(Questionnaire.QuestionnaireItemType itemType) {
+		this.itemType = itemType;
+	}
+
+	public CodeType getItemReferenceType() {
+		return itemReferenceType;
+	}
+
+	public void setItemReferenceType(CodeType itemReferenceType) {
+		this.itemReferenceType = itemReferenceType;
+	}
+
+	public Boolean getRequired() {
+		return required;
+	}
+
+	public void setRequired(Boolean required) {
+		this.required = required;
+	}
+
+	public Boolean getRepeats() {
+		return repeats;
+	}
+
+	public void setRepeats(Boolean repeats) {
+		this.repeats = repeats;
+	}
+
+	public Boolean getReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(Boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public QuestionnaireItem getQuestionnaireParentItem() {
+		return questionnaireParentItem;
+	}
+
+	public void setQuestionnaireParentItem(QuestionnaireItem questionnaireParentItem) {
+		this.questionnaireParentItem = questionnaireParentItem;
+	}
+
+	public ValueSetEntity getValueSetOptions() {
+		return valueSetOptions;
+	}
+
+	public void setValueSetOptions(ValueSetEntity valueSetOptions) {
+		this.valueSetOptions = valueSetOptions;
+	}
+
+	public Set<QuestionnaireItemOptions> getOptions() {
+		return options;
+	}
+
+	public void setOptions(Set<QuestionnaireItemOptions> options) {
+		this.options = options;
+	}
 
 	@Override
 	public Long getId() {
