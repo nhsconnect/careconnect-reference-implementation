@@ -89,7 +89,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
         }
 
         if (questionnaireEntity.getSubjectType() != null) {
-            questionnaire.getSubjectType().add(questionnaireEntity.getSubjectType());
+
+            CodeType type = new CodeType();
+            type.setValue(questionnaireEntity.getSubjectType().toString());
+            questionnaire.getSubjectType().add(type);
         }
 
 

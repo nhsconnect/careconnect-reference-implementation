@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.entity.questionnaire;
 import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Questionnaire;
+import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ValueSetEntity;
@@ -50,7 +51,7 @@ public class QuestionnaireItem extends BaseResource {
 
 	// Use the extension to lock down References
 	@Column(name="ITEM_RESOURCE_TYPE")
-	private CodeType itemReferenceType;
+	private ResourceType itemReferenceType;
 
 	@Column(name="required")
 	private Boolean required;
@@ -127,11 +128,11 @@ public class QuestionnaireItem extends BaseResource {
 		this.itemType = itemType;
 	}
 
-	public CodeType getItemReferenceType() {
+	public ResourceType getItemReferenceType() {
 		return itemReferenceType;
 	}
 
-	public void setItemReferenceType(CodeType itemReferenceType) {
+	public void setItemReferenceType(ResourceType itemReferenceType) {
 		this.itemReferenceType = itemReferenceType;
 	}
 

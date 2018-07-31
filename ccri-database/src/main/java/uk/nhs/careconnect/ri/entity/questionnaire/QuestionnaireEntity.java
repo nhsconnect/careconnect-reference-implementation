@@ -1,8 +1,8 @@
 package uk.nhs.careconnect.ri.entity.questionnaire;
 
-import org.hl7.fhir.dstu3.model.CodeType;
+
 import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.Questionnaire;
+import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 
@@ -60,7 +60,7 @@ public class QuestionnaireEntity extends BaseResource {
     private ConceptEntity questionnaireCode;
 
     @Column(name = "SUBJECT_TYPE")
-    private CodeType subjectType;
+    private ResourceType subjectType;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
     private Set<QuestionnaireItem> items = new HashSet<>();
@@ -137,11 +137,11 @@ public class QuestionnaireEntity extends BaseResource {
         this.questionnaireCode = questionnaireCode;
     }
 
-    public CodeType getSubjectType() {
+    public ResourceType getSubjectType() {
         return subjectType;
     }
 
-    public void setSubjectType(CodeType subjectType) {
+    public void setSubjectType(ResourceType subjectType) {
         this.subjectType = subjectType;
     }
 
