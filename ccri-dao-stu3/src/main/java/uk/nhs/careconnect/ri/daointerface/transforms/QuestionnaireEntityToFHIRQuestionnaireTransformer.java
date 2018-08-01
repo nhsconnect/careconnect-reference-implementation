@@ -8,6 +8,7 @@ import uk.nhs.careconnect.ri.entity.BaseAddress;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireIdentifier;
+import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireItem;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,9 +27,11 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
         this.addressTransformer = addressTransformer;
     }
 
+    private Questionnaire questionnaire;
+
     @Override
     public Questionnaire transform(final QuestionnaireEntity questionnaireEntity) {
-        final Questionnaire questionnaire = new Questionnaire();
+        questionnaire = new Questionnaire();
 
         Meta meta = new Meta();
 
@@ -95,8 +98,61 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             questionnaire.getSubjectType().add(type);
         }
 
+        for (QuestionnaireItem item : questionnaireEntity.getItems()) {
+            Questionnaire.QuestionnaireItemComponent itemComponent = questionnaire.addItem();
+            getItemComponent(item, itemComponent);
+        }
 
         return questionnaire;
 
     }
+
+    private Questionnaire.QuestionnaireItemComponent getItemComponent(QuestionnaireItem item, Questionnaire.QuestionnaireItemComponent itemComponent) {
+        if (item.getLinkId() != null) {
+            itemComponent.setLinkId(item.getLinkId());
+        }
+        if (item.getItemCode() != null){
+            itemComponent.addCode()
+                    .setCode(item.getItemCode().getCode())
+                    .setDisplay(item.getItemCode().getDisplay())
+                    .setSystem(item.getItemCode().getSystem());
+        }
+
+        if (item.getPrefix() != null) {
+            itemComponent.setPrefix(item.getPrefix());
+        }
+
+        if (item.getItemText() != null) {
+            itemComponent.setText(item.getItemText());
+        }
+
+        if (item.getItemType() != null) {
+            itemComponent.setType(item.getItemType());
+        }
+
+        if (item.getItemReferenceType() != null && item.getItemType().equals(Questionnaire.QuestionnaireItemType.REFERENCE)) {
+            Extension referenceType = itemComponent.addExtension();
+            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource");
+            referenceType.setValue(new Coding().setCode(item.getItemReferenceType().getPath()).setSystem("http://hl7.org/fhir/resource-types"));
+        }
+
+        if (item.getRequired() != null) {
+            itemComponent.setRequired(item.getRequired());
+        }
+        if (item.getReadOnly() != null) {
+            itemComponent.setReadOnly(item.getReadOnly());
+        }
+        if (item.getRepeats() != null) {
+            itemComponent.setRepeats(item.getRepeats());
+        }
+
+        if (item.getChildItems() != null) {
+            for (QuestionnaireItem childItem : item.getChildItems()) {
+                Questionnaire.QuestionnaireItemComponent childItemComponent = itemComponent.addItem();
+                getItemComponent(childItem, childItemComponent);
+            }
+        }
+        return itemComponent;
+    }
+
 }

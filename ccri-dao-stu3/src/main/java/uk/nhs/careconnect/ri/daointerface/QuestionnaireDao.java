@@ -27,14 +27,11 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     @Autowired
     private QuestionnaireEntityToFHIRQuestionnaireTransformer questionnaireEntityToFHIRQuestionnaireTransformer;
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
+
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
-    @Autowired
-    private ConceptRepository codeSvc;
 
 
     private static final Logger log = LoggerFactory.getLogger(QuestionnaireDao.class);

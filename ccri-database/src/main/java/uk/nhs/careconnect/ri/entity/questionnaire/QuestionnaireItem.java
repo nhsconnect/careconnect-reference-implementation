@@ -38,8 +38,13 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="LINKID",nullable = false)
 	private String linkId;
 
+
+
 	@Column(name="PREFIX",length = MAX_DESC_LENGTH,nullable = true)
 	private String prefix;
+
+	@Column(name="ITEM_TEXT",nullable = true)
+	private String itemText;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="ITEM_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_ITEM_CODE_CONCEPT_ID"))
@@ -72,6 +77,9 @@ public class QuestionnaireItem extends BaseResource {
 
 	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemOptions.class)
 	private Set<QuestionnaireItemOptions> options = new HashSet<>();
+
+	@OneToMany(mappedBy="questionnaireParentItem", targetEntity=QuestionnaireItem.class)
+	private Set<QuestionnaireItem> childItems = new HashSet<>();
 
 	public Long getItemId() { return itemId; }
 	public void setItemId(Long itemId) { this.itemId = itemId; }
@@ -184,8 +192,24 @@ public class QuestionnaireItem extends BaseResource {
 		this.options = options;
 	}
 
+	public String getItemText() {
+		return itemText;
+	}
+
+	public void setItemText(String itemText) {
+		this.itemText = itemText;
+	}
+
 	@Override
 	public Long getId() {
 		return null;
+	}
+
+	public Set<QuestionnaireItem> getChildItems() {
+		return childItems;
+	}
+
+	public void setChildItems(Set<QuestionnaireItem> childItems) {
+		this.childItems = childItems;
 	}
 }
