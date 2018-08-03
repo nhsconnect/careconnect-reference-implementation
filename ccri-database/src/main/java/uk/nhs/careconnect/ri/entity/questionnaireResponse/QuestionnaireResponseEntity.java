@@ -79,6 +79,9 @@ public class QuestionnaireResponseEntity extends BaseResource {
     @JoinColumn (name = "AUTHOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_FORM_AUTHOR_PRACTITIONER_ID"))
     private PractitionerEntity authorPractitioner;
 
+    @OneToMany(mappedBy="form", targetEntity=QuestionnaireResponseItem.class)
+    private Set<QuestionnaireResponseItem> items = new HashSet<>();
+
     public Long getId() {
         return id;
     }
@@ -189,5 +192,13 @@ public class QuestionnaireResponseEntity extends BaseResource {
 
     public void setQuestionnaire(QuestionnaireEntity questionnaire) {
         this.questionnaire = questionnaire;
+    }
+
+    public Set<QuestionnaireResponseItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<QuestionnaireResponseItem> items) {
+        this.items = items;
     }
 }

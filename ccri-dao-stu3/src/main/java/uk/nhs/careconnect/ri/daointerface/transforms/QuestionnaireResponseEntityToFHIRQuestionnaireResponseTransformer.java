@@ -10,6 +10,8 @@ import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireItem;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseIdentifier;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseItem;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseItemAnswer;
 
 
 @Component
@@ -43,6 +45,8 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
         }
         form.setMeta(meta);
 
+        form.setId(formEntity.getId().toString());
+
         for(QuestionnaireResponseIdentifier identifier : formEntity.getIdentifiers())
         {
             form.getIdentifier()
@@ -50,16 +54,91 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
                     .setValue(identifier.getValue());
         }
 
-
-        form.setId(formEntity.getId().toString());
-
+        if (formEntity.getAuthoredDateTime() != null) {
+            form.setAuthored(formEntity.getAuthoredDateTime());
+        }
 
         if (formEntity.getStatus() != null){
             form.setStatus(formEntity.getStatus());
         }
 
+        if (formEntity.getAuthorPatient() != null) {
+            form.setAuthor(new Reference("Patient/"+formEntity.getAuthorPatient().getId()).setDisplay(formEntity.getAuthorPatient().getNames().get(0).getDisplayName()));
+        }
+        if (formEntity.getAuthorPractitioner() != null) {
+            form.setAuthor(new Reference("Practitioner/"+formEntity.getAuthorPractitioner().getId()).setDisplay(formEntity.getAuthorPractitioner().getNames().get(0).getDisplayName()));
+        }
+
+        if (formEntity.getCarePlan() != null) {
+            form.getBasedOn().add(new Reference("CarePlan/"+formEntity.getCarePlan().getId()));
+        }
+        if (formEntity.getContextEncounter() != null) {
+            form.setContext(new Reference("Encounter/"+formEntity.getContextEncounter().getId()));
+        }
+        if (formEntity.getContextEpisodeOfCare() != null) {
+            form.setContext(new Reference("EpisodeOfCare/"+formEntity.getContextEpisodeOfCare().getId()));
+        }
+        if (formEntity.getPatient() != null) {
+            form.setSubject(new Reference("Patient/"+formEntity.getPatient().getId()).setDisplay(formEntity.getPatient().getNames().get(0).getDisplayName()));
+        }
+        if (formEntity.getQuestionnaire() != null) {
+            form.setQuestionnaire(new Reference("Questionnaire/"+formEntity.getQuestionnaire().getId()));
+        }
+        if (formEntity.getSourcePatient() != null) {
+            form.setSource(new Reference("Patient/"+formEntity.getSourcePatient().getId()).setDisplay(formEntity.getSourcePatient().getNames().get(0).getDisplayName()));
+        }
+        if (formEntity.getSourcePractitioner() != null) {
+            form.setSource(new Reference("Practitioner/"+formEntity.getSourcePractitioner().getId()).setDisplay(formEntity.getSourcePractitioner().getNames().get(0).getDisplayName()));
+        }
+
+        for (QuestionnaireResponseItem itemEntity : formEntity.getItems()) {
+            QuestionnaireResponse.QuestionnaireResponseItemComponent item = form.addItem();
+            getItem(itemEntity,item);
+        }
 
         return form;
+
+    }
+
+    private void getItem(QuestionnaireResponseItem itemEntity,QuestionnaireResponse.QuestionnaireResponseItemComponent item ) {
+        if (itemEntity.getLinkId() != null) {
+            item.setLinkId(itemEntity.getLinkId());
+        }
+        if (itemEntity.getText() != null) {
+            item.setText(itemEntity.getText());
+        }
+        if (itemEntity.getDefinition() != null) {
+            item.setDefinition(itemEntity.getDefinition());
+        }
+        for (QuestionnaireResponseItem subItemEntity : itemEntity.getItems()) {
+            QuestionnaireResponse.QuestionnaireResponseItemComponent subItem = item.addItem();
+            getItem(subItemEntity,subItem);
+        }
+        for (QuestionnaireResponseItemAnswer answerEntity : itemEntity.getAnswers()) {
+            QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent answer =item.addAnswer();
+            if (answerEntity.getValueBoolean() != null) {
+                answer.setValue(new BooleanType(answerEntity.getValueBoolean()));
+            } else if (answerEntity.getValueInteger() != null) {
+                answer.setValue(new IntegerType(answerEntity.getValueInteger()));
+            } else if (answerEntity.getValueString() != null) {
+                answer.setValue(new StringType(answerEntity.getValueString()));
+            } else if (answerEntity.getValueCoding() != null) {
+                answer.setValue(new Coding()
+                        .setCode(answerEntity.getValueCoding().getCode())
+                        .setDisplay(answerEntity.getValueCoding().getDisplay())
+                        .setSystem(answerEntity.getValueCoding().getSystem())
+                );
+            }
+             else if (answerEntity.getCondition() != null) {
+                    answer.setValue(new Reference("Condition/"+answerEntity.getCondition().getId())
+                    );
+                }
+            else if (answerEntity.getObservation() != null) {
+                answer.setValue(new Reference("Observation/"+answerEntity.getObservation().getId())
+                );
+            }
+        }
+
 
     }
 

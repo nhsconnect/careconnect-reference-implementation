@@ -5,6 +5,9 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -21,6 +24,7 @@ import uk.nhs.careconnect.ri.daointerface.QuestionnaireResponseRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Component
 public class QuestionnaireResponseProvider implements ICCResourceProvider {
@@ -119,6 +123,15 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         }
 
         return form;
+    }
+    @Search
+    public List<QuestionnaireResponse> searchQuestionnaire(HttpServletRequest theRequest,
+                                                           @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
+                                                           @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) TokenParam id,
+                                                           @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
+                                                           @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient
+    ) {
+        return formDao.searchQuestionnaireResponse(ctx, identifier,id,questionnaire,patient);
     }
 
 

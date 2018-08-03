@@ -5,8 +5,13 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
 import org.hl7.fhir.dstu3.model.Questionnaire;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -19,6 +24,7 @@ import uk.nhs.careconnect.ri.daointerface.QuestionnaireRepository;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Component
 public class QuestionnaireProvider implements ICCResourceProvider {
@@ -119,5 +125,13 @@ public class QuestionnaireProvider implements ICCResourceProvider {
         return questionnaire;
     }
 
+    @Search
+    public List<Questionnaire> searchQuestionnaire(HttpServletRequest theRequest,
+                                                   @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
+                                                   @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
+                                                   @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
+    ) {
+        return questionnaireDao.searchQuestionnaire(ctx, identifier,id,codes);
+    }
 
 }

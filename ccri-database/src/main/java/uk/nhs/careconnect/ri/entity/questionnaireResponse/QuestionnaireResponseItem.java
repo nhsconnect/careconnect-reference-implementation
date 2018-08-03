@@ -37,11 +37,25 @@ public class QuestionnaireResponseItem extends BaseResource {
 	@Column(name="LINKID",nullable = false)
 	private String linkId;
 
+    @Column(name="DEFINITION",nullable = true)
+    private String definition;
+
 	@Column(name="TEXT",length = MAX_DESC_LENGTH,nullable = true)
 	private String text;
 
 	@OneToMany(mappedBy="item", targetEntity=QuestionnaireResponseItemAnswer.class)
 	private Set<QuestionnaireResponseItemAnswer> answers = new HashSet<>();
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "PARENT_ITEM_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_PARENT_ITEM_ID"))
+	private QuestionnaireResponseItem parentItem;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "PARENT_ANSWER_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_PARENT_ANSWER_ID"))
+	private QuestionnaireResponseItemAnswer parentAnswer;
+
+	@OneToMany(mappedBy="parentItem", targetEntity=QuestionnaireResponseItem.class)
+	private Set<QuestionnaireResponseItem> items = new HashSet<>();
 
 	public Long getItemId() { return itemId; }
 	public void setItemId(Long itemId) { this.itemId = itemId; }
@@ -102,4 +116,36 @@ public class QuestionnaireResponseItem extends BaseResource {
 	public void setLinkId(String linkId) {
 		this.linkId = linkId;
 	}
+
+	public QuestionnaireResponseItem getParentItem() {
+		return parentItem;
+	}
+
+	public void setParentItem(QuestionnaireResponseItem parentItem) {
+		this.parentItem = parentItem;
+	}
+
+	public QuestionnaireResponseItemAnswer getParentAnswer() {
+		return parentAnswer;
+	}
+
+	public void setParentAnswer(QuestionnaireResponseItemAnswer parentAnswer) {
+		this.parentAnswer = parentAnswer;
+	}
+
+	public Set<QuestionnaireResponseItem> getItems() {
+		return items;
+	}
+
+	public void setItems(Set<QuestionnaireResponseItem> items) {
+		this.items = items;
+	}
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
 }

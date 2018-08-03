@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.questionnaireResponse;
 
 import uk.nhs.careconnect.ri.entity.BaseResource;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
@@ -8,6 +9,8 @@ import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="QuestionnaireResponseItemAnswer", uniqueConstraints= @UniqueConstraint(name="PK_FORM_ITEM_ANSWER", columnNames={"FORM_ITEM_ANSWER_ID"})
@@ -41,6 +44,10 @@ public class QuestionnaireResponseItemAnswer extends BaseResource {
 	@Column(name="valueString")
 	String valueString;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="value_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_CONCEPT_ID"))
+    ConceptEntity valueCoding;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "VALUE_GOAL_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_GOAL_ID"))
 	GoalEntity goal;
@@ -60,6 +67,9 @@ public class QuestionnaireResponseItemAnswer extends BaseResource {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "VALUE_DOCUMENT_REFERENCE_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_DOCUMENT_REFERENCE_ID"))
 	private DocumentReferenceEntity documentReference;
+
+	@OneToMany(mappedBy="parentAnswer", targetEntity=QuestionnaireResponseItem.class)
+	private Set<QuestionnaireResponseItem> items = new HashSet<>();
 
 	@Override
 	public Long getId() {
@@ -150,5 +160,19 @@ public class QuestionnaireResponseItemAnswer extends BaseResource {
 		this.documentReference = documentReference;
 	}
 
+	public Set<QuestionnaireResponseItem> getItems() {
+		return items;
+	}
 
+	public void setItems(Set<QuestionnaireResponseItem> items) {
+		this.items = items;
+	}
+
+    public ConceptEntity getValueCoding() {
+        return valueCoding;
+    }
+
+    public void setValueCoding(ConceptEntity valueCoding) {
+        this.valueCoding = valueCoding;
+    }
 }

@@ -1,0 +1,43 @@
+<Questionnaire xmlns="http://hl7.org/fhir">
+    <version value="0.01"/>
+    <title value="EOLC"/>
+    <status value="active"/>
+    <code>
+        <system value="http://snomed.info/sct"/>
+        <code value="802431000000101"/>
+        <display value="End of life care assessment (procedure)"/>
+    </code>
+    <subjectType value="Patient"/>
+    <item>
+        <linkId value="eolc-atp"/>
+        <text value="Advanced Treatment Preferences"/>
+        <type value="group"/>
+        <required value="true"/>
+        <readOnly value="false"/>
+        <item>
+            <linkId value="eolc-atp-1"/>
+            <text value="Clinical Problems and Advised Interventions"/>
+            <type value="group"/>
+            <repeats value="true"/>
+            <item>
+                <linkId value="eolc-atp-1-1"/>
+                <text value="Problem or Condition"/>
+                <type value="string"/>
+                <required value="true"/>
+                <repeats value="false"/>
+            </item>
+            <item>
+                <linkId value="eolc-atp-1-2"/>
+                <text value="Treatment Level"/>
+                <type value="string"/>
+                <required value="false"/>
+            </item>
+            <item>
+                <linkId value="eolc-atp-1-3"/>
+                <text value="Intervention"/>
+                <type value="string"/>
+                <required value="false"/>
+            </item>
+        </item>
+    </item>
+</Questionnaire>
