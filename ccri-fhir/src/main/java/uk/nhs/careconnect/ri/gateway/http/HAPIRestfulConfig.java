@@ -75,7 +75,8 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(DocumentReferenceResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(BinaryResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(MedicationResourceProvider.class)
-
+				,myAppCtx.getBean(QuestionnaireResourceProvider.class)
+				,myAppCtx.getBean(QuestionnaireResponseResourceProvider.class)
 				// Not supported on plain FHIR Server (OAuth2 only)
 
 				//,myAppCtx.getBean(HealthcareServiceResourceProvider.class)

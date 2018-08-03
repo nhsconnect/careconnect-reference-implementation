@@ -339,11 +339,7 @@
 			<artifactId>ccri-fhirgateway-common</artifactId>
 			<version>${care-connect-version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-jwt</artifactId>
-			<version>1.0.8.RELEASE</version>
-		</dependency>
+
 
 
 	</dependencies>

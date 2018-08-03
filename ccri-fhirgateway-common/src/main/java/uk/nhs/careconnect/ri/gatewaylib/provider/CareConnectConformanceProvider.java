@@ -403,9 +403,11 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "DocumentReference":
                 case "Medication":
                 case "Binary":
-                    case "HealthcareService":
+                case "HealthcareService":
                 case "ReferralRequest":
-
+                case "Endpoint":
+                case "Questionnaire":
+                case "QuestionnaireResponse":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
