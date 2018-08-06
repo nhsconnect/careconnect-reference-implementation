@@ -408,6 +408,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Endpoint":
                 case "Questionnaire":
                 case "QuestionnaireResponse":
+                case "List":
+                case "RelatedPerson":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {

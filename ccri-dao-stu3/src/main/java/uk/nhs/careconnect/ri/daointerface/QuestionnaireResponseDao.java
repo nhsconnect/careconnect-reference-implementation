@@ -168,7 +168,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                     Predicate p = builder.equal(join.get("id"), questionnaire.getIdPart());
                     predList.add(p);
                 } else {
-                    Join<ObservationEntity, PatientEntity> join = root.join("questionnaire", JoinType.LEFT);
+                    Join<QuestionnaireResponseEntity, PatientEntity> join = root.join("questionnaire", JoinType.LEFT);
 
                     Predicate p = builder.equal(join.get("id"), -1);
                     predList.add(p);

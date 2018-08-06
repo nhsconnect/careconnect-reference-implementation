@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<Bundle xmlns="http://hl7.org/fhir">-->
+<Bundle xmlns="http://hl7.org/fhir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7.org/fhir file:///C:/GitHubRepo/Schemas/bundle.xsd">
+	<id value="e6492db3-3788-4519-bebd-2bdf7d7236d8"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Message-Bundle-1"/>
+	</meta>
+	<identifier>
+		<value value="a3940bf5-b82e-4c4f-9477-9bbe6861d634"/>
+	</identifier>
+	<type value="message"/>
+	<entry>
+		<fullUrl value="urn:uuid:a4409d7c-b613-477c-b623-87e60406c2f0"/>
+		<resource>
+			<MessageHeader>
+				<id value="a4409d7c-b613-477c-b623-87e60406c2f0"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-MessageHeader-2"/>
+				</meta>
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-MessageHandling-2">
+					<extension url="BusAckRequested">
+						<valueBoolean value="false"/>
+					</extension>
+					<extension url="InfAckRequested">
+						<valueBoolean value="true"/>
+					</extension>
+					<extension url="RecipientType">
+						<valueCoding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/ITK-RecipientType-1"/>
+							<code value="FA"/>
+							<display value="For Action"/>
+						</valueCoding>
+					</extension>
+					<extension url="MessageDefinition">
+						<valueReference>
+							<reference value="https://fhir.nhs.uk/STU3/MessageDefinition/ITK-eDischarge-MessageDefinition-Instance-1"/>
+						</valueReference>
+					</extension>
+					<extension url="SenderReference">
+						<valueString value="NULL"/>
+					</extension>
+					<extension url="LocalExtension">
+						<valueString value="NULL"/>
+					</extension>
+				</extension>
+				<event>
+					<system value="https://fhir.nhs.uk/STU3/CodeSystem/ITK-MessageEvent-2"/>
+					<code value="ITK003D"/>
+					<display value="ITK eDischarge"/>
+				</event>
+				<receiver>
+					<reference value="urn:uuid:c7d0d92f-4db9-4ab0-89c8-375afca971ad"/>
+				</receiver>
+				<sender>
+					<reference value="urn:uuid:b86216fe-6a51-4687-af97-4b7d58154c39"/>
+				</sender>
+				<timestamp value="2017-01-23T10:10:16+00:00"/>
+				<source>
+					<endpoint value="NOROT003"/>
+				</source>
+				<focus>
+					<reference value="urn:uuid:289f9d42-6f97-40d2-890a-d3d0af397ac7"/>
+				</focus>
+			</MessageHeader>
+		</resource>
+	</entry>
+	<!--Practitioner-->
+	<entry>
+		<fullUrl value="urn:uuid:b86216fe-6a51-4687-af97-4b7d58154c39"/>
+		<resource>
+			<Practitioner>
+				<id value="b86216fe-6a51-4687-af97-4b7d58154c39"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Header-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-user-id"/>
+					<value value="033345750518"/>
+				</identifier>
+				<name>
+					<family value="Rastall"/>
+					<given value="Paul"/>
+					<prefix value="Dr"/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Organization-->
+	<entry>
+		<fullUrl value="urn:uuid:c7d0d92f-4db9-4ab0-89c8-375afca971ad"/>
+		<resource>
+			<Organization>
+				<id value="c7d0d92f-4db9-4ab0-89c8-375afca971ad"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Header-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="RY6"/>
+				</identifier>
+			</Organization>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:289f9d42-6f97-40d2-890a-d3d0af397ac7"/>
+		<resource>
+			<!-- An example document bundle, in this case an outline example containing only an outline EDIS-Composition with no linked resources -->
+			<Bundle>
+				<id value="289f9d42-6f97-40d2-890a-d3d0af397ac7"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="ac2226e1-35f7-4fc4-87dc-67df070a188d"/>
+				</identifier>
+				<type value="document"/>
+				<!--Outline Composition profile with mandatory elements populated only-->
+				<entry>
+					<fullUrl value="urn:uuid:ca9b6788-fb34-4668-9d61-a8cc2f9a5fdc"/>
+					<resource>
+						<Composition>
+							<id value="ca9b6788-fb34-4668-9d61-a8cc2f9a5fdc"/>
+							<meta>
+								<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-EDIS-Composition-1"/>
+							</meta>
+							<!-- Extension to carry details of the Correspondence Care Setting Type. -->
+							<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareSettingType-1">
+								<valueCodeableConcept>
+									<coding>
+										<system value="http://snomed.info/sct"/>
+										<code value="893061000000109"/>
+										<display value="Cardiology service"/>
+									</coding>
+								</valueCodeableConcept>
+							</extension>
+							<identifier>
+								<system value="https://tools.ietf.org/html/rfc4122"/>
+								<value value="5f3c870f-ee67-4065-8469-cd3a900682ee"/>
+							</identifier>
+							<status value="final"/>
+							<type>
+								<!--Discharge Summary-->
+								<coding>
+									<system value="http://snomed.info/sct"/>
+									<code value="373942005"/>
+									<display value="Discharge summary"/>
+								</coding>
+							</type>
+							<subject>
+								<reference value="urn:uuid:1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+							</subject>
+							<date value="2017-08-17T10:00:00+00:00"/>
+							<author>
+								<reference value="urn:uuid:ba20623e-6d70-420e-bbf9-e4b6ac0f50b3"/>
+							</author>
+							<title value="Discharge summary"/>
+							<!--Allergies and adverse reactions-->
+							<section>
+								<title value="Allergies and adverse reaction"/>
+								<code>
+									<coding>
+										<system value="http://snomed.info/sct"/>
+										<code value="886921000000105"/>
+										<display value="Allergies and adverse reactions"/>
+									</coding>
+								</code>
+								<text>
+									<status value="additional"/>
+									<div xmlns="http://www.w3.org/1999/xhtml">
+										<table width="100%">
+											<tbody>
+												<tr>
+													<th>Causative agent</th>
+													<td>Penicillin -class of antibiotic-</td>
+												</tr>
+												<tr>
+													<th>Description of reaction</th>
+													<td>Eruption due to drug</td>
+												</tr>
+												<tr>
+													<th>Date recorded</th>
+													<td>12 February 2015</td>
+												</tr>
+												<tr>
+													<th>Severity</th>
+													<td>Mild</td>
+												</tr>
+												<tr>
+													<th>Certainty</th>
+													<td>Certain</td>
+												</tr>
+												<tr>
+													<th>Comment</th>
+													<td>No swelling</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</text>
+								<!--Reference to Allergies List as the source of information for this section-->
+								<entry>
+									<reference value="urn:uuid:95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+								</entry>
+							</section>
+							<!-- Patient demographics-->
+							<section>
+								<title value="Patient demographics"/>
+								<code>
+									<coding>
+										<system value="http://snomed.info/sct"/>
+										<code value="886731000000109"/>
+										<display value="Patient demographics"/>
+									</coding>
+								</code>
+								<text>
+									<status value="additional"/>
+									<div xmlns="http://www.w3.org/1999/xhtml">
+										<table width="100%">
+											<tbody>
+												<tr>
+													<th>Patient name</th>
+													<td>
+														<p>Prefix: Ms</p>
+														<p>Given Name: Elizabeth</p>
+														<p>Family Name: Black</p>
+													</td>
+												</tr>
+												<tr>
+													<th>Patient preferred name</th>
+													<td>
+														<p>Prefix: Ms</p>
+														<p>Given Name: Liz</p>
+														<p>Family Name: Black</p>
+													</td>
+												</tr>
+												<tr>
+													<th>Date of birth</th>
+													<td>09 June 1969</td>
+												</tr>
+												<tr>
+													<th>Gender</th>
+													<td>Female</td>
+												</tr>
+												<tr>
+													<th>NHS number</th>
+													<td>9996668887</td>
+												</tr>
+												<tr>
+													<th>Patient address</th>
+													<td>
+														<p>Address Line: 21, Grove Street, Overtown</p>
+														<p>City: Leeds</p>
+														<p>Post Code: LS21 4GG</p>
+													</td>
+												</tr>
+												<tr>
+													<th>Relevant contacts</th>
+													<td>Name: Susan Smith<p>Relationship: Next of kin</p>
+														<p>Contact details: Tel: 0782345678 Email: mrssuesmith@mymail.com</p>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</text>
+								<!--reference to further information carried in the patient resource-->
+								<entry>
+									<reference value="urn:uuid:1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+								</entry>
+							</section>
+						</Composition>
+					</resource>
+				</entry>
+				<entry>
+					<fullUrl value="urn:uuid:95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+					<resource>
+						<List>
+							<id value="95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+							<meta>
+								<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Allergy-List-1"/>
+							</meta>
+							<identifier>
+								<system value="https://tools.ietf.org/html/rfc4122"/>
+								<value value="6ee0967d-aaa7-411a-9398-518c089ce3a1"/>
+							</identifier>
+							<status value="current"/>
+							<mode value="snapshot"/>
+							<code>
+								<coding>
+									<system value="http://snomed.info/sct"/>
+									<code value="886921000000105"/>
+									<display value="Allergies and adverse reactions"/>
+								</coding>
+							</code>
+							<subject>
+								<reference value="urn:uuid:1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+							</subject>
+							<entry>
+								<item>
+									<reference value="urn:uuid:9a1c380c-e8b0-4814-aefc-ee69d39b1079"/>
+								</item>
+							</entry>
+						</List>
+					</resource>
+				</entry>
+				<entry>
+					<fullUrl value="urn:uuid:9a1c380c-e8b0-4814-aefc-ee69d39b1079"/>
+					<resource>
+						<AllergyIntolerance>
+							<id value="9a1c380c-e8b0-4814-aefc-ee69d39b1079"/>
+							<meta>
+								<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-AllergyIntolerance-1"/>
+							</meta>
+							<identifier>
+								<system value="https://tools.ietf.org/html/rfc4122"/>
+								<value value="06d65f0f-117a-43c6-84ea-f28c3bd664a2"/>
+							</identifier>
+							<clinicalStatus value="active"/>
+							<verificationStatus value="confirmed"/>
+							<category value="medication"/>
+							<code>
+								<coding>
+									<system value="http://snomed.info/sct"/>
+									<code value="373270004"/>
+									<display value="Penicillin -class of antibiotic-"/>
+								</coding>
+							</code>
+							<patient>
+								<reference value="urn:uuid:1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+							</patient>
+							<assertedDate value="2015-02-12"/>
+							<reaction>
+								<manifestation>
+									<coding>
+										<system value="http://snomed.info/sct"/>
+										<code value="28926001"/>
+										<display value="Eruption due to drug"/>
+									</coding>
+								</manifestation>
+								<severity value="mild"/>
+							</reaction>
+						</AllergyIntolerance>
+					</resource>
+				</entry>
+				<entry>
+					<fullUrl value="urn:uuid:1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+					<resource>
+						<Patient>
+							<id value="1c5a26fd-b317-4fc0-8e0d-7ed8c75d34d8"/>
+							<meta>
+								<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+							</meta>
+							<identifier>
+								<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+									<valueCodeableConcept>
+										<coding>
+											<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+											<code value="01"/>
+											<display value="Number present and verified"/>
+										</coding>
+									</valueCodeableConcept>
+								</extension>
+								<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+								<value value="9996668887"/>
+							</identifier>
+							<name>
+								<use value="official"/>
+								<family value="Black"/>
+								<given value="Elizabeth"/>
+								<prefix value="Ms"/>
+							</name>
+							<name>
+								<use value="usual"/>
+								<family value="Black"/>
+								<given value="Liz"/>
+								<prefix value="Ms"/>
+							</name>
+							<gender value="female"/>
+							<birthDate value="1969-06-09"/>
+							<address>
+								<use value="home"/>
+								<line value="21, Grove Street, Overtown"/>
+								<city value="Leeds"/>
+								<postalCode value="LS21 4GG"/>
+							</address>
+						</Patient>
+					</resource>
+				</entry>
+				<entry>
+					<fullUrl value="urn:uuid:ba20623e-6d70-420e-bbf9-e4b6ac0f50b3"/>
+					<resource>
+						<Practitioner>
+							<id value="ba20623e-6d70-420e-bbf9-e4b6ac0f50b3"/>
+							<meta>
+								<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+							</meta>
+							<identifier>
+								<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+								<value value="9222477"/>
+							</identifier>
+							<name>
+								<family value="Scott"/>
+								<given value="Mike"/>
+								<prefix value="Dr"/>
+							</name>
+							<telecom>
+								<system value="phone"/>
+								<value value="0113 111225"/>
+								<use value="work"/>
+							</telecom>
+						</Practitioner>
+					</resource>
+				</entry>
+			</Bundle>
+		</resource>
+	</entry>
+</Bundle>

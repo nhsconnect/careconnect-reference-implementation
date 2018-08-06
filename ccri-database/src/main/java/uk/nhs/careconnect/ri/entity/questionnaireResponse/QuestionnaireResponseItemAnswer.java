@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.entity.questionnaireResponse;
 
+import uk.nhs.careconnect.ri.entity.BaseReferenceItem;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Table(name="QuestionnaireResponseItemAnswer", uniqueConstraints= @UniqueConstraint(name="PK_FORM_ITEM_ANSWER", columnNames={"FORM_ITEM_ANSWER_ID"})
 		,indexes = {}
 		)
-public class QuestionnaireResponseItemAnswer extends BaseResource {
+public class QuestionnaireResponseItemAnswer extends BaseReferenceItem {
 
 	public QuestionnaireResponseItemAnswer() {
 	}
@@ -47,26 +48,6 @@ public class QuestionnaireResponseItemAnswer extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="value_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_CONCEPT_ID"))
     ConceptEntity valueCoding;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "VALUE_GOAL_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_GOAL_ID"))
-	GoalEntity goal;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "VALUE_CONDITION_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_CONDITION_ID"))
-	ConditionEntity condition;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "VALUE_OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_OBSERVATION_ID"))
-	ObservationEntity observation;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "VALUE_PATIENT_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_PATIENT_ID"))
-	private PatientEntity patient;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "VALUE_DOCUMENT_REFERENCE_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_DOCUMENT_REFERENCE_ID"))
-	private DocumentReferenceEntity documentReference;
 
 	@OneToMany(mappedBy="parentAnswer", targetEntity=QuestionnaireResponseItem.class)
 	private Set<QuestionnaireResponseItem> items = new HashSet<>();
@@ -120,45 +101,6 @@ public class QuestionnaireResponseItemAnswer extends BaseResource {
 		this.valueString = valueString;
 	}
 
-	public GoalEntity getGoal() {
-		return goal;
-	}
-
-	public void setGoal(GoalEntity goal) {
-		this.goal = goal;
-	}
-
-	public ConditionEntity getCondition() {
-		return condition;
-	}
-
-	public void setCondition(ConditionEntity condition) {
-		this.condition = condition;
-	}
-
-	public ObservationEntity getObservation() {
-		return observation;
-	}
-
-	public void setObservation(ObservationEntity observation) {
-		this.observation = observation;
-	}
-
-	public PatientEntity getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
-	}
-
-	public DocumentReferenceEntity getDocumentReference() {
-		return documentReference;
-	}
-
-	public void setDocumentReference(DocumentReferenceEntity documentReference) {
-		this.documentReference = documentReference;
-	}
 
 	public Set<QuestionnaireResponseItem> getItems() {
 		return items;

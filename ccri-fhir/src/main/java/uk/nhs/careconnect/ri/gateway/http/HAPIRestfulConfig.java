@@ -77,6 +77,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationResourceProvider.class)
 				,myAppCtx.getBean(QuestionnaireResourceProvider.class)
 				,myAppCtx.getBean(QuestionnaireResponseResourceProvider.class)
+				,myAppCtx.getBean(ListResourceProvider.class)
 				// Not supported on plain FHIR Server (OAuth2 only)
 
 				//,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
