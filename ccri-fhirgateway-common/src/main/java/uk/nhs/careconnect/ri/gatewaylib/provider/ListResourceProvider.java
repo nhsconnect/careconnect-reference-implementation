@@ -111,7 +111,7 @@ public class ListResourceProvider implements IResourceProvider {
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "ListResource");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "List");
                 }
             });
 
