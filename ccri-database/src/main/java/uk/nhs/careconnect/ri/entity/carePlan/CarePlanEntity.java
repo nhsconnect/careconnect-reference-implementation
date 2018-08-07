@@ -91,6 +91,9 @@ public class CarePlanEntity extends BaseResource {
     @OneToMany(mappedBy="carePlan", targetEntity= QuestionnaireResponseEntity.class)
     private Set<QuestionnaireResponseEntity> assessments = new HashSet<>();
 
+    @OneToMany(mappedBy="carePlan", targetEntity= CarePlanSupportingInformation.class)
+    private Set<CarePlanSupportingInformation> supportingInformation = new HashSet<>();
+
     public Long getId() {
         return id;
     }
@@ -245,5 +248,13 @@ public class CarePlanEntity extends BaseResource {
 
     public void setAssessments(Set<QuestionnaireResponseEntity> assessments) {
         this.assessments = assessments;
+    }
+
+    public Set<CarePlanSupportingInformation> getSupportingInformation() {
+        return supportingInformation;
+    }
+
+    public void setSupportingInformation(Set<CarePlanSupportingInformation> supportingInformation) {
+        this.supportingInformation = supportingInformation;
     }
 }

@@ -33,7 +33,6 @@ public class ObservationEntity extends BaseResource {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_PATIENT_ID"))
     private PatientEntity patient;
 

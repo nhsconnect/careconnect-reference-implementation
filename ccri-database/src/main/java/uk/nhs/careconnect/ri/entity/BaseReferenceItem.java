@@ -1,10 +1,13 @@
 package uk.nhs.careconnect.ri.entity;
 
+import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
+import uk.nhs.careconnect.ri.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.*;
 
@@ -30,6 +33,18 @@ public class BaseReferenceItem extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "VALUE_DOCUMENT_REFERENCE_ID")
     private DocumentReferenceEntity documentReference;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "VALUE_LIST_ID")
+    private ListEntity
+            listResource;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "VALUE_FORM_ID")
+    private QuestionnaireResponseEntity
+            form;
+
     @Override
     public Long getId() {
         return null;
@@ -75,4 +90,19 @@ public class BaseReferenceItem extends BaseResource {
         this.documentReference = documentReference;
     }
 
+    public ListEntity getListResource() {
+        return listResource;
+    }
+
+    public void setListResource(ListEntity listResource) {
+        this.listResource = listResource;
+    }
+
+    public QuestionnaireResponseEntity getForm() {
+        return form;
+    }
+
+    public void setForm(QuestionnaireResponseEntity form) {
+        this.form = form;
+    }
 }

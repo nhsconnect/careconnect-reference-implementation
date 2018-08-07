@@ -62,7 +62,8 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
                    for (IResourceProvider provider : restfulServer.getResourceProviders()) {
 
                         log.trace("Provider Resource - " + provider.getResourceType().getSimpleName());
-                        if (restResourceComponent.getType().equals(provider.getResourceType().getSimpleName()))
+                        if (restResourceComponent.getType().equals(provider.getResourceType().getSimpleName())
+                                || (restResourceComponent.getType().contains("List") && provider.getResourceType().getSimpleName().contains("List")))
                             if (provider instanceof ICCResourceProvider) {
                                 log.trace("ICCResourceProvider - " + provider.getClass());
                                 ICCResourceProvider resourceProvider = (ICCResourceProvider) provider;

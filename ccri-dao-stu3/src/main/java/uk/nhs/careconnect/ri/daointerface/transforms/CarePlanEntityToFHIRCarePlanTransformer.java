@@ -101,6 +101,31 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                 .setValue(identifier.getValue());
         }
 
+        for (CarePlanSupportingInformation supportingInformation : carePlanEntity.getSupportingInformation()) {
+            /*if (supportingInformation.getCarePlan() != null) {
+                carePlan.addSupportingInfo(new Reference("CarePlan/"+supportingInformation.getCarePlan().getId()));
+            }*/
+            if (supportingInformation.getCondition() != null) {
+                carePlan.addSupportingInfo(new Reference("Condition/"+supportingInformation.getCondition().getId()));
+            }
+            if (supportingInformation.getDocumentReference() != null) {
+                carePlan.addSupportingInfo(new Reference("DocumentReference/"+supportingInformation.getDocumentReference().getId()));
+            }
+            if (supportingInformation.getForm() != null) {
+                carePlan.addSupportingInfo(new Reference("QuestionnaireResponse/"+supportingInformation.getForm().getId()));
+            }
+            if (supportingInformation.getListResource() != null) {
+                carePlan.addSupportingInfo(new Reference("List/"+supportingInformation.getListResource().getId()));
+            }
+            if (supportingInformation.getObservation() != null) {
+                carePlan.addSupportingInfo(new Reference("Observation/"+supportingInformation.getObservation().getId()));
+            }
+            if (supportingInformation.getPatient() != null) {
+                carePlan.addSupportingInfo(new Reference("Patient/"+supportingInformation.getPatient().getId()));
+            }
+        }
+
+
 
         return carePlan;
 

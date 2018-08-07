@@ -1,0 +1,31 @@
+<CarePlan xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://fhir.leedsth.nhs.uk/CarePlan/Id"/>
+        <value value="12345"/>
+    </identifier>
+    <status value="active"/>
+    <intent value="plan"/>
+    <category>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="736373009"/>
+            <display value="End of life care plan (record artifact)"/>
+        </coding>
+    </category>
+    <description value="Manage obesity and weight loss"/>
+    <subject>
+        <reference value="Patient/1"/>
+    </subject>
+    <period>
+        <start value="2018-06-01"/>
+    </period>
+    <author>
+        <reference value="Practitioner/1"/>
+    </author>
+    <supportingInfo> 
+        <reference value="QuestionnaireResponse/1"/> 
+    </supportingInfo>
+    <supportingInfo> 
+        <reference value="List/1"/> 
+    </supportingInfo>
+</CarePlan> 

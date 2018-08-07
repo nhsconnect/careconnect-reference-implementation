@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.CarePlan;
@@ -109,13 +110,13 @@ public class CarePlanProvider implements ICCResourceProvider {
 
     @Search
     public List<CarePlan> search(HttpServletRequest theRequest,
-                                           @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
+                                 @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
-
+            , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
     ) {
-        return carePlanDao.search(ctx,patient, date, identifier,resid);
+        return carePlanDao.search(ctx,patient, date, categories,identifier,resid);
     }
 
     @Read()

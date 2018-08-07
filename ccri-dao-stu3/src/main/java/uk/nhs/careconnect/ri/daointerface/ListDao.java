@@ -16,6 +16,7 @@ import uk.nhs.careconnect.ri.daointerface.transforms.ListEntityToFHIRListResourc
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.entity.list.ListEntity;
@@ -26,6 +27,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireIdentifier;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 
 import javax.persistence.EntityManager;
@@ -72,6 +74,13 @@ public class ListDao implements ListRepository {
 
     @Autowired
     ObservationRepository observationDao;
+
+    @Autowired
+    QuestionnaireResponseRepository formDao;
+
+    @Autowired
+    DocumentReferenceRepository documentDao;
+
 
     @Autowired
     private ListEntityToFHIRListResourceTransformer listEntityToFHIRListResourceTranslister;
@@ -183,7 +192,7 @@ public class ListDao implements ListRepository {
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(ListResource.class)));
+        cq.select(qb.count(cq.from(ListEntity.class)));
         //cq.where(/*your stuff*/);
         return em.createQuery(cq).getSingleResult();
     }
@@ -317,11 +326,30 @@ public class ListDao implements ListRepository {
     private void buildItem(FhirContext ctx,ListResource.ListEntryComponent item, ListItem itemEntity ) {
 
         if (item.getItem().getReference().contains("Condition")) {
+
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(item.getItem().getReference()));
             itemEntity.setCondition(conditionEntity);
+
         } else if (item.getItem().getReference().contains("Observation")) {
+
             ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(item.getItem().getReference()));
             itemEntity.setObservation(observationEntity);
+        } else if (item.getItem().getReference().contains("QuestionnaireResponse")) {
+
+            QuestionnaireResponseEntity
+                    questionnaireEntity = formDao.readEntity(ctx, new IdType(item.getItem().getReference()));
+            itemEntity.setForm(questionnaireEntity);
+
+        } else if (item.getItem().getReference().contains("List")) {
+
+            ListEntity listEntity = readEntity(ctx, new IdType(item.getItem().getReference()));
+            itemEntity.setListResource(listEntity);
+
+        } else if (item.getItem().getReference().contains("List")) {
+
+            DocumentReferenceEntity documentReferenceEntity = documentDao.readEntity(ctx, new IdType(item.getItem().getReference()));
+            itemEntity.setDocumentReference(documentReferenceEntity);
+
         }
         em.persist(itemEntity);
 

@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.CarePlanEntityToFHIRCarePlanTransformer;
+import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.*;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
+import uk.nhs.careconnect.ri.entity.list.ListEntity;
+import uk.nhs.careconnect.ri.entity.list.ListItem;
+import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -57,6 +61,18 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     ConditionRepository conditionDao;
+
+    @Autowired
+    ListRepository listDao;
+
+    @Autowired
+    DocumentReferenceRepository documentDao;
+
+    @Autowired
+    QuestionnaireResponseRepository formDao;
+
+    @Autowired
+    ObservationRepository observationDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -131,7 +147,7 @@ public class CarePlanDao implements CarePlanRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<CarePlanEntity> results = searchEntity(ctx, null, null,new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/carePlan"),null);
+                    List<CarePlanEntity> results = searchEntity(ctx, null, null,null,new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/carePlan"),null);
                     for (CarePlanEntity con : results) {
                         carePlanEntity = con;
                         break;
@@ -272,13 +288,56 @@ public class CarePlanDao implements CarePlanRepository {
             }
         }
 
+        for (Reference reference : carePlan.getSupportingInfo()) {
+              CarePlanSupportingInformation carePlanSupportingInformation = new CarePlanSupportingInformation();
+              carePlanSupportingInformation.setCarePlan(carePlanEntity);
+              buildItem(ctx,reference,carePlanSupportingInformation);
+        }
 
         return carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity);
     }
 
+
+    private void buildItem(FhirContext ctx,Reference item, CarePlanSupportingInformation itemEntity ) {
+
+        if (item.getReference().contains("Condition")) {
+
+            ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setCondition(conditionEntity);
+
+        } else if (item.getReference().contains("Observation")) {
+
+            ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setObservation(observationEntity);
+        } else if (item.getReference().contains("QuestionnaireResponse")) {
+
+            QuestionnaireResponseEntity
+                    questionnaireEntity = formDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setForm(questionnaireEntity);
+
+        } else if (item.getReference().contains("List")) {
+
+            ListEntity listEntity = listDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setListResource(listEntity);
+
+        } else if (item.getReference().contains("DocumentReference")) {
+
+            DocumentReferenceEntity documentReferenceEntity = documentDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setDocumentReference(documentReferenceEntity);
+
+        }
+        em.persist(itemEntity);
+
+    }
+
     @Override
-    public List<CarePlan> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam identifier ,TokenParam resid) {
-        List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date, identifier,resid);
+    public List<CarePlan> search(FhirContext ctx,
+                                 @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
+            , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
+            , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid) {
+        List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date,categories, identifier,resid);
         List<CarePlan> results = new ArrayList<>();
 
         for (CarePlanEntity carePlanIntoleranceEntity : qryResults)
@@ -292,7 +351,13 @@ public class CarePlanDao implements CarePlanRepository {
     }
 
     @Override
-    public List<CarePlanEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date,  TokenParam identifier ,TokenParam resid) {
+    public List<CarePlanEntity> searchEntity(FhirContext ctx,
+                                             @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
+            , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
+            , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
+                                             ) {
 
 
         List<CarePlanEntity> qryResults = null;
@@ -333,6 +398,29 @@ public class CarePlanDao implements CarePlanRepository {
 
         }
 
+        if (categories!=null) {
+            List<Predicate> predOrList = new LinkedList<Predicate>();
+            Join<CarePlanEntity, CarePlanCategory> joinCategory = root.join("categories", JoinType.LEFT);
+            Join<CarePlanCategory, ConceptEntity> joinConcept = joinCategory.join("category", JoinType.LEFT);
+            Join<ConceptEntity, CodeSystemEntity> joinCodeSystem = joinConcept.join("codeSystemEntity", JoinType.LEFT);
+
+            for (TokenParam code : categories.getValuesAsQueryTokens()) {
+                log.trace("Search on CarePlan.category code = " + code.getValue());
+
+                Predicate p = null;
+                if (code.getSystem() != null) {
+                    p = builder.and(builder.equal(joinCodeSystem.get("codeSystemUri"), code.getSystem()),builder.equal(joinConcept.get("code"), code.getValue()));
+                } else {
+                    p = builder.equal(joinConcept.get("code"), code.getValue());
+                }
+                predOrList.add(p);
+
+            }
+            if (predOrList.size()>0) {
+                Predicate p = builder.or(predOrList.toArray(new Predicate[0]));
+                predList.add(p);
+            }
+        }
 
         ParameterExpression<Date> parameterLower = builder.parameter(Date.class);
         ParameterExpression<Date> parameterUpper = builder.parameter(Date.class);
@@ -380,6 +468,7 @@ public class CarePlanDao implements CarePlanRepository {
                         log.trace("DEFAULT DATE(0) Prefix = " + date.getValuesAsQueryTokens().get(0).getPrefix());
                 }
             }
+
             if (date.getUpperBound() != null) {
 
                 DateParam dateParam = date.getUpperBound();

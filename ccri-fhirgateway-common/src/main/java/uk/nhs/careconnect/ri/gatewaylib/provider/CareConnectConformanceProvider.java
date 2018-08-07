@@ -244,6 +244,16 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "HealthcareService":
                         //resource.getProfile().setReference(CareConnectProfile.Medication_1);
                         break;
+                    case "Questionnaire":
+                        //resource.getProfile().setReference(CareConnectProfile.Medication_1);
+                        break;
+                    case "QuestionnaireResponse":
+                    case "List":
+                    case "RelatedPerson":
+                    case "CarePlan":
+                        //resource.getProfile().setReference(CareConnectProfile.Medication_1);
+                        break;
+
                     default:
                         resource.getProfile().setReference((def.getResourceProfile(serverBase)));
                 }
@@ -410,6 +420,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "QuestionnaireResponse":
                 case "List":
                 case "RelatedPerson":
+                case "CarePlan":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
