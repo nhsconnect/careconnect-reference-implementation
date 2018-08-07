@@ -1,6 +1,8 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
@@ -10,17 +12,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.CarePlanEntityToFHIRCarePlanTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.ListEntityToFHIRListResourceTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.*;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.entity.list.ListItem;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.EntityManager;
@@ -30,10 +41,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static uk.nhs.careconnect.ri.daointerface.daoutils.MAXROWS;
 
@@ -76,6 +84,15 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
+
+    @Autowired
+    private ListEntityToFHIRListResourceTransformer listEntityToFHIRListResourceTransformer;
+
+    @Autowired
+    private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
 
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
@@ -147,7 +164,7 @@ public class CarePlanDao implements CarePlanRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<CarePlanEntity> results = searchEntity(ctx, null, null,null,new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/carePlan"),null);
+                    List<CarePlanEntity> results = searchEntity(ctx, null, null,null,new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/carePlan"),null, null);
                     for (CarePlanEntity con : results) {
                         carePlanEntity = con;
                         break;
@@ -331,14 +348,18 @@ public class CarePlanDao implements CarePlanRepository {
     }
 
     @Override
-    public List<CarePlan> search(FhirContext ctx,
+    public List<Resource> search(FhirContext ctx,
                                  @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid) {
-        List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date,categories, identifier,resid);
-        List<CarePlan> results = new ArrayList<>();
+            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
+            , @IncludeParam(allow= {
+            "CarePlan:subject"
+            ,"CarePlan:supportingInformation"
+            , "*"}) Set<Include> includes) {
+        List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date,categories, identifier,resid, includes);
+        List<Resource> results = new ArrayList<>();
 
         for (CarePlanEntity carePlanIntoleranceEntity : qryResults)
         {
@@ -347,7 +368,53 @@ public class CarePlanDao implements CarePlanRepository {
             results.add(carePlanIntolerance);
         }
 
+
+
+        if (includes!=null) {
+            log.info("Reverse includes");
+            for (CarePlanEntity carePlanEntity : qryResults) {
+                if (includes !=null) {
+                    for (Include include : includes) {
+                        switch(include.getValue()) {
+                            case "CarePlan:subject":
+                                PatientEntity patientEntity = carePlanEntity.getPatient();
+                                if (patientEntity !=null) results.add(patientEntityToFHIRPatientTransformer.transform(patientEntity));
+                                break;
+                            case "CarePlan:supportingInformation":
+                                for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
+                                    Resource resource = getResource(carePlanSupportingInformation);
+                                    if (resource != null)
+                                        results.add(resource);
+                                }
+                                break;
+                            case "*":
+                                PatientEntity patientEntity2 = carePlanEntity.getPatient();
+                                if (patientEntity2 !=null) results.add(patientEntityToFHIRPatientTransformer.transform(patientEntity2));
+
+                                for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
+                                    Resource resource = getResource(carePlanSupportingInformation);
+                                    if (resource != null)
+                                        results.add(resource);
+                                }
+                                break;
+                        }
+                    }
+                }
+
+            }
+        }
+
         return results;
+    }
+
+    private Resource getResource(CarePlanSupportingInformation carePlanSupportingInformation) {
+        if (carePlanSupportingInformation.getListResource() != null) {
+            return listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getListResource());
+        }
+        if (carePlanSupportingInformation.getForm() != null) {
+            return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getForm());
+        }
+        return null;
     }
 
     @Override
@@ -357,6 +424,10 @@ public class CarePlanDao implements CarePlanRepository {
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
+            , @IncludeParam(allow= {
+            "CarePlan:subject"
+            ,"CarePlan:supportingInformation"
+            , "*"}) Set<Include> includes
                                              ) {
 
 

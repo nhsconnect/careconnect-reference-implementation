@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -10,10 +11,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CarePlanResourceProvider implements IResourceProvider {
@@ -172,15 +171,19 @@ public class CarePlanResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<CarePlan> searchCarePlan(HttpServletRequest httpRequest,
+    public List<Resource> searchCarePlan(HttpServletRequest httpRequest,
                                          @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam id
+            , @IncludeParam(allow= {
+            "CarePlan:subject"
+            ,"CarePlan:supportingInformation"
+            , "*"}) Set<Include> includes
     ) {
 
-        List<CarePlan> results = new ArrayList<CarePlan>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -202,8 +205,8 @@ public class CarePlanResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                CarePlan carePlan = (CarePlan) entry.getResource();
-                results.add(carePlan);
+                Resource resource1 = entry.getResource();
+                results.add(resource1);
             }
         } else if (resource instanceof OperationOutcome)
         {
