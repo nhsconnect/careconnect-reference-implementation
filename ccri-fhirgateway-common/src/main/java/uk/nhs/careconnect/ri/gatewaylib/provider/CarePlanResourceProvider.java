@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -60,6 +61,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
         Exchange exchange = template.send("direct:FHIRCarePlanDocument",ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setHeader(Exchange.HTTP_QUERY, "_count=50");
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                 exchange.getIn().setHeader(Exchange.HTTP_PATH, "CarePlan/"+carePlanId.getIdPart()+"/$document");
             }
@@ -68,17 +70,20 @@ public class CarePlanResourceProvider implements IResourceProvider {
 
         Bundle bundle = null;
 
-        Reader reader = new InputStreamReader(inputStream);
         IBaseResource resource = null;
         try {
-            resource = ctx.newJsonParser().parseResource(reader);
+            String contents = org.apache.commons.io.IOUtils.toString(inputStream);
+            resource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(ctx).parseResource(contents);
         } catch(Exception ex) {
-            log.error("JSON Parse failed " + ex.getMessage());
+            log.error("XML Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
-
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
+            }
+           // log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
             return bundle;
             /*
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
