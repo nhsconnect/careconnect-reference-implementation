@@ -56,6 +56,7 @@ public class ListProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
     try {
+        log.info(theId.getId());
         ListResource newList = listDao.create(ctx, list, theId, theConditional);
         method.setId(newList.getIdElement());
         method.setResource(newList);
@@ -87,9 +88,9 @@ public class ListProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
         try {
-        ListResource newList = listDao.create(ctx, list,null,null);
-        method.setId(newList.getIdElement());
-        method.setResource(newList);
+            ListResource newList = listDao.create(ctx, list,null,null);
+            method.setId(newList.getIdElement());
+            method.setResource(newList);
         } catch (Exception ex) {
 
             if (ex instanceof OperationOutcomeException) {

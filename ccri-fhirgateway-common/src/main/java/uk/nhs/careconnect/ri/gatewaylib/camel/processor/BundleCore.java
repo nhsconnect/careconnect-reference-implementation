@@ -175,6 +175,8 @@ public class BundleCore {
                         resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
                     } else if (iResource instanceof HealthcareService) {
                         resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
+                    } else if (iResource instanceof QuestionnaireResponse) {
+                        resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
                     }
                     //else if (iResource instanceof PractitionerRole) {
                     //    resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
@@ -211,27 +213,129 @@ public class BundleCore {
         //return null;
     }
 
-    public Resource searchAddList(String listId, ListResource list) {
+    public ListResource searchAddList(String listId,ListResource list) {
+        log.info("List searchAdd " +listId);
 
-        log.info("searchAddList "+listId);
-        if (listId == null) {
-            return null; //throw new InternalErrorException("Null Reference");
+        if (list == null) throw new InternalErrorException("Bundle processing error");
+
+        ListResource eprListResource = (ListResource) resourceMap.get(listId);
+
+        // Organization already processed, quit with Organization
+        if (eprListResource != null) return eprListResource;
+
+        // Prevent re-adding the same Practitioner
+        if (list.getIdentifier().size() == 0) {
+            list.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(list.getId());
         }
-        Resource resource = resourceMap.get(listId);
-        // Don't process, if already processed.
-        if (resource !=null)
-        {
-            log.info("Already Processed "+resource.getId());
-            return resource;
-        }
-        for (ListResource.ListEntryComponent listEntry : list.getEntry()) {
-            if (listEntry.hasItem()) {
-                searchAddResource(listEntry.getItem().getReference());
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : list.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRList", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "List");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprListResource = (ListResource) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found ListResource = " + eprListResource.getId());
+                }
             }
         }
 
-        return resource;
+        if (list.hasEncounter()) {
+            Resource resource = searchAddResource(list.getEncounter().getReference());
+
+            if (resource == null) referenceMissing(list, list.getEncounter().getReference());
+            list.setEncounter(getReference(resource));
+        }
+        if (list.hasSubject()) {
+            Resource resource = searchAddResource(list.getSubject().getReference());
+
+            if (resource == null) referenceMissing(list, list.getSubject().getReference());
+            list.setSubject(getReference(resource));
+        }
+
+        for (ListResource.ListEntryComponent listEntry : list.getEntry()) {
+            if (listEntry.hasItem()) {
+                Resource resource = searchAddResource(listEntry.getItem().getReference());
+                if (resource == null) referenceMissing(list, listEntry.getItem().getReference());
+                if (resource != null) listEntry.setItem(getReference(resource));
+            }
+        }
+
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "List";
+        // Location found do not add
+        if (eprListResource != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "List/"+eprListResource.getIdElement().getIdPart();
+            list.setId(eprListResource.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(list);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRList", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            if (exchange.getIn().getBody() instanceof String ) {
+                log.error((String) exchange.getIn().getBody());
+                throw new InternalErrorException((String) exchange.getIn().getBody());
+            }
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof ListResource) {
+            eprListResource = (ListResource) iResource;
+            setResourceMap(listId,eprListResource);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprListResource;
     }
+
+
 
     public Practitioner searchAddPractitioner(String practitionerId,Practitioner practitioner) {
 
@@ -868,6 +972,128 @@ public class BundleCore {
         }
 
         return eprCarePlan;
+    }
+
+    public QuestionnaireResponse searchAddQuestionnaireResponse(String formId,QuestionnaireResponse form) {
+        log.info("QuestionnaireResponse searchAdd " +formId);
+
+        if (form == null) throw new InternalErrorException("Bundle processing error");
+
+        QuestionnaireResponse eprQuestionnaireResponse = (QuestionnaireResponse) resourceMap.get(formId);
+
+        // Organization already processed, quit with Organization
+        if (eprQuestionnaireResponse != null) return eprQuestionnaireResponse;
+
+        // Prevent re-adding the same Practitioner
+        if (!form.hasIdentifier()) {
+            form.getIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(form.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        Identifier identifier = form.getIdentifier();
+        Exchange exchange = template.send("direct:FHIRQuestionnaireResponse", ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "QuestionnaireResponse");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource iresource = null;
+        try {
+            iresource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iresource instanceof OperationOutcome) {
+            processOperationOutcome((OperationOutcome) iresource);
+        } else
+        if (iresource instanceof Bundle) {
+            Bundle returnedBundle = (Bundle) iresource;
+            if (returnedBundle.getEntry().size()>0) {
+                eprQuestionnaireResponse = (QuestionnaireResponse) returnedBundle.getEntry().get(0).getResource();
+                log.info("Found QuestionnaireResponse = " + eprQuestionnaireResponse.getId());
+            }
+        }
+
+
+        if (form.getContext().getReference() != null) {
+            Resource resource = searchAddResource(form.getContext().getReference());
+
+            if (resource == null) referenceMissing(form, form.getContext().getReference());
+            form.setContext(getReference(resource));
+        }
+        if (form.getSubject() != null) {
+            Resource resource = searchAddResource(form.getSubject().getReference());
+
+            if (resource == null) referenceMissing(form, form.getSubject().getReference());
+            form.setSubject(getReference(resource));
+        }
+        if (form.hasSource()) {
+            Resource resource = searchAddResource(form.getSource().getReference());
+
+            if (resource == null) referenceMissing(form, form.getSource().getReference());
+            form.setSource(getReference(resource));
+        }
+        if (form.hasAuthor()) {
+            Resource resource = searchAddResource(form.getAuthor().getReference());
+
+            if (resource == null) referenceMissing(form, form.getAuthor().getReference());
+            form.setAuthor(getReference(resource));
+        }
+
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "QuestionnaireResponse";
+        // Location found do not add
+        if (eprQuestionnaireResponse != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "QuestionnaireResponse/"+eprQuestionnaireResponse.getIdElement().getIdPart();
+            form.setId(eprQuestionnaireResponse.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(form);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            exchange = template.send("direct:FHIRQuestionnaireResponse", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof QuestionnaireResponse) {
+            eprQuestionnaireResponse = (QuestionnaireResponse) iResource;
+            setResourceMap(formId,eprQuestionnaireResponse);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprQuestionnaireResponse;
     }
 
 
@@ -1758,7 +1984,14 @@ public class BundleCore {
             if (resource == null) referenceMissing(composition, composition.getEncounter().getReference());
             composition.setEncounter(getReference(resource));
         }
-        if (composition.getCustodian() != null) {
+        if (composition.hasAttester()) {
+            for (Composition.CompositionAttesterComponent attester : composition.getAttester()){
+                Resource resource = searchAddResource(attester.getParty().getReference());
+                if (resource == null) referenceMissing(composition, attester.getParty().getReference());
+                attester.setParty(getReference(resource));
+            }
+        }
+        if (composition.hasCustodian()) {
             Resource resource = searchAddResource(composition.getCustodian().getReference());
             if (resource == null) referenceMissing(composition, composition.getCustodian().getReference());
             composition.setCustodian(getReference(resource));

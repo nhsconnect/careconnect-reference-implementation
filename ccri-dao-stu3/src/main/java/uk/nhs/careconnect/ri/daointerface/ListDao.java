@@ -215,8 +215,8 @@ public class ListDao implements ListRepository {
 
         ListEntity listEntity = null;
         log.debug("Called ListResource Create Condition Url: "+theConditional);
-        if (list.hasId()) {
-            listEntity =  (ListEntity) em.find(ListEntity.class,Long.parseLong(list.getId()));
+        if (theId != null) {
+                listEntity =  readEntity(ctx,theId);
         }
 
         if (listEntity == null) {

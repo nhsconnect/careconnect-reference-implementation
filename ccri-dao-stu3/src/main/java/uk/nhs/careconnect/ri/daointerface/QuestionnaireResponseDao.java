@@ -220,8 +220,8 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         QuestionnaireResponseEntity formEntity = null;
         log.debug("Called QuestionnaireResponse Create Condition Url: "+theConditional);
-        if (form.hasId()) {
-            formEntity =  (QuestionnaireResponseEntity) em.find(QuestionnaireResponseEntity.class,Long.parseLong(form.getId()));
+        if ((theId != null)) {
+            formEntity =  readEntity(ctx,theId);
         }
 
         if (formEntity == null) {
