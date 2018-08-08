@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.daointerface.transforms.CarePlanEntityToFHIRCarePlanTransformer;
-import uk.nhs.careconnect.ri.daointerface.transforms.ListEntityToFHIRListResourceTransformer;
-import uk.nhs.careconnect.ri.daointerface.transforms.PatientEntityToFHIRPatientTransformer;
-import uk.nhs.careconnect.ri.daointerface.transforms.QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
+import uk.nhs.careconnect.ri.daointerface.transforms.*;
 import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
@@ -61,6 +58,7 @@ public class CarePlanDao implements CarePlanRepository {
     @Autowired
     PractitionerRepository practitionerDao;
 
+
     @Autowired
     EncounterRepository encounterDao;
 
@@ -94,6 +92,8 @@ public class CarePlanDao implements CarePlanRepository {
     @Autowired
     private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
 
+    @Autowired
+    private ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
@@ -382,7 +382,7 @@ public class CarePlanDao implements CarePlanRepository {
                                 break;
                             case "CarePlan:supportingInformation":
                                 for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
-                                    Resource resource = getResource(carePlanSupportingInformation);
+                                    Resource resource = getResource(carePlanSupportingInformation,results);
                                     if (resource != null)
                                         results.add(resource);
                                 }
@@ -392,7 +392,7 @@ public class CarePlanDao implements CarePlanRepository {
                                 if (patientEntity2 !=null) results.add(patientEntityToFHIRPatientTransformer.transform(patientEntity2));
 
                                 for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
-                                    Resource resource = getResource(carePlanSupportingInformation);
+                                    Resource resource = getResource(carePlanSupportingInformation,results);
                                     if (resource != null)
                                         results.add(resource);
                                 }
@@ -407,8 +407,16 @@ public class CarePlanDao implements CarePlanRepository {
         return results;
     }
 
-    private Resource getResource(CarePlanSupportingInformation carePlanSupportingInformation) {
+    private Resource getResource(CarePlanSupportingInformation carePlanSupportingInformation, List<Resource> results) {
         if (carePlanSupportingInformation.getListResource() != null) {
+            ListEntity list = carePlanSupportingInformation.getListResource();
+            if (list != null) {
+                for (ListItem items : list.getItems()) {
+                    if (items.getCondition() != null) {
+                        results.add(conditionEntityToFHIRConditionTransformer.transform(items.getCondition()));
+                    }
+                }
+            }
             return listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getListResource());
         }
         if (carePlanSupportingInformation.getForm() != null) {
