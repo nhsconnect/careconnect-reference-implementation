@@ -1,10 +1,13 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
@@ -16,10 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+
+import static com.phloc.commons.lang.ClassHelper.getContextClassLoader;
 
 @Component
 public class BundleResourceProvider implements IResourceProvider {
@@ -56,6 +60,8 @@ public class BundleResourceProvider implements IResourceProvider {
         exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
         return exchange;
     }
+
+
 
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Bundle bundle) {

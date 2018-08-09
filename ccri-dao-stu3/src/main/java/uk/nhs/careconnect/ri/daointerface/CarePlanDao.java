@@ -81,6 +81,9 @@ public class CarePlanDao implements CarePlanRepository {
     ObservationRepository observationDao;
 
     @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
@@ -91,6 +94,12 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
+
+    @Autowired
+    private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
+
+    @Autowired
+    private OrganisationEntityToFHIROrganizationTransformer organisationEntityToFHIROrganizationTransformer;
 
     @Autowired
     private ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
@@ -305,6 +314,21 @@ public class CarePlanDao implements CarePlanRepository {
             }
         }
 
+        for (Reference reference : carePlan.getAuthor()) {
+            CarePlanAuthor author = new CarePlanAuthor();
+            author.setCarePlan(carePlanEntity);
+            if (reference.getReference().contains("Practitioner")) {
+                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                author.setPractitioner(practitionerEntity);
+            }
+            if (reference.getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(reference.getReference()));
+                author.setOrganisation(organisationEntity);
+            }
+
+            em.persist(author);
+        }
+
         for (Reference reference : carePlan.getSupportingInfo()) {
               CarePlanSupportingInformation carePlanSupportingInformation = new CarePlanSupportingInformation();
               carePlanSupportingInformation.setCarePlan(carePlanEntity);
@@ -395,6 +419,12 @@ public class CarePlanDao implements CarePlanRepository {
                                     Resource resource = getResource(carePlanSupportingInformation,results);
                                     if (resource != null)
                                         results.add(resource);
+                                }
+                                for (CarePlanAuthor carePlanAuthor : carePlanEntity.getAuthors()) {
+                                    if (carePlanAuthor.getPractitioner() != null)
+                                        results.add(practitionerEntityToFHIRPractitionerTransformer.transform(carePlanAuthor.getPractitioner()));
+                                    if (carePlanAuthor.getOrganisation() != null)
+                                        results.add(organisationEntityToFHIROrganizationTransformer.transform(carePlanAuthor.getOrganisation()));
                                 }
                                 break;
                         }

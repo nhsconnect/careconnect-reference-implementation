@@ -79,6 +79,9 @@ public class CarePlanEntity extends BaseResource {
     @Column(name = "periodEndDateTime")
     private Date periodEndDateTime;
 
+    @OneToMany(mappedBy="carePlan", targetEntity=CarePlanAuthor.class)
+    private Set<CarePlanAuthor> authors = new HashSet<>();
+
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanCondition.class)
     private Set<CarePlanCondition> addresses = new HashSet<>();
 
@@ -256,5 +259,13 @@ public class CarePlanEntity extends BaseResource {
 
     public void setSupportingInformation(Set<CarePlanSupportingInformation> supportingInformation) {
         this.supportingInformation = supportingInformation;
+    }
+
+    public Set<CarePlanAuthor> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(Set<CarePlanAuthor> authors) {
+        this.authors = authors;
     }
 }

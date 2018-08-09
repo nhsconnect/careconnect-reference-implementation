@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
+import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -77,14 +79,123 @@ public class PatientResourceProvider implements IResourceProvider {
     public Class<Patient> getResourceType() {
         return Patient.class;
     }
-/*
-    @Validate
-    public MethodOutcome testResource(@ResourceParam Patient resource,
-                                  @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResource(resource,theMode,theProfile);
+
+    @Operation(name = "$getrecord3", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
+    public Bundle getGetRecord3(
+            @OperationParam(name="patientNHSnumber") TokenParam
+                    nhsNumber,
+            @OperationParam(name="recordType") TokenParam
+                    recordType,
+            @OperationParam(name="recordSection") TokenParam
+                    recordSection
+    ) throws UnsupportedDataTypeException {
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+        // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
+        Exchange exchange = template.send("direct:FHIRPatientOperation",ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordSection.getValue());
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient/$getrecord3");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+
+        Bundle bundle = null;
+
+        IBaseResource resource = null;
+        try {
+            String contents = org.apache.commons.io.IOUtils.toString(inputStream);
+            resource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(ctx).parseResource(contents);
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
+            }
+
+            return bundle;
+
+        }
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
+        return null;
     }
-*/
+
+    @Operation(name = "$getrecord4", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
+    public Bundle getCareRecord4(
+            @OperationParam(name="patientNHSnumber") TokenParam
+                    nhsNumber,
+            @OperationParam(name="recordType") TokenParam
+                    recordType,
+            @OperationParam(name="recordSection") TokenParam
+                    recordSection
+    ) throws UnsupportedDataTypeException {
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+        // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
+        Exchange exchange = template.send("direct:FHIRPatientOperation",ExchangePattern.InOut, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordSection.getValue());
+                exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient/$getrecord4");
+            }
+        });
+        inputStream = (InputStream) exchange.getIn().getBody();
+
+        Bundle bundle = null;
+
+        IBaseResource resource = null;
+        try {
+            String contents = org.apache.commons.io.IOUtils.toString(inputStream);
+            resource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(ctx).parseResource(contents);
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
+            }
+
+            return bundle;
+
+        }
+        else if (resource instanceof OperationOutcome)
+        {
+
+            OperationOutcome operationOutcome = (OperationOutcome) resource;
+            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+
+            OperationOutcomeFactory.convertToException(operationOutcome);
+        } else {
+            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        }
+
+        return null;
+
+    }
+
+
     @Read
     public Patient getPatientById(HttpServletRequest request, @IdParam IdType internalId) {
 

@@ -102,6 +102,10 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("TIE CarePlan")
 				.to("direct:TIEServer");
 
+		from("direct:FHIRPatientOperation")
+				.routeId("TIE PatientOperation")
+				.to("direct:TIEServer");
+
 		from("direct:TIEServer")
 				.routeId("TIE FHIR Server")
 				.process(camelProcessor)
