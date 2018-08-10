@@ -54,7 +54,7 @@ public class OAuth2Interceptor extends InterceptorAdapter {
         accessRights.put("Condition","Condition");
         accessRights.put("Procedure","Observation");
         accessRights.put("AllergyIntolerance","AllergyIntolerance");
-        accessRights.put("MedicationRequest","MedicationPrescription");
+        accessRights.put("MedicationRequest","MedicationRequest");
         accessRights.put("MedicationStatement","MedicationStatement");
         accessRights.put("Immunization","Immunization");
         accessRights.put("Medication","Medication");
