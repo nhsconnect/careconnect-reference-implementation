@@ -35,46 +35,25 @@ public class EncounterEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID", nullable = false,foreignKey= @ForeignKey(name="FK_ENCOUNTER_PATIENT"))
-
     private PatientEntity patient;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_CLASS_CONCEPT_ID"))
-
     private ConceptEntity _class;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_TYPE_CONCEPT_ID"))
-
     private ConceptEntity type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRIORITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PRIORITY_CONCEPT_ID"))
     private ConceptEntity priority;
 
-
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status", nullable = false)
     Encounter.EncounterStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="PARTICIPANT_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PRACTITIONER_ID"))
-
-    private PractitionerEntity participant;
-
-    public ConceptEntity getParticipantType() {
-        return participantType;
-    }
-
-    public void setParticipantType(ConceptEntity participantType) {
-        this.participantType = participantType;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="PARTICIPANT_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PARTICIPANT_TYPE_CONCEPT_ID"))
-    private ConceptEntity participantType;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "periodStartDate")
@@ -84,16 +63,13 @@ public class EncounterEntity extends BaseResource {
     @Column(name = "periodEndDate")
     private Date periodEndDate;
 
+    // Now defunct do not use !!
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="PARTICIPANT_PRACTITIONER_ID")
+    private PractitionerEntity participant;
+
     @OneToMany(mappedBy="encounter", targetEntity = EncounterReason.class)
     Set<EncounterReason> reasons = new HashSet<>();
-
-    public Set<ProcedureEntity> getProcedureEncounters() {
-        return procedureEncounters;
-    }
-
-    public void setProcedureEncounters(Set<ProcedureEntity> procedureEncounters) {
-        this.procedureEncounters = procedureEncounters;
-    }
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterDiagnosis.class)
     Set<EncounterDiagnosis> diagnoses = new HashSet<>();
@@ -103,6 +79,9 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="encounter", targetEntity = EncounterEpisode.class)
     Set<EncounterEpisode> episodes = new HashSet<>();
+
+    @OneToMany(mappedBy="encounter", targetEntity = EncounterParticipant.class)
+    Set<EncounterParticipant> participants = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_LOCATION_ID"))
@@ -135,7 +114,6 @@ public class EncounterEntity extends BaseResource {
     Set<DiagnosticReportEntity> diagnosticReports = new HashSet<>();
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = CarePlanEntity.class)
-
     Set<CarePlanEntity> carePlans = new HashSet<>();
     // Support for reverse includes
 
@@ -235,10 +213,6 @@ public class EncounterEntity extends BaseResource {
         return serviceProvider;
     }
 
-    public PractitionerEntity getParticipant() {
-        return participant;
-    }
-
     public Set<EncounterDiagnosis> getDiagnoses() {
         if (diagnoses == null) {
             diagnoses = new HashSet<>();
@@ -264,11 +238,6 @@ public class EncounterEntity extends BaseResource {
 
     public EncounterEntity _setClass(ConceptEntity _class) {
         this._class = _class;
-        return this;
-    }
-
-    public EncounterEntity setParticipant(PractitionerEntity participant) {
-        this.participant = participant;
         return this;
     }
 
@@ -319,5 +288,21 @@ public class EncounterEntity extends BaseResource {
 
     public void setCarePlans(Set<CarePlanEntity> carePlans) {
         this.carePlans = carePlans;
+    }
+
+    public Set<EncounterParticipant> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<EncounterParticipant> participants) {
+        this.participants = participants;
+    }
+
+    public Set<ProcedureEntity> getProcedureEncounters() {
+        return procedureEncounters;
+    }
+
+    public void setProcedureEncounters(Set<ProcedureEntity> procedureEncounters) {
+        this.procedureEncounters = procedureEncounters;
     }
 }

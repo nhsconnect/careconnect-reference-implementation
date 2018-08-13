@@ -177,6 +177,8 @@ public class BundleCore {
                         resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
                     } else if (iResource instanceof QuestionnaireResponse) {
                         resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
+                    } else if (iResource instanceof RelatedPerson) {
+                        resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
                     }
                     //else if (iResource instanceof PractitionerRole) {
                     //    resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
@@ -2739,6 +2741,94 @@ public class BundleCore {
 
         return eprPatient;
     }
+
+    public RelatedPerson searchAddRelatedPerson(String personId, RelatedPerson person) {
+
+        log.info("RelatedPerson searchAdd " + personId);
+
+        if (person == null) throw new InternalErrorException("Bundle processing error");
+
+        RelatedPerson eprRelatedPerson = (RelatedPerson) resourceMap.get(personId);
+
+        // RelatedPerson already processed, quit with RelatedPerson
+        if (eprRelatedPerson != null) return eprRelatedPerson;
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : person.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRRelatedPerson", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "RelatedPerson");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch (Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size() > 0) {
+                    eprRelatedPerson = (RelatedPerson) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found RelatedPerson = " + eprRelatedPerson.getId());
+                    // KGM 31/Jan/2018 Missing break on finding person
+                    break;
+                }
+            }
+        }
+        // RelatedPerson found do not add
+        if (eprRelatedPerson != null) {
+            setResourceMap(personId, eprRelatedPerson);
+
+            return eprRelatedPerson;
+        }
+
+        // Location not found. Add to database
+
+
+        IBaseResource iResource = null;
+        String jsonResource = ctx.newJsonParser().encodeResourceToString(person);
+        try {
+            Exchange exchange = template.send("direct:FHIRRelatedPerson", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "RelatedPerson");
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(jsonResource);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch (Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof RelatedPerson) {
+            eprRelatedPerson = (RelatedPerson) iResource;
+            setResourceMap(personId, eprRelatedPerson);
+        } else if (iResource instanceof OperationOutcome) {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprRelatedPerson;
+    }
+
     private void referenceMissingWarn(Resource resource, String reference) {
         String errMsg = "Unable to resolve reference: "+reference+" In resource "+resource.getClass().getSimpleName()+" id "+resource.getId();
         log.warn(errMsg);

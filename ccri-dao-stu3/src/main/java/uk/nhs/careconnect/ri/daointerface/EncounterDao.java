@@ -20,13 +20,16 @@ import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterParticipant;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
 
 
 import javax.persistence.EntityManager;
@@ -58,6 +61,9 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    RelatedPersonRepository personDao;
 
     @Autowired
     OrganisationRepository organisationDao;
@@ -97,6 +103,9 @@ public class  EncounterDao implements EncounterRepository {
     private MedicationRequestEntityToFHIRMedicationTransformer
             medicationRequestEntityToFHIRMedicationTransformer;
 
+    @Autowired
+    private RelatedPersonEntityToFHIRRelatedPersonTransformer
+        relatedPersonEntityToFHIRRelatedPersonTransformer;
 
 
     @Autowired
@@ -224,28 +233,7 @@ public class  EncounterDao implements EncounterRepository {
             encounterEntity.setStatus(encounter.getStatus());
         }
 
-        if (encounter.hasParticipant()) {
-            for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
-                if (participant.getIndividual().getReference().contains("Practitioner")) {
 
-                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx,new IdType("Practitioner/"+participant.getIndividual().getReference()));
-                    if (practitionerEntity != null ) encounterEntity.setParticipant(practitionerEntity);
-                }
-
-                if (participant.hasType()) {
-                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0));
-                    if (code != null) {
-                        encounterEntity.setParticipantType(code);
-                    } else {
-                        String message = "Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode();
-                        log.error(message);
-                        throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
-                    }
-
-                }
-
-            }
-        }
 
         if (encounter.hasPeriod()) {
 
@@ -319,6 +307,45 @@ public class  EncounterDao implements EncounterRepository {
 
         }
 
+        if (encounter.hasParticipant()) {
+
+            for ( EncounterParticipant encounterParticipantDel : encounterEntity.getParticipants()) {
+                em.remove(encounterParticipantDel);
+            }
+
+            for(Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
+
+                EncounterParticipant encounterParticipant = new EncounterParticipant();
+
+                encounterParticipant.setEncounter(encounterEntity);
+
+                if (participant.getIndividual().getReference().contains("Practitioner")) {
+
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx,new IdType("Practitioner/"+participant.getIndividual().getReference()));
+                    if (practitionerEntity != null ) encounterParticipant.setParticipant(practitionerEntity);
+                }
+                if (participant.getIndividual().getReference().contains("RelatedPerson")) {
+
+                    RelatedPersonEntity personEntity = personDao.readEntity(ctx,new IdType("RelatedPerson/"+participant.getIndividual().getReference()));
+                    if (personEntity != null ) encounterParticipant.setPerson(personEntity);
+                }
+
+                if (participant.hasType()) {
+                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0));
+                    if (code != null) {
+                        encounterParticipant.setParticipantType(code);
+                    } else {
+                        String message = "Code: Missing System/Code = "+participant.getType().get(0).getCoding().get(0).getSystem() +" code = "+participant.getType().get(0).getCoding().get(0).getCode();
+                        log.error(message);
+                        throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
+                    }
+
+                }
+                em.persist(encounterParticipant);
+
+            }
+        }
+
         return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
     }
 
@@ -367,8 +394,13 @@ public class  EncounterDao implements EncounterRepository {
                     switch(include.getValue()) {
                         case
                             "Encounter.participant":
-                            if (encounterEntity.getParticipant()!=null) {
-                                addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
+                            for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
+                                if (encounterParticipant.getParticipant() != null) {
+                                    addToResults(results, practitionerEntityToFHIRPractitionerTransformer.transform(encounterParticipant.getParticipant()));
+                                }
+                                if (encounterParticipant.getPerson() != null) {
+                                    addToResults(results, relatedPersonEntityToFHIRRelatedPersonTransformer.transform(encounterParticipant.getPerson()));
+                                }
                             }
                             break;
                         case
@@ -401,8 +433,13 @@ public class  EncounterDao implements EncounterRepository {
                                 if (encounterEntity.getLocation()!=null) {
                                     addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
                                 }
-                                if (encounterEntity.getParticipant()!=null) {
-                                    addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(encounterEntity.getParticipant()));
+                                for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
+                                    if (encounterParticipant.getParticipant() != null) {
+                                        addToResults(results, practitionerEntityToFHIRPractitionerTransformer.transform(encounterParticipant.getParticipant()));
+                                    }
+                                    if (encounterParticipant.getPerson() != null) {
+                                        addToResults(results, relatedPersonEntityToFHIRRelatedPersonTransformer.transform(encounterParticipant.getPerson()));
+                                    }
                                 }
                                 if (encounterEntity.getPatient()!=null) {
                                     PatientEntity patientEntity = encounterEntity.getPatient();

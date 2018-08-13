@@ -322,7 +322,15 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         if (form.hasItem()) {
             for (QuestionnaireResponse.QuestionnaireResponseItemComponent item : form.getItem()) {
-                QuestionnaireResponseItem itemEntity = new QuestionnaireResponseItem();
+                QuestionnaireResponseItem itemEntity = null;
+                if (item.hasLinkId()) {
+                    for (QuestionnaireResponseItem itemSearch : formEntity.getItems()) {
+                        if (itemSearch.getLinkId() != null && itemSearch.getLinkId().contains(item.getLinkId())) {
+                            itemEntity = itemSearch;
+                        }
+                    }
+                }
+                if (itemEntity == null) { itemEntity = new QuestionnaireResponseItem(); }
                 itemEntity.setForm(formEntity);
                 buildItem(ctx, item, itemEntity);
             }
@@ -356,7 +364,17 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         if (item.hasItem()) {
             for (QuestionnaireResponse.QuestionnaireResponseItemComponent subitem : item.getItem()) {
-                QuestionnaireResponseItem subItemEntity = new QuestionnaireResponseItem();
+
+                QuestionnaireResponseItem subItemEntity = null;
+                if (subitem.hasLinkId()) {
+                    for (QuestionnaireResponseItem itemSearch : itemEntity.getItems()) {
+                        if (itemSearch.getLinkId() != null && itemSearch.getLinkId().contains(subitem.getLinkId())) {
+                            itemEntity = itemSearch;
+                        }
+                    }
+                }
+                if (subItemEntity == null) { subItemEntity = new QuestionnaireResponseItem(); }
+
                 subItemEntity.setParentItem(itemEntity);
                 buildItem(ctx, subitem, subItemEntity);
             }

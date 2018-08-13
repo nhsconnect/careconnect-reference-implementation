@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,6 +49,9 @@ public class CompositionDao implements CompositionRepository {
 
     @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    RelatedPersonRepository personDao;
 
     @Autowired
     EncounterRepository encounterDao;
@@ -192,6 +196,10 @@ public class CompositionDao implements CompositionRepository {
             if (reference.getReference().contains("Practitioner")) {
                 PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
                 compositionEntity.setAuthorPractitioner(practitionerEntity);
+            }
+            if (reference.getReference().contains("RelatedPerson")) {
+                RelatedPersonEntity personEntity = personDao.readEntity(ctx, new IdType(reference.getReference()));
+                compositionEntity.setAuthorPerson(personEntity);
             }
         }
         if (composition.hasTitle()) {

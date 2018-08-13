@@ -77,6 +77,13 @@ public class CompositionEntityToFHIRCompositionTransformer implements Transforme
             );
         }
 
+        if (compositionEntity.getAuthorPerson() != null) {
+            composition.addAuthor(
+                    new Reference("RelatedPerson/"+compositionEntity.getAuthorPerson().getId())
+                            .setDisplay(compositionEntity.getAuthorPerson().getNames().get(0).getDisplayName())
+            );
+        }
+
         if (compositionEntity.getCustodianOrganisation() != null) {
             composition.setCustodian(new Reference("Organization/" + compositionEntity.getCustodianOrganisation().getId()));
         }

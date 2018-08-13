@@ -6,10 +6,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterEpisode;
-import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
+import uk.nhs.careconnect.ri.entity.encounter.*;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -75,8 +72,8 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
         if (encounterEntity.getStatus() !=null) {
             encounter.setStatus(encounterEntity.getStatus());
         }
-        if (encounterEntity.getPeriodStartDate() != null || encounterEntity.getPeriodEndDate() != null)
-        {
+
+        if (encounterEntity.getPeriodStartDate() != null || encounterEntity.getPeriodEndDate() != null) {
             Period period = new Period();
             if (encounterEntity.getPeriodStartDate() != null ) {
                 period.setStart(encounterEntity.getPeriodStartDate());
@@ -86,24 +83,31 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
             }
             encounter.setPeriod(period);
         }
+
         if (encounterEntity.getLocation()!=null) {
             encounter.addLocation()
                     .setLocation(new Reference("Location/"+encounterEntity.getLocation().getId())
                     .setDisplay(encounterEntity.getLocation().getName()));
         }
 
-        if (encounterEntity.getParticipant() != null) {
+        for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
             Encounter.EncounterParticipantComponent participantComponent = encounter.addParticipant();
 
-            participantComponent
-                    .setIndividual(new Reference("Practitioner/"+encounterEntity.getParticipant().getId()))
-                    .getIndividual().setDisplay(encounterEntity.getParticipant().getNames().get(0).getDisplayName());
-
-            if (encounterEntity.getParticipantType() != null) {
+            if (encounterParticipant.getParticipant() != null) {
+                participantComponent
+                        .setIndividual(new Reference("Practitioner/" + encounterParticipant.getParticipant().getId()))
+                        .getIndividual().setDisplay(encounterParticipant.getParticipant().getNames().get(0).getDisplayName());
+            }
+            if (encounterParticipant.getPerson() != null) {
+                participantComponent
+                        .setIndividual(new Reference("RelatedPerson/" + encounterParticipant.getPerson().getId()))
+                        .getIndividual().setDisplay(encounterParticipant.getPerson().getNames().get(0).getDisplayName());
+            }
+            if (encounterParticipant.getParticipantType() != null) {
                 participantComponent.addType().addCoding()
-                        .setCode(encounterEntity.getParticipantType().getCode())
-                        .setSystem(encounterEntity.getParticipantType().getSystem())
-                        .setDisplay(encounterEntity.getParticipantType().getDisplay());
+                        .setCode(encounterParticipant.getParticipantType().getCode())
+                        .setSystem(encounterParticipant.getParticipantType().getSystem())
+                        .setDisplay(encounterParticipant.getParticipantType().getDisplay());
             }
         }
         if (encounterEntity.getPriority() != null) {

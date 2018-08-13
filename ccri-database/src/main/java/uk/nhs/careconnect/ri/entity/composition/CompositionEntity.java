@@ -10,6 +10,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -31,7 +32,6 @@ public class CompositionEntity  extends BaseResource {
     @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_COMPOSITION"))
 
     private PatientEntity patient;
-
     @OneToMany(mappedBy="composition", targetEntity = CompositionIdentifier.class)
 
     Set<CompositionIdentifier> identifiers = new HashSet<>();
@@ -41,12 +41,10 @@ public class CompositionEntity  extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_TYPE"))
-
     private ConceptEntity type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_CLASS"))
-
     private ConceptEntity class_;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -55,13 +53,15 @@ public class CompositionEntity  extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_ENCOUNTER"))
-
     private EncounterEntity encounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="AUTHOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_PRACTITIONER_ID"))
-
     private PractitionerEntity authorPractitioner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="AUTHOR_PERSON_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_PERSON_ID"))
+    private RelatedPersonEntity authorPerson;
 
     @Column(name="TITLE_COMPOSITION",length = MAX_DESC_LENGTH,nullable = true)
     private String title;
@@ -72,11 +72,9 @@ public class CompositionEntity  extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CUSTODIAN_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_COMPOSITION_CUSTODIAN_ORGANISATION_ID"))
-
     private OrganisationEntity custodianOrganisation;
 
     @OneToMany(mappedBy="composition", targetEntity = CompositionSection.class)
-
     Set<CompositionSection> sections = new HashSet<>();
 
     @Override
@@ -195,5 +193,13 @@ public class CompositionEntity  extends BaseResource {
     public CompositionEntity setSections(Set<CompositionSection> sections) {
         this.sections = sections;
         return this;
+    }
+
+    public RelatedPersonEntity getAuthorPerson() {
+        return authorPerson;
+    }
+
+    public void setAuthorPerson(RelatedPersonEntity authorPerson) {
+        this.authorPerson = authorPerson;
     }
 }
