@@ -68,6 +68,9 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
                 method.setOperationOutcome(outcomeException.getOutcome());
                 method.setCreated(false);
             } else {
+                if (ex.getStackTrace().length >0) {
+                    log.error(ex.getStackTrace().toString());
+                }
                 log.error(ex.getMessage());
                 method.setCreated(false);
                 method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));

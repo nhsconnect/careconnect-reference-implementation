@@ -141,7 +141,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
         if (service.hasName()) {
             serviceEntity.setName(service.getName());
         }
-
+        log.debug("HealthcareService.saveCategory");
         if (service.hasCategory()) {
             ConceptEntity code = conceptDao.findCode(service.getCategory().getCoding().get(0));
             if (code != null) { serviceEntity.setCategory(code); }
@@ -154,7 +154,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
         }
 
         em.persist(serviceEntity);
-
+        log.debug("HealthcareService.saveIdentifier");
         for (Identifier identifier : service.getIdentifier()) {
             HealthcareServiceIdentifier serviceIdentifier = null;
 
@@ -171,7 +171,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
             serviceIdentifier.setService(serviceEntity);
             em.persist(serviceIdentifier);
         }
-        
+        log.debug("HealthcareService.saveLocation");
         for (Reference reference : service.getLocation()) {
             LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(reference.getReference()));
             if (locationEntity != null) {
@@ -204,7 +204,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                 }
             }
         }
-
+        log.debug("HealthcareService.saveType");
         for (CodeableConcept concept :service.getType()) {
 
             if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
@@ -215,7 +215,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                     for (HealthcareServiceType cat :serviceEntity.getTypes()) {
                         if (cat.getType_().getCode().equals(concept.getCodingFirstRep().getCode())) type = cat;
                     }
-                    if (service == null) type = new HealthcareServiceType();
+                    if (type == null) type = new HealthcareServiceType();
 
                     type.setType_(conceptEntity);
                     type.setHealthcareService(serviceEntity);
@@ -228,7 +228,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                 }
             }
         }
-
+        log.debug("HealthcareService.saveTelecom");
         for (ContactPoint telecom : service.getTelecom()) {
             HealthcareServiceTelecom serviceTelecom = null;
 
@@ -245,10 +245,11 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
 
             serviceTelecom.setValue(telecom.getValue());
             serviceTelecom.setSystem(telecom.getSystem());
-            serviceTelecom.setTelecomUse(telecom.getUse());
+            if (telecom.hasUse()) { serviceTelecom.setTelecomUse(telecom.getUse()); }
 
             em.persist(serviceTelecom);
         }
+        log.info("HealthcareService.Transform");
         return serviceEntityToFHIRHealthcareServiceTransformer.transform(serviceEntity);
 
     }
