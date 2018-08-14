@@ -70,16 +70,16 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
             referral.setAuthoredOn(referralRequestEntity.getAuthoredOn());
         }
         if (referralRequestEntity.getRequesterOrganisation() != null) {
-            referral.getRequester().setAgent(new Reference("Organization/" + referralRequestEntity.getRequesterOrganisation().getId()));
+            referral.getRequester().setAgent(new Reference("Organization/" + referralRequestEntity.getRequesterOrganisation().getId()).setDisplay(referralRequestEntity.getRequesterOrganisation().getName()));
         }
         if (referralRequestEntity.getRequesterPractitioner() != null) {
-            referral.getRequester().setAgent(new Reference("Practitioner/" + referralRequestEntity.getRequesterPractitioner().getId()));
+            referral.getRequester().setAgent(new Reference("Practitioner/" + referralRequestEntity.getRequesterPractitioner().getId()).setDisplay(referralRequestEntity.getRequesterPractitioner().getNames().get(0).getDisplayName()));
         }
         if (referralRequestEntity.getRequesterPatient() != null) {
             referral.getRequester().setAgent(new Reference("Patient/" + referralRequestEntity.getRequesterPatient().getId()));
         }
         if (referralRequestEntity.getOnBehalfOrganisation() != null) {
-            referral.getRequester().setOnBehalfOf(new Reference("Organization/" + referralRequestEntity.getOnBehalfOrganisation().getId()));
+            referral.getRequester().setOnBehalfOf(new Reference("Organization/" + referralRequestEntity.getOnBehalfOrganisation().getId()).setDisplay(referralRequestEntity.getOnBehalfOrganisation().getName()));
         }
         for (ReferralRequestReason reason : referralRequestEntity.getReasons()) {
             referral.addReasonCode()
