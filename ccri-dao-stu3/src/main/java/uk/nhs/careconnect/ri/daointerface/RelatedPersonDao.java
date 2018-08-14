@@ -373,7 +373,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
 
 
         newRelatedPerson = personEntityToFHIRRelatedPersonTransformer.transform(personEntity);
-        personEntity.setResource(ctx.newJsonParser().encodeResourceToString(newRelatedPerson));
+      //  personEntity.setResource(ctx.newJsonParser().encodeResourceToString(newRelatedPerson));
         em.persist(personEntity);
 
 
@@ -392,14 +392,12 @@ public class RelatedPersonDao implements RelatedPersonRepository {
         for (RelatedPersonEntity personEntity : qryResults)
         {
             RelatedPerson person;
-            if (personEntity.getResource() != null) {
-                person = (RelatedPerson) ctx.newJsonParser().parseResource(personEntity.getResource());
-            } else {
-                    person = personEntityToFHIRRelatedPersonTransformer.transform(personEntity);
-                    String resourceStr = ctx.newJsonParser().encodeResourceToString(person);
-                    personEntity.setResource(resourceStr);
-                    em.persist(personEntity);
-            }
+
+            person = personEntityToFHIRRelatedPersonTransformer.transform(personEntity);
+            String resourceStr = ctx.newJsonParser().encodeResourceToString(person);
+       //     personEntity.setResource(resourceStr);
+       //     em.persist(personEntity);
+
             results.add(person);
 
             // If reverse include selected

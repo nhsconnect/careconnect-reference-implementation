@@ -38,20 +38,15 @@ public class RelatedPersonEntityToFHIRRelatedPersonTransformer implements Transf
         }
         person.setMeta(meta);
 
+        person.setId(personEntity.getId().toString());
 
-        for(RelatedPersonIdentifier personIdentifier : personEntity.getIdentifiers())
-        {
-            Identifier identifier = person.addIdentifier()
-                    .setSystem(personIdentifier.getSystemUri())
-                    .setValue(personIdentifier.getValue());
-                    //.setUse(Identifier.IdentifierUse.SECONDARY);
+        for(RelatedPersonIdentifier personIdentifier : personEntity.getIdentifiers()) {
+            Identifier identifier =  person.addIdentifier();
 
-            
+            identifier.setSystem(personIdentifier.getSystemUri()).setValue(personIdentifier.getValue());
 
         }
 
-
-        person.setId(personEntity.getId().toString());
 
         Boolean officialFound = false;
         for (RelatedPersonName nameEntity : personEntity.getNames()) {

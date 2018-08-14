@@ -69,6 +69,13 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
             period.setEnd(carePlanEntity.getPeriodEndDateTime());
         }
 
+        if (carePlanEntity.getTitle() != null) {
+            carePlan.setTitle(carePlan.getTitle());
+        }
+        if (carePlanEntity.getDescription() != null) {
+            carePlan.setDescription(carePlan.getDescription());
+        }
+
         for (CarePlanCondition condition : carePlanEntity.getAddresses()) {
             carePlan.addAddresses(new Reference("Condition/"+condition.getCondition().getId())
                     .setDisplay(condition.getCondition().getCode().getDisplay()));

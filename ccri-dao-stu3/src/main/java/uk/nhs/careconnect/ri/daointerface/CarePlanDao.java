@@ -206,6 +206,13 @@ public class CarePlanDao implements CarePlanRepository {
         if (carePlan.hasIntent()) {
             carePlanEntity.setIntent(carePlan.getIntent());
         }
+        if (carePlan.hasTitle()) {
+            carePlanEntity.setTitle(carePlan.getTitle());
+        }
+        if (carePlan.hasDescription()) {
+            carePlanEntity.setDescription(carePlan.getDescription());
+        }
+
         if (carePlan.hasPeriod()) {
             if (carePlan.getPeriod().hasStart()) {
                 carePlanEntity.setPeriodStartDateTime(carePlan.getPeriod().getStart());
