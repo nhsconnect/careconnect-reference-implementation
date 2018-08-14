@@ -57,7 +57,7 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
                     .addCoding()
                     .setSystem(service.getService().getSystem())
                     .setCode(service.getService().getCode())
-                    .setDisplay(service.getService().getCode());
+                    .setDisplay(service.getService().getDisplay());
         }
         if (referralRequestEntity.getPatient() != null) {
             referral.setSubject(new Reference("Patient/" + referralRequestEntity.getPatient().getId())
