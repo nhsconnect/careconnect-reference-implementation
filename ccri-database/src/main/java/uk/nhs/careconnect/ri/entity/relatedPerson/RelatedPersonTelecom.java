@@ -26,15 +26,15 @@ public class RelatedPersonTelecom extends BaseContactPoint {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name= "PERSON_TELECOM_ID")
-	private Long identifierId;
+	private Long telecomId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PERSON_ID",foreignKey= @ForeignKey(name="FK_PERSON_PERSON_TELECOM"))
 	private RelatedPersonEntity personEntity;
 
 
-    public Long getTelecomId() { return identifierId; }
-	public void setTelecomId(Long identifierId) { this.identifierId = identifierId; }
+    public Long getTelecomId() { return telecomId; }
+	public void setTelecomId(Long telecomId) { this.telecomId = telecomId; }
 
 	public RelatedPersonEntity getRelatedPerson() {
 	        return this.personEntity;

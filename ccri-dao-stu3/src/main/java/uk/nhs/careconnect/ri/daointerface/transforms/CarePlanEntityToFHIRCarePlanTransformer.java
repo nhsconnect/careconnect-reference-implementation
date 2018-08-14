@@ -134,6 +134,11 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                 carePlan.addSupportingInfo(new Reference("Patient/"+supportingInformation.getPatient().getId()));
             }
         }
+        for (CarePlanTeam team : carePlanEntity.getTeams()) {
+            if (team.getTeam() != null) {
+                carePlan.addCareTeam().setReference("CareTeam/" + team.getTeam().getId()).setDisplay(team.getTeam().getName());
+            }
+        }
 
 
 

@@ -16,6 +16,7 @@ import uk.nhs.careconnect.ri.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.*;
+import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -58,7 +59,6 @@ public class CarePlanDao implements CarePlanRepository {
     @Autowired
     PractitionerRepository practitionerDao;
 
-
     @Autowired
     EncounterRepository encounterDao;
 
@@ -79,6 +79,9 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     ObservationRepository observationDao;
+
+    @Autowired
+    CareTeamRepository teamDao;
 
     @Autowired
     OrganisationRepository organisationDao;
@@ -114,7 +117,7 @@ public class CarePlanDao implements CarePlanRepository {
 
 
     @Autowired
-    CarePlanEntityToFHIRCarePlanTransformer carePlanIntoleranceEntityToFHIRCarePlanTransformer;
+    CarePlanEntityToFHIRCarePlanTransformer carePlanEntityToFHIRCarePlanTransformer;
 
     @Override
     public Long count() {
@@ -135,7 +138,7 @@ public class CarePlanDao implements CarePlanRepository {
 
             return carePlanIntolerance == null
                     ? null
-                    : carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanIntolerance);
+                    : carePlanEntityToFHIRCarePlanTransformer.transform(carePlanIntolerance);
         } else {
             return null;
         }
@@ -188,7 +191,7 @@ public class CarePlanDao implements CarePlanRepository {
         }
 
         if (carePlanEntity == null) carePlanEntity = new CarePlanEntity();
-
+        log.debug("CarePlan.Mainsave");
 
         PatientEntity patientEntity = null;
         if (carePlan.hasSubject()) {
@@ -223,7 +226,9 @@ public class CarePlanDao implements CarePlanRepository {
 
         em.persist(carePlanEntity);
 
+        log.debug("CarePlan.saveAddresses");
         for (Reference reference : carePlan.getAddresses()) {
+            log.info("Address Reference = "+reference.getReference());
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
             CarePlanCondition carePlanCondition = null;
             for (CarePlanCondition conditionSearch : carePlanEntity.getAddresses()) {
@@ -232,13 +237,14 @@ public class CarePlanDao implements CarePlanRepository {
                     break;
                 }
             }
-            if (carePlanCondition == null) {
+            if (conditionEntity != null && carePlanCondition == null) {
                 carePlanCondition = new CarePlanCondition();
                 carePlanCondition.setCondition(conditionEntity);
                 carePlanCondition.setCarePlan(carePlanEntity);
                 em.persist(carePlanCondition);
             }
         }
+        log.debug("CarePlan.saveCategory");
         for (CodeableConcept conceptCategory : carePlan.getCategory()) {
             ConceptEntity concept = conceptDao.findAddCode(conceptCategory.getCodingFirstRep());
 
@@ -257,6 +263,7 @@ public class CarePlanDao implements CarePlanRepository {
             }
         }
 
+        log.debug("CarePlan.saveIdentifier");
         for (Identifier identifier : carePlan.getIdentifier()) {
             CarePlanIdentifier carePlanIdentifier = null;
 
@@ -274,6 +281,24 @@ public class CarePlanDao implements CarePlanRepository {
             em.persist(carePlanIdentifier);
         }
 
+        log.debug("CarePlan.saveTeams");
+        for (CarePlanTeam team : carePlanEntity.getTeams()) {
+            em.remove(team);
+        }
+        for (Reference reference : carePlan.getCareTeam()) {
+            CarePlanTeam carePlanTeam = new CarePlanTeam();
+            carePlanTeam.setCarePlan(carePlanEntity);
+            if (reference.getReference().contains("CareTeam")) {
+                CareTeamEntity careTeamEntity = teamDao.readEntity(ctx, new IdType(reference.getReference()));
+                if (careTeamEntity != null) {
+                    carePlanTeam.setTeam(careTeamEntity);
+                    em.persist(carePlanTeam);
+                }
+            }
+
+        }
+
+        log.debug("CarePlan.saveActivity");
         for (CarePlan.CarePlanActivityComponent component : carePlan.getActivity()) {
             CarePlanActivity activity= null;
             CarePlanActivityDetail detail = null;
@@ -303,7 +328,7 @@ public class CarePlanDao implements CarePlanRepository {
                     detail.setStatus(component.getDetail().getStatus());
                 }
                 if (component.getDetail().hasCode()) {
-                    log.info("CarePlan Detail "+component.getDetail().getCode().getCodingFirstRep().getCode());
+                    log.debug("CarePlan Detail "+component.getDetail().getCode().getCodingFirstRep().getCode());
                     ConceptEntity concept = conceptDao.findAddCode(component.getDetail().getCode().getCodingFirstRep());
                     if (concept != null) {
                         detail.setCode(concept);
@@ -313,7 +338,10 @@ public class CarePlanDao implements CarePlanRepository {
 
             }
         }
-
+        log.debug("CarePlan.saveAuthor");
+        for (CarePlanAuthor author : carePlanEntity.getAuthors()) {
+            em.remove(author);
+        }
         for (Reference reference : carePlan.getAuthor()) {
             CarePlanAuthor author = new CarePlanAuthor();
             author.setCarePlan(carePlanEntity);
@@ -335,7 +363,7 @@ public class CarePlanDao implements CarePlanRepository {
               buildItem(ctx,reference,carePlanSupportingInformation);
         }
 
-        return carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity);
+        return carePlanEntityToFHIRCarePlanTransformer.transform(carePlanEntity);
     }
 
 
@@ -388,7 +416,7 @@ public class CarePlanDao implements CarePlanRepository {
         for (CarePlanEntity carePlanIntoleranceEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
-            CarePlan carePlanIntolerance = carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanIntoleranceEntity);
+            CarePlan carePlanIntolerance = carePlanEntityToFHIRCarePlanTransformer.transform(carePlanIntoleranceEntity);
             results.add(carePlanIntolerance);
         }
 

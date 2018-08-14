@@ -91,6 +91,9 @@ public class CarePlanEntity extends BaseResource {
     @OneToMany(mappedBy="carePlan", targetEntity=CarePlanActivity.class)
     private Set<CarePlanActivity> activities = new HashSet<>();
 
+    @OneToMany(mappedBy="carePlan", targetEntity=CarePlanTeam.class)
+    private Set<CarePlanTeam> teams = new HashSet<>();
+
     @OneToMany(mappedBy="carePlan", targetEntity= QuestionnaireResponseEntity.class)
     private Set<QuestionnaireResponseEntity> assessments = new HashSet<>();
 
@@ -267,5 +270,13 @@ public class CarePlanEntity extends BaseResource {
 
     public void setAuthors(Set<CarePlanAuthor> authors) {
         this.authors = authors;
+    }
+
+    public Set<CarePlanTeam> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<CarePlanTeam> teams) {
+        this.teams = teams;
     }
 }

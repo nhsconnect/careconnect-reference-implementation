@@ -291,6 +291,13 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway RelatedPerson")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRCareTeam")
+				.routeId("Gateway CareTeam")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRMedicationDispense")
+				.routeId("Gateway MedicationDispense")
+				.to("direct:HAPIServer");
 
 		from("direct:EDMSServer")
 				.routeId("Int EDMS FHIR Server")

@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.entity.medicationStatement;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import uk.nhs.careconnect.ri.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
@@ -34,19 +35,19 @@ public class MedicationStatementPartOf {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_MEDICATION_STATEMENT"))
-
 	private ObservationEntity observation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_MEDICATION_STATEMENT"))
-
 	private ProcedureEntity procedure;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "PARTOF_STATEMENT_ID",foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_STATEMENT"))
-
 	private MedicationStatementEntity statementPartOf;;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "PARTOF_DISPENSE_ID",foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_DISPENSE"))
+	private MedicationDispenseEntity dispensePartOf;;
 
 	public Long getPartOfId() { return identifierId; }
 	public void setPartOfId(Long identifierId) { this.identifierId = identifierId; }

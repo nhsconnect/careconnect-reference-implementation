@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class CarePlanResourceProvider implements IResourceProvider {
+public class CareTeamResourceProvider implements IResourceProvider {
 
     @Autowired
     CamelContext context;
@@ -41,87 +40,30 @@ public class CarePlanResourceProvider implements IResourceProvider {
     @Autowired
     ResourceTestProvider resourceTestProvider;
 
-    private static final Logger log = LoggerFactory.getLogger(CarePlanResourceProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(CareTeamResourceProvider.class);
 
     @Override
-    public Class<CarePlan> getResourceType() {
-        return CarePlan.class;
+    public Class<CareTeam> getResourceType() {
+        return CareTeam.class;
     }
 
 
-    @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
-    public Bundle carePlanDocumentOperation(
-            @IdParam IdType carePlanId
-
-    ) {
-        ProducerTemplate template = context.createProducerTemplate();
-
-        InputStream inputStream = null;
-        // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
-        Exchange exchange = template.send("direct:FHIRCarePlanDocument",ExchangePattern.InOut, new Processor() {
-            public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "_count=50");
-                exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
-                exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
-                exchange.getIn().setHeader(Exchange.HTTP_PATH, "CarePlan/"+carePlanId.getIdPart()+"/$document");
-            }
-        });
-        inputStream = (InputStream) exchange.getIn().getBody();
-
-        Bundle bundle = null;
-
-        IBaseResource resource = null;
-        try {
-            String contents = org.apache.commons.io.IOUtils.toString(inputStream);
-            resource = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(ctx).parseResource(contents);
-        } catch(Exception ex) {
-            log.error("XML Parse failed " + ex.getMessage());
-            throw new InternalErrorException(ex.getMessage());
-        }
-        if (resource instanceof Bundle) {
-            bundle = (Bundle) resource;
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
-            }
-           // log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
-            return bundle;
-            /*
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-
-                results.add(entry.getResource());
-            }
-            */
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
-        }
-
-        return null;
-
-    }
-
+   
     @Read
-    public CarePlan getCarePlanById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public CareTeam getCareTeamById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
 
-        CarePlan carePlan = null;
+        CareTeam carePlan = null;
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
             if (httpRequest != null) {
-                inputStream = (InputStream)  template.sendBody("direct:FHIRCarePlan",
+                inputStream = (InputStream)  template.sendBody("direct:FHIRCareTeam",
                     ExchangePattern.InOut,httpRequest);
             } else {
-                Exchange exchange = template.send("direct:FHIRCarePlan",ExchangePattern.InOut, new Processor() {
+                Exchange exchange = template.send("direct:FHIRCareTeam",ExchangePattern.InOut, new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
@@ -137,8 +79,8 @@ public class CarePlanResourceProvider implements IResourceProvider {
             log.error("JSON Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
-        if (resource instanceof CarePlan) {
-            carePlan = (CarePlan) resource;
+        if (resource instanceof CareTeam) {
+            carePlan = (CareTeam) resource;
         }else if (resource instanceof OperationOutcome)
         {
 
@@ -154,7 +96,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam CarePlan plan) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam CareTeam team) {
 
 
 
@@ -163,16 +105,16 @@ public class CarePlanResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
-            String newXmlResource = ctx.newXmlParser().encodeResourceToString(plan);
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(team);
 
-            Exchange exchangeBundle = template.send("direct:FHIRCarePlan", ExchangePattern.InOut, new Processor() {
+            Exchange exchangeBundle = template.send("direct:FHIRCareTeam", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setBody(newXmlResource);
                     exchange.getIn().setHeader("Prefer", "return=representation");
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "CarePlan");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "CareTeam");
                 }
             });
 
@@ -197,8 +139,8 @@ public class CarePlanResourceProvider implements IResourceProvider {
         }
         log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
 
-        if (resource instanceof CarePlan) {
-            plan = (CarePlan) resource;
+        if (resource instanceof CareTeam) {
+            team = (CareTeam) resource;
         } else if (resource instanceof OperationOutcome) {
 
             OperationOutcome operationOutcome =(OperationOutcome) resource;
@@ -231,15 +173,15 @@ public class CarePlanResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Resource> searchCarePlan(HttpServletRequest httpRequest,
-                                         @OptionalParam(name = CarePlan.SP_PATIENT) ReferenceParam patient
-            , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
-            , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
-            , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam id
+    public List<Resource> searchCareTeam(HttpServletRequest httpRequest,
+                                         @OptionalParam(name = CareTeam.SP_PATIENT) ReferenceParam patient
+            , @OptionalParam(name = CareTeam.SP_DATE) DateRangeParam date
+            , @OptionalParam(name = CareTeam.SP_CATEGORY) TokenOrListParam categories
+            , @OptionalParam(name = CareTeam.SP_IDENTIFIER) TokenParam identifier
+            , @OptionalParam(name = CareTeam.SP_RES_ID) TokenParam id
             , @IncludeParam(allow= {
-            "CarePlan:subject"
-            ,"CarePlan:supportingInplanation"
+            "CareTeam:subject"
+            ,"CareTeam:supportingInteamation"
             , "*"}) Set<Include> includes
     ) {
 
@@ -249,7 +191,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
 
 
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRCarePlan",
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRCareTeam",
                 ExchangePattern.InOut,httpRequest);
 
         Bundle bundle = null;

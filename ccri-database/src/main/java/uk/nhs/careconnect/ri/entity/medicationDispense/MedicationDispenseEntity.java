@@ -107,12 +107,30 @@ public class MedicationDispenseEntity extends BaseResource {
     @Column(name = "note")
     String note;
 
+    @OneToMany(mappedBy="dispense", targetEntity = MedicationDispenseDosage.class)
+    Set<MedicationDispenseDosage> dosageInstructions = new HashSet<>();
+
     @Column(name = "substituted")
     Boolean substituted;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTION_TYPE_CONCEPT",foreignKey= @ForeignKey(name="FK_DISPENSE_SUBSTITUTION_TYPE_CONCEPT"))
+    ConceptEntity substitutionTypeCode;
 
-    @OneToMany(mappedBy="dispense", targetEntity = MedicationDispenseDosage.class)
-    Set<MedicationDispenseDosage> dosages = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTION_REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_DISPENSE_SUBSTITUTION_REASON_CONCEPT"))
+    ConceptEntity substitutionReasonCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTION_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_DISPENSE_SUBSTITUTION_PRACTITIONER"))
+    PractitionerEntity substitutionPractitioner;
+
+    @Column(name="noteDone")
+    Boolean notDone;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "NOT_DONE_CONCEPT",foreignKey= @ForeignKey(name="FK_DISPENSE_NOT_DONE_CONCEPT"))
+    ConceptEntity notDoneCode;
 
 
 
@@ -181,15 +199,6 @@ public class MedicationDispenseEntity extends BaseResource {
 
     public MedicationDispenseEntity setCategoryCode(ConceptEntity categoryCode) {
         this.categoryCode = categoryCode;
-        return this;
-    }
-
-    public Set<MedicationDispenseDosage> getDosages() {
-        return dosages;
-    }
-
-    public MedicationDispenseEntity setDosages(Set<MedicationDispenseDosage> dosages) {
-        this.dosages = dosages;
         return this;
     }
 
@@ -307,5 +316,53 @@ public class MedicationDispenseEntity extends BaseResource {
 
     public void setSubstituted(Boolean substituted) {
         this.substituted = substituted;
+    }
+
+    public Set<MedicationDispenseDosage> getDosageInstructions() {
+        return dosageInstructions;
+    }
+
+    public void setDosageInstructions(Set<MedicationDispenseDosage> dosageInstructions) {
+        this.dosageInstructions = dosageInstructions;
+    }
+
+    public ConceptEntity getSubstitutionTypeCode() {
+        return substitutionTypeCode;
+    }
+
+    public void setSubstitutionTypeCode(ConceptEntity substitutionTypeCode) {
+        this.substitutionTypeCode = substitutionTypeCode;
+    }
+
+    public ConceptEntity getSubstitutionReasonCode() {
+        return substitutionReasonCode;
+    }
+
+    public void setSubstitutionReasonCode(ConceptEntity substitutionReasonCode) {
+        this.substitutionReasonCode = substitutionReasonCode;
+    }
+
+    public PractitionerEntity getSubstitutionPractitioner() {
+        return substitutionPractitioner;
+    }
+
+    public void setSubstitutionPractitioner(PractitionerEntity substitutionPractitioner) {
+        this.substitutionPractitioner = substitutionPractitioner;
+    }
+
+    public Boolean getNotDone() {
+        return notDone;
+    }
+
+    public void setNotDone(Boolean notDone) {
+        this.notDone = notDone;
+    }
+
+    public ConceptEntity getNotDoneCode() {
+        return notDoneCode;
+    }
+
+    public void setNotDoneCode(ConceptEntity notDoneCode) {
+        this.notDoneCode = notDoneCode;
     }
 }

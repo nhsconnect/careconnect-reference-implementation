@@ -82,14 +82,15 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationResourceProvider.class)
 				,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
 				,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
-				,myAppCtx.getBean(ReferralRequestResourceProvider.class)
 				,myAppCtx.getBean(EndpointResourceProvider.class)
 				,myAppCtx.getBean(QuestionnaireResourceProvider.class)
 				,myAppCtx.getBean(QuestionnaireResponseResourceProvider.class)
 				,myAppCtx.getBean(ListResourceProvider.class)
 				,myAppCtx.getBean(RelatedPersonResourceProvider.class)
 				,myAppCtx.getBean(CarePlanResourceProvider.class)
-
+				,myAppCtx.getBean(ReferralRequestResourceProvider.class)
+				,myAppCtx.getBean(CareTeamResourceProvider.class)
+				,myAppCtx.getBean(MedicationDispenseResourceProvider.class)
 				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 

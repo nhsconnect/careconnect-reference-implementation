@@ -57,14 +57,14 @@ public class RelatedPersonEntity extends BaseResource {
     private List<RelatedPersonIdentifier> identifiers = new ArrayList<>();
 
     @OneToMany(mappedBy="personEntity", targetEntity=RelatedPersonAddress.class)
-    private List<RelatedPersonAddress> addresses;
+    private List<RelatedPersonAddress> addresses = new ArrayList<>();
 
   
     @OneToMany(mappedBy="personEntity", targetEntity=RelatedPersonName.class)
-    private List<RelatedPersonName> names;
+    private List<RelatedPersonName> names = new ArrayList<>();
 
     @OneToMany(mappedBy="personEntity", targetEntity=RelatedPersonTelecom.class)
-    private List<RelatedPersonTelecom> telecoms;
+    private List<RelatedPersonTelecom> telecoms = new ArrayList<>();
 
     public Long getId() {
         return id;

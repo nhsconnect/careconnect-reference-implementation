@@ -138,7 +138,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
     public RelatedPerson update(FhirContext ctx, RelatedPerson person, IdType theId, String theConditional) throws OperationOutcomeException {
 
         RelatedPersonEntity personEntity = null;
-        log.info("Started person updated");
+        log.debug("RelatedPerson.save");
         if (theId != null) {
             log.trace("theId.getIdPart()="+theId.getIdPart());
             personEntity = (RelatedPersonEntity) em.find(RelatedPersonEntity.class, Long.parseLong(theId.getIdPart()));
@@ -179,6 +179,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             }
         }
 
+        log.debug("RelatedPerson.saveMain");
 
         if (personEntity == null) {
             log.trace("Adding new RelatedPerson");
@@ -237,7 +238,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             personEntity.setDateOfBirth(null);
         }
 
-
+        log.debug("RelatedPerson.saveEntity");
 
         em.persist(personEntity);
 
@@ -262,6 +263,8 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             em.persist(personIdentifier);
         }
         em.persist(personEntity);
+
+        log.debug("RelatedPerson.saveIdentifier");
 
         for (HumanName name : person.getName()) {
             RelatedPersonName personName = null;
@@ -295,6 +298,9 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             }
             em.persist(personName);
         }
+
+        log.debug("RelatedPerson.saveName");
+
         for (Address address : person.getAddress()) {
             RelatedPersonAddress personAdr = null;
             for (RelatedPersonAddress adrSearch : personEntity.getAddresses()) {
@@ -332,8 +338,11 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             em.persist(addr);
             em.persist(personAdr);
         }
+        log.debug("RelatedPerson.saveAddress");
+
         for (ContactPoint contact : person.getTelecom()) {
             RelatedPersonTelecom personTel = null;
+            log.info("RelatedPerson.searchTelecom");
             for (RelatedPersonTelecom telSearch : personEntity.getTelecoms()) {
 
                 if (telSearch.getValue().equals(contact.getValue())) {
@@ -341,18 +350,24 @@ public class RelatedPersonDao implements RelatedPersonRepository {
                         break;
                 }
             }
+
             if (personTel == null) {
+                log.info("RelatedPerson.isNullTelecom");
                 personTel = new RelatedPersonTelecom();
                 personTel.setRelatedPersonEntity(personEntity);
                 personEntity.addTelecom(personTel);
                 personTel.setValue(contact.getValue());
             }
+            log.info("RelatedPerson.hasSystemTelecom");
             if (contact.hasSystem())
                 personTel.setSystem(contact.getSystem());
+            log.info("RelatedPerson.hasUseTelecom");
             if (contact.hasUse())
                 personTel.setTelecomUse(contact.getUse());
+
             em.persist(personTel);
         }
+        log.debug("RelatedPerson.saveContactPoint");
 
         RelatedPerson newRelatedPerson = null;
 

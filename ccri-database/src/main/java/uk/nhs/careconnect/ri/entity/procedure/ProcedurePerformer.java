@@ -29,17 +29,14 @@ public class ProcedurePerformer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ACTOR_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_PRACTITIONER"))
-
     private PractitionerEntity actorPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ACTOR_ORGNANISATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_PERFORMER_ACTOR_ORGNANISATION"))
-
     private OrganisationEntity actorOrganisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ON_BEHALF_OF_ORGANISATION",foreignKey= @ForeignKey(name="FK_PROCEDURE_ORGANISATION"))
-
     private OrganisationEntity onBehalfOrganisation;
 
     public void setId(Long id) {

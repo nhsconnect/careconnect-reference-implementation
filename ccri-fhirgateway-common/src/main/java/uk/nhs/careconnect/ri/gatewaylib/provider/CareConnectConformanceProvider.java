@@ -251,6 +251,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "List":
                     case "RelatedPerson":
                     case "CarePlan":
+                    case "CareTeam":
+                    case "MedicationDispense":
                         //resource.getProfile().setReference(CareConnectProfile.Medication_1);
                         break;
 
@@ -421,6 +423,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "List":
                 case "RelatedPerson":
                 case "CarePlan":
+                case "CareTeam":
+                case "MedicationDispense":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
