@@ -86,7 +86,7 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
                     .addCoding()
                     .setSystem(reason.getReason().getSystem())
                     .setCode(reason.getReason().getCode())
-                    .setDisplay(reason.getReason().getCode());
+                    .setDisplay(reason.getReason().getDisplay());
         }
         for (ReferralRequestRecipient recipient : referralRequestEntity.getRecipients()) {
             if (recipient.getOrganisation() != null) {
