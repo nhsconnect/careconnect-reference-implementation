@@ -328,27 +328,27 @@ public class ListDao implements ListRepository {
         if (item.getItem().getReference().contains("Condition")) {
 
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(item.getItem().getReference()));
-            itemEntity.setCondition(conditionEntity);
+            itemEntity.setReferenceCondition(conditionEntity);
 
         } else if (item.getItem().getReference().contains("Observation")) {
 
             ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(item.getItem().getReference()));
-            itemEntity.setObservation(observationEntity);
+            itemEntity.setReferenceObservation(observationEntity);
         } else if (item.getItem().getReference().contains("QuestionnaireResponse")) {
 
             QuestionnaireResponseEntity
                     questionnaireEntity = formDao.readEntity(ctx, new IdType(item.getItem().getReference()));
-            itemEntity.setForm(questionnaireEntity);
+            itemEntity.setReferenceForm(questionnaireEntity);
 
         } else if (item.getItem().getReference().contains("List")) {
 
             ListEntity listEntity = readEntity(ctx, new IdType(item.getItem().getReference()));
-            itemEntity.setListResource(listEntity);
+            itemEntity.setReferenceListResource(listEntity);
 
         } else if (item.getItem().getReference().contains("List")) {
 
             DocumentReferenceEntity documentReferenceEntity = documentDao.readEntity(ctx, new IdType(item.getItem().getReference()));
-            itemEntity.setDocumentReference(documentReferenceEntity);
+            itemEntity.setReferenceDocumentReference(documentReferenceEntity);
 
         }
         em.persist(itemEntity);

@@ -403,10 +403,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                             Reference reference = answer.getValueReference();
                             if (reference.getReference().contains("Condition")) {
                                 ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
-                                answerEntity.setCondition(conditionEntity);
+                                answerEntity.setReferenceCondition(conditionEntity);
                             } else if (reference.getReference().contains("Observation")) {
                                 ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
-                                answerEntity.setObservation(observationEntity);
+                                answerEntity.setReferenceObservation(observationEntity);
                             }
                         }
                     }

@@ -1,11 +1,13 @@
 package uk.nhs.careconnect.ri.entity.goal;
 
 import org.hl7.fhir.dstu3.model.MedicationStatement;
+import org.hl7.fhir.dstu3.model.RiskAssessment;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import javax.persistence.*;
 
@@ -28,21 +30,9 @@ public class GoalAddresses extends BaseResource {
 	@Column(name= "GOAL_ADDRESSES_ID")
     private Long addressesId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "GOAL_ID",foreignKey= @ForeignKey(name="FK_GOAL_ADDRESSES_GOAL_ID"))
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "GOAL_ID")
 	private GoalEntity goal;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="OBSERVATION_ID",foreignKey= @ForeignKey(name="FK_GOAL_ADDRESSES_OBSERVATION_ID"))
-	private ObservationEntity observation;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="STATEMENT_ID",foreignKey= @ForeignKey(name="FK_GOAL_ADDRESSES_STATEMENT_ID"))
-	private MedicationStatementEntity statement;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="PROCEDURE_ID",foreignKey= @ForeignKey(name="FK_GOAL_ADDRESSES_PROCEDURE_ID"))
-	private ProcedureEntity procedure;
 
 	public Long getAddressesId() { return addressesId; }
 	public void setAddressesId(Long addressesId) { this.addressesId = addressesId; }
@@ -60,27 +50,5 @@ public class GoalAddresses extends BaseResource {
 		return this.addressesId;
 	}
 
-    public ObservationEntity getObservation() {
-        return observation;
-    }
 
-    public void setObservation(ObservationEntity observation) {
-        this.observation = observation;
-    }
-
-    public MedicationStatementEntity getStatement() {
-        return statement;
-    }
-
-    public void setStatement(MedicationStatementEntity statement) {
-        this.statement = statement;
-    }
-
-    public ProcedureEntity getProcedure() {
-        return procedure;
-    }
-
-    public void setProcedure(ProcedureEntity procedure) {
-        this.procedure = procedure;
-    }
 }

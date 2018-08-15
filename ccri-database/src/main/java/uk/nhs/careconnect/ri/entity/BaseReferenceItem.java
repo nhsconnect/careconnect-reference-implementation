@@ -5,104 +5,144 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
 import uk.nhs.careconnect.ri.entity.list.ListEntity;
+import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import javax.persistence.*;
 
 @MappedSuperclass
 public class BaseReferenceItem extends BaseResource {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "VALUE_GOAL_ID")
-    GoalEntity goal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_CONDITION_ID")
-    ConditionEntity condition;
+    @JoinColumn (name = "REF_CONDITION_ID")
+    ConditionEntity referenceCondition;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_OBSERVATION_ID")
-    ObservationEntity observation;
+    @JoinColumn (name = "REF_OBSERVATION_ID")
+    ObservationEntity referenceObservation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_PATIENT_ID")
-    private PatientEntity patient;
+    @JoinColumn (name = "REF_PATIENT_ID")
+    private PatientEntity referencePatient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_DOCUMENT_REFERENCE_ID")
-    private DocumentReferenceEntity documentReference;
+    @JoinColumn (name = "REF_DOCUMENT_REFERENCE_ID")
+    private DocumentReferenceEntity referenceDocumentReference;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_LIST_ID")
+    @JoinColumn (name = "REF_LIST_ID")
     private ListEntity
-            listResource;
+            referenceListResource;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "VALUE_FORM_ID")
+    @JoinColumn (name = "REF_FORM_ID")
     private QuestionnaireResponseEntity
-            form;
+            referenceForm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "REF_GOAL_ID")
+    private GoalEntity referenceGoal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_STATEMENT_ID")
+    private MedicationStatementEntity referenceStatement;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_PROCEDURE_ID")
+    private ProcedureEntity referenceProcedure;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_RISK_ID")
+    private RiskAssessmentEntity referenceRisk;
 
     @Override
     public Long getId() {
         return null;
     }
 
-    public GoalEntity getGoal() {
-        return goal;
+    public ConditionEntity getReferenceCondition() {
+        return referenceCondition;
     }
 
-    public void setGoal(GoalEntity goal) {
-        this.goal = goal;
+    public void setReferenceCondition(ConditionEntity referenceCondition) {
+        this.referenceCondition = referenceCondition;
     }
 
-    public ConditionEntity getCondition() {
-        return condition;
+    public ObservationEntity getReferenceObservation() {
+        return referenceObservation;
     }
 
-    public void setCondition(ConditionEntity condition) {
-        this.condition = condition;
+    public void setReferenceObservation(ObservationEntity referenceObservation) {
+        this.referenceObservation = referenceObservation;
     }
 
-    public ObservationEntity getObservation() {
-        return observation;
+    public PatientEntity getReferencePatient() {
+        return referencePatient;
     }
 
-    public void setObservation(ObservationEntity observation) {
-        this.observation = observation;
+    public void setReferencePatient(PatientEntity referencePatient) {
+        this.referencePatient = referencePatient;
     }
 
-    public PatientEntity getPatient() {
-        return patient;
+    public DocumentReferenceEntity getReferenceDocumentReference() {
+        return referenceDocumentReference;
     }
 
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
+    public void setReferenceDocumentReference(DocumentReferenceEntity referenceDocumentReference) {
+        this.referenceDocumentReference = referenceDocumentReference;
     }
 
-    public DocumentReferenceEntity getDocumentReference() {
-        return documentReference;
+    public ListEntity getReferenceListResource() {
+        return referenceListResource;
     }
 
-    public void setDocumentReference(DocumentReferenceEntity documentReference) {
-        this.documentReference = documentReference;
+    public void setReferenceListResource(ListEntity referenceListResource) {
+        this.referenceListResource = referenceListResource;
     }
 
-    public ListEntity getListResource() {
-        return listResource;
+    public QuestionnaireResponseEntity getReferenceForm() {
+        return referenceForm;
     }
 
-    public void setListResource(ListEntity listResource) {
-        this.listResource = listResource;
+    public void setReferenceForm(QuestionnaireResponseEntity referenceForm) {
+        this.referenceForm = referenceForm;
     }
 
-    public QuestionnaireResponseEntity getForm() {
-        return form;
+    public GoalEntity getReferenceGoal() {
+        return referenceGoal;
     }
 
-    public void setForm(QuestionnaireResponseEntity form) {
-        this.form = form;
+    public void setReferenceGoal(GoalEntity referenceGoal) {
+        this.referenceGoal = referenceGoal;
+    }
+
+    public MedicationStatementEntity getReferenceStatement() {
+        return referenceStatement;
+    }
+
+    public void setReferenceStatement(MedicationStatementEntity referenceStatement) {
+        this.referenceStatement = referenceStatement;
+    }
+
+    public ProcedureEntity getReferenceProcedure() {
+        return referenceProcedure;
+    }
+
+    public void setReferenceProcedure(ProcedureEntity referenceProcedure) {
+        this.referenceProcedure = referenceProcedure;
+    }
+
+    public RiskAssessmentEntity getReferenceRisk() {
+        return referenceRisk;
+    }
+
+    public void setReferenceRisk(RiskAssessmentEntity referenceRisk) {
+        this.referenceRisk = referenceRisk;
     }
 }

@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class CareTeamResourceProvider implements IResourceProvider {
+public class GoalResourceProvider implements IResourceProvider {
 
     @Autowired
     CamelContext context;
@@ -40,30 +39,30 @@ public class CareTeamResourceProvider implements IResourceProvider {
     @Autowired
     ResourceTestProvider resourceTestProvider;
 
-    private static final Logger log = LoggerFactory.getLogger(CareTeamResourceProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(GoalResourceProvider.class);
 
     @Override
-    public Class<CareTeam> getResourceType() {
-        return CareTeam.class;
+    public Class<Goal> getResourceType() {
+        return Goal.class;
     }
 
 
    
     @Read
-    public CareTeam getCareTeamById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Goal getGoalById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
 
         ProducerTemplate template = context.createProducerTemplate();
 
 
-        CareTeam carePlan = null;
+        Goal carePlan = null;
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
             if (httpRequest != null) {
-                inputStream = (InputStream)  template.sendBody("direct:FHIRCareTeam",
+                inputStream = (InputStream)  template.sendBody("direct:FHIRGoal",
                     ExchangePattern.InOut,httpRequest);
             } else {
-                Exchange exchange = template.send("direct:FHIRCareTeam",ExchangePattern.InOut, new Processor() {
+                Exchange exchange = template.send("direct:FHIRGoal",ExchangePattern.InOut, new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
@@ -79,8 +78,8 @@ public class CareTeamResourceProvider implements IResourceProvider {
             log.error("JSON Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
-        if (resource instanceof CareTeam) {
-            carePlan = (CareTeam) resource;
+        if (resource instanceof Goal) {
+            carePlan = (Goal) resource;
         }else if (resource instanceof OperationOutcome)
         {
 
@@ -96,7 +95,7 @@ public class CareTeamResourceProvider implements IResourceProvider {
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam CareTeam team) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Goal goal) {
 
 
 
@@ -105,16 +104,16 @@ public class CareTeamResourceProvider implements IResourceProvider {
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
-            String newXmlResource = ctx.newXmlParser().encodeResourceToString(team);
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(goal);
 
-            Exchange exchangeBundle = template.send("direct:FHIRCareTeam", ExchangePattern.InOut, new Processor() {
+            Exchange exchangeBundle = template.send("direct:FHIRGoal", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setBody(newXmlResource);
                     exchange.getIn().setHeader("Prefer", "return=representation");
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "CareTeam");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Goal");
                 }
             });
 
@@ -139,8 +138,8 @@ public class CareTeamResourceProvider implements IResourceProvider {
         }
         log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
 
-        if (resource instanceof CareTeam) {
-            team = (CareTeam) resource;
+        if (resource instanceof Goal) {
+            goal = (Goal) resource;
         } else if (resource instanceof OperationOutcome) {
 
             OperationOutcome operationOutcome =(OperationOutcome) resource;
@@ -173,11 +172,10 @@ public class CareTeamResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Resource> searchCareTeam(HttpServletRequest httpRequest,
-                                         @OptionalParam(name = CareTeam.SP_PATIENT) ReferenceParam patient
-                                        ,@OptionalParam(name = CareTeam.SP_IDENTIFIER) TokenParam identifier
-                                        ,@OptionalParam(name = CareTeam.SP_RES_ID) TokenParam id
-
+    public List<Resource> searchGoal(HttpServletRequest httpRequest,
+                                         @OptionalParam(name = Goal.SP_PATIENT) ReferenceParam patient
+                                        ,@OptionalParam(name = Goal.SP_IDENTIFIER) TokenParam identifier
+                                        ,@OptionalParam(name = Goal.SP_RES_ID) TokenParam id
     ) {
 
         List<Resource> results = new ArrayList<>();
@@ -186,7 +184,7 @@ public class CareTeamResourceProvider implements IResourceProvider {
 
 
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRCareTeam",
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRGoal",
                 ExchangePattern.InOut,httpRequest);
 
         Bundle bundle = null;

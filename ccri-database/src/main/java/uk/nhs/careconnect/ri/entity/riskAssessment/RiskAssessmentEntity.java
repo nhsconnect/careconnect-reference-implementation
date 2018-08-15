@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.entity.riskAssessment;
 
 import org.hl7.fhir.dstu3.model.RiskAssessment;
+import uk.nhs.careconnect.ri.entity.BaseReferenceItem;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
@@ -18,7 +19,7 @@ import java.util.Set;
         indexes = {
 
         })
-public class RiskAssessmentEntity extends BaseResource {
+public class RiskAssessmentEntity extends BaseReferenceItem {
 
     private static final int MAX_DESC_LENGTH = 4096;
 
@@ -32,17 +33,21 @@ public class RiskAssessmentEntity extends BaseResource {
     @OneToMany(mappedBy="risk", targetEntity=RiskAssessmentIdentifier.class)
     private Set<RiskAssessmentIdentifier> identifiers = new HashSet<>();
 
+    @OneToMany(mappedBy="risk", targetEntity=RiskAssessmentBasedOn.class)
+    private Set<RiskAssessmentBasedOn> basedOn = new HashSet<>();
+
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
     private RiskAssessment.RiskAssessmentStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_CODE_CONCEPT_ID"))
-    private ConceptEntity riskCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="METHOD_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_METHOD_CONCEPT_ID"))
     private ConceptEntity method;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_CODE_CONCEPT_ID"))
+    private ConceptEntity riskCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_RISK_PATIENT_ID"))
@@ -75,6 +80,18 @@ public class RiskAssessmentEntity extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REASON_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_RISK_REASON_CONCEPT_ID"))
     private ConceptEntity reasonConcept;
+
+    @OneToMany(mappedBy="risk", targetEntity=RiskAssessmentBasis.class)
+    private Set<RiskAssessmentBasis> basis = new HashSet<>();
+
+    @OneToMany(mappedBy="risk", targetEntity=RiskAssessmentPrediction.class)
+    private Set<RiskAssessmentPrediction> predictions = new HashSet<>();
+
+    @Column(name="MITIGATION")
+    private String mitigation;
+
+    @Column(name="COMMENT")
+    private String comment;
 
     public Long getId() {
         return id;
@@ -187,5 +204,45 @@ public class RiskAssessmentEntity extends BaseResource {
 
     public void setOccurrenceEndDateTime(Date occurrenceEndDateTime) {
         this.occurrenceEndDateTime = occurrenceEndDateTime;
+    }
+
+    public Set<RiskAssessmentBasedOn> getBasedOn() {
+        return basedOn;
+    }
+
+    public void setBasedOn(Set<RiskAssessmentBasedOn> basedOn) {
+        this.basedOn = basedOn;
+    }
+
+    public Set<RiskAssessmentBasis> getBasis() {
+        return basis;
+    }
+
+    public void setBasis(Set<RiskAssessmentBasis> basis) {
+        this.basis = basis;
+    }
+
+    public Set<RiskAssessmentPrediction> getPredictions() {
+        return predictions;
+    }
+
+    public void setPredictions(Set<RiskAssessmentPrediction> predictions) {
+        this.predictions = predictions;
+    }
+
+    public String getMitigation() {
+        return mitigation;
+    }
+
+    public void setMitigation(String mitigation) {
+        this.mitigation = mitigation;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
