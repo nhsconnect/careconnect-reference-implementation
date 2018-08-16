@@ -299,6 +299,14 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway MedicationDispense")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRGoal")
+				.routeId("Gateway Goal")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRRiskAssessment")
+				.routeId("Gateway RiskAssessment")
+				.to("direct:HAPIServer");
+
 		from("direct:EDMSServer")
 				.routeId("Int EDMS FHIR Server")
 				.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")

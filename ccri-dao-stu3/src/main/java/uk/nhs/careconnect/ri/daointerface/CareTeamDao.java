@@ -134,6 +134,7 @@ public class CareTeamDao implements CareTeamRepository {
             }
         }
 
+
         em.persist(teamEntity);
 
 

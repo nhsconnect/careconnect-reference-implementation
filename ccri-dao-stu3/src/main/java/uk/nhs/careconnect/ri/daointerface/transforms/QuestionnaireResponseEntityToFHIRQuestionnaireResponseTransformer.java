@@ -129,12 +129,12 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
                         .setSystem(answerEntity.getValueCoding().getSystem())
                 );
             }
-             else if (answerEntity.getCondition() != null) {
-                    answer.setValue(new Reference("Condition/"+answerEntity.getCondition().getId())
+             else if (answerEntity.getReferenceCondition() != null) {
+                    answer.setValue(new Reference("Condition/"+answerEntity.getReferenceCondition().getId())
                     );
                 }
-            else if (answerEntity.getObservation() != null) {
-                answer.setValue(new Reference("Observation/"+answerEntity.getObservation().getId())
+            else if (answerEntity.getReferenceObservation() != null) {
+                answer.setValue(new Reference("Observation/"+answerEntity.getReferenceObservation().getId())
                 );
             }
         }

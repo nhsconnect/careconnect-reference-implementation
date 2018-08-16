@@ -1,0 +1,35 @@
+<RiskAssessment xmlns="http://hl7.org/fhir">
+    <status value="final"/>
+    <code>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="170967006"/>
+            <display value="Prognosis/outlook"/>
+        </coding>
+    </code>
+    <subject>
+        <reference value="Patient/1"/>
+    </subject>
+    <context>
+        <reference value="Encounter/1"/>
+    </context>
+    <occurrenceDateTime value="2010-11-22"/>
+    <condition>
+        <reference value="Condition/1"/>
+    </condition>
+    <prediction>
+        <outcome>
+            <coding>
+                <system value="http://snomed.info/sct"/>
+                <code value="Cardiac arrest"/>
+            </coding>
+        </outcome>
+        <qualitativeRisk>
+            <coding>
+                <system value="http://hl7.org/fhir/risk-probability"/>
+                <code value="moderate"/>
+                <display value="moderate likelihood"/>
+            </coding>
+        </qualitativeRisk>
+    </prediction>
+</RiskAssessment>

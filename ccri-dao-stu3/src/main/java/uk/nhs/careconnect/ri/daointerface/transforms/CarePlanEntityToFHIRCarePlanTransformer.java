@@ -122,23 +122,23 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
             /*if (supportingInformation.getCarePlan() != null) {
                 carePlan.addSupportingInfo(new Reference("CarePlan/"+supportingInformation.getCarePlan().getId()));
             }*/
-            if (supportingInformation.getCondition() != null) {
-                carePlan.addSupportingInfo(new Reference("Condition/"+supportingInformation.getCondition().getId()));
+            if (supportingInformation.getReferenceCondition() != null) {
+                carePlan.addSupportingInfo(new Reference("Condition/"+supportingInformation.getReferenceCondition().getId()));
             }
-            if (supportingInformation.getDocumentReference() != null) {
-                carePlan.addSupportingInfo(new Reference("DocumentReference/"+supportingInformation.getDocumentReference().getId()));
+            if (supportingInformation.getReferenceDocumentReference() != null) {
+                carePlan.addSupportingInfo(new Reference("DocumentReference/"+supportingInformation.getReferenceDocumentReference().getId()));
             }
-            if (supportingInformation.getForm() != null) {
-                carePlan.addSupportingInfo(new Reference("QuestionnaireResponse/"+supportingInformation.getForm().getId()));
+            if (supportingInformation.getReferenceForm() != null) {
+                carePlan.addSupportingInfo(new Reference("QuestionnaireResponse/"+supportingInformation.getReferenceForm().getId()));
             }
-            if (supportingInformation.getListResource() != null) {
-                carePlan.addSupportingInfo(new Reference("List/"+supportingInformation.getListResource().getId()));
+            if (supportingInformation.getReferenceListResource() != null) {
+                carePlan.addSupportingInfo(new Reference("List/"+supportingInformation.getReferenceListResource().getId()));
             }
-            if (supportingInformation.getObservation() != null) {
-                carePlan.addSupportingInfo(new Reference("Observation/"+supportingInformation.getObservation().getId()));
+            if (supportingInformation.getReferenceObservation() != null) {
+                carePlan.addSupportingInfo(new Reference("Observation/"+supportingInformation.getReferenceObservation().getId()));
             }
-            if (supportingInformation.getPatient() != null) {
-                carePlan.addSupportingInfo(new Reference("Patient/"+supportingInformation.getPatient().getId()));
+            if (supportingInformation.getReferencePatient() != null) {
+                carePlan.addSupportingInfo(new Reference("Patient/"+supportingInformation.getReferencePatient().getId()));
             }
         }
         for (CarePlanTeam team : carePlanEntity.getTeams()) {

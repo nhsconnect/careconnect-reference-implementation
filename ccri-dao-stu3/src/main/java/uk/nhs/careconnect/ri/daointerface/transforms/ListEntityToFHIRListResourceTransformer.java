@@ -107,12 +107,12 @@ public class ListEntityToFHIRListResourceTransformer implements Transformer<List
             item.setDeleted(itemEntity.getItemDeleted());
         }
 
-         if (itemEntity.getCondition() != null) {
-                item.setItem(new Reference("Condition/"+itemEntity.getCondition().getId())
+         if (itemEntity.getReferenceCondition() != null) {
+                item.setItem(new Reference("Condition/"+itemEntity.getReferenceCondition().getId())
                 );
             }
-        else if (itemEntity.getObservation() != null) {
-            item.setItem(new Reference("Observation/"+itemEntity.getObservation().getId())
+        else if (itemEntity.getReferenceObservation() != null) {
+            item.setItem(new Reference("Observation/"+itemEntity.getReferenceObservation().getId())
             );
         }
 

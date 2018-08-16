@@ -379,27 +379,27 @@ public class CarePlanDao implements CarePlanRepository {
         if (item.getReference().contains("Condition")) {
 
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(item.getReference()));
-            itemEntity.setCondition(conditionEntity);
+            itemEntity.setReferenceCondition(conditionEntity);
 
         } else if (item.getReference().contains("Observation")) {
 
             ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(item.getReference()));
-            itemEntity.setObservation(observationEntity);
+            itemEntity.setReferenceObservation(observationEntity);
         } else if (item.getReference().contains("QuestionnaireResponse")) {
 
             QuestionnaireResponseEntity
                     questionnaireEntity = formDao.readEntity(ctx, new IdType(item.getReference()));
-            itemEntity.setForm(questionnaireEntity);
+            itemEntity.setReferenceForm(questionnaireEntity);
 
         } else if (item.getReference().contains("List")) {
 
             ListEntity listEntity = listDao.readEntity(ctx, new IdType(item.getReference()));
-            itemEntity.setListResource(listEntity);
+            itemEntity.setReferenceListResource(listEntity);
 
         } else if (item.getReference().contains("DocumentReference")) {
 
             DocumentReferenceEntity documentReferenceEntity = documentDao.readEntity(ctx, new IdType(item.getReference()));
-            itemEntity.setDocumentReference(documentReferenceEntity);
+            itemEntity.setReferenceDocumentReference(documentReferenceEntity);
 
         }
         em.persist(itemEntity);
@@ -473,19 +473,19 @@ public class CarePlanDao implements CarePlanRepository {
     }
 
     private Resource getResource(CarePlanSupportingInformation carePlanSupportingInformation, List<Resource> results) {
-        if (carePlanSupportingInformation.getListResource() != null) {
-            ListEntity list = carePlanSupportingInformation.getListResource();
+        if (carePlanSupportingInformation.getReferenceListResource() != null) {
+            ListEntity list = carePlanSupportingInformation.getReferenceListResource();
             if (list != null) {
                 for (ListItem items : list.getItems()) {
-                    if (items.getCondition() != null) {
-                        results.add(conditionEntityToFHIRConditionTransformer.transform(items.getCondition()));
+                    if (items.getReferenceCondition() != null) {
+                        results.add(conditionEntityToFHIRConditionTransformer.transform(items.getReferenceCondition()));
                     }
                 }
             }
-            return listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getListResource());
+            return listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getReferenceListResource());
         }
-        if (carePlanSupportingInformation.getForm() != null) {
-            return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getForm());
+        if (carePlanSupportingInformation.getReferenceForm() != null) {
+            return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getReferenceForm());
         }
         return null;
     }

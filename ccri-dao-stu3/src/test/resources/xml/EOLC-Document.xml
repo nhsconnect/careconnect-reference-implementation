@@ -1,0 +1,709 @@
+<Bundle xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://tools.ietf.org/html/rfc4122"></system>
+        <value value="28753ece-5827-443f-b525-89ccbfe3d9c5"></value>
+    </identifier>
+    <type value="document"></type>
+    <entry>
+        <fullUrl value="urn:uuid:dfc1e95a-d8aa-4ff1-808a-7c187a5e6e75"></fullUrl>
+        <resource>
+            <Composition xmlns="http://hl7.org/fhir">
+                <id value="dfc1e95a-d8aa-4ff1-808a-7c187a5e6e75"></id>
+                <status value="final"></status>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="736373009"></code>
+                        <display value="End of life care plan (record artifact)"></display>
+                    </coding>
+                </type>
+                <subject>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </subject>
+                <date value="2018-08-09T12:49:26+00:00"></date>
+                <author>
+                    <reference value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></reference>
+                    <display value="The Moir Medical Centre"></display>
+                </author>
+                <title value="Care Plan Document"></title>
+                <attester>
+                    <mode value="official"></mode>
+                    <party>
+                        <reference value="urn:uuid:c3d3a020-bed5-42a6-b953-41cd92a3f20f"></reference>
+                    </party>
+                </attester>
+                <section>
+                    <title value="Advanced Treatment Preferences"></title>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"></system>
+                            <code value="854851000000107"></code>
+                            <display value="Advanced Treatment Preferences"></display>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"></status>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <p>Advanced treatment preferences - Not yet implemented</p>
+                        </div>
+                    </text>
+                    <entry>
+                        <reference value="urn:uuid:932ebbb6-8919-472f-ba32-97c36983da46"></reference>
+                    </entry>
+                </section>
+                <section>
+                    <title value="Disability"></title>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"></system>
+                            <code value="854851000000107"></code>
+                            <display value="Disability"></display>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"></status>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>09 Oct 2010</td>
+                                            <td>Genuine stress incontinence (finding)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </text>
+                    <entry>
+                        <reference value="urn:uuid:23d4a952-ff75-4228-8d98-2f57dcf6011b"></reference>
+                    </entry>
+                </section>
+                <section>
+                    <title value="Functional Status"></title>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"></system>
+                            <code value="854851000000107"></code>
+                            <display value="Functional Status"></display>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"></status>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <p>Functional status - Not yet implemented</p>
+                        </div>
+                    </text>
+                    <entry>
+                        <reference value="urn:uuid:932ebbb6-8919-472f-ba32-97c36983da46"></reference>
+                    </entry>
+                </section>
+                <section>
+                    <title value="Preferences"></title>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"></system>
+                            <code value="854851000000107"></code>
+                            <display value="Preferences"></display>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"></status>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <p>prefernces - Not yet implemented</p>
+                        </div>
+                    </text>
+                    <entry>
+                        <reference value="urn:uuid:932ebbb6-8919-472f-ba32-97c36983da46"></reference>
+                    </entry>
+                </section>
+            </Composition>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:c3d3a020-bed5-42a6-b953-41cd92a3f20f"></fullUrl>
+        <resource>
+            <Organization xmlns="http://hl7.org/fhir">
+                <id value="c3d3a020-bed5-42a6-b953-41cd92a3f20f"></id>
+                <meta>
+                    <lastUpdated value="2018-06-23T17:54:20.157+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"></profile>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+                    <value value="RR8"></value>
+                </identifier>
+                <active value="true"></active>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="930621000000104"></code>
+                        <display value="National Health Service Trust (qualifier value)"></display>
+                    </coding>
+                </type>
+                <name value="Leeds Teaching Hospitals Nhs Trust"></name>
+                <address>
+                    <use value="work"></use>
+                    <line value="St. James's University Hospital"></line>
+                    <line value="Beckett Street"></line>
+                    <city value="Leeds"></city>
+                    <district value="West Yorkshire"></district>
+                    <postalCode value="LS9 7TF"></postalCode>
+                </address>
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></fullUrl>
+        <resource>
+            <Patient xmlns="http://hl7.org/fhir">
+                <id value="b51c55b4-b109-44c8-b474-fad1492498a1"></id>
+                <meta>
+                    <lastUpdated value="2018-07-24T10:02:25.285+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"></profile>
+                </meta>
+                <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-EthnicCategory-1">
+                    <valueCodeableConcept>
+                        <coding>
+                            <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1"></system>
+                            <code value="A"></code>
+                            <display value="British, Mixed British"></display>
+                        </coding>
+                    </valueCodeableConcept>
+                </extension>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                                <code value="01"></code>
+                                <display value="Number present and verified"></display>
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+                    <value value="9876543210"></value>
+                </identifier>
+                <identifier>
+                    <system value="https://fhir.leedsth.nhs.uk/Id/pas-number"></system>
+                    <value value="ABC8650149"></value>
+                </identifier>
+                <identifier>
+                    <system value="https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"></system>
+                    <value value="1"></value>
+                </identifier>
+                <active value="true"></active>
+                <name>
+                    <use value="official"></use>
+                    <family value="Kanfeld"></family>
+                    <given value="Bernie"></given>
+                    <prefix value="Miss"></prefix>
+                </name>
+                <telecom>
+                    <system value="phone"></system>
+                    <value value="0115 9737320"></value>
+                    <use value="home"></use>
+                </telecom>
+                <telecom>
+                    <system value="email"></system>
+                    <value value="bernie.kanfeld@nhsdigital.nhs.uk"></value>
+                    <use value="home"></use>
+                </telecom>
+                <gender value="female"></gender>
+                <birthDate value="1998-03-13"></birthDate>
+                <address>
+                    <use value="work"></use>
+                    <type value="both"></type>
+                    <line value="Field Jardin"></line>
+                    <line value="Long Eaton"></line>
+                    <city value="Nottingham"></city>
+                    <district value="Derbyshire"></district>
+                    <postalCode value="NG10 1ZZ"></postalCode>
+                </address>
+                <maritalStatus>
+                    <coding>
+                        <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                        <code value="S"></code>
+                        <display value="Never Married"></display>
+                    </coding>
+                </maritalStatus>
+                <generalPractitioner>
+                    <reference value="urn:uuid:0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></reference>
+                    <display value="Dr AA Bhatia"></display>
+                </generalPractitioner>
+                <managingOrganization>
+                    <reference value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></reference>
+                </managingOrganization>
+            </Patient>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></fullUrl>
+        <resource>
+            <Organization xmlns="http://hl7.org/fhir">
+                <id value="0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></id>
+                <meta>
+                    <lastUpdated value="2018-06-23T17:54:41.725+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"></profile>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+                    <value value="C81010"></value>
+                </identifier>
+                <active value="true"></active>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="394745000"></code>
+                        <display value="General practice (organisation) (qualifier value)"></display>
+                    </coding>
+                </type>
+                <name value="The Moir Medical Centre"></name>
+                <telecom>
+                    <system value="phone"></system>
+                    <value value="0115 9737320"></value>
+                    <use value="work"></use>
+                </telecom>
+                <address>
+                    <use value="work"></use>
+                    <type value="both"></type>
+                    <line value="The Moir Medical Centre"></line>
+                    <line value="Regent Street, Long Eaton"></line>
+                    <line value="Nottingham"></line>
+                    <city value="Nottingham"></city>
+                    <district value="Derbyshire"></district>
+                    <postalCode value="NG10 1QQ"></postalCode>
+                </address>
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></fullUrl>
+        <resource>
+            <Practitioner xmlns="http://hl7.org/fhir">
+                <id value="0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></id>
+                <meta>
+                    <lastUpdated value="2018-06-23T18:05:07.833+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"></profile>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/sds-user-id"></system>
+                    <value value="G8133438"></value>
+                </identifier>
+                <active value="true"></active>
+                <name>
+                    <family value="Bhatia"></family>
+                    <given value="AA"></given>
+                    <prefix value="Dr"></prefix>
+                </name>
+                <telecom>
+                    <system value="phone"></system>
+                    <value value="0115 9737320"></value>
+                    <use value="work"></use>
+                </telecom>
+                <telecom>
+                    <system value="email"></system>
+                    <value value="abhatia@nhs.skynet"></value>
+                    <use value="work"></use>
+                </telecom>
+                <address>
+                    <use value="work"></use>
+                    <line value="The Moir Medical Centre"></line>
+                    <line value="Regent Street, Long Eaton"></line>
+                    <line value="Nottingham"></line>
+                    <city value="Nottingham"></city>
+                    <district value="Derbyshire"></district>
+                    <postalCode value="NG10 1QQ"></postalCode>
+                </address>
+                <gender value="male"></gender>
+            </Practitioner>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:e3b502a3-05a6-42a1-9317-dea2f3f71077"></fullUrl>
+        <resource>
+            <CarePlan xmlns="http://hl7.org/fhir">
+                <id value="e3b502a3-05a6-42a1-9317-dea2f3f71077"></id>
+                <meta>
+                    <lastUpdated value="2018-08-07T14:05:04.606+00:00"></lastUpdated>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.leedsth.nhs.uk/CarePlan/Id"></system>
+                    <value value="12345"></value>
+                </identifier>
+                <status value="active"></status>
+                <intent value="plan"></intent>
+                <category>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="736373009"></code>
+                        <display value="End of life care plan (record artifact)"></display>
+                    </coding>
+                </category>
+                <subject>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </subject>
+                <period>
+                    <start value="2018-06-01T00:00:00+00:00"></start>
+                </period>
+                <author>
+                    <reference value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></reference>
+                    <display value="The Moir Medical Centre"></display>
+                </author>
+                <supportingInfo>
+                    <reference value="urn:uuid:932ebbb6-8919-472f-ba32-97c36983da46"></reference>
+                </supportingInfo>
+                <supportingInfo>
+                    <reference value="urn:uuid:fbafe049-76c5-49b9-ab57-b2e8986e4ac4"></reference>
+                </supportingInfo>
+            </CarePlan>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></fullUrl>
+        <resource>
+            <Patient xmlns="http://hl7.org/fhir">
+                <id value="b51c55b4-b109-44c8-b474-fad1492498a1"></id>
+                <meta>
+                    <lastUpdated value="2018-07-24T10:32:07.868+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"></profile>
+                </meta>
+                <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-EthnicCategory-1">
+                    <valueCodeableConcept>
+                        <coding>
+                            <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1"></system>
+                            <code value="A"></code>
+                            <display value="British, Mixed British"></display>
+                        </coding>
+                    </valueCodeableConcept>
+                </extension>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                                <code value="01"></code>
+                                <display value="Number present and verified"></display>
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+                    <value value="9876543210"></value>
+                </identifier>
+                <identifier>
+                    <system value="https://fhir.leedsth.nhs.uk/Id/pas-number"></system>
+                    <value value="ABC8650149"></value>
+                </identifier>
+                <identifier>
+                    <system value="https://fhir.leedsth.nhs.uk/Id/PPMIdentifier"></system>
+                    <value value="1"></value>
+                </identifier>
+                <active value="true"></active>
+                <name>
+                    <use value="official"></use>
+                    <family value="Kanfeld"></family>
+                    <given value="Bernie"></given>
+                    <prefix value="Miss"></prefix>
+                </name>
+                <telecom>
+                    <system value="phone"></system>
+                    <value value="0115 9737320"></value>
+                    <use value="home"></use>
+                </telecom>
+                <telecom>
+                    <system value="email"></system>
+                    <value value="bernie.kanfeld@nhsdigital.nhs.uk"></value>
+                    <use value="home"></use>
+                </telecom>
+                <gender value="female"></gender>
+                <birthDate value="1998-03-13"></birthDate>
+                <address>
+                    <use value="work"></use>
+                    <type value="both"></type>
+                    <line value="Field Jardin"></line>
+                    <line value="Long Eaton"></line>
+                    <city value="Nottingham"></city>
+                    <district value="Derbyshire"></district>
+                    <postalCode value="NG10 1ZZ"></postalCode>
+                </address>
+                <maritalStatus>
+                    <coding>
+                        <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                        <code value="S"></code>
+                        <display value="Never Married"></display>
+                    </coding>
+                </maritalStatus>
+                <generalPractitioner>
+                    <reference value="urn:uuid:0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></reference>
+                    <display value="Dr AA Bhatia"></display>
+                </generalPractitioner>
+                <managingOrganization>
+                    <reference value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></reference>
+                </managingOrganization>
+            </Patient>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:932ebbb6-8919-472f-ba32-97c36983da46"></fullUrl>
+        <resource>
+            <QuestionnaireResponse xmlns="http://hl7.org/fhir">
+                <id value="932ebbb6-8919-472f-ba32-97c36983da46"></id>
+                <meta>
+                    <lastUpdated value="2018-08-07T14:04:58.948+00:00"></lastUpdated>
+                </meta>
+                <status value="in-progress"></status>
+                <subject>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </subject>
+                <authored value="2018-08-03T10:10:00+00:00"></authored>
+                <author>
+                    <reference value="urn:uuid:0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></reference>
+                </author>
+                <source>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </source>
+                <item>
+                    <linkId value="eolc-atp"></linkId>
+                    <text value="Advanced Treatment Preferences"></text>
+                    <item>
+                        <linkId value="eolc-atp-2"></linkId>
+                        <text value="ReSPECT Care Priority"></text>
+                        <item>
+                            <linkId value="eolc-atp-2-2"></linkId>
+                            <text value="ReSPECT Patient Care Priority - Textual"></text>
+                            <answer>
+                                <valueString value="Feeling comfortable with little pain"></valueString>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-atp-2-1"></linkId>
+                            <text value="ReSPECT Care Priority Scale"></text>
+                            <answer>
+                                <valueInteger value="70"></valueInteger>
+                            </answer>
+                        </item>
+                    </item>
+                    <item>
+                        <linkId value="eolc-atp-1"></linkId>
+                        <item>
+                            <linkId value="eolc-atp-1-2"></linkId>
+                            <text value="Treatment Level"></text>
+                            <answer>
+                                <valueString value="Home"></valueString>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-atp-1-1"></linkId>
+                            <text value="Problem or Condition"></text>
+                            <answer>
+                                <valueString value="Genuine stress incontinence "></valueString>
+                            </answer>
+                        </item>
+                    </item>
+                    <item>
+                        <linkId value="eolc-atp-1"></linkId>
+                        <text value="Clinical Problems and Advised Interventions"></text>
+                        <item>
+                            <linkId value="eolc-atp-1-2"></linkId>
+                            <text value="Treatment Level"></text>
+                            <answer>
+                                <valueString value="Home"></valueString>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-atp-1-3"></linkId>
+                            <text value="Intervention"></text>
+                            <answer>
+                                <valueString value="Oxygen"></valueString>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-atp-1-1"></linkId>
+                            <text value="Problem or Condition"></text>
+                            <answer>
+                                <valueString value="Severe persistent asthma (disorder)"></valueString>
+                            </answer>
+                        </item>
+                    </item>
+                </item>
+                <item>
+                    <linkId value="eolc-pref"></linkId>
+                    <text value="Preferences"></text>
+                    <item>
+                        <linkId value="eolc-pref-4"></linkId>
+                        <text value="Domestic Access and Information"></text>
+                        <answer>
+                            <valueString value="Partner wishes to be present"></valueString>
+                        </answer>
+                    </item>
+                    <item>
+                        <linkId value="eolc-pref-3"></linkId>
+                        <text value="Preferences and Wishes"></text>
+                        <answer>
+                            <valueString value="Depart peacefully"></valueString>
+                        </answer>
+                    </item>
+                    <item>
+                        <linkId value="eolc-pref-1"></linkId>
+                        <text value="Preferred Place of Death - Coded"></text>
+                        <answer>
+                            <valueCoding>
+                                <system value="http://snomed.info/sct"></system>
+                                <code value="109401000000108"></code>
+                                <display value="Preferred place of death: hospital (finding)"></display>
+                            </valueCoding>
+                        </answer>
+                    </item>
+                    <item>
+                        <linkId value="eolc-pref-2"></linkId>
+                        <text value="Preferred Place of Death - Textual"></text>
+                        <answer>
+                            <valueString value="Preferred place of death: hospital (finding)"></valueString>
+                        </answer>
+                    </item>
+                </item>
+                <item>
+                    <linkId value="eolc-func"></linkId>
+                    <text value="Functional Status"></text>
+                    <item>
+                        <linkId value="eolc-func-group"></linkId>
+                        <item>
+                            <linkId value="eolc-func-2"></linkId>
+                            <text value="Functional Status Value"></text>
+                            <answer>
+                                <valueInteger value="40"></valueInteger>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-func-3"></linkId>
+                            <text value="Functional Status Text"></text>
+                            <answer>
+                                <valueString value="In bed more than 50% of the time"></valueString>
+                            </answer>
+                        </item>
+                        <item>
+                            <linkId value="eolc-func-1"></linkId>
+                            <text value="Functional Status Type"></text>
+                            <answer>
+                                <valueCoding>
+                                    <system value="http://snomed.info/sct"></system>
+                                    <code value="901361000000101"></code>
+                                    <display value="Australia-modified Karnofsky Performance Status scale (assessment scale)"></display>
+                                </valueCoding>
+                            </answer>
+                        </item>
+                    </item>
+                </item>
+            </QuestionnaireResponse>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:23d4a952-ff75-4228-8d98-2f57dcf6011b"></fullUrl>
+        <resource>
+            <Condition xmlns="http://hl7.org/fhir">
+                <id value="23d4a952-ff75-4228-8d98-2f57dcf6011b"></id>
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1"></profile>
+                </meta>
+                <clinicalStatus value="active"></clinicalStatus>
+                <category>
+                    <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                        <code value="encounter-diagnosis"></code>
+                        <display value="Encounter Diagnosis"></display>
+                    </coding>
+                </category>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="22220005"></code>
+                        <display value="Genuine stress incontinence (finding)"></display>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </subject>
+                <onsetDateTime value="2010-10-09T09:00:00+00:00"></onsetDateTime>
+                <assertedDate value="2010-10-09T09:00:00+00:00"></assertedDate>
+                <asserter>
+                    <reference value="urn:uuid:0cbd4151-71a9-4b07-8b3f-866fc2bb236d"></reference>
+                </asserter>
+            </Condition>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:fbafe049-76c5-49b9-ab57-b2e8986e4ac4"></fullUrl>
+        <resource>
+            <List xmlns="http://hl7.org/fhir">
+                <id value="fbafe049-76c5-49b9-ab57-b2e8986e4ac4"></id>
+                <meta>
+                    <lastUpdated value="2018-08-06T14:02:25.722+00:00"></lastUpdated>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid:a9fcea7c-fcdf-4d17-a5e0-f26dda030b59"></system>
+                    <value value="23974652"></value>
+                </identifier>
+                <status value="current"></status>
+                <mode value="changes"></mode>
+                <subject>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </subject>
+                <date value="2012-11-25T11:17:00+00:00"></date>
+                <source>
+                    <reference value="urn:uuid:b51c55b4-b109-44c8-b474-fad1492498a1"></reference>
+                </source>
+                <entry>
+                    <item>
+                        <reference value="urn:uuid:23d4a952-ff75-4228-8d98-2f57dcf6011b"></reference>
+                    </item>
+                </entry>
+            </List>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></fullUrl>
+        <resource>
+            <Organization xmlns="http://hl7.org/fhir">
+                <id value="0c0f5997-d6ff-48d7-bfe2-cd2d56f70498"></id>
+                <meta>
+                    <lastUpdated value="2018-06-23T17:54:41.725+00:00"></lastUpdated>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"></profile>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+                    <value value="C81010"></value>
+                </identifier>
+                <active value="true"></active>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="394745000"></code>
+                        <display value="General practice (organisation) (qualifier value)"></display>
+                    </coding>
+                </type>
+                <name value="The Moir Medical Centre"></name>
+                <telecom>
+                    <system value="phone"></system>
+                    <value value="0115 9737320"></value>
+                    <use value="work"></use>
+                </telecom>
+                <address>
+                    <use value="work"></use>
+                    <type value="both"></type>
+                    <line value="The Moir Medical Centre"></line>
+                    <line value="Regent Street, Long Eaton"></line>
+                    <line value="Nottingham"></line>
+                    <city value="Nottingham"></city>
+                    <district value="Derbyshire"></district>
+                    <postalCode value="NG10 1QQ"></postalCode>
+                </address>
+            </Organization>
+        </resource>
+    </entry>
+</Bundle>
