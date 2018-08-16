@@ -241,6 +241,9 @@ public class CarePlanDao implements CarePlanRepository {
         em.persist(carePlanEntity);
 
         log.debug("CarePlan.saveAddresses");
+        for (CarePlanCondition conditionSearch : carePlanEntity.getAddresses()) {
+            em.remove(conditionSearch);
+        }
         for (Reference reference : carePlan.getAddresses()) {
             log.info("Address Reference = "+reference.getReference());
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
@@ -371,6 +374,9 @@ public class CarePlanDao implements CarePlanRepository {
             em.persist(author);
         }
 
+        for (CarePlanSupportingInformation support : carePlanEntity.getSupportingInformation()) {
+            em.remove(support);
+        }
         for (Reference reference : carePlan.getSupportingInfo()) {
               CarePlanSupportingInformation carePlanSupportingInformation = new CarePlanSupportingInformation();
               carePlanSupportingInformation.setCarePlan(carePlanEntity);

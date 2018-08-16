@@ -943,7 +943,7 @@ public class BundleCore {
             Resource resource = searchAddResource(reference.getReference());
             if (resource!=null) referenceTeam.add(getReference(resource));
         }
-        carePlan.setAddresses(referenceTeam);
+        carePlan.setCareTeam(referenceTeam);
 
         List<Reference> referenceSupporting = new ArrayList<>();
         for (Reference reference : carePlan.getSupportingInfo()) {
@@ -951,7 +951,7 @@ public class BundleCore {
             if (resource == null) referenceMissing(carePlan, reference.getReference());
             if (resource!=null) referenceSupporting.add(getReference(resource));
         }
-        carePlan.setAddresses(referenceSupporting);
+        carePlan.setSupportingInfo(referenceSupporting);
 
         IBaseResource iResource = null;
         String xhttpMethod = "POST";

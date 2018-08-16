@@ -350,17 +350,20 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
             em.persist(formIdentifier);
         }
-
+        for (QuestionnaireResponseItem itemSearch : formEntity.getItems()) {
+           removeItem(itemSearch);
+        }
         if (form.hasItem()) {
             for (QuestionnaireResponse.QuestionnaireResponseItemComponent item : form.getItem()) {
                 QuestionnaireResponseItem itemEntity = null;
+                /*
                 if (item.hasLinkId()) {
                     for (QuestionnaireResponseItem itemSearch : formEntity.getItems()) {
                         if (itemSearch.getLinkId() != null && itemSearch.getLinkId().contains(item.getLinkId())) {
                             itemEntity = itemSearch;
                         }
                     }
-                }
+                }*/
                 if (itemEntity == null) { itemEntity = new QuestionnaireResponseItem(); }
                 itemEntity.setForm(formEntity);
                 buildItem(ctx, item, itemEntity);
@@ -371,6 +374,19 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         form.setId(formEntity.getId().toString());
 
         return form;
+    }
+
+    private void removeItem(QuestionnaireResponseItem item) {
+        for (QuestionnaireResponseItemAnswer answer : item.getAnswers()) {
+            for (QuestionnaireResponseItem itemSearch : answer.getItems()) {
+                removeItem(itemSearch);
+            }
+            em.remove(answer);
+        }
+        for (QuestionnaireResponseItem itemSearch : item.getItems()) {
+            removeItem(itemSearch);
+        }
+        em.remove(item);
     }
 
     private void buildItem(FhirContext ctx,QuestionnaireResponse.QuestionnaireResponseItemComponent item, QuestionnaireResponseItem itemEntity ) {
@@ -397,6 +413,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             for (QuestionnaireResponse.QuestionnaireResponseItemComponent subitem : item.getItem()) {
 
                 QuestionnaireResponseItem subItemEntity = null;
+                /*
                 if (subitem.hasLinkId()) {
                     for (QuestionnaireResponseItem itemSearch : itemEntity.getItems()) {
                         if (itemSearch.getLinkId() != null && itemSearch.getLinkId().contains(subitem.getLinkId())) {
@@ -404,6 +421,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                         }
                     }
                 }
+                */
                 if (subItemEntity == null) { subItemEntity = new QuestionnaireResponseItem(); }
 
                 subItemEntity.setParentItem(itemEntity);

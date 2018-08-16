@@ -304,6 +304,9 @@ public class ListDao implements ListRepository {
         }
 
 
+        for (ListItem item : listEntity.getItems()) {
+            em.remove(item);
+        }
         for (ListResource.ListEntryComponent item : list.getEntry()) {
             ListItem itemEntity = new ListItem();
             itemEntity.setList(listEntity);
