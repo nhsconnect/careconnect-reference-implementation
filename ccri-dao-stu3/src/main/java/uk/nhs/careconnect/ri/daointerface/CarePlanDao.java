@@ -31,6 +31,7 @@ import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -84,6 +85,9 @@ public class CarePlanDao implements CarePlanRepository {
     CareTeamRepository teamDao;
 
     @Autowired
+    RiskAssessmentRepository riskDao;
+
+    @Autowired
     OrganisationRepository organisationDao;
 
     @Autowired
@@ -106,6 +110,9 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     private ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    @Autowired
+    private RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskAssessmentEntityToFHIRRiskAssessmentTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
@@ -400,6 +407,9 @@ public class CarePlanDao implements CarePlanRepository {
 
             DocumentReferenceEntity documentReferenceEntity = documentDao.readEntity(ctx, new IdType(item.getReference()));
             itemEntity.setReferenceDocumentReference(documentReferenceEntity);
+        } else if (item.getReference().contains("RiskAssessment")) {
+            RiskAssessmentEntity riskAssessment = riskDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setReferenceRisk(riskAssessment);
 
         }
         em.persist(itemEntity);
@@ -486,6 +496,9 @@ public class CarePlanDao implements CarePlanRepository {
         }
         if (carePlanSupportingInformation.getReferenceForm() != null) {
             return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getReferenceForm());
+        }
+        if (carePlanSupportingInformation.getReferenceRisk() != null) {
+            return riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(carePlanSupportingInformation.getReferenceRisk());
         }
         return null;
     }

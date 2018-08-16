@@ -90,6 +90,17 @@ public class JPAStepsDef {
     @Autowired
     HealthcareServiceRepository serviceRepository;
 
+    @Autowired
+    ListRepository listRepository;
+
+    @Autowired
+    QuestionnaireResponseRepository questionnaireResponseRepository;
+
+    @Autowired
+    RiskAssessmentRepository riskAssessmentRepository;
+
+    @Autowired
+    CarePlanRepository carePlanRepository;
 
     @Autowired
     TerminologyLoader myTermSvc;
@@ -124,6 +135,14 @@ public class JPAStepsDef {
     List<Procedure> procedureList = null;
 
     List<MedicationRequest> prescribingList;
+
+    List<ListResource> listList;
+
+    List<Resource> carePlanList;
+
+    List<RiskAssessment> riskAssessmentList;
+
+    List<QuestionnaireResponse> questionnaireResponseList;
 
     Transaction tx;
 
@@ -710,9 +729,71 @@ PROCEDURE
         assertNotNull(procedureRepository.read(ctx,new IdType(1)));
     }
 
+    @Given("^I have one List resource loaded$")
+    public void i_have_one_List_resource_loaded() throws Throwable {
+        assertNotNull(listRepository.read(ctx,new IdType(1)));
+    }
+
+    @Given("^I have one QuestionnaireResponse resource loaded$")
+    public void i_have_one_QuestionnaireResponse_resource_loaded() throws Throwable {
+        assertNotNull(questionnaireResponseRepository.read(ctx,new IdType(1)));
+    }
+
+    @Given("^I have one RiskAssessment resource loaded$")
+    public void i_have_one_RiskAssessment_resource_loaded() throws Throwable {
+        assertNotNull(riskAssessmentRepository.read(ctx,new IdType(1)));
+    }
+
+    @Given("^I have one CarePlan resource loaded$")
+    public void i_have_one_CarePlan_resource_loaded() throws Throwable {
+        assertNotNull(carePlanRepository.read(ctx,new IdType(1)));
+    }
+
+
+
     @When("^I search Procedure on Patient ID = (\\d+)$")
     public void i_search_Procedure_on_Patient_ID(int patient) throws Throwable {
         procedureList = procedureRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+    }
+
+    @When("^I search List on Patient ID = (\\d+)$")
+    public void i_search_List_on_Patient_ID(int patient) throws Throwable {
+        listList = listRepository.searchListResource(ctx, null,null, new ReferenceParam("Patient/"+patient));
+    }
+
+    @When("^I search CarePlan on Patient ID = (\\d+)$")
+    public void i_search_CarePlan_on_Patient_ID(int patient) throws Throwable {
+        carePlanList = carePlanRepository.search(ctx, new ReferenceParam("Patient/"+patient), null,null,null, null,null);
+    }
+
+    @When("^I search RiskAssessment on Patient ID = (\\d+)$")
+    public void i_search_RiskAssessment_on_Patient_ID(int patient) throws Throwable {
+        riskAssessmentList = riskAssessmentRepository.search(ctx,  new ReferenceParam("Patient/"+patient),null,null);
+    }
+
+    @When("^I search QuestionnaireResponse on Patient ID = (\\d+)$")
+    public void i_search_QuestionnaireResponse_on_Patient_ID(int patient) throws Throwable {
+        questionnaireResponseList = questionnaireResponseRepository.searchQuestionnaireResponse(ctx, null,null,null, new ReferenceParam("Patient/"+patient));
+    }
+
+    @Then("^I should get a Bundle of QuestionnaireResponse (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_QuestionnaireResponse_resource(int count) throws Throwable {
+        assertEquals(count,questionnaireResponseList.size());
+    }
+
+    @Then("^I should get a Bundle of CarePlan (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_CarePlan_resource(int count) throws Throwable {
+        assertEquals(count,carePlanList.size());
+    }
+
+    @Then("^I should get a Bundle of List (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_List_resource(int count) throws Throwable {
+        assertEquals(count,listList.size());
+    }
+
+    @Then("^I should get a Bundle of RiskAssessment (\\d+) resource$")
+    public void i_should_get_a_Bundle_of_RiskAssessment_resource(int count) throws Throwable {
+        assertEquals(count,riskAssessmentList.size());
     }
 
     @Then("^I should get a Bundle of Procedure (\\d+) resource$")
@@ -1076,8 +1157,55 @@ PROCEDURE
                 System.out.println(ex.getMessage());
             }
 
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/List.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            ListResource list = ctx.newXmlParser().parseResource(ListResource.class, reader);
+            try {
+                list = listRepository.create(ctx,list,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/RiskAssessment.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            RiskAssessment risk = ctx.newXmlParser().parseResource(RiskAssessment.class, reader);
+            try {
+                risk = riskAssessmentRepository.create(ctx,risk,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/EOLC-QuestionnaireResponse.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            QuestionnaireResponse questionnaireResponse = ctx.newXmlParser().parseResource(QuestionnaireResponse.class, reader);
+            try {
+                questionnaireResponse = questionnaireResponseRepository.create(ctx,questionnaireResponse,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
             initialized = true;
 
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/CarePlan.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            CarePlan carePlan = ctx.newXmlParser().parseResource(CarePlan.class, reader);
+            try {
+                carePlan = carePlanRepository.create(ctx,carePlan,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+            initialized = true;
         }
 
 

@@ -28,4 +28,7 @@
     <supportingInfo> 
         <reference value="List/1"/> 
     </supportingInfo>
+    <supportingInfo>
+        <reference value="RiskAssessment/1"/>
+    </supportingInfo>
 </CarePlan> 

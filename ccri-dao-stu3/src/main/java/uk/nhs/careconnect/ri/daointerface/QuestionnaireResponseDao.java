@@ -28,10 +28,13 @@ import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseE
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseIdentifier;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseItem;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseItemAnswer;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -220,6 +223,34 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         QuestionnaireResponseEntity formEntity = null;
         log.debug("Called QuestionnaireResponse Create Condition Url: "+theConditional);
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/form")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<QuestionnaireResponseEntity> results = searchQuestionnaireResponseEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/risk"),null,null,null);
+                    for (QuestionnaireResponseEntity con : results) {
+                        formEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
         if ((theId != null)) {
             formEntity =  readEntity(ctx,theId);
         }

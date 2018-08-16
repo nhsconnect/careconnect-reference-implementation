@@ -1,4 +1,8 @@
 <RiskAssessment xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://fhir.leedsth.nhs.uk/Id/risk"/>
+        <value value="12345"/>
+    </identifier>
     <status value="final"/>
     <code>
         <coding>
@@ -15,13 +19,14 @@
     </context>
     <occurrenceDateTime value="2010-11-22"/>
     <condition>
-        <reference value="Condition/1"/>
+        <reference value="Condition/2"/>
     </condition>
     <prediction>
         <outcome>
             <coding>
                 <system value="http://snomed.info/sct"/>
-                <code value="Cardiac arrest"/>
+                <code value="410429000"/>
+                <display value="Cardiac arrest"/>
             </coding>
         </outcome>
         <qualitativeRisk>

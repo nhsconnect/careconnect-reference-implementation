@@ -185,6 +185,10 @@ public class BundleCore {
                         resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
                     } else if (iResource instanceof MedicationDispense) {
                         resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
+                    } else if (iResource instanceof Goal) {
+                        resource = searchAddGoal(referenceId, (Goal) iResource);
+                    } else if (iResource instanceof RiskAssessment) {
+                        resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
                     }else {
                         log.info("Found in Bundle. Not processed (" + iResource.getClass());
                     }
@@ -1742,6 +1746,233 @@ public class BundleCore {
         return eprMedicationRequest;
     }
 
+    public RiskAssessment searchAddRiskAssessment(String riskAssessmentId,RiskAssessment riskAssessment) {
+        log.info("RiskAssessment searchAdd " +riskAssessmentId);
+
+        if (riskAssessment == null) throw new InternalErrorException("Bundle processing error");
+
+        RiskAssessment eprRiskAssessment = (RiskAssessment) resourceMap.get(riskAssessmentId);
+
+        // Organization already processed, quit with Organization
+        if (eprRiskAssessment != null) return eprRiskAssessment;
+
+        // Prevent re-adding the same Practitioner
+        if (riskAssessment.hasIdentifier()) {
+            riskAssessment.getIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(riskAssessment.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        if (riskAssessment.hasIdentifier()) {
+            Identifier identifier = riskAssessment.getIdentifier();
+            Exchange exchange = template.send("direct:FHIRRiskAssessment", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "RiskAssessment");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprRiskAssessment = (RiskAssessment) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found RiskAssessment = " + eprRiskAssessment.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (riskAssessment.hasSubject()) {
+            Resource resource = searchAddResource(riskAssessment.getSubject().getReference());
+            if (resource == null) referenceMissing(riskAssessment, riskAssessment.getSubject().getReference());
+            riskAssessment.setSubject(getReference(resource));
+        }
+        if (riskAssessment.hasContext()) {
+            Resource resource = searchAddResource(riskAssessment.getContext().getReference());
+            if (resource == null) referenceMissing(riskAssessment, riskAssessment.getContext().getReference());
+            riskAssessment.setContext(getReference(resource));
+        }
+        if (riskAssessment.hasCondition()) {
+            Resource resource = searchAddResource(riskAssessment.getCondition().getReference());
+            if (resource == null) referenceMissing(riskAssessment, riskAssessment.getCondition().getReference());
+            riskAssessment.setCondition(getReference(resource));
+        }
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "RiskAssessment";
+        // Location found do not add
+        if (eprRiskAssessment != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "RiskAssessment/"+eprRiskAssessment.getIdElement().getIdPart();
+            riskAssessment.setId(eprRiskAssessment.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(riskAssessment);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRRiskAssessment", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof RiskAssessment) {
+            eprRiskAssessment = (RiskAssessment) iResource;
+            setResourceMap(riskAssessmentId,eprRiskAssessment);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprRiskAssessment;
+    }
+
+    public Goal searchAddGoal(String goalId,Goal goal) {
+        log.info("Goal searchAdd " +goalId);
+
+        if (goal == null) throw new InternalErrorException("Bundle processing error");
+
+        Goal eprGoal = (Goal) resourceMap.get(goalId);
+
+        // Organization already processed, quit with Organization
+        if (eprGoal != null) return eprGoal;
+
+        // Prevent re-adding the same Practitioner
+        if (goal.getIdentifier().size() == 0) {
+            goal.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(goal.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : goal.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRGoal", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Goal");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprGoal = (Goal) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Goal = " + eprGoal.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (goal.hasSubject()) {
+            Resource resource = searchAddResource(goal.getSubject().getReference());
+            if (resource == null) referenceMissing(goal, goal.getSubject().getReference());
+            goal.setSubject(getReference(resource));
+        }
+
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Goal";
+        // Location found do not add
+        if (eprGoal != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Goal/"+eprGoal.getIdElement().getIdPart();
+            goal.setId(eprGoal.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(goal);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRGoal", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Goal) {
+            eprGoal = (Goal) iResource;
+            setResourceMap(goalId,eprGoal);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprGoal;
+    }
 
     public MedicationDispense searchAddMedicationDispense(String medicationDispenseId,MedicationDispense medicationDispense) {
         log.info("MedicationDispense searchAdd " +medicationDispenseId);

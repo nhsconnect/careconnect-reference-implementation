@@ -327,6 +327,11 @@ public class PatientDao implements PatientRepository {
             }
             em.persist(patientName);
         }
+
+        // Temp fix to remove old addresses 16/8/2018 KGM
+        for (PatientAddress adrSearch : patientEntity.getAddresses()) {
+            em.remove(adrSearch);
+        }
         for (Address address : patient.getAddress()) {
             PatientAddress patientAdr = null;
             for (PatientAddress adrSearch : patientEntity.getAddresses()) {

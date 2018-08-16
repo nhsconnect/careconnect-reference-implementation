@@ -1,4 +1,8 @@
 <QuestionnaireResponse xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://fhir.leedsth.nhs.uk/Id/form"/>
+        <value value="12345"/>
+    </identifier>
     <status value="in-progress"/>
     <subject>
         <reference value="Patient/1"/>
