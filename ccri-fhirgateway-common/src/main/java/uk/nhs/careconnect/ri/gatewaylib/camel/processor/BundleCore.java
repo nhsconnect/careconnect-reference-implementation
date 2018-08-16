@@ -945,6 +945,14 @@ public class BundleCore {
         }
         carePlan.setAddresses(referenceTeam);
 
+        List<Reference> referenceSupporting = new ArrayList<>();
+        for (Reference reference : carePlan.getSupportingInfo()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(carePlan, reference.getReference());
+            if (resource!=null) referenceSupporting.add(getReference(resource));
+        }
+        carePlan.setAddresses(referenceSupporting);
+
         IBaseResource iResource = null;
         String xhttpMethod = "POST";
         String xhttpPath = "CarePlan";
@@ -1757,7 +1765,7 @@ public class BundleCore {
         if (eprRiskAssessment != null) return eprRiskAssessment;
 
         // Prevent re-adding the same Practitioner
-        if (riskAssessment.hasIdentifier()) {
+        if (!riskAssessment.hasIdentifier()) {
             riskAssessment.getIdentifier()
                     .setSystem("urn:uuid")
                     .setValue(riskAssessment.getId());
