@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 
 public class ProviderResponseLibrary {
     private static final Logger log = LoggerFactory.getLogger(ProviderResponseLibrary.class);
@@ -29,10 +27,17 @@ public class ProviderResponseLibrary {
         } else {
             log.error(ex.getMessage());
             if (ex.getStackTrace().length >0) {
-                log.error(ex.getStackTrace().toString());
+                StringWriter sw = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sw));
+                String exceptionAsString = sw.toString();
+                log.error(exceptionAsString);
+
+            }
+            if (ex.getCause() != null) {
+                log.error(ex.getCause().toString());
             }
             method.setCreated(false);
-            method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getCause().getMessage() + ' '+ ex.getMessage()));
+            method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
         }
 
         return method;

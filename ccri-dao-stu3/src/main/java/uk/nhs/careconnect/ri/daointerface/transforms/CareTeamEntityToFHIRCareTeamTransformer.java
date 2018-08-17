@@ -55,7 +55,16 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
             period.setEnd(careTeamEntity.getPeriodEndDateTime());
         }
 
+        if (careTeamEntity.getReasonCode() != null) {
+            careTeam.addReasonCode().addCoding()
+                    .setSystem(careTeamEntity.getReasonCode().getSystem())
+                    .setDisplay(careTeamEntity.getReasonCode().getDisplay())
+                    .setCode(careTeamEntity.getReasonCode().getCode());
+        }
 
+        if (careTeamEntity.getManagingOrganisation() != null) {
+            careTeam.addManagingOrganization(new Reference("Organization/"+careTeamEntity.getManagingOrganisation().getId()));
+        }
 
         for (CareTeamIdentifier identifier : careTeamEntity.getIdentifiers()) {
             careTeam.addIdentifier()
@@ -63,7 +72,35 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
                 .setValue(identifier.getValue());
         }
 
+        for (CareTeamMember careTeamMember : careTeamEntity.getMembers()) {
+            CareTeam.CareTeamParticipantComponent participant = careTeam.addParticipant();
 
+            if (careTeamMember.getRole() !=null) {
+                participant.getRole().addCoding()
+                        .setSystem(careTeamMember.getRole().getSystem())
+                        .setDisplay(careTeamMember.getRole().getDisplay())
+                        .setCode(careTeamMember.getRole().getCode());
+            }
+            if (careTeamMember.getMemberOrganisation() != null) {
+                participant.setMember(new Reference("Organization/"+careTeamMember.getMemberOrganisation().getId()));
+            }
+            if (careTeamMember.getMemberPractitioner() != null) {
+                participant.setMember(new Reference("Practitioner/"+careTeamMember.getMemberPractitioner().getId()));
+            }
+            if (careTeamMember.getMemberPerson() != null) {
+                participant.setMember(new Reference("RelatedPerson/"+careTeamMember.getMemberPerson().getId()));
+            }
+            if (careTeamMember.getMemberPatient() != null) {
+                participant.setMember(new Reference("Patient/"+careTeamMember.getMemberPatient().getId()));
+            }
+            if (careTeamMember.getOnBehalfOrganisation() != null) {
+                participant.setOnBehalfOf(new Reference("Organization/"+careTeamMember.getOnBehalfOrganisation().getId()));
+            }
+
+        }
+        for (CareTeamReason reason : careTeamEntity.getReasons()) {
+            careTeam.addReasonReference(new Reference("Condition/" + reason.getCondition().getId()));
+        }
 
 
         return careTeam;
