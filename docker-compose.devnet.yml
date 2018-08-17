@@ -2,7 +2,7 @@ version: '2'
 services:
   ccriserver:
     container_name: ccriserver
-    image: ccri-fhirserver
+    image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
     links:
@@ -33,7 +33,7 @@ services:
 
   ccrisql:
     container_name: ccrisql
-    image: ccri-sql
+    image: ${REGISTRY_PREFIX}ccri-sql${IMAGE_TAG}
     environment:
       - POSTGRES_DB=careconnect
       - POSTGRES_USER=${MYSQL_DB_USER}
@@ -45,7 +45,7 @@ services:
 
   ccrifhir:
     container_name: ccrifhir
-    image: ccri-fhir
+    image: ${REGISTRY_PREFIX}ccri-fhir${IMAGE_TAG}
     environment:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
@@ -66,7 +66,7 @@ services:
 
   ccriui:
     container_name: ccriui
-    image: ccri-ui
+    image: ${REGISTRY_PREFIX}ccri-ui${IMAGE_TAG}
     environment:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
@@ -92,7 +92,7 @@ services:
 
   ccridocument:
      container_name: ccridocument
-     image: ccri-document
+     image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
        - ccrimongo
      links:
