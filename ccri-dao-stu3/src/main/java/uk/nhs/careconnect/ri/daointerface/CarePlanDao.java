@@ -164,7 +164,7 @@ public class CarePlanDao implements CarePlanRepository {
     public CarePlan create(FhirContext ctx, CarePlan carePlan, IdType theId, String theConditional) throws OperationOutcomeException {
 
         log.debug("CarePlan.save");
-        //  log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
+        //  log.debug(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounter));
         CarePlanEntity carePlanEntity = null;
 
         if (carePlan.hasId()) carePlanEntity = readEntity(ctx, carePlan.getIdElement());
@@ -189,7 +189,7 @@ public class CarePlanDao implements CarePlanRepository {
                         break;
                     }
                 } else {
-                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                    log.debug("NOT SUPPORTED: Conditional Url = "+theConditional);
                 }
 
             } catch (Exception ex) {
@@ -245,15 +245,15 @@ public class CarePlanDao implements CarePlanRepository {
             em.remove(conditionSearch);
         }
         for (Reference reference : carePlan.getAddresses()) {
-            log.info("Address Reference = "+reference.getReference());
+            log.debug("Address Reference = "+reference.getReference());
             ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
-            CarePlanCondition carePlanCondition = null;
-            for (CarePlanCondition conditionSearch : carePlanEntity.getAddresses()) {
+          CarePlanCondition carePlanCondition = null;
+        /*      for (CarePlanCondition conditionSearch : carePlanEntity.getAddresses()) {
                 if (conditionSearch.getCondition().getCode().getCode().equals(conditionEntity.getCode())) {
                     carePlanCondition = conditionSearch;
                     break;
                 }
-            }
+            } */
             if (conditionEntity != null && carePlanCondition == null) {
                 carePlanCondition = new CarePlanCondition();
                 carePlanCondition.setCondition(conditionEntity);
@@ -322,10 +322,15 @@ public class CarePlanDao implements CarePlanRepository {
             if (component.hasDetail()) {
                 for (CarePlanActivity searchActivity : carePlanEntity.getActivities()) {
                     for (CarePlanActivityDetail searchDetail : searchActivity.getDetails()) {
-                        if (searchDetail.getCode().getCode().equals(component.getDetail().getCode())) {
-                            activity= searchActivity;
-                            detail= searchDetail;
-                            break;
+                        if (searchDetail.getCode() != null) {
+                            if (searchDetail.getCode().getCode().equals(component.getDetail().getCode())) {
+                                activity = searchActivity;
+                                detail = searchDetail;
+                                break;
+                            }
+                        } else {
+                            // Can't find solid reference to activity so remove
+                            em.remove(searchDetail);
                         }
 
                     }
@@ -344,15 +349,18 @@ public class CarePlanDao implements CarePlanRepository {
                 if (component.getDetail().hasStatus()) {
                     detail.setStatus(component.getDetail().getStatus());
                 }
+                if (component.getDetail().hasDescription()) {
+                    detail.setDescription(component.getDetail().getDescription());
+                }
                 if (component.getDetail().hasCode()) {
                     log.debug("CarePlan Detail "+component.getDetail().getCode().getCodingFirstRep().getCode());
                     ConceptEntity concept = conceptDao.findAddCode(component.getDetail().getCode().getCodingFirstRep());
                     if (concept != null) {
                         detail.setCode(concept);
-                        em.persist(detail);
+
                     }
                 }
-
+                em.persist(detail);
             }
         }
         log.debug("CarePlan.saveAuthor");
@@ -436,17 +444,17 @@ public class CarePlanDao implements CarePlanRepository {
         List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date,categories, identifier,resid, includes);
         List<Resource> results = new ArrayList<>();
 
-        for (CarePlanEntity carePlanIntoleranceEntity : qryResults)
+        for (CarePlanEntity carePlanEntity : qryResults)
         {
             // log.trace("HAPI Custom = "+doc.getId());
-            CarePlan carePlanIntolerance = carePlanEntityToFHIRCarePlanTransformer.transform(carePlanIntoleranceEntity);
-            results.add(carePlanIntolerance);
+            CarePlan carePlan = carePlanEntityToFHIRCarePlanTransformer.transform(carePlanEntity);
+            results.add(carePlan);
         }
 
 
 
         if (includes!=null) {
-            log.info("Reverse includes");
+            log.debug("Reverse includes");
             for (CarePlanEntity carePlanEntity : qryResults) {
                 if (includes !=null) {
                     for (Include include : includes) {

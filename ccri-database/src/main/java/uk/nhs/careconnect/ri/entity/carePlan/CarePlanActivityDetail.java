@@ -35,12 +35,15 @@ public class CarePlanActivityDetail {
 	private ConceptEntity category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CODE_CONCEPT_ID"))
+	@JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CODE_CONCEPT_ID"))
 	private ConceptEntity code;
 
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name="status")
 	CarePlan.CarePlanActivityStatus status;
+
+	@Column(name="DESCRIPTION")
+	String description;
 
 	public Long getCarePlanActivityDetailId() {
 		return carePlanActivityDetailId;
@@ -80,5 +83,13 @@ public class CarePlanActivityDetail {
 
 	public void setStatus(CarePlan.CarePlanActivityStatus status) {
 		this.status = status;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

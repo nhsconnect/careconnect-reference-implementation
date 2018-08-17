@@ -85,12 +85,17 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
             CarePlan.CarePlanActivityComponent activityComponent = carePlan.addActivity();
             for (CarePlanActivityDetail carePlanActivityDetail : activity.getDetails()) {
                 CarePlan.CarePlanActivityDetailComponent activityDetailComponent = activityComponent.getDetail();
-                activityDetailComponent.getCode().addCoding()
-                        .setCode(carePlanActivityDetail.getCode().getCode())
-                        .setDisplay(carePlanActivityDetail.getCode().getDisplay())
-                        .setSystem(carePlanActivityDetail.getCode().getSystem());
+                if (carePlanActivityDetail.getCode() != null) {
+                    activityDetailComponent.getCode().addCoding()
+                            .setCode(carePlanActivityDetail.getCode().getCode())
+                            .setDisplay(carePlanActivityDetail.getCode().getDisplay())
+                            .setSystem(carePlanActivityDetail.getCode().getSystem());
+                }
                 if (carePlanActivityDetail.getStatus() != null) {
                     activityDetailComponent.setStatus(carePlanActivityDetail.getStatus());
+                }
+                if (carePlanActivityDetail.getDescription() != null) {
+                    activityDetailComponent.setDescription(carePlanActivityDetail.getDescription());
                 }
                 if (carePlanActivityDetail.getCategory() != null) {
                     activityDetailComponent.getCategory().addCoding()

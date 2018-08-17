@@ -1,0 +1,126 @@
+<Bundle xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://tools.ietf.org/html/rfc4122"/>
+        <value value="169d2041-52f9-4de0-92f5-b8fb1d956211"/>
+    </identifier>
+    <type value="collection"/>
+    <entry>
+        <fullUrl value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+        <resource>
+            <Patient>
+                <id value="7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                <meta>
+                        profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-Patient-1"/>
+                </meta>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+                                <code value="01"/>
+                                <display value="Number present and verified"/>
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+                    <value value="9912003888"/>
+                </identifier>
+                <name>
+                    <use value="official"/>
+                    <family value="DAWKINS"/>
+                    <given value="Jack"/>
+                </name>
+                <birthDate value="2017-10-02"/>
+            </Patient>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+        <resource>
+            <List xmlns="http://hl7.org/fhir">
+                <id value="33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-ProblemList-1.xml"/>
+                </meta>
+                <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-EOL-ReSPECTScale-1">
+                    <extension url="respectPriorityScale">
+                        <valueInteger value="50"/>
+                    </extension>
+                    <extension url="respectPriorityScaleStatement">
+                        <valueString value="Considering the above priority, what is most important to you?"/>
+                    </extension>
+                </extension>
+                <status value="current"/>
+                <mode value="working"/>
+                <subject>
+                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                </subject>
+                <entry>
+                    <item>
+                        <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                    </item>
+                </entry>
+            </List>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+        <resource>
+            <Condition>
+                <id value="f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-ProblemHeader-Condition"/>
+                </meta>
+                <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-RelatedClinicalContent-1">
+                    <valueReference>
+                        <reference value="f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+                    </valueReference>
+                </extension>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="426656000"/>
+                        <display value="Severe persistent asthma"/>
+                    </coding>
+                    <text value="Breathlessness"/>
+                </code>
+
+                <subject>
+                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                </subject>
+            </Condition>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+        <resource>
+            <CarePlan xmlns="http://hl7.org/fhir">
+                <id value="f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATP-CarePlan-1"/>
+                </meta>
+                <status value="active"/>
+                <intent value="plan"/>
+                <category>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="736373009"/>
+                        <display value="End of life care plan (record artifact)"/>
+                    </coding>
+                </category>
+                <subject>
+                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                </subject>
+                <addresses>
+                    <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                </addresses>
+                <activity>
+                    <detail>
+                        <status value="completed"/>
+                        <description value="Patient should be made comfortable"/>
+                    </detail>
+                </activity>
+            </CarePlan>
+        </resource>
+    </entry>
+</Bundle>
