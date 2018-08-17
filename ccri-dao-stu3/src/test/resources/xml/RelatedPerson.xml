@@ -1,0 +1,22 @@
+<RelatedPerson xmlns="http://hl7.org/fhir">
+    <identifier>
+        <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+        <value value="9912003999"/>
+    </identifier>
+    <patient>
+        <reference value="Patient/1"/>
+    </patient>
+    <relationship>
+        <coding>
+            <system value="http://hl7.org/fhir/v3/RoleCode"/>
+            <code value="MTH"/>
+            <display value="mother"/>
+        </coding>
+    </relationship>
+    <name>
+        <use value="official"/>
+        <family value="Kanfeld"/>
+        <given value="Anita"/>
+    </name>
+    <birthDate value="1972-07-22"/>
+</RelatedPerson>

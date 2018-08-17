@@ -11,10 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.CareTeamEntityToFHIRCareTeamTransformer;
+import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.entity.careTeam.CareTeamIdentifier;
+import uk.nhs.careconnect.ri.entity.careTeam.CareTeamMember;
+import uk.nhs.careconnect.ri.entity.careTeam.CareTeamReason;
+import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -46,6 +54,15 @@ public class CareTeamDao implements CareTeamRepository {
 
     @Autowired
     EncounterRepository encounterDao;
+
+    @Autowired
+    ConditionRepository conditionDao;
+
+    @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
+    RelatedPersonRepository personDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -81,7 +98,7 @@ public class CareTeamDao implements CareTeamRepository {
             try {
 
 
-                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/team")) {
+                if (theConditional.contains("fhir.leedsth.nhs.uk/CareTeam/Id")) {
                     URI uri = new URI(theConditional);
 
                     String scheme = uri.getScheme();
@@ -133,7 +150,12 @@ public class CareTeamDao implements CareTeamRepository {
                 teamEntity.setContextEncounter(encounterEntity);
             }
         }
-
+        if (team.hasManagingOrganization()) {
+            if (team.getManagingOrganizationFirstRep().getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(team.getManagingOrganizationFirstRep().getReference()));
+                teamEntity.setManagingOrganisation(organisationEntity);
+            }
+        }
 
         em.persist(teamEntity);
 
@@ -156,6 +178,48 @@ public class CareTeamDao implements CareTeamRepository {
             em.persist(teamIdentifier);
         }
 
+
+        for (CareTeamReason reason :teamEntity.getReasons()) {
+            em.remove(reason);
+        }
+        for (Reference reference :team.getReasonReference()) {
+            CareTeamReason reason = new CareTeamReason();
+            reason.setCareTeam(teamEntity);
+            if (reference.getReference().contains("Condition")) {
+                ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
+                reason.setCondition(conditionEntity);
+            }
+            em.persist(reason);
+        }
+
+        for (CareTeamMember member :teamEntity.getMembers()) {
+            em.remove(member);
+        }
+        for (CareTeam.CareTeamParticipantComponent participant :team.getParticipant()) {
+            CareTeamMember member = new CareTeamMember();
+            member.setCareTeam(teamEntity);
+            if (participant.getMember().getReference().contains("Practitioner")) {
+                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(participant.getMember().getReference()));
+                member.setMemberPractitioner(practitionerEntity);
+            }
+            if (participant.getMember().getReference().contains("RelatedPerson")) {
+                RelatedPersonEntity relatedPersonEntity = personDao.readEntity(ctx, new IdType(participant.getMember().getReference()));
+                member.setMemberPerson(relatedPersonEntity);
+            }
+            if (participant.getMember().getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(participant.getMember().getReference()));
+                member.setMemberOrganisation(organisationEntity);
+            }
+            if (participant.hasOnBehalfOf() && participant.getOnBehalfOf().getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(participant.getOnBehalfOf().getReference()));
+                member.setOnBehalfOrganisation(organisationEntity);
+            }
+            if (participant.hasRole() && participant.getRole().hasCoding()) {
+                ConceptEntity concept = conceptDao.findAddCode(participant.getRole().getCodingFirstRep());
+                if (concept != null) member.setRole(concept);
+            }
+            em.persist(member);
+        }
 
 
 

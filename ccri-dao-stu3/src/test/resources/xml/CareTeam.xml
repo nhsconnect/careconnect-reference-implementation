@@ -1,0 +1,49 @@
+<CareTeam xmlns="http://hl7.org/fhir">
+  <identifier>
+    <system value="https://fhir.leedsth.nhs.uk/CareTeam/Id"/>
+       <value value="12345"/>
+  </identifier>
+  <status value="active"/>
+  <category>
+     <coding>
+       <system value="http://hl7.org/fhir/care-team-category"/>
+       <code value="encounter"/>
+     </coding>
+  </category>
+  <name value="Peter James Charlmers Care Plan for Breathlessness"/>
+  <subject>
+    <reference value="Patient/1"/>
+  </subject>
+  <context>
+  <reference value="Encounter/1"/>
+  </context>
+  <period>
+    <end value="2013-01-01"/>
+  </period>
+  <participant>
+    <role>
+      <text value="responsiblePerson"/>
+    </role>
+    <member>
+      <reference value="RelatedPerson/2"/>
+    </member>
+  </participant>
+
+  <participant>
+    <role>
+      <text value="adviser"/>
+    </role>
+    <member>
+      <reference value="Practitioner/1"/>
+    </member>
+    <onBehalfOf>
+      <reference value="Organization/1"/>
+    </onBehalfOf>
+    <period>
+      <end value="2013-01-01"/>
+    </period>
+  </participant>
+  <managingOrganization>
+        <reference value="Organization/1"/>
+    </managingOrganization>
+</CareTeam>

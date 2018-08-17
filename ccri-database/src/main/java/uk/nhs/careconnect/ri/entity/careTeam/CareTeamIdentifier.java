@@ -4,7 +4,7 @@ import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 import javax.persistence.*;
 
 @Entity
-@Table(name="CareTeamIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_CARE_TEAM_IDENTIFIER", columnNames={"CARE_TEAM_IDENTIFIER_ID"})
+@Table(name="CareTeamIdentifier2", uniqueConstraints= @UniqueConstraint(name="PK_CARE_TEAM_IDENTIFIER", columnNames={"CARE_TEAM_IDENTIFIER_ID"})
 		,indexes = {}
 		)
 public class CareTeamIdentifier extends BaseIdentifier {

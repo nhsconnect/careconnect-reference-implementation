@@ -1,13 +1,11 @@
 package uk.nhs.careconnect.ri.entity.careTeam;
-
-import uk.nhs.careconnect.ri.entity.BaseIdentifier;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="CareTeamIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_CARE_TEAM_IDENTIFIER", columnNames={"CARE_TEAM_IDENTIFIER_ID"})
+@Table(name="CareTeamReason", uniqueConstraints= @UniqueConstraint(name="PK_CARE_TEAM_REASON", columnNames={"CARE_TEAM_REASON_ID"})
 		,indexes = {}
 		)
 public class CareTeamReason extends BaseResource {
@@ -25,7 +23,7 @@ public class CareTeamReason extends BaseResource {
     private Long reasonId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "CARE_TEAM_ID",foreignKey= @ForeignKey(name="FK_CARE_TEAM_IDENTIFIER_CARE_TEAM_ID"))
+    @JoinColumn (name = "CARE_TEAM_ID",foreignKey= @ForeignKey(name="FK_CARE_TEAM_REASON_CARE_TEAM_ID"))
 	private CareTeamEntity team;
 
 	@ManyToOne(fetch = FetchType.LAZY)
