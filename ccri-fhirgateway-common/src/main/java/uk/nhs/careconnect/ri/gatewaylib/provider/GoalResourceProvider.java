@@ -137,7 +137,7 @@ public class GoalResourceProvider implements IResourceProvider {
                                          @OptionalParam(name = Goal.SP_PATIENT) ReferenceParam patient
                                         ,@OptionalParam(name = Goal.SP_IDENTIFIER) TokenParam identifier
                                         ,@OptionalParam(name = Goal.SP_RES_ID) TokenParam id
-    ) {
+    ) throws Exception {
 
         List<Resource> results = new ArrayList<>();
 
@@ -164,15 +164,8 @@ public class GoalResourceProvider implements IResourceProvider {
                 Resource resource1 = entry.getResource();
                 results.add(resource1);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;
