@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -87,7 +88,7 @@ public class EncounterResourceProvider implements IResourceProvider {
     public Bundle encounterDocumentOperation(
             @IdParam IdType encounterId
 
-    ) {
+    ) throws Exception {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
@@ -121,16 +122,8 @@ public class EncounterResourceProvider implements IResourceProvider {
                 results.add(entry.getResource());
             }
             */
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return null;
@@ -138,7 +131,7 @@ public class EncounterResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public Encounter getEncounterById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Encounter getEncounterById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -159,15 +152,8 @@ public class EncounterResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Encounter) {
             encounter = (Encounter) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return encounter;
@@ -184,8 +170,7 @@ public class EncounterResourceProvider implements IResourceProvider {
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
-
-                                       ) {
+    ) throws Exception {
 
         List<Resource> results = new ArrayList<>();
 
@@ -221,16 +206,8 @@ public class EncounterResourceProvider implements IResourceProvider {
                 //Encounter resourceEntry = (Resource) entry.getResource();
                 results.add(entry.getResource());
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

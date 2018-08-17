@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
 */
 
     @Read
-    public PractitionerRole getPractitionerRoleById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public PractitionerRole getPractitionerRoleById(HttpServletRequest theRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -72,15 +73,8 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
         }
         if (resource instanceof PractitionerRole) {
             practitionerRole = (PractitionerRole) resource;
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return practitionerRole;
@@ -92,7 +86,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
                                                          @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
                                                          ,@OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       )  throws Exception {
 
         List<PractitionerRole> results = new ArrayList<PractitionerRole>();
 
@@ -119,15 +113,8 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
                 PractitionerRole patient = (PractitionerRole) entry.getResource();
                 results.add(patient);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
         return results;
 

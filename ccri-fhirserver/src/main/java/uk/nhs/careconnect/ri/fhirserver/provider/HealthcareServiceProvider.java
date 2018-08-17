@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.HealthcareServiceRepository;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,18 +63,7 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
             method.setResource(newHealthcareService);
         } catch (Exception ex) {
 
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                if (ex.getStackTrace().length >0) {
-                    log.error(ex.getStackTrace().toString());
-                }
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+            ProviderResponseLibrary.handleException(method,ex);
         }
 
 
@@ -97,15 +86,7 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
             method.setResource(newHealthcareService);
         } catch (Exception ex) {
 
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+            ProviderResponseLibrary.handleException(method,ex);
         }
 
 

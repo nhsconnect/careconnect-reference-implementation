@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
 */
 
     @Read
-    public Organization getOrganizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Organization getOrganizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -81,16 +82,8 @@ public class OrganisationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Organization) {
             organization = (Organization) resource;
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
         return organization;
     }
@@ -100,7 +93,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
                                                  @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name
             , @OptionalParam(name = Organization.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Organization> results = new ArrayList<Organization>();
 
@@ -124,15 +117,8 @@ public class OrganisationResourceProvider implements IResourceProvider {
                 Organization patient = (Organization) entry.getResource();
                 results.add(patient);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

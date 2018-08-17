@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -45,7 +44,7 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
 
     
     @Read
-    public QuestionnaireResponse getQuestionnaireById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public QuestionnaireResponse getQuestionnaireById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -76,22 +75,15 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
         }
         if (resource instanceof QuestionnaireResponse) {
             form = (QuestionnaireResponse) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return form;
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam QuestionnaireResponse form) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam QuestionnaireResponse form) throws Exception {
 
 
 
@@ -99,7 +91,7 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
 
         IBaseResource resource = null;
         try {
-            InputStream inputStream = null;
+
             String newXmlResource = ctx.newXmlParser().encodeResourceToString(form);
 
             Exchange exchangeBundle = template.send("direct:FHIRQuestionnaireResponse", ExchangePattern.InOut, new Processor() {
@@ -114,19 +106,7 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
             });
 
             // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -136,18 +116,8 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
 
         if (resource instanceof org.hl7.fhir.dstu3.model.QuestionnaireResponse) {
             form = (QuestionnaireResponse) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
@@ -173,7 +143,7 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
                                                                    @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) TokenParam id,
                                                                    @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
                                                                    @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient
-    ) {
+    ) throws Exception {
 
         List<QuestionnaireResponse> results = new ArrayList<QuestionnaireResponse>();
 
@@ -200,17 +170,9 @@ public class QuestionnaireResponseResourceProvider implements IResourceProvider 
                 QuestionnaireResponse form = (QuestionnaireResponse) entry.getResource();
                 results.add(form);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
-
         return results;
 
     }

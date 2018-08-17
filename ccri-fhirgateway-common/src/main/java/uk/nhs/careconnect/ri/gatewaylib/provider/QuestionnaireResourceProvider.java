@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -44,7 +45,7 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Questionnaire getQuestionnaireById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Questionnaire getQuestionnaireById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -75,15 +76,8 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Questionnaire) {
             questionnaire = (Questionnaire) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return questionnaire;
@@ -112,20 +106,7 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -171,7 +152,7 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                                                    @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
                                                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
-    ) {
+    ) throws Exception {
 
         List<Questionnaire> results = new ArrayList<Questionnaire>();
 
@@ -198,15 +179,8 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
                 Questionnaire questionnaire = (Questionnaire) entry.getResource();
                 results.add(questionnaire);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

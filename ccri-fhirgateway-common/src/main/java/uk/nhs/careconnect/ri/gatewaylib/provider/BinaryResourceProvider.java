@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -41,7 +42,7 @@ public class BinaryResourceProvider implements IResourceProvider {
 
   
     @Read
-    public Binary getBinaryById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Binary getBinaryById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
 
         // We get raw response from FHIR Server. Need to convert back to Binary for HAPI Handling
@@ -129,14 +130,9 @@ public class BinaryResourceProvider implements IResourceProvider {
 
         if (resource !=null) {
             log.warn("Unexpected resource != null "+resource.getClass().getCanonicalName());
-            if (resource instanceof OperationOutcome) {
-                OperationOutcome operationOutcome = (OperationOutcome) resource;
-                log.info("Sever Returned: " + ctx.newJsonParser().encodeResourceToString(operationOutcome));
 
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            } else {
-                throw new InternalErrorException("Unknown Error");
-            }
+            ProviderResponseLibrary.createException(ctx,resource);
+
         }
 
 

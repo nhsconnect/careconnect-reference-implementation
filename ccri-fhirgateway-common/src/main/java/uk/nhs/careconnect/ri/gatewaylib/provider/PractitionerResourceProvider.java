@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -52,7 +53,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Practitioner getPractitionerById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Practitioner getPractitionerById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -82,15 +83,8 @@ public class PractitionerResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Practitioner) {
             practitioner = (Practitioner) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
         return practitioner;
     }
@@ -101,7 +95,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
                                                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
             , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Practitioner> results = new ArrayList<Practitioner>();
 
@@ -126,17 +120,9 @@ public class PractitionerResourceProvider implements IResourceProvider {
                 Practitioner patient = (Practitioner) entry.getResource();
                 results.add(patient);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
-
         return results;
 
     }

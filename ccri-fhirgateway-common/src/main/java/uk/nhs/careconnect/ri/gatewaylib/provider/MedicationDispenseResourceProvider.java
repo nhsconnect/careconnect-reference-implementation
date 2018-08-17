@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -83,7 +84,7 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
     }
 */
     @Read
-    public MedicationDispense getMedicationDispenseById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public MedicationDispense getMedicationDispenseById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -104,15 +105,8 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
         }
         if (resource instanceof MedicationDispense) {
             dispense = (MedicationDispense) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return dispense;
@@ -126,7 +120,7 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationDispense.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = MedicationDispense.SP_CODE) TokenParam code
             , @OptionalParam(name= MedicationDispense.SP_MEDICATION) ReferenceParam medication
-                                       ) {
+                                       ) throws Exception {
 
         List<MedicationDispense> results = new ArrayList<MedicationDispense>();
 
@@ -162,17 +156,10 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
                 MedicationDispense dispense = (MedicationDispense) entry.getResource();
                 results.add(dispense);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
 
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
-        }
+    } else {
+        ProviderResponseLibrary.createException(ctx,resource);
+    }
 
         return results;
 

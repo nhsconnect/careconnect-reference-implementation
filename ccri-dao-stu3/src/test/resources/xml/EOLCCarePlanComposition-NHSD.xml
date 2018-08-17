@@ -111,6 +111,9 @@
                 <subject>
                     <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
                 </subject>
+                  <supportingInfo>
+                    <reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                </supportingInfo>
                 <addresses>
                     <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
                 </addresses>

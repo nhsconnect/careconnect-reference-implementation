@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -52,7 +52,7 @@ public class ConditionResourceProvider implements IResourceProvider {
     public Bundle conditionEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
-    ) {
+    ) throws Exception {
         
         Bundle bundle = new Bundle();
 
@@ -69,7 +69,7 @@ public class ConditionResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public Condition getConditionById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Condition getConditionById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -90,15 +90,8 @@ public class ConditionResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Condition) {
             condition = (Condition) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return condition;
@@ -111,7 +104,7 @@ public class ConditionResourceProvider implements IResourceProvider {
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Condition> results = new ArrayList<Condition>();
 
@@ -149,15 +142,8 @@ public class ConditionResourceProvider implements IResourceProvider {
                 results.add(condition);
             }
         }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

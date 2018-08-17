@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -71,7 +72,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
     }
 */
     @Read
-    public Immunization getImmunizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Immunization getImmunizationById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -92,15 +93,8 @@ public class ImmunizationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Immunization) {
             immunization = (Immunization) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return immunization;
@@ -112,7 +106,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Immunization> results = new ArrayList<Immunization>();
 
@@ -147,16 +141,8 @@ public class ImmunizationResourceProvider implements IResourceProvider {
                 Immunization immunization = (Immunization) entry.getResource();
                 results.add(immunization);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

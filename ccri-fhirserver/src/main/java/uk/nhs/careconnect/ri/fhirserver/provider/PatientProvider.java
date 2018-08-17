@@ -2,8 +2,6 @@ package uk.nhs.careconnect.ri.fhirserver.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.model.primitive.DateDt;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -17,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.daointerface.PatientDao;
 import uk.nhs.careconnect.ri.daointerface.PatientRepository;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,15 +79,7 @@ public class PatientProvider implements ICCResourceProvider {
         try {
             newPatient = patientDao.update(ctx, patient, theId, theConditional);
         } catch (Exception ex) {
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+            ProviderResponseLibrary.handleException(method,ex);
         }
         method.setId(newPatient.getIdElement());
         method.setResource(newPatient);

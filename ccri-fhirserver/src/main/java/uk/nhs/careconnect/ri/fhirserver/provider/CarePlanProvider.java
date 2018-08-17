@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.CarePlanRepository;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,16 +63,7 @@ public class CarePlanProvider implements ICCResourceProvider {
             method.setId(newCarePlan.getIdElement());
             method.setResource(newCarePlan);
         } catch (Exception ex) {
-
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+               ProviderResponseLibrary.handleException(method,ex);
         }
 
 
@@ -96,15 +87,7 @@ public class CarePlanProvider implements ICCResourceProvider {
             method.setId(newCarePlan.getIdElement());
             method.setResource(newCarePlan);
         } catch (Exception ex) {
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+            ProviderResponseLibrary.handleException(method,ex);
         }
 
 

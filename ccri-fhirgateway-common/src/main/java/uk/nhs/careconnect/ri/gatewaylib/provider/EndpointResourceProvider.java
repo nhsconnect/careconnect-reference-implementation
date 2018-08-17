@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -48,7 +49,7 @@ public class EndpointResourceProvider implements IResourceProvider {
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Endpoint endpoint) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Endpoint endpoint) throws Exception {
 
 
 
@@ -70,20 +71,7 @@ public class EndpointResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -93,39 +81,19 @@ public class EndpointResourceProvider implements IResourceProvider {
 
         if (resource instanceof Endpoint) {
             endpoint = (Endpoint) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }
 
     @Update
-    public MethodOutcome updateEndpoint(HttpServletRequest theRequest, @ResourceParam Endpoint endpoint, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome updateEndpoint(HttpServletRequest theRequest, @ResourceParam Endpoint endpoint, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -148,20 +116,7 @@ public class EndpointResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -171,40 +126,20 @@ public class EndpointResourceProvider implements IResourceProvider {
 
         if (resource instanceof Endpoint) {
             endpoint = (Endpoint) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }
 
 
     @Read
-    public Endpoint getEndpointById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Endpoint getEndpointById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -235,15 +170,8 @@ public class EndpointResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Endpoint) {
             location = (Endpoint) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return location;
@@ -253,7 +181,7 @@ public class EndpointResourceProvider implements IResourceProvider {
     public List<Endpoint> searchEndpoint(HttpServletRequest httpRequest,
                                          @OptionalParam(name = Endpoint.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Endpoint.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Endpoint> results = new ArrayList<Endpoint>();
 
@@ -280,15 +208,8 @@ public class EndpointResourceProvider implements IResourceProvider {
                 Endpoint patient = (Endpoint) entry.getResource();
                 results.add(patient);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

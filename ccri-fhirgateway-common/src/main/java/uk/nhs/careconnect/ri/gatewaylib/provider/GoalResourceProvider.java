@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -49,7 +50,7 @@ public class GoalResourceProvider implements IResourceProvider {
 
    
     @Read
-    public Goal getGoalById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Goal getGoalById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -80,22 +81,15 @@ public class GoalResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Goal) {
             carePlan = (Goal) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return carePlan;
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Goal goal) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Goal goal) throws Exception {
 
 
 
@@ -117,20 +111,7 @@ public class GoalResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -140,18 +121,8 @@ public class GoalResourceProvider implements IResourceProvider {
 
         if (resource instanceof Goal) {
             goal = (Goal) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();

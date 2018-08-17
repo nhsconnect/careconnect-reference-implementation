@@ -479,6 +479,9 @@ public class CarePlanDao implements CarePlanRepository {
                                     if (resource != null)
                                         results.add(resource);
                                 }
+                                for (CarePlanCondition condition : carePlanEntity.getAddresses()) {
+                                        results.add(conditionEntityToFHIRConditionTransformer.transform(condition.getCondition()));
+                                }
                                 for (CarePlanAuthor carePlanAuthor : carePlanEntity.getAuthors()) {
                                     if (carePlanAuthor.getPractitioner() != null)
                                         results.add(practitionerEntityToFHIRPractitionerTransformer.transform(carePlanAuthor.getPractitioner()));

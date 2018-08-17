@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -48,7 +49,7 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
     
     
     @Read
-    public ReferralRequest getReferralRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public ReferralRequest getReferralRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -67,15 +68,8 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
         }
         if (resource instanceof ReferralRequest) {
             referralRequest = (ReferralRequest) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return referralRequest;
@@ -87,7 +81,7 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
                                                     //   @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
                                                        @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
                                                        @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
-                                       ) {
+                                       ) throws Exception {
 
         List<ReferralRequest> results = new ArrayList<ReferralRequest>();
 
@@ -123,16 +117,8 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
                 ReferralRequest referralRequest = (ReferralRequest) entry.getResource();
                 results.add(referralRequest);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

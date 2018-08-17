@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class LocationResourceProvider implements IResourceProvider {
     */
 
     @Read
-    public Location getLocationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Location getLocationById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -82,15 +83,8 @@ public class LocationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Location) {
             location = (Location) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return location;
@@ -101,7 +95,7 @@ public class LocationResourceProvider implements IResourceProvider {
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
             , @OptionalParam(name = Location.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<Location> results = new ArrayList<Location>();
 
@@ -128,15 +122,8 @@ public class LocationResourceProvider implements IResourceProvider {
                 Location patient = (Location) entry.getResource();
                 results.add(patient);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

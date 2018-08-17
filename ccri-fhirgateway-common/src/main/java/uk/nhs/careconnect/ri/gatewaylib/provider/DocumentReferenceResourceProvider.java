@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -54,7 +55,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     }
     */
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -83,15 +84,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         }
         if (resource instanceof DocumentReference) {
             documentReference = (DocumentReference) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
@@ -108,7 +102,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
 
     @Read
-    public DocumentReference getDocumentReferenceById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public DocumentReference getDocumentReferenceById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -139,15 +133,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         }
         if (resource instanceof DocumentReference) {
             documentReference = (DocumentReference) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
 
@@ -162,7 +149,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
             , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
             , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
-    ) {
+    ) throws Exception {
 
 
 
@@ -191,15 +178,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
                 DocumentReference documentReference = (DocumentReference) entry.getResource();
                 results.add(documentReference);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

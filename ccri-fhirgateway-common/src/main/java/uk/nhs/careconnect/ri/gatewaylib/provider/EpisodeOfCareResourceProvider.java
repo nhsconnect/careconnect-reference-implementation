@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -46,7 +47,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
 
 
     @Read
-    public EpisodeOfCare getEpisodeOfCareById(HttpServletRequest theRequest, @IdParam IdType internalId) {
+    public EpisodeOfCare getEpisodeOfCareById(HttpServletRequest theRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -67,15 +68,8 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
         }
         if (resource instanceof EpisodeOfCare) {
             episode = (EpisodeOfCare) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
         
 
@@ -87,7 +81,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
           //  , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
             , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) TokenParam resid
-                                       ) {
+                                       ) throws Exception {
 
         List<EpisodeOfCare> results = new ArrayList<EpisodeOfCare>();
 
@@ -112,16 +106,9 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
                 EpisodeOfCare episode = (EpisodeOfCare) entry.getResource();
                 results.add(episode);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
 
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

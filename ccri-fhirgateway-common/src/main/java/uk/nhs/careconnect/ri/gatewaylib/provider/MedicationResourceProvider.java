@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -50,7 +51,7 @@ public class MedicationResourceProvider implements IResourceProvider {
     */
 
     @Read
-    public Medication getMedicationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Medication getMedicationById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -71,15 +72,8 @@ public class MedicationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Medication) {
             medication = (Medication) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return medication;
@@ -89,7 +83,7 @@ public class MedicationResourceProvider implements IResourceProvider {
     public List<Medication> searchMedicationRequest(HttpServletRequest httpRequest
             , @OptionalParam(name = Medication.SP_CODE) TokenParam code
             , @OptionalParam(name = Medication.SP_RES_ID) TokenParam resid
-    ) {
+    ) throws Exception {
 
         List<Medication> results = new ArrayList<>();
 
@@ -116,16 +110,8 @@ public class MedicationResourceProvider implements IResourceProvider {
                 Medication medication = (Medication) entry.getResource();
                 results.add(medication);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

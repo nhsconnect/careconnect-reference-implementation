@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +65,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Bundle bundle) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Bundle bundle) throws Exception {
 
 
         // Example message https://gist.github.com/IOPS-DEV/1a532eb43b226dcd6ce26a6b698019f4#file-ec_edischarge_full_payload_example-01
@@ -104,19 +105,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     });
                     log.trace("IN MESSAGE POST HANDLING");
                     // This response is coming from an external FHIR Server, so uses inputstream
-                    if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                        log.trace("RESPONSE InputStream");
-                        inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                        Reader reader = new InputStreamReader(inputStream);
-                        resource = ctx.newXmlParser().parseResource(reader);
-                    } else
-                    if (exchangeBundle.getIn().getBody() instanceof String) {
-                        log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                        resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                        log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-                    } else {
-                        log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-                    }
+                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
                     break;
 
                 case MESSAGE:
@@ -130,21 +119,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
                         }
                     });
-                    log.trace("IN MESSAGE POST HANDLING");
-                    // This response is coming from an external FHIR Server, so uses inputstream
-                    if (exchangeMessage.getIn().getBody() instanceof InputStream) {
-                        log.trace("RESPONSE InputStream");
-                        inputStream = (InputStream) exchangeMessage.getIn().getBody();
-                        Reader reader = new InputStreamReader(inputStream);
-                        resource = ctx.newXmlParser().parseResource(reader);
-                    } else
-                    if (exchangeMessage.getIn().getBody() instanceof String) {
-                        log.trace("RESPONSE String = "+(String) exchangeMessage.getIn().getBody());
-                        resource = ctx.newXmlParser().parseResource((String) exchangeMessage.getIn().getBody());
-                        log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-                    } else {
-                        log.info("MESSAGE TYPE "+exchangeMessage.getIn().getBody().getClass());
-                    }
+                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeMessage.getIn().getBody());
                     break;
 
                 case DOCUMENT:
@@ -181,18 +156,8 @@ public class BundleResourceProvider implements IResourceProvider {
 
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
@@ -216,7 +181,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
 
     @Update
-    public MethodOutcome updateBundle(HttpServletRequest theRequest, @ResourceParam Bundle bundle, @IdParam IdType bundleId, @ConditionalUrlParam String conditional, RequestDetails theRequestDetails) {
+    public MethodOutcome updateBundle(HttpServletRequest theRequest, @ResourceParam Bundle bundle, @IdParam IdType bundleId, @ConditionalUrlParam String conditional, RequestDetails theRequestDetails) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -236,7 +201,7 @@ public class BundleResourceProvider implements IResourceProvider {
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
-                    resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
+                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
                     break;
 
                 case DOCUMENT:
@@ -248,14 +213,8 @@ public class BundleResourceProvider implements IResourceProvider {
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
 
                     // This response is coming from an external FHIR Server, so uses inputstream
-                    if (exchangeDocument.getIn().getBody() instanceof InputStream) {
-                        inputStream = (InputStream) exchangeDocument.getIn().getBody();
-                        Reader reader = new InputStreamReader(inputStream);
-                        resource = ctx.newXmlParser().parseResource(reader);
-                    } else
-                    if (exchangeDocument.getIn().getBody() instanceof String) {
-                        resource = ctx.newXmlParser().parseResource((String) exchangeDocument.getIn().getBody());
-                    }
+                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeDocument.getIn().getBody());
+
 
                 default:
                     // TODO
@@ -266,16 +225,8 @@ public class BundleResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
-        } else if (resource instanceof OperationOutcome) {
-            if(((OperationOutcome) resource).getIssue().size()>0)
-            {
-                OperationOutcome operationOutcome = (OperationOutcome) resource;
-                log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
 

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ public class ListResourceProvider implements IResourceProvider {
 
     
     @Read
-    public ListResource getListById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public ListResource getListById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -78,22 +79,15 @@ public class ListResourceProvider implements IResourceProvider {
         }
         if (resource instanceof ListResource) {
             form = (ListResource) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return form;
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam ListResource form) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam ListResource form) throws Exception {
 
 
 
@@ -116,19 +110,7 @@ public class ListResourceProvider implements IResourceProvider {
             });
 
             // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -138,18 +120,8 @@ public class ListResourceProvider implements IResourceProvider {
 
         if (resource instanceof ListResource) {
             form = (ListResource) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
@@ -174,7 +146,7 @@ public class ListResourceProvider implements IResourceProvider {
                                                                    @OptionalParam(name = ListResource.SP_IDENTIFIER) TokenParam identifier,
                                                                    @OptionalParam(name= ListResource.SP_RES_ID) TokenParam id,
                                                                    @OptionalParam(name = ListResource.SP_PATIENT) ReferenceParam patient
-    ) {
+    ) throws Exception {
 
         List<ListResource> results = new ArrayList<ListResource>();
 
@@ -201,15 +173,8 @@ public class ListResourceProvider implements IResourceProvider {
                 ListResource form = (ListResource) entry.getResource();
                 results.add(form);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ public class ObservationResourceProvider implements IResourceProvider {
     public Bundle observationEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
-    ) {
+    ) throws Exception {
 
         Bundle bundle = completeBundle.getBundle();
 
@@ -75,7 +76,7 @@ public class ObservationResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public Observation getObservationById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public Observation getObservationById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -96,15 +97,8 @@ public class ObservationResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Observation) {
             observation = (Observation) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return observation;
@@ -118,7 +112,7 @@ public class ObservationResourceProvider implements IResourceProvider {
                                                @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid
              ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
-                                       ) {
+                                       ) throws Exception {
 
         List<Observation> results = new ArrayList<Observation>();
 
@@ -155,16 +149,8 @@ public class ObservationResourceProvider implements IResourceProvider {
                 Observation observation = (Observation) entry.getResource();
                 results.add(observation);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

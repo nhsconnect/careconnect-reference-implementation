@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -95,7 +96,7 @@ public class RiskAssessmentResourceProvider implements IResourceProvider {
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam RiskAssessment riskAssessment) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam RiskAssessment riskAssessment) throws Exception {
 
 
 
@@ -117,20 +118,7 @@ public class RiskAssessmentResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -140,18 +128,8 @@ public class RiskAssessmentResourceProvider implements IResourceProvider {
 
         if (resource instanceof RiskAssessment) {
             riskAssessment = (RiskAssessment) resource;
-        } else if (resource instanceof OperationOutcome) {
-
-            OperationOutcome operationOutcome =(OperationOutcome) resource;
-            log.trace("OP OUTCOME PROCESS " + operationOutcome.getIssue().size() );
-            if(operationOutcome.getIssue().size()>0)
-            {
-                log.info("Server Returned: "+operationOutcome.getIssueFirstRep().getDiagnostics());
-                OperationOutcomeFactory.convertToException(operationOutcome);
-            }
-        }
-        else {
-            throw new InternalErrorException("Unknown Error");
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         MethodOutcome method = new MethodOutcome();
@@ -176,7 +154,7 @@ public class RiskAssessmentResourceProvider implements IResourceProvider {
                                          @OptionalParam(name = RiskAssessment.SP_PATIENT) ReferenceParam patient
                                         ,@OptionalParam(name = RiskAssessment.SP_IDENTIFIER) TokenParam identifier
                                         ,@OptionalParam(name = RiskAssessment.SP_RES_ID) TokenParam id
-    ) {
+    ) throws Exception {
 
         List<Resource> results = new ArrayList<>();
 
@@ -203,15 +181,8 @@ public class RiskAssessmentResourceProvider implements IResourceProvider {
                 Resource resource1 = entry.getResource();
                 results.add(resource1);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

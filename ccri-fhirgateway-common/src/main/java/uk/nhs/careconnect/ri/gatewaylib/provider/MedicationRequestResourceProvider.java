@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -77,7 +78,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
     }
 */
     @Read
-    public MedicationRequest getMedicationRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public MedicationRequest getMedicationRequestById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -98,15 +99,8 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
         }
         if (resource instanceof MedicationRequest) {
             prescription = (MedicationRequest) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return prescription;
@@ -120,7 +114,7 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_RES_ID) TokenParam resid
             , @OptionalParam(name= MedicationRequest.SP_MEDICATION) ReferenceParam medication
-                                       ) {
+                                       ) throws Exception {
 
         List<MedicationRequest> results = new ArrayList<MedicationRequest>();
 
@@ -156,16 +150,8 @@ public class MedicationRequestResourceProvider implements IResourceProvider {
                 MedicationRequest prescription = (MedicationRequest) entry.getResource();
                 results.add(prescription);
             }
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return results;

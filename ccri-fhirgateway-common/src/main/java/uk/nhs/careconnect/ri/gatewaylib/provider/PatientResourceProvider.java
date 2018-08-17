@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 
 import javax.activation.UnsupportedDataTypeException;
 import javax.servlet.http.HttpServletRequest;
@@ -88,7 +89,7 @@ public class PatientResourceProvider implements IResourceProvider {
                     recordType,
             @OperationParam(name="recordSection") TokenParam
                     recordSection
-    ) throws UnsupportedDataTypeException {
+    ) throws Exception {
 
 
         ProducerTemplate template = context.createProducerTemplate();
@@ -123,16 +124,8 @@ public class PatientResourceProvider implements IResourceProvider {
 
             return bundle;
 
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return null;
@@ -146,7 +139,7 @@ public class PatientResourceProvider implements IResourceProvider {
                     recordType,
             @OperationParam(name="recordSection") TokenParam
                     recordSection
-    ) throws UnsupportedDataTypeException {
+    ) throws Exception {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
@@ -179,16 +172,8 @@ public class PatientResourceProvider implements IResourceProvider {
 
             return bundle;
 
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return null;
@@ -197,7 +182,7 @@ public class PatientResourceProvider implements IResourceProvider {
 
 
     @Read
-    public Patient getPatientById(HttpServletRequest request, @IdParam IdType internalId) {
+    public Patient getPatientById(HttpServletRequest request, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -226,15 +211,8 @@ public class PatientResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Patient) {
              patient = (Patient) resource;
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-             throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return patient;
@@ -260,7 +238,7 @@ public class PatientResourceProvider implements IResourceProvider {
                                         "Patient:general-practitioner"
                                         ,"Patient:organization"
                                         , "*"}) Set<Include> includes
-                                       ) {
+                                       ) throws Exception {
 
         List<Resource> results = new ArrayList<>();
 
@@ -286,15 +264,8 @@ public class PatientResourceProvider implements IResourceProvider {
                 //Patient patient = (Patient) ;
                 results.add(entry.getResource());
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            ProviderResponseLibrary.createException(ctx,resource);
         }
         return results;
 

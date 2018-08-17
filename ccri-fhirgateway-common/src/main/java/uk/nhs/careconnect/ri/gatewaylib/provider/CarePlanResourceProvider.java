@@ -18,10 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -53,7 +53,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
     public Bundle carePlanDocumentOperation(
             @IdParam IdType carePlanId
 
-    ) {
+    ) throws Exception {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
@@ -91,16 +91,8 @@ public class CarePlanResourceProvider implements IResourceProvider {
                 results.add(entry.getResource());
             }
             */
-        }
-        else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        } else  {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return null;
@@ -108,7 +100,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
     }
 
     @Read
-    public CarePlan getCarePlanById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public CarePlan getCarePlanById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -139,22 +131,15 @@ public class CarePlanResourceProvider implements IResourceProvider {
         }
         if (resource instanceof CarePlan) {
             carePlan = (CarePlan) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Unknown Error");
+        } else  {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return carePlan;
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam CarePlan plan) {
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam CarePlan plan) throws Exception {
 
 
 
@@ -176,20 +161,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
                 }
             });
 
-            // This response is coming from an external FHIR Server, so uses inputstream
-            if (exchangeBundle.getIn().getBody() instanceof InputStream) {
-                log.trace("RESPONSE InputStream");
-                inputStream = (InputStream) exchangeBundle.getIn().getBody();
-                Reader reader = new InputStreamReader(inputStream);
-                resource = ctx.newXmlParser().parseResource(reader);
-            } else
-            if (exchangeBundle.getIn().getBody() instanceof String) {
-                log.trace("RESPONSE String = "+(String) exchangeBundle.getIn().getBody());
-                resource = ctx.newXmlParser().parseResource((String) exchangeBundle.getIn().getBody());
-                log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
-            } else {
-                log.info("MESSAGE TYPE "+exchangeBundle.getIn().getBody().getClass());
-            }
+            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
@@ -215,17 +187,9 @@ public class CarePlanResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+
+        ProviderResponseLibrary.createException(ctx,resource);
+
 
         return method;
     }
@@ -241,7 +205,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
             "CarePlan:subject"
             ,"CarePlan:supportingInplanation"
             , "*"}) Set<Include> includes
-    ) {
+    ) throws Exception {
 
         List<Resource> results = new ArrayList<>();
 
@@ -268,17 +232,9 @@ public class CarePlanResourceProvider implements IResourceProvider {
                 Resource resource1 = entry.getResource();
                 results.add(resource1);
             }
-        } else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
-        } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+        } else  {
+            ProviderResponseLibrary.createException(ctx,resource);
         }
-
         return results;
 
     }
