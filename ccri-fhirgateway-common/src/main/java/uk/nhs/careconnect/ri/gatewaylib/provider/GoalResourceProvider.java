@@ -127,17 +127,7 @@ public class GoalResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }

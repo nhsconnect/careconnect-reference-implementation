@@ -105,7 +105,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     });
                     log.trace("IN MESSAGE POST HANDLING");
                     // This response is coming from an external FHIR Server, so uses inputstream
-                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+                    resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
                     break;
 
                 case MESSAGE:
@@ -119,7 +119,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
                         }
                     });
-                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeMessage.getIn().getBody());
+                    resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeMessage.getIn().getBody());
                     break;
 
                 case DOCUMENT:
@@ -132,18 +132,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
                         }
                     });
-                    // TODO need proper responses from the camel processor. KGM 18/Apr/2018
-
-                    // This response is coming from an external FHIR Server, so uses inputstream
-                    if (exchangeDocument.getIn().getBody() instanceof InputStream) {
-                        inputStream = (InputStream) exchangeDocument.getIn().getBody();
-                        Reader reader = new InputStreamReader(inputStream);
-                        resource = ctx.newXmlParser().parseResource(reader);
-
-                    } else
-                        if (exchangeDocument.getIn().getBody() instanceof String) {
-                            resource = ctx.newXmlParser().parseResource((String) exchangeDocument.getIn().getBody());
-                        }
+                    resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeDocument.getIn().getBody());
 
                     default:
                         // TODO
@@ -162,19 +151,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-
-
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }
@@ -201,7 +178,7 @@ public class BundleResourceProvider implements IResourceProvider {
                         }
                     });
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
-                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+                    resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
                     break;
 
                 case DOCUMENT:
@@ -213,7 +190,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     // TODO need proper responses from the camel processor. KGM 18/Apr/2018
 
                     // This response is coming from an external FHIR Server, so uses inputstream
-                    ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeDocument.getIn().getBody());
+                    resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeDocument.getIn().getBody());
 
 
                 default:
@@ -232,18 +209,7 @@ public class BundleResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
-
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
 
         return method;

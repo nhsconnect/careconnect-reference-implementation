@@ -57,7 +57,7 @@ public class CompleteBundle {
         this.organisationMap = organisationMap;
     }
 
-    public void addGetPractitioner(IdType id) {
+    public void addGetPractitioner(IdType id) throws Exception {
         if (id !=null) {
             Practitioner practitioner = practitionerMap.get(id.getIdPart());
             if (practitioner == null) {
@@ -70,7 +70,7 @@ public class CompleteBundle {
         }
     }
 
-    public void addGetOrganisation(IdType id) {
+    public void addGetOrganisation(IdType id) throws Exception {
         if (id != null) {
             Organization organization = organisationMap.get(id.getIdPart());
             if (organization == null) {
@@ -83,7 +83,7 @@ public class CompleteBundle {
         }
     }
 
-    public void addGetLocation(IdType id) {
+    public void addGetLocation(IdType id) throws Exception {
         if (id != null) {
             Location location = locationMap.get(id.getIdPart());
             if (location == null) {

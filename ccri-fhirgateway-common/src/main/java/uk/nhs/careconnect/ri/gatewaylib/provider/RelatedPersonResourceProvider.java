@@ -49,7 +49,7 @@ public class RelatedPersonResourceProvider implements IResourceProvider {
 
 
     @Read
-    public RelatedPerson getRelatedPersonById(HttpServletRequest httpRequest, @IdParam IdType internalId) {
+    public RelatedPerson getRelatedPersonById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -80,15 +80,8 @@ public class RelatedPersonResourceProvider implements IResourceProvider {
         }
         if (resource instanceof RelatedPerson) {
             person = (RelatedPerson) resource;
-        }else if (resource instanceof OperationOutcome)
-        {
-
-            OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
-
-            OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Unknown Error");
+            ProviderResponseLibrary.createException(ctx,resource);
         }
 
         return person;
@@ -134,17 +127,7 @@ public class RelatedPersonResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-        if (resource instanceof OperationOutcome) {
-            OperationOutcome opOutcome = (OperationOutcome) resource;
-            method.setOperationOutcome(opOutcome);
-            method.setCreated(false);
-        } else {
-            method.setCreated(true);
-            OperationOutcome opOutcome = new OperationOutcome();
-            method.setOperationOutcome(opOutcome);
-            method.setId(resource.getIdElement());
-            method.setResource(resource);
-        }
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }
