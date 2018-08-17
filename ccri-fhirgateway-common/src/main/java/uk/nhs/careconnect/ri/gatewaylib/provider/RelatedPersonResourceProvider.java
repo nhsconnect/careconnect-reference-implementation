@@ -111,7 +111,7 @@ public class RelatedPersonResourceProvider implements IResourceProvider {
             });
 
             // This response is coming from an external FHIR Server, so uses inputstream
-            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());

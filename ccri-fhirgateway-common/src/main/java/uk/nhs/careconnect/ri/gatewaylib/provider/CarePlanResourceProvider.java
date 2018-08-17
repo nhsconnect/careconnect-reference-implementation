@@ -161,7 +161,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
                 }
             });
 
-            ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
