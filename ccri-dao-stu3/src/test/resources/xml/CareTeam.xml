@@ -22,6 +22,11 @@
   </period>
   <participant>
     <role>
+      <coding>
+        <system value="http://snomed.info/sct"/>
+        <code value="72705000"/>
+        <display value="Mother"/>
+      </coding>
       <text value="responsiblePerson"/>
     </role>
     <member>
@@ -31,7 +36,12 @@
 
   <participant>
     <role>
-      <text value="adviser"/>
+      <coding>
+        <system value="http://snomed.info/sct"/>
+        <code value="59058001"/>
+        <display value="General physician"/>
+      </coding>
+      <text value="responsiblePerson"/>
     </role>
     <member>
       <reference value="Practitioner/1"/>
