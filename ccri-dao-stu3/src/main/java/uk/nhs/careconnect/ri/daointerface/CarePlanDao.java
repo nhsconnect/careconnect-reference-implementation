@@ -114,6 +114,9 @@ public class CarePlanDao implements CarePlanRepository {
     @Autowired
     private RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskAssessmentEntityToFHIRRiskAssessmentTransformer;
 
+    @Autowired
+    private CareTeamEntityToFHIRCareTeamTransformer careTeamEntityToFHIRCareTeamTransformer;
+
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
     @Override
@@ -481,6 +484,9 @@ public class CarePlanDao implements CarePlanRepository {
                                 }
                                 for (CarePlanCondition condition : carePlanEntity.getAddresses()) {
                                         results.add(conditionEntityToFHIRConditionTransformer.transform(condition.getCondition()));
+                                }
+                                for (CarePlanTeam carePlanTeam : carePlanEntity.getTeams()) {
+                                    results.add(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
                                 }
                                 for (CarePlanAuthor carePlanAuthor : carePlanEntity.getAuthors()) {
                                     if (carePlanAuthor.getPractitioner() != null)
