@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name="ClinicalImpressionBasedOn", uniqueConstraints= @UniqueConstraint(name="PK_IMPRESSION_BASEDON", columnNames={"IMPRESSION_BASEDON_ID"})
 		,indexes = {}
 		)
-public class ClinicalImpressionPrognosis extends BaseReferenceItem {
+public class ClinicalImpressionPrognosis extends BaseResource {
 
 	public ClinicalImpressionPrognosis() {
 	}
