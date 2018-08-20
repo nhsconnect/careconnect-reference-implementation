@@ -85,22 +85,18 @@ public class DocumentReferenceEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="FORMAT_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_FORMAT_CONCEPT_ID"))
-
     private ConceptEntity contentFormat;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CONTEXT_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_ENCOUNTER_ID"))
-
     private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTICE_SETTING_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_PRACTICE_SETTING_CONCEPT_ID"))
-
     private ConceptEntity contextPracticeSetting;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="FACILITY_TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_DOCUMENT_REFERENCE_FACILITY_TYPE_CONCEPT_ID"))
-
     private ConceptEntity contextFaciltityType;
 
     @OneToMany(mappedBy="documentReference", targetEntity=DocumentReferenceAttachment.class)

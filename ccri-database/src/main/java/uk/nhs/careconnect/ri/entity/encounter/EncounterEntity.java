@@ -6,9 +6,13 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.*;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
@@ -16,6 +20,9 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
+import uk.nhs.careconnect.ri.entity.referral.ReferralRequestEntity;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -96,12 +103,8 @@ public class EncounterEntity extends BaseResource {
     @OneToMany(mappedBy="contextEncounter", targetEntity = ProcedureEntity.class)
     Set<ProcedureEntity> procedureEncounters = new HashSet<>();
 
-
-
     @OneToMany(mappedBy="contextEncounter", targetEntity = ObservationEntity.class)
     Set<ObservationEntity> observationEncounters = new HashSet<>();
-
-
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = ConditionEntity.class)
     Set<ConditionEntity> conditionEncounters = new HashSet<>();
@@ -115,7 +118,25 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = CarePlanEntity.class)
     Set<CarePlanEntity> carePlans = new HashSet<>();
-    // Support for reverse includes
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = DocumentReferenceEntity.class)
+    Set<DocumentReferenceEntity> documents = new HashSet<>();
+
+    @OneToMany(mappedBy="encounter", targetEntity = ImmunisationEntity.class)
+    Set<ImmunisationEntity> immunisations = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = ListEntity.class)
+    Set<ListEntity> lists = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = QuestionnaireResponseEntity.class)
+    Set<QuestionnaireResponseEntity> forms = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = RiskAssessmentEntity.class)
+    Set<RiskAssessmentEntity> risks = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = ReferralRequestEntity.class)
+    Set<ReferralRequestEntity> referrals = new HashSet<>();
+    // Support for reverse includes End
 
     public Long getId() {
         return id;
@@ -304,5 +325,65 @@ public class EncounterEntity extends BaseResource {
 
     public void setProcedureEncounters(Set<ProcedureEntity> procedureEncounters) {
         this.procedureEncounters = procedureEncounters;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public PractitionerEntity getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(PractitionerEntity participant) {
+        this.participant = participant;
+    }
+
+    public Set<DocumentReferenceEntity> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(Set<DocumentReferenceEntity> documents) {
+        this.documents = documents;
+    }
+
+    public Set<ImmunisationEntity> getImmunisations() {
+        return immunisations;
+    }
+
+    public void setImmunisations(Set<ImmunisationEntity> immunisations) {
+        this.immunisations = immunisations;
+    }
+
+    public Set<ListEntity> getLists() {
+        return lists;
+    }
+
+    public void setLists(Set<ListEntity> lists) {
+        this.lists = lists;
+    }
+
+    public Set<QuestionnaireResponseEntity> getForms() {
+        return forms;
+    }
+
+    public void setForms(Set<QuestionnaireResponseEntity> forms) {
+        this.forms = forms;
+    }
+
+    public Set<RiskAssessmentEntity> getRisks() {
+        return risks;
+    }
+
+    public void setRisks(Set<RiskAssessmentEntity> risks) {
+        this.risks = risks;
+    }
+
+    public Set<ReferralRequestEntity> getReferrals() {
+        return referrals;
+    }
+
+    public void setReferrals(Set<ReferralRequestEntity> referrals) {
+        this.referrals = referrals;
     }
 }

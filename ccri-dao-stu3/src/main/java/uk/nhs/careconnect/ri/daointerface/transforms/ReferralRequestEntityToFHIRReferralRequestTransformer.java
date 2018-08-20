@@ -2,13 +2,9 @@ package uk.nhs.careconnect.ri.daointerface.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.entity.BaseAddress;
-import uk.nhs.careconnect.ri.entity.location.LocationAddress;
-import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.referral.*;
-import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+
 
 @Component
 public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Transformer<ReferralRequestEntity, ReferralRequest> {
@@ -63,8 +59,8 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
             referral.setSubject(new Reference("Patient/" + referralRequestEntity.getPatient().getId())
                     .setDisplay(referralRequestEntity.getPatient().getNames().get(0).getDisplayName()));
         }
-        if (referralRequestEntity.getEncounterContext() != null) {
-            referral.setContext(new Reference("Encounter/" + referralRequestEntity.getEncounterContext().getId()));
+        if (referralRequestEntity.getContextEncounter() != null) {
+            referral.setContext(new Reference("Encounter/" + referralRequestEntity.getContextEncounter().getId()));
         }
         if (referralRequestEntity.getAuthoredOn() != null) {
             referral.setAuthoredOn(referralRequestEntity.getAuthoredOn());

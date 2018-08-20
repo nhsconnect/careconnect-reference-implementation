@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -272,7 +271,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
         EncounterEntity encounterEntity = null;
         if (referralRequest.hasContext()) {
             encounterEntity = encounterDao.readEntity(ctx, new IdType(referralRequest.getContext().getReference()));
-            referralRequestEntity.setEncounterContext(encounterEntity);
+            referralRequestEntity.setContextEncounter(encounterEntity);
         }
         
         em.persist(referralRequestEntity);

@@ -49,8 +49,8 @@ public class ReferralRequestEntity extends BaseResource {
     private Date authoredOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="SPECIALTY_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ENCOUNTERT"))
-    private EncounterEntity encounterContext;
+    @JoinColumn(name="CONTEXT_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ENCOUNTER"))
+    private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SPECIALTY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_SPECIALTY_CONCEPT"))
@@ -116,12 +116,12 @@ public class ReferralRequestEntity extends BaseResource {
         this.authoredOn = authoredOn;
     }
 
-    public EncounterEntity getEncounterContext() {
-        return encounterContext;
+    public EncounterEntity getContextEncounter() {
+        return contextEncounter;
     }
 
-    public void setEncounterContext(EncounterEntity encounterContext) {
-        this.encounterContext = encounterContext;
+    public void setContextEncounter(EncounterEntity contextEncounter) {
+        this.contextEncounter = contextEncounter;
     }
 
     public Set<ReferralRequestReason> getReasons() {

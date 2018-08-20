@@ -8,7 +8,6 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.careconnect.ri.gatewaylib.transform.FHIRMedicationStatementToFHIRMedicationRequestTransformer;
 import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
 
 import java.io.InputStream;
@@ -136,6 +135,7 @@ public class BundleCore {
                 Resource iResource = null;
                 if ((entry.getFullUrl() != null && entry.getFullUrl().equals(referenceId)) || (iResource == null && entry.getResource() != null && entry.getResource().getId() != null && entry.getResource().getId().equals(referenceId))) {
                     iResource = entry.getResource();
+
                     if (iResource instanceof Patient) {
                         resource = searchAddPatient(referenceId, (Patient) iResource);
                     } else if (iResource instanceof Practitioner) {
@@ -181,16 +181,49 @@ public class BundleCore {
                         resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
                     } else if (iResource instanceof CarePlan) {
                         resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
-                    }else if (iResource instanceof CareTeam) {
+                    } else if (iResource instanceof CareTeam) {
                         resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
                     } else if (iResource instanceof MedicationDispense) {
                         resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
                     } else if (iResource instanceof Goal) {
                         resource = searchAddGoal(referenceId, (Goal) iResource);
-                    } else if (iResource instanceof RiskAssessment) {
-                        resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
-                    }else {
-                        log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                    } else {
+
+                        switch (iResource.getClass().getSimpleName()) {
+                            case "CarePlan":
+                                resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
+                                break;
+                            case "CareTeam":
+                                resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
+                                break;
+                            case "Goal":
+                                resource = searchAddGoal(referenceId, (Goal) iResource);
+                                break;
+                            case "HealthcareService":
+                                resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
+                                break;
+                            case "MedicationDispense":
+                                resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
+                                break;
+                            case "MedicationRequest":
+                                resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
+                                break;
+                            case "QuestionnaireResponse" :
+                                resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
+                                break;
+                            case "RelatedPerson" :
+                                resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
+                                break;
+                            case "ReferralRequest" :
+                                resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
+                                break;
+                            case "RiskAssessment" :
+                                resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
+                                break;
+                            default:
+                                log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                        }
+
                     }
 
                     //else if (iResource instanceof PractitionerRole) {

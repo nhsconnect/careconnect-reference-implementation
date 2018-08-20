@@ -17,10 +17,13 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
+import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterDiagnosis;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterIdentifier;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterParticipant;
+import uk.nhs.careconnect.ri.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationRequestEntity;
@@ -29,7 +32,10 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
+import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
+import uk.nhs.careconnect.ri.entity.referral.ReferralRequestEntity;
 import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
+import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 
 import javax.persistence.EntityManager;
@@ -113,6 +119,33 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     DiagnosticReportEntityToFHIRDiagnosticReportTransformer diagnosticReportEntityToFHIRDiagnosticReportTransformer;
+
+    // Docs
+    @Autowired
+    DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
+
+    // Imms
+
+    @Autowired
+    ImmunisationEntityToFHIRImmunizationTransformer immunisationEntityToFHIRImmunizationTransformer;
+
+    // List
+
+    @Autowired
+    ListEntityToFHIRListResourceTransformer listEntityToFHIRListResourceTransformer;
+
+    // QuestionnaireResponse
+
+    @Autowired
+    QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
+
+    // Risk Assessment
+    @Autowired
+    RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskAssessmentEntityToFHIRRiskAssessmentTransformer;
+
+    // Referral
+    ReferralRequestEntityToFHIRReferralRequestTransformer referralRequestEntityToFHIRReferralRequestTransformer;
+
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
@@ -384,6 +417,37 @@ public class  EncounterDao implements EncounterRepository {
                     for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
                         addToResults(results,diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
                     }
+
+                    // Docs
+                    for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
+                        addToResults(results,documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                    }
+
+                    // Imms
+                    for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
+                        addToResults(results,immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                    }
+
+                    // List
+                    for (ListEntity listEntity : encounterEntity.getLists()) {
+                        addToResults(results,listEntityToFHIRListResourceTransformer.transform(listEntity));
+
+                    }
+
+                    // QuestionnaireResponse
+                    for (QuestionnaireResponseEntity questionnaireResponseEntity : encounterEntity.getForms()) {
+                        addToResults(results,questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(questionnaireResponseEntity));
+                    }
+
+                    // Risk Assessment
+                    for (RiskAssessmentEntity riskAssessmentEntity : encounterEntity.getRisks()) {
+                        addToResults(results,riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(riskAssessmentEntity));
+                    }
+                    // Referrals
+                    for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
+                        addToResults(results,referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity));
+                    }
+
                 }
             }
         }
