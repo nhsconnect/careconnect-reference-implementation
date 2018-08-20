@@ -1,8 +1,6 @@
 package uk.nhs.careconnect.ri.entity.clinicialImpression;
 
-import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.ClinicalImpression;
-import uk.nhs.careconnect.ri.entity.BaseReferenceItem;
 import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;

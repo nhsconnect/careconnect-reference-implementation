@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.entity.clinicialImpression;
 
 
 import uk.nhs.careconnect.ri.entity.BaseReferenceItem;
+import uk.nhs.careconnect.ri.entity.BaseResource;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
