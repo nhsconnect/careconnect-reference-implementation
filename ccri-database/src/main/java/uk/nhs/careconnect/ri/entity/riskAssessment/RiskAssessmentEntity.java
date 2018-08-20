@@ -19,7 +19,7 @@ import java.util.Set;
         indexes = {
 
         })
-public class RiskAssessmentEntity extends BaseReferenceItem {
+public class RiskAssessmentEntity extends BaseResource {
 
     private static final int MAX_DESC_LENGTH = 4096;
 

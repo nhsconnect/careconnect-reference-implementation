@@ -93,6 +93,7 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationDispenseResourceProvider.class)
 				,myAppCtx.getBean(GoalResourceProvider.class)
 				,myAppCtx.getBean(RiskAssessmentResourceProvider.class)
+				,myAppCtx.getBean(ClinicalImpressionResourceProvider.class)
 				// ,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 		));
 

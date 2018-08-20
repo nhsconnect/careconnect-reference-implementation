@@ -169,7 +169,7 @@ public class BundleCore {
                         resource = searchAddList(referenceId, (ListResource) iResource);
                     } else if (iResource instanceof Immunization) {
                         resource = searchAddImmunization(referenceId, (Immunization) iResource);
-                    } else if (iResource instanceof DocumentReference) {
+                   /* } else if (iResource instanceof DocumentReference) {
                         resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
                     } else if (iResource instanceof HealthcareService) {
                         resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
@@ -186,7 +186,7 @@ public class BundleCore {
                     } else if (iResource instanceof MedicationDispense) {
                         resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
                     } else if (iResource instanceof Goal) {
-                        resource = searchAddGoal(referenceId, (Goal) iResource);
+                        resource = searchAddGoal(referenceId, (Goal) iResource); */
                     } else {
 
                         switch (iResource.getClass().getSimpleName()) {
@@ -195,6 +195,12 @@ public class BundleCore {
                                 break;
                             case "CareTeam":
                                 resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
+                                break;
+                            case "ClinicalImpression":
+                                resource = searchAddClinicalImpression(referenceId, (ClinicalImpression) iResource);
+                                break;
+                            case "DocumentReference":
+                                resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
                                 break;
                             case "Goal":
                                 resource = searchAddGoal(referenceId, (Goal) iResource);
@@ -1904,6 +1910,121 @@ public class BundleCore {
         }
 
         return eprRiskAssessment;
+    }
+
+
+    public ClinicalImpression searchAddClinicalImpression(String impressionId,ClinicalImpression impression) {
+        log.info("ClinicalImpression searchAdd " +impressionId);
+
+        if (impression == null) throw new InternalErrorException("Bundle processing error");
+
+        ClinicalImpression eprClinicalImpression = (ClinicalImpression) resourceMap.get(impressionId);
+
+        // Organization already processed, quit with Organization
+        if (eprClinicalImpression != null) return eprClinicalImpression;
+
+        // Prevent re-adding the same Practitioner
+        if (!impression.hasIdentifier()) {
+            impression.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(impression.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : impression.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRClinicalImpression", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "ClinicalImpression");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprClinicalImpression = (ClinicalImpression) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found ClinicalImpression = " + eprClinicalImpression.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (impression.hasSubject()) {
+            Resource resource = searchAddResource(impression.getSubject().getReference());
+            if (resource == null) referenceMissing(impression, impression.getSubject().getReference());
+            impression.setSubject(getReference(resource));
+        }
+        if (impression.hasContext()) {
+            Resource resource = searchAddResource(impression.getContext().getReference());
+            if (resource == null) referenceMissing(impression, impression.getContext().getReference());
+            impression.setContext(getReference(resource));
+        }
+
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "ClinicalImpression";
+        // Location found do not add
+        if (eprClinicalImpression != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "ClinicalImpression/"+eprClinicalImpression.getIdElement().getIdPart();
+            impression.setId(eprClinicalImpression.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(impression);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRClinicalImpression", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof ClinicalImpression) {
+            eprClinicalImpression = (ClinicalImpression) iResource;
+            setResourceMap(impressionId,eprClinicalImpression);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprClinicalImpression;
     }
 
     public Goal searchAddGoal(String goalId,Goal goal) {
