@@ -1,0 +1,21 @@
+<ClinicalImpression xmlns="http://hl7.org/fhir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7.org/fhir file:///C:/stu3/clinicalimpression.xsd">
+    <id value="0826cdb4-0335-4878-b235-0b715a945b6c"/>
+    <meta>
+        <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"/>
+    </meta>
+    <status value="completed"/>
+    <subject>
+        <reference value="Patient/1"/>
+    </subject>
+    <date value="2018-08-20"/>
+    <assessor>
+        <reference value="Practitioner/1"/>
+    </assessor>
+    <prognosisCodeableConcept>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="767503006"/>
+            <display value="Limited life expectancy of approximately one year"/>
+        </coding>
+    </prognosisCodeableConcept>
+</ClinicalImpression>

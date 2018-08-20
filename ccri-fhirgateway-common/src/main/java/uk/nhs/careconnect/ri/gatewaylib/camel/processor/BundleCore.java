@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.gatewaylib.camel.processor;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
@@ -24,12 +25,14 @@ public class BundleCore {
         this.ctx = ctx;
         this.bundle = bundle;
         this.context = camelContext;
-
+        this.client = FhirContext.forDstu3().newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3");
     }
 
     CamelContext context;
 
     FhirContext ctx;
+
+    IGenericClient client;
 
 /*
     private FHIRMedicationStatementToFHIRMedicationRequestTransformer
@@ -131,105 +134,129 @@ public class BundleCore {
                 return resource;
             }
 
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                Resource iResource = null;
-                if ((entry.getFullUrl() != null && entry.getFullUrl().equals(referenceId)) || (iResource == null && entry.getResource() != null && entry.getResource().getId() != null && entry.getResource().getId().equals(referenceId))) {
-                    iResource = entry.getResource();
+            if (referenceId.contains("demographics.spineservices.nhs.uk")) {
+                //
+                log.info("NHS Number detected");
+            }
+            if (referenceId.contains("directory.spineservices.nhs.uk")) {
+                if (referenceId.contains("Organization")) {
+                    String sdsCode = referenceId.replace("https://directory.spineservices.nhs.uk/STU3/Organization/","");
+                    Organization sdsOrganization = client.read().resource(Organization.class).withId(sdsCode).execute();
 
-                    if (iResource instanceof Patient) {
-                        resource = searchAddPatient(referenceId, (Patient) iResource);
-                    } else if (iResource instanceof Practitioner) {
-                        resource = searchAddPractitioner(referenceId, (Practitioner) iResource);
-                    } else if (iResource instanceof Encounter) {
-                        resource = searchAddEncounter(referenceId, (Encounter) iResource);
-                    } else if (iResource instanceof Organization) {
-                        resource = searchAddOrganisation(referenceId, (Organization) iResource);
-                    } else if (iResource instanceof Location) {
-                        resource = searchAddLocation(referenceId, (Location) iResource);
-                    } else if (iResource instanceof Observation) {
-                        resource = searchAddObservation(referenceId, (Observation) iResource);
-                    } else if (iResource instanceof AllergyIntolerance) {
-                        resource = searchAddAllergyIntolerance(referenceId, (AllergyIntolerance) iResource);
-                    } else if (iResource instanceof Condition) {
-                        resource = searchAddCondition(referenceId, (Condition) iResource);
-                    } else if (iResource instanceof Procedure) {
-                        resource = searchAddProcedure(referenceId, (Procedure) iResource);
-                    } else if (iResource instanceof Composition) {
-                        resource = searchAddComposition(referenceId, (Composition) iResource);
-                    } else if (iResource instanceof DiagnosticReport) {
-                        resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource);
-                    } else if (iResource instanceof MedicationRequest) {
-                        resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
-                    } else if (iResource instanceof MedicationStatement) {
-                        resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource);
-                    } else if (iResource instanceof Medication) {
-                        // We don't store medicationRequest, so return the resource as is 26th June 2018 KGM
-                        resource = iResource;
-                    } else if (iResource instanceof ListResource) {
-                        resource = searchAddList(referenceId, (ListResource) iResource);
-                    } else if (iResource instanceof Immunization) {
-                        resource = searchAddImmunization(referenceId, (Immunization) iResource);
-                   /* } else if (iResource instanceof DocumentReference) {
-                        resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
-                    } else if (iResource instanceof HealthcareService) {
-                        resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
-                    } else if (iResource instanceof QuestionnaireResponse) {
-                        resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
-                    } else if (iResource instanceof RelatedPerson) {
-                        resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
-                    } else if (iResource instanceof ReferralRequest) {
-                        resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
-                    } else if (iResource instanceof CarePlan) {
-                        resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
-                    } else if (iResource instanceof CareTeam) {
-                        resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
-                    } else if (iResource instanceof MedicationDispense) {
-                        resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
-                    } else if (iResource instanceof Goal) {
-                        resource = searchAddGoal(referenceId, (Goal) iResource); */
-                    } else {
+                    if (sdsOrganization != null) {
+                        resource = searchAddOrganisation(referenceId, sdsOrganization);
+                    }
+                }
+                if (referenceId.contains("Practitioner")) {
+                    String sdsCode = referenceId.replace("https://directory.spineservices.nhs.uk/STU3/Practitioner/","");
+                    Practitioner sdsPractitioner = client.read().resource(Practitioner.class).withId(sdsCode).execute();
 
-                        switch (iResource.getClass().getSimpleName()) {
-                            case "CarePlan":
-                                resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
-                                break;
-                            case "CareTeam":
-                                resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
-                                break;
-                            case "ClinicalImpression":
-                                resource = searchAddClinicalImpression(referenceId, (ClinicalImpression) iResource);
-                                break;
-                            case "DocumentReference":
-                                resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
-                                break;
-                            case "Goal":
-                                resource = searchAddGoal(referenceId, (Goal) iResource);
-                                break;
-                            case "HealthcareService":
-                                resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
-                                break;
-                            case "MedicationDispense":
-                                resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
-                                break;
-                            case "MedicationRequest":
-                                resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
-                                break;
-                            case "QuestionnaireResponse" :
-                                resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
-                                break;
-                            case "RelatedPerson" :
-                                resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
-                                break;
-                            case "ReferralRequest" :
-                                resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
-                                break;
-                            case "RiskAssessment" :
-                                resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
-                                break;
-                            default:
-                                log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                    if (sdsPractitioner != null) {
+                        resource = searchAddPractitioner(referenceId, sdsPractitioner);
+                    }
+                }
+            } else {
+
+                for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                    Resource iResource = null;
+                    if ((entry.getFullUrl() != null && entry.getFullUrl().equals(referenceId)) || (iResource == null && entry.getResource() != null && entry.getResource().getId() != null && entry.getResource().getId().equals(referenceId))) {
+                        iResource = entry.getResource();
+
+                        if (iResource instanceof Patient) {
+                            resource = searchAddPatient(referenceId, (Patient) iResource);
+                        } else if (iResource instanceof Practitioner) {
+                            resource = searchAddPractitioner(referenceId, (Practitioner) iResource);
+                        } else if (iResource instanceof Encounter) {
+                            resource = searchAddEncounter(referenceId, (Encounter) iResource);
+                        } else if (iResource instanceof Organization) {
+                            resource = searchAddOrganisation(referenceId, (Organization) iResource);
+                        } else if (iResource instanceof Location) {
+                            resource = searchAddLocation(referenceId, (Location) iResource);
+                        } else if (iResource instanceof Observation) {
+                            resource = searchAddObservation(referenceId, (Observation) iResource);
+                        } else if (iResource instanceof AllergyIntolerance) {
+                            resource = searchAddAllergyIntolerance(referenceId, (AllergyIntolerance) iResource);
+                        } else if (iResource instanceof Condition) {
+                            resource = searchAddCondition(referenceId, (Condition) iResource);
+                        } else if (iResource instanceof Procedure) {
+                            resource = searchAddProcedure(referenceId, (Procedure) iResource);
+                        } else if (iResource instanceof Composition) {
+                            resource = searchAddComposition(referenceId, (Composition) iResource);
+                        } else if (iResource instanceof DiagnosticReport) {
+                            resource = searchAddDiagnosticReport(referenceId, (DiagnosticReport) iResource);
+                        } else if (iResource instanceof MedicationRequest) {
+                            resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
+                        } else if (iResource instanceof MedicationStatement) {
+                            resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource);
+                        } else if (iResource instanceof Medication) {
+                            // We don't store medicationRequest, so return the resource as is 26th June 2018 KGM
+                            resource = iResource;
+                        } else if (iResource instanceof ListResource) {
+                            resource = searchAddList(referenceId, (ListResource) iResource);
+                        } else if (iResource instanceof Immunization) {
+                            resource = searchAddImmunization(referenceId, (Immunization) iResource);
+                       /* } else if (iResource instanceof DocumentReference) {
+                            resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
+                        } else if (iResource instanceof HealthcareService) {
+                            resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
+                        } else if (iResource instanceof QuestionnaireResponse) {
+                            resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
+                        } else if (iResource instanceof RelatedPerson) {
+                            resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
+                        } else if (iResource instanceof ReferralRequest) {
+                            resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
+                        } else if (iResource instanceof CarePlan) {
+                            resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
+                        } else if (iResource instanceof CareTeam) {
+                            resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
+                        } else if (iResource instanceof MedicationDispense) {
+                            resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
+                        } else if (iResource instanceof Goal) {
+                            resource = searchAddGoal(referenceId, (Goal) iResource); */
+                        } else {
+
+                            switch (iResource.getClass().getSimpleName()) {
+                                case "CarePlan":
+                                    resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
+                                    break;
+                                case "CareTeam":
+                                    resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
+                                    break;
+                                case "ClinicalImpression":
+                                    resource = searchAddClinicalImpression(referenceId, (ClinicalImpression) iResource);
+                                    break;
+                                case "DocumentReference":
+                                    resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
+                                    break;
+                                case "Goal":
+                                    resource = searchAddGoal(referenceId, (Goal) iResource);
+                                    break;
+                                case "HealthcareService":
+                                    resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
+                                    break;
+                                case "MedicationDispense":
+                                    resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
+                                    break;
+                                case "MedicationRequest":
+                                    resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
+                                    break;
+                                case "QuestionnaireResponse":
+                                    resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
+                                    break;
+                                case "RelatedPerson":
+                                    resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
+                                    break;
+                                case "ReferralRequest":
+                                    resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
+                                    break;
+                                case "RiskAssessment":
+                                    resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
+                                    break;
+                                default:
+                                    log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                            }
+
                         }
-
                     }
 
                     //else if (iResource instanceof PractitionerRole) {
