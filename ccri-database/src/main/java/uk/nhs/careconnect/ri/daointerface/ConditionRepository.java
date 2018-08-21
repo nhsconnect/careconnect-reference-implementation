@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
-public interface ConditionRepository extends BaseDao<ConditionEntity,Condition> {
+public interface ConditionRepository extends BaseRepository<ConditionEntity,Condition> {
     void save(FhirContext ctx,ConditionEntity condition) throws OperationOutcomeException;
 
     Condition read(FhirContext ctx, IdType theId);

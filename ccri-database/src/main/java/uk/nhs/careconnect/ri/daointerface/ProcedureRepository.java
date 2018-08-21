@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 
 import java.util.List;
 
-public interface ProcedureRepository extends BaseDao<ProcedureEntity,Procedure> {
+public interface ProcedureRepository extends BaseRepository<ProcedureEntity,Procedure> {
     void save(FhirContext ctx,ProcedureEntity procedure) throws OperationOutcomeException;
 
     Procedure read(FhirContext ctx, IdType theId);

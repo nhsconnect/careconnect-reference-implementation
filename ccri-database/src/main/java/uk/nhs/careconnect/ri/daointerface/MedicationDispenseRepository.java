@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.medicationDispense.MedicationDispenseEntity;
 
 import java.util.List;
 
-public interface MedicationDispenseRepository extends BaseDao<MedicationDispenseEntity,MedicationDispense> {
+public interface MedicationDispenseRepository extends BaseRepository<MedicationDispenseEntity,MedicationDispense> {
     void save(FhirContext ctx, MedicationDispenseEntity statement) throws OperationOutcomeException;
 
     MedicationDispense read(FhirContext ctx, IdType theId);

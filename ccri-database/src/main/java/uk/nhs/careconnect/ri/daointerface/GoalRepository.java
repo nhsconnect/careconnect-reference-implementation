@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
 
 import java.util.List;
 
-public interface GoalRepository extends BaseDao<GoalEntity,Goal> {
+public interface GoalRepository extends BaseRepository<GoalEntity,Goal> {
     void save(FhirContext ctx, GoalEntity team) throws OperationOutcomeException;
 
     Goal read(FhirContext ctx, IdType theId);

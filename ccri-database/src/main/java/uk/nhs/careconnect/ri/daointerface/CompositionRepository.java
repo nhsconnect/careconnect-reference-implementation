@@ -17,7 +17,7 @@ import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 
 import java.util.List;
 
-public interface CompositionRepository extends BaseDao<CompositionEntity,Composition> {
+public interface CompositionRepository extends BaseRepository<CompositionEntity,Composition> {
     void save(FhirContext ctx, CompositionEntity composition) throws OperationOutcomeException;
 
     Composition read(FhirContext ctx, IdType theId);

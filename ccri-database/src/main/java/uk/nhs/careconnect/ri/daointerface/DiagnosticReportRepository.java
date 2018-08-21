@@ -16,7 +16,7 @@ import uk.nhs.careconnect.ri.entity.diagnosticReport.DiagnosticReportEntity;
 
 import java.util.List;
 
-public interface DiagnosticReportRepository extends BaseDao<DiagnosticReportEntity,DiagnosticReport> {
+public interface DiagnosticReportRepository extends BaseRepository<DiagnosticReportEntity,DiagnosticReport> {
     void save(FhirContext ctx, DiagnosticReportEntity diagnosticReport) throws OperationOutcomeException;
 
     DiagnosticReport read(FhirContext ctx, IdType theId);

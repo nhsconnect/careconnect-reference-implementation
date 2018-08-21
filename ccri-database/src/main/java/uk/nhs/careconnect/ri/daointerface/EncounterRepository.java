@@ -19,7 +19,7 @@ import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import java.util.List;
 import java.util.Set;
 
-public interface EncounterRepository  extends BaseDao<EncounterEntity,Encounter> {
+public interface EncounterRepository  extends BaseRepository<EncounterEntity,Encounter> {
     void save(FhirContext ctx,EncounterEntity encounter) throws OperationOutcomeException;
 
     Encounter read(FhirContext ctx, IdType theId);

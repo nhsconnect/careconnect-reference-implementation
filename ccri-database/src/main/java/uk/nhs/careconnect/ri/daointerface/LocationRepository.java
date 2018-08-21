@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.location.LocationEntity;
 
 import java.util.List;
 
-public interface LocationRepository extends BaseDao<LocationEntity,Location> {
+public interface LocationRepository extends BaseRepository<LocationEntity,Location> {
     void save(FhirContext ctx,LocationEntity location) throws OperationOutcomeException;
 
     Location read(FhirContext ctx, IdType theId);

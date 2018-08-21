@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntit
 
 import java.util.List;
 
-public interface MedicationStatementRepository  extends BaseDao<MedicationStatementEntity,MedicationStatement> {
+public interface MedicationStatementRepository  extends BaseRepository<MedicationStatementEntity,MedicationStatement> {
     void save(FhirContext ctx,MedicationStatementEntity statement) throws OperationOutcomeException;
 
     MedicationStatement read(FhirContext ctx, IdType theId);

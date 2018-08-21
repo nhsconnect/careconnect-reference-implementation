@@ -7,7 +7,7 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.entity.IBaseResource;
 
 
-public interface BaseDao<R extends IBaseResource,F extends DomainResource> {
+public interface BaseRepository<R extends IBaseResource,F extends DomainResource> {
 
     Long count();
 

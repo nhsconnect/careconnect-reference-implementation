@@ -12,7 +12,7 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
 import java.util.List;
 
-public interface PractitionerRoleRepository extends BaseDao<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole,PractitionerRole> {
+public interface PractitionerRoleRepository extends BaseRepository<uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole,PractitionerRole> {
 
     void save(FhirContext ctx, uk.nhs.careconnect.ri.entity.practitioner.PractitionerRole practitioner) throws OperationOutcomeException;
 

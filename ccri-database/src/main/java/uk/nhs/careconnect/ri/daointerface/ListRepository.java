@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.list.ListEntity;
 
 import java.util.List;
 
-public interface ListRepository extends BaseDao<ListEntity,ListResource> {
+public interface ListRepository extends BaseRepository<ListEntity,ListResource> {
 
     void save(FhirContext ctx, ListEntity list) throws OperationOutcomeException;
 

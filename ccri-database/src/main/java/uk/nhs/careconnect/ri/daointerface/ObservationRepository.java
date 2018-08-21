@@ -16,7 +16,7 @@ import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
 
 import java.util.List;
 
-public interface ObservationRepository extends BaseDao<ObservationEntity,Observation> {
+public interface ObservationRepository extends BaseRepository<ObservationEntity,Observation> {
 
     Observation save(FhirContext ctx, Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 

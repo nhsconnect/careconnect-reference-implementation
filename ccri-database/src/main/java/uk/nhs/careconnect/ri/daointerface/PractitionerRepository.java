@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 
 import java.util.List;
 
-public interface PractitionerRepository extends BaseDao<PractitionerEntity,Practitioner> {
+public interface PractitionerRepository extends BaseRepository<PractitionerEntity,Practitioner> {
 
     void save(FhirContext ctx,PractitionerEntity practitioner) throws OperationOutcomeException;
 

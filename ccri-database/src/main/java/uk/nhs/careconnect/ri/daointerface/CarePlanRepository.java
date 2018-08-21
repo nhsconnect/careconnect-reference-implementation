@@ -19,7 +19,7 @@ import uk.nhs.careconnect.ri.entity.carePlan.CarePlanEntity;
 import java.util.List;
 import java.util.Set;
 
-public interface CarePlanRepository extends BaseDao<CarePlanEntity,CarePlan> {
+public interface CarePlanRepository extends BaseRepository<CarePlanEntity,CarePlan> {
     void save(FhirContext ctx, CarePlanEntity allergy) throws OperationOutcomeException;
 
     CarePlan read(FhirContext ctx, IdType theId);

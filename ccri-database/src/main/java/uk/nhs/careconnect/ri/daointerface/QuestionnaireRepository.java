@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.questionnaire.QuestionnaireEntity;
 
 import java.util.List;
 
-public interface QuestionnaireRepository extends BaseDao<QuestionnaireEntity,Questionnaire> {
+public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEntity,Questionnaire> {
     void save(FhirContext ctx, QuestionnaireEntity questionnaire) throws OperationOutcomeException;
 
     Questionnaire read(FhirContext ctx, IdType theId);

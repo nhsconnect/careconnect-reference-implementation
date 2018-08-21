@@ -10,7 +10,7 @@ import uk.nhs.careconnect.ri.entity.medicationRequest.MedicationEntity;
 
 import java.util.List;
 
-public interface MedicationRepository extends BaseDao<MedicationEntity, Medication> {
+public interface MedicationRepository extends BaseRepository<MedicationEntity, Medication> {
 
     Medication read(FhirContext ctx, IdType theId);
 

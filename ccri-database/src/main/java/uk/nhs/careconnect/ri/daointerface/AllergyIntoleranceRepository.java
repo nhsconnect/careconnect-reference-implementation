@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 
 import java.util.List;
 
-public interface AllergyIntoleranceRepository extends BaseDao<AllergyIntoleranceEntity,AllergyIntolerance> {
+public interface AllergyIntoleranceRepository extends BaseRepository<AllergyIntoleranceEntity,AllergyIntolerance> {
     void save(FhirContext ctx,AllergyIntoleranceEntity allergy) throws OperationOutcomeException;
 
     AllergyIntolerance read(FhirContext ctx, IdType theId);

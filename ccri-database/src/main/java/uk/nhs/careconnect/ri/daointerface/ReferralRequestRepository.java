@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.referral.ReferralRequestEntity;
 
 import java.util.List;
 
-public interface ReferralRequestRepository extends BaseDao<ReferralRequestEntity,ReferralRequest> {
+public interface ReferralRequestRepository extends BaseRepository<ReferralRequestEntity,ReferralRequest> {
     void save(FhirContext ctx, ReferralRequestEntity referral) throws OperationOutcomeException;
 
     ReferralRequest read(FhirContext ctx, IdType theId);

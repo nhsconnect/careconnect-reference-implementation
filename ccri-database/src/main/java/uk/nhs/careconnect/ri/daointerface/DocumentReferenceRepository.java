@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 
 import java.util.List;
 
-public interface DocumentReferenceRepository extends BaseDao<DocumentReferenceEntity,DocumentReference> {
+public interface DocumentReferenceRepository extends BaseRepository<DocumentReferenceEntity,DocumentReference> {
     void save(FhirContext ctx, DocumentReferenceEntity composition) throws OperationOutcomeException;
 
     DocumentReference read(FhirContext ctx, IdType theId);

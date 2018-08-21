@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.clinicialImpression.ClinicalImpressionEntity
 
 import java.util.List;
 
-public interface ClinicalImpressionRepository extends BaseDao<ClinicalImpressionEntity,ClinicalImpression> {
+public interface ClinicalImpressionRepository extends BaseRepository<ClinicalImpressionEntity,ClinicalImpression> {
     void save(FhirContext ctx, ClinicalImpressionEntity team) throws OperationOutcomeException;
 
     ClinicalImpression read(FhirContext ctx, IdType theId);

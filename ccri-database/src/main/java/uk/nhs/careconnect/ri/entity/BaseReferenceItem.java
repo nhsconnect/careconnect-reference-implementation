@@ -1,15 +1,19 @@
 package uk.nhs.careconnect.ri.entity;
 
 import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
+import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
 import uk.nhs.careconnect.ri.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.entity.questionnaireResponse.QuestionnaireResponseEntity;
+import uk.nhs.careconnect.ri.entity.relatedPerson.RelatedPersonEntity;
 import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import javax.persistence.*;
@@ -34,6 +38,9 @@ public class BaseReferenceItem extends BaseResource {
     @JoinColumn (name = "REF_DOCUMENT_REFERENCE_ID")
     private DocumentReferenceEntity referenceDocumentReference;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "REF_CARE_TEAM_ID")
+    private CareTeamEntity ReferenceCareTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REF_LIST_ID")
@@ -60,6 +67,18 @@ public class BaseReferenceItem extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REF_RISK_ID")
     private RiskAssessmentEntity referenceRisk;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_ORGANISATION_ID")
+    private OrganisationEntity referenceOrganisation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_PRACTITIONER_ID")
+    private PractitionerEntity referencePractitioner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_PERSON_ID")
+    private RelatedPersonEntity referencePerson;
 
     @Override
     public Long getId() {
@@ -144,5 +163,37 @@ public class BaseReferenceItem extends BaseResource {
 
     public void setReferenceRisk(RiskAssessmentEntity referenceRisk) {
         this.referenceRisk = referenceRisk;
+    }
+
+    public CareTeamEntity getReferenceCareTeam() {
+        return ReferenceCareTeam;
+    }
+
+    public void setReferenceCareTeam(CareTeamEntity referenceCareTeam) {
+        ReferenceCareTeam = referenceCareTeam;
+    }
+
+    public OrganisationEntity getReferenceOrganisation() {
+        return referenceOrganisation;
+    }
+
+    public void setReferenceOrganisation(OrganisationEntity referenceOrganisation) {
+        this.referenceOrganisation = referenceOrganisation;
+    }
+
+    public PractitionerEntity getReferencePractitioner() {
+        return referencePractitioner;
+    }
+
+    public void setReferencePractitioner(PractitionerEntity referencePractitioner) {
+        this.referencePractitioner = referencePractitioner;
+    }
+
+    public RelatedPersonEntity getReferencePerson() {
+        return referencePerson;
+    }
+
+    public void setReferencePerson(RelatedPersonEntity referencePerson) {
+        this.referencePerson = referencePerson;
     }
 }

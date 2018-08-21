@@ -256,6 +256,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "RiskAssessment":
                     case "Goal":
                     case "ClinicalImpression":
+                    case "Consent":
                         //resource.getProfile().setReference(CareConnectProfile.Medication_1);
                         break;
 
@@ -431,6 +432,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "RiskAssessment":
                 case "Goal":
                 case "ClinicalImpression":
+                case "Consent":
 
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {

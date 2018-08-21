@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
 
 import java.util.List;
 
-public interface EpisodeOfCareRepository extends BaseDao<EpisodeOfCareEntity,EpisodeOfCare> {
+public interface EpisodeOfCareRepository extends BaseRepository<EpisodeOfCareEntity,EpisodeOfCare> {
     void save(FhirContext ctx,EpisodeOfCare episode) throws OperationOutcomeException;
 
     EpisodeOfCare read(FhirContext ctx, IdType theId);

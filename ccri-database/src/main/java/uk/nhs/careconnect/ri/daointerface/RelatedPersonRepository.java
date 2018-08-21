@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface RelatedPersonRepository extends BaseDao<RelatedPersonEntity,RelatedPerson> {
+public interface RelatedPersonRepository extends BaseRepository<RelatedPersonEntity,RelatedPerson> {
 
     void save(FhirContext ctx, RelatedPersonEntity person) throws OperationOutcomeException;
 

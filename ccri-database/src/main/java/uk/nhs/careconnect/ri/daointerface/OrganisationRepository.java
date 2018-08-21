@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import java.util.List;
 
 
-public interface OrganisationRepository extends BaseDao<OrganisationEntity,Organization> {
+public interface OrganisationRepository extends BaseRepository<OrganisationEntity,Organization> {
 
    void save(FhirContext ctx, OrganisationEntity organization) throws OperationOutcomeException;
    Organization read(FhirContext ctx,IdType theId);

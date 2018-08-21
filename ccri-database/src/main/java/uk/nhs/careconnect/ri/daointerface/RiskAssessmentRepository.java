@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.riskAssessment.RiskAssessmentEntity;
 
 import java.util.List;
 
-public interface RiskAssessmentRepository extends BaseDao<RiskAssessmentEntity,RiskAssessment> {
+public interface RiskAssessmentRepository extends BaseRepository<RiskAssessmentEntity,RiskAssessment> {
     void save(FhirContext ctx, RiskAssessmentEntity team) throws OperationOutcomeException;
 
     RiskAssessment read(FhirContext ctx, IdType theId);

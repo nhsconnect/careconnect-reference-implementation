@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.entity.healthcareService.HealthcareServiceEntity;
 
 import java.util.List;
 
-public interface HealthcareServiceRepository extends BaseDao<HealthcareServiceEntity,HealthcareService> {
+public interface HealthcareServiceRepository extends BaseRepository<HealthcareServiceEntity,HealthcareService> {
     void save(FhirContext ctx, HealthcareServiceEntity location) throws OperationOutcomeException;
 
     HealthcareService read(FhirContext ctx, IdType theId);

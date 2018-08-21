@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
 
 import java.util.List;
 
-public interface CareTeamRepository extends BaseDao<CareTeamEntity,CareTeam> {
+public interface CareTeamRepository extends BaseRepository<CareTeamEntity,CareTeam> {
     void save(FhirContext ctx, CareTeamEntity team) throws OperationOutcomeException;
 
     CareTeam read(FhirContext ctx, IdType theId);

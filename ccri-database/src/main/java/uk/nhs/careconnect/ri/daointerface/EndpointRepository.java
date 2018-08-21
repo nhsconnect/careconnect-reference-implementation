@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.entity.endpoint.EndpointEntity;
 
 import java.util.List;
 
-public interface EndpointRepository extends BaseDao<EndpointEntity,Endpoint> {
+public interface EndpointRepository extends BaseRepository<EndpointEntity,Endpoint> {
     void save(FhirContext ctx, EndpointEntity endpoint) throws OperationOutcomeException;
 
     Endpoint read(FhirContext ctx, IdType theId);

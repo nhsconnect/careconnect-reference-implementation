@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface PatientRepository extends BaseDao<PatientEntity,Patient> {
+public interface PatientRepository extends BaseRepository<PatientEntity,Patient> {
 
     void save(FhirContext ctx, PatientEntity patient) throws OperationOutcomeException;
 
