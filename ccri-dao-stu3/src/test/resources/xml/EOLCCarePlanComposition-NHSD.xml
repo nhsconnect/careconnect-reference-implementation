@@ -1,16 +1,190 @@
 <Bundle xmlns="http://hl7.org/fhir">
     <identifier>
         <system value="https://tools.ietf.org/html/rfc4122"/>
-        <value value="169d2041-52f9-4de0-92f5-b8fb1d956211"/>
+        <value value="8f4bdd4b-8c23-4546-9dd5-cd657bc571b0"/>
     </identifier>
-    <type value="collection"/>
+    <type value="document"/>
     <entry>
-        <fullUrl value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+        <fullUrl value="urn:uuid:43e47cc4-8b59-4f0a-85a7-4ff8aed81f26"/>
         <resource>
-            <Patient>
-                <id value="7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+            <Composition xmlns="http://hl7.org/fhir">
+                <id value="43e47cc4-8b59-4f0a-85a7-4ff8aed81f26"/>
+                <status value="final"/>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="736373009"/>
+                        <display value="End of life care plan (record artifact)"/>
+                    </coding>
+                </type>
+                <subject>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </subject>
+                <date value="2018-08-22T15:07:44+00:00"/>
+                <title value="Care Plan Document"/>
+                <attester>
+                    <mode value="official"/>
+                    <party>
+                        <reference value="urn:uuid:24b4cff6-dc9a-4944-af40-d8431370752a"/>
+                    </party>
+                </attester>
+                <section>
+                    <title value="Prognosis"/>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="854851000000107"/>
+                            <display value="Prognosis"/>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"/>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <p>None Recorded</p>
+                            </div>
+                        </div>
+                    </text>
+                </section>
+                <section>
+                    <title value="Advanced Treatment Preferences"/>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="854851000000107"/>
+                            <display value="Advanced Treatment Preferences"/>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"/>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <p>None Recorded</p>
+                            </div>
+                        </div>
+                    </text>
+                </section>
+                <section>
+                    <title value="Disability"/>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="854851000000107"/>
+                            <display value="Disability"/>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"/>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td/>
+                                            <td>Severe persistent asthma (disorder)</td>
+                                        </tr>
+                                        <tr>
+                                            <td/>
+                                            <td>Severe persistent asthma (disorder)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </text>
+                    <entry>
+                        <reference value="urn:uuid:e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+                    </entry>
+                    <entry>
+                        <reference value="urn:uuid:e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+                    </entry>
+                </section>
+                <section>
+                    <title value="Functional Status"/>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="854851000000107"/>
+                            <display value="Functional Status"/>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"/>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <p>None Recorded</p>
+                            </div>
+                        </div>
+                    </text>
+                </section>
+                <section>
+                    <title value="Preferences"/>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="854851000000107"/>
+                            <display value="Preferences"/>
+                        </coding>
+                    </code>
+                    <text>
+                        <status value="generated"/>
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <div>
+                                <p>None Recorded</p>
+                            </div>
+                        </div>
+                    </text>
+                </section>
+            </Composition>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:24b4cff6-dc9a-4944-af40-d8431370752a"/>
+        <resource>
+            <Organization xmlns="http://hl7.org/fhir">
+                <id value="24b4cff6-dc9a-4944-af40-d8431370752a"/>
                 <meta>
-                        profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-Patient-1"/>
+                    <lastUpdated value="2018-06-24T14:11:33.810+00:00"/>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+                    <value value="RR8"/>
+                </identifier>
+                <active value="true"/>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="930621000000104"/>
+                        <display value="National Health Service Trust (qualifier value)"/>
+                    </coding>
+                </type>
+                <name value="Leeds Teaching Hospitals Nhs Trust"/>
+                <address>
+                    <use value="work"/>
+                    <line value="St. James's University Hospital"/>
+                    <line value="Beckett Street"/>
+                    <city value="Leeds"/>
+                    <district value="West Yorkshire"/>
+                    <postalCode value="LS9 7TF"/>
+                </address>
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+        <resource>
+            <Patient xmlns="http://hl7.org/fhir">
+                <id value="07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                <meta>
+                    <lastUpdated value="2018-08-13T14:47:43.903+00:00"/>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
                 </meta>
                 <identifier>
                     <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
@@ -30,75 +204,29 @@
                     <family value="DAWKINS"/>
                     <given value="Jack"/>
                 </name>
-                <birthDate value="2017-10-02"/>
+                <gender value="male"/>
+                <birthDate value="2013-10-12"/>
+                <address>
+                    <use value="home"/>
+                    <line value="4 Sandmoor Drive"/>
+                    <city value="DURHAM"/>
+                    <postalCode value="DH1 2TF"/>
+                </address>
             </Patient>
         </resource>
     </entry>
     <entry>
-        <fullUrl value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
-        <resource>
-            <List xmlns="http://hl7.org/fhir">
-                <id value="33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
-                <meta>
-                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-ProblemList-1.xml"/>
-                </meta>
-                <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-EOL-ReSPECTScale-1">
-                    <extension url="respectPriorityScale">
-                        <valueInteger value="50"/>
-                    </extension>
-                    <extension url="respectPriorityScaleStatement">
-                        <valueString value="Considering the above priority, what is most important to you?"/>
-                    </extension>
-                </extension>
-                <status value="current"/>
-                <mode value="working"/>
-                <subject>
-                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
-                </subject>
-                <entry>
-                    <item>
-                        <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
-                    </item>
-                </entry>
-            </List>
-        </resource>
-    </entry>
-    <entry>
-        <fullUrl value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
-        <resource>
-            <Condition>
-                <id value="f74658b4-f667-4385-9b6f-7c4305b4f743"/>
-                <meta>
-                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-ProblemHeader-Condition"/>
-                </meta>
-                <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-RelatedClinicalContent-1">
-                    <valueReference>
-                        <reference value="f74658b4-f667-4385-9b6f-7c4305b4f742"/>
-                    </valueReference>
-                </extension>
-                <code>
-                    <coding>
-                        <system value="http://snomed.info/sct"/>
-                        <code value="426656000"/>
-                        <display value="Severe persistent asthma"/>
-                    </coding>
-                    <text value="Breathlessness"/>
-                </code>
-
-                <subject>
-                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
-                </subject>
-            </Condition>
-        </resource>
-    </entry>
-    <entry>
-        <fullUrl value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+        <fullUrl value="urn:uuid:f19af61e-e6a7-4df9-83ed-909923c68845"/>
         <resource>
             <CarePlan xmlns="http://hl7.org/fhir">
-                <id value="f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+                <id value="f19af61e-e6a7-4df9-83ed-909923c68845"/>
                 <meta>
-                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATP-CarePlan-1"/>
+                    <lastUpdated value="2018-08-17T07:16:09.786+00:00"/>
                 </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f742"/>
+                </identifier>
                 <status value="active"/>
                 <intent value="plan"/>
                 <category>
@@ -109,20 +237,21 @@
                     </coding>
                 </category>
                 <subject>
-                    <reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
                 </subject>
-                  <supportingInfo>
-                    <reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
-                </supportingInfo>
-                  <supportingInfo>
-                    <reference value="urn:uuid:981dbc45-9ff9-4570-836c-eb3e93763189"/>
-                </supportingInfo>
-                 <supportingInfo>
-                    <reference value="urn:uuid:0826cdb4-0335-4878-b235-0b715a945b6c"/>
-                </supportingInfo>
                 <addresses>
-                    <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                    <reference value="Condition/119"/>
+                    <display value="Severe persistent asthma (disorder)"/>
                 </addresses>
+                <supportingInfo>
+                    <reference value="urn:uuid:25ca1898-5b58-4529-b921-5532d2615182"/>
+                </supportingInfo>
+                <supportingInfo>
+                    <reference value="urn:uuid:99006625-5064-4a03-9266-99f769631a34"/>
+                </supportingInfo>
+                <supportingInfo>
+                    <reference value="urn:uuid:d80985da-7226-4a3a-9e4c-9b295901ceee"/>
+                </supportingInfo>
                 <activity>
                     <detail>
                         <status value="completed"/>
@@ -133,63 +262,174 @@
         </resource>
     </entry>
     <entry>
-        <fullUrl value="urn:uuid:981dbc45-9ff9-4570-836c-eb3e93763189"/>
+        <fullUrl value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+        <resource>
+            <Patient xmlns="http://hl7.org/fhir">
+                <id value="07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                <meta>
+                    <lastUpdated value="2018-08-14T15:56:48.330+00:00"/>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+                </meta>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+                                <code value="01"/>
+                                <display value="Number present and verified"/>
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+                    <value value="9912003888"/>
+                </identifier>
+                <name>
+                    <use value="official"/>
+                    <family value="DAWKINS"/>
+                    <given value="Jack"/>
+                </name>
+                <gender value="male"/>
+                <birthDate value="2013-10-12"/>
+                <address>
+                    <use value="home"/>
+                    <line value="4 Sandmoor Drive"/>
+                    <city value="DURHAM"/>
+                    <postalCode value="DH1 2TF"/>
+                </address>
+            </Patient>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:25ca1898-5b58-4529-b921-5532d2615182"/>
         <resource>
             <Consent xmlns="http://hl7.org/fhir">
-	<id value="981dbc45-9ff9-4570-836c-eb3e93763189"/>
-	<meta>
-		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"/>
-	</meta>
-	<status value="active"/>
-	<patient>
-		<reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
-	</patient>
-	<dateTime value="2018-08-20T15:00:00+00:00"/>
-	<actor>
-		<role>
-			<coding>
-				<system value="http://hl7.org/fhir/v3/ParticipationType"/>
-				<code value="PROV"/>
-				<display value="Healthcare Provider"/>
-			</coding>
-		</role>
-	<!--	<reference>
-				<reference value="urn:uuid:12692f55-56cf-4ddf-3ef5-e9ed13f6bd923"/>
-		</reference> -->
-	</actor>
-</Consent>
+                <id value="25ca1898-5b58-4529-b921-5532d2615182"/>
+                <meta>
+                    <lastUpdated value="2018-08-22T14:47:27.024+00:00"/>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:981dbc45-9ff9-4570-836c-eb3e93763189"/>
+                </identifier>
+                <status value="active"/>
+                <patient>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </patient>
+                <dateTime value="2018-08-20T15:00:00+00:00"/>
+                <actor>
+                    <role>
+                        <coding>
+                            <system value="http://hl7.org/fhir/v3/ParticipationType"/>
+                            <code value="PROV"/>
+                            <display value="Healthcare Provider"/>
+                        </coding>
+                    </role>
+                </actor>
+            </Consent>
         </resource>
     </entry>
-     <entry>
-        <fullUrl value="urn:uuid:0826cdb4-0335-4878-b235-0b715a945b6c"/>
+    <entry>
+        <fullUrl value="urn:uuid:99006625-5064-4a03-9266-99f769631a34"/>
         <resource>
-        <ClinicalImpression xmlns="http://hl7.org/fhir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7.org/fhir file:///C:/stu3/clinicalimpression.xsd">
-	<id value="0826cdb4-0335-4878-b235-0b715a945b6c"/>
-	<meta>
-		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"/>
-	</meta>
-	<status value="completed"/>
-	<subject>
-		<reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
-	</subject>
-	<date value="2018-08-20"/>
-<!--	<assessor>
-		<reference value="Practitioner/7d9ccb47-3cbb-4844-8d6c-8edf58c3415a"/>
-	</assessor> -->
-	<prognosisCodeableConcept>
-		<coding>
-			<system value="http://snomed.info/sct"/>
-			<code value="767503006"/>
-			<display value="Limited life expectancy of approximately one year"/>
-		</coding>
-	</prognosisCodeableConcept>
-</ClinicalImpression>
+            <ClinicalImpression xmlns="http://hl7.org/fhir">
+                <id value="99006625-5064-4a03-9266-99f769631a34"/>
+                <meta>
+                    <lastUpdated value="2018-08-22T14:47:27.053+00:00"/>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:0826cdb4-0335-4878-b235-0b715a945b6c"/>
+                </identifier>
+                <status value="completed"/>
+                <subject>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </subject>
+                <date value="2018-08-20T00:00:00+00:00"/>
+                <prognosisCodeableConcept>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="767503006"/>
+                        <display value="Limited life expectancy of approximately one year"/>
+                    </coding>
+                </prognosisCodeableConcept>
+            </ClinicalImpression>
         </resource>
     </entry>
-     <entry>
-        <fullUrl value=""/>
+    <entry>
+        <fullUrl value="urn:uuid:e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
         <resource>
-      
+            <Condition xmlns="http://hl7.org/fhir">
+                <id value="e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+                <meta>
+                    <lastUpdated value="2018-08-17T07:16:09.625+00:00"/>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1"/>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                </identifier>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="426656000"/>
+                        <display value="Severe persistent asthma (disorder)"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </subject>
+            </Condition>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:d80985da-7226-4a3a-9e4c-9b295901ceee"/>
+        <resource>
+            <List xmlns="http://hl7.org/fhir">
+                <id value="d80985da-7226-4a3a-9e4c-9b295901ceee"/>
+                <meta>
+                    <lastUpdated value="2018-08-17T07:16:09.692+00:00"/>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                </identifier>
+                <status value="current"/>
+                <mode value="working"/>
+                <subject>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </subject>
+                <entry>
+                    <item>
+                        <reference value="urn:uuid:e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+                    </item>
+                </entry>
+            </List>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+        <resource>
+            <Condition xmlns="http://hl7.org/fhir">
+                <id value="e4839ae7-d2ee-4ee0-9273-bc2a04e869cf"/>
+                <meta>
+                    <lastUpdated value="2018-08-17T07:16:09.625+00:00"/>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Condition-1"/>
+                </meta>
+                <identifier>
+                    <system value="urn:uuid"/>
+                    <value value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
+                </identifier>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="426656000"/>
+                        <display value="Severe persistent asthma (disorder)"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:07e05937-e2a4-4cf6-9cc3-243f92d1cbc6"/>
+                </subject>
+            </Condition>
         </resource>
     </entry>
 </Bundle>
