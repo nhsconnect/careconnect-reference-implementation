@@ -17,7 +17,9 @@ import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.entity.allergy.AllergyIntoleranceEntity;
 import uk.nhs.careconnect.ri.entity.carePlan.*;
 import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
+import uk.nhs.careconnect.ri.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.consent.ConsentEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
@@ -91,6 +93,12 @@ public class CarePlanDao implements CarePlanRepository {
     OrganisationRepository organisationDao;
 
     @Autowired
+    ConsentRepository consentDao;
+
+    @Autowired
+    ClinicalImpressionRepository impressionDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
@@ -116,6 +124,12 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     private CareTeamEntityToFHIRCareTeamTransformer careTeamEntityToFHIRCareTeamTransformer;
+
+    @Autowired
+    private ClinicalImpressionEntityToFHIRClinicalImpressionTransformer clinicalImpressionEntityToFHIRClinicalImpressionTransformer;
+
+    @Autowired
+    private ConsentEntityToFHIRConsentTransformer consentEntityToFHIRConsentTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
@@ -427,7 +441,12 @@ public class CarePlanDao implements CarePlanRepository {
         } else if (item.getReference().contains("RiskAssessment")) {
             RiskAssessmentEntity riskAssessment = riskDao.readEntity(ctx, new IdType(item.getReference()));
             itemEntity.setReferenceRisk(riskAssessment);
-
+        } else if (item.getReference().contains("ClinicalImpression")) {
+            ClinicalImpressionEntity clinicalImpressionEntity = impressionDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setReferenceClinicalImpression(clinicalImpressionEntity);
+        } else if (item.getReference().contains("Consent")) {
+            ConsentEntity consentEntity = consentDao.readEntity(ctx, new IdType(item.getReference()));
+            itemEntity.setReferenceConsent(consentEntity);
         }
         em.persist(itemEntity);
 
@@ -519,6 +538,12 @@ public class CarePlanDao implements CarePlanRepository {
         }
         if (carePlanSupportingInformation.getReferenceForm() != null) {
             return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getReferenceForm());
+        }
+        if (carePlanSupportingInformation.getReferenceConsent() != null) {
+            return consentEntityToFHIRConsentTransformer.transform(carePlanSupportingInformation.getReferenceConsent());
+        }
+        if (carePlanSupportingInformation.getReferenceClinicalImpression() != null) {
+            return clinicalImpressionEntityToFHIRClinicalImpressionTransformer.transform(carePlanSupportingInformation.getReferenceClinicalImpression());
         }
         if (carePlanSupportingInformation.getReferenceRisk() != null) {
             return riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(carePlanSupportingInformation.getReferenceRisk());

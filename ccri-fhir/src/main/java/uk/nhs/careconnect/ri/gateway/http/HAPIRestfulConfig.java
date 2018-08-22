@@ -59,6 +59,9 @@ public class HAPIRestfulConfig extends RestfulServer {
 
 
 		setResourceProviders(Arrays.asList(
+
+				// Care Connect API providers START
+
 				 myAppCtx.getBean(PatientResourceProvider.class)
                	,myAppCtx.getBean(OrganisationResourceProvider.class)
                 ,myAppCtx.getBean(PractitionerResourceProvider.class)
@@ -72,17 +75,21 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(MedicationRequestResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(MedicationStatementResourceProvider.class) // R3 addition KGM
 				,myAppCtx.getBean(ImmunizationResourceProvider.class) // R3 addition KGM
-			//	,myAppCtx.getBean(CompositionResourceProvider.class) // Composition exploration
 				,myAppCtx.getBean(DocumentReferenceResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(BinaryResourceProvider.class) // Unstructured
 				,myAppCtx.getBean(MedicationResourceProvider.class)
+
+				// Care Connect API providers END
+
+				// Support for NHS Digital National Projects  START
+
+				// NOT FOR LIVE - Use ENVIRONEMNT VARIABLE
+
 				,myAppCtx.getBean(QuestionnaireResourceProvider.class)
 				,myAppCtx.getBean(QuestionnaireResponseResourceProvider.class)
 				,myAppCtx.getBean(ListResourceProvider.class)
 				,myAppCtx.getBean(RelatedPersonResourceProvider.class)
 				,myAppCtx.getBean(CarePlanResourceProvider.class)
-				// Not supported on plain FHIR Server (OAuth2 only)
-
 				,myAppCtx.getBean(HealthcareServiceResourceProvider.class)
 				,myAppCtx.getBean(ReferralRequestResourceProvider.class)
 				,myAppCtx.getBean(CareTeamResourceProvider.class)
@@ -91,9 +98,14 @@ public class HAPIRestfulConfig extends RestfulServer {
 				,myAppCtx.getBean(RiskAssessmentResourceProvider.class)
 				,myAppCtx.getBean(ClinicalImpressionResourceProvider.class)
 				,myAppCtx.getBean(ConsentResourceProvider.class)
+				,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
+				,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
 
-				//,myAppCtx.getBean(BundleResourceProvider.class) // Supports uploading resources
-				//,myAppCtx.getBean(EpisodeOfCareResourceProvider.class) // TO DO Remove me for live KGM
+				// Support for NHS Digital Natinal Projects  END
+
+				// NOT FOR LIVE
+
+
 		));
 
         // Replace built in conformance provider (CapabilityStatement)

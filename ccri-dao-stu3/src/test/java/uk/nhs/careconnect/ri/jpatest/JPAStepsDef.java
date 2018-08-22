@@ -103,6 +103,12 @@ public class JPAStepsDef {
     CarePlanRepository carePlanRepository;
 
     @Autowired
+    ClinicalImpressionRepository impressionRepository;
+
+    @Autowired
+    ConsentRepository consentRepository;
+
+    @Autowired
     TerminologyLoader myTermSvc;
 
     Patient patient;
@@ -1177,6 +1183,30 @@ PROCEDURE
             RiskAssessment risk = ctx.newXmlParser().parseResource(RiskAssessment.class, reader);
             try {
                 risk = riskAssessmentRepository.create(ctx,risk,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/ClinicalImpression.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            ClinicalImpression clinicalImpression = ctx.newXmlParser().parseResource(ClinicalImpression.class, reader);
+            try {
+                clinicalImpression = impressionRepository.create(ctx,clinicalImpression,null,null);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("xml/Consent.xml");
+            assertNotNull(inputStream);
+            reader = new InputStreamReader(inputStream);
+
+            Consent consent = ctx.newXmlParser().parseResource(Consent.class, reader);
+            try {
+                consent = consentRepository.create(ctx,consent,null,null);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

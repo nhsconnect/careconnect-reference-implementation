@@ -2,7 +2,10 @@ package uk.nhs.careconnect.ri.entity;
 
 import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
 import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
+import uk.nhs.careconnect.ri.entity.clinicialImpression.ClinicalImpressionEntity;
+import uk.nhs.careconnect.ri.entity.clinicialImpression.ClinicalImpressionPrognosis;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.consent.ConsentEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.goal.GoalEntity;
 import uk.nhs.careconnect.ri.entity.list.ListEntity;
@@ -79,6 +82,14 @@ public class BaseReferenceItem extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REF_PERSON_ID")
     private RelatedPersonEntity referencePerson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_IMPRESSION_ID")
+    private ClinicalImpressionEntity referenceClinicalImpression;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_CONSENT_ID")
+    private ConsentEntity referenceConsent;
 
     @Override
     public Long getId() {
@@ -195,5 +206,21 @@ public class BaseReferenceItem extends BaseResource {
 
     public void setReferencePerson(RelatedPersonEntity referencePerson) {
         this.referencePerson = referencePerson;
+    }
+
+    public ClinicalImpressionEntity getReferenceClinicalImpression() {
+        return referenceClinicalImpression;
+    }
+
+    public void setReferenceClinicalImpression(ClinicalImpressionEntity referenceClinicalImpression) {
+        this.referenceClinicalImpression = referenceClinicalImpression;
+    }
+
+    public ConsentEntity getReferenceConsent() {
+        return referenceConsent;
+    }
+
+    public void setReferenceConsent(ConsentEntity referenceConsent) {
+        this.referenceConsent = referenceConsent;
     }
 }

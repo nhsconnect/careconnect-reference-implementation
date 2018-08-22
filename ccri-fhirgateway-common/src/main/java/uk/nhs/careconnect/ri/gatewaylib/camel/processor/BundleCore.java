@@ -195,24 +195,7 @@ public class BundleCore {
                             resource = searchAddList(referenceId, (ListResource) iResource);
                         } else if (iResource instanceof Immunization) {
                             resource = searchAddImmunization(referenceId, (Immunization) iResource);
-                       /* } else if (iResource instanceof DocumentReference) {
-                            resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
-                        } else if (iResource instanceof HealthcareService) {
-                            resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
-                        } else if (iResource instanceof QuestionnaireResponse) {
-                            resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
-                        } else if (iResource instanceof RelatedPerson) {
-                            resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
-                        } else if (iResource instanceof ReferralRequest) {
-                            resource = searchAddReferralRequest(referenceId, (ReferralRequest) iResource);
-                        } else if (iResource instanceof CarePlan) {
-                            resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
-                        } else if (iResource instanceof CareTeam) {
-                            resource = searchAddCareTeam(referenceId, (CareTeam) iResource);
-                        } else if (iResource instanceof MedicationDispense) {
-                            resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
-                        } else if (iResource instanceof Goal) {
-                            resource = searchAddGoal(referenceId, (Goal) iResource); */
+
                         } else {
 
                             switch (iResource.getClass().getSimpleName()) {
@@ -224,6 +207,9 @@ public class BundleCore {
                                     break;
                                 case "ClinicalImpression":
                                     resource = searchAddClinicalImpression(referenceId, (ClinicalImpression) iResource);
+                                    break;
+                                case "Consent":
+                                    resource = searchAddConsent(referenceId, (Consent) iResource);
                                     break;
                                 case "DocumentReference":
                                     resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
@@ -2052,6 +2038,145 @@ public class BundleCore {
         }
 
         return eprClinicalImpression;
+    }
+
+    public Consent searchAddConsent(String consentId,Consent consent) {
+        log.info("Consent searchAdd " +consentId);
+
+        if (consent == null) throw new InternalErrorException("Bundle processing error");
+
+        Consent eprConsent = (Consent) resourceMap.get(consentId);
+
+        // Organization already processed, quit with Organization
+        if (eprConsent != null) return eprConsent;
+
+        // Prevent re-adding the same Practitioner
+        if (!consent.hasIdentifier()) {
+            consent.getIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(consent.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        if (consent.hasIdentifier()) {
+            Identifier identifier = consent.getIdentifier();
+            Exchange exchange = template.send("direct:FHIRConsent", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Consent");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprConsent = (Consent) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Consent = " + eprConsent.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (consent.hasPatient()) {
+            Resource resource = searchAddResource(consent.getPatient().getReference());
+            if (resource == null) referenceMissing(consent, consent.getPatient().getReference());
+            consent.setPatient(getReference(resource));
+        }
+        if (consent.hasOrganization()) {
+            List<Reference> organisations = new ArrayList<>();
+            for (Reference reference : consent.getOrganization()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(consent, reference.getReference());
+                organisations.add(getReference(resource));
+            }
+            consent.setOrganization(organisations);
+
+        }
+        if (consent.hasConsentingParty()) {
+            List<Reference> parties = new ArrayList<>();
+            for (Reference reference : consent.getConsentingParty()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(consent, reference.getReference());
+                parties.add(getReference(resource));
+            }
+            consent.setConsentingParty(parties);
+        }
+
+        if (consent.hasActor()) {
+
+            for (Consent.ConsentActorComponent consentActorComponent : consent.getActor()) {
+                if (consentActorComponent.hasReference()) {
+                    Resource resource = searchAddResource(consentActorComponent.getReference().getReference());
+                    if (resource == null) referenceMissing(consent, consentActorComponent.getReference().getReference());
+                    consentActorComponent.setReference(getReference(resource));
+                }
+            }
+        }
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Consent";
+        // Location found do not add
+        if (eprConsent != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Consent/"+eprConsent.getIdElement().getIdPart();
+            consent.setId(eprConsent.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(consent);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRConsent", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Consent) {
+            eprConsent = (Consent) iResource;
+            setResourceMap(consentId,eprConsent);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprConsent;
     }
 
     public Goal searchAddGoal(String goalId,Goal goal) {
