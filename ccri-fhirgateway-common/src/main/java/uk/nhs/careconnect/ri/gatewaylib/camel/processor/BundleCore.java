@@ -1991,6 +1991,11 @@ public class BundleCore {
             if (resource == null) referenceMissing(impression, impression.getContext().getReference());
             impression.setContext(getReference(resource));
         }
+        if (impression.hasAssessor()) {
+            Resource resource = searchAddResource(impression.getAssessor().getReference());
+            if (resource == null) referenceMissing(impression, impression.getAssessor().getReference());
+            impression.setAssessor(getReference(resource));
+        }
 
 
         IBaseResource iResource = null;

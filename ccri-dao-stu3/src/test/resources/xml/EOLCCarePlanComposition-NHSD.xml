@@ -114,6 +114,12 @@
                   <supportingInfo>
                     <reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
                 </supportingInfo>
+                  <supportingInfo>
+                    <reference value="urn:uuid:981dbc45-9ff9-4570-836c-eb3e93763189"/>
+                </supportingInfo>
+                 <supportingInfo>
+                    <reference value="urn:uuid:0826cdb4-0335-4878-b235-0b715a945b6c"/>
+                </supportingInfo>
                 <addresses>
                     <reference value="urn:uuid:f74658b4-f667-4385-9b6f-7c4305b4f743"/>
                 </addresses>
@@ -124,6 +130,66 @@
                     </detail>
                 </activity>
             </CarePlan>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:981dbc45-9ff9-4570-836c-eb3e93763189"/>
+        <resource>
+            <Consent xmlns="http://hl7.org/fhir">
+	<id value="981dbc45-9ff9-4570-836c-eb3e93763189"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"/>
+	</meta>
+	<status value="active"/>
+	<patient>
+		<reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+	</patient>
+	<dateTime value="2018-08-20T15:00:00+00:00"/>
+	<actor>
+		<role>
+			<coding>
+				<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+				<code value="PROV"/>
+				<display value="Healthcare Provider"/>
+			</coding>
+		</role>
+	<!--	<reference>
+				<reference value="urn:uuid:12692f55-56cf-4ddf-3ef5-e9ed13f6bd923"/>
+		</reference> -->
+	</actor>
+</Consent>
+        </resource>
+    </entry>
+     <entry>
+        <fullUrl value="urn:uuid:0826cdb4-0335-4878-b235-0b715a945b6c"/>
+        <resource>
+        <ClinicalImpression xmlns="http://hl7.org/fhir" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7.org/fhir file:///C:/stu3/clinicalimpression.xsd">
+	<id value="0826cdb4-0335-4878-b235-0b715a945b6c"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"/>
+	</meta>
+	<status value="completed"/>
+	<subject>
+		<reference value="urn:uuid:7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+	</subject>
+	<date value="2018-08-20"/>
+<!--	<assessor>
+		<reference value="Practitioner/7d9ccb47-3cbb-4844-8d6c-8edf58c3415a"/>
+	</assessor> -->
+	<prognosisCodeableConcept>
+		<coding>
+			<system value="http://snomed.info/sct"/>
+			<code value="767503006"/>
+			<display value="Limited life expectancy of approximately one year"/>
+		</coding>
+	</prognosisCodeableConcept>
+</ClinicalImpression>
+        </resource>
+    </entry>
+     <entry>
+        <fullUrl value=""/>
+        <resource>
+      
         </resource>
     </entry>
 </Bundle>
