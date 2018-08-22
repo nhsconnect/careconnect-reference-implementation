@@ -82,7 +82,7 @@ public class PatientResourceProvider implements IResourceProvider {
     }
 
     @Operation(name = "$getrecord3", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
-    public Bundle getGetRecord3(
+    public Parameters getGetRecord3(
             @OperationParam(name="patientNHSnumber") TokenParam
                     nhsNumber,
             @OperationParam(name="recordType") TokenParam
@@ -122,7 +122,9 @@ public class PatientResourceProvider implements IResourceProvider {
                 entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
             }
 
-            return bundle;
+            Parameters param =new Parameters();
+            param.addParameter().setResource(bundle).setName(recordSection.getValue());
+            return param;
 
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
