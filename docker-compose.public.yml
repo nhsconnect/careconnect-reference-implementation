@@ -75,7 +75,7 @@ services:
     depends_on:
       - ccrifhir
     ports:
-      - 8104:80
+      - 80:80
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
       - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
