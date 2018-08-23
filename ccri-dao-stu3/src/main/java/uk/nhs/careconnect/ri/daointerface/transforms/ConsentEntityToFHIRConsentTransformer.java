@@ -75,19 +75,24 @@ public class ConsentEntityToFHIRConsentTransformer implements Transformer<Consen
                         .setDisplay(consentActor.getRoleCode().getDisplay());
             }
             if (consentActor.getReferenceCareTeam() != null) {
-                consentActorComponent.setReference(new Reference("CareTeam/"+consentActor.getReferenceCareTeam().getId()));
+                consentActorComponent.setReference(new Reference("CareTeam/"+consentActor.getReferenceCareTeam().getId())
+                        .setDisplay(consentActor.getReferenceCareTeam().getName()));
             }
             if (consentActor.getReferenceOrganisation() != null) {
-                consentActorComponent.setReference(new Reference("Organization/"+consentActor.getReferenceOrganisation().getId()));
+                consentActorComponent.setReference(new Reference("Organization/"+consentActor.getReferenceOrganisation().getId())
+                        .setDisplay(consentActor.getReferenceOrganisation().getName()));
             }
             if (consentActor.getReferencePatient() != null) {
-                consentActorComponent.setReference(new Reference("Patient/"+consentActor.getReferencePatient().getId()));
+                consentActorComponent.setReference(new Reference("Patient/"+consentActor.getReferencePatient().getId())
+                        .setDisplay(consentActor.getReferencePatient().getNames().get(0).getDisplayName()));
             }
             if (consentActor.getReferencePerson() != null) {
-                consentActorComponent.setReference(new Reference("RelatedPerson/"+consentActor.getReferencePerson().getId()));
+                consentActorComponent.setReference(new Reference("RelatedPerson/"+consentActor.getReferencePerson().getId())
+                        .setDisplay(consentActor.getReferencePerson().getNames().get(0).getDisplayName()));
             }
             if (consentActor.getReferencePractitioner() != null) {
-                consentActorComponent.setReference(new Reference("Practitioner/"+consentActor.getReferencePractitioner().getId()));
+                consentActorComponent.setReference(new Reference("Practitioner/"+consentActor.getReferencePractitioner().getId())
+                        .setDisplay(consentActor.getReferencePractitioner().getNames().get(0).getDisplayName()));
             }
         }
 

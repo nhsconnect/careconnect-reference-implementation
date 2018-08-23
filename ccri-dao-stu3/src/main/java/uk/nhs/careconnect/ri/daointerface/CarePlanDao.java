@@ -19,6 +19,7 @@ import uk.nhs.careconnect.ri.entity.carePlan.*;
 import uk.nhs.careconnect.ri.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.entity.consent.ConsentActor;
 import uk.nhs.careconnect.ri.entity.consent.ConsentEntity;
 import uk.nhs.careconnect.ri.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
@@ -132,6 +133,8 @@ public class CarePlanDao implements CarePlanRepository {
     private ConsentEntityToFHIRConsentTransformer consentEntityToFHIRConsentTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
+
+    List<Resource> results = null;
 
     @Override
     public void save(FhirContext ctx,CarePlanEntity carePlan) {
@@ -463,8 +466,12 @@ public class CarePlanDao implements CarePlanRepository {
             "CarePlan:subject"
             ,"CarePlan:supportingInformation"
             , "*"}) Set<Include> includes) {
+
+
+
         List<CarePlanEntity> qryResults = searchEntity(ctx,patient, date,categories, identifier,resid, includes);
-        List<Resource> results = new ArrayList<>();
+
+        results = new ArrayList<>();
 
         for (CarePlanEntity carePlanEntity : qryResults)
         {
@@ -483,35 +490,32 @@ public class CarePlanDao implements CarePlanRepository {
                         switch(include.getValue()) {
                             case "CarePlan:subject":
                                 PatientEntity patientEntity = carePlanEntity.getPatient();
-                                if (patientEntity !=null) results.add(patientEntityToFHIRPatientTransformer.transform(patientEntity));
+                                if (patientEntity !=null) resultsAddIfNotPresent(patientEntityToFHIRPatientTransformer.transform(patientEntity));
                                 break;
                             case "CarePlan:supportingInformation":
                                 for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
-                                    Resource resource = getResource(carePlanSupportingInformation,results);
-                                    if (resource != null)
-                                        results.add(resource);
+                                    addResource(carePlanSupportingInformation);
+
                                 }
                                 break;
                             case "*":
                                 PatientEntity patientEntity2 = carePlanEntity.getPatient();
-                                if (patientEntity2 !=null) results.add(patientEntityToFHIRPatientTransformer.transform(patientEntity2));
+                                if (patientEntity2 !=null) resultsAddIfNotPresent(patientEntityToFHIRPatientTransformer.transform(patientEntity2));
 
                                 for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
-                                    Resource resource = getResource(carePlanSupportingInformation,results);
-                                    if (resource != null)
-                                        results.add(resource);
+                                    addResource(carePlanSupportingInformation);
                                 }
                                 for (CarePlanCondition condition : carePlanEntity.getAddresses()) {
-                                        results.add(conditionEntityToFHIRConditionTransformer.transform(condition.getCondition()));
+                                    resultsAddIfNotPresent(conditionEntityToFHIRConditionTransformer.transform(condition.getCondition()));
                                 }
                                 for (CarePlanTeam carePlanTeam : carePlanEntity.getTeams()) {
-                                    results.add(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
+                                    resultsAddIfNotPresent(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
                                 }
                                 for (CarePlanAuthor carePlanAuthor : carePlanEntity.getAuthors()) {
                                     if (carePlanAuthor.getPractitioner() != null)
-                                        results.add(practitionerEntityToFHIRPractitionerTransformer.transform(carePlanAuthor.getPractitioner()));
+                                        resultsAddIfNotPresent(practitionerEntityToFHIRPractitionerTransformer.transform(carePlanAuthor.getPractitioner()));
                                     if (carePlanAuthor.getOrganisation() != null)
-                                        results.add(organisationEntityToFHIROrganizationTransformer.transform(carePlanAuthor.getOrganisation()));
+                                        resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(carePlanAuthor.getOrganisation()));
                                 }
                                 break;
                         }
@@ -524,31 +528,44 @@ public class CarePlanDao implements CarePlanRepository {
         return results;
     }
 
-    private Resource getResource(CarePlanSupportingInformation carePlanSupportingInformation, List<Resource> results) {
+    private void resultsAddIfNotPresent(Resource resource) {
+        boolean found = false;
+        for (Resource resource1 : results) {
+            if (resource1.getId().equals(resource.getId()) && resource.getClass().getSimpleName().equals(resource1.getClass().getSimpleName())) found=true;
+        }
+        if (!found) results.add(resource);
+    }
+
+    private void addResource(CarePlanSupportingInformation carePlanSupportingInformation) {
         if (carePlanSupportingInformation.getReferenceListResource() != null) {
             ListEntity list = carePlanSupportingInformation.getReferenceListResource();
             if (list != null) {
                 for (ListItem items : list.getItems()) {
                     if (items.getReferenceCondition() != null) {
-                        results.add(conditionEntityToFHIRConditionTransformer.transform(items.getReferenceCondition()));
+                        resultsAddIfNotPresent(conditionEntityToFHIRConditionTransformer.transform(items.getReferenceCondition()));
                     }
                 }
             }
-            return listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getReferenceListResource());
+            resultsAddIfNotPresent(listEntityToFHIRListResourceTransformer.transform(carePlanSupportingInformation.getReferenceListResource()));
         }
         if (carePlanSupportingInformation.getReferenceForm() != null) {
-            return questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getReferenceForm());
+            resultsAddIfNotPresent(questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(carePlanSupportingInformation.getReferenceForm()));
         }
         if (carePlanSupportingInformation.getReferenceConsent() != null) {
-            return consentEntityToFHIRConsentTransformer.transform(carePlanSupportingInformation.getReferenceConsent());
+            for (ConsentActor consentActor : carePlanSupportingInformation.getReferenceConsent().getActors()) {
+                if (consentActor.getReferenceOrganisation()!=null) {
+                    resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(consentActor.getReferenceOrganisation()));
+                }
+            }
+            resultsAddIfNotPresent(consentEntityToFHIRConsentTransformer.transform(carePlanSupportingInformation.getReferenceConsent()));
         }
         if (carePlanSupportingInformation.getReferenceClinicalImpression() != null) {
-            return clinicalImpressionEntityToFHIRClinicalImpressionTransformer.transform(carePlanSupportingInformation.getReferenceClinicalImpression());
+            resultsAddIfNotPresent(clinicalImpressionEntityToFHIRClinicalImpressionTransformer.transform(carePlanSupportingInformation.getReferenceClinicalImpression()));
         }
         if (carePlanSupportingInformation.getReferenceRisk() != null) {
-            return riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(carePlanSupportingInformation.getReferenceRisk());
+            resultsAddIfNotPresent(riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(carePlanSupportingInformation.getReferenceRisk()));
         }
-        return null;
+
     }
 
     @Override
