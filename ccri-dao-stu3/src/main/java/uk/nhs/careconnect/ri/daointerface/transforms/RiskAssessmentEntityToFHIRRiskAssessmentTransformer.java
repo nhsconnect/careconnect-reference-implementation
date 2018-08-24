@@ -64,6 +64,10 @@ public class RiskAssessmentEntityToFHIRRiskAssessmentTransformer implements Tran
             riskAssessment.setCondition(new Reference("Condition/"+riskAssessmentEntity.getCondition().getId()));
         }
 
+        if (riskAssessmentEntity.getMitigation() != null) {
+            riskAssessment.setMitigation(riskAssessmentEntity.getMitigation());
+        }
+
 
         for (RiskAssessmentIdentifier identifier : riskAssessmentEntity.getIdentifiers()) {
             riskAssessment.getIdentifier()

@@ -154,6 +154,10 @@ public class RiskAssessmentDao implements RiskAssessmentRepository {
             }
         }
 
+        if (risk.hasMitigation()) {
+            riskEntity.setMitigation(risk.getMitigation());
+        }
+
         em.persist(riskEntity);
 
 
