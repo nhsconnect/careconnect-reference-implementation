@@ -210,14 +210,21 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
 
         em.persist(documentReferenceEntity);
 
+        // Remove previous links to documents.
+
+        for (DocumentReferenceAttachment attachmentSearch : documentReferenceEntity.getAttachments() ) {
+            em.remove(attachmentSearch);
+        }
         for (DocumentReference.DocumentReferenceContentComponent content : documentReference.getContent()) {
             DocumentReferenceAttachment documentReferenceAttachment = null;
+            /*
             for (DocumentReferenceAttachment attachmentSearch : documentReferenceEntity.getAttachments() ) {
                 if (attachmentSearch.getUrl().equals(content.getAttachment().getUrl())) {
                     documentReferenceAttachment = attachmentSearch;
                     break;
                 }
             }
+            */
             if (documentReferenceAttachment == null ) {
                 documentReferenceAttachment = new DocumentReferenceAttachment();
                 documentReferenceAttachment.setDocumentReference(documentReferenceEntity);
