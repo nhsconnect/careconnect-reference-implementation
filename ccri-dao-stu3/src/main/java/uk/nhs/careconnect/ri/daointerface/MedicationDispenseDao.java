@@ -4,8 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.MedicationDispense;
-import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +12,23 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.daointerface.transforms.MedicationDispenseEntityToFHIRMedicationDispenseTransformer;
 import uk.nhs.careconnect.ri.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.entity.episode.EpisodeOfCareEntity;
+import uk.nhs.careconnect.ri.entity.medicationDispense.MedicationDispenseDosage;
 import uk.nhs.careconnect.ri.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.entity.medicationDispense.MedicationDispenseIdentifier;
+import uk.nhs.careconnect.ri.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.entity.practitioner.PractitionerEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +49,18 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
 
     @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    private OrganisationRepository organisationDao;
+
+    @Autowired
+    EncounterRepository encounterDao;
+
+    @Autowired
+    EpisodeOfCareRepository episodeDao;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
     
     @Autowired
     MedicationDispenseEntityToFHIRMedicationDispenseTransformer medicationDispenseEntityToFHIRMedicationDispenseTransformer;
@@ -63,8 +82,259 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     }
 
     @Override
-    public MedicationDispense create(FhirContext ctx, MedicationDispense statement, IdType theId, String theConditional) throws OperationOutcomeException {
-        return null;
+    public MedicationDispense create(FhirContext ctx, MedicationDispense dispense, IdType theId, String theConditional) throws OperationOutcomeException {
+        log.debug("MedicationDispense.save");
+
+        MedicationDispenseEntity dispenseEntity = null;
+
+        if (dispense.hasId()) dispenseEntity = readEntity(ctx, dispense.getIdElement());
+
+        if (theConditional != null) {
+            try {
+
+
+                if (theConditional.contains("fhir.leedsth.nhs.uk/Id/dispense")) {
+                    URI uri = new URI(theConditional);
+
+                    String scheme = uri.getScheme();
+                    String host = uri.getHost();
+                    String query = uri.getRawQuery();
+                    log.debug(query);
+                    String[] spiltStr = query.split("%7C");
+                    log.debug(spiltStr[1]);
+
+                    List<MedicationDispenseEntity> results = searchEntity(ctx
+                            , null
+                            , null
+                            ,null
+                            , new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/dispense")
+                            ,null
+                            , null);
+                    for (MedicationDispenseEntity con : results) {
+                        dispenseEntity = con;
+                        break;
+                    }
+                } else {
+                    log.info("NOT SUPPORTED: Conditional Url = "+theConditional);
+                }
+
+            } catch (Exception ex) {
+
+            }
+        }
+
+        if (dispenseEntity == null) dispenseEntity = new MedicationDispenseEntity();
+
+
+        PatientEntity patientEntity = null;
+        if (dispense.hasSubject()) {
+            log.trace(dispense.getSubject().getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(dispense.getSubject().getReference()));
+            dispenseEntity.setPatient(patientEntity);
+        }
+
+        if (dispense.hasStatus()) {
+            dispenseEntity.setStatus(dispense.getStatus());
+        }
+
+        if (dispense.hasContext()) {
+            if (dispense.getContext().getReference().contains("Encounter")) {
+
+                EncounterEntity encounter = encounterDao.readEntity(ctx,new IdType(dispense.getContext().getReference()));
+                dispenseEntity.setContextEncounter(encounter);
+            }
+            if (dispense.getContext().getReference().contains("EpisodeOfCare")) {
+                EpisodeOfCareEntity episode = episodeDao.readEntity(ctx,new IdType(dispense.getContext().getReference()));
+                dispenseEntity.setContextEpisodeOfCare(episode);
+
+            }
+        }
+
+        if (dispense.hasMedicationCodeableConcept()) {
+            try {
+                ConceptEntity code = conceptDao.findAddCode(dispense.getMedicationCodeableConcept().getCoding().get(0));
+                if (code != null) {
+                    dispenseEntity.setMedicationCode(code);
+                } else {
+                    log.info("Code: Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
+                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                }
+            } catch (Exception ex) {}
+        }
+
+        if (dispense.hasWhenPrepared()) {
+            dispenseEntity.setWhenPrepared(dispense.getWhenPrepared());
+        }
+
+        if (dispense.hasPerformer()) {
+            if (dispense.getPerformerFirstRep().getActor().getReference().contains("Practitioner")) {
+                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getActor().getReference()));
+                dispenseEntity.setPerformerPractitioner(practitionerEntity);
+            }
+            if (dispense.getPerformerFirstRep().getActor().getReference().contains("Organization")) {
+                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getActor().getReference()));
+                dispenseEntity.setPerformerOrganisation(organisationEntity);
+            }
+        }
+
+        for (Identifier identifier : dispense.getIdentifier()) {
+            MedicationDispenseIdentifier dispenseIdentifier = null;
+
+            for (MedicationDispenseIdentifier orgSearch : dispenseEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    dispenseIdentifier = orgSearch;
+                    break;
+                }
+            }
+            if (dispenseIdentifier == null)  dispenseIdentifier = new MedicationDispenseIdentifier();
+
+            dispenseIdentifier.setValue(identifier.getValue());
+            dispenseIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            dispenseIdentifier.setMedicationDispense(dispenseEntity);
+            em.persist(dispenseIdentifier);
+        }
+
+        // Don't attempt to rebuild dosages
+        for ( MedicationDispenseDosage dosageEntity : dispenseEntity.getDosageInstructions()) {
+            em.remove(dosageEntity);
+        }
+        dispenseEntity.setDosageInstructions(new HashSet<>());
+        em.persist(dispenseEntity);
+
+        Integer cnt = 0;
+        for (Dosage dosage : dispense.getDosageInstruction()) {
+            log.debug("Iteration "+cnt);
+            cnt++;
+            MedicationDispenseDosage dosageEntity = new MedicationDispenseDosage();
+            dosageEntity.setMedicationDispense(dispenseEntity);
+
+            if (dosage.hasAdditionalInstruction()) {
+
+                ConceptEntity code = conceptDao.findAddCode(dosage.getAdditionalInstruction().get(0).getCoding().get(0));
+                if (code != null) {
+                    dosageEntity.setAdditionalInstructionCode(code);
+                } else {
+                    log.info("Code: Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getSystem()
+                            + " code = " + dosage.getAdditionalInstruction().get(0).getCoding().get(0).getCode());
+                }
+            }
+            if (dosage.hasAsNeededCodeableConcept()) {
+
+                try {
+                    ConceptEntity code = conceptDao.findAddCode(dosage.getAsNeededCodeableConcept().getCoding().get(0));
+                    if (code != null) {
+                        dosageEntity.setAdditionalInstructionCode(code);
+                    } else {
+                        log.info("Code: Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                                + " code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+
+                        throw new IllegalArgumentException("Missing System/Code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getSystem()
+                                + " code = " + dosage.getAsNeededCodeableConcept().getCoding().get(0).getCode());
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+            if (dosage.hasRoute()) {
+
+                ConceptEntity code = conceptDao.findAddCode(dosage.getRoute().getCoding().get(0));
+                if (code != null) {
+                    dosageEntity.setRouteCode(code);
+                } else {
+                    log.info("Code: Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getRoute().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing System/Code = " + dosage.getRoute().getCoding().get(0).getSystem()
+                            + " code = " + dosage.getRoute().getCoding().get(0).getCode());
+                }
+            }
+            if (dosage.hasAsNeededBooleanType()) {
+                try {
+                    dosageEntity.setAsNeededBoolean(dosage.getAsNeededBooleanType().booleanValue());
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+            if (dosage.hasText()) {
+                dosageEntity.setOtherText(dosage.getText());
+            }
+            if (dosage.hasPatientInstruction()) {
+                dosageEntity.setPatientInstruction(dosage.getPatientInstruction());
+            }
+            if (dosage.hasDoseSimpleQuantity() ) {
+                try {
+                    SimpleQuantity qty = dosage.getDoseSimpleQuantity();
+
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findAddCode(qty);
+                        if (code != null) {
+                            dosageEntity.setDoseUnitOfMeasure(code);
+                        } else {
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                    dosageEntity.setDoseQuantity(qty.getValue());
+                }
+                catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+
+            if (dosage.hasDoseRange()) {
+
+                try {
+                    SimpleQuantity qty = dosage.getDoseRange().getHigh();
+                    dosageEntity.setDoseRangeHigh(qty.getValue());
+
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findAddCode(qty);
+                        if (code != null) {
+                            dosageEntity.setDoseHighUnitOfMeasure(code);
+                        } else {
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+                try {
+                    SimpleQuantity qty = dosage.getDoseRange().getLow();
+                    dosageEntity.setDoseRangeLow(qty.getValue());
+
+                    if (qty.hasCode()) {
+                        ConceptEntity code = conceptDao.findAddCode(qty);
+                        if (code != null) {
+                            dosageEntity.setDoseLowUnitOfMeasure(code);
+                        } else {
+                            log.info("Code: Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+
+                            throw new IllegalArgumentException("Missing System/Code = " + qty.getSystem()
+                                    + " code = " + qty.getCode());
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+            }
+            em.persist(dosageEntity);
+        }
+
+        return medicationDispenseEntityToFHIRMedicationDispenseTransformer.transform(dispenseEntity);
     }
 
     @Override
@@ -183,7 +453,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
         {
             criteria.select(root);
         }
-        criteria.orderBy(builder.desc(root.get("authoredDate")));
+        criteria.orderBy(builder.desc(root.get("whenPrepared")));
         TypedQuery<MedicationDispenseEntity> typedQuery = em.createQuery(criteria).setMaxResults(MAXROWS);
 
         qryResults = typedQuery.getResultList();
