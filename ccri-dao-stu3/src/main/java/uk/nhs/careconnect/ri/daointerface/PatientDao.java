@@ -286,11 +286,15 @@ public class PatientDao implements PatientRepository {
                     break;
                 }
             }
-            if (patientIdentifier == null)  patientIdentifier = new PatientIdentifier();
+            if (patientIdentifier == null) {
+                patientIdentifier = new PatientIdentifier();
+                patientEntity.addIdentifier(patientIdentifier);
+            }
 
             patientIdentifier.setValue(daoutils.removeSpace(identifier.getValue()));
             patientIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             patientIdentifier.setPatient(patientEntity);
+
             em.persist(patientIdentifier);
         }
         em.persist(patientEntity);
@@ -395,7 +399,7 @@ public class PatientDao implements PatientRepository {
 
 
         newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
-        patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
+        //patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
         em.persist(patientEntity);
 
 
