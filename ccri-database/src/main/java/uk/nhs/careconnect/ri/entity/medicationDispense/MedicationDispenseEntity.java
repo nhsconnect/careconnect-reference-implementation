@@ -78,11 +78,17 @@ public class MedicationDispenseEntity extends BaseResource {
     @JoinColumn(name = "TYPE_CONCEPT",foreignKey= @ForeignKey(name="FK_DISPENSE_TYPE_CONCEPT"))
     ConceptEntity typeCode;
 
-    @Column(name="quantity")
-    private BigDecimal doseQuantity;
+    @Column(name="quantityValue")
+    private BigDecimal quantityValue;
 
-    @Column(name="daysSupply")
-    private BigDecimal daysSupply;
+    @Column(name="quantityUnit")
+    private String quantityUnit;
+
+    @Column(name="daysSupplyValue")
+    private BigDecimal daysSupplyValue;
+
+    @Column(name="daysSupplyUnit")
+    private String daysSupplyUnit;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "whenPrepared")
@@ -246,21 +252,38 @@ public class MedicationDispenseEntity extends BaseResource {
         this.typeCode = typeCode;
     }
 
-    public BigDecimal getDoseQuantity() {
-        return doseQuantity;
+    public BigDecimal getQuantityValue() {
+        return quantityValue;
     }
 
-    public void setDoseQuantity(BigDecimal doseQuantity) {
-        this.doseQuantity = doseQuantity;
+    public void setQuantityValue(BigDecimal quantityValue) {
+        this.quantityValue = quantityValue;
     }
 
-    public BigDecimal getDaysSupply() {
-        return daysSupply;
+    public String getQuantityUnit() {
+        return quantityUnit;
     }
 
-    public void setDaysSupply(BigDecimal daysSupply) {
-        this.daysSupply = daysSupply;
+    public void setQuantityUnit(String quantityUnit) {
+        this.quantityUnit = quantityUnit;
     }
+
+    public String getDaysSupplyUnit() {
+        return daysSupplyUnit;
+    }
+
+    public void setDaysSupplyUnit(String daysSupplyUnit) {
+        this.daysSupplyUnit = daysSupplyUnit;
+    }
+
+    public BigDecimal getDaysSupplyValue() {
+        return daysSupplyValue;
+    }
+
+    public void setDaysSupplyValue(BigDecimal daysSupplyValue) {
+        this.daysSupplyValue = daysSupplyValue;
+    }
+
 
     public Date getWhenPrepared() {
         return whenPrepared;

@@ -2369,6 +2369,29 @@ public class BundleCore {
             medicationDispense.setAuthorizingPrescription(pres);
         }
 
+        if (medicationDispense.hasPerformer()) {
+            if (medicationDispense.getPerformerFirstRep().hasActor()) {
+                Resource resource = searchAddResource(medicationDispense.getPerformerFirstRep().getActor().getReference());
+                if (resource == null) referenceMissing(medicationDispense, medicationDispense.getPerformerFirstRep().getActor().getReference());
+                medicationDispense.getPerformerFirstRep().setActor(getReference(resource));
+            }
+            if (medicationDispense.getPerformerFirstRep().hasOnBehalfOf()) {
+                Resource resource = searchAddResource(medicationDispense.getPerformerFirstRep().getOnBehalfOf().getReference());
+                if (resource == null) referenceMissing(medicationDispense, medicationDispense.getPerformerFirstRep().getOnBehalfOf().getReference());
+                medicationDispense.getPerformerFirstRep().setOnBehalfOf(getReference(resource));
+            }
+        }
+
+        if (medicationDispense.hasReceiver()) {
+            List<Reference> recv = new ArrayList<>();
+            for (Reference reference : medicationDispense.getReceiver()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(medicationDispense, reference.getReference());
+                recv.add(getReference(resource));
+            }
+            medicationDispense.setReceiver(recv);
+        }
+
         if (medicationDispense.hasMedicationReference()) {
             Resource resource = null;
             String reference = "";

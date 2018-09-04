@@ -40,16 +40,27 @@ public class MedicationDispenseEntityToFHIRMedicationDispenseTransformer impleme
                     .setSystem(identifier.getSystem().getUri())
                     .setValue(identifier.getValue());
         }
-        if (medicationDispenseEntity.getPatient() != null) {
-            medicationDispense.setSubject(new Reference("Patient/"+medicationDispenseEntity.getPatient().getId()));
+
+        // part of
+
+        if (medicationDispenseEntity.getStatus() !=null) {
+            medicationDispense.setStatus(medicationDispenseEntity.getStatus());
         }
-        
         if (medicationDispenseEntity.getCategoryCode() != null) {
             medicationDispense.getCategory().addCoding()
                     .setDisplay(medicationDispenseEntity.getCategoryCode().getDisplay())
                     .setSystem(medicationDispenseEntity.getCategoryCode().getSystem())
                     .setCode(medicationDispenseEntity.getCategoryCode().getCode());
         }
+        if (medicationDispenseEntity.getMedicationCode() != null) {
+            medicationDispense.setMedication(new Reference("Medication/"+medicationDispenseEntity.getId())
+                    .setDisplay(medicationDispenseEntity.getMedicationCode().getDisplay()));
+        }
+
+        if (medicationDispenseEntity.getPatient() != null) {
+            medicationDispense.setSubject(new Reference("Patient/"+medicationDispenseEntity.getPatient().getId()));
+        }
+
         if (medicationDispenseEntity.getContextEpisodeOfCare() != null) {
             medicationDispense.setContext(new Reference("EpisodeOfCare/"+medicationDispenseEntity.getContextEpisodeOfCare().getId()));
         }
@@ -57,16 +68,84 @@ public class MedicationDispenseEntityToFHIRMedicationDispenseTransformer impleme
             medicationDispense.setContext(new Reference("Encounter/"+medicationDispenseEntity.getContextEncounter().getId()));
         }
 
-        
-        if (medicationDispenseEntity.getStatus() !=null) {
-            medicationDispense.setStatus(medicationDispenseEntity.getStatus());
+        if (medicationDispenseEntity.getPerformerPractitioner() != null) {
+            if (medicationDispense.getPerformer().size() == 0) medicationDispense.addPerformer();
+            medicationDispense.getPerformerFirstRep().setActor(new Reference("Practitioner/"+medicationDispenseEntity.getPerformerPractitioner().getId()).setDisplay(medicationDispenseEntity.getPerformerPractitioner().getNames().get(0).getDisplayName()));
+        }
+        if (medicationDispenseEntity.getPerformerOrganisation() != null) {
+            if (medicationDispense.getPerformer().size() == 0) medicationDispense.addPerformer();
+            medicationDispense.getPerformerFirstRep().setOnBehalfOf(new Reference("Organization/"+medicationDispenseEntity.getPerformerOrganisation().getId()).setDisplay(medicationDispenseEntity.getPerformerOrganisation().getName()));
+        }
+        if (medicationDispenseEntity.getPrescription() != null) {
+            medicationDispense.addAuthorizingPrescription(new Reference("MedicationRequest/"+medicationDispenseEntity.getPrescription().getId()));
+        }
+        if (medicationDispenseEntity.getTypeCode() != null) {
+            medicationDispense.getType().addCoding()
+                    .setDisplay(medicationDispenseEntity.getTypeCode().getDisplay())
+                    .setSystem(medicationDispenseEntity.getTypeCode().getSystem())
+                    .setCode(medicationDispenseEntity.getTypeCode().getCode());
         }
 
-        if (medicationDispenseEntity.getMedicationCode() != null) {
-            medicationDispense.setMedication(new Reference("Medication/"+medicationDispenseEntity.getId())
-                    .setDisplay(medicationDispenseEntity.getMedicationCode().getDisplay()));
+        // quantity
+
+        if (medicationDispenseEntity.getQuantityValue() != null) {
+            medicationDispense.getQuantity().setValue(medicationDispenseEntity.getQuantityValue());
+            medicationDispense.getQuantity().setUnit((medicationDispenseEntity.getQuantityUnit()));
         }
-       
+
+        if (medicationDispenseEntity.getDaysSupplyValue() != null) {
+            medicationDispense.getDaysSupply().setValue(medicationDispenseEntity.getDaysSupplyValue());
+            medicationDispense.getDaysSupply().setUnit((medicationDispenseEntity.getDaysSupplyUnit()));
+        }
+
+        if (medicationDispenseEntity.getWhenHandedOver() !=null) {
+            medicationDispense.setWhenHandedOver(medicationDispenseEntity.getWhenHandedOver());
+        }
+        if (medicationDispenseEntity.getWhenPrepared() !=null) {
+            medicationDispense.setWhenPrepared(medicationDispenseEntity.getWhenPrepared());
+        }
+
+        if (medicationDispenseEntity.getReceiverPractitioner() != null) {
+            medicationDispense.addReceiver(new Reference("Practitioner/"+medicationDispenseEntity.getReceiverPractitioner().getId()).setDisplay(medicationDispenseEntity.getReceiverPractitioner().getNames().get(0).getDisplayName()));
+        }
+        if (medicationDispenseEntity.getReceiverOrganisaton() != null) {
+            medicationDispense.addReceiver(new Reference("Organization/"+medicationDispenseEntity.getReceiverOrganisaton().getId()).setDisplay(medicationDispenseEntity.getReceiverOrganisaton().getName()));
+        }
+
+        if (medicationDispenseEntity.getLocation() !=null) {
+            medicationDispense.setDestination(new Reference("Location/"+medicationDispenseEntity.getLocation().getId()));
+        }
+
+        if (medicationDispenseEntity.getSubstituted() !=null) {
+            medicationDispense.getSubstitution().setWasSubstituted(medicationDispenseEntity.getSubstituted());
+
+            if (medicationDispenseEntity.getSubstitutionTypeCode() != null) {
+                medicationDispense.getSubstitution().getType().addCoding()
+                        .setDisplay(medicationDispenseEntity.getSubstitutionTypeCode().getDisplay())
+                        .setSystem(medicationDispenseEntity.getSubstitutionTypeCode().getSystem())
+                        .setCode(medicationDispenseEntity.getSubstitutionTypeCode().getCode());
+            }
+            if (medicationDispenseEntity.getSubstitutionReasonCode() != null) {
+                medicationDispense.getSubstitution().addReason().addCoding()
+                        .setDisplay(medicationDispenseEntity.getSubstitutionReasonCode().getDisplay())
+                        .setSystem(medicationDispenseEntity.getSubstitutionReasonCode().getSystem())
+                        .setCode(medicationDispenseEntity.getSubstitutionReasonCode().getCode());
+            }
+            if (medicationDispenseEntity.getSubstitutionPractitioner() != null) {
+                medicationDispense.getSubstitution().addResponsibleParty(new Reference("Practitioner/"+medicationDispenseEntity.getSubstitutionPractitioner().getId()).setDisplay(medicationDispenseEntity.getSubstitutionPractitioner().getNames().get(0).getDisplayName()));
+            }
+        }
+
+        if (medicationDispenseEntity.getNotDone() != null) {
+            medicationDispense.setNotDone(medicationDispenseEntity.getNotDone());
+        }
+
+        if (medicationDispenseEntity.getNotDoneCode() != null) {
+            medicationDispense.getNotDoneReasonCodeableConcept().addCoding()
+                    .setDisplay(medicationDispenseEntity.getNotDoneCode().getDisplay())
+                    .setSystem(medicationDispenseEntity.getNotDoneCode().getSystem())
+                    .setCode(medicationDispenseEntity.getNotDoneCode().getCode());
+        }
 
        
         for (MedicationDispenseDosage dosageEntity : medicationDispenseEntity.getDosageInstructions()) {
