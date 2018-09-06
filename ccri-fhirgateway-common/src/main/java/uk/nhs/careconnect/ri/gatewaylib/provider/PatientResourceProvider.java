@@ -6,6 +6,7 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -87,18 +88,40 @@ public class PatientResourceProvider implements IResourceProvider {
                     nhsNumber,
             @OperationParam(name="recordType") TokenParam
                     recordType,
-            @OperationParam(name="recordSection") TokenParam
+            @OperationParam(name="recordSection") TokenOrListParam
                     recordSection
     ) throws Exception {
 
 
         ProducerTemplate template = context.createProducerTemplate();
 
+        String queryString = "";
+        for (TokenParam token : recordSection.getValuesAsQueryTokens()) {
+            if (token.getValue().equals("all")) {
+                TokenOrListParam newList = new TokenOrListParam();
+                newList.add(new TokenParam().setValue("consent"));
+                newList.add(new TokenParam().setValue("prognosis"));
+                newList.add(new TokenParam().setValue("preferences"));
+                newList.add(new TokenParam().setValue("advancedtreatmentpreferences"));
+                recordSection = newList;
+                queryString = "consent,prognosis,preferences,advancedtreatmentpreferences";
+            } else {
+                if (queryString.equals("")) {
+                    queryString = token.getValue();
+                } else {
+                    queryString = queryString+","+token.getValue();
+                }
+            }
+
+        }
+
+        String recordQuery = queryString;
+
         InputStream inputStream = null;
         // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
         Exchange exchange = template.send("direct:FHIRPatientOperation",ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordSection.getValue());
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordQuery);
                 exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                 exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient/$getrecord3");
@@ -116,14 +139,12 @@ public class PatientResourceProvider implements IResourceProvider {
             log.error("XML Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
-        if (resource instanceof Bundle) {
-            bundle = (Bundle) resource;
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+        if (resource instanceof Parameters) {
+            Parameters param = (Parameters) resource;
+          /*  for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
-            }
+            } */
 
-            Parameters param =new Parameters();
-            param.addParameter().setResource(bundle).setName(recordSection.getValue());
             return param;
 
         } else {
@@ -139,16 +160,37 @@ public class PatientResourceProvider implements IResourceProvider {
                     nhsNumber,
             @OperationParam(name="recordType") TokenParam
                     recordType,
-            @OperationParam(name="recordSection") TokenParam
+            @OperationParam(name="recordSection") TokenOrListParam
                     recordSection
     ) throws Exception {
         ProducerTemplate template = context.createProducerTemplate();
+        String queryString = "";
+        for (TokenParam token : recordSection.getValuesAsQueryTokens()) {
+            if (token.getValue().equals("all")) {
+                TokenOrListParam newList = new TokenOrListParam();
+                newList.add(new TokenParam().setValue("consent"));
+                newList.add(new TokenParam().setValue("prognosis"));
+                newList.add(new TokenParam().setValue("preferences"));
+                newList.add(new TokenParam().setValue("advancedtreatmentpreferences"));
+                recordSection = newList;
+                queryString = "consent,prognosis,preferences,advancedtreatmentpreferences";
+            } else {
+                if (queryString.equals("")) {
+                    queryString = token.getValue();
+                } else {
+                    queryString = queryString+","+token.getValue();
+                }
+            }
+
+        }
+
+        String recordQuery = queryString;
 
         InputStream inputStream = null;
         // https://purple.testlab.nhs.uk/careconnect-ri/STU3/Encounter/804/$document?_count=50
         Exchange exchange = template.send("direct:FHIRPatientOperation",ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordSection.getValue());
+                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "patientNHSnumber="+nhsNumber.getValue()+"&recordType="+recordType.getValue()+"&recordSection="+recordQuery);
                 exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                 exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient/$getrecord4");
