@@ -155,7 +155,7 @@ public class PatientResourceProvider implements IResourceProvider {
     }
 
     @Operation(name = "$getrecord4", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
-    public Bundle getCareRecord4(
+    public Parameters getCareRecord4(
             @OperationParam(name="patientNHSnumber") TokenParam
                     nhsNumber,
             @OperationParam(name="recordType") TokenParam
@@ -208,13 +208,11 @@ public class PatientResourceProvider implements IResourceProvider {
             log.error("XML Parse failed " + ex.getMessage());
             throw new InternalErrorException(ex.getMessage());
         }
-        if (resource instanceof Bundle) {
-            bundle = (Bundle) resource;
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
-            }
+        if (resource instanceof Parameters) {
+            Parameters parameters = (Parameters) resource;
 
-            return bundle;
+
+            return parameters;
 
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
