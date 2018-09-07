@@ -140,5 +140,8 @@ networks:
       driver: default
       config:
       - subnet: 172.168.240.0/24
-
+  oauth_net:
+    driver: bridge
+    ipam:
+      driver: default
 
