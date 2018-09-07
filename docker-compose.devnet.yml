@@ -120,8 +120,8 @@ services:
     image: ${REGISTRY_PREFIX}ccri-oauthserver
     environment:
     - oidc.issuer=v
-    - ldap.url=ldap://oauthldap:${LDAP_PORT}
-    - ldap.server=ldap://oauthldap:${LDAP_PORT}/dc=ccri,dc=com
+    - ldap.url=ldap://oauthldap
+    - ldap.server=ldap://oauthldap/dc=ccri,dc=com
     - oidc.datasource.mysql.schema=oic
     - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
     - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
