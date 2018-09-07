@@ -105,6 +105,34 @@ services:
        ccri_net:
          ipv4_address: 172.168.240.11
 
+  oauthsql:
+    container_name: oauthsql
+    image: postgres:10.4
+    environment:
+    - POSTGRES_DB=oic
+    - POSTGRES_USER=root
+    - POSTGRES_PASSWORD=password
+    networks:
+    - oauth_net
+
+  oauthserver:
+    container_name: ccri_oauth_server
+    image: ${REGISTRY_PREFIX}ccri-oauthserver
+    environment:
+    - oidc.issuer=v
+    - ldap.url=ldap://oauthldap:${LDAP_PORT}
+    - ldap.server=ldap://oauthldap:${LDAP_PORT}/dc=ccri,dc=com
+    - oidc.datasource.mysql.schema=oic
+    - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
+    - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
+    ports:
+    - 8107:8080
+    depends_on:
+    - oauthsql
+    networks:
+    - oauth_net
+
+
 networks:
   ccri_net:
     driver: bridge
