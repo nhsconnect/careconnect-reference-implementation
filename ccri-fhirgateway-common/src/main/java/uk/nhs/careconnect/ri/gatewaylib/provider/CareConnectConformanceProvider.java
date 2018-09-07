@@ -69,6 +69,21 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         this.oauth2token = oauth2token;
     }
 
+    public CareConnectConformanceProvider(String oauth2authorize
+            ,String oauth2token
+            ,String oauth2register
+            ,ApplicationContext applicationContext
+    ) {
+        this.context = applicationContext.getBean(CamelContext.class);
+
+        log.trace("oauth2authorize = "+oauth2authorize);
+        log.trace("oauth2register = "+oauth2register);
+        log.trace("oauth2token = "+oauth2token);
+        this.oauth2authorize = oauth2authorize;
+        this.oauth2register = oauth2register;
+        this.oauth2token = oauth2token;
+    }
+
     public CareConnectConformanceProvider(ApplicationContext applicationContext) {
         this.context = applicationContext.getBean(CamelContext.class);
         this.oauth2authorize = null;

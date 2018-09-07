@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.facade.ccrifhir;
+package uk.nhs.careconnect.ri.facade.ccrismartonfhir;
 
 
 
@@ -17,7 +17,7 @@ public class CamelConfig extends CamelConfiguration {
 	@Override
 	protected void setupCamelContext(CamelContext camelContext) throws Exception {
 
-		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("Fhir-tie"));
+		camelContext.setNameStrategy(new DefaultCamelContextNameStrategy("SmartOnFhir-tie"));
 		// Disabled streaming due to errors
 		//camelContext.setStreamCaching(true);
 	}

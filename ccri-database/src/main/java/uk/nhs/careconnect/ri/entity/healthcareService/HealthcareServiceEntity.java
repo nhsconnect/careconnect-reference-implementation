@@ -44,11 +44,9 @@ public class HealthcareServiceEntity extends BaseResource {
     Set<HealthcareServiceIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceSpecialty.class)
-
     Set<HealthcareServiceSpecialty> specialties = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceLocation.class)
-
     Set<HealthcareServiceLocation> locations = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceType.class)
