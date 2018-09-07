@@ -25,6 +25,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.org.hl7.fhir.core.Stu3.CareConnectITKProfile;
@@ -66,6 +67,13 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         this.oauth2authorize = oauth2authorize;
         this.oauth2register = oauth2register;
         this.oauth2token = oauth2token;
+    }
+
+    public CareConnectConformanceProvider(ApplicationContext applicationContext) {
+        this.context = applicationContext.getBean(CamelContext.class);
+        this.oauth2authorize = null;
+        this.oauth2register = null;
+        this.oauth2token = null;
     }
 
     public CareConnectConformanceProvider() {

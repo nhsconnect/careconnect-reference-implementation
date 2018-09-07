@@ -157,6 +157,7 @@
         <module>ccri-fhir</module>
         <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
+        <module>ccri-fhir-tie</module>
     </modules>
 
     <distributionManagement>
