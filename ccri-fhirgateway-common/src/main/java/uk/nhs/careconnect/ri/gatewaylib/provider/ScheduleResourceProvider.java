@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.gatewaylib.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -47,6 +45,53 @@ public class ScheduleResourceProvider implements IResourceProvider {
         return Schedule.class;
     }
 
+    
+    @Create
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Schedule schedule) throws Exception {
+
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(schedule);
+
+            Exchange exchangeBundle = template.send("direct:FHIRSchedule", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Schedule");
+                }
+            });
+
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Schedule) {
+            schedule = (Schedule) resource;
+        } else  {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+
+        ProviderResponseLibrary.createException(ctx,resource);
+
+
+        return method;
+    }
+    
     @Read
     public Schedule getScheduleById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
