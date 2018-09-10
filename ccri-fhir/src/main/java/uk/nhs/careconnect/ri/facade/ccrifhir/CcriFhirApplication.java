@@ -26,12 +26,13 @@ public class CcriFhirApplication {
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
         System.setProperty("server.port", "8183");
+        System.setProperty("server.servlet.context-path", "/ccri-fhir");
         SpringApplication.run(CcriFhirApplication.class, args);
     }
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), "/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
         registration.setName("FhirServlet");
         return registration;
     }

@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.ri.facade</groupId>
     <artifactId>ccri-smartonfhir-tie</artifactId>
-    <version>3.5.0-SNAPSHOT</version>
+    <version>3.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ccri-smartonfhir-tie</name>
@@ -222,6 +222,7 @@
     </dependencies>
 
     <build>
+        <finalName>ccri-smartonfhir</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
