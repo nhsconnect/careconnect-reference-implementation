@@ -35,6 +35,7 @@ public class CcriSmartOnFhirApplication {
     public ServletRegistrationBean ServletRegistrationBean() {
         ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieSmartOnFhirServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
         registration.setName("FhirServlet");
+        registration.setLoadOnStartup(1);
         return registration;
     }
 

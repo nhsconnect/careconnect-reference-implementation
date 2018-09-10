@@ -34,11 +34,13 @@ public class CcriFhirApplication {
     public ServletRegistrationBean ServletRegistrationBean() {
         ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
         registration.setName("FhirServlet");
+        registration.setLoadOnStartup(1);
         return registration;
     }
 
     @Bean
     public FhirContext getFhirContext() {
+
         return FhirContext.forDstu3();
     }
 
