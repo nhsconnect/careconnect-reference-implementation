@@ -260,6 +260,13 @@ public class CamelRoute extends RouteBuilder {
 				.routeId("Gateway Schedule")
 				.to("direct:HAPIServer");
 
+		from("direct:FHIRSlot")
+				.routeId("Gateway Slot")
+				.to("direct:HAPIServer");
+
+		from("direct:FHIRAppointment")
+				.routeId("Gateway Appointment")
+				.to("direct:HAPIServer");
 
 		from("direct:EDMSServer")
 				.routeId("EDMS FHIR Server")
