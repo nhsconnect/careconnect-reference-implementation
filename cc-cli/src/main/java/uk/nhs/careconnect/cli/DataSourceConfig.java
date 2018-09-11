@@ -99,7 +99,7 @@ public class DataSourceConfig {
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setPersistenceUnitName("CCRI_PU");
        // factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("uk.nhs.careconnect.ri.entity");
+        factory.setPackagesToScan("uk.nhs.careconnect.ri.database.entity.);
         factory.setDataSource(dataSource);
         factory.setPersistenceProvider(new HibernatePersistenceProvider());
         factory.setJpaProperties(jpaProperties());

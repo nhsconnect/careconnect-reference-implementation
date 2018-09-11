@@ -6,19 +6,19 @@
 
     <groupId>uk.nhs.careconnect.ri</groupId>
     <artifactId>ccri-parent</artifactId>
-    <version>3.6.0</version>
+    <version>${care-connect-version}</version>
     <packaging>pom</packaging>
 
 
      <!-- https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/html/appendix-dependency-versions.html -->
 
     <properties>
-        <care-connect-version>3.6.0</care-connect-version>
+        <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
 
         <slf4j>1.7.25</slf4j>
-        <spring-boot>1.5.7.RELEASE</spring-boot>
+        <spring-boot>1.5.15.RELEASE</spring-boot>
         <spring-version>5.0.3.RELEASE</spring-version>
 
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
@@ -44,13 +44,13 @@
             <version>${care-connect-version}</version>
         </dependency>
 
-
-        <dependency>
+<!--
+       <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j}</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

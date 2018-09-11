@@ -13,8 +13,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			uk.nhs.careconnect.ri.hapiui.Config
-		</param-value>
+            uk.nhs.careconnect.ri.hapiui.Config
+        </param-value>
 	</context-param>
 
 	<!-- Servlets -->

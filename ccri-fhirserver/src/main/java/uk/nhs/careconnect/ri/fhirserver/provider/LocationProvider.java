@@ -16,9 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.daointerface.LocationRepository;
-import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
-import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.database.daointerface.LocationRepository;
+import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
+import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

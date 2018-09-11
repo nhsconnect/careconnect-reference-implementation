@@ -3,7 +3,7 @@ package uk.nhs.careconnect.ri.fhirserver.provider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.daointerface.TerminologyLoader;
+import uk.nhs.careconnect.ri.database.daointerface.TerminologyLoader;
 
 @Component
 public class TerminologyUploaderProvider extends BaseProvider  {

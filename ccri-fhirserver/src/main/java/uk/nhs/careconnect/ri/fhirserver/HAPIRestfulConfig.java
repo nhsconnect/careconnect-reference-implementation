@@ -7,16 +7,15 @@ import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import org.hl7.fhir.dstu3.model.DiagnosticReport;
-import org.hl7.fhir.dstu3.model.Medication;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import uk.nhs.careconnect.ri.database.fhirserver.provider.*;
 import uk.nhs.careconnect.ri.fhirserver.provider.*;
-import uk.nhs.careconnect.ri.lib.ServerInterceptor;
+import uk.nhs.careconnect.ri.lib.serverServerInterceptor;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;

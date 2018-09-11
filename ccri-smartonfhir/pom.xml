@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.ri.facade</groupId>
     <artifactId>ccri-smartonfhir</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
+    <version>${care-connect-version}</version>
     <packaging>jar</packaging>
 
     <name>ccri-smartonfhir</name>
@@ -24,7 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
-        <care-connect-version>3.6.0</care-connect-version>
+        <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <camel-version>2.21.1</camel-version>
         <hawtio.version>2.0.3</hawtio.version>
         <spring_security_version>1.0.8.RELEASE</spring_security_version>

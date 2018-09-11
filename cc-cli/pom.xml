@@ -44,7 +44,7 @@
     <properties>
     	<category>Rest</category>
 
-        <care-connect-version>3.6.0</care-connect-version>
+        <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <junit-version>4.12</junit-version>
         <spring-boot-version>2.0.3.RELEASE</spring-boot-version>

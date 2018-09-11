@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.daointerface.PractitionerRoleRepository;
-import uk.nhs.careconnect.ri.lib.ProviderResponseLibrary;
-import uk.nhs.careconnect.ri.lib.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.database.daointerface.PractitionerRoleRepository;
+import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
+import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
