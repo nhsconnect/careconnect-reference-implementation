@@ -17,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @SpringBootApplication
 @EnableTransactionManagement()
 @PropertySource("classpath:application.properties")
-@ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.dao"})
+@ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.dao"})
 public class FhirserverApplication {
 
     @Autowired

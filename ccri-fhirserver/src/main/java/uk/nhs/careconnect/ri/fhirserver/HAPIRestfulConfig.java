@@ -13,9 +13,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import uk.nhs.careconnect.ri.database.fhirserver.provider.*;
 import uk.nhs.careconnect.ri.fhirserver.provider.*;
-import uk.nhs.careconnect.ri.lib.serverServerInterceptor;
+import uk.nhs.careconnect.ri.lib.server.ServerInterceptor;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;

@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:application.properties")
-@ComponentScan(basePackages = "uk.nhs.careconnect.ri")
+@ComponentScan(basePackages = {"uk.nhs.careconnect.ri.fhirserver","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.dao"})
 public class Config {
 
     @Bean
