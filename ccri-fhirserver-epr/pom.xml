@@ -27,6 +27,9 @@
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <hawtio.version>2.0.3</hawtio.version>
+
+        <junit-version>4.12</junit-version>
+        <cucumber-version>1.2.5</cucumber-version>
     </properties>
 
 
@@ -247,6 +250,28 @@
             </exclusions>
         </dependency>
 
+        <!-- Testing -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber-version}</version>
+            <scope>test</scope>
+        </dependency>
 
 
     </dependencies>
