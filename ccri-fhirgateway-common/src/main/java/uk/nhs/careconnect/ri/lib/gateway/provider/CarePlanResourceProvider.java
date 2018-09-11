@@ -176,9 +176,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
 
         MethodOutcome method = new MethodOutcome();
 
-
-        ProviderResponseLibrary.createException(ctx,resource);
-
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
     }
