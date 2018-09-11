@@ -16,6 +16,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
@@ -43,6 +44,7 @@ public class JPAStepsDef {
     CodeSystemRepository codeSystemDao;
 
     @Autowired
+    @Lazy
     ConceptRepository conceptDao;
 
     @Autowired

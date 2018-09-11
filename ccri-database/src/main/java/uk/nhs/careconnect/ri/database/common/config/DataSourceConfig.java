@@ -28,7 +28,7 @@ import java.util.Properties;
 @PropertySource("classpath:application.properties")
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory",
                        transactionManagerRef = "transactionManager",
-                       basePackages = "uk.nhs.careconnect.ri")
+                       basePackages = "uk.nhs.careconnect.ri.database")
 public class DataSourceConfig {
 
     @Value("${datasource.vendor:h2}")
@@ -113,7 +113,7 @@ public class DataSourceConfig {
         */
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setPersistenceUnitName("CCRI_PU");
+        factory.setPersistenceUnitName("CCRI_PERSISTENCE_UNIT");
        // factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("uk.nhs.careconnect.ri.database.entity");
         factory.setDataSource(dataSource);
@@ -170,8 +170,5 @@ public class DataSourceConfig {
         return transactionTemplate;
     }
 
-    @Bean
-    public RefreshData getRefreshData() {
-        return new RefreshData();
-    }
+
 }

@@ -40,9 +40,10 @@ public class CodeSystemDao implements CodeSystemRepository {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    /*
     @Autowired
     private ConceptRepository conceptRepository;
-
+*/
 
     Integer flushCount = 1000;
     Integer flushNumber = 0;
@@ -212,6 +213,7 @@ public class CodeSystemDao implements CodeSystemRepository {
         return conceptEntity;
     }
 
+    /*
     @Transactional
     private void processChildConcepts(ValueSet.ConceptReferenceComponent concept, ConceptEntity parentConcept) {
         String lastConcept="";
@@ -246,6 +248,7 @@ public class CodeSystemDao implements CodeSystemRepository {
 
                 }
             }
-        }*/
+        }
     }
+    */
 }

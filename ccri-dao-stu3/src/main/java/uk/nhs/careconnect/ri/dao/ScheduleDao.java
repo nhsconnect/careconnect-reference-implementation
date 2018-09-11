@@ -8,6 +8,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
@@ -37,6 +38,7 @@ public class ScheduleDao implements ScheduleRepository {
     ScheduleEntityToFHIRScheduleTransformer scheduleEntityToFHIRScheduleTransformer;
 
     @Autowired
+    @Lazy
     ConceptRepository conceptDao;
 
     @Autowired

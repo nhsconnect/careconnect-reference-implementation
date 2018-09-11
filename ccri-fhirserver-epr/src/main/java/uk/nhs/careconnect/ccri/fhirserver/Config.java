@@ -17,10 +17,13 @@ import uk.nhs.careconnect.ccri.fhirserver.provider.DatabaseBackedPagingProvider;
 @Configuration
 public class Config {
 
+    /*  TODO REACTIVATE AFTER TESTING
     @Bean
     public FhirContext getServerFhirContext() {
         return FhirContext.forDstu3();
     }
+
+    */
 
     @Bean(autowire = Autowire.BY_TYPE)
 		public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
