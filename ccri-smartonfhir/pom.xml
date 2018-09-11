@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.ri.facade</groupId>
     <artifactId>ccri-smartonfhir</artifactId>
-    <version>${care-connect-version}</version>
+    <version>3.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ccri-smartonfhir</name>
