@@ -21,7 +21,7 @@ services:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
       - datasource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
     ports:
-      - 8109:8080
+      - 8109:8186
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
@@ -47,15 +47,13 @@ services:
     container_name: ccrifhir
     image: thorlogic/ccri-fhir:${CRRI_VERSION}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.restserver.serverBase=http4://ccriserver:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccriserver
     ports:
-      - 8105:80
+      - 8105:8183
     extra_hosts:
       - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
     volumes:
