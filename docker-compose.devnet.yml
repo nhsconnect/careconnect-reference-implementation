@@ -20,6 +20,8 @@ services:
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
       - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
+    ports:
+      - 8110:8186
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
@@ -43,15 +45,13 @@ services:
     container_name: ccrifhir
     image: ${REGISTRY_PREFIX}ccri-fhir${IMAGE_TAG}
     environment:
-      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.restserver.serverBase=http4://ccriserver:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccriserver:8186/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccriserver
     ports:
-      - 8105:80
+      - 8105:8183
     extra_hosts:
       - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
     volumes:
@@ -59,6 +59,27 @@ services:
     networks:
       ccri_net:
         ipv4_address: 172.168.240.14
+
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
+    environment:
+      - fhir.restserver.serverBase=http4://ccriserver:8186/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.oauth2.authorize=https://purple.testlab.nhs.uk/ccri-auth/authorize
+      - fhir.oauth2.token=https://purple.testlab.nhs.uk/ccri-auth/token
+      - fhir.oauth2.register=https://purple.testlab.nhs.uk/ccri-auth/register
+    depends_on:
+      - ccriserver
+    ports:
+      - 8109:8184
+    volumes:
+      - gateway-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+
 
   ccriui:
     container_name: ccriui
@@ -109,28 +130,28 @@ services:
     container_name: oauthsql
     image: postgres:10.4
     environment:
-    - POSTGRES_DB=oic
-    - POSTGRES_USER=root
-    - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=oic
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
     networks:
-    - oauth_net
+      - oauth_net
 
   oauthserver:
     container_name: ccri_oauth_server
     image: ${REGISTRY_PREFIX}ccri-oauthserver
     environment:
-    - oidc.issuer=v
-    - ldap.url=ldap://oauthldap
-    - ldap.server=ldap://oauthldap/dc=ccri,dc=com
-    - oidc.datasource.mysql.schema=oic
-    - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
-    - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
+      - oidc.issuer=v
+      - ldap.url=ldap://oauthldap
+      - ldap.server=ldap://oauthldap/dc=ccri,dc=com
+      - oidc.datasource.mysql.schema=oic
+      - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
+      - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
     ports:
-    - 8107:8080
+      - 8107:8080
     depends_on:
-    - oauthsql
+      - oauthsql
     networks:
-    - oauth_net
+      - oauth_net
 
 
 networks:
