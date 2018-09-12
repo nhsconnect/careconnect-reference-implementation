@@ -91,24 +91,7 @@ public class DataSourceConfig {
     }
 */
 
-/*
-    @Bean
-    public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
-        final Database database = Database.valueOf(vendor.toUpperCase());
 
-        final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setPersistenceUnitName("CCRI_PU");
-       // factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("uk.nhs.careconnect.ri.entity");
-        factory.setDataSource(dataSource);
-        factory.setPersistenceProvider(new HibernatePersistenceProvider());
-        factory.setJpaProperties(jpaProperties());
-        factory.afterPropertiesSet();
-
-
-        return factory.getObject();
-    }
-    */
     private Properties jpaProperties() {
         Properties extraProperties = new Properties();
         extraProperties.put("hibernate.dialect", dialect);

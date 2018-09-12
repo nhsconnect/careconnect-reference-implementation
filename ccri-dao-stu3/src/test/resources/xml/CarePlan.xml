@@ -29,6 +29,9 @@
         <reference value="List/1"/> 
     </supportingInfo>
     <supportingInfo>
-        <reference value="RiskAssessment/1"/>
+        <reference value="ClinicalImpression/1"/>
+    </supportingInfo>
+    <supportingInfo>
+        <reference value="Consent/1"/>
     </supportingInfo>
 </CarePlan> 
