@@ -60,25 +60,25 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.14
 
-  ccrismartonfhir:
-    container_name: ccrismartonfhir
-    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
-    environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.oauth2.authorize=https://purple.testlab.nhs.uk/ccri-auth/authorize
-      - fhir.oauth2.token=https://purple.testlab.nhs.uk/ccri-auth/token
-      - fhir.oauth2.register=https://purple.testlab.nhs.uk/ccri-auth/register
-    depends_on:
-      - ccriserver
-    ports:
-      - 8109:8184
-    volumes:
-      - gatewayssl-log-volume:/usr/local/tomcat/logs
-    networks:
-      ccri_net:
+#  ccrismartonfhir:
+#    container_name: ccrismartonfhir
+#    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
+#    environment:
+#      - fhir.restserver.serverBase=http4://ccriserver:8186/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+        #      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+        #      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+        #  - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
+        # - fhir.oauth2.authorize=https://purple.testlab.nhs.uk/ccri-auth/authorize
+        # - fhir.oauth2.token=https://purple.testlab.nhs.uk/ccri-auth/token
+    #   - fhir.oauth2.register=https://purple.testlab.nhs.uk/ccri-auth/register
+        #  depends_on:
+    #  - ccriserver
+        #  ports:
+      # - 8109:8184
+        #volumes:
+      # - gatewayssl-log-volume:/usr/local/tomcat/logs
+      #networks:
+    #  ccri_net:
 
 
   ccriui:
