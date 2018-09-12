@@ -19,7 +19,7 @@ services:
 
   ccrismartonfhir:
     volumes:
-      - gatewayssl-log-volume:/usr/local/tomcat/logs
+      - /docker-data/ccri-gatewayssl-log-volume:/usr/local/tomcat/logs
 
   ccridocument:
      volumes:

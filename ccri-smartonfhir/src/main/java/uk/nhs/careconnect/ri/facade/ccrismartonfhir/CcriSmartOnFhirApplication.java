@@ -12,12 +12,14 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 @ComponentScan({"uk.nhs.careconnect.ri.facade.ccrismartonfhir","uk.nhs.careconnect.ri"})
+@PropertySource("classpath:application.properties")
 public class CcriSmartOnFhirApplication {
 
     @Autowired

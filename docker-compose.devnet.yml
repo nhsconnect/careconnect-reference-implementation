@@ -76,7 +76,7 @@ services:
     ports:
       - 8109:8184
     volumes:
-      - gateway-log-volume:/usr/local/tomcat/logs
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
     networks:
       ccri_net:
 
