@@ -52,14 +52,28 @@ services:
       - ccriserver
     ports:
       - 8105:8183
-    extra_hosts:
-      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
     volumes:
       - gateway-log-volume:/usr/local/tomcat/logs
     networks:
       ccri_net:
         ipv4_address: 172.168.240.14
 
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
+    environment:
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccriserver
+    ports:
+      - 8106:8184
+    volumes:
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.15
 
   ccriui:
     container_name: ccriui
