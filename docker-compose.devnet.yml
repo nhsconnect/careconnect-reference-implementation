@@ -149,6 +149,22 @@ services:
     networks:
       - oauth_net
 
+  ccricat:
+    container_name: ccri-cat
+    image: thorlogic/ccri-app:latest
+    environment:
+    - KEYCLOAK_CLIENT_SECRET=709c79a1-7710-452f-859c-fb6edfb86027
+    - KEYCLOAK_CLIENT_ID=ccri-cat
+    - SMART_OAUTH2_CLIENT_SECRET=AM3ai-PGoZZRW-7osWbzvGlDBHjHq7M2aBlpNttreHeEyB5jequWy8fsHMVQP4JV0Kd0Fzrtu0iNEqGqguq69Qs
+    - KEYCLOAK_AUTH_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
+    - KEYCLOAK_SERVER_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
+    - FHIR_SERVER_URL=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3
+    - KEYCLOAK_REALM=ReferenceImplementations
+    - CAT_COOKIE_DOMAIN=purple.testlab.nhs.uk
+    - SMART_GROWTH_CHART_URL=https://purple.testlab.nhs.uk/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    - SMART_CARDIAC_URL=https://purple.testlab.nhs.uk/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    ports:
+    - 8108:80
 
 networks:
   ccri_net:
