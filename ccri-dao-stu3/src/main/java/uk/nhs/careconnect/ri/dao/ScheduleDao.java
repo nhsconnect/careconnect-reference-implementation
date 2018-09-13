@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ScheduleEntityToFHIRScheduleTransformer;
+import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
 import uk.nhs.careconnect.ri.database.entity.schedule.*;
@@ -49,6 +50,9 @@ public class ScheduleDao implements ScheduleRepository {
 
     @Autowired
     LocationRepository locationDao;
+
+    @Autowired
+    PractitionerRepository practitionerDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -248,6 +252,22 @@ public class ScheduleDao implements ScheduleRepository {
 
             em.persist(scheduleTelecom);
         }*/
+
+        for(Reference actorRef : schedule.getActor()){
+
+            ScheduleActor actor = new ScheduleActor();
+            actor.setScheduleEntity(scheduleEntity);
+            if (actorRef.getReference().contains("Practitioner")){
+
+                PractitionerEntity practitionerEntity = new PractitionerEntity();
+                if(practitionerEntity != null){
+                    actor.setPractitionerEntity(practitionerEntity);
+                }
+
+            }
+            em.persist(actor);
+
+        }
         log.info("Schedule.Transform");
         return scheduleEntityToFHIRScheduleTransformer.transform(scheduleEntity);
 

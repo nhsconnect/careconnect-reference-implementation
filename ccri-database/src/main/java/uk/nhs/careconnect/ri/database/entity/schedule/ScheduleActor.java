@@ -6,11 +6,6 @@ import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.practitioner.*;
-import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
-import uk.nhs.careconnect.ri.database.entity.location.*;
-
-
 import javax.persistence.*;
 
 @Entity
