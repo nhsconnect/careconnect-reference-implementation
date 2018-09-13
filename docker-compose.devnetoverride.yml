@@ -24,3 +24,7 @@ services:
   ccridocument:
      volumes:
        - /docker-data/ccri-document-logs:/usr/local/tomcat/logs
+
+  ccriintegration:
+    volumes:
+      - /docker-data/ccri-integration-logs:/usr/local/tomcat/logs

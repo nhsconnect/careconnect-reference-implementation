@@ -51,7 +51,7 @@ services:
     environment:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccriserver
     ports:
@@ -79,20 +79,20 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.13
 
-  ccritie:
-    container_name: ccritie
+  ccriintegration:
+    container_name: ccriintegration
     image: thorlogic/ccri-tie:latest
     depends_on:
-    - ccriserver
+      - ccriserver
     environment:
-    - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-    - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
-    - fhir.resource.serverName=Care Connect TIE FHIR Server
-    - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
+      - fhir.resource.serverName=Care Connect TIE FHIR Server
+      - fhir.resource.serverVersion=3.7.0-SNAPSHOT
     ports:
-    - 8182:8182
+      - 8182:8182
     volumes:
-    - tie-log-volume:/usr/local/tomcat/logs
+      - tie-log-volume:/usr/local/tomcat/logs
     networks:
       ccri_net:
         ipv4_address: 172.168.240.12
