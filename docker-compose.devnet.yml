@@ -26,8 +26,7 @@ services:
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
     networks:
-      ccri_net:
-        ipv4_address: 172.168.240.10
+      - ccri_net
 
   ccrisql:
     container_name: ccrisql
@@ -105,8 +104,7 @@ services:
       - POSTGRES_USERNAME=${MYSQL_DB_USER}
       - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
     networks:
-      ccri_net:
-        ipv4_address: 172.168.240.13
+       - ccri_net
 
   ccriintegration:
     container_name: ccriintegration
@@ -123,9 +121,7 @@ services:
     volumes:
       - tie-log-volume:/usr/local/tomcat/logs
     networks:
-      ccri_net:
-        ipv4_address: 172.168.240.12
-
+      - ccri_net
 
   ccrimongo:
     container_name: ccrimongo
@@ -149,8 +145,7 @@ services:
      volumes:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
-       ccri_net:
-         ipv4_address: 172.168.240.11
+       - ccri_net
 
   oauthsql:
     container_name: oauthsql
