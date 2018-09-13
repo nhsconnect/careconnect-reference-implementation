@@ -47,6 +47,8 @@ services:
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccriserver
+      - ccridocument
+      - ccriintegration
     ports:
       - 8105:8183
     volumes:
@@ -68,6 +70,8 @@ services:
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
     depends_on:
       - ccriserver
+      - ccridocument
+      - ccriintegration
     ports:
       - 8106:8184
     volumes:
@@ -97,6 +101,7 @@ services:
     image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
     depends_on:
       - ccriserver
+      - ccrisql
     environment:
       - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
       - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
