@@ -6,7 +6,7 @@ services:
     depends_on:
       - ccrisql
     ports:
-      - 8204:8186
+      - 8110:8186
     links:
       - ccrisql
     environment:
@@ -115,6 +115,8 @@ services:
     image: ${REGISTRY_PREFIX}ccri-integration${IMAGE_TAG}
     depends_on:
       - ccriserver
+    ports:
+      - 8112:8182
     environment:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
@@ -138,6 +140,8 @@ services:
      image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
        - ccrimongo
+     ports:
+       - 8111:8181
      links:
        - ccrimongo
      environment:
