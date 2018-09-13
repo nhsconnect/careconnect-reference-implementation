@@ -5,8 +5,6 @@ services:
     image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
-    ports:
-      - 8110:8186
     links:
       - ccrisql
     environment:
@@ -140,8 +138,6 @@ services:
      image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
        - ccrimongo
-     ports:
-       - 8111:8181
      links:
        - ccrimongo
      environment:
