@@ -29,6 +29,8 @@ public class CcriFhirApplication {
         System.setProperty("management.security.enabled","false");
         System.setProperty("server.port", "8183");
         System.setProperty("server.servlet.context-path", "/ccri-fhir");
+        // This works but hawtio doesn't respect it System.setProperty("server.context-path", "/ccri-fhir");
+        // Suspect hawtio api works but not the app
         SpringApplication.run(CcriFhirApplication.class, args);
     }
 
