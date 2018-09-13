@@ -1,0 +1,23 @@
+<Consent xmlns="http://hl7.org/fhir">
+    <id value="981dbc45-9ff9-4570-836c-eb3e93763189"/>
+    <meta>
+        <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"/>
+    </meta>
+    <status value="active"/>
+    <patient>
+        <reference value="Patient/1"/>
+    </patient>
+    <dateTime value="2018-08-20T15:00:00+00:00"/>
+    <actor>
+        <role>
+            <coding>
+                <system value="http://hl7.org/fhir/v3/ParticipationType"/>
+                <code value="PROV"/>
+                <display value="Healthcare Provider"/>
+            </coding>
+        </role>
+        <reference>
+            <reference value="Organization/1"/>
+        </reference>
+    </actor>
+</Consent>
