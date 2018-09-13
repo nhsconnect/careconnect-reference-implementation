@@ -157,7 +157,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             System.out.println("HAPI Client created");
 
             CapabilityStatement capabilityStatement = null;
-            Integer retries = 5;
+            Integer retries = 15; // This is 15 mins before giving up
             while (capabilityStatement == null && retries > 0) {
                 try {
                     capabilityStatement = client.fetchConformance().ofType(org.hl7.fhir.dstu3.model.CapabilityStatement.class).execute();
@@ -182,7 +182,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             Bundle pastResults = client
                     .search()
                     .forResource(Patient.class)
-                    .where(Patient.IDENTIFIER.exactly().code("1172"))
+                    .where(Patient.IDENTIFIER.exactly().code("LOCAL1172"))
                     .returnBundle(Bundle.class)
                     .execute();
 
