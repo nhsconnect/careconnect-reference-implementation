@@ -1,7 +1,7 @@
 version: '2'
 services:
-  ccriserver:
-    container_name: ccriserver
+  ccrifhirserver:
+    container_name: ccrifhirserver
     image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
@@ -42,12 +42,12 @@ services:
     container_name: ccrifhir
     image: ${REGISTRY_PREFIX}ccri-fhir${IMAGE_TAG}
     environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccrifhirserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocumentserver:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
-      - ccriserver
-      - ccridocument
+      - ccrifhirserver
+      - ccridocumentserver
       - ccriintegration
     ports:
       - 8105:8183
@@ -61,16 +61,16 @@ services:
     container_name: ccrismartonfhir
     image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
     environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccrifhirserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocumentserver:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
     depends_on:
-      - ccriserver
-      - ccridocument
+      - ccrifhirserver
+      - ccridocumentserver
       - ccriintegration
     ports:
       - 8106:8184
@@ -100,10 +100,10 @@ services:
     container_name: ccridataload
     image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
     depends_on:
-      - ccriserver
+      - ccrifhirserver
       - ccrisql
     environment:
-      - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
+      - FHIR_SERVER=http://ccrifhirserver:8186/ccri-fhirserver/STU3
       - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
       - POSTGRES_USER=${MYSQL_DB_USER}
       - POSTGRES_USERNAME=${MYSQL_DB_USER}
@@ -115,12 +115,12 @@ services:
     container_name: ccriintegration
     image: ${REGISTRY_PREFIX}ccri-integration${IMAGE_TAG}
     depends_on:
-      - ccriserver
+      - ccrifhirserver
     ports:
       - 8112:8182
     environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
+      - fhir.restserver.serverBase=http4://ccrifhirserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.eprBase=http://ccrifhirserver:8186/ccri-fhirserver/STU3
       - fhir.resource.serverName=Care Connect TIE FHIR Server
       - fhir.resource.serverVersion=3.7.0-SNAPSHOT
     volumes:
@@ -134,8 +134,8 @@ services:
     networks:
       - ccri_net
 
-  ccridocument:
-     container_name: ccridocument
+  ccridocumentserver:
+     container_name: ccridocumentserver
      image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
        - ccrimongo
