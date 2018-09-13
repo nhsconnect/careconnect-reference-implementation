@@ -172,9 +172,22 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     }
                 }
             }
+            if (capabilityStatement == null) {
+                System.out.println("Max number of attempts to connect exceeded. Aborting");
+                return;
+            }
+            Integer resourceCount = 0;
+
+            // Check patient
+            Bundle pastResults = client
+                    .search()
+                    .forResource(Patient.class)
+                    .where(Patient.IDENTIFIER.exactly().code("1172"))
+                    .returnBundle(Bundle.class)
+                    .execute();
 
             // BA Patient data file
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("pat")) {
+            if (pastResults.getEntry().size()==0 && (theCommandLine.hasOption("a") ||theCommandLine.hasOption("pat"))) {
                 try {
 
                     System.out.println("Patient.csv");
@@ -229,7 +242,16 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
 
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("o")) {
+            // Check for signs observations has already run
+
+            pastResults = client
+                    .search()
+                    .forResource(Observation.class)
+                    .where(Observation.CODE.exactly().code("86290005"))
+                    .returnBundle(Bundle.class)
+                    .execute();
+
+            if (pastResults.getEntry().size()==0 && (theCommandLine.hasOption("a") ||theCommandLine.hasOption("o"))) {
                 try {
 
                     //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
@@ -453,7 +475,16 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             */
 
             // Nokia
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("phr")) {
+
+            // Don't reload patient 2
+            pastResults = client
+                    .search()
+                    .forResource(Observation.class)
+                    .where(Observation.PATIENT.hasId("2"))
+                    .returnBundle(Bundle.class)
+                    .execute();
+
+            if (pastResults.getEntry().size()==0 && (theCommandLine.hasOption("a") ||theCommandLine.hasOption("phr"))) {
 
                 try {
 
