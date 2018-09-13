@@ -5,6 +5,8 @@ services:
     image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
+    ports:
+      - 8204:8186
     links:
       - ccrisql
     environment:
