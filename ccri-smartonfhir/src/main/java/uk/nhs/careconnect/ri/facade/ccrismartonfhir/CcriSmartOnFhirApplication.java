@@ -29,13 +29,14 @@ public class CcriSmartOnFhirApplication {
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
         System.setProperty("server.port", "8184");
-        System.setProperty("server.servlet.context-path", "/ccri-smartonfhir");
+        System.setProperty("server.context-path", "/ccri-smartonfhir");
+        System.setProperty("management.contextPath","");
         SpringApplication.run(CcriSmartOnFhirApplication.class, args);
     }
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieSmartOnFhirServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieSmartOnFhirServerHAPIConfig(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
         return registration;

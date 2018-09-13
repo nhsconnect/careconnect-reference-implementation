@@ -28,7 +28,8 @@ public class CcriFhirApplication {
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
         System.setProperty("server.port", "8183");
-        System.setProperty("server.servlet.context-path", "/ccri-fhir");
+        System.setProperty("server.context-path", "/ccri-fhir");
+        System.setProperty("management.contextPath","");
         // This works but hawtio doesn't respect it System.setProperty("server.context-path", "/ccri-fhir");
         // Suspect hawtio api works but not the app
         SpringApplication.run(CcriFhirApplication.class, args);
@@ -36,7 +37,7 @@ public class CcriFhirApplication {
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
         return registration;
