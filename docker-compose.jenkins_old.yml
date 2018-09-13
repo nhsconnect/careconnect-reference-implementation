@@ -1,0 +1,136 @@
+version: '3'
+services:
+  ccriserver:
+    container_name: ccriserver
+    build: ccri-fhirserver
+    image: thorlogic/ccri-fhirserver:${CRRI_VERSION}
+    depends_on:
+      - ccrisql
+    links:
+      - ccrisql
+    environment:
+      - datasource.username=${MYSQL_DB_USER}
+      - datasource.password=${MYSQL_DB_PASSWORD}
+      - datasource.host=//ccrisql
+      - datasource.driver=com.mysql.jdbc.Driver
+      - datasource.path=3306/careconnect?autoReconnect=true
+      - datasource.vendor=mysql
+      - datasource.showSql=true
+      - datasource.showDdl=true
+      - datasource.cleardown.cron=0 19 21 * * *
+      - datasource.dialect=org.hibernate.dialect.MySQL57Dialect
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+      - datasource.serverBase=http://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3
+    ports:
+      - 8080:8080
+    extra_hosts:
+      # Define an alias to loop back for REST Connections
+      - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
+    volumes:
+      - tomcat-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.10
+
+  ccrimongo:
+      container_name: ccrimongo
+      image: mongo:3.6.3
+      ports:
+        - 27107:27107
+      networks:
+        - ccri_net
+
+  ccrisql:
+    container_name: ccrisql
+    image: mysql:5.7.20
+    environment:
+      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_DATABASE=careconnect
+      - MYSQL_USER=${MYSQL_DB_USER}
+      - MYSQL_PASSWORD=${MYSQL_DB_PASSWORD}
+      - timezone=+0:00
+      - default-time-zone=+0:00
+    ports:
+      - 43306:3306
+    networks:
+      - ccri_net
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --innodb_lock_wait_timeout=300 --transaction-isolation=READ-UNCOMMITTED
+
+  ccrifhir:
+    container_name: ccrifhir
+    build: ccri-fhir
+    image: thorlogic/ccri-fhir:${CRRI_VERSION}
+    environment:
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccriserver
+    ports:
+      - 80:80
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+    volumes:
+      - gateway-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+  ccriui:
+    container_name: ccriui
+    build: ccri
+    image: thorlogic/ccri-ui:${CRRI_VERSION}
+    environment:
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccriserver
+    ports:
+      - 80:80
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+    networks:
+      - ccri_net
+
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    build: ccri-smartonfhir
+    image: thorlogic/ccri-smartonfhir:${CRRI_VERSION}
+    environment:
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.oauth2.authorize=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/authorize
+      - fhir.oauth2.token=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/token
+      - fhir.oauth2.register=https://purple.testlab.nhs.uk/careconnect-ri/oauth2/register
+    depends_on:
+      - ccriserver
+    ports:
+      - 443:8443
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+    volumes:
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+
+volumes:
+  tomcat-log-volume:
+  gateway-log-volume:
+  gatewayssl-log-volume:
+
+networks:
+  ccri_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.168.240.0/24
