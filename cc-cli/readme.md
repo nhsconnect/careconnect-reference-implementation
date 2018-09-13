@@ -8,6 +8,12 @@ Validate
 javac target/cc-cli.jar validate -n /Development/QRISK-ME.json
 
 
+** Docker + SQL **
+
+docker exec -it ccrisql /bin/bash
+
+psql -d careconnect -U fhirjpa
+
 
 
 docker build . -t thorlogic/ccri-dataload
