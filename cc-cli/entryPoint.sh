@@ -17,9 +17,7 @@ set -xe
 : "${POSTGRES_USERNAME?Need Postgres username}"
 : "${POSTGRES_PASSWORD?Need Postgres password}"
 
-java -jar cc-cli.jar codesystem -u ${POSTGRES_USERNAME} -p ${POSTGRES_PASSWORD} -j ${POSTGRES_JDBC}
-
-
+# java -jar cc-cli.jar codesystem -u ${POSTGRES_USERNAME} -p ${POSTGRES_PASSWORD} -j ${POSTGRES_JDBC}
 
 # java -jar cc-cli.jar upload-ods -t ${FHIR_SERVER}
 

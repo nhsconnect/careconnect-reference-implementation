@@ -95,6 +95,21 @@ services:
     networks:
       - ccri_net
 
+  ccridataload:
+    container_name: ccridataload
+    image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
+    depends_on:
+    - ccri
+    environment:
+    - FHIR_SERVER=http://ccri:8080/careconnect-ri/STU3
+    - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
+    - POSTGRES_USER=${MYSQL_DB_USER}
+    - POSTGRES_USERNAME=${MYSQL_DB_USER}
+    - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.13
+
   ccrimongo:
       container_name: ccrimongo
       image: mongo:3.6.3
