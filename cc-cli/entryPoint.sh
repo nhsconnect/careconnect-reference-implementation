@@ -1,15 +1,5 @@
 #!/bin/sh
 
-echo EntryPoint
-
-echo Local ls
-
-ls
-
-ehco Root ls
-
-ls /
-
 set -xe
 
 : "${FHIR_SERVER?Need FHIR Endpoint}"

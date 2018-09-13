@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
 import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.Conformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
@@ -25,6 +26,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -152,13 +154,31 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 
             client = ctx.newRestfulGenericClient(targetServer);
+            System.out.println("HAPI Client created");
+
+            CapabilityStatement capabilityStatement = null;
+            Integer retries = 5;
+            while (capabilityStatement == null && retries > 0) {
+                try {
+                    capabilityStatement = client.fetchConformance().ofType(org.hl7.fhir.dstu3.model.CapabilityStatement.class).execute();
+                } catch (Exception ex) {
+                    ourLog.warn("Failed to load conformance statement, error was: {}", ex.toString());
+                    System.out.println("Sleeping for a minute");
+                    retries--;
+                    try {
+                        TimeUnit.MINUTES.sleep(1);
+                    } catch (Exception ex1) {
+
+                    }
+                }
+            }
 
             // BA Patient data file
             if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("pat")) {
                 try {
 
                     System.out.println("Patient.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new PatientIdentifierHandler(ctx, client);
@@ -213,7 +233,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 try {
 
                     //File file = new File(classLoader.getResourceAsStream ("Examples/Obs.csv").getFile());
-
+                    resources.clear();
                     System.out.println("Obs.csv");
 
                     IRecordHandler handler = null;
@@ -241,7 +261,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("e")) {
                 try {
                     System.out.println("Encounter.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new EncounterHandler();
@@ -267,7 +287,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("c")) {
                 try {
                     System.out.println("Condition.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new ConditionHandler();
@@ -293,7 +313,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("allergy")) {
                 try {
                     System.out.println("AllergyIntolerance.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new AllergyHandler();
@@ -321,7 +341,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("imms")) {
                 try {
                     System.out.println("Immunisation.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new ImmunisationHandler();
@@ -347,7 +367,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("proc") ||theCommandLine.hasOption("a")) {
                 try {
                     System.out.println("Procedure.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new ProcedureHandler();
@@ -374,7 +394,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (theCommandLine.hasOption("pres") ||theCommandLine.hasOption("a")) {
                 try {
                     System.out.println("MedicationRequest.csv");
-
+                    resources.clear();
                     IRecordHandler handler = null;
 
                     handler = new PrescriptionHandler();
@@ -441,7 +461,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                     System.out.println("activities.csv");
                     IRecordHandler handler = null;
-
+                    resources.clear();
                     handler = new ActivitiesHandler();
                     processActivitiesCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/activities.csv"));
                     for (IBaseResource resource : resources) {
@@ -477,7 +497,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                     System.out.println("blood_pressure.csv");
                     handler = null;
-
+                    resources.clear();
                     handler = new BloodPressureHandler();
                     processBloodPressureCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/nokia/blood_pressure.csv"));
                     for (IBaseResource resource : resources) {
