@@ -213,7 +213,15 @@
             </exclusions>
         </dependency>
 
-        <!-- Hawt.io -->
+        <!-- JMX Jolokia -->
+
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency>
+
+
+        <!-- Hawt.io
 
         <dependency>
             <groupId>io.hawt</groupId>
@@ -224,18 +232,6 @@
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.apache.logging.log4j</artifactId>
-                    <groupId>log4j-slf4j-impl</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -249,6 +245,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        -->
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.apache.logging.log4j</artifactId>
+                    <groupId>log4j-slf4j-impl</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
 
         <!-- Testing -->
 

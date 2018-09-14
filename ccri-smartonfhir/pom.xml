@@ -182,7 +182,14 @@
             <version>${camel-version}</version>
         </dependency>
 
-        <!-- Hawt.io -->
+        <!-- JMX Jolokia -->
+
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency>
+
+        <!-- Hawt.io
 
         <dependency>
             <groupId>io.hawt</groupId>
@@ -194,6 +201,20 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
+
+         <dependency>
+            <groupId>io.hawt</groupId>
+            <artifactId>hawtio-insight-log</artifactId>
+            <version>1.5.11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        -->
 
         <!-- Logging -->
         <dependency>
@@ -207,17 +228,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>io.hawt</groupId>
-            <artifactId>hawtio-insight-log</artifactId>
-            <version>1.5.11</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
     </dependencies>
 
