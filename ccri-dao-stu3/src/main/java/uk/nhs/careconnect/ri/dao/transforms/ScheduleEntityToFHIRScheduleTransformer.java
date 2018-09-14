@@ -4,6 +4,7 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
 
@@ -44,17 +45,42 @@ public class ScheduleEntityToFHIRScheduleTransformer implements Transformer<Sche
             if (scheduleEntity.getActive() != null) {
                 schedule.setActive(scheduleEntity.getActive());
             }
-        /* if (scheduleEntity.getName() != null) {
-            schedule.setName(schedule.getName());
+
+
+
+            for(ScheduleActor actor : scheduleEntity.getActors()){
+                if(actor.getPractitionerRole() != null){
+                    schedule.addActor().setReference("PractitonerRole/"+actor.getPractitionerRole().getId());
+                }
+
+                if(actor.getPractitionerEntity() != null){
+                    schedule.addActor().setReference("Practitoner/"+actor.getPractitionerEntity().getId());
+                }
+
+                if(actor.getHealthcareServiceEntity() != null){
+                    schedule.addActor().setReference("HealthcareService/"+actor.getHealthcareServiceEntity().getId());
+                }
+
+                if(actor.getLocationEntity() != null){
+                    schedule.addActor().setReference("Location/"+actor.getLocationEntity().getId());
+                }
+
+            }
+
+
+        if (scheduleEntity.getComment() != null) {
+            schedule.setComment(scheduleEntity.getComment());
         }
+
+
         if (scheduleEntity.getCategory() != null) {
-            schedule.getCategory()
+            schedule.getServiceCategory()
                     .addCoding()
                     .setDisplay(scheduleEntity.getCategory().getDisplay())
                     .setSystem(scheduleEntity.getCategory().getSystem())
                     .setCode(scheduleEntity.getCategory().getCode());
         }
-
+ /*
         if (scheduleEntity.getProvidedBy() != null) {
             schedule.setProvidedBy(new Reference("Organization/"+scheduleEntity.getProvidedBy().getId()));
         }

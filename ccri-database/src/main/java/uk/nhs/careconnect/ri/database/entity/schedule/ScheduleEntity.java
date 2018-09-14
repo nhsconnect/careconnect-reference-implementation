@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.schedule;
 
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
+import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 
 
 import javax.persistence.*;
@@ -17,9 +18,12 @@ public class ScheduleEntity extends BaseResource {
     @Column(name="ACTIVE")
     private Boolean active;
 
-    @Column(name="NAME")
-    private String name;
+    @Column(name="COMMENT")
+    private String comment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="CATEGORY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_SCHEDULE_CATEGORY_CONCEPT"))
+    private ConceptEntity category;
 
     @OneToMany(mappedBy="schedule", targetEntity = ScheduleIdentifier.class)
     Set<ScheduleIdentifier> identifiers = new HashSet<>();
@@ -44,12 +48,13 @@ public class ScheduleEntity extends BaseResource {
         this.active = active;
     }
 
-    public String getName() {
-        return name;
+
+    public String getComment() {
+        return comment;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Set<ScheduleIdentifier> getIdentifiers() {
@@ -66,5 +71,13 @@ public class ScheduleEntity extends BaseResource {
 
     public void setActors(Set<ScheduleActor> actors) {
         this.actors = actors;
+    }
+
+    public ConceptEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(ConceptEntity category) {
+        this.category = category;
     }
 }
