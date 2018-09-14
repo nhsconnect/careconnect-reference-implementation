@@ -87,6 +87,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- Spring OAuth2 Dependencies -->
         <dependency>
             <groupId>org.springframework.security</groupId>
