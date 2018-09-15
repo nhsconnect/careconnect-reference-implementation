@@ -181,6 +181,28 @@
             <version>${camel-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-servlet-starter</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson-starter</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-swagger-java-starter</artifactId>
+            <version>${camel-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- JMX Jolokia -->
 
         <dependency>
@@ -188,7 +210,7 @@
             <artifactId>jolokia-core</artifactId>
         </dependency>
 
-        <!-- Hawt.io
+        <!-- Hawt.io -->
 
         <dependency>
             <groupId>io.hawt</groupId>
@@ -200,7 +222,7 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
-
+<!--
           <dependency>
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-insight-log</artifactId>

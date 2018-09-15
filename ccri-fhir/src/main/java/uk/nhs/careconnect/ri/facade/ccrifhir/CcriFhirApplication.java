@@ -2,12 +2,14 @@ package uk.nhs.careconnect.ri.facade.ccrifhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.CamelContext;
+import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @SpringBootApplication
 @ComponentScan({"uk.nhs.careconnect.ri.facade.ccrifhir","uk.nhs.careconnect.ri"})
 @PropertySource("classpath:application.properties")
-public class CcriFhirApplication {
+public class CcriFhirApplication extends SpringBootServletInitializer {
 
     @Autowired
     ApplicationContext context;
@@ -41,6 +43,15 @@ public class CcriFhirApplication {
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
         return registration;
+    }
+
+    @Bean
+    ServletRegistrationBean servletRegistrationBean() {
+        ServletRegistrationBean servlet = new ServletRegistrationBean
+                (new CamelHttpTransportServlet(), "/*");
+        servlet.setName("jmxmonitor");
+        servlet.setLoadOnStartup(2);
+        return servlet;
     }
 
     @Bean
