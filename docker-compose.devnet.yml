@@ -20,6 +20,8 @@ services:
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
       - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
@@ -45,6 +47,8 @@ services:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     depends_on:
       - ccriserver
       - ccridocument
@@ -68,6 +72,8 @@ services:
       - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     depends_on:
       - ccriserver
       - ccridocument
@@ -86,6 +92,11 @@ services:
     environment:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
@@ -123,6 +134,8 @@ services:
       - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
       - fhir.resource.serverName=Care Connect TIE FHIR Server
       - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     volumes:
       - tie-log-volume:/usr/local/tomcat/logs
     networks:
@@ -147,6 +160,8 @@ services:
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
        - spring.data.mongodb.database=careconnect-nosql
+       - jolokia.username=HSFAdmin
+       - jolokia.password=h5fadm!n
      volumes:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
