@@ -1,0 +1,23 @@
+FROM tomcat:8.0.46-jre8
+
+ENV JAVA_OPTS="-Xms128m -Xmx512m"
+
+RUN rm -rf /usr/local/tomcat/webapps/*;
+
+RUN  mkdir -p /usr/local/tomcat/webapps/ROOT;
+
+ADD index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
+ADD google3eacf3dd7222ac95.html /usr/local/tomcat/webapps/ROOT/google3eacf3dd7222ac95.html
+ADD robots.txt /usr/local/tomcat/webapps/ROOT/robots.txt
+ADD logging.properties /usr/local/tomcat/conf/logging.properties
+ADD server.xml /usr/local/tomcat/conf/server.xml
+
+# ADD hawtio.war /usr/local/tomcat/webapps/
+
+ADD target/ccri.war /usr/local/tomcat/webapps/ccri.war
+
+# See CareConnectAPI for details on pulling and running docker images https://care-connect-api.netlify.com/ccri_docker.html
+EXPOSE 80
+
+CMD ["catalina.sh", "run"]
+
