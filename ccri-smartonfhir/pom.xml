@@ -187,14 +187,16 @@
             <version>${camel-version}</version>
         </dependency>
 
-        <!-- JMX Jolokia -->
+        <!-- JMX Jolokia
 
         <dependency>
             <groupId>org.jolokia</groupId>
             <artifactId>jolokia-core</artifactId>
         </dependency>
 
-        <!-- Hawt.io
+        -->
+
+        <!-- Hawt.io -->
 
         <dependency>
             <groupId>io.hawt</groupId>
@@ -206,7 +208,7 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
-
+<!--
          <dependency>
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-insight-log</artifactId>

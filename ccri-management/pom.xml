@@ -27,6 +27,7 @@
 
         <hapi-fhir-version>3.4.0</hapi-fhir-version>
         <thymeleaf-version>3.0.7.RELEASE</thymeleaf-version>
+        <camel-version>2.21.2</camel-version>
     </properties>
 
     <dependencyManagement>
@@ -90,6 +91,55 @@
         </dependency>
         -->
 
+        <!-- Camel -->
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring-boot-starter</artifactId>
+            <version>${camel-version}</version>
+            <!-- Use log4j with hawtio instead of logback -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http4</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring-javaconfig</artifactId>
+            <scope>provided</scope>
+            <version>${camel-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-servlet-starter</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson-starter</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-swagger-java-starter</artifactId>
+            <version>${camel-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- Thymeleaf	-->
         <dependency>
@@ -137,6 +187,7 @@
     </dependencies>
 
     <build>
+        <finalName>ccri</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

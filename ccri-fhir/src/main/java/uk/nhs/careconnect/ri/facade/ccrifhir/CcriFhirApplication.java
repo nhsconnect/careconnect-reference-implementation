@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ri.facade.ccrifhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.CamelContext;
-import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +44,6 @@ public class CcriFhirApplication extends SpringBootServletInitializer {
         return registration;
     }
 
-    @Bean
-    ServletRegistrationBean servletRegistrationBean() {
-        ServletRegistrationBean servlet = new ServletRegistrationBean
-                (new CamelHttpTransportServlet(), "/*");
-        servlet.setName("jmxmonitor");
-        servlet.setLoadOnStartup(2);
-        return servlet;
-    }
 
     @Bean
     public FhirContext getFhirContext() {
