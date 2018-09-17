@@ -15,10 +15,7 @@ import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.PractitionerRoleToFHIRPractitionerRoleTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
-import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRole;
-import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRoleIdentifier;
-import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerSpecialty;
+import uk.nhs.careconnect.ri.database.entity.practitioner.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -166,25 +163,32 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             }
         }
 
-        Boolean found = false;
+        for (PractitionerRoleIdentifier orgSearch : roleEntity.getIdentifiers()) {
+            em.remove(orgSearch);
+        }
+
         for (Identifier identifier : practitionerRole.getIdentifier()) {
             log.trace("Recieved identifier = " + identifier.getSystem() + " code "+identifier.getValue());
 
-            for (PractitionerRoleIdentifier identifierEntity : roleEntity.getIdentifiers()) {
-                log.trace("Existing identifier = " + identifierEntity.getSystemUri() + " code "+identifierEntity.getValue());
-
-                if (identifier.getSystem().equals(identifierEntity.getSystemUri()) && identifier.getValue().equals(identifierEntity.getValue())) {
-                    found = true;
+            PractitionerRoleIdentifier practitionerRoleIdentifier = null;
+/*
+            for (PractitionerRoleIdentifier orgSearch : roleEntity.getIdentifiers()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                    practitionerRoleIdentifier = orgSearch;
+                    break;
                 }
             }
-            if (!found) {
+            */
+            if (practitionerRoleIdentifier == null) {
+                practitionerRoleIdentifier = new PractitionerRoleIdentifier();
+
                 log.trace("Not found Identifier!");
-                PractitionerRoleIdentifier ident = new PractitionerRoleIdentifier();
-                ident.setValue(identifier.getValue());
-                ident.setPractitionerRole(roleEntity);
-                ident.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
-                em.persist(ident);
-                roleEntity.getIdentifiers().add(ident);
+
+                practitionerRoleIdentifier.setValue(identifier.getValue());
+                practitionerRoleIdentifier.setPractitionerRole(roleEntity);
+                practitionerRoleIdentifier.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
+                em.persist(practitionerRoleIdentifier);
+                roleEntity.getIdentifiers().add(practitionerRoleIdentifier);
             }
         }
         return practitionerRole; //roleEntity;

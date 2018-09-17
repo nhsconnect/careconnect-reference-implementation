@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.Conformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -48,11 +49,15 @@ public class   UploadExamples extends BaseCommand {
 
     private Map<String, Address> addressMap = new HashMap<>();
 
+    private ArrayList<PractitionerRole> roles = new ArrayList<>();
+
     private static String nokiaObs = "https://fhir.health.phr.example.com/Id/observation";
 
     FhirContext ctx ;
 
     IGenericClient client;
+
+    IGenericClient odsClient;
 
 /* PROGRAM ARGUMENTS
 
@@ -61,6 +66,21 @@ upload-examples
 http://127.0.0.1:8080/careconnect-ri/STU3
 
     */
+
+    private String Inicaps(String string) {
+        String result = null;
+        String[] array = string.split(" ");
+
+        for (int f=0; f<array.length;f++) {
+            if (f==0) {
+                result = StringUtils.capitalize(StringUtils.lowerCase(array[f]));
+            } else
+            {
+                result = result + " "+ StringUtils.capitalize(StringUtils.lowerCase(array[f]));
+            }
+        }
+        return result;
+    }
 
 	@Override
 	public String getCommandDescription() {
@@ -85,6 +105,11 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		Option opt;
 
 		addFhirVersionOption(options);
+
+        opt = new Option("prac", "practitioner", false, "Practitioner Examples upload files");
+        opt.setRequired(false);
+        options.addOption(opt);
+
 
 		opt = new Option("t", "target", true, "Base URL for the target server (e.g. \"http://example.com/fhir\")");
 		opt.setRequired(true);
@@ -154,6 +179,9 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 		if (ctx.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 
             client = ctx.newRestfulGenericClient(targetServer);
+
+            odsClient = ctx.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
+
             System.out.println("HAPI Client created");
 
             CapabilityStatement capabilityStatement = null;
@@ -177,6 +205,70 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 return;
             }
             Integer resourceCount = 0;
+
+            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("prac")) {
+                try {
+                    System.out.println("Practitioner.csv");
+                    resources.clear();
+                    IRecordHandler handler = null;
+
+                    handler = new PractitionerHandler();
+                    processPractitionerCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Practitioner.csv"));
+                    for (IBaseResource resource : resources) {
+                        Practitioner practitioner = (Practitioner) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            practitioner.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+                    System.out.println("Consultant.csv");
+                    handler = new ConsultantHandler();
+                    processPractitionerCSV(handler, ctx, ',', QuoteMode.NON_NUMERIC, classLoader.getResourceAsStream("Examples/Consultant.csv"));
+                    for (IBaseResource resource : resources) {
+                        Practitioner practitioner = (Practitioner) resource;
+                        MethodOutcome outcome = client.update().resource(resource)
+                                .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" +practitioner.getIdentifier().get(0).getValue())
+                                .execute();
+
+                        if (outcome.getId() != null ) {
+                            practitioner.setId(outcome.getId().getIdPart());
+                        }
+                    }
+                    resources.clear();
+
+                    for (PractitionerRole practitionerRole : roles) {
+
+
+                        if (practitionerRole.getPractitioner() != null) {
+                            String practitionerId = docMap.get(practitionerRole.getPractitioner().getReference());
+                            if (practitionerId == null) {
+                                practitionerId = getPractitioner(practitionerRole.getPractitioner().getReference());
+                            }
+                            if (practitionerId != null) {
+                                practitionerRole.setPractitioner(new Reference("Practitioner/"+practitionerId));
+                            }
+                        }
+                        MethodOutcome outcome = client.update().resource(practitionerRole)
+                                .conditionalByUrl("PractitionerRole?identifier=" + practitionerRole.getIdentifier().get(0).getSystem() + "%7C" +practitionerRole.getIdentifier().get(0).getValue())
+                                .execute();
+                        //     System.out.println(outcome.getId());
+                        if (outcome.getId() != null ) {
+                            practitionerRole.setId(outcome.getId().getIdPart());
+
+                        }
+                    }
+                    roles.clear();
+
+
+                } catch (Exception ex) {
+                    ourLog.error(ex.getMessage());
+                }
+            }
+
 
             // Check patient
             Bundle pastResults = client
@@ -1018,6 +1110,67 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
+    private void processPractitionerCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
+
+        Boolean found = false;
+        try {
+
+            //  ourLog.info("Processing file {}", file.getName());
+            found = true;
+
+            Reader reader = null;
+            CSVParser parsed = null;
+            try {
+                reader = new InputStreamReader(file);
+                CSVFormat format = CSVFormat
+                        .newFormat(theDelimiter)
+                        .withAllowMissingColumnNames()
+                        .withSkipHeaderRecord(true)
+                        .withHeader("OrganisationCode"
+                                ,"Name"
+                                ,"NationalGrouping"
+                                ,"HighLevelHealthGeography"
+                                ,"AddressLine_1"
+                                ,"AddressLine_2"
+                                ,"AddressLine_3"
+                                ,"AddressLine_4"
+                                ,"AddressLine_5"
+                                ,"Postcode"
+                                ,"OpenDate"
+                                ,"CloseDate"
+                                ,"Fld13"
+                                ,"OrganisationSubTypeCode"
+                                ,"Commissioner"
+                                ,"Fld16"
+                                ,"Fld17"
+                                ,"ContactTelephoneNumber"
+                        );
+                if (theQuoteMode != null) {
+                    format = format.withQuote('"').withQuoteMode(theQuoteMode);
+                }
+                parsed = new CSVParser(reader, format);
+                Iterator<CSVRecord> iter = parsed.iterator();
+                ourLog.debug("Header map: {}", parsed.getHeaderMap());
+
+                int count = 0;
+
+                int nextLoggedCount = 0;
+                while (iter.hasNext()) {
+                    CSVRecord nextRecord = iter.next();
+                    handler.accept(nextRecord);
+                    count++;
+                    if (count >= nextLoggedCount) {
+                        ourLog.info(" * Processed {} records", count);
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new InternalErrorException(e);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
 
 
     private void processProcedureCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
@@ -1426,6 +1579,95 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
 
 
+    public String getPractitioner (String identifier) {
+	    String practitionerId = null;
+        Bundle results = client
+                .search()
+                .forResource(Practitioner.class)
+                .where(Practitioner.IDENTIFIER.exactly().code(identifier))
+                .returnBundle(Bundle.class)
+                .execute();
+        //   System.out.println(results.getEntry().size());
+        if (results.getEntry().size() == 0) {
+
+            // Get result from ODS API
+
+            System.out.println("Practitioner "+identifier);
+
+            /*
+            Practitioner odsPractitioner = odsClient
+                    .read().resource(Practitioner.class).withId(identifier)
+                    .execute();
+            if (odsPractitioner != null) {
+                MethodOutcome outcome = client.create().resource(odsPractitioner).execute();
+                if (outcome.getId() != null) {
+                    practitionerId = outcome.getId().getIdPart();
+                    docMap.put(identifier, practitionerId);
+                }
+            }*/
+        } else {
+            Practitioner prac = (Practitioner) results.getEntry().get(0).getResource();
+            practitionerId = prac.getIdElement().getIdPart();
+            docMap.put(identifier, practitionerId);
+        }
+        return practitionerId;
+    }
+
+    public String getOrganisation (String identifier) {
+        String organisationId = null;
+
+
+        Bundle results = client
+                .search()
+                .forResource(Organization.class)
+                .where(Organization.IDENTIFIER.exactly().code(identifier))
+                .returnBundle(Bundle.class)
+                .execute();
+        //   System.out.println(results.getEntry().size());
+        if (results.getEntry().size() == 0) {
+
+            // Get result from ODS API
+            System.out.println("Looking up Organisation "+identifier);
+            try {
+                Organization odsOrganisation = odsClient
+                        .read().resource(Organization.class).withId(identifier)
+                        .execute();
+                if (odsOrganisation != null) {
+                    MethodOutcome outcome = client.create().resource(odsOrganisation).execute();
+
+
+                    if (outcome.getId() != null) {
+                        organisationId = outcome.getId().getIdPart();
+                        orgMap.put(identifier, organisationId);
+                    }
+                }
+            } catch(Exception ex) {
+                System.out.println("Not found " +identifier);
+            }
+         } else {
+            Organization org = (Organization) results.getEntry().get(0).getResource();
+            organisationId = org.getIdElement().getIdPart();
+            orgMap.put(identifier, organisationId);
+        }
+
+        return organisationId;
+    }
+
+    public String getPatientId(String ppmId ) {
+        String patientId = null;
+
+        Bundle results = client
+                .search()
+                .forResource(Patient.class)
+                .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier" ,ppmId))
+                .returnBundle(Bundle.class)
+                .execute();
+        //   System.out.println(results.getEntry().size());
+        if (results.getEntry().size() > 0) {
+            patientId = results.getEntry().get(0).getResource().getId();
+        }
+        return patientId;
+    }
 
     private void processActivitiesCSV(IRecordHandler handler, FhirContext ctx, char theDelimiter, QuoteMode theQuoteMode, InputStream file) throws CommandFailureException {
 
@@ -1590,18 +1832,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                     case "practitioner" :
                         String practitioner = docMap.get(theRecord.get("PerformerIdentifier"));
                         if (practitioner == null) {
-                            Bundle results = client
-                                    .search()
-                                    .forResource(Practitioner.class)
-                                    .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("PerformerIdentifier")))
-                                    .returnBundle(Bundle.class)
-                                    .execute();
-                         //   System.out.println(results.getEntry().size());
-                            if (results.getEntry().size() > 0) {
-                                Practitioner prac = (Practitioner) results.getEntry().get(0).getResource();
-                                practitioner = prac.getIdElement().getIdPart();
-                                docMap.put(theRecord.get("PerformerIdentifier"), practitioner);
-                            }
+                            practitioner = getPractitioner(theRecord.get("PerformerIdentifier"));
                         }
                         if (practitioner != null) {
                             observation.addPerformer(new Reference("Practitioner/" + practitioner));
@@ -1613,18 +1844,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
                         String organization= orgMap.get(theRecord.get("PerformerIdentifier"));
                         if (organization == null) {
-                            Bundle results = client
-                                    .search()
-                                    .forResource(Organization.class)
-                                    .where(Organization.IDENTIFIER.exactly().code(theRecord.get("PerformerIdentifier")))
-                                    .returnBundle(Bundle.class)
-                                    .execute();
-                         //   System.out.println(results.getEntry().size());
-                            if (results.getEntry().size() > 0) {
-                                Organization org = (Organization) results.getEntry().get(0).getResource();
-                                organization = org.getIdElement().getIdPart();
-                                orgMap.put(theRecord.get("PerformerIdentifier"), organization);
-                            }
+                           organization = getOrganisation(theRecord.get("PerformerIdentifier"));
                         }
                         if (organization != null) {
                             observation.addPerformer(new Reference("Organization/" + organization));
@@ -1637,6 +1857,184 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(observation));
            resources.add(observation);
         }
+    }
+
+    public class ConsultantHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+            // System.out.println(theRecord.toString());
+            Practitioner practitioner = new Practitioner();
+            practitioner.setId("dummy");
+            practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
+
+            practitioner.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get(1));
+
+            practitioner.setActive(true);
+
+            if (!theRecord.get(2).isEmpty()) {
+
+                HumanName name = new HumanName();
+                practitioner.getName().add(name);
+                name.setFamily(Inicaps(theRecord.get(2)));
+                name.addPrefix("Dr");
+
+                if (!theRecord.get(3).isEmpty()) {
+                    name.addGiven(theRecord.get(3));
+                }
+            }
+            if (!theRecord.get(4).isEmpty()) {
+                switch (theRecord.get(4)) {
+                    case "M" : practitioner.setGender(Enumerations.AdministrativeGender.MALE);
+                        break;
+                    case "F" : practitioner.setGender(Enumerations.AdministrativeGender.FEMALE);
+                        break;
+                }
+            }
+
+
+            resources.add(practitioner);
+
+            // TODO Missing addition of specialty field 5 and organisation field 7
+
+            PractitionerRole role = new PractitionerRole();
+
+            if (!theRecord.get(7).isEmpty()) {
+                String parentOrgId = orgMap.get(theRecord.get(7));
+                if (parentOrgId == null) {
+                    parentOrgId = getOrganisation(theRecord.get(7));
+                }
+                if (parentOrgId != null) {
+                    role.setOrganization(new Reference("Organization/"+parentOrgId));
+                }
+            }
+            role.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get(1));
+            // Make a note of the practitioner. Will need to change to correct code
+            role.setPractitioner(new Reference(theRecord.get(1)));
+
+            /* TODO basic ConceptMapping */
+
+            switch(theRecord.get(5)) {
+                case "101":
+                    CodeableConcept specialty = new CodeableConcept();
+                    specialty.addCoding()
+                            .setSystem(CareConnectSystem.SNOMEDCT)
+                            .setCode("394612005")
+                            .setDisplay("Urology (qualifier value)");
+                    role.getSpecialty().add(specialty);
+                    break;
+                case "320":
+                    CodeableConcept concept = new CodeableConcept();
+                    concept.addCoding()
+                            .setSystem(CareConnectSystem.SNOMEDCT)
+                            .setCode("394579002")
+                            .setDisplay("Cardiology (qualifier value)");
+                    role.getSpecialty().add(concept);
+                    break;
+            }
+            roles.add(role);
+        }
+
+    }
+
+
+    public class PractitionerHandler implements IRecordHandler {
+        @Override
+        public void accept(CSVRecord theRecord) {
+
+            Practitioner practitioner = new Practitioner();
+            practitioner.setId("dummy");
+            practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
+
+            practitioner.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get("OrganisationCode"));
+
+            if (!theRecord.get("ContactTelephoneNumber").isEmpty()) {
+                practitioner.addTelecom()
+                        .setUse(ContactPoint.ContactPointUse.WORK)
+                        .setValue(theRecord.get("ContactTelephoneNumber"))
+                        .setSystem(ContactPoint.ContactPointSystem.PHONE);
+            }
+            practitioner.setActive(true);
+            if (!theRecord.get("CloseDate").isEmpty()) {
+                practitioner.setActive(false);
+            }
+            practitioner.addAddress()
+                    .setUse(Address.AddressUse.WORK)
+                    .addLine(Inicaps(theRecord.get("AddressLine_1")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_2")))
+                    .addLine(Inicaps(theRecord.get("AddressLine_3")))
+                    .setCity(Inicaps(theRecord.get("AddressLine_4")))
+                    .setDistrict(Inicaps(theRecord.get("AddressLine_5")))
+                    .setPostalCode(theRecord.get("Postcode"));
+
+            if (!theRecord.get("Name").isEmpty()) {
+                String[] nameStr = theRecord.get("Name").split(" ");
+
+                if (nameStr.length>0) {
+                    HumanName name = new HumanName();
+                    practitioner.getName().add(name);
+                    name.setFamily(Inicaps(nameStr[0]));
+                    name.addPrefix("Dr");
+                    String foreName = "";
+                    for (Integer f=1; f<nameStr.length;f++) {
+                        if (f==1) {
+                            foreName = nameStr[1];
+                        } else {
+                            foreName = foreName + " " + nameStr[f];
+                        }
+                    }
+                    if (!foreName.isEmpty()) {
+                        name.addGiven(foreName);
+                    }
+                }
+            }
+            resources.add(practitioner);
+
+            PractitionerRole role = new PractitionerRole();
+
+            if (!theRecord.get("Commissioner").isEmpty()) {
+                String parentOrg = orgMap.get(theRecord.get("Commissioner"));
+                if (parentOrg == null) {
+                    parentOrg = getOrganisation(theRecord.get("Commissioner"));
+                }
+                if (parentOrg != null) {
+                    role.setOrganization(new Reference("Organization/"+parentOrg));
+                }
+
+            }
+            role.addIdentifier()
+                    .setSystem(CareConnectSystem.SDSUserId)
+                    .setValue(theRecord.get("OrganisationCode"));
+            // Make a note of the practitioner. Will need to change to correct code
+            role.setPractitioner(new Reference(theRecord.get("OrganisationCode")));
+            if (!theRecord.get("OrganisationSubTypeCode").isEmpty()) {
+                switch (theRecord.get("OrganisationSubTypeCode")) {
+                    case "O":
+                    case "P":
+                        CodeableConcept concept = new CodeableConcept();
+                        concept.addCoding()
+                                .setSystem(CareConnectSystem.SDSJobRoleName)
+                                .setCode("R0260")
+                                .setDisplay("General Medical Practitioner");
+                        role.getCode().add(concept);
+                }
+            }
+            CodeableConcept specialty = new CodeableConcept();
+            specialty.addCoding()
+                    .setSystem(CareConnectSystem.SNOMEDCT)
+                    .setCode("394814009")
+                    .setDisplay("General practice (specialty) (qualifier value)");
+            role.getSpecialty().add(specialty);
+            // System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(role));
+            roles.add(role);
+
+        }
+
     }
 
     public class EncounterHandler implements  IRecordHandler {
@@ -1714,18 +2112,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 if (theRecord.get("resource.type").equals("Practitioner")) {
                     String practitioner = docMap.get(theRecord.get("participent.individual"));
                     if (practitioner == null) {
-                        Bundle results = client
-                                .search()
-                                .forResource(Practitioner.class)
-                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("participent.individual")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-                        //   System.out.println(results.getEntry().size());
-                        if (results.getEntry().size() > 0) {
-                            Practitioner prac = (Practitioner) results.getEntry().get(0).getResource();
-                            practitioner = prac.getIdElement().getIdPart();
-                            docMap.put(theRecord.get("participent.individual"), practitioner);
-                        }
+                       practitioner = getPractitioner(theRecord.get("participent.individual"));
                     }
                     if (practitioner != null) {
                         Encounter.EncounterParticipantComponent participant = encounter.addParticipant()
@@ -1757,18 +2144,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("serviceProvider").isEmpty()) {
                 String organization= orgMap.get(theRecord.get("serviceProvider"));
                 if (organization == null) {
-                    Bundle results = client
-                            .search()
-                            .forResource(Organization.class)
-                            .where(Organization.IDENTIFIER.exactly().code(theRecord.get("serviceProvider")))
-                            .returnBundle(Bundle.class)
-                            .execute();
-                    //   System.out.println(results.getEntry().size());
-                    if (results.getEntry().size() > 0) {
-                        Organization org = (Organization) results.getEntry().get(0).getResource();
-                        organization = org.getIdElement().getIdPart();
-                        orgMap.put(theRecord.get("serviceProvider"), organization);
-                    }
+                    organization = getOrganisation(theRecord.get("serviceProvider"));
                 }
                 if (organization != null) {
                     encounter
@@ -1808,17 +2184,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
             if (!theRecord.get("asserter").isEmpty()) {
-                Bundle results = client
-                        .search()
-                        .forResource(Practitioner.class)
-                        .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("asserter")))
-                        .returnBundle(Bundle.class)
-                        .execute();
-                //   System.out.println(results.getEntry().size());
-                if (results.getEntry().size() > 0) {
-                    Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
 
-                    condition.setAsserter(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                String practitionerId = docMap.get(theRecord.get("asserter"));
+                if (practitionerId == null) {
+                    practitionerId = getPractitioner(theRecord.get("asserter"));
+                }
+
+                if (practitionerId != null) {
+                    condition.setAsserter(new Reference("Practitioner/" + practitionerId));
                 }
             }
 
@@ -2049,17 +2422,15 @@ http://127.0.0.1:8080/careconnect-ri/STU3
                 }
             }
             if (!theRecord.get("recorder").isEmpty()) {
-                Bundle results = client
-                        .search()
-                        .forResource(Practitioner.class)
-                        .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("recorder")))
-                        .returnBundle(Bundle.class)
-                        .execute();
-                //   System.out.println(results.getEntry().size());
-                if (results.getEntry().size() > 0) {
-                    Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
 
-                    allergy.setAsserter(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+               String practitionerId= docMap.get(theRecord.get("recorder"));
+
+               if (practitionerId == null) {
+                   practitionerId = getPractitioner(theRecord.get("recorder"));
+               }
+
+                if (practitionerId != null) {
+                    allergy.setAsserter(new Reference("Practitioner/" + practitionerId));
                 }
             }
 
@@ -2068,21 +2439,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
         }
     }
 
-    public String getPatientId(String ppmId ) {
-        String patientId = null;
 
-	    Bundle results = client
-                .search()
-                .forResource(Patient.class)
-                .where(Practitioner.IDENTIFIER.exactly().systemAndCode("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier" ,ppmId))
-                .returnBundle(Bundle.class)
-                .execute();
-        //   System.out.println(results.getEntry().size());
-        if (results.getEntry().size() > 0) {
-            patientId = results.getEntry().get(0).getResource().getId();
-        }
-        return patientId;
-    }
 
     public class ProcedureHandler implements  IRecordHandler {
         @Override
@@ -2148,33 +2505,28 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("Performer Type").isEmpty()) {
                 switch (theRecord.get("Performer Type")) {
                     case "Practitioner":
-                        Bundle results = client
-                                .search()
-                                .forResource(Practitioner.class)
-                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("performer")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-                        //   System.out.println(results.getEntry().size());
-                        if (results.getEntry().size() > 0) {
-                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
 
+                        String practitionerId = docMap.get(theRecord.get("performer"));
+
+                        if (practitionerId == null) {
+                            practitionerId =  getPractitioner(theRecord.get("performer"));
+                        }
+
+                        if (practitionerId != null) {
                             Procedure.ProcedurePerformerComponent performer = procedure.addPerformer();
-                            performer.setActor(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                            performer.setActor(new Reference("Practitioner/" + practitionerId));
                         }
                         break;
                     case "Organization":
-                        results = client
-                                .search()
-                                .forResource(Organization.class)
-                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("performer")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-                        //   System.out.println(results.getEntry().size());
-                        if (results.getEntry().size() > 0) {
-                            Organization organization = (Organization) results.getEntry().get(0).getResource();
+                        String organisationId = docMap.get(theRecord.get("performer"));
 
+                        if (organisationId == null) {
+                            organisationId =  getOrganisation(theRecord.get("performer"));
+                        }
+
+                        if (organisationId != null) {
                             Procedure.ProcedurePerformerComponent performer = procedure.addPerformer();
-                            performer.setActor(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                            performer.setActor(new Reference("Organization/" + organisationId));
                         }
                 }
             }
@@ -2421,24 +2773,26 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
 
              if (theRecord.get("PRACTICE_ID") != null && !theRecord.get("PRACTICE_ID").isEmpty()) {
-                Bundle bundle = client.search().forResource(Organization.class)
-                        .where(Organization.IDENTIFIER.exactly().code(theRecord.get("PRACTICE_ID")))
-                        .returnBundle(Bundle.class).execute();
+                 String organisationId = docMap.get(theRecord.get("PRACTICE_ID"));
 
-                if (bundle.getEntry().size()>0) {
-                    Organization org = (Organization) bundle.getEntry().get(0).getResource();
-                    patient.setManagingOrganization(new Reference( "Organization/"+org.getIdElement().getIdPart() ));
+                 if (organisationId == null) {
+                     organisationId = getOrganisation(theRecord.get("PRACTICE_ID"));
+                 }
+                 if (organisationId != null) {
+
+                    patient.setManagingOrganization(new Reference( "Organization/"+organisationId));
                 }
 
             }
             if (theRecord.get("GP_ID") != null && !theRecord.get("GP_ID").isEmpty()) {
-                 Bundle bundle = client.search().forResource(Practitioner.class)
-                         .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("GP_ID")))
-                         .returnBundle(Bundle.class).execute();
 
-                 if (bundle.getEntry().size()>0) {
-                     Practitioner gp = (Practitioner) bundle.getEntry().get(0).getResource();
-                     patient.addGeneralPractitioner(new Reference( "Practitioner/"+gp.getIdElement().getIdPart() ));
+                String practitionerId = docMap.get(theRecord.get("GP_ID"));
+
+                if (practitionerId == null) {
+                    practitionerId = getPractitioner(theRecord.get("GP_ID"));
+                }
+                if (practitionerId != null) {
+                     patient.addGeneralPractitioner(new Reference( "Practitioner/"+practitionerId));
                  }
 
              }
@@ -3001,32 +3355,23 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("requester.agent type").isEmpty() && !theRecord.get("requester.agent").isEmpty()) {
                 switch (theRecord.get("requester.agent type")) {
                     case "Practitioner":
-                        Bundle results = client
-                                .search()
-                                .forResource(Practitioner.class)
-                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
-                                .returnBundle(Bundle.class)
-                                .execute();
+                        String practitionerId = docMap.get(theRecord.get("requester.agent"));
+                        if (practitionerId == null) {
+                            practitionerId = getPractitioner(theRecord.get("requester.agent"));
+                        }
+                        if (practitionerId != null) {
 
-                        if (results.getEntry().size() > 0) {
-                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
-
-                            prescription.getRequester().setAgent(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                            prescription.getRequester().setAgent(new Reference("Practitioner/" + practitionerId));
                         }
                         break;
 
                     case "Organization":
-                        results = client
-                                .search()
-                                .forResource(Organization.class)
-                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-
-                        if (results.getEntry().size() > 0) {
-                            Organization organization = (Organization) results.getEntry().get(0).getResource();
-
-                            prescription.getRequester().setAgent(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                        String organisationId = docMap.get(theRecord.get("requester.agent"));
+                        if (organisationId == null) {
+                            organisationId = getOrganisation(theRecord.get("requester.agent"));
+                        }
+                        if (organisationId != null) {
+                            prescription.getRequester().setAgent(new Reference("Organization/" + organisationId));
                         }
                         break;
 
@@ -3246,32 +3591,22 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             if (!theRecord.get("requester.agent type").isEmpty() && !theRecord.get("requester.agent").isEmpty()) {
                 switch (theRecord.get("requester.agent type")) {
                     case "Practitioner":
-                        Bundle results = client
-                                .search()
-                                .forResource(Practitioner.class)
-                                .where(Practitioner.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-
-                        if (results.getEntry().size() > 0) {
-                            Practitioner practitioner = (Practitioner) results.getEntry().get(0).getResource();
-
-                            statement.setInformationSource(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                        String practitionerId= docMap.get(theRecord.get("requester.agent"));
+                        if (practitionerId == null) {
+                            practitionerId = getPractitioner(theRecord.get("requester.agent"));
+                        }
+                        if (practitionerId !=null) {
+                            statement.setInformationSource(new Reference("Practitioner/" + practitionerId));
                         }
                         break;
 
                     case "Organization":
-                        results = client
-                                .search()
-                                .forResource(Organization.class)
-                                .where(Organization.IDENTIFIER.exactly().code(theRecord.get("requester.agent")))
-                                .returnBundle(Bundle.class)
-                                .execute();
-
-                        if (results.getEntry().size() > 0) {
-                            Organization organization = (Organization) results.getEntry().get(0).getResource();
-
-                            statement.setInformationSource(new Reference("Organization/" + organization.getIdElement().getIdPart()));
+                        String organisationId = orgMap.get(theRecord.get("requester.agent"));
+                        if (organisationId == null) {
+                            organisationId = getOrganisation(theRecord.get("requester.agent"));
+                        }
+                        if (organisationId !=null) {
+                            statement.setInformationSource(new Reference("Organization/" + organisationId));
                         }
                         break;
 
