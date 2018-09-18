@@ -44,3 +44,4 @@ identifier,encounter,patient,code,,clinicalStatus,verificationStatus,onset.DateT
 100043,4789,1162,720687003,Dust mite protein ,Active,Confirmed,,1981-10-30,,
 100044,,1162,410986002,Grass pollen allergen,Active,Confirmed,1946-07,1971-04-28,,1956-09
 100045,,1168,720687003,Dust mite protein ,Active,Unconfirmed,,2016-10-12,,
+
