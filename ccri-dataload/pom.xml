@@ -19,7 +19,7 @@
 
   
     <groupId>uk.nhs.careconnect</groupId>
-    <artifactId>cc-cli</artifactId>
+    <artifactId>ccri-dataload</artifactId>
     <version>3.6.0</version>
 
     <repositories>
@@ -245,7 +245,7 @@
   
 
   <build>
-      <finalName>cc-cli</finalName>
+      <finalName>ccri-dataload</finalName>
     <plugins>
     	 <plugin>
 				<groupId>org.apache.maven.plugins</groupId>

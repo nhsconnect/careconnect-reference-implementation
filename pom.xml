@@ -148,7 +148,7 @@
 
     <modules>
         <module>cc-core</module>
-        <module>cc-cli</module>
+        <module>ccri-dataload</module>
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver-common</module>
