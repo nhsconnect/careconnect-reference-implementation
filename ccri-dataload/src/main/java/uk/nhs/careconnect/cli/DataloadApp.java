@@ -12,7 +12,6 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
 import java.io.PrintWriter;
@@ -29,14 +28,13 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 @SpringBootApplication
 @PropertySource("classpath:application.properties")
-@ComponentScan("uk.nhs.careconnect.cli")
-public class App  {
+public class DataloadApp {
 
 
 
     private static List<BaseCommand> ourCommands;
 
-    private static final org.slf4j.Logger ourLog = LoggerFactory.getLogger(App.class);
+    private static final org.slf4j.Logger ourLog = LoggerFactory.getLogger(DataloadApp.class);
 
     static {
         ourCommands = new ArrayList<BaseCommand>();
@@ -81,7 +79,7 @@ public class App  {
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
             ((LoggerContext) LoggerFactory.getILoggerFactory()).reset();
-            configurator.doConfigure(App.class.getResourceAsStream("/logback-cli-off.xml"));
+            configurator.doConfigure(DataloadApp.class.getResourceAsStream("/logback-cli-off.xml"));
         } catch (JoranException e) {
             e.printStackTrace();
         }
@@ -92,7 +90,7 @@ public class App  {
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
             ((LoggerContext) LoggerFactory.getILoggerFactory()).reset();
-            configurator.doConfigure(App.class.getResourceAsStream("/logback-cli-on.xml"));
+            configurator.doConfigure(DataloadApp.class.getResourceAsStream("/logback-cli-on.xml"));
         } catch (JoranException e) {
             e.printStackTrace();
         }

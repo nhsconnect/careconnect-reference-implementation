@@ -184,7 +184,7 @@ public class ValidateCommand extends BaseCommand {
 			else {
 
 				count++;
-				b.append(App.LINESEP);
+				b.append(DataloadApp.LINESEP);
 				if (!next.getSeverity().equals(ResultSeverityEnum.INFORMATION)) localIsSuccesful = false;
 
 				String leftString = "Issue " + count + ": ";
@@ -198,7 +198,7 @@ public class ValidateCommand extends BaseCommand {
 				}
 				String[] message = WordUtils.wrap(next.getMessage(), 80 - leftWidth, "\n", true).split("\\n");
 				for (String line : message) {
-					b.append(App.LINESEP);
+					b.append(DataloadApp.LINESEP);
 					b.append(ansi().fg(Color.WHITE));
 					b.append(leftPad("", leftWidth)).append(line);
 				}
@@ -206,7 +206,7 @@ public class ValidateCommand extends BaseCommand {
 		}
 
 		}
-		b.append(App.LINESEP);
+		b.append(DataloadApp.LINESEP);
 
 		if (count > 0) {
 			ourLog.info(b.toString());
