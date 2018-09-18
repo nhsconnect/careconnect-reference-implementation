@@ -32,12 +32,16 @@ import {
 } from "@angular/material";
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {MainComponent} from "./component/main/main.component";
+import { ConformanceComponent } from './component/conformance/conformance.component';
+import { ResourceComponent } from './component/resource/resource.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent
+    MainComponent,
+    ConformanceComponent,
+    ResourceComponent
   ],
   imports: [
     BrowserModule,

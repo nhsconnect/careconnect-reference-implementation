@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {TdMediaService} from "@covalent/core";
+import {FhirService} from "./service/fhir.service";
+
 
 @Component({
   selector: 'app-root',
@@ -10,8 +12,8 @@ export class AppComponent {
 
   routes: Object[] = [{
     icon: 'home',
-    route: '.',
-    title: 'CCRI',
+    route: '/',
+    title: 'Home',
   }, {
     icon: 'lock',
     route: '.',
@@ -66,7 +68,16 @@ export class AppComponent {
   ];
 
 
-  constructor(public media: TdMediaService) {}
+  constructor(public media: TdMediaService, public fhirService : FhirService) {
+
+    /*
+    this.fhirService.getConformance().then( (result) => {
+        console.log("Result = " + result);
+      }
+    );
+    */
+   // const api: FHIR.SMART.Api = this.fhirService.smart.api;
+  }
 
   title = 'ccri-app';
 }

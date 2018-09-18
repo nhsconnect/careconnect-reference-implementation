@@ -27,7 +27,9 @@
               "src/styles.scss",
               "src/theme.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/fhir-js-client/dist/fhir-client.js"
+            ]
           },
           "configurations": {
             "production": {
