@@ -245,7 +245,7 @@
   
 
   <build>
-      <finalName>ccri-dataload</finalName>
+      <finalName>cc-cli</finalName>
     <plugins>
     	 <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
