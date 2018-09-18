@@ -39,45 +39,30 @@ export class AppComponent {
     title: 'Sign out',
   },
   ];
-  navmenu: Object[] = [{
-    icon: 'looks_one',
-    route: '.',
-    title: 'Appointments',
-    description: 'Item description',
-  }, {
-    icon: 'looks_two',
-    route: '.',
-    title: 'Second item',
-    description: 'Item description',
-  }, {
-    icon: 'looks_3',
-    route: '.',
-    title: 'Third item',
-    description: 'Item description',
-  }, {
-    icon: 'looks_4',
-    route: '.',
-    title: 'Fourth item',
-    description: 'Item description',
-  }, {
-    icon: 'looks_5',
-    route: '.',
-    title: 'Fifth item',
-    description: 'Item description',
-  },
-  ];
+  navmenu: Object[] = [];
 
 
   constructor(public media: TdMediaService, public fhirService : FhirService) {
+      this.fhirService.getConformance().subscribe(capabilityStatement =>
+      {
 
-    /*
-    this.fhirService.getConformance().then( (result) => {
-        console.log("Result = " + result);
-      }
-    );
-    */
-   // const api: FHIR.SMART.Api = this.fhirService.smart.api;
+          for(let node of capabilityStatement.rest) {
+              console.log('mode ' + node.mode);
+              for (let resource of node.resource) {
+                console.log(resource.type);
+                this.navmenu.push({
+                    icon: 'looks_one',
+                    route: '/'+resource.type,
+                    title: resource.type,
+                    count: 0
+
+                })
+              }
+          }
+      })
+
   }
+
 
   title = 'ccri-app';
 }

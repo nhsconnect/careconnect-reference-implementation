@@ -5,13 +5,13 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
     "types": [
-      "fhir"
+      "fhir",
+      "hammerjs"
     ],
     "typeRoots": [
       "node_modules/@types"

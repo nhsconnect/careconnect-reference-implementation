@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {FhirService} from "../../service/fhir.service";
+//import {} from "@types/fhir";
 
 @Component({
   selector: 'app-conformance',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConformanceComponent implements OnInit {
 
-  constructor() { }
+  public conformance : any;
+
+  constructor(private fhirService : FhirService) {
+
+
+  }
 
   ngOnInit() {
+
+      console.log('calling FHIR Service from CaabilityStatement');
+      this.fhirService.getConformance().subscribe(conformance => {
+          this.conformance = conformance;
+      });
   }
 
 }

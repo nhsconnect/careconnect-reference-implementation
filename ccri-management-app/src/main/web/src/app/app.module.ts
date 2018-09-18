@@ -1,39 +1,47 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {CovalentLayoutModule, CovalentMediaModule, CovalentMessageModule, CovalentStepsModule} from "@covalent/core";
+import {
+    CovalentJsonFormatterModule,
+    CovalentLayoutModule,
+    CovalentMediaModule,
+    CovalentMessageModule,
+    CovalentStepsModule
+} from "@covalent/core";
 import {CovalentHttpModule} from "@covalent/http";
 import {CovalentHighlightModule} from "@covalent/highlight";
 import {CovalentMarkdownModule} from "@covalent/markdown";
 import {CovalentDynamicFormsModule} from "@covalent/dynamic-forms";
 import {AppRoutingModule} from "./app-routing.module";
 import {
-  DateAdapter,
-  MAT_DATE_FORMATS,
-  MAT_DATE_LOCALE,
-  MatButtonModule,
-  MatCardModule,
-  MatDatepickerModule,
-  MatDialogModule,
-  MatGridListModule,
-  MatIconModule,
-  MatIconRegistry,
-  MatInputModule,
-  MatListModule,
-  MatMenuModule,
-  MatPaginatorModule,
-  MatSelectModule,
-  MatSidenavModule,
-  MatSnackBarModule,
-  MatTableModule,
-  MatToolbarModule
+    DateAdapter,
+    MAT_DATE_FORMATS,
+    MAT_DATE_LOCALE,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCardModule, MatChipsModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatGridListModule,
+    MatIconModule,
+    MatIconRegistry,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSnackBarModule,
+    MatTableModule,
+    MatToolbarModule
 } from "@angular/material";
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {MainComponent} from "./component/main/main.component";
 import { ConformanceComponent } from './component/conformance/conformance.component';
 import { ResourceComponent } from './component/resource/resource.component';
+import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -46,6 +54,8 @@ import { ResourceComponent } from './component/resource/resource.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+      HttpClientModule,
+      AppRoutingModule,
 
 
     MatMomentDateModule,
@@ -66,6 +76,8 @@ import { ResourceComponent } from './component/resource/resource.component';
     MatPaginatorModule,
     MatMenuModule,
     MatSnackBarModule,
+      MatBadgeModule,
+      MatChipsModule,
 
 
     CovalentLayoutModule,
@@ -77,7 +89,8 @@ import { ResourceComponent } from './component/resource/resource.component';
     CovalentDynamicFormsModule,
     CovalentMediaModule,
     CovalentMessageModule,
-    AppRoutingModule
+      CovalentJsonFormatterModule
+
 
   ],
   providers: [

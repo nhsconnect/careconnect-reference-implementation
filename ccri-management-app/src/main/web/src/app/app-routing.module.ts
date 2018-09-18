@@ -6,7 +6,7 @@ import {ResourceComponent} from "./component/resource/resource.component";
 
 const routes: Routes = [
   {  path: '', component: MainComponent },
-  {  path: 'conformance', component: ConformanceComponent },
+  {  path: 'capabilitystatement', component: ConformanceComponent },
   {  path: 'resource/:id', component: ResourceComponent }
 ];
 

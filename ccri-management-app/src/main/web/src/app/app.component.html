@@ -1,7 +1,7 @@
 <td-layout [class]="'theme-dark'">
-  <td-navigation-drawer flex sidenavTitle="FHIR Server" logo="assets:nhs_digital_logo.png" name="" email="" >
+  <td-navigation-drawer flex sidenavTitle="FHIR Server"  name="" email="" >
     <mat-nav-list>
-      <a *ngFor="let item of routes" mat-list-item><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+      <a *ngFor="let item of routes" mat-list-item routerLink="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
     </mat-nav-list>
     <div td-navigation-drawer-menu>
       <mat-nav-list>
@@ -33,11 +33,16 @@
       -->
     </div>
     <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
-      <mat-list-item>  <h3 matLine><b>Resources</b> </h3></mat-list-item>
+      <a mat-list-item routerLink="/"><mat-icon matListAvatar>home</mat-icon> <h3 matLine>Home </h3></a>
+      <mat-divider></mat-divider>
+      <mat-list-item><h2 matLine>  Resources</h2></mat-list-item>
+      <mat-divider></mat-divider>
       <ng-template let-item let-last="last" ngFor [ngForOf]="navmenu">
-        <a mat-list-item>
+        <a mat-list-item routerLink="resource/{{item.route}}">
 
-          <h3 matLine> {{item.title}} </h3>
+          <h3 matLine > {{item.title}} </h3><mat-chip-list>
+          <span *ngIf="item.count > 0"><mat-chip>{{item.count}}</mat-chip></span>
+        </mat-chip-list>
 
         </a>
         <mat-divider [inset]="false" *ngIf="!last"></mat-divider>

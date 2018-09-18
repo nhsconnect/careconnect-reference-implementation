@@ -9,6 +9,8 @@ export class ResourceComponent implements OnInit {
 
   constructor() { }
 
+  public resource = '{}';
+
   ngOnInit() {
   }
 
