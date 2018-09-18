@@ -23,7 +23,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/@covalent/core/common/platform.scss",
+              "src/styles.scss",
+              "src/theme.scss"
             ],
             "scripts": []
           },
