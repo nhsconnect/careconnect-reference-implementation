@@ -22,6 +22,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.Conformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -342,8 +343,8 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
                         if (nextMethodBinding instanceof SearchMethodBinding) {
                             handleSearchMethodBinding(rest, resource, resourceName, def, includes, (SearchMethodBinding) nextMethodBinding);
-                        } else if (nextMethodBinding instanceof DynamicSearchMethodBinding) {
-                            handleDynamicSearchMethodBinding(resource, def, includes, (DynamicSearchMethodBinding) nextMethodBinding);
+                       // } else if (nextMethodBinding instanceof DynamicSearchMethodBinding) {
+                       //     handleDynamicSearchMethodBinding(resource, def, includes, (DynamicSearchMethodBinding) nextMethodBinding);
                         } else if (nextMethodBinding instanceof OperationMethodBinding) {
                             OperationMethodBinding methodBinding = (OperationMethodBinding) nextMethodBinding;
                             String opName = myOperationBindingToName.get(methodBinding);
@@ -406,10 +407,10 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
     }
 
     private DateTimeType conformanceDate() {
-        String buildDate = serverConfiguration.getConformanceDate();
+        IPrimitiveType<Date> buildDate = serverConfiguration.getConformanceDate();
         if (buildDate != null) {
             try {
-                return new DateTimeType(buildDate);
+                return new DateTimeType(buildDate.getValue());
             } catch (DataFormatException e) {
                 // fall through
             }
@@ -500,8 +501,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         });
     }
 
+    /*
     private void handleDynamicSearchMethodBinding(CapabilityStatement.CapabilityStatementRestResourceComponent resource, RuntimeResourceDefinition def, TreeSet<String> includes, DynamicSearchMethodBinding searchMethodBinding) {
-        includes.addAll(searchMethodBinding.getIncludes());
+        includes.addAll(searchMethodBindin getIncludes());
 
         List<RuntimeSearchParam> searchParameters = new ArrayList<RuntimeSearchParam>();
         searchParameters.addAll(searchMethodBinding.getSearchParams());
@@ -522,9 +524,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
                 String nextParamDescription = nextParameter.getDescription();
 
-                /*
-                 * If the parameter has no description, default to the one from the resource
-                 */
+
                 if (StringUtils.isBlank(nextParamDescription)) {
                     RuntimeSearchParam paramDef = def.getSearchParam(nextParamUnchainedName);
                     if (paramDef != null) {
@@ -543,6 +543,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
             }
         }
     }
+    */
 
 
     private void handleSearchMethodBinding(CapabilityStatement.CapabilityStatementRestComponent rest, CapabilityStatement.CapabilityStatementRestResourceComponent resource, String resourceName, RuntimeResourceDefinition def, TreeSet<String> includes,

@@ -46,16 +46,26 @@ export class AppComponent {
 
       this.fhirSrv.getConformanceChange().subscribe(capabilityStatement =>
       {
-
+          this.navmenu = [];
           for(let node of capabilityStatement.rest) {
               //console.log('mode ' + node.mode);
               for (let resource of node.resource) {
                  // console.log(resource.type);
+                  let count= 0;
+                  if (resource.extension !== undefined) {
+
+                      for (let extension of resource.extension) {
+                          if (extension.url.endsWith('resourceCount')) {
+                              count = extension.valueDecimal;
+
+                          }
+                      }
+                  }
                   this.navmenu.push({
                       icon: 'looks_one',
                       route: '/'+resource.type,
                       title: resource.type,
-                      count: 0
+                      count: count
 
                   })
               }

@@ -20,13 +20,11 @@
 
     <properties>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
-
         <slf4j>1.7.25</slf4j>
         <spring-boot>1.5.15.RELEASE</spring-boot>
         <spring-version>5.0.3.RELEASE</spring-version>
-
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
 
         <thymeleaf-version>3.0.7.RELEASE</thymeleaf-version>
@@ -37,6 +35,11 @@
 
         <camel-version>2.21.2</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
+
+        <hibernate_version>5.3.6.Final</hibernate_version>
+        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
+        <!-- Update lucene version when you update hibernate-search version -->
+        <hibernate_search_version>5.10.3.Final</hibernate_search_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->
         <dependency.locations.enabled>false</dependency.locations.enabled>
@@ -56,13 +59,13 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j}</version>
         </dependency>
--->
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-
+-->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -105,6 +108,7 @@
             <artifactId>phloc-commons</artifactId>
             <version>${phloc_commons_version}</version>
         </dependency>
+
 
     </dependencies>
 

@@ -12,18 +12,16 @@
     <description>Care Connect SMART on FHIR Facade for CCRI (Spring Boot)</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.15.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-
+        <groupId>uk.nhs.careconnect.ri</groupId>
+        <artifactId>ccri-parent</artifactId>
+        <version>3.7.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <camel-version>2.21.2</camel-version>
         <hawtio.version>2.0.3</hawtio.version>
