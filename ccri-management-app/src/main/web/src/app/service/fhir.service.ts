@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 
@@ -8,10 +8,14 @@ import {HttpClient} from "@angular/common/http";
 export class FhirService {
 
 
-  //private baseUrl : string = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
+  private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
 
-    private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+  //  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
  // public smart: SMARTClient;
+
+  public conformance;
+
+  conformanceChange : EventEmitter<any> = new EventEmitter();
 
   constructor( private http: HttpClient) {
 
@@ -36,8 +40,18 @@ export class FhirService {
 
 
   }
-    public getConformance(): Observable<any> {
-    console.log('called CapabilityStatement');
-    return this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : {}});
+
+  public getConformanceChange() {
+    return this.conformanceChange;
+  }
+
+    public getConformance() {
+      console.log('called CapabilityStatement');
+      this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : {}}).subscribe(capabilityStatement =>
+      {
+          this.conformance = capabilityStatement;
+
+          this.conformanceChange.emit(capabilityStatement);
+      });
   }
 }

@@ -42,6 +42,8 @@ import {MainComponent} from "./component/main/main.component";
 import { ConformanceComponent } from './component/conformance/conformance.component';
 import { ResourceComponent } from './component/resource/resource.component';
 import {HttpClientModule} from "@angular/common/http";
+import {FormsModule} from "@angular/forms";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 
 @NgModule({
@@ -56,11 +58,12 @@ import {HttpClientModule} from "@angular/common/http";
     BrowserAnimationsModule,
       HttpClientModule,
       AppRoutingModule,
+      FormsModule,
+      FlexLayoutModule,
 
 
     MatMomentDateModule,
     MatDatepickerModule,
-
     MatSidenavModule,
     MatInputModule,
     MatListModule,

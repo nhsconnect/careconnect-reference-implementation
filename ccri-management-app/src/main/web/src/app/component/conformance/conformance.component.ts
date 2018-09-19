@@ -11,7 +11,7 @@ export class ConformanceComponent implements OnInit {
 
   public conformance : any;
 
-  constructor(private fhirService : FhirService) {
+  constructor(private fhirSrv : FhirService) {
 
 
   }
@@ -19,9 +19,13 @@ export class ConformanceComponent implements OnInit {
   ngOnInit() {
 
       console.log('calling FHIR Service from CaabilityStatement');
-      this.fhirService.getConformance().subscribe(conformance => {
+      this.conformance = this.fhirSrv.conformance;
+
+      this.fhirSrv.getConformanceChange().subscribe(conformance => {
           this.conformance = conformance;
       });
+
+      this.fhirSrv.getConformance();
   }
 
 }

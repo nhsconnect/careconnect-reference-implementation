@@ -42,27 +42,30 @@ export class AppComponent {
   navmenu: Object[] = [];
 
 
-  constructor(public media: TdMediaService, public fhirService : FhirService) {
-      this.fhirService.getConformance().subscribe(capabilityStatement =>
+  constructor(public media: TdMediaService, public fhirSrv: FhirService) {
+
+      this.fhirSrv.getConformanceChange().subscribe(capabilityStatement =>
       {
 
           for(let node of capabilityStatement.rest) {
-              console.log('mode ' + node.mode);
+              //console.log('mode ' + node.mode);
               for (let resource of node.resource) {
-                console.log(resource.type);
-                this.navmenu.push({
-                    icon: 'looks_one',
-                    route: '/'+resource.type,
-                    title: resource.type,
-                    count: 0
+                 // console.log(resource.type);
+                  this.navmenu.push({
+                      icon: 'looks_one',
+                      route: '/'+resource.type,
+                      title: resource.type,
+                      count: 0
 
-                })
+                  })
               }
           }
-      })
+      });
+
+      this.fhirSrv.getConformance();
 
   }
 
 
-  title = 'ccri-app';
+    title = 'ccri-app';
 }
