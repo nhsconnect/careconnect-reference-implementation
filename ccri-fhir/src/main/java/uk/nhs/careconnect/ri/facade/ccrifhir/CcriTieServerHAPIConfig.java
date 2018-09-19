@@ -19,11 +19,12 @@ import uk.nhs.careconnect.ri.lib.gateway.provider.*;
 import uk.nhs.careconnect.ri.lib.server.ServerInterceptor;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.TimeZone;
 
-
+@WebServlet(urlPatterns = { "/ccri-fhir/*" }, displayName = "FHIR Server")
 public class CcriTieServerHAPIConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
