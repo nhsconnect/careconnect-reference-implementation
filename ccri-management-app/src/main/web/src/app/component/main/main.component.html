@@ -1,0 +1,43 @@
+<mat-card>
+  <mat-card-title>Care Connect Reference Implementation</mat-card-title>
+ <!-- <mat-card-subtitle>About</mat-card-subtitle> -->
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div>
+      You are accessing the INTEROpen/NHS Digital Care Connect Reference Implementation FHIR server. <br>
+      <br>
+      For more information on Care Connect: <br>
+      <br>
+      <a href="https://nhsconnect.github.io/CareConnectAPI/">NHS Digital Care Connect API</a><br>
+      <a href="https://fhir-test.hl7.org.uk/">HL7 UK INTEROpen Care Connect FHIR Profiles</a><br>
+      <a href="https://fhir.nhs.uk/">NHS Digital FHIR Profiles</a><br>
+      <br>
+      <td-message label="Note" sublabel="All information provided is subject to on-going review." color="info" icon="info">
+
+      </td-message>
+
+    </div>
+    <br>
+    This is not a production server.  Do not store any information here that contains personal health information or any other confidential information. This server will be regularly purged and reloaded with fixed test data.
+    purged and reloaded with fixed test data.
+  </mat-card-content>
+  <mat-divider></mat-divider>
+ <!-- <mat-card-actions>
+    <a mat-button color="accent" class="text-upper" [routerLink]="['/']">
+      <span>View More</span>
+    </a>
+  </mat-card-actions> -->
+</mat-card>
+<mat-card>
+  <mat-card-title>Server Actions</mat-card-title>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    Retrieve the server's <b>conformance</b> statement.
+  </mat-card-content>
+  <mat-divider></mat-divider>
+  <mat-card-actions>
+     <a mat-button color="accent" class="text-upper" [routerLink]="['/capabilitystatement']">
+       <span>Conformance Statement</span>
+     </a>
+   </mat-card-actions>
+</mat-card>

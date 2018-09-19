@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ri.lib.gateway.camel;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -33,6 +34,7 @@ public class CamelRoute extends RouteBuilder {
 
 	@Value("${fhir.resource.serverBase}")
     private String hapiBase;
+
 	
     @Override
     public void configure() 
@@ -48,7 +50,8 @@ public class CamelRoute extends RouteBuilder {
         //DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
         BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
-		// Validation Service
+
+
 
 		from("direct:FHIRValidate")
 				.routeId("FHIR Validation")

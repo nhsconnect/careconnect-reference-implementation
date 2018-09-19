@@ -7,17 +7,22 @@ import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import uk.nhs.careconnect.ri.lib.server.CorsFilter;
 
 @SpringBootApplication
 @ComponentScan({"uk.nhs.careconnect.ri.facade.ccrifhir","uk.nhs.careconnect.ri"})
-public class CcriFhirApplication {
+@PropertySource("classpath:application.properties")
+public class CcriFhirApplication extends SpringBootServletInitializer {
 
     @Autowired
     ApplicationContext context;
@@ -26,17 +31,21 @@ public class CcriFhirApplication {
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
         System.setProperty("server.port", "8183");
-        System.setProperty("server.servlet.context-path", "/ccri-fhir");
+        System.setProperty("server.context-path", "/ccri-fhir");
+        System.setProperty("management.contextPath","");
+        // This works but hawtio doesn't respect it System.setProperty("server.context-path", "/ccri-fhir");
+        // Suspect hawtio api works but not the app
         SpringApplication.run(CcriFhirApplication.class, args);
     }
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), System.getProperty("server.servlet.context-path")+"/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new CcriTieServerHAPIConfig(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
         return registration;
     }
+
 
     @Bean
     public FhirContext getFhirContext() {
@@ -50,6 +59,21 @@ public class CcriFhirApplication {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
+    }
+
+    @Bean
+    public FilterRegistrationBean corsFilter() {
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter());
+        bean.setOrder(0);
+        return bean;
     }
 
     @Bean

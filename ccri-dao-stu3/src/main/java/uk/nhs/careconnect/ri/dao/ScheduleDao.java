@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ScheduleEntityToFHIRScheduleTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
@@ -132,29 +131,33 @@ public class ScheduleDao implements ScheduleRepository {
             scheduleEntity = new ScheduleEntity();
         }
 
+        /* if (schedule.hasProvidedBy()) {
 
+            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(schedule.getProvidedBy().getReference()));
+            if (organisationEntity != null) {
+                scheduleEntity.setProvidedBy(organisationEntity);
+            }
+        } */
         if (schedule.hasActive()) {
             scheduleEntity.setActive(schedule.getActive());
         }
-        if (schedule.hasComment()) {
-            scheduleEntity.setComment(schedule.getComment());
-        }
-
-        log.debug("Schedule.saveCategory");
-        if (schedule.hasServiceCategory()) {
-            ConceptEntity code = conceptDao.findCode(schedule.getServiceCategory().getCoding().get(0));
+        /*if (schedule.hasName()) {
+            scheduleEntity.setName(schedule.getName());
+        }*/
+        /*log.debug("Schedule.saveCategory");
+        if (schedule.hasCategory()) {
+            ConceptEntity code = conceptDao.findCode(schedule.getCategory().getCoding().get(0));
             if (code != null) { scheduleEntity.setCategory(code); }
             else {
-                log.info("Category: Missing System/Code = "+ schedule.getServiceCategory().getCoding().get(0).getSystem() +" code = "+schedule.getServiceCategory().getCoding().get(0).getCode());
+                log.info("Category: Missing System/Code = "+ schedule.getCategory().getCoding().get(0).getSystem() +" code = "+schedule.getCategory().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ schedule.getServiceCategory().getCoding().get(0).getSystem()
-                        +" code = "+schedule.getServiceCategory().getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing System/Code = "+ schedule.getCategory().getCoding().get(0).getSystem()
+                        +" code = "+schedule.getCategory().getCoding().get(0).getCode());
             }
-        }
+        }*/
 
         em.persist(scheduleEntity);
-
-        log.debug("Schedule.saveIdentifier");
+        /*log.debug("Schedule.saveIdentifier");
         for (Identifier identifier : schedule.getIdentifier()) {
             ScheduleIdentifier scheduleIdentifier = null;
 
@@ -170,27 +173,99 @@ public class ScheduleDao implements ScheduleRepository {
             scheduleIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             scheduleIdentifier.setService(scheduleEntity);
             em.persist(scheduleIdentifier);
-        }
+        }*/
+        /*log.debug("Schedule.saveLocation");
+        for (Reference reference : schedule.getLocation()) {
+            LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(reference.getReference()));
+            if (locationEntity != null) {
+                ScheduleLocation location = new ScheduleLocation();
+                location.setLocation(locationEntity);
+                location.setSchedule(scheduleEntity);
+                em.persist(location);
+            }
+        }*/
+/*        for (CodeableConcept concept :schedule.getSpecialty()) {
 
+            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
+                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
+                if (conceptEntity != null) {
+                    ScheduleSpecialty specialtyEntity = null;
+                    // Look for existing categories
+                    for (ScheduleSpecialty cat :scheduleEntity.getSpecialties()) {
+                        if (cat.getSpecialty().getCode().equals(concept.getCodingFirstRep().getCode())) specialtyEntity = cat;
+                    }
+                    if (specialtyEntity == null) specialtyEntity = new ScheduleSpecialty();
 
-        for(Reference actorRef : schedule.getActor()){
-            log.info("Schedule.actor");
+                    specialtyEntity.setSpecialty(conceptEntity);
+                    specialtyEntity.setSchedule(scheduleEntity);
+                    em.persist(specialtyEntity);
+                    scheduleEntity.getSpecialties().add(specialtyEntity);
+                }
+                else {
+                    log.info("Missing ServiceRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                }
+            }
+        }*/
+        /*log.debug("Schedule.saveType");
+        for (CodeableConcept concept :schedule.getType()) {
+
+            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
+                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
+                if (conceptEntity != null) {
+                    ScheduleType type = null;
+                    // Look for existing categories
+                    for (ScheduleType cat :scheduleEntity.getTypes()) {
+                        if (cat.getType_().getCode().equals(concept.getCodingFirstRep().getCode())) type = cat;
+                    }
+                    if (type == null) type = new ScheduleType();
+
+                    type.setType_(conceptEntity);
+                    type.setSchedule(scheduleEntity);
+                    em.persist(type);
+                    scheduleEntity.getTypes().add(type);
+                }
+                else {
+                    log.info("Missing ServiceRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                }
+            }
+        }*/
+        /*log.debug("Schedule.saveTelecom");
+        for (ContactPoint telecom : schedule.getTelecom()) {
+            ScheduleTelecom scheduleTelecom = null;
+
+            for (ScheduleTelecom orgSearch : scheduleEntity.getTelecoms()) {
+                if (telecom.getValue().equals(orgSearch.getValue())) {
+                    scheduleTelecom = orgSearch;
+                    break;
+                }
+            }
+            if (scheduleTelecom == null) {
+                scheduleTelecom = new ScheduleTelecom();
+                scheduleTelecom.setSchedule(scheduleEntity);
+            }
+
+            scheduleTelecom.setValue(telecom.getValue());
+            scheduleTelecom.setSystem(telecom.getSystem());
+            if (telecom.hasUse()) { scheduleTelecom.setTelecomUse(telecom.getUse()); }
+
+            em.persist(scheduleTelecom);
+        }*/
+        for (Reference actorRef :schedule.getActor()) {
             ScheduleActor actor = new ScheduleActor();
             actor.setScheduleEntity(scheduleEntity);
-            if (actorRef.getReference().contains("Practitioner")){
+            if (actorRef.getReference().contains("Practitioner")) {
+
 
                 PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(actorRef.getReference()));
-                if(practitionerEntity != null){
+                if (practitionerEntity != null) {
                     actor.setPractitionerEntity(practitionerEntity);
                 }
-
             }
             em.persist(actor);
 
         }
-
-
-
         log.info("Schedule.Transform");
         return scheduleEntityToFHIRScheduleTransformer.transform(scheduleEntity);
 

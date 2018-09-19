@@ -11,16 +11,20 @@
 
 
      <!-- https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/html/appendix-dependency-versions.html -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.15.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
 
     <properties>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
-
         <slf4j>1.7.25</slf4j>
         <spring-boot>1.5.15.RELEASE</spring-boot>
         <spring-version>5.0.3.RELEASE</spring-version>
-
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
 
         <thymeleaf-version>3.0.7.RELEASE</thymeleaf-version>
@@ -31,6 +35,11 @@
 
         <camel-version>2.21.2</camel-version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
+
+        <hibernate_version>5.3.6.Final</hibernate_version>
+        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
+        <!-- Update lucene version when you update hibernate-search version -->
+        <hibernate_search_version>5.10.3.Final</hibernate_search_version>
 
         <!-- Disable Dependency Location Checking for Site Report -->
         <dependency.locations.enabled>false</dependency.locations.enabled>
@@ -50,13 +59,13 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j}</version>
         </dependency>
--->
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-
+-->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -99,6 +108,7 @@
             <artifactId>phloc-commons</artifactId>
             <version>${phloc_commons_version}</version>
         </dependency>
+
 
     </dependencies>
 
@@ -148,7 +158,7 @@
 
     <modules>
         <module>cc-core</module>
-        <module>cc-cli</module>
+        <module>ccri-dataload</module>
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver-common</module>
@@ -157,13 +167,15 @@
         <module>ccri-fhir</module>
         <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
+        <module>ccri-management</module>
+        <module>ccri-management-app</module>
     </modules>
-
+<!--
     <distributionManagement>
         <repository>
             <id>bintray-kevinmayfield-careconnect</id>
             <name>kevinmayfield-careconnect</name>
             <url>https://api.bintray.com/maven/kevinmayfield/careconnect/CareConnectPkg/;publish=1</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement> -->
 </project>

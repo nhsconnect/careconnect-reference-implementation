@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements. See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version
+    2.0 (the "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the
+    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+    CONDITIONS OF ANY KIND, either express or implied. See the License for
+    the specific language governing permissions and limitations under the
+    License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  
+    <groupId>uk.nhs.careconnect</groupId>
+    <artifactId>ccri-dataload</artifactId>
+    <version>3.6.0</version>
+
+    <repositories>
+        <repository>
+            <id>oss-snapshots</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.3.RELEASE</version>
+    </parent>
+  
+
+
+    <properties>
+    	<category>Rest</category>
+
+        <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
+        <junit-version>4.12</junit-version>
+        <spring-boot-version>2.0.3.RELEASE</spring-boot-version>
+        <phloc_schematron_version>2.7.1</phloc_schematron_version>
+    </properties>
+
+
+  <dependencies>
+    <!-- Spring Boot -->
+        <dependency>
+      	    <groupId>org.springframework.boot</groupId>
+      	    <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator</artifactId>
+        </dependency>
+
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+        <!--  <version>${spring-boot}</version> -->
+      </dependency>
+
+
+      <dependency>
+          <groupId>org.fusesource.jansi</groupId>
+          <artifactId>jansi</artifactId>
+          <version>1.16</version>
+      </dependency>
+
+      <dependency>
+          <groupId>uk.org.hl7.fhir</groupId>
+          <artifactId>cc-core</artifactId>
+          <version>${care-connect-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>42.2.2</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-core</artifactId>
+          <version>4.2.0</version>
+      </dependency>
+<!--
+      <dependency>
+          <groupId>uk.org.hl7.fhir</groupId>
+          <artifactId>cc-fhir-validation-resources-stu3</artifactId>
+          <version>3.6.0</version>
+      </dependency>
+-->
+   <!-- HL7 HAPI FHIR -->
+      <dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-base</artifactId>
+			<version>${hapi-fhir-version}</version>
+              <exclusions>
+                  <exclusion>
+                      <groupId>org.slf4j</groupId>
+                      <artifactId>slf4j-log4j12</artifactId>
+                  </exclusion>
+                  <exclusion>
+                      <groupId>log4j</groupId>
+                      <artifactId>log4j</artifactId>
+                  </exclusion>
+              </exclusions>
+          </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-structures-dstu3</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-structures-r4</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-client</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>ca.uhn.hapi.fhir</groupId>
+          <artifactId>hapi-fhir-validation</artifactId>
+          <version>${hapi-fhir-version}</version>
+      </dependency>
+
+      <dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+            <version>20160212</version>
+		</dependency>
+
+	    
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
+		</dependency>
+
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+
+      <!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-dbcp2</artifactId>
+          <version>2.1.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>commons-cli</groupId>
+          <artifactId>commons-cli</artifactId>
+          <version>1.4</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-csv</artifactId>
+          <version>1.5</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.5.3</version>
+      </dependency>
+
+
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>${junit-version}</version>
+          <scope>test</scope>
+          <exclusions>
+              <exclusion>
+                  <artifactId>hamcrest-core</artifactId>
+                  <groupId>org.hamcrest</groupId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>java-hamcrest</artifactId>
+          <version>2.0.0.0</version>
+          <scope>test</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.aspectj</groupId>
+          <artifactId>aspectjweaver</artifactId>
+
+      </dependency>
+      <dependency>
+          <groupId>com.phloc</groupId>
+          <artifactId>phloc-schematron</artifactId>
+          <version>${phloc_schematron_version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.eclipse.jgit</groupId>
+          <artifactId>org.eclipse.jgit</artifactId>
+          <version>3.5.0.201409260305-r</version>
+      </dependency>
+
+  </dependencies>
+  
+  
+
+  <build>
+      <finalName>cc-cli</finalName>
+    <plugins>
+    	 <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot-version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
+
+    </plugins>
+  </build>
+
+</project>

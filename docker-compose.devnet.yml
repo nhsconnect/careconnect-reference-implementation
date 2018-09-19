@@ -18,18 +18,17 @@ services:
       - datasource.showDdl=true
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
-      - datasource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
-    ports:
-      - 8080:8080
+      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
+      - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
     networks:
-      ccri_net:
-        ipv4_address: 172.168.240.10
+      - ccri_net
 
   ccrisql:
     container_name: ccrisql
@@ -38,8 +37,6 @@ services:
       - POSTGRES_DB=careconnect
       - POSTGRES_USER=${MYSQL_DB_USER}
       - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
-    ports:
-      - 20002:5432
     networks:
       - ccri_net
 
@@ -47,31 +44,59 @@ services:
     container_name: ccrifhir
     image: ${REGISTRY_PREFIX}ccri-fhir${IMAGE_TAG}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.restserver.serverBase=http4://ccriserver:8080/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
     depends_on:
       - ccriserver
+      - ccridocument
+      - ccriintegration
     ports:
-      - 8105:80
-    extra_hosts:
-      - "${FHIR_SERVER_BASE_HOST}:172.168.240.10"
+      - 8105:8183
     volumes:
       - gateway-log-volume:/usr/local/tomcat/logs
     networks:
       ccri_net:
         ipv4_address: 172.168.240.14
 
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
+    environment:
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
+      - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
+      - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+    depends_on:
+      - ccriserver
+      - ccridocument
+      - ccriintegration
+    ports:
+      - 8106:8184
+    volumes:
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.15
+
   ccriui:
     container_name: ccriui
     image: ${REGISTRY_PREFIX}ccri-ui${IMAGE_TAG}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
@@ -82,13 +107,45 @@ services:
     networks:
       - ccri_net
 
+  ccridataload:
+    container_name: ccridataload
+    image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
+    depends_on:
+      - ccriserver
+      - ccrisql
+    environment:
+      - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
+      - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
+      - POSTGRES_USER=${MYSQL_DB_USER}
+      - POSTGRES_USERNAME=${MYSQL_DB_USER}
+      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    networks:
+       - ccri_net
+
+  ccriintegration:
+    container_name: ccriintegration
+    image: ${REGISTRY_PREFIX}ccri-integration${IMAGE_TAG}
+    depends_on:
+      - ccriserver
+    ports:
+      - 8112:8182
+    environment:
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
+      - fhir.resource.serverName=Care Connect TIE FHIR Server
+      - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+    volumes:
+      - tie-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
   ccrimongo:
-      container_name: ccrimongo
-      image: mongo:3.6.3
-      ports:
-        - 27107:27107
-      networks:
-        - ccri_net
+    container_name: ccrimongo
+    image: mongo:3.6.3
+    networks:
+      - ccri_net
 
   ccridocument:
      container_name: ccridocument
@@ -103,13 +160,58 @@ services:
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
        - spring.data.mongodb.database=careconnect-nosql
-     ports:
-       - 8181:8181
+       - jolokia.username=HSFAdmin
+       - jolokia.password=h5fadm!n
      volumes:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
-       ccri_net:
-         ipv4_address: 172.168.240.11
+       - ccri_net
+
+  oauthsql:
+    container_name: oauthsql
+    image: postgres:10.4
+    environment:
+      - POSTGRES_DB=oic
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    networks:
+      - oauth_net
+
+  oauthserver:
+    container_name: ccri_oauth_server
+    image: ${REGISTRY_PREFIX}ccri-oauthserver
+    environment:
+      - oidc.issuer=v
+      - ldap.url=ldap://oauthldap
+      - ldap.server=ldap://oauthldap/dc=ccri,dc=com
+      - oidc.datasource.mysql.schema=oic
+      - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
+      - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
+      - hspc.platform.accountLoginPage=https://${FHIR_SERVER_BASE_HOST}/document-viewer/
+      - hspc.platform.accountLogoutPage=https://${FHIR_SERVER_BASE_HOST}/document-viewer/logout
+    ports:
+      - 8107:8080
+    depends_on:
+      - oauthsql
+    networks:
+      - oauth_net
+
+  ccricat:
+    container_name: ccricat
+    image: ${REGISTRY_PREFIX}ccri-cat
+    environment:
+    - KEYCLOAK_CLIENT_SECRET=709c79a1-7710-452f-859c-fb6edfb86027
+    - KEYCLOAK_CLIENT_ID=ccri-cat
+    - SMART_OAUTH2_CLIENT_SECRET=AM3ai-PGoZZRW-7osWbzvGlDBHjHq7M2aBlpNttreHeEyB5jequWy8fsHMVQP4JV0Kd0Fzrtu0iNEqGqguq69Qs
+    - KEYCLOAK_AUTH_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
+    - KEYCLOAK_SERVER_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
+    - FHIR_SERVER_URL=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+    - KEYCLOAK_REALM=ReferenceImplementations
+    - CAT_COOKIE_DOMAIN=${FHIR_SERVER_BASE_HOST}
+    - SMART_GROWTH_CHART_URL=https://${FHIR_SERVER_BASE_HOST}/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    - SMART_CARDIAC_URL=https://${FHIR_SERVER_BASE_HOST}/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    ports:
+    - 8108:80
 
 networks:
   ccri_net:
@@ -118,5 +220,8 @@ networks:
       driver: default
       config:
       - subnet: 172.168.240.0/24
-
+  oauth_net:
+    driver: bridge
+    ipam:
+      driver: default
 

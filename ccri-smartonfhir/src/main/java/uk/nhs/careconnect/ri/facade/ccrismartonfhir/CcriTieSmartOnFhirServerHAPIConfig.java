@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.FifoMemoryPagingProvider;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
@@ -14,17 +15,19 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.cors.CorsConfiguration;
 import uk.nhs.careconnect.ri.facade.ccrismartonfhir.oauth2.OAuth2Interceptor;
 import uk.nhs.careconnect.ri.lib.gateway.provider.*;
 import uk.nhs.careconnect.ri.lib.server.ServerInterceptor;
 
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.TimeZone;
 
-
+@WebServlet(urlPatterns = { "/ccri-smartonfhir/*" }, displayName = "FHIR Server")
 public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
@@ -114,6 +117,23 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 
 		setServerName(serverName);
         setServerVersion(serverVersion);
+
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedHeader("x-fhir-starter");
+		config.addAllowedHeader("Origin");
+		config.addAllowedHeader("Accept");
+		config.addAllowedHeader("X-Requested-With");
+		config.addAllowedHeader("Content-Type");
+
+		config.addAllowedOrigin("*");
+
+		config.addExposedHeader("Location");
+		config.addExposedHeader("Content-Location");
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+		// Create the interceptor and register it
+		CorsInterceptor interceptor = new CorsInterceptor(config);
+		registerInterceptor(interceptor);
 
 		ServerInterceptor gatewayInterceptor = new ServerInterceptor(log);
 		registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter

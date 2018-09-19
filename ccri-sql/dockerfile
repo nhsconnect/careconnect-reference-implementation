@@ -1,0 +1,17 @@
+FROM postgres:10.5
+
+RUN mkdir /mysql_exp
+
+RUN mkdir /mysql_exp/DMD
+
+#ADD /mysql_exp/tempConcept.txt /mysql_exp/tempConcept.txt
+#ADD /mysql_exp/tempDescription.txt /mysql_exp/tempDescription.txt
+#ADD /mysql_exp/tempSimple.txt /mysql_exp/tempSimple.txt
+#ADD /mysql_exp/tempRelationship.txt /mysql_exp/tempRelationship.txt
+
+#ADD /mysql_exp/DMD/tempConcept.txt /mysql_exp/DMD/tempConcept.txt
+#ADD /mysql_exp/DMD/tempDescription.txt /mysql_exp/DMD/tempDescription.txt
+#ADD /mysql_exp/DMD/tempSimple.txt /mysql_exp/DMD/tempSimple.txt
+#ADD /mysql_exp/DMD/tempRelationship.txt /mysql_exp/DMD/tempRelationship.txt
+
+

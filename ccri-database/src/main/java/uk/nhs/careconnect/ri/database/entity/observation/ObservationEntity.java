@@ -36,7 +36,6 @@ public class ObservationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_OBSERVATION_CODE_CONCEPT_ID"))
-
     private ConceptEntity code;
 
     // The parent should not be null but child observations don't have a status.

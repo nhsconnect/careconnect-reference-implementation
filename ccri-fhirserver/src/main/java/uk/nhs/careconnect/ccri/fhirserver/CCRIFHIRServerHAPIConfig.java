@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -12,13 +13,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.cors.CorsConfiguration;
 import uk.nhs.careconnect.ccri.fhirserver.provider.*;
 import uk.nhs.careconnect.ri.lib.server.ServerInterceptor;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import java.util.Arrays;
 import java.util.TimeZone;
 
+@WebServlet(urlPatterns = { "/ccri-fhirserver/*" }, displayName = "FHIR Server")
 public class CCRIFHIRServerHAPIConfig extends RestfulServer {
 
     private static final long serialVersionUID = 1L;
@@ -123,6 +127,23 @@ public class CCRIFHIRServerHAPIConfig extends RestfulServer {
 
         ServerInterceptor loggingInterceptor = new ServerInterceptor(log);
         registerInterceptor(loggingInterceptor);
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedHeader("x-fhir-starter");
+        config.addAllowedHeader("Origin");
+        config.addAllowedHeader("Accept");
+        config.addAllowedHeader("X-Requested-With");
+        config.addAllowedHeader("Content-Type");
+
+        config.addAllowedOrigin("*");
+
+        config.addExposedHeader("Location");
+        config.addExposedHeader("Content-Location");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // Create the interceptor and register it
+        CorsInterceptor interceptor = new CorsInterceptor(config);
+        registerInterceptor(interceptor);
 
        // KGM 24/11/2017
         // Mocked for exploration only setPagingProvider(applicationContext.getBean(DatabaseBackedPagingProvider.class));

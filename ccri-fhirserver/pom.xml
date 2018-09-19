@@ -11,11 +11,11 @@
     <name>ccri-fhirserver</name>
     <description>Care Connect FHIR Server EPR</description>
 
+
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.15.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>uk.nhs.careconnect.ri</groupId>
+        <artifactId>ccri-parent</artifactId>
+        <version>3.7.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -24,7 +24,7 @@
         <java.version>1.8</java.version>
 
         <java.version>1.8</java.version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <hawtio.version>2.0.3</hawtio.version>
 
@@ -77,6 +77,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -90,6 +100,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- JPA and Database -->
 
         <dependency>
@@ -97,6 +112,38 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>${hibernate_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate_validator_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-orm</artifactId>
+            <version>${hibernate_search_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-elasticsearch</artifactId>
+            <version>${hibernate_search_version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -213,6 +260,16 @@
             </exclusions>
         </dependency>
 
+        <!-- JMX Jolokia
+
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency>
+
+        -->
+
+
         <!-- Hawt.io -->
 
         <dependency>
@@ -225,6 +282,19 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
+<!--
+        <dependency>
+            <groupId>io.hawt</groupId>
+            <artifactId>hawtio-insight-log</artifactId>
+            <version>1.5.11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency> -->
+
 
         <!-- Logging -->
         <dependency>
@@ -238,17 +308,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>io.hawt</groupId>
-            <artifactId>hawtio-insight-log</artifactId>
-            <version>1.5.11</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
         <!-- Testing -->
 

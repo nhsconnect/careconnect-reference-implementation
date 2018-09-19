@@ -41,14 +41,15 @@ public class PractitionerRoleToFHIRPractitionerRoleTransformer implements Transf
             }
         }
 
-        for(int f=0;f<roleEntity.getIdentifiers().size();f++)
+        practitionerRole.setId(roleEntity.getId().toString());
+
+        for(PractitionerRoleIdentifier identifier : roleEntity.getIdentifiers())
         {
             practitionerRole.addIdentifier()
-                    .setSystem(roleEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(roleEntity.getIdentifiers().get(f).getValue());
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
         }
 
-        practitionerRole.setId(roleEntity.getId().toString());
 
         if (roleEntity.getOrganisation() != null) {
             practitionerRole.getOrganization()
@@ -77,12 +78,6 @@ public class PractitionerRoleToFHIRPractitionerRoleTransformer implements Transf
             practitionerRole.addSpecialty(concept);
         }
 
-        for(PractitionerRoleIdentifier identifier : roleEntity.getIdentifiers())
-        {
-            practitionerRole.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
-        }
 
 
         return practitionerRole;

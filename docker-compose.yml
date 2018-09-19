@@ -1,8 +1,21 @@
 version: '2'
 services:
+
+  ccrisql:
+    container_name: ccrisql
+    image: thorlogic/ccri-sql${IMAGE_TAG}
+    environment:
+    - POSTGRES_DB=careconnect
+    - POSTGRES_USER=${MYSQL_DB_USER}
+    - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    ports:
+    - 5433:5432
+    networks:
+    - ccri_net
+
   ccriserver:
     container_name: ccriserver
-    image: thorlogic/ccri-fhirserver:${CRRI_VERSION}
+    image: thorlogic/ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
     links:
@@ -31,25 +44,14 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.10
 
-  ccrisql:
-    container_name: ccrisql
-    image: thorlogic/ccri-sql:latest
-    environment:
-      - POSTGRES_DB=careconnect
-      - POSTGRES_USER=${MYSQL_DB_USER}
-      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
-    ports:
-      - 8108:5432
-    networks:
-      - ccri_net
 
   ccrifhir:
     container_name: ccrifhir
-    image: thorlogic/ccri-fhir:${CRRI_VERSION}
+    image: thorlogic/ccri-fhir${IMAGE_TAG}
     environment:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccritie:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccriserver
     ports:
@@ -62,16 +64,51 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.14
 
+  ccridataload:
+    container_name: ccridataload
+    image: thorlogic/ccri-dataload${IMAGE_TAG}
+    depends_on:
+    - ccriserver
+    environment:
+    - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
+    - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
+    - POSTGRES_USER=${MYSQL_DB_USER}
+    - POSTGRES_USERNAME=${MYSQL_DB_USER}
+    - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.13
+
+  ccriintegration:
+    container_name: ccriintegration
+    image: thorlogic/ccri-tie${IMAGE_TAG}
+    depends_on:
+      - ccriserver
+    environment:
+      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
+      - fhir.resource.serverName=Care Connect TIE FHIR Server
+      - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+    ports:
+      - 8182:8182
+    volumes:
+      - tie-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.12
+
   ccriui:
     container_name: ccriui
-    image: thorlogic/ccri-ui:${CRRI_VERSION}
+    image: thorlogic/ccri-ui${IMAGE_TAG}
     environment:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
       - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
-      - 80:80
+      - 81:80
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
       - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
@@ -88,7 +125,7 @@ services:
 
   ccridocument:
      container_name: ccridocument
-     image: thorlogic/ccri-document:latest
+     image: thorlogic/ccri-document${IMAGE_TAG}
      depends_on:
        - ccrimongo
      links:
@@ -96,7 +133,7 @@ services:
      environment:
        - fhir.resource.serverBase=http://127.0.0.1:8080/careconnect-gateway/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
-       - fhir.resource.serverVersion=3.5.1-SNAPSHOT
+       - fhir.resource.serverVersion=3.7.0-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
        - spring.data.mongodb.database=careconnect-nosql
      ports:
@@ -106,6 +143,8 @@ services:
      networks:
        ccri_net:
          ipv4_address: 172.168.240.11
+
+
 
 volumes:
   tomcat-log-volume:

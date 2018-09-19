@@ -12,21 +12,20 @@
     <description>Care Connect FHIR Facade for CCRI (Spring Boot)</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.15.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-
+        <groupId>uk.nhs.careconnect.ri</groupId>
+        <artifactId>ccri-parent</artifactId>
+        <version>3.7.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <hapi-fhir-version>3.4.0</hapi-fhir-version>
+        <hapi-fhir-version>3.5.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
-        <camel-version>2.21.1</camel-version>
+        <camel-version>2.21.2</camel-version>
         <hawtio.version>2.0.3</hawtio.version>
+        <jolokia></jolokia>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +83,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
 
@@ -175,6 +179,14 @@
             <version>${camel-version}</version>
         </dependency>
 
+
+        <!-- JMX Jolokia
+
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency> -->
+
         <!-- Hawt.io -->
 
         <dependency>
@@ -187,6 +199,20 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
+<!--
+          <dependency>
+            <groupId>io.hawt</groupId>
+            <artifactId>hawtio-insight-log</artifactId>
+            <version>1.5.11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        -->
 
         <!-- Logging -->
         <dependency>
@@ -200,17 +226,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>io.hawt</groupId>
-            <artifactId>hawtio-insight-log</artifactId>
-            <version>1.5.11</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
     </dependencies>
 
