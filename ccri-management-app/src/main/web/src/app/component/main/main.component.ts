@@ -15,6 +15,9 @@ export class MainComponent implements OnInit {
   public serverBase : string;
 
   ngOnInit() {
+    console.log('main on init');
+
+    this.FHIRSrv.getConformance();
 
     this.serverBase = this.FHIRSrv.getFHIRServerBase();
 

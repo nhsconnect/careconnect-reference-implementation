@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
+import {MatSelect} from "@angular/material";
+import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
 
 
 export interface QueryOptions {
@@ -35,12 +37,12 @@ export class ResourceComponent implements OnInit {
 
   private currentResource : string = "";
 
-  public elements = [
-      {
-          "name": "file-input",
-          "label": "Browse a file",
-          "type": "file-input"
-      }
+  @ViewChild('field') field : MatSelect;
+
+  @ViewChild('form') form : TdDynamicFormsComponent;
+
+  public elements :ITdDynamicElementConfig[] = [
+
   ];
 
    public selectedValue: string;
@@ -63,9 +65,86 @@ export class ResourceComponent implements OnInit {
               if ((event instanceof NavigationEnd) && (event.url.startsWith('/resource'))) {
                   console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
+                  this.elements=[];
                   this.buildOptions(resource);
               }
           })
+  }
+
+  onAdd() {
+
+   if (this.field.value !== undefined) {
+     switch (this.field.value.type) {
+       case 'date' :
+         let nodeDS :ITdDynamicElementConfig = {
+           "label": 'From '+this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name + '-s',
+           "type": TdDynamicElement.Datepicker,
+           "required": false,
+           "flex" : 50
+         };
+         let nodeDE :ITdDynamicElementConfig = {
+           "label": 'To '+this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name+ '-e',
+           "type": TdDynamicElement.Datepicker,
+           "required": false,
+           "flex" : 50
+         };
+         this.elements.push(nodeDS);
+         this.elements.push(nodeDE);
+         break;
+       case 'token' :
+         // add matches
+         let nodeT1 :ITdDynamicElementConfig = {
+           "label": 'System - '+this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name+'-system',
+           "type": TdDynamicElement.Input,
+           "flex" : 50
+         };
+         let nodeT2 :ITdDynamicElementConfig = {
+           "label": 'Code - '+this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name+'-code',
+           "type": TdDynamicElement.Input,
+           "flex" : 50
+         };
+         this.elements.push(nodeT1);
+         this.elements.push(nodeT2);
+         break;
+       case 'string' :
+         // add matches
+         let nodeS :ITdDynamicElementConfig = {
+           "label": this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name,
+           "type": TdDynamicElement.Input,
+           "required": true,
+         };
+         this.elements.push(nodeS);
+         break;
+       case 'reference' :
+         let nodeR :ITdDynamicElementConfig = {
+           "label": this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name,
+           "type": TdDynamicElement.Input,
+           "required": true,
+         };
+         this.elements.push(nodeR);
+         break;
+       case 'token' :
+         let node :ITdDynamicElementConfig = {
+           "label": this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.name,
+           "type": TdDynamicElement.Input,
+           "required": true,
+         };
+         this.elements.push(node);
+         break;
+       default:
+         console.log('MISSING - '+this.field.value.type);
+     }
+     console.log('call refresh');
+     this.form.refresh();
+   }
+
   }
 
   buildOptions(resource : string) {
