@@ -57,7 +57,8 @@ services:
       - ccri.software.version=3.7
       - ccri.software.name=Care Connect RI FHIR Server
       - ccri.server=Care Connect API (unsecured)
-      - ccri.server.base=http://127.0.0.1:9090/ccri-fhir/STU3
+      - ccri.server.base=https://data.developer.nhs.uk/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
     ports:

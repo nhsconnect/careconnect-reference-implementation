@@ -49,6 +49,11 @@ services:
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (unsecured)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
       - ccridocument
@@ -74,6 +79,11 @@ services:
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (OAuth2 + SMARTonFHIR)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
       - ccridocument
