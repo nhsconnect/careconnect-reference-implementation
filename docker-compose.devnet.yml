@@ -191,7 +191,7 @@ services:
     container_name: ccri_oauth_server
     image: ${REGISTRY_PREFIX}ccri-oauthserver
     environment:
-      - oidc.issuer=v
+      - oidc.issuer=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/
       - ldap.url=ldap://oauthldap
       - ldap.server=ldap://oauthldap/dc=ccri,dc=com
       - oidc.datasource.mysql.schema=oic
