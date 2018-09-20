@@ -16,13 +16,13 @@ export class AppComponent {
     title: 'Home',
   }, {
     icon: 'lock',
-    route: '.',
-    title: 'OAuth2 CCRI',
+    route: '../ccri-auth/',
+    title: 'OAuth2 Server',
   }
     , {
       icon: 'local_hospital',
-      route: '.',
-      title: 'A2SI',
+      route: '../document-viewer/',
+      title: 'FHIR Document Viewer',
     }
   ];
   usermenu: Object[] = [{
