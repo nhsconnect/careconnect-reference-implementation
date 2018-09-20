@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {FhirService} from "../../service/fhir.service";
 
 @Component({
   selector: 'app-main',
@@ -7,9 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  constructor(private FHIRSrv : FhirService) { }
+
+  public conformance : fhir.CapabilityStatement;
+
+  public serverBase : string;
 
   ngOnInit() {
+
+    this.serverBase = this.FHIRSrv.getFHIRServerBase();
+
+    this.FHIRSrv.getConformanceChange().subscribe(capabilityStatement =>
+    {
+      this.conformance = capabilityStatement;
+    });
   }
 
 }

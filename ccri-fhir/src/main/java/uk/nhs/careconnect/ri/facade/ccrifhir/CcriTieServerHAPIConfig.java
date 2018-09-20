@@ -36,14 +36,17 @@ public class CcriTieServerHAPIConfig extends RestfulServer {
 		this.applicationContext = context;
 	}
 
-	@Value("http://127.0.0.1/STU3")
+	@Value("${conf.software.name}")
+	private String softwareName;
+
+	@Value("${conf.software.version}")
+	private String softwareVersion;
+
+	@Value("${conf.server}")
+	private String server;
+
+	@Value("${conf.server.base}")
 	private String serverBase;
-
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
-
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
 
 
     @Override
@@ -92,8 +95,10 @@ public class CcriTieServerHAPIConfig extends RestfulServer {
 		// Replace built in conformance provider (CapabilityStatement)
 		setServerConformanceProvider(new CareConnectConformanceProvider(applicationContext));
 
-        setServerName(serverName);
-        setServerVersion(serverVersion);
+        setServerName(softwareName);
+        setServerVersion(softwareVersion);
+        setImplementationDescription(server);
+
 
 
 		CorsConfiguration config = new CorsConfiguration();

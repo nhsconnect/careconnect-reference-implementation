@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class FhirService {
   //  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
  // public smart: SMARTClient;
 
-  public conformance;
+  public conformance :fhir.CapabilityStatement;
 
   conformanceChange : EventEmitter<any> = new EventEmitter();
 
@@ -43,6 +43,10 @@ export class FhirService {
 
   public getConformanceChange() {
     return this.conformanceChange;
+  }
+
+  public getFHIRServerBase() {
+    return this.baseUrl;
   }
 
     public getConformance() {

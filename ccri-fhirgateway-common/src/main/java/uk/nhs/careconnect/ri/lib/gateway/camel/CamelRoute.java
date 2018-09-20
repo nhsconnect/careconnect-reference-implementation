@@ -32,7 +32,7 @@ public class CamelRoute extends RouteBuilder {
 	@Value("${fhir.restserver.tieBase}")
 	private String tieBase;
 
-	@Value("${fhir.resource.serverBase}")
+	@Value("${ccri.server.base}")
     private String hapiBase;
 
 	

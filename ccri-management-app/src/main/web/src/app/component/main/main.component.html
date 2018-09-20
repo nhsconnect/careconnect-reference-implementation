@@ -29,10 +29,28 @@
   </mat-card-actions> -->
 </mat-card>
 <mat-card>
-  <mat-card-title>Server Actions</mat-card-title>
+  <mat-card-title>Server Information</mat-card-title>
   <mat-divider></mat-divider>
   <mat-card-content>
-    Retrieve the server's <b>conformance</b> statement.
+      <span *ngIf="conformance != undefined">
+          <mat-list>
+              <mat-list-item> <span flex-auto fxLayoutAlign="space-between center">Server <b>{{conformance.implementation.description}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center"> Implementation Guide <b>
+                <span *ngIf="conformance.implementationGuide != null">
+                  <span *ngFor="let url of conformance.implementationGuide">
+                    <a href="{{url}}">{{url}}</a>
+                  </span>
+                </span></b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Software <b>{{conformance.software.name}} ({{conformance.software.version}}) </b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Server Base <b>{{serverBase}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Version <b>{{conformance.fhirVersion}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+          </mat-list>
+        </span>
   </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>

@@ -80,7 +80,12 @@ export class ResourceComponent implements OnInit {
                       if (resourceSrc.type === resource) {
                           console.log(resourceSrc.type);
                           for (let param of resourceSrc.searchParam) {
-                              this.options.push(param);
+                              let menuOpt : QueryOptions = {
+                                name : param.name,
+                                documentation : param.documentation,
+                                type : param.type
+                              };
+                              this.options.push(menuOpt);
                           }
                       }
                   }

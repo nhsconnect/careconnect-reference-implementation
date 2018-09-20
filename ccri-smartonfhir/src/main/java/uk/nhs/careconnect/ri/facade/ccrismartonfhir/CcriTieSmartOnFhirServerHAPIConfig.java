@@ -39,14 +39,17 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 		this.applicationContext = context;
 	}
 
-	@Value("http://127.0.0.1/STU3")
+	@Value("${ccri.software.name}")
+	private String softwareName;
+
+	@Value("${ccri.software.version}")
+	private String softwareVersion;
+
+	@Value("${ccri.server}")
+	private String server;
+
+	@Value("${ccri.server.base}")
 	private String serverBase;
-
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
-
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
 
 
     @Override
@@ -74,9 +77,6 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 		
 		Config cfg = applicationContext.getBean(Config.class);
 
-		String serverBase = cfg.getServerBase();
-		String serverName = cfg.getServerName();
-		String serverVersion = cfg.getServerVersion();
 		String oauth2authorize = cfg.getOauth2authorize();
 		String oauth2token = cfg.getOauth2token();
 		String oauth2register = cfg.getOauth2register();
@@ -85,8 +85,7 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 		log.info("oauth2authorize: " + oauth2authorize);
 		log.info("oauth2token: " + oauth2token);
 		log.info("oauth2register: " + oauth2register);
-		log.info("serverName: " + serverName);
-		log.info("serverVersion: " + serverVersion);
+
 
 		setResourceProviders(Arrays.asList(
 				applicationContext.getBean(PatientResourceProvider.class)
@@ -114,9 +113,9 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 				,oauth2token
 				,oauth2register, applicationContext));
 
-
-		setServerName(serverName);
-        setServerVersion(serverVersion);
+		setServerName(softwareName);
+		setServerVersion(softwareVersion);
+		setImplementationDescription(server);
 
 		CorsConfiguration config = new CorsConfiguration();
 		config.addAllowedHeader("x-fhir-starter");

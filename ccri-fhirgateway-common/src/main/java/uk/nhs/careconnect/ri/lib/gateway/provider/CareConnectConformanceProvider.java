@@ -8,10 +8,7 @@ import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Initialize;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.Constants;
-import ca.uhn.fhir.rest.server.IServerConformanceProvider;
-import ca.uhn.fhir.rest.server.ResourceBinding;
-import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
+import ca.uhn.fhir.rest.server.*;
 import ca.uhn.fhir.rest.server.method.*;
 import ca.uhn.fhir.rest.server.method.SearchParameter;
 import org.apache.camel.CamelContext;
@@ -27,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
@@ -40,7 +39,8 @@ import java.util.*;
 
 import static org.apache.http.util.TextUtils.isBlank;
 
-
+@Component
+@PropertySource("classpath:application.properties")
 public class CareConnectConformanceProvider implements IServerConformanceProvider<CapabilityStatement> {
 
     /*
@@ -117,11 +117,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
 
     private String oauth2register;
 
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
 
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
 
     @Override
     @Metadata
@@ -170,9 +166,14 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
         retVal.getImplementation().setDescription(serverConfiguration.getImplementationDescription());
         retVal.setKind(CapabilityStatement.CapabilityStatementKind.INSTANCE);
 
+
+        retVal.getSoftware().setName(System.getProperty("ccri.software.name"));
+        retVal.getSoftware().setVersion(System.getProperty("ccri.software.version"));
+        retVal.getImplementation().setDescription(System.getProperty("ccri.server"));
+        retVal.getImplementation().setUrl(System.getProperty("ccri.server.base"));
         // TODO KGM move to config
-        retVal.getSoftware().setName("Care Connect RI FHIR Server");
-        retVal.getSoftware().setVersion("3.7.0-SNAPSHOT");
+        retVal.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
+
         retVal.addFormat(Constants.CT_FHIR_XML_NEW);
         retVal.addFormat(Constants.CT_FHIR_JSON_NEW);
         retVal.setStatus(Enumerations.PublicationStatus.ACTIVE);
