@@ -6,6 +6,7 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -165,7 +166,7 @@ public class EncounterResourceProvider implements IResourceProvider {
                                            @OptionalParam(name = Encounter.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
           //  ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
-            , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Encounter.SP_RES_ID) StringParam resid
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes

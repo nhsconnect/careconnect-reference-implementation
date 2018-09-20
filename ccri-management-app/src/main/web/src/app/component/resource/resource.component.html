@@ -37,18 +37,21 @@
     </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <a mat-icon-button button color="accent" class="text-upper">
+    <a mat-icon-button button color="accent" class="text-upper" (click)="onSearch()">
       <mat-icon>search</mat-icon>
       <span>Search</span>
     </a>
   </mat-card-actions>
 </mat-card>
-<mat-card>
-    <mat-card-title>Results</mat-card-title>
-    <mat-divider></mat-divider>
-    <mat-card-content>
+<span *ngIf="resource !== undefined">
+  <mat-card>
+      <mat-card-title>Results</mat-card-title>
+      <mat-card-subtitle>Request {{query}}</mat-card-subtitle>
+      <mat-divider></mat-divider>
+      <mat-card-content>
 
-        <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
-        </td-json-formatter>
-    </mat-card-content>
-</mat-card>
+          <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
+          </td-json-formatter>
+      </mat-card-content>
+  </mat-card>
+</span>

@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ClinicalImpression;
@@ -26,12 +27,12 @@ public interface ClinicalImpressionRepository extends BaseRepository<ClinicalImp
     List<ClinicalImpression> search(FhirContext ctx,
                                 @OptionalParam(name = ClinicalImpression.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = ClinicalImpression.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) StringParam id
     );
 
     List<ClinicalImpressionEntity> searchEntity(FhirContext ctx,
                                             @OptionalParam(name = ClinicalImpression.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = ClinicalImpression.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) StringParam id
     );
 }

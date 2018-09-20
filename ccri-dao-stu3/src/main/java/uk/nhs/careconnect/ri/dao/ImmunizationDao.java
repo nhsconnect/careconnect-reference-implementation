@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Immunization;
@@ -228,7 +225,7 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, TokenParam resid) {
+    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, StringParam resid) {
         List<ImmunisationEntity> qryResults = searchEntity(ctx, patient, date, status,identifier,resid);
         List<Immunization> results = new ArrayList<>();
 
@@ -243,7 +240,7 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, TokenParam resid) {
+    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, StringParam resid) {
         List<ImmunisationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

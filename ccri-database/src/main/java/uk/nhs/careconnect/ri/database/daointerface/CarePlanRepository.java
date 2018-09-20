@@ -6,10 +6,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.CarePlan;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Resource;
@@ -35,7 +32,7 @@ public interface CarePlanRepository extends BaseRepository<CarePlanEntity,CarePl
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam id
             , @IncludeParam(allow= {
                 "CarePlan:subject"
                 ,"CarePlan:supportingInformation"
@@ -48,7 +45,7 @@ public interface CarePlanRepository extends BaseRepository<CarePlanEntity,CarePl
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam id
             , @IncludeParam(allow= {
                 "CarePlan:subject"
                 ,"CarePlan:supportingInformation"

@@ -138,7 +138,7 @@ public class PatientProvider implements ICCResourceProvider {
            @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
            @OptionalParam(name= Patient.SP_NAME) StringParam name,
            @OptionalParam(name= Patient.SP_PHONE) StringParam phone
-            , @OptionalParam(name = Patient.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Patient.SP_RES_ID) StringParam resid
             ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             ,@IncludeParam(allow= {
                                         "Patient:general-practitioner"

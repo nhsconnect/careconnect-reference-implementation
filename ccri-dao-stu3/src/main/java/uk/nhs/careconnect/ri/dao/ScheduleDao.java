@@ -272,7 +272,7 @@ public class ScheduleDao implements ScheduleRepository {
     }
 
     @Override
-    public List<Schedule> searchSchedule(FhirContext ctx, TokenParam identifier, StringParam actor, TokenOrListParam codes, TokenParam id) { // , ReferenceParam organisation
+    public List<Schedule> searchSchedule(FhirContext ctx, TokenParam identifier, StringParam actor, TokenOrListParam codes, StringParam id) { // , ReferenceParam organisation
         List<ScheduleEntity> qryResults = searchScheduleEntity(ctx,identifier,actor, codes,id); //,organisation
         List<Schedule> results = new ArrayList<>();
 
@@ -285,7 +285,7 @@ public class ScheduleDao implements ScheduleRepository {
     }
 
     @Override
-    public List<ScheduleEntity> searchScheduleEntity(FhirContext ctx, TokenParam identifier, StringParam actor, TokenOrListParam codes, TokenParam id) { // , ReferenceParam organisation
+    public List<ScheduleEntity> searchScheduleEntity(FhirContext ctx, TokenParam identifier, StringParam actor, TokenOrListParam codes, StringParam id) { // , ReferenceParam organisation
         List<ScheduleEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

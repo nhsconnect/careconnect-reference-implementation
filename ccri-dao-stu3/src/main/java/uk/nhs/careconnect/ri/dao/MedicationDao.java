@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class MedicationDao implements MedicationRepository {
     }
 
     @Override
-    public List<Medication> search(FhirContext ctx, TokenParam code, TokenParam id) {
+    public List<Medication> search(FhirContext ctx, TokenParam code, StringParam id) {
         List<MedicationRequestEntity> results = prescriptionDao.searchEntity(ctx,null,code,null,null,null,id,null);
         List<Medication> res = new ArrayList<>();
 

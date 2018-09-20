@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -291,7 +292,7 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange) {
         List<CompositionEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange);
         List<Composition> results = new ArrayList<>();
@@ -306,7 +307,7 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange) {
         List<CompositionEntity> qryResults = null;
 

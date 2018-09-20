@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -33,7 +34,7 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             , @OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
+            , @OptionalParam(name= Encounter.SP_RES_ID) StringParam id
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
@@ -45,7 +46,7 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             ,@OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Encounter.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Encounter.SP_RES_ID) StringParam id
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes

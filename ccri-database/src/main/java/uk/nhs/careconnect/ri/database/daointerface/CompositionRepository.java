@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.Condition;
@@ -28,7 +29,7 @@ public interface CompositionRepository extends BaseRepository<CompositionEntity,
 
               @OptionalParam(name = Condition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Composition.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Composition.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Composition.SP_RES_ID) StringParam id
             , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
             , @OptionalParam(name = Composition.SP_PERIOD)DateRangeParam dateRange
 
@@ -37,7 +38,7 @@ public interface CompositionRepository extends BaseRepository<CompositionEntity,
     List<CompositionEntity> searchEntity(FhirContext ctx,
               @OptionalParam(name = Composition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Condition.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Condition.SP_RES_ID) StringParam id
             , @OptionalParam(name = Composition.SP_TYPE) TokenParam type
             , @OptionalParam(name = Composition.SP_PERIOD)DateRangeParam dateRange
     );

@@ -97,7 +97,7 @@ public class SlotProvider implements ICCResourceProvider {
                                                            @OptionalParam(name = SP_IDENTIFIER) TokenParam identifier,
                                                            @OptionalParam(name = slot.SP_ACTOR) StringParam name,
                                                            @OptionalParam(name= slot.SP_TYPE) TokenOrListParam codes,
-                                                           @OptionalParam(name = slot.SP_RES_ID) TokenParam id
+                                                           @OptionalParam(name = slot.SP_RES_ID) StringParam id
     ) {
         return slotDao.searchSlot(ctx, identifier,name,codes,id);
     }*/

@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -27,13 +28,13 @@ public interface EpisodeOfCareRepository extends BaseRepository<EpisodeOfCareEnt
 
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
-            ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) StringParam id
             );
 
     List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
-            ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) StringParam id
 
     );
 }

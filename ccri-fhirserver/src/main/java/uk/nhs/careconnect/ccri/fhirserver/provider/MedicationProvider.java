@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -59,7 +60,7 @@ public class MedicationProvider implements ICCResourceProvider {
     @Search
     public List<Medication> searchMedication(HttpServletRequest httpRequest
             , @OptionalParam(name = Medication.SP_CODE) TokenParam code
-            , @OptionalParam(name = Medication.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Medication.SP_RES_ID) StringParam resid
     ) {
 
         return medicationDao.search(ctx,code,resid);

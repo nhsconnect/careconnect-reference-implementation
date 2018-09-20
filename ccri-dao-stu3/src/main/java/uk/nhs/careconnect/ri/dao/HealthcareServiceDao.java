@@ -257,7 +257,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareService> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<HealthcareService> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation);
         List<HealthcareService> results = new ArrayList<>();
 
@@ -270,7 +270,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<HealthcareServiceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

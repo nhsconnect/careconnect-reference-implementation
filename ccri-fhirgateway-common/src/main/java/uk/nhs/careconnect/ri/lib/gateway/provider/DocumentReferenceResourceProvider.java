@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -142,7 +143,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
     @Search
     public List<DocumentReference> searchDocumentReference(HttpServletRequest httpRequest
-            , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = DocumentReference.SP_RES_ID) StringParam resid
             , @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_CREATED) DateRangeParam date
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type

@@ -554,7 +554,7 @@ public class ObservationDao implements ObservationRepository {
 
 
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid,
+    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, StringParam resid,
                                     ReferenceParam subject) {
         List<Observation> results = new ArrayList<Observation>();
         List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid,subject);
@@ -583,7 +583,7 @@ public class ObservationDao implements ObservationRepository {
             ,DateRangeParam effectiveDate
             ,ReferenceParam patient
             ,TokenParam identifier
-            ,TokenParam resid
+            ,StringParam resid
         ,ReferenceParam subject) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

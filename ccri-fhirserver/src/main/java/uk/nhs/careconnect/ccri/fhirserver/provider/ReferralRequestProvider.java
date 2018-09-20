@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -95,7 +96,7 @@ public class ReferralRequestProvider implements ICCResourceProvider {
     public List<ReferralRequest> searchReferralRequest(HttpServletRequest theRequest,
                @OptionalParam(name = ReferralRequest.SP_IDENTIFIER) TokenParam identifier,
                @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
-               @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
+               @OptionalParam(name = ReferralRequest.SP_RES_ID) StringParam id,
                @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
     ) {
         return referralDao.searchReferralRequest(ctx, identifier,codes,id,patient);

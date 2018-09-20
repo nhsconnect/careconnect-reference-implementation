@@ -236,7 +236,7 @@ public class OrganisationDao implements OrganisationRepository {
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     ) {
         List<Organization> results = new ArrayList<>();
         List<OrganisationEntity> qryResults = searchOrganizationEntity(ctx, identifier,name,postCode,resid);
@@ -254,7 +254,7 @@ public class OrganisationDao implements OrganisationRepository {
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     )
     {
         List<OrganisationEntity> qryResults = null;

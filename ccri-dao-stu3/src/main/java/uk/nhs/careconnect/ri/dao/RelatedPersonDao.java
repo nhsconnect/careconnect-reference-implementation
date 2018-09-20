@@ -384,7 +384,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
     public List<Resource> search (FhirContext ctx,
                                   @OptionalParam(name = RelatedPerson.SP_IDENTIFIER) TokenParam identifier,
                                   @OptionalParam(name = RelatedPerson.SP_PATIENT) ReferenceParam patient,
-                                  @OptionalParam(name = RelatedPerson.SP_RES_ID) TokenParam resid
+                                  @OptionalParam(name = RelatedPerson.SP_RES_ID) StringParam resid
     ) {
         List<RelatedPersonEntity> qryResults = searchEntity(ctx,  identifier, patient,resid);
         List<Resource> results = new ArrayList<>();
@@ -412,7 +412,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
     public List<RelatedPersonEntity> searchEntity (FhirContext ctx,
                                                    @OptionalParam(name = RelatedPerson.SP_IDENTIFIER) TokenParam identifier,
                                                    @OptionalParam(name = RelatedPerson.SP_PATIENT) ReferenceParam patient,
-                                                   @OptionalParam(name = RelatedPerson.SP_RES_ID) TokenParam resid
+                                                   @OptionalParam(name = RelatedPerson.SP_RES_ID) StringParam resid
     )
     {
 

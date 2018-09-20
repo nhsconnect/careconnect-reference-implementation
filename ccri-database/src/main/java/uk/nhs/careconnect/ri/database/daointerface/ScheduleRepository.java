@@ -29,7 +29,7 @@ public interface ScheduleRepository extends BaseRepository<ScheduleEntity,Schedu
                                   @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
                                   @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
                                   @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
-                                  @OptionalParam(name = Schedule.SP_RES_ID) TokenParam id
+                                  @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
                                   //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
 
     );
@@ -39,7 +39,7 @@ public interface ScheduleRepository extends BaseRepository<ScheduleEntity,Schedu
                                               @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
                                               @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
                                               @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
-                                              @OptionalParam(name = Schedule.SP_RES_ID) TokenParam id
+                                              @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
                                               //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
 
     );

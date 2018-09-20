@@ -3,6 +3,7 @@ import {NavigationEnd, Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
 import {MatSelect} from "@angular/material";
 import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
+import {getViewData} from "@angular/core/src/render3/instructions";
 
 
 export interface QueryOptions {
@@ -31,7 +32,9 @@ export class ResourceComponent implements OnInit {
 
   constructor(private router : Router, private fhirSrv : FhirService) { }
 
-  public resource = '{}';
+  public resource : fhir.Bundle = undefined;
+
+  public query = "";
 
   private _routerSub ;
 
@@ -66,44 +69,69 @@ export class ResourceComponent implements OnInit {
                   console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
+                  this.resource = undefined;
                   this.buildOptions(resource);
               }
           })
   }
 
   onAdd() {
-
+    let seq :string = (this.elements.length + 1).toString(10);
    if (this.field.value !== undefined) {
      switch (this.field.value.type) {
        case 'date' :
+         let nodeDSQ :ITdDynamicElementConfig = {
+           "label": 'Qual',
+           "name" : this.field.value.type+'-'+seq + '-1-'+ this.field.value.name,
+           "type": TdDynamicElement.Select,
+           "required": false,
+           "selections": [
+             {
+               "label": "=",
+               "value": ""
+             },
+             {
+               "label": ">",
+               "value": "gt"
+             },
+             {
+               "label": ">=",
+               "value": "ge"
+             },
+             {
+               "label": "<",
+               "value": "lt"
+             },
+             {
+               "label": "<",
+               "value": "le"
+             }
+           ],
+           "flex" : 10
+         };
          let nodeDS :ITdDynamicElementConfig = {
-           "label": 'From '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name + '-s',
+           "label": this.field.value.name + ' - '+this.field.value.documentation,
+           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name ,
            "type": TdDynamicElement.Datepicker,
-           "required": false,
-           "flex" : 50
+           "required": true,
+           "flex" : 90
          };
-         let nodeDE :ITdDynamicElementConfig = {
-           "label": 'To '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name+ '-e',
-           "type": TdDynamicElement.Datepicker,
-           "required": false,
-           "flex" : 50
-         };
+
+         this.elements.push(nodeDSQ);
          this.elements.push(nodeDS);
-         this.elements.push(nodeDE);
+
          break;
        case 'token' :
          // add matches
          let nodeT1 :ITdDynamicElementConfig = {
            "label": 'System - '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name+'-system',
+           "name" : this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
            "type": TdDynamicElement.Input,
            "flex" : 50
          };
          let nodeT2 :ITdDynamicElementConfig = {
            "label": 'Code - '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name+'-code',
+           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name,
            "type": TdDynamicElement.Input,
            "flex" : 50
          };
@@ -112,40 +140,105 @@ export class ResourceComponent implements OnInit {
          break;
        case 'string' :
          // add matches
+         let nodeOpt: ITdDynamicElementConfig = {
+           "label": "match",
+           "name": this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
+           "type": TdDynamicElement.Select,
+           "selections": [
+           {
+             "label": "Matches",
+             "value": ""
+           },
+           {
+             "label": "Exactly",
+             "value": "exact"
+           }
+         ],
+           "required": true
+           ,"flex" : 20
+         };
+
          let nodeS :ITdDynamicElementConfig = {
            "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name,
+           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name,
            "type": TdDynamicElement.Input,
            "required": true,
+           "flex" : 80
          };
+          this.elements.push(nodeOpt);
          this.elements.push(nodeS);
          break;
        case 'reference' :
          let nodeR :ITdDynamicElementConfig = {
            "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name,
+           "name" : this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
            "type": TdDynamicElement.Input,
            "required": true,
          };
          this.elements.push(nodeR);
          break;
-       case 'token' :
-         let node :ITdDynamicElementConfig = {
-           "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.name,
-           "type": TdDynamicElement.Input,
-           "required": true,
-         };
-         this.elements.push(node);
-         break;
+
        default:
          console.log('MISSING - '+this.field.value.type);
      }
      console.log('call refresh');
      this.form.refresh();
    }
-
+    
   }
+
+  onSearch() {
+    var i:number;
+
+    let first : boolean = true;
+    let query = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource+'?'
+
+    for(i = 0;i<this.elements.length;i++) {
+
+      let name = this.elements[i].name;
+      let content: string[]=name.split('-');
+      let param = content[3];
+    if (content.length>4 && (content[4]!=undefined)) param = param + '-' + content[4];
+
+      if (!first) query = query +'&'+param
+      else query=query + param;
+      console.log(content[0]);
+      switch (content[0]) {
+        case 'date':
+          query=query+'=';
+          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name];
+          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name].format("YYYY-MM-DD");
+          i++;
+          break;
+        case 'token':
+          query=query+'=';
+          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name]+"|";
+          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name];
+          i++;
+        case 'string':
+          if (this.form.value[this.elements[i].name] !== undefined) query = query +":"+this.form.value[this.elements[i].name];
+          query=query+'=';
+          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name];
+          i++;
+          break;
+        case 'reference':
+          query=query+'=';
+          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name]
+          break;
+
+      }
+
+
+      console.log(this.form.value[this.elements[i].name]);
+      first = false;
+    }
+    console.log(query);
+    this.query = query;
+    this.fhirSrv.getResults(query).subscribe(bundle => {
+      this.resource = bundle;
+    })
+  }
+
 
   buildOptions(resource : string) {
 

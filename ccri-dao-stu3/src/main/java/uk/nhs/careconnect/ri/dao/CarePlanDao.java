@@ -459,7 +459,7 @@ public class CarePlanDao implements CarePlanRepository {
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam resid
             , @IncludeParam(allow= {
             "CarePlan:subject"
             ,"CarePlan:supportingInformation"
@@ -572,7 +572,7 @@ public class CarePlanDao implements CarePlanRepository {
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam resid
             , @IncludeParam(allow= {
             "CarePlan:subject"
             ,"CarePlan:supportingInformation"

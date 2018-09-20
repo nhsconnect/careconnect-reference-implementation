@@ -91,7 +91,7 @@ public class OrganisationResourceProvider implements IResourceProvider {
     public List<Organization> searchOrganization(HttpServletRequest httpRequest,
                                                  @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Organization.SP_NAME) StringParam name
-            , @OptionalParam(name = Organization.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Organization.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<Organization> results = new ArrayList<Organization>();

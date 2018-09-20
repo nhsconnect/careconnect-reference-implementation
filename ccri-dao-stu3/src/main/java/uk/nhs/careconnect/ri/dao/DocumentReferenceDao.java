@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -311,7 +312,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange, TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange, setting);
         List<DocumentReference> results = new ArrayList<>();
@@ -326,7 +327,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id,TokenParam type
             , DateRangeParam dateRange
             , TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = null;

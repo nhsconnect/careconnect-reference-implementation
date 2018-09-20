@@ -116,7 +116,7 @@ public class PractitionerProvider implements ICCResourceProvider {
                                                                   @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                                   @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , @OptionalParam(name = Procedure.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Procedure.SP_RES_ID) StringParam resid
     ) {
         return practitionerDao.searchPractitioner(ctx, identifier, name ,postCode,resid);
     }

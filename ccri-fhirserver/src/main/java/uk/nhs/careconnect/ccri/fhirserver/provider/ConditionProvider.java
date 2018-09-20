@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Condition;
@@ -122,7 +123,7 @@ public class ConditionProvider implements ICCResourceProvider {
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Condition.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Condition.SP_RES_ID) StringParam resid
                                   ) {
         return conditionDao.search(ctx,patient, category, clinicalstatus, asserted, identifier,resid);
     }

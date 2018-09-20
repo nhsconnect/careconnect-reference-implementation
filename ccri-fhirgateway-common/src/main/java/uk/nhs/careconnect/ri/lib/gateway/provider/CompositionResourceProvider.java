@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.*;
 
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.apache.camel.*;
@@ -58,7 +59,7 @@ public class CompositionResourceProvider implements IResourceProvider {
 */
     @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
     public Bundle compositionDocumentOperation(
-            @OptionalParam(name = Composition.SP_RES_ID) TokenParam resid,
+            @OptionalParam(name = Composition.SP_RES_ID) StringParam resid,
             @OperationParam(name="persist") TokenParam persist
     ) {
         HttpServletRequest request =  null;
@@ -154,7 +155,7 @@ public class CompositionResourceProvider implements IResourceProvider {
 
     @Search
     public List<Composition> searchComposition(HttpServletRequest theRequest
-            , @OptionalParam(name = Composition.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Composition.SP_RES_ID) StringParam resid
             , @OptionalParam(name = Composition.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Composition.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Composition.SP_PERIOD) DateRangeParam date

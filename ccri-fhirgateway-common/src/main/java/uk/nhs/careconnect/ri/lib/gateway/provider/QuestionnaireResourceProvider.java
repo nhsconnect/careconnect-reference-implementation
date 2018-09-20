@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -140,7 +141,7 @@ public class QuestionnaireResourceProvider implements IResourceProvider {
     @Search
     public List<Questionnaire> searchQuestionnaire(HttpServletRequest httpRequest,
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
-                                                   @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
+                                                   @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
     ) throws Exception {
 

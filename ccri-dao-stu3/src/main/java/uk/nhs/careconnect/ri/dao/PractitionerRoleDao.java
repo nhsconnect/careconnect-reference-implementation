@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -199,7 +200,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation
-            , TokenParam resid) {
+            , StringParam resid) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -266,7 +267,7 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
             TokenParam identifier
             , ReferenceParam practitioner
             , ReferenceParam organisation
-            , TokenParam resid) {
+            , StringParam resid) {
         List<org.hl7.fhir.dstu3.model.PractitionerRole> results = new ArrayList<>();
         List<PractitionerRole> roles = searchEntity(ctx, identifier,practitioner,organisation,resid);
         for (PractitionerRole role : roles) {

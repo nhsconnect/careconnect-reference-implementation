@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Goal;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -163,7 +164,7 @@ public class GoalDao implements GoalRepository {
     }
 
     @Override
-    public List<Goal> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<Goal> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id) {
         List<GoalEntity> qryResults = searchEntity(ctx,patient, identifier,id);
         List<Goal> results = new ArrayList<>();
 
@@ -178,7 +179,7 @@ public class GoalDao implements GoalRepository {
     }
 
     @Override
-    public List<GoalEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<GoalEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid) {
         List<GoalEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

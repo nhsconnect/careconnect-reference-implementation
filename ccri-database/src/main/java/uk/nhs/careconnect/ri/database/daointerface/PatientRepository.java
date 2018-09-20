@@ -39,7 +39,7 @@ public interface PatientRepository extends BaseRepository<PatientEntity,Patient>
                            @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                            @OptionalParam(name= Patient.SP_NAME) StringParam name,
                            @OptionalParam(name= Patient.SP_PHONE) StringParam phone
-            , @OptionalParam(name= Patient.SP_RES_ID) TokenParam id
+            , @OptionalParam(name= Patient.SP_RES_ID) StringParam id
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow= {
                     "Patient:general-practitioner"
@@ -56,7 +56,7 @@ public interface PatientRepository extends BaseRepository<PatientEntity,Patient>
                           @OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
                           @OptionalParam(name= Patient.SP_NAME) StringParam name,
                           @OptionalParam(name= Patient.SP_PHONE) StringParam phone
-            ,@OptionalParam(name= Patient.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Patient.SP_RES_ID) StringParam id
             ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             ,@IncludeParam(allow= {
                 "Patient:general-practitioner"

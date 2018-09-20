@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -113,7 +114,7 @@ public class MedicationDispenseResourceProvider implements IResourceProvider {
     public List<MedicationDispense> searchMedicationDispense(HttpServletRequest httpRequest,
                                                              @OptionalParam(name = MedicationDispense.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationDispense.SP_STATUS) TokenParam status
-            , @OptionalParam(name = MedicationDispense.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = MedicationDispense.SP_RES_ID) StringParam id
             , @OptionalParam(name = MedicationDispense.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = MedicationDispense.SP_CODE) TokenParam code
             , @OptionalParam(name= MedicationDispense.SP_MEDICATION) ReferenceParam medication

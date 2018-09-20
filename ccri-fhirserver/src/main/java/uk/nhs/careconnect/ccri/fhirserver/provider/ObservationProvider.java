@@ -4,10 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
@@ -110,7 +107,7 @@ public class ObservationProvider implements ICCResourceProvider {
                                     @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                                     @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient,
                                     @OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Observation.SP_RES_ID) StringParam resid
             ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
                                        ) {
         return observationDao.search(ctx,category, codes, effectiveDate,patient, identifier,resid,subject);

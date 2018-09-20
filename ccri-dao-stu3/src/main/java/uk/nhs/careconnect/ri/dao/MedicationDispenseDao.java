@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -472,7 +473,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     }
 
     @Override
-    public List<MedicationDispense> search(FhirContext ctx, ReferenceParam patient, TokenParam status, TokenParam id, TokenParam identifier, TokenParam code, ReferenceParam medication) {
+    public List<MedicationDispense> search(FhirContext ctx, ReferenceParam patient, TokenParam status, StringParam id, TokenParam identifier, TokenParam code, ReferenceParam medication) {
         List<MedicationDispenseEntity> qryResults = searchEntity(ctx,patient, status,id,identifier,code,medication);
         List<MedicationDispense> results = new ArrayList<>();
 
@@ -485,7 +486,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     }
 
     @Override
-    public List<MedicationDispenseEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam status, TokenParam resid, TokenParam identifier, TokenParam code, ReferenceParam medication) {
+    public List<MedicationDispenseEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam status, StringParam resid, TokenParam identifier, TokenParam code, ReferenceParam medication) {
         List<MedicationDispenseEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

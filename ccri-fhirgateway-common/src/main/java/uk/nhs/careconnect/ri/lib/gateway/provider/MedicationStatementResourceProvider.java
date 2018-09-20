@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -102,7 +103,7 @@ public class MedicationStatementResourceProvider implements IResourceProvider {
                                                                @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
-            , @OptionalParam(name = MedicationStatement.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = MedicationStatement.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<MedicationStatement> results = new ArrayList<MedicationStatement>();

@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -84,7 +85,7 @@ public class PractitionerRoleResourceProvider implements IResourceProvider {
                                                          @OptionalParam(name = PractitionerRole.SP_PRACTITIONER) ReferenceParam practitioner,
                                                          @OptionalParam(name = PractitionerRole.SP_ORGANIZATION) ReferenceParam organisation
                                                          ,@OptionalParam(name = PractitionerRole.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = PractitionerRole.SP_RES_ID) StringParam resid
                                        )  throws Exception {
 
         List<PractitionerRole> results = new ArrayList<PractitionerRole>();

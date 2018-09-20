@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -25,12 +26,12 @@ public interface EndpointRepository extends BaseRepository<EndpointEntity,Endpoi
 
     List<Endpoint> searchEndpoint(FhirContext ctx,
                                   @OptionalParam(name = Endpoint.SP_IDENTIFIER) TokenParam identifier,
-                                  @OptionalParam(name = Endpoint.SP_RES_ID) TokenParam id
+                                  @OptionalParam(name = Endpoint.SP_RES_ID) StringParam id
 
     );
 
     List<EndpointEntity> searchEndpointEntity(FhirContext ctx,
                                               @OptionalParam(name = Endpoint.SP_IDENTIFIER) TokenParam identifier,
-                                              @OptionalParam(name = Endpoint.SP_RES_ID) TokenParam id
+                                              @OptionalParam(name = Endpoint.SP_RES_ID) StringParam id
     );
 }

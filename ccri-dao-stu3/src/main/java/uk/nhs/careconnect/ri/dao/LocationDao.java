@@ -232,7 +232,7 @@ public class LocationDao implements LocationRepository {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     )
     {
         List<LocationEntity> qryResults = searchLocationEntity(ctx, identifier,name, postCode,resid);
@@ -254,7 +254,7 @@ public class LocationDao implements LocationRepository {
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     )
     {
         List<LocationEntity> qryResults = null;

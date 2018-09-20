@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -431,7 +428,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             , DateRangeParam authoredDate
             , TokenParam status
             , TokenParam identifier
-            , TokenParam resid
+            , StringParam resid
             , ReferenceParam medication) {
         List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier,resid, medication);
         List<MedicationRequest> results = new ArrayList<>();
@@ -452,7 +449,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             , DateRangeParam authoredDate
             , TokenParam status
             , TokenParam identifier
-            , TokenParam resid
+            , StringParam resid
             , ReferenceParam medication) {
         List<MedicationRequestEntity> qryResults = null;
 

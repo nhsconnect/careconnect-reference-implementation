@@ -4,10 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
@@ -30,7 +27,7 @@ public interface ObservationRepository extends BaseRepository<ObservationEntity,
             @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
             @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Observation.SP_RES_ID) StringParam id
             ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
             );
 
@@ -41,7 +38,7 @@ public interface ObservationRepository extends BaseRepository<ObservationEntity,
                               @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
 
             ,@OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Observation.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Observation.SP_RES_ID) StringParam id
             ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
     );
 }

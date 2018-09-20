@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -76,7 +77,7 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
     public List<ReferralRequest> searchReferralRequest(HttpServletRequest httpRequest,
                                                        @OptionalParam(name = ReferralRequest.SP_IDENTIFIER) TokenParam identifier,
                                                     //   @OptionalParam(name = ReferralRequest.SP_TYPE) TokenOrListParam codes,
-                                                       @OptionalParam(name = ReferralRequest.SP_RES_ID) TokenParam id,
+                                                       @OptionalParam(name = ReferralRequest.SP_RES_ID) StringParam id,
                                                        @OptionalParam(name = ReferralRequest.SP_PATIENT) ReferenceParam patient
                                        ) throws Exception {
 

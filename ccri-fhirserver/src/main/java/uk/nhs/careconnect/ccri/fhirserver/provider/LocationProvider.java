@@ -95,7 +95,7 @@ public class LocationProvider implements ICCResourceProvider {
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_NAME) StringParam name,
                                          @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , @OptionalParam(name = Location.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Location.SP_RES_ID) StringParam resid
     ) {
         return locationDao.searchLocation(ctx, identifierCode,name,postCode,resid);
     }

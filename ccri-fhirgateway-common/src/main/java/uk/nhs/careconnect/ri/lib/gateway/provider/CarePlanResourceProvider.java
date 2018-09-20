@@ -5,10 +5,7 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
@@ -187,7 +184,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
             , @OptionalParam(name = CarePlan.SP_DATE) DateRangeParam date
             , @OptionalParam(name = CarePlan.SP_CATEGORY) TokenOrListParam categories
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CarePlan.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam id
             , @IncludeParam(allow= {
             "CarePlan:subject"
             ,"CarePlan:supportingInplanation"

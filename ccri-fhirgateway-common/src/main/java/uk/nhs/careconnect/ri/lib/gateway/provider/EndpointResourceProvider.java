@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -176,7 +177,7 @@ public class EndpointResourceProvider implements IResourceProvider {
     @Search
     public List<Endpoint> searchEndpoint(HttpServletRequest httpRequest,
                                          @OptionalParam(name = Endpoint.SP_IDENTIFIER) TokenParam identifierCode,
-                                         @OptionalParam(name = Endpoint.SP_RES_ID) TokenParam resid
+                                         @OptionalParam(name = Endpoint.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<Endpoint> results = new ArrayList<Endpoint>();

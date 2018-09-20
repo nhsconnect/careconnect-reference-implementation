@@ -1,5 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {Observable} from "rxjs";
 
 
 @Injectable({
@@ -57,5 +58,9 @@ export class FhirService {
 
           this.conformanceChange.emit(capabilityStatement);
       });
+  }
+
+  public getResults(url : string) : Observable<fhir.Bundle> {
+    return this.http.get<any>(url,{ 'headers' : {}});
   }
 }

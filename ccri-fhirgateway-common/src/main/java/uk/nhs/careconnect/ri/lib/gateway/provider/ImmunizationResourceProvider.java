@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -104,7 +105,7 @@ public class ImmunizationResourceProvider implements IResourceProvider {
                                                  @OptionalParam(name = Immunization.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
-            , @OptionalParam(name = Immunization.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Immunization.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<Immunization> results = new ArrayList<Immunization>();

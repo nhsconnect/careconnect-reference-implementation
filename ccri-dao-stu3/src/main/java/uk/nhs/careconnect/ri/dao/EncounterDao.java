@@ -2,10 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -383,7 +380,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, TokenParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, StringParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
         List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes,includes);
         List<Resource> results = new ArrayList<>();
 
@@ -534,7 +531,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,StringParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

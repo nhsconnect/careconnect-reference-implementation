@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
@@ -99,7 +100,7 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) StringParam resid
     ) {
         return allergyDao.search(ctx,patient, date, clinicalStatus,identifier,resid);
     }

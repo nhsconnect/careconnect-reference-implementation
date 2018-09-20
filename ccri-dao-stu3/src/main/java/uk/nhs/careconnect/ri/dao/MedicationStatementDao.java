@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 
 import org.slf4j.Logger;
@@ -517,7 +514,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
+    public List<MedicationStatement> search(FhirContext ctx, ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, StringParam resid, TokenParam identifier) {
         List<MedicationStatementEntity> statementEntities = searchEntity(ctx,patient,effectiveDate,status,resid,identifier);
         List<MedicationStatement> results = new ArrayList<>();
 
@@ -532,7 +529,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
+    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, StringParam resid, TokenParam identifier) {
         List<MedicationStatementEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Procedure;
@@ -28,7 +29,7 @@ public interface ProcedureRepository extends BaseRepository<ProcedureEntity,Proc
             ,@OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
             , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Procedure.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Procedure.SP_RES_ID) StringParam id
     );
 
     List<ProcedureEntity> searchEntity(FhirContext ctx,
@@ -36,6 +37,6 @@ public interface ProcedureRepository extends BaseRepository<ProcedureEntity,Proc
             ,@OptionalParam(name = Procedure.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
             , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Procedure.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Procedure.SP_RES_ID) StringParam id
     );
 }
