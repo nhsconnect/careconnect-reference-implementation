@@ -361,7 +361,7 @@ public class  EncounterDao implements EncounterRepository {
                 }
 
                 if (participant.hasType()) {
-                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0));
+                    ConceptEntity code = conceptDao.findAddCode(participant.getType().get(0).getCoding().get(0));
                     if (code != null) {
                         encounterParticipant.setParticipantType(code);
                     } else {

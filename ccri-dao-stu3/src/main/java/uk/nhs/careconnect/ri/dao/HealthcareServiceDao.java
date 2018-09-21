@@ -145,7 +145,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
         }
         log.debug("HealthcareService.saveCategory");
         if (service.hasCategory()) {
-            ConceptEntity code = conceptDao.findCode(service.getCategory().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(service.getCategory().getCoding().get(0));
             if (code != null) { serviceEntity.setCategory(code); }
             else {
                 log.info("Category: Missing System/Code = "+ service.getCategory().getCoding().get(0).getSystem() +" code = "+service.getCategory().getCoding().get(0).getCode());

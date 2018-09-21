@@ -147,6 +147,7 @@ public class BundleCore {
                         resource = searchAddOrganisation(referenceId, sdsOrganization);
                     }
                 }
+                /*
                 if (referenceId.contains("Practitioner")) {
                     String sdsCode = referenceId.replace("https://directory.spineservices.nhs.uk/STU3/Practitioner/","");
                     Practitioner sdsPractitioner = client.read().resource(Practitioner.class).withId(sdsCode).execute();
@@ -155,6 +156,7 @@ public class BundleCore {
                         resource = searchAddPractitioner(referenceId, sdsPractitioner);
                     }
                 }
+                */
             } else {
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {

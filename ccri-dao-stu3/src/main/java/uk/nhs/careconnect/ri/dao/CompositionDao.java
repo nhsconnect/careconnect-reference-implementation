@@ -175,7 +175,7 @@ public class CompositionDao implements CompositionRepository {
             for (Extension extension : composition.getExtension()) {
                 if (extension.getUrl().contains("https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1")) {
                     CodeableConcept concept = (CodeableConcept) extension.getValue();
-                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0));
+                    ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
                     if (code != null) { compositionEntity.setClass_(code); }
                 }
             }

@@ -226,7 +226,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
         }
         
         if (referralRequest.hasType()) {
-            ConceptEntity code = conceptDao.findCode(referralRequest.getType().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(referralRequest.getType().getCoding().get(0));
             if (code != null) { referralRequestEntity.setType(code); }
             else {
                 log.info("Type: Missing System/Code = "+ referralRequest.getType().getCoding().get(0).getSystem() +" code = "+referralRequest.getType().getCoding().get(0).getCode());

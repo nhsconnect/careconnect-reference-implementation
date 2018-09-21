@@ -222,7 +222,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             }
             if (allergyReaction == null)  allergyReaction = new AllergyIntoleranceReaction();
 
-            ConceptEntity code = conceptDao.findCode(reaction.getManifestationFirstRep().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(reaction.getManifestationFirstRep().getCoding().get(0));
             if (code != null) {
 
                 AllergyIntoleranceManifestation man = null;

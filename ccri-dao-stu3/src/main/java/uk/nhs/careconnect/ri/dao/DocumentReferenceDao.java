@@ -147,7 +147,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
         }
 
         if (documentReference.hasType()) {
-            ConceptEntity code = conceptDao.findCode(documentReference.getType().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(documentReference.getType().getCoding().get(0));
             if (code != null) { documentReferenceEntity.setType(code); }
             else {
                 String message = "Type: Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem() +" code = "+documentReference.getType().getCoding().get(0).getCode();
@@ -180,7 +180,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
         // KGM 10/4/2018 replace class with practice setting
         if (documentReference.hasContext() ) {
             if (documentReference.getContext().hasPracticeSetting()) {
-                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getPracticeSetting().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(documentReference.getContext().getPracticeSetting().getCoding().get(0));
                 if (code != null) {
                     documentReferenceEntity.setContextPracticeSetting(code);
                 } else {
@@ -190,7 +190,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                 }
             }
             if (documentReference.getContext().hasFacilityType()) {
-                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getFacilityType().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(documentReference.getContext().getFacilityType().getCoding().get(0));
                 if (code != null) {
                     documentReferenceEntity.setContextFaciltityType(code);
                 } else {

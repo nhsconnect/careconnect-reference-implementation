@@ -73,7 +73,6 @@ services:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
