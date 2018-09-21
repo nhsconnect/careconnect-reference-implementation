@@ -151,6 +151,22 @@ services:
        ccri_net:
          ipv4_address: 172.168.240.11
 
+  ccricat:
+    container_name: ccricat
+    image: thorlogic/ccri-cat${IMAGE_TAG}
+    environment:
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - KEYCLOAK_CLIENT_ID=ccri-cat
+      - SMART_OAUTH2_CLIENT_SECRET=${SMART_OAUTH2_CLIENT_SECRET}
+      - KEYCLOAK_AUTH_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - KEYCLOAK_SERVER_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - FHIR_SERVER_URL=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - KEYCLOAK_REALM=ReferenceImplementations
+      - CAT_COOKIE_DOMAIN=${FHIR_SERVER_BASE_HOST}
+      - SMART_GROWTH_CHART_URL=https://${FHIR_SERVER_BASE_HOST}/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+      - SMART_CARDIAC_URL=https://${FHIR_SERVER_BASE_HOST}/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    ports:
+      - 8108:80
 
 
 volumes:
