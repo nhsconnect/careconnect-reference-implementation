@@ -34,11 +34,14 @@
             </ng-template>
           </ng-template>
         </td-dynamic-forms>
+        <span *ngIf="progressBar">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </span>
     </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <a mat-icon-button button color="accent" class="text-upper" (click)="onSearch()">
-      <mat-icon>search</mat-icon>
+    <a mat-button button color="accent" class="text-upper" (click)="onSearch()">
+     <!-- <mat-icon>search</mat-icon> -->
       <span>Search</span>
     </a>
   </mat-card-actions>

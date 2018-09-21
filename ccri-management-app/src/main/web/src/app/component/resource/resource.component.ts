@@ -38,6 +38,8 @@ export class ResourceComponent implements OnInit {
 
   private _routerSub ;
 
+    progressBar : boolean = false;
+
   private currentResource : string = "";
 
   @ViewChild('field') field : MatSelect;
@@ -88,7 +90,7 @@ export class ResourceComponent implements OnInit {
            "selections": [
              {
                "label": "=",
-               "value": ""
+               "value": "eq"
              },
              {
                "label": ">",
@@ -189,8 +191,9 @@ export class ResourceComponent implements OnInit {
 
   onSearch() {
     var i:number;
-
+    this.resource = undefined;
     let first : boolean = true;
+    this.progressBar = true;
     let query = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource+'?'
 
     for(i = 0;i<this.elements.length;i++) {
@@ -206,7 +209,7 @@ export class ResourceComponent implements OnInit {
       switch (content[0]) {
         case 'date':
           query=query+'=';
-          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name];
+          if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query +this.form.value[this.elements[i].name];
           if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name].format("YYYY-MM-DD");
           i++;
           break;
@@ -215,6 +218,7 @@ export class ResourceComponent implements OnInit {
           if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name]+"|";
           if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name];
           i++;
+          break;
         case 'string':
           if (this.form.value[this.elements[i].name] !== undefined) query = query +":"+this.form.value[this.elements[i].name];
           query=query+'=';
@@ -236,7 +240,11 @@ export class ResourceComponent implements OnInit {
     this.query = query;
     this.fhirSrv.getResults(query).subscribe(bundle => {
       this.resource = bundle;
-    })
+      this.progressBar = false;
+    },
+        ()=> {
+        this.progressBar = false;
+        })
   }
 
 

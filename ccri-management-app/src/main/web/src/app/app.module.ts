@@ -30,7 +30,7 @@ import {
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatPaginatorModule,
+    MatPaginatorModule, MatProgressBarModule,
     MatSelectModule,
     MatSidenavModule,
     MatSnackBarModule,
@@ -81,6 +81,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     MatSnackBarModule,
       MatBadgeModule,
       MatChipsModule,
+      MatProgressBarModule,
 
 
     CovalentLayoutModule,
