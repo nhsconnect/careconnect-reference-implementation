@@ -204,7 +204,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     .setValue(new UriType(oauth2token));
         }
 
-        Set<Conformance.SystemRestfulInteraction> systemOps = new HashSet<Conformance.SystemRestfulInteraction>();
+        Set<CapabilityStatement.SystemRestfulInteraction> systemOps = new HashSet<CapabilityStatement.SystemRestfulInteraction>();
         Set<String> operationNames = new HashSet<String>();
 
         Map<String, List<BaseMethodBinding<?>>> resourceToMethods = collectMethodBindings();
