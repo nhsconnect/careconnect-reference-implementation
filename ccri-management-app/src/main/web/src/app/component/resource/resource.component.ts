@@ -246,18 +246,22 @@ export class ResourceComponent implements OnInit {
           if (this.currentResource !== resource) {
               this.currentResource = resource;
               this.options = [];
-              for(let node of this.fhirSrv.conformance.rest) {
+              if (this.fhirSrv.conformance.rest !== undefined) {
+                  for(let node of this.fhirSrv.conformance.rest) {
 
-                  for (let resourceSrc of node.resource) {
-                      if (resourceSrc.type === resource) {
-                          console.log(resourceSrc.type);
-                          for (let param of resourceSrc.searchParam) {
-                              let menuOpt : QueryOptions = {
-                                name : param.name,
-                                documentation : param.documentation,
-                                type : param.type
-                              };
-                              this.options.push(menuOpt);
+                      for (let resourceSrc of node.resource) {
+                          if (resourceSrc.type === resource) {
+                              console.log(resourceSrc.type);
+                              if (resourceSrc.searchParam !== undefined) {
+                                  for (let param of resourceSrc.searchParam) {
+                                      let menuOpt: QueryOptions = {
+                                          name: param.name,
+                                          documentation: param.documentation,
+                                          type: param.type
+                                      };
+                                      this.options.push(menuOpt);
+                                  }
+                              }
                           }
                       }
                   }
