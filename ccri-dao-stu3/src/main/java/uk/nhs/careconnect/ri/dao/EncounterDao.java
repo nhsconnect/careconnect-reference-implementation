@@ -103,8 +103,8 @@ public class  EncounterDao implements EncounterRepository {
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
     @Autowired
-    private MedicationRequestEntityToFHIRMedicationTransformer
-            medicationRequestEntityToFHIRMedicationTransformer;
+    private MedicationEntityToFHIRMedicationTransformer
+            medicationEntityToFHIRMedicationTransformer;
 
     @Autowired
     private RelatedPersonEntityToFHIRRelatedPersonTransformer
@@ -406,7 +406,9 @@ public class  EncounterDao implements EncounterRepository {
                     }
                     for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
                         addToResults(results,medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                        addToResults(results,medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequestEntity));
+                        if (medicationRequestEntity.getMedicationEntity() != null) {
+                            addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                        }
                     }
                     for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
                         addToResults(results,carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));

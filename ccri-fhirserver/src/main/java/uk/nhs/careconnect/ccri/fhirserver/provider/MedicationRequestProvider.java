@@ -36,7 +36,7 @@ public class MedicationRequestProvider implements ICCResourceProvider {
     @Autowired
     FhirContext ctx;
 
-    private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(MedicationRequestProvider.class);
 
     @Override
     public Long count() {

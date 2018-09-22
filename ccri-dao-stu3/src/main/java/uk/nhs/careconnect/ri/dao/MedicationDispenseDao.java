@@ -18,6 +18,7 @@ import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
@@ -67,10 +68,13 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     LocationRepository locationDao;
 
     @Autowired
-    MedicationRequestRepository prescriptionDao;
+    MedicationRequestRepository dispenseDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    MedicationRepository medicationDao;
     
     @Autowired
     MedicationDispenseEntityToFHIRMedicationDispenseTransformer medicationDispenseEntityToFHIRMedicationDispenseTransformer;
@@ -157,17 +161,28 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
 
         if (dispense.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findAddCode(dispense.getMedicationCodeableConcept().getCoding().get(0));
-                if (code != null) {
-                    dispenseEntity.setMedicationCode(code);
+                List<MedicationEntity> listMedication = medicationDao.searchEntity(ctx,new TokenParam()
+                        .setSystem(dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                        .setValue(dispense.getMedicationCodeableConcept().getCoding().get(0).getCode()),null);
+                if (listMedication.size() >0 ) {
+                    dispenseEntity.setMedicationEntity(listMedication.get(0));
                 } else {
-                    log.info("Code: Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
 
-                    throw new IllegalArgumentException("Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    Medication medication = new Medication();
+                    medication.getCode().addCoding()
+                            .setSystem(dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                            .setDisplay(dispense.getMedicationCodeableConcept().getCoding().get(0).getDisplay())
+                            .setCode(dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    MedicationEntity medicationNew = medicationDao.createEntity(ctx,medication,null,null);
+                    dispenseEntity.setMedicationEntity(medicationNew);
                 }
             } catch (Exception ex) {}
+        }
+        if (dispense.hasMedicationReference()) {
+            try {
+                MedicationEntity medicationEntity = medicationDao.readEntity(ctx, new IdType(dispense.getMedicationReference().getReference()));
+                dispenseEntity.setMedicationEntity(medicationEntity);
+            } catch(Exception ex) {}
         }
 
         PatientEntity patientEntity = null;
@@ -202,7 +217,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
         }
 
         if (dispense.hasAuthorizingPrescription()) {
-            MedicationRequestEntity medicationRequestEntity = prescriptionDao.readEntity(ctx, new IdType(dispense.getAuthorizingPrescriptionFirstRep().getReference()));
+            MedicationRequestEntity medicationRequestEntity = dispenseDao.readEntity(ctx, new IdType(dispense.getAuthorizingPrescriptionFirstRep().getReference()));
             dispenseEntity.setPrescription(medicationRequestEntity);
         }
 

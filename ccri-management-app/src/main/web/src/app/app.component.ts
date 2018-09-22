@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import {TdMediaService} from "@covalent/core";
+import {Component, ViewContainerRef} from '@angular/core';
+import {IAlertConfig, IConfirmConfig, TdDialogService, TdMediaService} from "@covalent/core";
 import {FhirService} from "./service/fhir.service";
 import {Router} from "@angular/router";
-
+import {ErrorsHandler} from "./error-handler";
+import {MessageService} from "./service/message.service";
 
 @Component({
   selector: 'app-root',
@@ -11,18 +12,14 @@ import {Router} from "@angular/router";
 })
 export class AppComponent {
 
-  routes: Object[] = [{
-    icon: 'home',
-    route: '/',
-    title: 'Home',
-  }, {
+  routes: Object[] = [ {
     icon: 'lock',
-    route: '../ccri-auth/',
-    title: 'OAuth2 Server',
+    route: 'https://data.developer.nhs.uk/ccri-auth/',
+    title: 'OAuth2 (SMART on FHIR) Server',
   }
     , {
       icon: 'local_hospital',
-      route: '../document-viewer/',
+      route: 'https://data.developer.nhs.uk/document-viewer/',
       title: 'FHIR Document Viewer',
     }
   ];
@@ -46,12 +43,12 @@ export class AppComponent {
       {
           icon: 'swap_horiz',
           route: 'https://fhir.hl7.org.uk/STU3',
-          title: 'HL7 UK Reference Server'
+          title: 'HL7 UK FHIR Reference'
       },
       {
           icon: 'swap_horiz',
           route: 'https://fhir.nhs.uk/STU3',
-          title: 'NHS Digital Reference Server'
+          title: 'NHS Digital FHIR Reference'
       },
   ];
 
@@ -73,7 +70,13 @@ export class AppComponent {
 
   title : string ='Care Connect Reference Implemenation';
 
-  constructor(public media: TdMediaService, public fhirSrv: FhirService,private router : Router) {
+  constructor(public media: TdMediaService,
+              public fhirSrv: FhirService,
+              private router : Router,
+              private messageService : MessageService,
+              private _dialogService: TdDialogService,
+              private _viewContainerRef: ViewContainerRef
+  ) {
 
       this.fhirSrv.getConformanceChange().subscribe(capabilityStatement =>
       {
@@ -102,6 +105,23 @@ export class AppComponent {
               }
           }
       });
+
+      this.messageService.getMessageEvent().subscribe(
+          error => {
+
+              let alertConfig : IAlertConfig = {
+                  message : error.message};
+              alertConfig.disableClose =  false; // defaults to false
+              alertConfig.viewContainerRef = this._viewContainerRef;
+              alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+              alertConfig.closeButton = 'Ok';
+              alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+              this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
+
+              } );
+      }
+
+      )
 
       this.fhirSrv.getConformance();
 

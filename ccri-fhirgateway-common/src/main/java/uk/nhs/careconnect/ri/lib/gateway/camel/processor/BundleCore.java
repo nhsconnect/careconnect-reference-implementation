@@ -191,7 +191,7 @@ public class BundleCore {
                         } else if (iResource instanceof MedicationStatement) {
                             resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource);
                         } else if (iResource instanceof Medication) {
-                            // We don't store medicationRequest, so return the resource as is 26th June 2018 KGM
+                            // resource = searchAddMedication(referenceId, (Medication) iResource);
                             resource = iResource;
                         } else if (iResource instanceof ListResource) {
                             resource = searchAddList(referenceId, (ListResource) iResource);
@@ -1807,6 +1807,8 @@ public class BundleCore {
 
         return eprMedicationRequest;
     }
+
+
 
     public RiskAssessment searchAddRiskAssessment(String riskAssessmentId,RiskAssessment riskAssessment) {
         log.info("RiskAssessment searchAdd " +riskAssessmentId);

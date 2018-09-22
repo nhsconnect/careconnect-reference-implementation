@@ -77,27 +77,11 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             medicationRequest.setStatus(medicationRequestEntity.getStatus());
         }
 
-        if (medicationRequestEntity.getMedicationCode() != null) {
-            medicationRequest.setMedication(new Reference("Medication/"+medicationRequestEntity.getId())
-                    .setDisplay(medicationRequestEntity.getMedicationCode().getDisplay()));
-        }
-        /*
-         Disabled due to profile constraint 28/02/2018 KGM
-
-        if (medicationRequestEntity.getMedicationCode() != null) {
-
-                CodeableConcept medicationRequest = new CodeableConcept();
-                medicationRequest.addCoding()
-                    .setDisplay(medicationRequestEntity.getMedicationCode().getDisplay())
-                    .setSystem(medicationRequestEntity.getMedicationCode().getSystem())
-                    .setCode(medicationRequestEntity.getMedicationCode().getCode());
-                medicationStatement.setMedication(medicationRequest);
-
-        } else if (medicationRequestEntity.getMedicationEntity() != null) {
-            medicationStatement.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
+        if (medicationRequestEntity.getMedicationEntity() != null) {
+            medicationRequest.setMedication(new Reference("Medication/"+medicationRequestEntity.getMedicationEntity().getId())
                     .setDisplay(medicationRequestEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
-        */
+
         if (medicationRequestEntity.getPriority() != null) {
             medicationRequest.setPriority(medicationRequestEntity.getPriority());
         }

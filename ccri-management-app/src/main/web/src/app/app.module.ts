@@ -4,6 +4,7 @@ import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {
+    CovalentDialogsModule,
     CovalentJsonFormatterModule,
     CovalentLayoutModule,
     CovalentMediaModule,
@@ -45,6 +46,8 @@ import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {ErrorsHandler} from "./error-handler";
+import {MessageService} from "./service/message.service";
+
 
 
 @NgModule({
@@ -94,12 +97,14 @@ import {ErrorsHandler} from "./error-handler";
     CovalentDynamicFormsModule,
     CovalentMediaModule,
     CovalentMessageModule,
-      CovalentJsonFormatterModule
+      CovalentJsonFormatterModule,
+      CovalentDialogsModule,
 
 
   ],
   providers: [
     MatIconRegistry,
+      MessageService,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
