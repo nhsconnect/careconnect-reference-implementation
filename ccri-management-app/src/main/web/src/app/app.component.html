@@ -1,3 +1,9 @@
+<mat-menu #appMenu="matMenu">
+  <span *ngFor="let server of serverMenu">
+  <button mat-menu-item (click)="swapServer(server)">{{server.title}}</button>
+    </span>
+</mat-menu>
+
 <td-layout [class]="'theme-light'">
   <td-navigation-drawer flex sidenavTitle="Applications"  name="" email="" >
     <mat-nav-list>
@@ -25,8 +31,9 @@
       <button mat-icon-button tdLayoutNavListOpen [hideWhenOpened]="true">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <span>Care Connect Reference Implementation</span>
+      <span>{{title}}</span>
       <span flex></span>
+      <button mat-icon-button matTooltip="Swap FHIR Server" [matMenuTriggerFor]="appMenu"><mat-icon>device_hub</mat-icon></button>
       <!--
       <a mat-icon-button matTooltip="Docs" href="https://teradata.github.io/covalent/" target="_blank"><mat-icon>chrome_reader_mode</mat-icon></a>
       <a mat-icon-button matTooltip="Github" href="https://github.com/teradata/covalent" target="_blank"><mat-icon svgIcon="assets:github"></mat-icon></a>

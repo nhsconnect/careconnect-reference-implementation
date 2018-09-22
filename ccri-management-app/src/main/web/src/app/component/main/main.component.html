@@ -29,12 +29,20 @@
   </mat-card-actions> -->
 </mat-card>
 <mat-card>
-  <mat-card-title>Server Information</mat-card-title>
+  <mat-card-title>Conformance Information</mat-card-title>
   <mat-divider></mat-divider>
   <mat-card-content>
       <span *ngIf="conformance != undefined">
           <mat-list>
-              <mat-list-item> <span flex-auto fxLayoutAlign="space-between center">Server <b>{{conformance.implementation.description}}</b></span></mat-list-item>
+
+              <mat-list-item>
+                  <span flex-auto fxLayoutAlign="space-between center">
+                  Server
+                  <b><span *ngIf="conformance.implementation !== undefined">
+                  {{conformance.implementation.description}}
+                  </span></b>
+                    </span>
+              </mat-list-item>
               <mat-divider></mat-divider>
               <mat-list-item><span flex-auto fxLayoutAlign="space-between center"> Implementation Guide <b>
                 <span *ngIf="conformance.implementationGuide != null">
@@ -49,6 +57,43 @@
               <mat-divider></mat-divider>
               <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Version <b>{{conformance.fhirVersion}}</b></span></mat-list-item>
               <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Status <b>{{conformance.status}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Publisher <b>{{conformance.publisher}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item *ngFor="let format of conformance.format; let first = first;">
+                  <span flex-auto fxLayoutAlign="space-between center">
+                      <span *ngIf="first">Formats</span>
+                      <span *ngIf="!first">-</span>
+                  <b>{{format}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <span *ngIf="conformance.rest !== undefined">
+                  <span *ngFor="let rest of conformance.rest">
+                      <span *ngIf="rest.security !== undefined && rest.security.service !== undefined">
+                          <span *ngFor="let service of rest.security.service">
+                              <mat-list-item>
+                                  <span flex-auto fxLayoutAlign="space-between center">
+                                      <span>Security</span>
+                                      <b>{{service.coding[0].display}}</b>
+                                  </span>
+                          </mat-list-item>
+                          </span>
+                      <span *ngIf="rest.security.extension !== undefined">
+                          <span *ngFor="let extension of rest.security.extension">
+                          <span *ngIf="extension.extension != undefined" >
+
+                              <mat-list-item *ngFor="let secext of extension.extension">
+                                  <span flex-auto fxLayoutAlign="space-between center">
+                                      <span>{{secext.url}}</span>
+                                      <b>{{secext.valueUri}}</b>
+                                  </span>
+                          </mat-list-item>
+                          </span>
+                              </span>
+                          </span>
+                      </span>
+                  </span>
+              </span>
           </mat-list>
         </span>
   </mat-card-content>

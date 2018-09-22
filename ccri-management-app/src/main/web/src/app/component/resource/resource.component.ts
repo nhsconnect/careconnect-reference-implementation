@@ -3,7 +3,7 @@ import {NavigationEnd, Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
 import {MatSelect} from "@angular/material";
 import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
-import {getViewData} from "@angular/core/src/render3/instructions";
+
 
 
 export interface QueryOptions {
@@ -36,9 +36,15 @@ export class ResourceComponent implements OnInit {
 
   public query = "";
 
+  public rest : any;
+
   private _routerSub ;
 
+  private base : string;
+
     progressBar : boolean = false;
+    
+    searchVisible : boolean = false;
 
   private currentResource : string = "";
 
@@ -57,18 +63,19 @@ export class ResourceComponent implements OnInit {
     ];
 
   ngOnInit() {
-      console.log('Resource Init called'+ this.router.url);
+     // console.log('Resource Init called'+ this.router.url);
       if (this.router.url.startsWith('/resource')) {
-          console.log(' = Init Build');
+        //  console.log(' = Init Build');
           let resource = this.router.url.replace('/resource/','');
           this.buildOptions(resource);
       }
+
 
       this._routerSub = this.router.events
       // Here is one extra parenthesis it's missing in your code
           .subscribe( event  => {
               if ((event instanceof NavigationEnd) && (event.url.startsWith('/resource'))) {
-                  console.log(' + NavChange '+event.url);
+              //    console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
                   this.resource = undefined;
@@ -77,14 +84,14 @@ export class ResourceComponent implements OnInit {
           })
   }
 
-  onAdd() {
+  onAdd(param) {
     let seq :string = (this.elements.length + 1).toString(10);
-   if (this.field.value !== undefined) {
-     switch (this.field.value.type) {
+   if (param !== undefined) {
+     switch (param.type) {
        case 'date' :
          let nodeDSQ :ITdDynamicElementConfig = {
            "label": 'Qual',
-           "name" : this.field.value.type+'-'+seq + '-1-'+ this.field.value.name,
+           "name" : param.type+'-'+seq + '-1-'+ param.name,
            "type": TdDynamicElement.Select,
            "required": false,
            "selections": [
@@ -112,8 +119,8 @@ export class ResourceComponent implements OnInit {
            "flex" : 10
          };
          let nodeDS :ITdDynamicElementConfig = {
-           "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name ,
+           "label": param.name + ' - '+param.documentation,
+           "name" : param.type+'-'+seq + '-2-'+param.name ,
            "type": TdDynamicElement.Datepicker,
            "required": true,
            "flex" : 90
@@ -126,14 +133,14 @@ export class ResourceComponent implements OnInit {
        case 'token' :
          // add matches
          let nodeT1 :ITdDynamicElementConfig = {
-           "label": 'System - '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
+           "label": 'System - '+param.name + ' - '+param.documentation,
+           "name" : param.type+'-'+seq + '-1-'+param.name,
            "type": TdDynamicElement.Input,
            "flex" : 50
          };
          let nodeT2 :ITdDynamicElementConfig = {
-           "label": 'Code - '+this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name,
+           "label": 'Code - '+param.name + ' - '+param.documentation,
+           "name" : param.type+'-'+seq + '-2-'+param.name,
            "type": TdDynamicElement.Input,
            "flex" : 50
          };
@@ -144,7 +151,7 @@ export class ResourceComponent implements OnInit {
          // add matches
          let nodeOpt: ITdDynamicElementConfig = {
            "label": "match",
-           "name": this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
+           "name": param.type+'-'+seq + '-1-'+param.name,
            "type": TdDynamicElement.Select,
            "selections": [
            {
@@ -161,8 +168,8 @@ export class ResourceComponent implements OnInit {
          };
 
          let nodeS :ITdDynamicElementConfig = {
-           "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.type+'-'+seq + '-2-'+this.field.value.name,
+           "label": param.name + ' - '+param.documentation,
+           "name" : param.type+'-'+seq + '-2-'+param.name,
            "type": TdDynamicElement.Input,
            "required": true,
            "flex" : 80
@@ -172,8 +179,8 @@ export class ResourceComponent implements OnInit {
          break;
        case 'reference' :
          let nodeR :ITdDynamicElementConfig = {
-           "label": this.field.value.name + ' - '+this.field.value.documentation,
-           "name" : this.field.value.type+'-'+seq + '-1-'+this.field.value.name,
+           "label": param.name + ' - '+param.documentation,
+           "name" : param.type+'-'+seq + '-1-'+param.name,
            "type": TdDynamicElement.Input,
            "required": true,
          };
@@ -181,7 +188,7 @@ export class ResourceComponent implements OnInit {
          break;
 
        default:
-         console.log('MISSING - '+this.field.value.type);
+         console.log('MISSING - '+param.type);
      }
      console.log('call refresh');
      this.form.refresh();
@@ -205,7 +212,7 @@ export class ResourceComponent implements OnInit {
 
       if (!first) query = query +'&'+param
       else query=query + param;
-      console.log(content[0]);
+    //  console.log(content[0]);
       switch (content[0]) {
         case 'date':
           query=query+'=';
@@ -249,18 +256,21 @@ export class ResourceComponent implements OnInit {
 
 
   buildOptions(resource : string) {
-
+      this.searchVisible = false;
       if (this.fhirSrv.conformance != undefined ) {
           if (this.currentResource !== resource) {
               this.currentResource = resource;
+              this.base = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource;
               this.options = [];
               if (this.fhirSrv.conformance.rest !== undefined) {
                   for(let node of this.fhirSrv.conformance.rest) {
 
                       for (let resourceSrc of node.resource) {
                           if (resourceSrc.type === resource) {
-                              console.log(resourceSrc.type);
+                             // console.log(resourceSrc.type);
+                              this.rest = resourceSrc;
                               if (resourceSrc.searchParam !== undefined) {
+                                  this.searchVisible = true;
                                   for (let param of resourceSrc.searchParam) {
                                       let menuOpt: QueryOptions = {
                                           name: param.name,

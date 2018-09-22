@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
   public serverBase : string;
 
   ngOnInit() {
-    console.log('main on init');
+   // console.log('main on init');
 
     this.FHIRSrv.getConformance();
 
@@ -24,7 +24,10 @@ export class MainComponent implements OnInit {
     this.FHIRSrv.getConformanceChange().subscribe(capabilityStatement =>
     {
       this.conformance = capabilityStatement;
-    });
+    },
+        (error)=> {
+      console.log('main error'+ error);
+        });
   }
 
 }

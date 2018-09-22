@@ -9,12 +9,19 @@ import {Observable} from "rxjs";
 export class FhirService {
 
 
-  private baseUrl : string = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
+  private baseUrl : string = 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3';
 
+ //   private baseUrl : string = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
+
+    //   private baseUrl : string = 'https://fhir.hl7.org.uk/STU3';
+
+ // private baseUrl : string = 'https://directory.spineservices.nhs.uk/STU3';
   //  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
- // public smart: SMARTClient;
 
-  public conformance :fhir.CapabilityStatement;
+
+    // public smart: SMARTClient;
+
+  public conformance : fhir.CapabilityStatement;
 
   conformanceChange : EventEmitter<any> = new EventEmitter();
 
@@ -50,8 +57,12 @@ export class FhirService {
     return this.baseUrl;
   }
 
+    public setFHIRServerBase(server : string) {
+        this.baseUrl = server;
+    }
+
     public getConformance() {
-      console.log('called CapabilityStatement');
+    //  console.log('called CapabilityStatement');
       this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : {}}).subscribe(capabilityStatement =>
       {
           this.conformance = capabilityStatement;

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -44,6 +44,7 @@ import { ResourceComponent } from './component/resource/resource.component';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {ErrorsHandler} from "./error-handler";
 
 
 @NgModule({
@@ -101,7 +102,11 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     MatIconRegistry,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS}
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+      {
+          provide: ErrorHandler,
+          useClass: ErrorsHandler,
+      }
   ],
   bootstrap: [AppComponent]
 })

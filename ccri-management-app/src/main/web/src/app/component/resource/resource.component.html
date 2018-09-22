@@ -1,24 +1,47 @@
 <mat-card>
-    <mat-card-title>Search Builder - {{currentResource}}</mat-card-title>
+    <mat-card-title>{{currentResource}} Capabilities</mat-card-title>
     <mat-divider></mat-divider>
     <mat-card-content>
-
-        <span flex-auto fxLayoutAlign="space-between center">
-          <mat-form-field >
-                <mat-select #field placeholder="Search Field" [(ngModel)]="selectedValue" name="food">
-                    <mat-option *ngFor="let option of options" [value]="option">
-                        {{option.name}} - {{option.documentation}}
-                    </mat-option>
-                </mat-select>
-
-            </mat-form-field>
-            <button mat-icon-button color="accent" (click)="onAdd()"><mat-icon>add_circle</mat-icon></button>
+        <span *ngIf="rest !== undefined">
+            <span *ngFor="let interaction of rest.interaction">
+                <h3>{{interaction.code}}</h3>
+                <span *ngIf="interaction.code === 'read'">
+                    <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="accent" icon="info"></td-message>
+                </span>
+                <span *ngIf="interaction.code === 'create'">
+                    <td-message label="POST {{base}}" color="accent" icon="info"></td-message>
+                </span>
+                <span *ngIf="interaction.code === 'update'">
+                     <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="accent" icon="info"></td-message>
+                </span>
+                <span *ngIf="interaction.code === 'search-type'">
+                    <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="accent" icon="info"></td-message>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="20%">Name</th>
+                            <th width="60%">Details</th>
+                            <th width="15%">Parameter Type</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tr *ngFor="let param of rest.searchParam">
+                            <td>{{param.name}}</td>
+                            <td>{{param.documentation}}</td>
+                            <td>{{param.type}}</td>
+                            <td>
+                                <button mat-icon-button color="accent" (click)="onAdd(param)"><mat-icon>add_circle</mat-icon></button>
+                            </td>
+                        </tr>
+                    </table>
+                    </span>
+            </span>
         </span>
-
     </mat-card-content>
 </mat-card>
-<mat-card>
+<mat-card *ngIf="searchVisible">
     <mat-card-title>Search Form</mat-card-title>
+    <mat-card-subtitle>Add Search Fields above</mat-card-subtitle>
     <mat-divider></mat-divider>
     <mat-card-content>
         <td-dynamic-forms #form [elements]="elements">

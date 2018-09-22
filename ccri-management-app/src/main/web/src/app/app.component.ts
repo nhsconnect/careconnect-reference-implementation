@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {TdMediaService} from "@covalent/core";
 import {FhirService} from "./service/fhir.service";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -25,6 +26,35 @@ export class AppComponent {
       title: 'FHIR Document Viewer',
     }
   ];
+
+  serverMenu : Object[] = [
+      {
+      icon: 'swap_horiz',
+      route: 'https://data.developer.nhs.uk/ccri-fhir/STU3',
+      title: 'Care Connect RI'
+  },
+      {
+          icon: 'swap_horiz',
+          route: 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3',
+          title: 'Care Connect RI (Secure)'
+      },
+      {
+          icon: 'swap_horiz',
+          route: 'https://directory.spineservices.nhs.uk/STU3',
+          title: 'FHIR ODS API'
+      },
+      {
+          icon: 'swap_horiz',
+          route: 'https://fhir.hl7.org.uk/STU3',
+          title: 'HL7 UK Reference Server'
+      },
+      {
+          icon: 'swap_horiz',
+          route: 'https://fhir.nhs.uk/STU3',
+          title: 'NHS Digital Reference Server'
+      },
+  ];
+
   usermenu: Object[] = [{
     icon: 'swap_horiz',
     route: '.',
@@ -41,8 +71,9 @@ export class AppComponent {
   ];
   navmenu: Object[] = [];
 
+  title : string ='Care Connect Reference Implemenation';
 
-  constructor(public media: TdMediaService, public fhirSrv: FhirService) {
+  constructor(public media: TdMediaService, public fhirSrv: FhirService,private router : Router) {
 
       this.fhirSrv.getConformanceChange().subscribe(capabilityStatement =>
       {
@@ -76,6 +107,11 @@ export class AppComponent {
 
   }
 
+  swapServer(menuItem : any ) {
+      this.fhirSrv.setFHIRServerBase(menuItem.route);
+      this.title = menuItem.title;
+      this.router.navigateByUrl('/');
+      this.fhirSrv.getConformance();
+  }
 
-    title = 'ccri-app';
 }
