@@ -4,7 +4,7 @@ import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {
-    CovalentDialogsModule,
+    CovalentDialogsModule, CovalentExpansionPanelModule,
     CovalentJsonFormatterModule,
     CovalentLayoutModule,
     CovalentMediaModule,
@@ -99,6 +99,7 @@ import {MessageService} from "./service/message.service";
     CovalentMessageModule,
       CovalentJsonFormatterModule,
       CovalentDialogsModule,
+      CovalentExpansionPanelModule
 
 
   ],

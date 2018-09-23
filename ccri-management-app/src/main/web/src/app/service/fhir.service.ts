@@ -9,13 +9,8 @@ import {Observable} from "rxjs";
 export class FhirService {
 
 
-  private baseUrl : string = 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3';
+  private baseUrl : string = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
 
- //   private baseUrl : string = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
-
-    //   private baseUrl : string = 'https://fhir.hl7.org.uk/STU3';
-
- // private baseUrl : string = 'https://directory.spineservices.nhs.uk/STU3';
   //  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
 
 

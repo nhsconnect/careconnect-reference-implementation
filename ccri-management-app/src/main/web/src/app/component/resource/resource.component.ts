@@ -46,6 +46,8 @@ export class ResourceComponent implements OnInit {
     
     searchVisible : boolean = false;
 
+    expanded : boolean = false;
+
   private currentResource : string = "";
 
   @ViewChild('field') field : MatSelect;
@@ -82,6 +84,14 @@ export class ResourceComponent implements OnInit {
                   this.buildOptions(resource);
               }
           })
+  }
+
+  onExpand() {
+      this.expanded = true;
+  }
+
+  onCollapse() {
+      this.expanded = false;
   }
 
   onAdd(param) {
@@ -196,62 +206,75 @@ export class ResourceComponent implements OnInit {
     
   }
 
+  onMore(linkUrl : string) {
+      this.progressBar = true;
+      this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+              this.resource = bundle;
+              this.progressBar = false;
+          },
+          () => {
+              this.progressBar = false;
+          })
+  }
   onSearch() {
-    var i:number;
-    this.resource = undefined;
-    let first : boolean = true;
-    this.progressBar = true;
-    let query = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource+'?'
+      var i: number;
+      this.resource = undefined;
+      let first: boolean = true;
+      this.progressBar = true;
+      console.log(this.form.valid);
+      if (this.form.valid && this.elements.length > 0) {
+          let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '?'
 
-    for(i = 0;i<this.elements.length;i++) {
+          for (i = 0; i < this.elements.length; i++) {
 
-      let name = this.elements[i].name;
-      let content: string[]=name.split('-');
-      let param = content[3];
-    if (content.length>4 && (content[4]!=undefined)) param = param + '-' + content[4];
+              let name = this.elements[i].name;
+              let content: string[] = name.split('-');
+              let param = content[3];
+              if (content.length > 4 && (content[4] != undefined)) param = param + '-' + content[4];
 
-      if (!first) query = query +'&'+param
-      else query=query + param;
-    //  console.log(content[0]);
-      switch (content[0]) {
-        case 'date':
-          query=query+'=';
-          if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query +this.form.value[this.elements[i].name];
-          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name].format("YYYY-MM-DD");
-          i++;
-          break;
-        case 'token':
-          query=query+'=';
-          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name]+"|";
-          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name];
-          i++;
-          break;
-        case 'string':
-          if (this.form.value[this.elements[i].name] !== undefined) query = query +":"+this.form.value[this.elements[i].name];
-          query=query+'=';
-          if (this.form.value[this.elements[i+1].name] !== undefined) query = query +this.form.value[this.elements[i+1].name];
-          i++;
-          break;
-        case 'reference':
-          query=query+'=';
-          if (this.form.value[this.elements[i].name] !== undefined) query = query +this.form.value[this.elements[i].name]
-          break;
+              if (!first) query = query + '&' + param
+              else query = query + param;
+              //  console.log(content[0]);
+              switch (content[0]) {
+                  case 'date':
+                      query = query + '=';
+                      if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query + this.form.value[this.elements[i].name];
+                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name].format("YYYY-MM-DD");
+                      i++;
+                      break;
+                  case 'token':
+                      query = query + '=';
+                      if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "|";
+                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                      i++;
+                      break;
+                  case 'string':
+                      if (this.form.value[this.elements[i].name] !== undefined) query = query + ":" + this.form.value[this.elements[i].name];
+                      query = query + '=';
+                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                      i++;
+                      break;
+                  case 'reference':
+                      query = query + '=';
+                      if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name]
+                      break;
 
+              }
+
+
+              console.log(this.form.value[this.elements[i].name]);
+              first = false;
+          }
+          console.log(query);
+          this.query = query;
+          this.fhirSrv.getResults(query).subscribe(bundle => {
+                  this.resource = bundle;
+                  this.progressBar = false;
+              },
+              () => {
+                  this.progressBar = false;
+              })
       }
-
-
-      console.log(this.form.value[this.elements[i].name]);
-      first = false;
-    }
-    console.log(query);
-    this.query = query;
-    this.fhirSrv.getResults(query).subscribe(bundle => {
-      this.resource = bundle;
-      this.progressBar = false;
-    },
-        ()=> {
-        this.progressBar = false;
-        })
   }
 
 

@@ -15,6 +15,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
@@ -39,6 +40,9 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     @Autowired
     ResourceTestProvider resourceTestProvider;
 
+    @Value("${ccri.server.base}")
+    String serverBase;
+
     private static final Logger log = LoggerFactory.getLogger(DocumentReferenceResourceProvider.class);
 
 
@@ -54,6 +58,17 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
     */
+
+    private DocumentReference convertFromSmartUrl(DocumentReference documentReference) {
+    if (serverBase != null && serverBase.contains("ccri-fhir")) {
+        for (DocumentReference.DocumentReferenceContentComponent context: documentReference.getContent()) {
+            if (context.hasAttachment() && context.getAttachment().hasUrl()) {
+                context.getAttachment().setUrl(context.getAttachment().getUrl().replace("ccri-smartonfhir","ccri-fhir"));
+            }
+        }
+    }
+    return documentReference;
+}
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) throws Exception {
 
@@ -83,7 +98,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             throw new InternalErrorException(ex.getMessage());
         }
         if (resource instanceof DocumentReference) {
-            documentReference = (DocumentReference) resource;
+            documentReference = convertFromSmartUrl((DocumentReference) resource);
+
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
         }
@@ -132,7 +148,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             throw new InternalErrorException(ex.getMessage());
         }
         if (resource instanceof DocumentReference) {
-            documentReference = (DocumentReference) resource;
+
+            documentReference = convertFromSmartUrl((DocumentReference) resource);
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
         }
@@ -175,7 +192,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                DocumentReference documentReference = (DocumentReference) entry.getResource();
+                DocumentReference documentReference = convertFromSmartUrl((DocumentReference) resource);
                 results.add(documentReference);
             }
         } else {

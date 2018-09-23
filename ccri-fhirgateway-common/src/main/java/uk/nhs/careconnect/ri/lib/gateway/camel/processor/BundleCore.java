@@ -509,6 +509,13 @@ public class BundleCore {
 
         InputStream inputStream = null;
 
+        // Prevent re-adding the same Organisation
+        if (organisation.getIdentifier().size() == 0) {
+            organisation.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(organisation.getId());
+        }
+
         for (Identifier identifier : organisation.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIROrganisation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
@@ -609,6 +616,13 @@ public class BundleCore {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
+
+        // Prevent re-adding the same HealthcareService
+        if (service.getIdentifier().size() == 0) {
+            service.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(service.getId());
+        }
 
         log.info("Looking up HealthcareService Service " +serviceId);
         for (Identifier identifier : service.getIdentifier()) {

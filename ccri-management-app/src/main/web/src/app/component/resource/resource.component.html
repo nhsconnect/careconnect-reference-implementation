@@ -11,43 +11,52 @@
                     </td-message>
                 </span>
             </span>
+            <h3>Interactions</h3>
             <span *ngFor="let interaction of rest.interaction">
-                <h3>{{interaction.code}}</h3>
+
                 <span *ngIf="interaction.code === 'read'">
-                    <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                        <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                    </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'create'">
-                    <td-message label="POST {{base}}" color="green" icon="info"></td-message>
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                        <td-message label="POST {{base}}" color="green" icon="info"></td-message>
+                    </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'update'">
-                     <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                        <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                    </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'search-type'">
-                    <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="green" icon="info"></td-message>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th width="20%">Name</th>
-                            <th width="60%">Details</th>
-                            <th width="15%">Parameter Type</th>
-                            <th width="5%"></th>
-                        </tr>
-                        </thead>
-                        <tr *ngFor="let param of rest.searchParam">
-                            <td>{{param.name}}</td>
-                            <td>{{param.documentation}}</td>
-                            <td>{{param.type}}</td>
-                            <td>
-                                <button mat-icon-button color="accent" (click)="onAdd(param)"><mat-icon>add_circle</mat-icon></button>
-                            </td>
-                        </tr>
-                    </table>
-                    </span>
+                    <td-expansion-panel (expanded)="onExpand()" (collapsed)="onCollapse()" label="{{interaction.code}}" [disabled]="disabled">
+                        <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="green" icon="info"></td-message>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="20%">Name</th>
+                                <th width="60%">Details</th>
+                                <th width="15%">Parameter Type</th>
+                                <th width="5%"></th>
+                            </tr>
+                            </thead>
+                            <tr *ngFor="let param of rest.searchParam">
+                                <td>{{param.name}}</td>
+                                <td>{{param.documentation}}</td>
+                                <td>{{param.type}}</td>
+                                <td>
+                                    <button mat-icon-button color="accent" (click)="onAdd(param)"><mat-icon>add_circle</mat-icon></button>
+                                </td>
+                            </tr>
+                        </table>
+                </td-expansion-panel>
+                </span>
             </span>
         </span>
     </mat-card-content>
 </mat-card>
-<mat-card *ngIf="searchVisible">
+<mat-card *ngIf="searchVisible && expanded">
     <mat-card-title>Search Form</mat-card-title>
     <mat-card-subtitle>Add Search Fields above</mat-card-subtitle>
     <mat-divider></mat-divider>
@@ -71,7 +80,7 @@
     </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <a mat-button button color="accent" class="text-upper" (click)="onSearch()">
+    <a mat-button color="accent" class="text-upper" (click)="onSearch()">
      <!-- <mat-icon>search</mat-icon> -->
       <span>Search</span>
     </a>
@@ -80,7 +89,25 @@
 <span *ngIf="resource !== undefined">
   <mat-card>
       <mat-card-title>Results</mat-card-title>
-      <mat-card-subtitle>GET <b>{{query}}</b></mat-card-subtitle>
+      <mat-card-subtitle>GET <b>{{query}}</b>
+          <p>
+          <span flex-auto fxLayoutAlign="space-between center">
+              <span>
+                <span>Results: </span>
+                <b> {{resource.entry.length}} / {{resource.total}}</b>
+              </span>
+              <span>
+                  <span *ngFor="let link of resource.link.slice().reverse()">
+                    <span *ngIf="link.relation ==='previous'">
+                        <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_previous</mat-icon></button>
+                    </span>
+                    <span *ngIf="link.relation ==='next'">
+                        <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_next</mat-icon></button>
+                    </span>
+                  </span>
+                </span>
+              </span>
+      </mat-card-subtitle>
       <mat-divider></mat-divider>
       <mat-card-content>
 
