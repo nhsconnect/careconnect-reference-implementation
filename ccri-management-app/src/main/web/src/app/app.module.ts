@@ -31,7 +31,7 @@ import {
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatPaginatorModule, MatProgressBarModule,
+    MatPaginatorModule, MatProgressBarModule, MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
     MatSnackBarModule,
@@ -86,6 +86,7 @@ import {MessageService} from "./service/message.service";
       MatBadgeModule,
       MatChipsModule,
       MatProgressBarModule,
+      MatRadioModule,
 
 
     CovalentLayoutModule,

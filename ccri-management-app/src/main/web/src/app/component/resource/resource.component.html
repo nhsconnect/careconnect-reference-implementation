@@ -77,6 +77,7 @@
         <span *ngIf="progressBar">
           <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         </span>
+
     </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
@@ -94,7 +95,7 @@
           <span flex-auto fxLayoutAlign="space-between center">
               <span>
                 <span>Results: </span>
-                <b> {{resource.entry.length}} / {{resource.total}}</b>
+                <b *ngIf="resource.entry !== undefined"> {{resource.entry.length}} / {{resource.total}}</b>
               </span>
               <span>
                   <span *ngFor="let link of resource.link.slice().reverse()">

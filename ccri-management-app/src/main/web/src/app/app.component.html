@@ -3,6 +3,21 @@
   <button mat-menu-item (click)="swapServer(server)">{{server.title}}</button>
     </span>
 </mat-menu>
+<mat-menu #formatMenu>
+  <button mat-menu-item>
+    <mat-icon>check</mat-icon>
+    <span>JSON (Formatter)</span></button>
+
+  <button mat-menu-item>
+    <mat-icon></mat-icon>
+    <span>JSON</span></button>
+  <button mat-menu-item>
+    <mat-icon></mat-icon>
+    <span>XML</span></button>
+  <button mat-menu-item>
+    <mat-icon></mat-icon>
+    <span>EPR Mode</span></button>
+</mat-menu>
 
 <td-layout [class]="'theme-light'">
   <td-navigation-drawer flex sidenavTitle="Applications"  name="" email="" >
@@ -33,7 +48,9 @@
       </button>
       <span>{{title}}</span>
       <span flex></span>
+      <button mat-icon-button matTooltip="Output format" [matMenuTriggerFor]="formatMenu"><mat-icon>text_format</mat-icon></button>
       <button mat-icon-button matTooltip="Swap FHIR Server" [matMenuTriggerFor]="appMenu"><mat-icon>device_hub</mat-icon></button>
+
       <!--
       <a mat-icon-button matTooltip="Docs" href="https://teradata.github.io/covalent/" target="_blank"><mat-icon>chrome_reader_mode</mat-icon></a>
       <a mat-icon-button matTooltip="Github" href="https://github.com/teradata/covalent" target="_blank"><mat-icon svgIcon="assets:github"></mat-icon></a>
