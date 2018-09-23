@@ -3,19 +3,27 @@
     <mat-divider></mat-divider>
     <mat-card-content>
         <span *ngIf="rest !== undefined">
+            <span *ngIf="rest.profile != undefined && rest.profile.reference !=undefined">
+                <span *ngIf="!rest.profile.reference.includes('hl7.org/fhir/Profile')">
+                 <h3>FHIR Profile</h3>
+                    <td-message label="{{rest.profile.reference}}" color="blue" icon="info">
+                        <a td-message-actions mat-button href="{{rest.profile.reference}}" >VIEW PROFILE</a>
+                    </td-message>
+                </span>
+            </span>
             <span *ngFor="let interaction of rest.interaction">
                 <h3>{{interaction.code}}</h3>
                 <span *ngIf="interaction.code === 'read'">
-                    <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="accent" icon="info"></td-message>
+                    <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
                 </span>
                 <span *ngIf="interaction.code === 'create'">
-                    <td-message label="POST {{base}}" color="accent" icon="info"></td-message>
+                    <td-message label="POST {{base}}" color="green" icon="info"></td-message>
                 </span>
                 <span *ngIf="interaction.code === 'update'">
-                     <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="accent" icon="info"></td-message>
+                     <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
                 </span>
                 <span *ngIf="interaction.code === 'search-type'">
-                    <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="accent" icon="info"></td-message>
+                    <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="green" icon="info"></td-message>
                     <table>
                         <thead>
                         <tr>

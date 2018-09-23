@@ -4,13 +4,11 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Medication;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.MedicationRepository;
 import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
+import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -69,6 +68,30 @@ public class MedicationProvider implements ICCResourceProvider {
         return medicationDao.search(ctx,code,resid);
 
 
+    }
+
+    @Update
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Medication medication, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        try {
+            Medication newMedication = medicationDao.create(ctx,medication, theId, theConditional);
+            method.setId(newMedication.getIdElement());
+            method.setResource(newMedication);
+        } catch (Exception ex) {
+
+            ProviderResponseLibrary.handleException(method,ex);
+        }
+
+
+
+        return method;
     }
 
     @Create
