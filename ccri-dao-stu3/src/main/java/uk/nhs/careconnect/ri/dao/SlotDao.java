@@ -260,7 +260,6 @@ public class SlotDao implements SlotRepository {
 
     }
 
-
     @Override
     public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
 
@@ -274,8 +273,6 @@ public class SlotDao implements SlotRepository {
 
         return results;
     }
-
-
 
     @Override
     public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {

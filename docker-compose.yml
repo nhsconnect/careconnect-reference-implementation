@@ -9,7 +9,7 @@ services:
     - POSTGRES_USER=${MYSQL_DB_USER}
     - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
     ports:
-    - 5433:5432
+    - 5432:5432
     networks:
     - ccri_net
 

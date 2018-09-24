@@ -25,7 +25,6 @@ public class HealthcareServiceEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SPECIALTY_ORGANISATION_ID"))
-
     private OrganisationEntity providedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
