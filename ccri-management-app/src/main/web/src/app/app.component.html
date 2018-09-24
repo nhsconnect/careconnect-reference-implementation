@@ -4,18 +4,32 @@
     </span>
 </mat-menu>
 <mat-menu #formatMenu>
-  <button mat-menu-item>
-    <mat-icon>check</mat-icon>
+  <button mat-menu-item (click)="format('jsonf')">
+    <span *ngIf="outputFormat === 'jsonf';then other1i else other1e">
+    </span>
+    <ng-template #other1i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other1e><mat-icon></mat-icon></ng-template>
     <span>JSON (Formatter)</span></button>
-
-  <button mat-menu-item>
-    <mat-icon></mat-icon>
+  <button mat-menu-item (click)="format('json')">
+    <span *ngIf="outputFormat === 'json';then other2i else other2e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other2i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other2e><mat-icon></mat-icon></ng-template>
     <span>JSON</span></button>
-  <button mat-menu-item>
-    <mat-icon></mat-icon>
+  <button mat-menu-item (click)="format('xml')">
+    <span *ngIf="outputFormat === 'xml';then other3i else other3e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other3i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other3e><mat-icon></mat-icon></ng-template>
     <span>XML</span></button>
-  <button mat-menu-item>
-    <mat-icon></mat-icon>
+  <button mat-menu-item (click)="format('epr')">
+    <span *ngIf="outputFormat === 'epr';then other4i else other4e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other4i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other4e><mat-icon></mat-icon></ng-template>
     <span>EPR Mode</span></button>
 </mat-menu>
 

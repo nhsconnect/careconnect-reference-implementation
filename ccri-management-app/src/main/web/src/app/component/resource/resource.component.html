@@ -50,70 +50,81 @@
                                 </td>
                             </tr>
                         </table>
+                        <td-dynamic-forms #form [elements]="elements">
+                          <ng-template let-element ngFor [ngForOf]="elements">
+                            <ng-template let-control="control" [tdDynamicFormsError]="element.name">
+                                <span *ngIf="control.touched || !control.pristine">
+                                  <span *ngIf="control.hasError('required')">Required</span>
+                                  <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
+                                  <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
+                                  <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
+                                  <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
+                                </span>
+                            </ng-template>
+                          </ng-template>
+                        </td-dynamic-forms>
+                        <span *ngIf="progressBar">
+                          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                        </span>
+                         <a mat-button color="accent" class="text-upper" (click)="onSearch()">
+                         <!-- <mat-icon>search</mat-icon> -->
+                          <span>Search</span>
+                        </a>
+
                 </td-expansion-panel>
                 </span>
             </span>
         </span>
     </mat-card-content>
 </mat-card>
-<mat-card *ngIf="searchVisible && expanded">
-    <mat-card-title>Search Form</mat-card-title>
-    <mat-card-subtitle>Add Search Fields above</mat-card-subtitle>
-    <mat-divider></mat-divider>
-    <mat-card-content>
-        <td-dynamic-forms #form [elements]="elements">
-          <ng-template let-element ngFor [ngForOf]="elements">
-            <ng-template let-control="control" [tdDynamicFormsError]="element.name">
-                <span *ngIf="control.touched || !control.pristine">
-                  <span *ngIf="control.hasError('required')">Required</span>
-                  <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
-                  <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
-                  <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
-                  <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
-                </span>
-            </ng-template>
-          </ng-template>
-        </td-dynamic-forms>
-        <span *ngIf="progressBar">
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        </span>
 
-    </mat-card-content>
-  <mat-divider></mat-divider>
-  <mat-card-actions>
-    <a mat-button color="accent" class="text-upper" (click)="onSearch()">
-     <!-- <mat-icon>search</mat-icon> -->
-      <span>Search</span>
-    </a>
-  </mat-card-actions>
-</mat-card>
-<span *ngIf="resource !== undefined">
-  <mat-card>
-      <mat-card-title>Results</mat-card-title>
-      <mat-card-subtitle>GET <b>{{query}}</b>
-          <p>
-          <span flex-auto fxLayoutAlign="space-between center">
-              <span>
-                <span>Results: </span>
-                <b *ngIf="resource.entry !== undefined"> {{resource.entry.length}} / {{resource.total}}</b>
-              </span>
-              <span>
-                  <span *ngFor="let link of resource.link.slice().reverse()">
-                    <span *ngIf="link.relation ==='previous'">
-                        <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_previous</mat-icon></button>
-                    </span>
-                    <span *ngIf="link.relation ==='next'">
-                        <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_next</mat-icon></button>
+<span *ngIf="resource !== undefined || resourceString !== undefined">
+    <span *ngIf="format === 'jsonf' || format === 'json'">
+      <mat-card>
+          <mat-card-title>Results</mat-card-title>
+          <mat-card-subtitle>GET <b>{{query}}</b>
+              <p>
+              <span flex-auto fxLayoutAlign="space-between center">
+                  <span>
+                    <span>Results: </span>
+                    <b *ngIf="resource.entry !== undefined"> {{resource.entry.length}} / {{resource.total}}</b>
+                  </span>
+                  <span>
+                      <span *ngFor="let link of resource.link.slice().reverse()">
+                        <span *ngIf="link.relation ==='previous'">
+                            <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_previous</mat-icon></button>
+                        </span>
+                        <span *ngIf="link.relation ==='next'">
+                            <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_next</mat-icon></button>
+                        </span>
+                      </span>
                     </span>
                   </span>
-                </span>
+          </mat-card-subtitle>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+              <span *ngIf="format === 'jsonf'">
+                  <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
+                  </td-json-formatter>
               </span>
-      </mat-card-subtitle>
-      <mat-divider></mat-divider>
-      <mat-card-content>
+               <span *ngIf="format === 'json'">
+                  <td-highlight lang="json" [content]="resourceString">
+                  </td-highlight>
+              </span>
+          </mat-card-content>
+      </mat-card>
+    </span>
+    <span *ngIf="format === 'xml'">
+      <mat-card>
+          <mat-card-title>Results</mat-card-title>
+          <mat-card-subtitle>GET <b>{{query}}</b>
+          </mat-card-subtitle>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+              <td-highlight lang="xml" [content]="resourceString">
+              </td-highlight>
+          </mat-card-content>
+      </mat-card>
+    </span>
 
-          <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
-          </td-json-formatter>
-      </mat-card-content>
-  </mat-card>
 </span>

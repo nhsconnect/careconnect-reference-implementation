@@ -1,6 +1,6 @@
 import {Component, ViewContainerRef} from '@angular/core';
 import {IAlertConfig, IConfirmConfig, TdDialogService, TdMediaService} from "@covalent/core";
-import {FhirService} from "./service/fhir.service";
+import {FhirService, Formats} from "./service/fhir.service";
 import {Router} from "@angular/router";
 import {ErrorsHandler} from "./error-handler";
 import {MessageService} from "./service/message.service";
@@ -12,13 +12,15 @@ import {MessageService} from "./service/message.service";
 })
 export class AppComponent {
 
+    public outputFormat : Formats = Formats.JsonFormatted;
+
   routes: Object[] = [ {
     icon: 'lock',
     route: 'https://data.developer.nhs.uk/ccri-auth/',
     title: 'OAuth2 (SMART on FHIR) Server',
   }
     , {
-      icon: 'local_hospital',
+      icon: 'file_copy',
       route: 'https://data.developer.nhs.uk/document-viewer/',
       title: 'FHIR Document Viewer',
     }
@@ -125,6 +127,26 @@ export class AppComponent {
 
       this.fhirSrv.getConformance();
 
+  }
+
+  format(format : string) {
+
+      switch(format) {
+          case 'jsonf' :
+              this.outputFormat = Formats.JsonFormatted;
+
+              break;
+          case 'json' :
+              this.outputFormat = Formats.Json;
+              break;
+          case 'xml' :
+              this.outputFormat = Formats.Xml;
+              break;
+          case 'epr' :
+              this.outputFormat = Formats.EprView;
+              break;
+      }
+      this.fhirSrv.setOutputFormat(this.outputFormat);
   }
 
   swapServer(menuItem : any ) {

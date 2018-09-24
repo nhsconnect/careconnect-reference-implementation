@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router} from "@angular/router";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService, Formats} from "../../service/fhir.service";
 import {MatSelect} from "@angular/material";
 import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
 
@@ -34,13 +34,17 @@ export class ResourceComponent implements OnInit {
 
   public resource : fhir.Bundle = undefined;
 
+  public resourceString : string = undefined;
+
   public query = "";
 
   public rest : any;
 
   private _routerSub ;
 
-  private base : string;
+  public base : string;
+
+    public format : Formats;
 
     progressBar : boolean = false;
     
@@ -72,6 +76,12 @@ export class ResourceComponent implements OnInit {
           this.buildOptions(resource);
       }
 
+      this.format = this.fhirSrv.getFormat();
+
+      this.fhirSrv.getFormatChange().subscribe( format => {
+          this.format = format;
+          this.getResults();
+      })
 
       this._routerSub = this.router.events
       // Here is one extra parenthesis it's missing in your code
@@ -265,10 +275,32 @@ export class ResourceComponent implements OnInit {
               console.log(this.form.value[this.elements[i].name]);
               first = false;
           }
-          console.log(query);
+        //  console.log(query);
           this.query = query;
-          this.fhirSrv.getResults(query).subscribe(bundle => {
-                  this.resource = bundle;
+          this.getResults();
+      }
+  }
+
+  getResults() {
+      if (this.query !== undefined && (this.query != '')) {
+          console.log(this.format + ' Query = '+this.query);
+          this.fhirSrv.getResults(this.query).subscribe(bundle => {
+
+                  if (this.format === 'jsonf') {
+                      this.resource = bundle;
+                  } else if (this.format === 'json') {
+                      this.resource = bundle;
+                      this.resourceString = JSON.stringify(bundle, null, 2);
+                  } else if (this.format === 'xml') {
+                      let reader = new FileReader();
+                      reader.addEventListener('loadend', (e) => {
+                          const text = e.srcElement.result;
+
+                          this.resourceString = text;
+                      });
+                      reader.readAsText(<Blob> bundle);
+
+                  }
                   this.progressBar = false;
               },
               () => {
@@ -276,7 +308,6 @@ export class ResourceComponent implements OnInit {
               })
       }
   }
-
 
   buildOptions(resource : string) {
       this.searchVisible = false;
