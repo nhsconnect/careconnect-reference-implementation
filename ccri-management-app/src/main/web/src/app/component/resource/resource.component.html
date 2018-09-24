@@ -50,6 +50,10 @@
                                 </td>
                             </tr>
                         </table>
+                        <mat-card>
+                            <mat-card-subtitle>FHIR Search Form</mat-card-subtitle>
+                            <mat-card-content>
+                        Use the table above to add search fields (above) to add search components to this form.
                         <td-dynamic-forms #form [elements]="elements">
                           <ng-template let-element ngFor [ngForOf]="elements">
                             <ng-template let-control="control" [tdDynamicFormsError]="element.name">
@@ -66,11 +70,16 @@
                         <span *ngIf="progressBar">
                           <mat-progress-bar mode="indeterminate"></mat-progress-bar>
                         </span>
-                         <a mat-button color="accent" class="text-upper" (click)="onSearch()">
-                         <!-- <mat-icon>search</mat-icon> -->
-                          <span>Search</span>
-                        </a>
+                                </mat-card-content>
+                            <mat-card-actions>
+                                 <a mat-button color="accent" class="text-upper" (click)="onSearch()">
+                                 <!-- <mat-icon>search</mat-icon> -->
+                                  <span>Search</span>
 
+
+                        </a>
+                            </mat-card-actions>
+                        </mat-card>
                 </td-expansion-panel>
                 </span>
             </span>
