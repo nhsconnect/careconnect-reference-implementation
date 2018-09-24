@@ -126,7 +126,7 @@ services:
       container_name: ccrimongo
       image: mongo:3.6.3
       ports:
-        - 8106:27107
+        - 27107:27107
       networks:
         - ccri_net
 

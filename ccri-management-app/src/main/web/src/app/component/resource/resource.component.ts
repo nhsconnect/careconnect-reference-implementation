@@ -91,6 +91,7 @@ export class ResourceComponent implements OnInit {
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
                   this.resource = undefined;
+                  this.resourceString = undefined;
                   this.buildOptions(resource);
               }
           })
@@ -294,9 +295,9 @@ export class ResourceComponent implements OnInit {
                   } else if (this.format === 'xml') {
                       let reader = new FileReader();
                       reader.addEventListener('loadend', (e) => {
-                          const text = e.srcElement.result;
+                          //const text = e.srcElement.result;
 
-                          this.resourceString = text;
+                          this.resourceString = reader.result;
                       });
                       reader.readAsText(<Blob> bundle);
 
