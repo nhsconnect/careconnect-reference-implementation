@@ -56,7 +56,7 @@ export class ResourceComponent implements OnInit {
 
   @ViewChild('field') field : MatSelect;
 
-  @ViewChild('form') form : TdDynamicFormsComponent;
+  @ViewChild('dynform') form : TdDynamicFormsComponent;
 
   public elements :ITdDynamicElementConfig[] = [
 
@@ -163,6 +163,7 @@ export class ResourceComponent implements OnInit {
            "label": 'Code - '+param.name + ' - '+param.documentation,
            "name" : param.type+'-'+seq + '-2-'+param.name,
            "type": TdDynamicElement.Input,
+             "required": true,
            "flex" : 50
          };
          this.elements.push(nodeT1);
@@ -282,25 +283,30 @@ export class ResourceComponent implements OnInit {
       }
   }
 
+  onClear() {
+      this.elements = [];
+      this.form.refresh();
+  }
+
   getResults() {
       if (this.query !== undefined && (this.query != '')) {
           console.log(this.format + ' Query = '+this.query);
           this.fhirSrv.getResults(this.query).subscribe(bundle => {
+                  switch(this.format) {
+                      case 'jsonf':
+                          this.resource = bundle;
+                          break;
+                      case 'json' :
+                          this.resource = bundle;
+                          this.resourceString = JSON.stringify(bundle, null, 2);
+                          break;
 
-                  if (this.format === 'jsonf') {
-                      this.resource = bundle;
-                  } else if (this.format === 'json') {
-                      this.resource = bundle;
-                      this.resourceString = JSON.stringify(bundle, null, 2);
-                  } else if (this.format === 'xml') {
-                      let reader = new FileReader();
-                      reader.addEventListener('loadend', (e) => {
-                          //const text = e.srcElement.result;
-
-                          this.resourceString = reader.result;
-                      });
-                      reader.readAsText(<Blob> bundle);
-
+                      case 'xml':
+                          let reader = new FileReader();
+                          reader.addEventListener('loadend', (e) => {
+                              this.resourceString = reader.result;
+                          });
+                          reader.readAsText(<Blob> bundle);
                   }
                   this.progressBar = false;
               },

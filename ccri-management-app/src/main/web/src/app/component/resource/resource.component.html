@@ -16,21 +16,36 @@
 
                 <span *ngIf="interaction.code === 'read'">
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
-                        <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                       <mat-card>
+                           <mat-card-content>
+                                <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                            </mat-card-content>
+                       </mat-card>
                     </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'create'">
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
-                        <td-message label="POST {{base}}" color="green" icon="info"></td-message>
+                      <mat-card>
+                            <mat-card-content>
+                                <td-message label="POST {{base}}" color="green" icon="info"></td-message>
+                             </mat-card-content>
+                        </mat-card>
                     </td-expansion-panel>
+
                 </span>
                 <span *ngIf="interaction.code === 'update'">
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
-                        <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                        <mat-card>
+                            <mat-card-content>
+                                <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
+                            </mat-card-content>
+                        </mat-card>
                     </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'search-type'">
                     <td-expansion-panel (expanded)="onExpand()" (collapsed)="onCollapse()" label="{{interaction.code}}" [disabled]="disabled">
+                        <mat-card>
+                            <mat-card-content>
                         <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="green" icon="info"></td-message>
                         <table>
                             <thead>
@@ -50,34 +65,34 @@
                                 </td>
                             </tr>
                         </table>
+                            </mat-card-content>
+                           </mat-card>
                         <mat-card>
                             <mat-card-subtitle>FHIR Search Form</mat-card-subtitle>
                             <mat-card-content>
-                        Use the table above to add search fields (above) to add search components to this form.
-                        <td-dynamic-forms #form [elements]="elements">
-                          <ng-template let-element ngFor [ngForOf]="elements">
-                            <ng-template let-control="control" [tdDynamicFormsError]="element.name">
-                                <span *ngIf="control.touched || !control.pristine">
-                                  <span *ngIf="control.hasError('required')">Required</span>
-                                  <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
-                                  <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
-                                  <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
-                                  <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
-                                </span>
-                            </ng-template>
-                          </ng-template>
-                        </td-dynamic-forms>
-                        <span *ngIf="progressBar">
-                          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                        </span>
+                                Use the table above to add search fields (above) to this form.
+                                <td-dynamic-forms #dynform [elements]="elements">
+                                  <ng-template let-element ngFor [ngForOf]="elements">
+                                    <ng-template let-control="control" [tdDynamicFormsError]="element.name">
+                                        <span *ngIf="control.touched || !control.pristine">
+                                          <span *ngIf="control.hasError('required')">Required</span>
+                                          <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
+                                          <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
+                                          <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
+                                          <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
+                                        </span>
+                                    </ng-template>
+                                  </ng-template>
+                                </td-dynamic-forms>
                                 </mat-card-content>
                             <mat-card-actions>
-                                 <a mat-button color="accent" class="text-upper" (click)="onSearch()">
-                                 <!-- <mat-icon>search</mat-icon> -->
-                                  <span>Search</span>
-
-
-                        </a>
+                                <a mat-button color="accent" class="text-upper" (click)="onSearch()">
+                                  <span>Search</span></a>
+                                <a mat-button color="accent" class="text-upper" (click)="onClear()">
+                                  <span>Clear</span></a>
+                                <span *ngIf="progressBar">
+                                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                </span>
                             </mat-card-actions>
                         </mat-card>
                 </td-expansion-panel>
