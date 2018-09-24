@@ -18,6 +18,7 @@
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
                        <mat-card>
                            <mat-card-content>
+                               Read the current state of the resource<br><br>
                                 <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
                             </mat-card-content>
                        </mat-card>
@@ -27,6 +28,7 @@
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
                       <mat-card>
                             <mat-card-content>
+                                Create a new resource with a server assigned id<br><br>
                                 <td-message label="POST {{base}}" color="green" icon="info"></td-message>
                              </mat-card-content>
                         </mat-card>
@@ -37,6 +39,7 @@
                     <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
                         <mat-card>
                             <mat-card-content>
+                                Update an existing resource by its id (or create it if it is new)<br><br>
                                 <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}" color="green" icon="info"></td-message>
                             </mat-card-content>
                         </mat-card>
@@ -46,6 +49,7 @@
                     <td-expansion-panel (expanded)="onExpand()" (collapsed)="onCollapse()" label="{{interaction.code}}" [disabled]="disabled">
                         <mat-card>
                             <mat-card-content>
+                                	Search the resource type based on some filter criteria<br><br>
                         <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}" color="green" icon="info"></td-message>
                         <table>
                             <thead>
@@ -86,9 +90,9 @@
                                 </td-dynamic-forms>
                                 </mat-card-content>
                             <mat-card-actions>
-                                <a mat-button color="accent" class="text-upper" (click)="onSearch()">
+                                <a mat-button [disabled]="!(dynform.valid && (elements.length >0))" color="accent" class="text-upper" (click)="onSearch()">
                                   <span>Search</span></a>
-                                <a mat-button color="accent" class="text-upper" (click)="onClear()">
+                                <a mat-button [disabled]="(elements.length === 0)" color="accent" class="text-upper" (click)="onClear()">
                                   <span>Clear</span></a>
                                 <span *ngIf="progressBar">
                                   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
