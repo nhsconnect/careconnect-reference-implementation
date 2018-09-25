@@ -1,0 +1,131 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let medicationStatement"> {{medicationStatement.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="asserted">
+      <th mat-header-cell *matHeaderCellDef> Asserted </th>
+      <td mat-cell *matCellDef="let medicationStatement"> {{medicationStatement.dateAsserted | date: 'dd-MMM-yyyy HH:mm'}} </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="medication">
+      <th mat-header-cell *matHeaderCellDef> Medication </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <span *ngIf="medicationStatement.medicationCodeableConcept !=undefined" >
+          <b *ngIf="medicationStatement.medicationCodeableConcept !=undefined">{{medicationStatement.medicationCodeableConcept.coding[0].display}}</b>
+
+        </span>
+        <span *ngIf="medicationStatement.medicationReference !=undefined">
+
+            <b>{{medicationStatement.medicationReference.display}}</b>
+
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="medicationlink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+
+          <span *ngIf="medicationStatement.medicationCodeableConcept !=undefined" >
+            <span *ngIf="isSNOMED(medicationStatement.medicationCodeableConcept.coding[0].system)">
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationStatement.medicationCodeableConcept.coding[0].system)}} {{medicationStatement.medicationCodeableConcept.coding[0].code}}" (click)="getSNOMEDLink(medicationStatement.medicationCodeableConcept.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationStatement.medicationCodeableConcept.coding[0].system)}} {{medicationStatement.medicationCodeableConcept.coding[0].code}}" (click)="getDMDLink(medicationStatement.medicationCodeableConcept.coding[0])">
+                  <mat-icon>turned_in</mat-icon>
+              </button>
+            </span>
+
+          </span>
+          <span *ngIf="medicationStatement.medicationReference !=undefined">
+
+              <button mat-icon-button color="accent" matTooltip="View Medication" (click)="onClick( medicationStatement)">
+                  <mat-icon>colorize</mat-icon>
+              </button>
+
+          </span>
+
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dose">
+      <th mat-header-cell *matHeaderCellDef> Dose </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <span *ngFor="let dosage of medicationStatement.dosage">
+            <span *ngIf="dosage.doseQuantity!=undefined">{{dosage.doseQuantity.value}} {{dosage.doseQuantity.unit}}</span>
+
+            <span *ngIf="dosage.asNeededBoolean"> as required</span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="form">
+      <th mat-header-cell *matHeaderCellDef> Form </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <span *ngFor="let dosage of medicationStatement.dosage">
+            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+              <span  > {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
+            </span>
+
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="route">
+      <th mat-header-cell *matHeaderCellDef> Route </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <span *ngFor="let dosage of medicationStatement.dosage">
+
+            <span *ngIf="dosage.route!=undefined && dosage.route.coding.length>0" >
+              {{dosage.route.coding[0].display}}
+            </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="routelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <span *ngFor="let dosage of medicationStatement.dosage">
+
+            <span *ngIf="dosage.route!=undefined && dosage.route.coding.length>0" >
+               <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(dosage.route.coding[0].system)}} {{dosage.route.coding[0].code}}" (click)="getSNOMEDLink(dosage.route.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+            </span>
+        </span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Status </th>
+        <td mat-cell *matCellDef="let medicationStatement"><b>{{medicationStatement.status}}</b></td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>
+      <td mat-cell *matCellDef="let medicationStatement">
+        <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(medicationStatement)"><mat-icon>code</mat-icon></button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
+

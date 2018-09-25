@@ -1,0 +1,162 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.id}} </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="patient">
+      <th mat-header-cell *matHeaderCellDef > Patient </th>
+      <td mat-cell *matCellDef="let patient">
+
+        <b>{{ getLastName(patient) }}</b>
+        &nbsp;{{ getFirstName(patient) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="identifier">
+      <th mat-header-cell *matHeaderCellDef > Identifier </th>
+      <td mat-cell *matCellDef="let patient">
+
+        <div *ngFor="let identifier of patient.identifier">
+            <i>{{ getIdentifier(identifier) }}</i>
+            &nbsp;<b> {{identifier.value}}</b>
+          </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="contact">
+      <th mat-header-cell *matHeaderCellDef > Contact </th>
+      <td mat-cell *matCellDef="let patient">
+        <div *ngFor="let telecom of patient.telecom">
+          <i>{{telecom.use}}&nbsp;{{telecom.system}}</i>
+          &nbsp;<b>{{telecom.value}}</b>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef  width="5%"> Sex </th>
+      <td mat-cell *matCellDef="let patient">
+        <b>{{ patient.gender }}</b>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dob">
+      <th mat-header-cell *matHeaderCellDef  width="10%" > DOB </th>
+      <td mat-cell *matCellDef="let patient">
+        <b>{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gp">
+      <th mat-header-cell *matHeaderCellDef width="5%"> GP </th>
+      <td mat-cell *matCellDef="let patient">
+        <span *ngIf="patient.generalPractitioner != undefined">
+          <button mat-icon-button color="accent"  matTooltip="View GP" (click)="showPractitioner(patient)"><mat-icon>person</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="prac">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Prac. </th>
+      <td mat-cell *matCellDef="let patient">
+        <span *ngIf="patient.managingOrganization != undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Practice" (click)="showOrganisation(patient)"><mat-icon>account_balance</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef width="8%"> Select </th>
+      <td mat-cell *matCellDef="let patient">
+        <button mat-icon-button color="accent"  matTooltip="Select Patient" (click)="selectPatient(patient)"><mat-icon>collections_bookmark</mat-icon></button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>
+      <td mat-cell *matCellDef="let patient">
+        <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(patient)"><mat-icon>code</mat-icon></button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
+<!--
+<mat-card >
+  <mat-card-content>
+  <div class="d-flex justify-content-between">
+    <div >
+
+    </div>
+
+    <div><i>DOB: </i></div>
+    <div><i>Gender: </i><b>{{ patient.gender }}</b></div>
+
+    <div><i>NHS No: </i><b>{{ getNHSIdentifier() }}</b></div>
+    <span *ngIf="showResourceLink"><button mat-icon-button color="accent"  (click)="select(patient)"><mat-icon>code</mat-icon></button></span>
+  </div>
+
+
+  <div *ngIf="detail">
+
+    <mat-grid-list cols="3" rowHeight="10em">
+      <mat-grid-tile> <div  class="d-flex w-100 justify-content-between">
+          <div *ngIf="patient.address != undefined && patient.address.length>0">
+            <i>{{patient.address[0].use}}</i>
+            <div *ngFor="let line of patient.address[0].line">
+              <div>{{line}}</div>
+            </div>
+            <div>{{patient.address[0].city}}</div>
+            <div>{{patient.address[0].district}}</div>
+            <div>{{patient.address[0].postalCode}}</div>
+          </div>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <div>
+          <div *ngFor="let telecom of patient.telecom">
+            <div>{{telecom.use}}&nbsp;{{telecom.system}}</div>
+            <div><b>{{telecom.value}}</b></div>
+          </div>
+          <div *ngIf="patient.telecom == undefined">
+            &nbsp;
+          </div>
+        </div>
+
+      </mat-grid-tile>
+      <mat-grid-tile>
+
+        <div *ngIf="patient.contact !=undefined && patient.contact.length>0">
+        <i *ngIf="patient.contact[0].relationship != undefined && patient.contact[0].relationship.length>0">{{patient.contact[0].relationship[0].coding[0].display}}</i>
+        <div><b>{{patient.contact[0].name.family}}</b>, {{patient.contact[0].name.given}}</div>
+        <div *ngFor="let telecom of patient.contact[0].telecom">
+          <div><i>{{telecom.use}}</i>
+            <i>{{telecom.system}}</i>
+            <b>{{telecom.value}}</b></div>
+        </div>
+          <div *ngIf="patient.contact == undefined">
+            &nbsp;
+          </div>
+      </div></mat-grid-tile>
+
+    </mat-grid-list>
+
+
+  </div>
+  </mat-card-content>
+</mat-card>
+-->

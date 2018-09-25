@@ -1,0 +1,42 @@
+
+
+    <table>
+      <tr>
+        <td><b>Date</b></td>
+        <td>{{composition.date | date: 'dd MMM yyyy HH:mm'}}</td>
+      </tr>
+      <tr>
+        <td width="50%"><b>Type </b></td>
+        <td width="50%">{{composition.type.coding[0].display}}</td>
+      </tr>
+      <tr>
+        <td width="50%"><b>Specialty </b></td>
+        <td width="50%">{{getService(composition.extension)}}</td>
+      </tr>
+      <tr  *ngIf="composition.custodian!=undefined">
+        <td><b>Custodian</b></td>
+        <td>{{composition.custodian.display}}</td>
+      </tr>
+      <tr *ngFor="let author of composition.author">
+        <td><b>Author</b></td>
+        <td>{{author.display}}</td>
+      </tr>
+      <tr>
+        <td><b>Status</b></td>
+        <td>{{composition. status}}</td>
+      </tr>
+      <tr *ngIf="encounter != undefined">
+        <td><b>Encounter</b></td>
+        <td>
+          <span *ngIf="encounter.type != undefined && encounter.type.length && encounter.type[0].coding != undefined > 0">{{encounter.type[0].coding[0].display}}</span>
+          <span *ngIf="encounter.period!=undefined">&nbsp;({{encounter.period.start | date: 'dd MMM yyyy HH:mm'}}
+            <span *ngIf="encounter.period.end !=undefined"> - {{encounter.period.end | date: 'dd MMM yyyy HH:mm'}}</span>)
+          </span>
+        </td>
+      </tr>
+    </table>
+    <span *ngIf="composition.text != undefined">
+       <div [innerHTML]="composition.text.div"></div>
+    </span>
+
+

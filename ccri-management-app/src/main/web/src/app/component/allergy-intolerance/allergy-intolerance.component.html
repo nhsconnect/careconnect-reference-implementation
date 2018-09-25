@@ -1,0 +1,96 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let allergy"> {{allergy.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="onset">
+      <th mat-header-cell *matHeaderCellDef> Onset </th>
+      <td mat-cell *matCellDef="let allergy"> {{allergy.onsetDateTime | date: 'dd-MMM-yyyy'}} </td>
+    </ng-container>
+    <ng-container matColumnDef="asserted">
+      <th mat-header-cell *matHeaderCellDef> Asserted </th>
+      <td mat-cell *matCellDef="let allergy"> {{allergy.assertedDate | date: 'dd-MMM-yyyy'}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef> AllergyIntolerance </th>
+      <td mat-cell *matCellDef="let allergy">
+        <span *ngIf="allergy.code != undefined && allergy.code.coding.length > 0">
+          <b>{{allergy.code.coding[0].display}}</b>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="codelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let allergy">
+        <span *ngIf="allergy.code != undefined && allergy.code.coding.length > 0">
+          <span *ngIf="allergy.code.coding[0].code != undefined" >
+            <span *ngIf="isSNOMED(allergy.code.coding[0].system)">
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(allergy.code.coding[0].system)}} {{allergy.code.coding[0].code}}" (click)="getSNOMEDLink(allergy.code.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+            </span>
+             <span *ngIf="!isSNOMED(allergy.code.coding[0].system)">
+                  <mat-icon matTooltip="{{getCodeSystem(allergy.code.coding[0].system)}} {{allergy.code.coding[0].code}}">book_outline</mat-icon>
+            </span>
+          </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="reaction">
+      <th mat-header-cell *matHeaderCellDef> Reaction </th>
+      <td mat-cell *matCellDef="let allergy">
+         <span *ngFor="let reaction of allergy.reaction">
+            <span *ngIf="reaction.substance != undefined">
+
+              &nbsp;
+              <i>substance</i><b> {{reaction.substance.coding[0].display}}</b>
+            </span>
+             <span *ngIf="reaction.severity != undefined">
+
+              &nbsp;<i>severity</i>
+               <b> {{reaction.severity.display }}</b>
+            </span>
+
+            <span *ngFor="let manifestation of reaction.manifestation">
+              &nbsp;<i>manifestation</i>
+               {{manifestation.coding[0].display}}
+            </span>
+        </span>
+      </td>
+    </ng-container>
+
+
+
+
+    <ng-container matColumnDef="clinicalstatus">
+      <th mat-header-cell *matHeaderCellDef> Clinical Status </th>
+      <td mat-cell *matCellDef="let allergy"> {{allergy.clinicalStatus}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="verificationstatus">
+      <th mat-header-cell *matHeaderCellDef> Verification </th>
+      <td mat-cell *matCellDef="let allergy"> {{allergy.verificationStatus}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%">FHIR</th>
+      <td mat-cell *matCellDef="let allergy">  <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(allergy)"><mat-icon>code</mat-icon></button>  </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>

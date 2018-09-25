@@ -1,0 +1,36 @@
+<div>
+
+  <span *ngIf="encounter != undefined">
+  <div *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+                  <b>{{encounter.type[0].coding[0].display}}</b>
+                  <span *ngIf="isSNOMED(encounter.type[0].coding[0].system)">
+                    &nbsp;<a (click)="getSNOMEDLink(encounter.type[0].coding[0])"><span *ngIf="encounter.type[0].coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}"></span> </a>
+                  </span>
+                  <span *ngIf="!isSNOMED(encounter.type[0].coding[0].system)">
+                    &nbsp;<span *ngIf="encounter.type[0].coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}"></span>
+                  </span>
+             </div>
+
+  <div *ngFor="let participant of encounter.participant">
+                <span *ngIf="participant.individual != undefined"><i>{{participant.individual.display}}</i></span>
+              </div>
+  <div *ngIf="encounter.serviceProvider!=undefined"> {{encounter.serviceProvider.display}}</div>
+    </span>
+  <br>
+  <span *ngIf="conditionTotal>0">
+    <h5>Condition</h5>
+    <app-condition [conditions]="conditions"></app-condition>
+  </span>
+  <span *ngIf="procTotal>0">
+    <h5>Procedures</h5>
+    <app-procedure [procedures]="procedures"></app-procedure>
+  </span>
+  <span *ngIf="presTotal>0">
+    <h5>Prescriptions</h5>
+    <app-medication-request [medicationRequests]="prescriptions"></app-medication-request>
+  </span>
+  <span *ngIf="obsTotal>0">
+    <h5>Observations</h5>
+    <app-observation [showDetail]="false" [observations]="observations"></app-observation>
+  </span>
+</div>

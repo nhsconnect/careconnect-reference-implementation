@@ -87,6 +87,31 @@ export class FhirService {
       });
   }
 
+  public get(search : string) : Observable<fhir.Bundle> {
+    let url = this.getFHIRServerBase() + search;
+    let headers = new HttpHeaders(
+    );
+    if (this.format === 'xml') {
+      headers = headers.append( 'Content-Type',  'application/fhir+xml' );
+      headers = headers.append('Accept', 'application/fhir+xml');
+      return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
+    } else {
+      return this.http.get<any>(url, {'headers': headers});
+    }
+  }
+
+  public getResource(search : string) : Observable<any> {
+    let url = this.getFHIRServerBase() + search;
+    let headers = new HttpHeaders(
+    );
+    if (this.format === 'xml') {
+      headers = headers.append( 'Content-Type',  'application/fhir+xml' );
+      headers = headers.append('Accept', 'application/fhir+xml');
+      return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
+    } else {
+      return this.http.get<any>(url, {'headers': headers});
+    }
+  }
   public getResults(url : string) : Observable<fhir.Bundle> {
       let headers = new HttpHeaders(
       );

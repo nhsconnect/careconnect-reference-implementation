@@ -1,0 +1,28 @@
+<span *ngIf="resource !== undefined || resourceString !== undefined">
+    <span *ngIf="format === 'jsonf' || format === 'json'">
+      <mat-card>
+          <mat-card-title>Results</mat-card-title>
+          <mat-card-content>
+              <span *ngIf="format === 'jsonf'">
+                  <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
+                  </td-json-formatter>
+              </span>
+               <span *ngIf="format === 'json'">
+                  <td-highlight lang="json" [content]="resourceString">
+                  </td-highlight>
+              </span>
+          </mat-card-content>
+      </mat-card>
+    </span>
+    <span *ngIf="format === 'xml'">
+      <mat-card>
+          <mat-card-title>Results</mat-card-title>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+              <td-highlight lang="xml" [content]="resourceString">
+              </td-highlight>
+          </mat-card-content>
+      </mat-card>
+    </span>
+
+</span>

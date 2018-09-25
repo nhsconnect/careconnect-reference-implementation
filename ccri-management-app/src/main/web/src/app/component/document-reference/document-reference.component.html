@@ -1,0 +1,111 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let document"> {{document.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="created">
+      <th mat-header-cell *matHeaderCellDef> Created </th>
+      <td mat-cell *matCellDef="let document"> {{document.created | date: 'dd-MMM-yyyy HH:mm'}} </td>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let document"> {{document.description}} </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Type </th>
+      <td mat-cell *matCellDef="let document"> <b>{{document.type.coding[0].display}}</b>
+
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="typelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let document">
+      <span *ngIf="document.type.coding[0].code != undefined" >
+        <span *ngIf="isSNOMED(document.type.coding[0].system)">
+          <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(document.type.coding[0].system)}} {{document.type.coding[0].code}}" (click)="getSNOMEDLink(document.type.coding[0])">
+              <mat-icon>book</mat-icon>
+          </button>
+        </span>
+         <span *ngIf="!isSNOMED(document.type.coding[0].system)">
+              <mat-icon matTooltip="{{getCodeSystem(document.type.coding[0].system)}} {{document.type.coding[0].code}}">book_outline</mat-icon>
+        </span>
+      </span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="author">
+      <th mat-header-cell *matHeaderCellDef> Author </th>
+      <td mat-cell *matCellDef="let document">
+        <span *ngFor="let author of document.author">
+          <div>{{author.display}}</div>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="authorLink">
+      <th mat-header-cell *matHeaderCellDef width="5%"></th>
+      <td mat-cell *matCellDef="let document">
+        <span *ngIf="document.author !=undefined && document.author.length > 0">
+          <button mat-icon-button color="accent"  matTooltip="View Authors" (click)="showAuthors(document)"><mat-icon>person</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="custodian">
+      <th mat-header-cell *matHeaderCellDef> Custodian </th>
+      <td mat-cell *matCellDef="let document">
+        <span *ngIf="document.custodian!=undefined"> {{document.custodian.display}}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="custodianLink">
+      <th mat-header-cell *matHeaderCellDef width="5%"></th>
+      <td mat-cell *matCellDef="let document">
+        <span *ngIf="document.custodian !=undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Custodian" (click)="showCustodian(document)"><mat-icon>account_balance</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="mime">
+      <th mat-header-cell *matHeaderCellDef> mime </th>
+      <td mat-cell *matCellDef="let document">
+        <span *ngIf="document.content != undefined" class="badge badge-info">{{document.content[0].attachment.contentType}}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef width="8%"> Status </th>
+      <td mat-cell *matCellDef="let document"> {{document.status}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="open">
+      <th mat-header-cell *matHeaderCellDef >Open</th>
+      <td mat-cell *matCellDef="let document">
+
+        <button mat-icon-button color="accent" matTooltip="View document" (click)="selectDocument(document)"><mat-icon>collections_bookmark</mat-icon></button> </td>
+    </ng-container>
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef >FHIR</th>
+      <td mat-cell *matCellDef="let document">  <button mat-icon-button color="accent" matTooltip="View FHIR resource" (click)="select(document)"><mat-icon>code</mat-icon></button>  </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
