@@ -11,11 +11,11 @@ export class AppConfig {
         console.log('hello App' + document.baseURI);
         this.http.get<any>(document.baseURI+'camel/config/http').subscribe( result => {
             console.log(result);
-                this.fhirServer.setFHIRServerBase(result.fhirServer);
+                this.fhirServer.setRootUrl(result.fhirServer);
         },
             () => {
             console.log('No server deteted');
-            this.fhirServer.setFHIRServerBase('http://data.developer-test.nhs.uk/ccri-fhir/STU3');
+            this.fhirServer.setRootUrl('http://data.developer-test.nhs.uk/ccri-fhir/STU3');
             })
     }
 

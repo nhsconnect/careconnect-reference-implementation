@@ -26,9 +26,14 @@ export class FhirService {
 
   conformanceChange : EventEmitter<any> = new EventEmitter();
 
-   formatChange : EventEmitter<any> = new EventEmitter();
+  rootUrlChange : EventEmitter<any> = new EventEmitter();
 
-  constructor( private http: HttpClient) {
+    formatChange : EventEmitter<any> = new EventEmitter();
+
+   private rootUrl : string = undefined;
+
+
+    constructor( private http: HttpClient) {
 
 
     /*
@@ -52,6 +57,16 @@ export class FhirService {
 
   }
 
+  public setRootUrl(rootUrl :string) {
+        this.rootUrl = rootUrl;
+        this.baseUrl = rootUrl;
+        this.rootUrlChange.emit(rootUrl);
+  }
+
+  public getRootUrlChange() {
+        return this.rootUrlChange;
+  }
+
   public getConformanceChange() {
     return this.conformanceChange;
   }
@@ -70,6 +85,7 @@ export class FhirService {
 
     public setFHIRServerBase(server : string) {
         this.baseUrl = server;
+
     }
 
     public setOutputFormat(outputFormat : Formats) {
@@ -84,6 +100,9 @@ export class FhirService {
           this.conformance = capabilityStatement;
 
           this.conformanceChange.emit(capabilityStatement);
+      },()=>{
+          this.conformance = undefined;
+          this.conformanceChange.emit(undefined);
       });
   }
 
