@@ -37,7 +37,9 @@
                             <executable>ng</executable>
                             <arguments>
                                 <argument>build</argument>
+                                <argument>--prod</argument>
                                 <argument>--base-href=/ccri/</argument>
+                                <argument>--deploy-url=/ccri/</argument>
                             </arguments>
                         </configuration>
                         <goals>

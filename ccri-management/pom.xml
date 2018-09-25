@@ -140,7 +140,7 @@
     </dependencies>
 
     <build>
-        <finalName>ccri</finalName>
+        <finalName>ccri-mananagement</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
