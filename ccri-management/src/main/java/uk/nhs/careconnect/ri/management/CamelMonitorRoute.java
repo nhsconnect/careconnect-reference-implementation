@@ -22,10 +22,20 @@ public class CamelMonitorRoute extends RouteBuilder {
 
 	@Value("${jolokia.jmxendpoint.ccriintegration}")
 	private String jmxCCRIIntegration;
+
+	@Value("${fhir.resource.serverBase}")
+	private String serverBase;
 	
     @Override
     public void configure() 
     {
+
+		rest("/config")
+				.get("/http").to("direct:hello");
+
+		from("direct:hello")
+				.transform().constant("{ \"fhirServer\" : \""+serverBase+"\" }");
+
 
 		from("servlet:ccri-fhirserver?matchOnUriPrefix=true")
 				.routeId("ccri-fhiserver-jokolia")

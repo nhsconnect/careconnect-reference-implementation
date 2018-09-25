@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {ErrorHandler, NgModule} from '@angular/core';
+import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
 import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -88,8 +88,12 @@ import {LinksService} from "./service/links.service";
 import {EprService} from "./service/epr.service";
 import {ResponseInterceptor} from "./response-interceptor";
 import {CompositionComponent} from "./component/composition/composition.component";
+import {AppConfig} from "./app-config";
 
 
+export function initializeApp(appConfig: AppConfig) {
+    return () => appConfig.load();
+}
 
 @NgModule({
   declarations: [
@@ -200,6 +204,10 @@ import {CompositionComponent} from "./component/composition/composition.componen
 
   ],
   providers: [
+      AppConfig,
+      { provide: APP_INITIALIZER,
+          useFactory: initializeApp,
+          deps: [AppConfig], multi: true },
     MatIconRegistry,
       MessageService,
     LinksService,
