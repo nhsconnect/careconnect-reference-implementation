@@ -1,27 +1,32 @@
-import {ErrorHandler, EventEmitter, Injectable} from '@angular/core';
-import {MessageService} from "./service/message.service";
+import {ErrorHandler, EventEmitter, Injectable, Injector} from '@angular/core';
+
 import {HttpErrorResponse} from "@angular/common/http";
 
 
 @Injectable()
 export class ErrorsHandler implements ErrorHandler {
 
-    constructor(private messageService : MessageService
+    constructor(private injector: Injector,
     )  {
     }
 
 
     handleError(error: Error | HttpErrorResponse) {
-        // Do whatever you like with the error (send it to the server?)
-        // And log it to the console
-       // this.errorEvent.emit(error);
+
         if (error instanceof HttpErrorResponse) {
-            let httpErorr : HttpErrorResponse = <HttpErrorResponse> error;
-            console.log('http error =  '+httpErorr.status);
-            this.messageService.addMessage(error);
+          if (!navigator.onLine) {
+            // Handle offline error
+          } else {
+            // Handle Http Error (error.status === 403, 404...)
+            if (error.status == 401) {
+              console.log('Need to refresh access token');
+            } else {
+              console.log('http error: '+error.status);
+            }
+          }
         } else {
             console.error('It happens: ', error);
-            this.messageService.addMessage(error);
+
         }
     }
 

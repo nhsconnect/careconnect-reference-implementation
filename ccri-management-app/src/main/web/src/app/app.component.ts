@@ -112,18 +112,19 @@ export class AppComponent {
           error => {
 
               let alertConfig : IAlertConfig = {
-                  message : error.message};
+                  message : error};
               alertConfig.disableClose =  false; // defaults to false
               alertConfig.viewContainerRef = this._viewContainerRef;
               alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
-              alertConfig.closeButton = 'Ok';
+
               alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
               this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
 
               } );
+
       }
 
-      )
+      );
 
       this.fhirSrv.getConformance();
 

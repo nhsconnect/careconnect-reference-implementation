@@ -111,10 +111,11 @@
 
 
     </dependencies>
-
     <build>
         <pluginManagement>
             <plugins>
+
+
                 <!-- Use FailSafe plugin to run Integration Tests
                   This will be executed by running the 'verify' target.
                   The pre & post integration tests targets can then be used to setup & teardown the Integration Test
@@ -157,6 +158,7 @@
     </reporting>
 
     <modules>
+        <module>ccri-management-app</module>
         <module>cc-core</module>
         <module>ccri-dataload</module>
         <module>ccri-database</module>
@@ -168,7 +170,7 @@
         <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
         <module>ccri-management</module>
-        <module>ccri-management-app</module>
+
     </modules>
 <!--
     <distributionManagement>

@@ -77,7 +77,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   carePlans : fhir.CarePlan[];
   consents : fhir.Consent[];
 
-  private currentResource : string = "";
+  public currentResource : string = "";
 
   @ViewChild('field') field : MatSelect;
 
@@ -373,11 +373,11 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   }
   onSearch() {
 
-      this.resource = undefined;
 
-      this.progressBar = true;
       console.log(this.form.valid);
       if (this.form.valid && this.elements.length > 0) {
+          this.resource = undefined;
+          this.progressBar = true;
           this.buildQuery();
           this.getResults();
       }

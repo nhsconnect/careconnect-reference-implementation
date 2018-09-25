@@ -44,7 +44,7 @@ import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@
 import {MainComponent} from "./modules/main/main.component";
 import { ConformanceComponent } from './modules/conformance/conformance.component';
 import { ResourceComponent } from './modules/resource/resource.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {ErrorsHandler} from "./error-handler";
@@ -86,6 +86,8 @@ import {PatientComponent} from "./component/patient/patient.component";
 import {MedicationDispenseDetailComponent} from "./dialog/medication-dispense-detail/medication-dispense-detail.component";
 import {LinksService} from "./service/links.service";
 import {EprService} from "./service/epr.service";
+import {ResponseInterceptor} from "./response-interceptor";
+import {CompositionComponent} from "./component/composition/composition.component";
 
 
 
@@ -101,6 +103,7 @@ import {EprService} from "./service/epr.service";
     ConsentComponent,
     CarePlanComponent,
     ConditionComponent,
+    CompositionComponent,
     DocumentReferenceComponent,
     EncounterDetailComponent,
     EncounterComponent,
@@ -204,10 +207,15 @@ import {EprService} from "./service/epr.service";
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
-    /*  {
+    {
           provide: ErrorHandler,
           useClass: ErrorsHandler,
-      }*/
+      },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ResponseInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

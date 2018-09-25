@@ -5,13 +5,13 @@ import {EventEmitter, Injectable} from '@angular/core';
 })
 export class MessageService {
 
-  message : Error;
+  message : String;
 
   messageEvent :EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
-  addMessage(message : Error) {
+  addMessage(message : String) {
     console.log('bang');
     this.message = message;
     this.messageEvent.emit(message);
