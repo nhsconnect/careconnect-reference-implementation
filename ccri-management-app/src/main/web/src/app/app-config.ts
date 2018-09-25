@@ -15,7 +15,7 @@ export class AppConfig {
         },
             () => {
             console.log('No server deteted');
-            this.fhirServer.setRootUrl('http://data.developer-test.nhs.uk/ccri-fhir/STU3');
+            this.fhirServer.setRootUrl('https://data.developer.nhs.uk/ccri-fhir/STU3');
             })
     }
 
