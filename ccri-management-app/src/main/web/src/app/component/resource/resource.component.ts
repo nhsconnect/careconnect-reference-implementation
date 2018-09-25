@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router} from "@angular/router";
 import {FhirService, Formats} from "../../service/fhir.service";
 import {MatSelect} from "@angular/material";
@@ -28,7 +28,7 @@ documentation:
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.css']
 })
-export class ResourceComponent implements OnInit {
+export class ResourceComponent implements OnInit,AfterViewInit {
 
   constructor(private router : Router, private fhirSrv : FhirService) { }
 
@@ -36,7 +36,7 @@ export class ResourceComponent implements OnInit {
 
   public resourceString : string = undefined;
 
-  public query = "";
+  public query = undefined;
 
   public rest : any;
 
@@ -74,6 +74,8 @@ export class ResourceComponent implements OnInit {
         //  console.log(' = Init Build');
           let resource = this.router.url.replace('/resource/','');
           this.buildOptions(resource);
+
+
       }
 
       this.format = this.fhirSrv.getFormat();
@@ -81,7 +83,8 @@ export class ResourceComponent implements OnInit {
       this.fhirSrv.getFormatChange().subscribe( format => {
           this.format = format;
           this.getResults();
-      })
+      });
+
 
       this._routerSub = this.router.events
       // Here is one extra parenthesis it's missing in your code
@@ -90,8 +93,14 @@ export class ResourceComponent implements OnInit {
               //    console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
+                  if (this.form != undefined) {
+                      this.form.form.valueChanges.subscribe((val) => {
+                          this.buildQuery();
+                      })
+                  }
                   this.resource = undefined;
                   this.resourceString = undefined;
+                  this.query = undefined;
                   this.buildOptions(resource);
               }
           })
@@ -214,6 +223,7 @@ export class ResourceComponent implements OnInit {
      }
      console.log('call refresh');
      this.form.refresh();
+     this.buildQuery();
    }
     
   }
@@ -228,57 +238,73 @@ export class ResourceComponent implements OnInit {
               this.progressBar = false;
           })
   }
-  onSearch() {
+
+    ngAfterViewInit() {
+      console.log('afteer init');
+
+        if (this.form != undefined) {
+            this.form.form.valueChanges.subscribe((val) => {
+                this.buildQuery();
+            })
+        }
+    }
+
+  buildQuery() {
       var i: number;
-      this.resource = undefined;
       let first: boolean = true;
+      let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '?'
+
+      for (i = 0; i < this.elements.length; i++) {
+
+          let name = this.elements[i].name;
+          let content: string[] = name.split('-');
+          let param = content[3];
+          if (content.length > 4 && (content[4] != undefined)) param = param + '-' + content[4];
+
+          if (!first) query = query + '&' + param
+          else query = query + param;
+          //  console.log(content[0]);
+          switch (content[0]) {
+              case 'date':
+                  query = query + '=';
+                  if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query + this.form.value[this.elements[i].name];
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name].format("YYYY-MM-DD");
+                  i++;
+                  break;
+              case 'token':
+                  query = query + '=';
+                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "|";
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                  i++;
+                  break;
+              case 'string':
+                  if (this.form.value[this.elements[i].name] !== undefined) query = query + ":" + this.form.value[this.elements[i].name];
+                  query = query + '=';
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                  i++;
+                  break;
+              case 'reference':
+                  query = query + '=';
+                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name]
+                  break;
+
+          }
+
+
+          console.log(this.form.value[this.elements[i].name]);
+          first = false;
+      }
+      //  console.log(query);
+      this.query = query;
+  }
+  onSearch() {
+
+      this.resource = undefined;
+
       this.progressBar = true;
       console.log(this.form.valid);
       if (this.form.valid && this.elements.length > 0) {
-          let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '?'
-
-          for (i = 0; i < this.elements.length; i++) {
-
-              let name = this.elements[i].name;
-              let content: string[] = name.split('-');
-              let param = content[3];
-              if (content.length > 4 && (content[4] != undefined)) param = param + '-' + content[4];
-
-              if (!first) query = query + '&' + param
-              else query = query + param;
-              //  console.log(content[0]);
-              switch (content[0]) {
-                  case 'date':
-                      query = query + '=';
-                      if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query + this.form.value[this.elements[i].name];
-                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name].format("YYYY-MM-DD");
-                      i++;
-                      break;
-                  case 'token':
-                      query = query + '=';
-                      if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "|";
-                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
-                      i++;
-                      break;
-                  case 'string':
-                      if (this.form.value[this.elements[i].name] !== undefined) query = query + ":" + this.form.value[this.elements[i].name];
-                      query = query + '=';
-                      if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
-                      i++;
-                      break;
-                  case 'reference':
-                      query = query + '=';
-                      if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name]
-                      break;
-
-              }
-
-
-              console.log(this.form.value[this.elements[i].name]);
-              first = false;
-          }
-        //  console.log(query);
-          this.query = query;
+          this.buildQuery();
           this.getResults();
       }
   }

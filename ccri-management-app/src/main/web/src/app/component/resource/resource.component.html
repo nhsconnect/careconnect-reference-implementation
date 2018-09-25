@@ -90,6 +90,7 @@
                                 </td-dynamic-forms>
                                 </mat-card-content>
                             <mat-card-actions>
+                                <td-message *ngIf="query!==undefined" [label]="query" color="blue" icon="info"></td-message>
                                 <a mat-button [disabled]="!(dynform.valid && (elements.length >0))" color="accent" class="text-upper" (click)="onSearch()">
                                   <span>Search</span></a>
                                 <a mat-button [disabled]="(elements.length === 0)" color="accent" class="text-upper" (click)="onClear()">
