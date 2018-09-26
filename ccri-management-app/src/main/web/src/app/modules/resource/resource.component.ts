@@ -54,28 +54,39 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   entries : any[];
 
+    allergies : fhir.AllergyIntolerance[];
+    carePlans : fhir.CarePlan[];
+    consents : fhir.Consent[];
+    impressions : fhir.ClinicalImpression[];
+  conditions : fhir.Condition[];
+  documents : fhir.DocumentReference[];
+    encounters : fhir.Encounter[];
+    goals : fhir.Goal[];
+    services : fhir.HealthcareService[];
+    immunisations : fhir.Immunization[];
+    locations : fhir.Location[];
+    medications : fhir.Medication[];
   medicationStatements : fhir.MedicationStatement[];
   medicationDispenses : fhir.MedicationDispense[];
+    observations : fhir.Observation[];
+    organisations : fhir.Organization[];
+
   prescriptions : fhir.MedicationRequest[];
-  medications : fhir.Medication[];
-  conditions : fhir.Condition[];
+    forms : fhir.QuestionnaireResponse[];
+
   procedures : fhir.Procedure[];
-  observations : fhir.Observation[];
-  allergies : fhir.AllergyIntolerance[];
-  encounters : fhir.Encounter[];
   patients : fhir.Patient[];
   practitioners : fhir.Practitioner[];
-  organisations : fhir.Organization[];
-  locations : fhir.Location[];
+
+    risks : fhir.RiskAssessment[];
   roles : fhir.PractitionerRole[];
-  services : fhir.HealthcareService[];
-  immunisations : fhir.Immunization[];
-  forms : fhir.QuestionnaireResponse[];
-  risks : fhir.RiskAssessment[];
-  goals : fhir.Goal[];
-  impressions : fhir.ClinicalImpression[];
-  carePlans : fhir.CarePlan[];
-  consents : fhir.Consent[];
+
+
+
+
+
+
+
 
   public currentResource : string = "";
 
@@ -159,6 +170,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     this.impressions=[];
     this.consents=[];
     this.carePlans=[];
+    this.documents=[];
   }
 
   onExpand() {
@@ -484,6 +496,10 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               let condition: fhir.Condition = <fhir.Condition> resource;
               this.conditions.push(condition);
               break;
+              case "DocumentReference" :
+                  let document: fhir.DocumentReference = <fhir.DocumentReference> resource;
+                  this.documents.push(document);
+                  break;
             case "Encounter" :
               let encounter: fhir.Encounter = <fhir.Encounter> resource;
               this.encounters.push(encounter);
@@ -582,6 +598,10 @@ export class ResourceComponent implements OnInit,AfterViewInit {
       }
 
 
+
+  }
+
+    onResoureSelected(event) {
 
   }
 
