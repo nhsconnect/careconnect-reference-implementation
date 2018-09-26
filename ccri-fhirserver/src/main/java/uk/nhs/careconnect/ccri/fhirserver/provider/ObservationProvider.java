@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ccri.fhirserver.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -9,6 +10,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ObservationProvider implements ICCResourceProvider {
@@ -100,17 +103,18 @@ public class ObservationProvider implements ICCResourceProvider {
     }
 
     @Search
-    public List<Observation> search(HttpServletRequest theRequest,
+    public List<Resource> search(HttpServletRequest theRequest,
 
-                                    @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
-                                    @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
-                                    @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
-                                    @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient,
-                                    @OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
+                                 @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
+                                 @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
+                                 @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
+                                 @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient,
+                                 @OptionalParam(name = Observation.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Observation.SP_RES_ID) StringParam resid
-            ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
+            , @OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
+            , @IncludeParam(allow = { "Observation.related" ,  "*" }) Set<Include> includes
                                        ) {
-        return observationDao.search(ctx,category, codes, effectiveDate,patient, identifier,resid,subject);
+        return observationDao.search(ctx,category, codes, effectiveDate,patient, identifier,resid,subject, includes);
     }
 
 

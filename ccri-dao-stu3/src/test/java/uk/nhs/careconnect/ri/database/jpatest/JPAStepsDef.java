@@ -134,7 +134,7 @@ public class JPAStepsDef {
     List<Practitioner> practitionerList = null;
     List<Location> locationList = null;
 
-    List<Observation> observationList = null;
+    List<Resource> observationList = null;
 
     List<AllergyIntolerance> allergyList = null;
 
@@ -463,7 +463,7 @@ public class JPAStepsDef {
     @When("^I search Observations on SNOMED category (\\d+)$")
     public void i_search_on_SNOMED_category(String category) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null,null,null, null);
+        observationList = observationRepository.search(ctx,new TokenParam().setValue(category).setSystem(CareConnectSystem.SNOMEDCT),null,null,null,null,null, null,null);
     }
 
     @Then("^I should get a Bundle of Observations with (\\d+) resource$")
@@ -474,12 +474,12 @@ public class JPAStepsDef {
 
     @When("^I search Observations on SNOMED code (\\d+)$")
     public void i_search_on_SNOMED_code(String code) throws Throwable {
-        observationList = observationRepository.search(ctx,null, new TokenOrListParam().add(new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT)),null,null, null,null, null);
+        observationList = observationRepository.search(ctx,null, new TokenOrListParam().add(new TokenParam().setValue(code).setSystem(CareConnectSystem.SNOMEDCT)),null,null, null,null, null,null);
     }
 
     @When("^I search on Patient ID = (\\d+)$")
     public void i_search_on_Patient_ID(String patientId) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId),null,null, null);
+        observationList = observationRepository.search(ctx,null, null, null, new ReferenceParam("Patient/"+patientId),null,null, null,null);
     }
 
     @Then("^I should get a Bundle of Observations with more then (\\d+) resources$")
@@ -489,22 +489,22 @@ public class JPAStepsDef {
 
     @When("^I search on dates less than (\\d+)-(\\d+)-(\\d+)$")
     public void dates_less_than_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null,null,null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.LESSTHAN,year+"-"+month+"-"+day)), null,null,null, null, null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)-(\\d+)$")
     public void dates_equal_yyyymmdd(String year, String month, String day) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null,null,null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month+"-"+day)), null,null,null, null, null);
     }
 
     @When("^I search on dates equal to (\\d+)-(\\d+)$")
     public void dates_equal_yyyymm(String year, String month) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null, null,null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year+"-"+month)), null, null,null, null,null);
     }
 
     @When("^I search on dates equal to (\\d+)$")
     public void dates_equal_yyyy(String year) throws Throwable {
-        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null, null,null, null);
+        observationList = observationRepository.search(ctx,null, null, new DateRangeParam(new DateParam(ParamPrefixEnum.EQUAL,year)), null, null,null, null, null);
     }
 
     /*
