@@ -61,7 +61,6 @@ public class ObservationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="valueUnitOfMeasure_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_valueUnitOfMeasure_CONCEPT_ID"))
-
     private ConceptEntity valueUnitOfMeasure;
 
     @Enumerated(EnumType.ORDINAL)
@@ -82,7 +81,6 @@ public class ObservationEntity extends BaseResource {
     @OneToMany(mappedBy="observation", targetEntity=ObservationCategory.class)
     private Set<ObservationCategory> categories = new HashSet<>();
 
-
     @OneToMany(mappedBy="observation", targetEntity=ObservationIdentifier.class)
     private Set<ObservationIdentifier> identifiers = new HashSet<>();
 
@@ -94,6 +92,9 @@ public class ObservationEntity extends BaseResource {
 
     @OneToMany(mappedBy="parentObservation", targetEntity = ObservationEntity.class)
     private Set<ObservationEntity> components = new HashSet<>();
+
+    @OneToMany(mappedBy="observation", targetEntity = ObservationRelated.class)
+    private Set<ObservationRelated> relatedResources = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_BODY_SITE_CONCEPT_ID"))
@@ -300,5 +301,13 @@ public class ObservationEntity extends BaseResource {
     public ObservationEntity setInterpretation(ConceptEntity interpretation) {
         this.interpretation = interpretation;
         return this;
+    }
+
+    public Set<ObservationRelated> getRelatedResources() {
+        return relatedResources;
+    }
+
+    public void setRelatedResources(Set<ObservationRelated> relatedResources) {
+        this.relatedResources = relatedResources;
     }
 }

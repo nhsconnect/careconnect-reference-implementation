@@ -21,6 +21,7 @@ import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
+import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,13 +44,20 @@ public class ObservationDao implements ObservationRepository {
     ConceptRepository conceptDao;
 
     @Autowired
+    @Lazy
     PatientRepository patientDao;
 
     @Autowired
+    @Lazy
     PractitionerRepository practitionerDao;
 
     @Autowired
+    @Lazy
     OrganisationRepository organisationDao;
+
+    @Autowired
+    @Lazy
+    QuestionnaireResponseRepository formDao;
 
     @Autowired
     @Lazy
@@ -507,6 +515,34 @@ public class ObservationDao implements ObservationRepository {
             }
 
             em.persist(observationValue);
+        }
+
+        if (observation.hasRelated()) {
+            for (ObservationRelated observationRelated : observationEntity.getRelatedResources()) {
+                em.remove(observationRelated);
+            }
+            observationEntity.setRelatedResources(new HashSet<>());
+
+            for (Observation.ObservationRelatedComponent observationRelatedComponent : observation.getRelated()) {
+                ObservationRelated observationRelated = new ObservationRelated();
+                observationRelated.setObservation(observationEntity);
+                if (observationRelatedComponent.hasType()) {
+                    observationRelated.setType(observationRelatedComponent.getType());
+                }
+                if (observationRelatedComponent.hasTarget()) {
+                    log.info("hasRelated");
+                    if (observationRelatedComponent.getTarget().getReference().contains("Observation")) {
+                        ObservationEntity observationRelatedEntity= readEntity(ctx, new IdType(observationRelatedComponent.getTarget().getReference()));
+                        observationRelated.setRelatedObservation(observationRelatedEntity);
+                    }
+                    if (observationRelatedComponent.getTarget().getReference().contains("QuestionnaireResponse")) {
+                        QuestionnaireResponseEntity questionnaireResponseEntity = formDao.readEntity(ctx, new IdType(observationRelatedComponent.getTarget().getReference()));
+                        observationRelated.setRelatedForm(questionnaireResponseEntity);
+                    }
+                }
+                em.persist(observationRelated);
+                observationEntity.getRelatedResources().add(observationRelated);
+            }
         }
         observation = null;
         if (observationEntity != null) {

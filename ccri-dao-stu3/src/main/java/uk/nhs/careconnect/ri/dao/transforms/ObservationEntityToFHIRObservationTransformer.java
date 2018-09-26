@@ -234,6 +234,18 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                 }
             }
 
+            for (ObservationRelated relatedResource : observationEntity.getRelatedResources()) {
+                Observation.ObservationRelatedComponent related = observation.addRelated();
+                if (relatedResource.getType() != null) {
+                    related.setType(relatedResource.getType());
+                }
+                if (relatedResource.getRelatedObservation() != null) {
+                    related.setTarget(new Reference("Observation/"+relatedResource.getRelatedObservation().getId()));
+                } else if (relatedResource.getRelatedForm() != null) {
+                    related.setTarget(new Reference("QuestionnaireResponse/"+relatedResource.getRelatedForm().getId()));
+                }
+            }
+
             observation.setStatus(observationEntity.getStatus());
 
             for (ObservationIdentifier identifier : observationEntity.getIdentifiers()) {
