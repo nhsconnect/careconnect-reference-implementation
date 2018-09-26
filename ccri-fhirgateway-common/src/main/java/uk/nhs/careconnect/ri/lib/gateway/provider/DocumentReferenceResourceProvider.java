@@ -159,7 +159,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<DocumentReference> searchDocumentReference(HttpServletRequest httpRequest
+    public List<Resource> searchDocumentReference(HttpServletRequest httpRequest
             , @OptionalParam(name = DocumentReference.SP_RES_ID) StringParam resid
             , @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_CREATED) DateRangeParam date
@@ -170,11 +170,9 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
 
 
-        List<DocumentReference> results = new ArrayList<DocumentReference>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
-
-
 
         InputStream inputStream = (InputStream) template.sendBody("direct:FHIRDocumentReference",
                 ExchangePattern.InOut,httpRequest);
@@ -192,8 +190,12 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                DocumentReference documentReference = convertFromSmartUrl((DocumentReference) resource);
-                results.add(documentReference);
+                if (entry.getResource() instanceof DocumentReference) {
+                    DocumentReference documentReference = convertFromSmartUrl((DocumentReference) entry.getResource());
+                    results.add(documentReference);
+                } else {
+                    results.add(entry.getResource());
+                }
             }
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
