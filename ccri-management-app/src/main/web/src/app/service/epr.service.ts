@@ -35,7 +35,7 @@ export class EprService {
     this.patient = patient;
 
     this.patientAllergies = [];
-
+/*
     if (patient != undefined && patient.id != undefined) {
       this.fhirService.get('/AllergyIntolerance?patient='+patient.id).subscribe(data => {
 
@@ -47,7 +47,7 @@ export class EprService {
         }
       );
     }
-
+*/
     this.patientChangeEvent.emit(this.patient);
   }
   clear() {
