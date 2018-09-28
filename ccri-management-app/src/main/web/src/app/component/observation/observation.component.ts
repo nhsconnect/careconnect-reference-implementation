@@ -133,11 +133,13 @@ export class ObservationComponent implements OnInit {
 
             dialogConfig.disableClose = true;
             dialogConfig.autoFocus = true;
-            dialogConfig.height = '600px';
+            dialogConfig.height = '520px';
             dialogConfig.width = '90%';
             dialogConfig.data = {
                 resource: observation
             };
+
+            console.log(observation.subject.reference);
 
             this.dialog.open(ObservationChartDialogComponent, dialogConfig);
         }

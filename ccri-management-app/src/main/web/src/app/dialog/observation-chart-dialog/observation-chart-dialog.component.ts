@@ -1,7 +1,8 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {TdDigitsPipe} from "@covalent/core";
-import {MAT_DIALOG_DATA, MatDialog} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatSelect} from "@angular/material";
 import {FhirService} from "../../service/fhir.service";
+import {NgxChartsModule} from "@swimlane/ngx-charts";
 
 @Component({
   selector: 'app-observation-chart-dialog',
@@ -14,14 +15,16 @@ export class ObservationChartDialogComponent implements OnInit {
 
 
     // options
-    showXAxis: boolean = true;
+    showXAxis: boolean = false;
     showYAxis: boolean = true;
     gradient: boolean = true;
     showLegend: boolean = false;
     showXAxisLabel: boolean = true;
     xAxisLabel: string = '';
     showYAxisLabel: boolean = true;
-    yAxisLabel: string = 'Sales';
+    timeline:boolean = true;
+    yAxisLabel: string = 'Value';
+    animations: boolean = false;
 
     colorScheme: any = {
         domain: ['#1565C0', '#03A9F4', '#FFA726', '#FFCC80'],
@@ -30,142 +33,129 @@ export class ObservationChartDialogComponent implements OnInit {
     // line, area
     autoScale: boolean = true;
 
+    title = 'Observation Chart';
 
     multi: any = [
         {
-            'name': 'Databases',
+            'name': 'Values',
             'series': [
                 {
                     'value': 2469,
                     'name': '2016-09-15T19:25:07.773Z',
-                },
-                {
-                    'value': 3619,
-                    'name': '2016-09-17T17:16:53.279Z',
-                },
-                {
-                    'value': 3885,
-                    'name': '2016-09-15T10:34:32.344Z',
-                },
-                {
-                    'value': 4289,
-                    'name': '2016-09-19T14:33:45.710Z',
-                },
-                {
-                    'value': 3309,
-                    'name': '2016-09-12T18:48:58.925Z',
-                },
+                }
             ],
-        },
-        {
-            'name': 'Containers',
-            'series': [
-                {
-                    'value': 2452,
-                    'name': '2016-09-15T19:25:07.773Z',
-                },
-                {
-                    'value': 4938,
-                    'name': '2016-09-17T17:16:53.279Z',
-                },
-                {
-                    'value': 4110,
-                    'name': '2016-09-15T10:34:32.344Z',
-                },
-                {
-                    'value': 3828,
-                    'name': '2016-09-19T14:33:45.710Z',
-                },
-                {
-                    'value': 5772,
-                    'name': '2016-09-12T18:48:58.925Z',
-                },
-            ],
-        },
-        {
-            'name': 'Streams',
-            'series': [
-                {
-                    'value': 4022,
-                    'name': '2016-09-15T19:25:07.773Z',
-                },
-                {
-                    'value': 2345,
-                    'name': '2016-09-17T17:16:53.279Z',
-                },
-                {
-                    'value': 5148,
-                    'name': '2016-09-15T10:34:32.344Z',
-                },
-                {
-                    'value': 6868,
-                    'name': '2016-09-19T14:33:45.710Z',
-                },
-                {
-                    'value': 5415,
-                    'name': '2016-09-12T18:48:58.925Z',
-                },
-            ],
-        },
-        {
-            'name': 'Queries',
-            'series': [
-                {
-                    'value': 6194,
-                    'name': '2016-09-15T19:25:07.773Z',
-                },
-                {
-                    'value': 6585,
-                    'name': '2016-09-17T17:16:53.279Z',
-                },
-                {
-                    'value': 6857,
-                    'name': '2016-09-15T10:34:32.344Z',
-                },
-                {
-                    'value': 2545,
-                    'name': '2016-09-19T14:33:45.710Z',
-                },
-                {
-                    'value': 5986,
-                    'name': '2016-09-12T18:48:58.925Z',
-                },
-            ],
-        },
+        }
+
     ];
 
 @Input()
 observation : fhir.Observation;
 
+    @ViewChild('chart') chart : NgxChartsModule;
+
+
   constructor(public dialog: MatDialog,
               @Inject(MAT_DIALOG_DATA) data,
               public fhirService : FhirService) {
 
-    this.observation = data.observation;
+    this.observation = data.resource;
 
-    console.log(data.observation);
-
-    let obs : string[] = this.observation.subject.reference.split('/');
-
-      this.fhirService.get('Observation?patient='+obs[1]+'&code='+this.observation.code.coding[0].code).subscribe(
-          observation => {
-              console.log(observation.id);
-          }
-      );
-      // Chart Multi
-      /*
-      this.multi = multi.map((group: any) => {
-          group.series = group.series.map((dataItem: any) => {
-              dataItem.name = new Date(dataItem.name);
-              return dataItem;
-          });
-          return group;
-      });
-      */
   }
 
   ngOnInit() {
 
+      console.log(this.observation);
+
+      let obs : string[] = this.observation.subject.reference.split('/');
+      this.fhirService.get('/Observation?patient='+obs[1]+'&code='+this.observation.code.coding[0].code+"&_count=200").subscribe(
+          bundle => {
+                    console.log(bundle);
+                  let observations : fhir.Bundle = <fhir.Bundle> bundle;
+                  this.title = this.observation.code.coding[0].display;
+                  this.yAxisLabel='Value';
+                  let multi : any[] = [];
+
+                  if (this.observation.valueQuantity !== undefined) {
+                      this.yAxisLabel=this.observation.valueQuantity.unit;
+                      multi.push({
+                          'name': this.observation.code.coding[0].display,
+                          'series': [
+                          ],
+                      })
+                  }
+                  if (this.observation.component !== undefined) {
+                      this.yAxisLabel=this.observation.component[0].valueQuantity.unit;
+                      for (let component of this.observation.component) {
+                          multi.push(
+                              {
+                                  'name': component.code.coding[0].display,
+                                  'series': [],
+                              }
+                          );
+                      }
+                  }
+
+                  for (let entry of observations.entry) {
+                      if (entry.resource.resourceType === 'Observation') {
+                          let observation: fhir.Observation = <fhir.Observation> entry.resource;
+
+                          if (observation.component === undefined || observation.component.length < 0) {
+                              if (observation.valueQuantity.value !== undefined) {
+                                  if (observation.effectiveDateTime !== undefined) {
+                                      console.log(observation.effectiveDateTime);
+                                      multi[0].series.push({
+                                          'value': observation.valueQuantity.value,
+                                          'name': new Date(observation.effectiveDateTime)
+                                      });
+                                  }
+                                  if (observation.effectivePeriod !== undefined) {
+                                      console.log(observation.effectivePeriod.start);
+                                      multi[0].series.push({
+                                          'value': observation.valueQuantity.value,
+                                          'name': new Date(observation.effectivePeriod.start)
+                                      });
+                                  }
+                              }
+                          } else {
+                              for (let component of observation.component) {
+
+                                  let seriesId = undefined;
+                                  let cont = 0;
+                                  for (; cont < multi.length; cont++) {
+                                      console.log('series name = ' + multi[cont].name);
+                                      console.log('component name ' + component.code.coding[0].display);
+                                      if (multi[cont].name === component.code.coding[0].display) {
+                                          seriesId = cont;
+                                      }
+                                  }
+                                  if (seriesId !== undefined) {
+                                      if (observation.effectiveDateTime !== undefined) {
+                                          console.log(observation.effectiveDateTime);
+                                          multi[seriesId].series.push({
+                                              'value': component.valueQuantity.value,
+                                              'name': new Date(observation.effectiveDateTime)
+                                          });
+                                      }
+                                      if (observation.effectivePeriod !== undefined) {
+                                          console.log(observation.effectivePeriod.start);
+                                          multi[seriesId].series.push({
+                                              'value': component.valueQuantity.value,
+                                              'name': new Date(observation.effectivePeriod.start)
+                                          });
+                                      }
+                                  }
+                              }
+                          }
+                      }
+
+
+
+                  }
+                  this.multi = multi;
+                  console.log(this.multi);
+
+          }
+      );
 
 
   }
