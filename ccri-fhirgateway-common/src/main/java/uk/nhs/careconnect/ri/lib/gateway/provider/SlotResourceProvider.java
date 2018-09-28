@@ -46,7 +46,7 @@ public class SlotResourceProvider implements IResourceProvider {
 
 /*
     @Validate
-    public MethodOutcome testResource(@ResourceParam Schedule resource,
+    public MethodOutcome testResource(@ResourceParam Slot resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
@@ -102,14 +102,14 @@ public class SlotResourceProvider implements IResourceProvider {
             InputStream inputStream = null;
             String newXmlResource = ctx.newXmlParser().encodeResourceToString(slot);
 
-            Exchange exchangeBundle = template.send("direct:FHIRSchedule", ExchangePattern.InOut, new Processor() {
+            Exchange exchangeBundle = template.send("direct:FHIRSlot", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setBody(newXmlResource);
                     exchange.getIn().setHeader("Prefer", "return=representation");
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Schedule");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Slot");
                 }
             });
 
@@ -142,7 +142,7 @@ public class SlotResourceProvider implements IResourceProvider {
                                                            @OptionalParam(name = Slot.SP_STATUS) TokenParam status,
                                                            @OptionalParam(name = Slot.SP_START) TokenParam start
                                                            //@OptionalParam(name = Slot.SP_) TokenParam end
-                                                           //   @OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
+                                                           //   @OptionalParam(name = Slot.SP_ORGANIZATION) ReferenceParam organisation
               ) throws Exception {
 
         List<Slot> results = new ArrayList<Slot>();
