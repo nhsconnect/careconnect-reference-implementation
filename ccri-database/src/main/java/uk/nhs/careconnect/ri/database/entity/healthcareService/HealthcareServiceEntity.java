@@ -23,6 +23,9 @@ public class HealthcareServiceEntity extends BaseResource {
     @Column(name="NAME")
     private String name;
 
+    @Column(name="COMMENT")
+    private String comment;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_SERVICE_SPECIALTY_ORGANISATION_ID"))
     private OrganisationEntity providedBy;
@@ -75,6 +78,16 @@ public class HealthcareServiceEntity extends BaseResource {
         return this;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) { this.id = id; }
+
+    public String getComment() { return comment; }
+
+    public void setComment(String comment) { this.comment = comment; }
+
     public Set<HealthcareServiceLocation> getLocations() {
         return locations;
     }
@@ -118,10 +131,6 @@ public class HealthcareServiceEntity extends BaseResource {
     public HealthcareServiceEntity setSpecialties(Set<HealthcareServiceSpecialty> specialties) {
         this.specialties = specialties;
         return this;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Set<HealthcareServiceIdentifier> getIdentifiers() {
