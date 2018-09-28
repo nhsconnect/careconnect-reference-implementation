@@ -59,63 +59,14 @@
     <td mat-cell *matCellDef="let observation">  <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(observation)"><mat-icon>code</mat-icon></button>  </td>
   </ng-container>
 
+  <ng-container matColumnDef="chart">
+    <th mat-header-cell *matHeaderCellDef width="5%">Chart</th>
+    <td mat-cell *matCellDef="let observation">  <button mat-icon-button color="accent"  matTooltip="View Observation Chart" (click)="selectChart(observation)"><mat-icon>insert_chart</mat-icon></button></td>
+  </ng-container>
+
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator> -->
 </div>
-<!--
-<ng-template #modalContent let-c="close" let-d="dismiss">
-  <div class="modal-header">
-    <h4>{{selectedObs.code.coding[0].display}}</h4>
-    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-
-    <app-observation-detail [code]="selectedObs.code.coding[0].code" [patientId]="patientId"></app-observation-detail>
-  </div>
-</ng-template>
-<table class="table" >
-  <thead>
-  <tr>
-    <th scope="col" width="20%">Date</th>
-    <th scope="col" width="60%">Observation</th>
-    <th scope="col">Value</th>
-    <th scope="col" width="5%"></th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let observation of observations" >
-    <td>
-      {{observation.effectiveDateTime | date: 'dd-MMM-yyyy HH:mm'}}
-    </td>
-    <td>
-      <b>{{observation.code.coding[0].display}}</b>
-      <span *ngIf="isSNOMED(observation.code.coding[0].system)">
-        &nbsp;<a (click)="getSNOMEDLink(observation.code.coding[0])"> <span *ngIf="observation.code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(observation.code.coding[0].system)}} {{observation.code.coding[0].code}}"></span> </a>
-      </span>
-      <span *ngIf="!isSNOMED(observation.code.coding[0].system)">
-        &nbsp;<span *ngIf="observation.code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(observation.code.coding[0].system)}} {{observation.code.coding[0].code}}"></span>
-      </span>
-      <span *ngIf="observation.category != undefined">
-        <i *ngFor="let category of observation.category"> {{category.coding[0].display}}</i>
-      </span>
-      - {{observation.status}}
-    </td>
-    <td>
-      {{getValue(observation)}}
-      <span *ngIf="showDetail">
-      &nbsp;<a (click)="onClick(modalContent, observation)"> <span *ngIf="observation.code.coding[0].code != undefined" class="badge badge-success" >detail</span></a>
-      </span>
-    </td>
-    <td>
-      <button mat-icon-button color="accent" style="background-color: lightgray" (click)="select(observation)"><mat-icon>code</mat-icon></button>
-    </td>
-  </tr>
-  </tbody>
-</table>
-
-  -->
