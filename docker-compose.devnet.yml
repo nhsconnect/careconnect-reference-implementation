@@ -115,7 +115,7 @@ services:
       - ccrisql
     environment:
       - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
-      - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
+      - POSTGRES_JDBC=postgresql://ccrisql:5433/careconnect
       - POSTGRES_USER=${MYSQL_DB_USER}
       - POSTGRES_USERNAME=${MYSQL_DB_USER}
       - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}

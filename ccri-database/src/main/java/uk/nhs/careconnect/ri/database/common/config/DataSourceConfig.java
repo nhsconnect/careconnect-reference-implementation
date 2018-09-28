@@ -65,7 +65,8 @@ public class DataSourceConfig {
 
 
 
-    @Bean()
+    //@Bean()
+    @Bean(destroyMethod = "")
     public DataSource dataSource() {
         final BasicDataSource dataSource = new BasicDataSource();
         System.out.println("In Data Source");
