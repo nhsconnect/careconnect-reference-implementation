@@ -135,7 +135,7 @@ public class SlotResourceProvider implements IResourceProvider {
                                                            //   @OptionalParam(name = Slot.SP_ORGANIZATION) ReferenceParam organisation
               ) throws Exception {
 
-        List<Slot> results = new ArrayList<Slot>();
+        List<Slot> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 
