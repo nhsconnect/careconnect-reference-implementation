@@ -227,7 +227,7 @@ public class SlotDao implements SlotRepository {
     }
 
     @Override
-    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, StringParam id) {
+    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
 
         List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,schedule, id); //,organisation
         List<Slot> results = new ArrayList<>();
@@ -241,7 +241,7 @@ public class SlotDao implements SlotRepository {
     }
 
     @Override
-    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, StringParam id) {
+    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
 
         List<SlotEntity> qryResults = null;
 
