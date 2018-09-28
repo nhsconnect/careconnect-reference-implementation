@@ -15,14 +15,14 @@ export class ObservationChartDialogComponent implements OnInit {
 
 
     // options
-    showXAxis: boolean = false;
+    showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = true;
     showLegend: boolean = false;
     showXAxisLabel: boolean = true;
     xAxisLabel: string = '';
     showYAxisLabel: boolean = true;
-    timeline:boolean = true;
+    timeline:boolean = false;
     yAxisLabel: string = 'Value';
     animations: boolean = false;
 
