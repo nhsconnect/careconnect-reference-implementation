@@ -5,7 +5,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 
 import uk.nhs.careconnect.ri.database.entity.carePlan.*;
-import uk.nhs.careconnect.ri.database.entity.carePlan.*;
+
 
 @Component
 public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<CarePlanEntity, CarePlan> {

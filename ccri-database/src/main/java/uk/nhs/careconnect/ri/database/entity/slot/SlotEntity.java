@@ -24,14 +24,14 @@ public class SlotEntity extends BaseResource {
     private Boolean active;
 
     @Column(name="SLOT_NAME")
-    private String slotName;
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SERVICE_CATEGORY",nullable = false)
     private ConceptEntity serviceCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="APPOINTMENT_TYPE",nullable = false)
+    @JoinColumn(name="APPOINTMENT_TYPE",nullable = true)
     private ConceptEntity appointmentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,15 +40,15 @@ public class SlotEntity extends BaseResource {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "SLOT_START")
-    private Date slotStart;
+    private Date Start;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "SLOT_END")
-    private Date slotEnd;
+    private Date End;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "SLOT_STATUS")
-    private Slot.SlotStatus slotStatus;
+    private Slot.SlotStatus Status;
 
     @OneToMany(mappedBy="slot", targetEntity = SlotIdentifier.class)
     Set<SlotIdentifier> identifiers = new HashSet<>();
@@ -70,13 +70,9 @@ public class SlotEntity extends BaseResource {
         this.active = active;
     }
 
-    public String getSlotName() {
-        return slotName;
-    }
+    public String getName() { return name; }
 
-    public void setSlotName(String slotName) {
-        this.slotName = slotName;
-    }
+    public void setName(String name) { this.name = name; }
 
     public ConceptEntity getServiceCategory() {
         return serviceCategory;
@@ -102,29 +98,17 @@ public class SlotEntity extends BaseResource {
         this.schedule = schedule;
     }
 
-    public Date getSlotStart() {
-        return slotStart;
-    }
+    public Date getStart() { return Start; }
 
-    public void setSlotStart(Date slotStart) {
-        this.slotStart = slotStart;
-    }
+    public void setStart(Date start) { Start = start; }
 
-    public Date getSlotEnd() {
-        return slotEnd;
-    }
+    public Date getEnd() { return End; }
 
-    public void setSlotEnd(Date slotEnd) {
-        this.slotEnd = slotEnd;
-    }
+    public void setEnd(Date end) { End = end; }
 
-    public Slot.SlotStatus getSlotStatus() {
-        return slotStatus;
-    }
+    public Slot.SlotStatus getStatus() { return Status; }
 
-    public void setSlotStatus(Slot.SlotStatus slotStatus) {
-        this.slotStatus = slotStatus;
-    }
+    public void setStatus(Slot.SlotStatus status) { Status = status; }
 
     public Set<SlotIdentifier> getIdentifiers() {
         return identifiers;

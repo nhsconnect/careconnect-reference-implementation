@@ -19,6 +19,7 @@ import uk.nhs.careconnect.ri.database.entity.appointment.*;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -52,6 +53,9 @@ public class AppointmentDao implements AppointmentRepository {
 
     @Autowired
     LocationRepository locationDao;
+
+    @Autowired
+    SlotRepository slotDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -154,30 +158,49 @@ public class AppointmentDao implements AppointmentRepository {
             appointmentEntity = new AppointmentEntity();
         }
 
-/*        if (appointment.hasProvidedBy()) {
+        if (appointment.hasStatus()) {
+            appointmentEntity.setStatus(appointment.getStatus());
+        }
 
-            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(service.getProvidedBy().getReference()));
-            if (organisationEntity != null) {
-                appointmentEntity.setProvidedBy(organisationEntity);
-            }
-        }*/
-/*        if (appointment.hasActive()) {
-            appointmentEntity.setActive(service.getActive());
-        }*/
-/*        if (appointment.hasName()) {
-            appointmentEntity.setName(appointment.getName());
-        }*/
-/*        log.debug("Appointment.saveCategory");
-        if (appointment.hasCategory()) {
-            ConceptEntity code = conceptDao.findCode(appointment.getCategory().getCoding().get(0));
-            if (code != null) { appointmentEntity.setCategory(code); }
+        log.debug("Appointment.saveCategory");
+        if (appointment.hasAppointmentType()) {
+            ConceptEntity code = conceptDao.findCode(appointment.getAppointmentType().getCoding().get(0));
+            if (code != null) { appointmentEntity.setApointmentType(code); }
             else {
-                log.info("Category: Missing System/Code = "+ appointment.getCategory().getCoding().get(0).getSystem() +" code = "+appointment.getCategory().getCoding().get(0).getCode());
+                log.info("Category: Missing System/Code = "+ appointment.getAppointmentType().getCoding().get(0).getSystem() +" code = "+appointment.getAppointmentType().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getCategory().getCoding().get(0).getSystem()
-                        +" code = "+appointment.getCategory().getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getAppointmentType().getCoding().get(0).getSystem()
+                        +" code = "+appointment.getAppointmentType().getCoding().get(0).getCode());
+            }
+        }
+
+/*        log.debug("Appointment.saveReason");
+        if (appointment.hasReason()) {
+            ConceptEntity code = conceptDao.findCode(appointment.getReason().getCoding().get(0));
+            if (code != null) { appointmentEntity.setReason(code); }
+            else {
+                log.info("Category: Missing System/Code = "+ appointment.getReason().getCoding().get(0).getSystem() +" code = "+appointment.getReason().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getReason().getCoding().get(0).getSystem()
+                        +" code = "+appointment.getReason().getCoding().get(0).getCode());
             }
         }*/
+
+        if (appointment.hasPriority()) {
+            appointmentEntity.setPriority(appointment.getPriority());
+        }
+
+        if (appointment.hasDescription()) {
+            appointmentEntity.setDescription(appointment.getDescription());
+        }
+
+        if (appointment.hasStart()) {
+            appointmentEntity.setStart(appointment.getStart());
+        }
+
+        if (appointment.hasEnd()) {
+            appointmentEntity.setEnd(appointment.getEnd());
+        }
 
 /*        em.persist(appointmentEntity);
         log.debug("HealthcareService.saveIdentifier");
@@ -197,14 +220,14 @@ public class AppointmentDao implements AppointmentRepository {
             serviceIdentifier.setService(appointmentEntity);
             em.persist(serviceIdentifier);
         }*/
-/*        log.debug("HealthcareService.saveLocation");
-        for (Reference reference : appointment.getLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(reference.getReference()));
-            if (locationEntity != null) {
-                AppointmentLocation location = new AppointmentLocation();
-                location.setLocation(locationEntity);
-                location.setAppointment(appointmentEntity);
-                em.persist(location);
+/*        log.debug("Appointment.saveSlot");
+        for (Reference reference : appointment.getSlot()) {
+            SlotEntity slotEntity = slotDao.readEntity(ctx, new IdType(reference.getReference()));
+            if (slotEntity != null) {
+                AppointmentSlot appointmentSlot = new AppointmentSlot();
+                appointmentSlot.setLocation(slotEntity);
+                appointmentSlot.setAppointment(appointmentEntity);
+                em.persist(appointmentSlot);
             }
         }*/
 /*        for (CodeableConcept concept :appointment.getSpecialty()) {

@@ -14,7 +14,6 @@ public class ScheduleEntityToFHIRScheduleTransformer implements Transformer<Sche
 
     
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScheduleEntityToFHIRScheduleTransformer.class);
-    
 
     @Override
     public Schedule transform(final ScheduleEntity scheduleEntity) {
@@ -46,8 +45,6 @@ public class ScheduleEntityToFHIRScheduleTransformer implements Transformer<Sche
                 schedule.setActive(scheduleEntity.getActive());
             }
 
-
-
             for(ScheduleActor actor : scheduleEntity.getActors()){
                 if(actor.getPractitionerRole() != null){
                     schedule.addActor().setReference("PractitonerRole/"+actor.getPractitionerRole().getId());
@@ -67,51 +64,20 @@ public class ScheduleEntityToFHIRScheduleTransformer implements Transformer<Sche
 
             }
 
+            if (scheduleEntity.getComment() != null) {
+                schedule.setComment(scheduleEntity.getComment());
+            }
 
-        if (scheduleEntity.getComment() != null) {
-            schedule.setComment(scheduleEntity.getComment());
-        }
 
-
-        if (scheduleEntity.getCategory() != null) {
-            schedule.getServiceCategory()
-                    .addCoding()
-                    .setDisplay(scheduleEntity.getCategory().getDisplay())
-                    .setSystem(scheduleEntity.getCategory().getSystem())
-                    .setCode(scheduleEntity.getCategory().getCode());
-        }
- /*
-        if (scheduleEntity.getProvidedBy() != null) {
-            schedule.setProvidedBy(new Reference("Organization/"+scheduleEntity.getProvidedBy().getId()));
-        }
-        for (ScheduleSpecialty scheduleSpecialty : scheduleEntity.getSpecialties()) {
-            schedule.addSpecialty()
-                    .addCoding()
-                        .setCode(scheduleSpecialty.getSpecialty().getCode())
-                        .setSystem(scheduleSpecialty.getSpecialty().getSystem())
-                        .setDisplay(scheduleSpecialty.getSpecialty().getDisplay());
-        }
-        for (ScheduleLocation scheduleLocation : scheduleEntity.getLocations()) {
-            schedule.addLocation(new Reference("Location/"+scheduleLocation.getLocation().getId()));
-        }
-        for (ScheduleTelecom scheduleTelecom : scheduleEntity.getTelecoms()) {
-            schedule.addTelecom()
-                    .setSystem(scheduleTelecom.getSystem())
-                    .setValue(scheduleTelecom.getValue())
-                    .setUse(scheduleTelecom.getTelecomUse());
-
-        }
-        for (ScheduleType scheduleType : scheduleEntity.getTypes()) {
-            schedule.addType()
-                    .addCoding()
-                    .setCode(scheduleType.getType_().getCode())
-                    .setSystem(scheduleType.getType_().getSystem())
-                    .setDisplay(scheduleType.getType_().getDisplay());
-        } */
-
+            if (scheduleEntity.getCategory() != null) {
+                schedule.getServiceCategory()
+                        .addCoding()
+                        .setDisplay(scheduleEntity.getCategory().getDisplay())
+                        .setSystem(scheduleEntity.getCategory().getSystem())
+                        .setCode(scheduleEntity.getCategory().getCode());
+            }
 
             return schedule;
 
-
-        }
+    }
 }

@@ -27,21 +27,23 @@ public interface SlotRepository extends BaseRepository<SlotEntity,Slot> {
 
 
 
+    //List<SlotEntity> searchSlotByStart(FhirContext ctx, @OptionalParam(name = Slot.SP_START) StringParam identifier);
+
+
+
     List<Slot> searchSlot(FhirContext ctx,
-
-                                                    @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
-                                                    @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
-
-                                                    @OptionalParam(name = Slot.SP_RES_ID) StringParam id
-                                                    //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
+                                            @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                                            @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
+                                            @OptionalParam(name = Slot.SP_RES_ID) TokenParam id
+                                            //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
 
     );
 
     List<SlotEntity> searchSlotEntity(FhirContext ctx,
 
-                                                                @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
-                                                                @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
-                                                                @OptionalParam(name = Slot.SP_RES_ID) StringParam id
+                                            @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                                            @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
+                                            @OptionalParam(name = Slot.SP_RES_ID) TokenParam id
 
 
     );

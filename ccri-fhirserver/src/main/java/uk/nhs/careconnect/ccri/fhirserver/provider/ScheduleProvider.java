@@ -92,6 +92,18 @@ public class ScheduleProvider implements ICCResourceProvider {
         return method;
     }
 
+
+/*    @Search
+    public List<Schedule> searchScheduleBy(HttpServletRequest theRequest,
+                                         @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
+                                         @OptionalParam(name = Schedule.SP_ACTOR) StringParam name,
+                                         @OptionalParam(name= Schedule.SP_TYPE) TokenOrListParam codes,
+                                         @OptionalParam(name = Schedule.SP_RES_ID) TokenParam id
+    ) {
+        return scheduleDao.searchSchedule(ctx, identifier,name,codes,id);
+    }*/
+
+/*
     @Search
     public List<Schedule> searchSchedule(HttpServletRequest theRequest,
                                                            @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
@@ -101,6 +113,7 @@ public class ScheduleProvider implements ICCResourceProvider {
     ) {
         return scheduleDao.searchSchedule(ctx, identifier,name,codes,id);
     }
+*/
 
     @Read()
     public Schedule getSchedule(@IdParam IdType scheduleId) {
