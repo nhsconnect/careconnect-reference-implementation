@@ -89,42 +89,6 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.13
 
-  ccriintegration:
-    container_name: ccriintegration
-    image: thorlogic/ccri-tie${IMAGE_TAG}
-    depends_on:
-      - ccriserver
-    environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
-      - fhir.resource.serverName=Care Connect TIE FHIR Server
-      - fhir.resource.serverVersion=3.7.0-SNAPSHOT
-    ports:
-      - 8182:8182
-    volumes:
-      - tie-log-volume:/usr/local/tomcat/logs
-    networks:
-      ccri_net:
-        ipv4_address: 172.168.240.12
-
-  ccriui:
-    container_name: ccriui
-    build: ccri-management
-    image: thorlogic/ccri-management${IMAGE_TAG}
-    environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
-      - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-    depends_on:
-      - ccrifhir
-    ports:
-      - 81:8187
-    extra_hosts:
-      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
-      - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
-    networks:
-      - ccri_net
 
   ccrimongo:
       container_name: ccrimongo
@@ -170,8 +134,44 @@ services:
       - SMART_GROWTH_CHART_URL=https://${FHIR_SERVER_BASE_HOST}/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
       - SMART_CARDIAC_URL=https://${FHIR_SERVER_BASE_HOST}/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
     ports:
-      - 8108:80
+      - 4200:80
 
+  ccriintegration:
+    container_name: ccriintegration
+    image: thorlogic/ccri-tie${IMAGE_TAG}
+    depends_on:
+    - ccriserver
+    environment:
+    - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
+    - fhir.resource.serverName=Care Connect TIE FHIR Server
+    - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+    ports:
+    - 8182:8182
+    volumes:
+    - tie-log-volume:/usr/local/tomcat/logs
+    networks:
+      ccri_net:
+        ipv4_address: 172.168.240.12
+
+  ccriui:
+    container_name: ccriui
+    build: ccri-management
+    image: thorlogic/ccri-management${IMAGE_TAG}
+    environment:
+    - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
+    - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}:8105/ccri-fhir/STU3
+    - fhir.restserver.serverBase=http4://${FHIR_SERVER_BASE_HOST}/careconnect-ri/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    - fhir.restserver.edmsBase=http4://127.0.0.1:8184/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+    - ccrifhir
+    ports:
+    - 81:8187
+    extra_hosts:
+    # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+    - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
+    networks:
+    - ccri_net
 
 volumes:
   tomcat-log-volume:

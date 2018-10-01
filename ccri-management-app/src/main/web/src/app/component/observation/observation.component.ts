@@ -133,7 +133,7 @@ export class ObservationComponent implements OnInit {
 
             dialogConfig.disableClose = true;
             dialogConfig.autoFocus = true;
-            dialogConfig.height = '520px';
+            dialogConfig.height = '620px';
             dialogConfig.width = '90%';
             dialogConfig.data = {
                 resource: observation
