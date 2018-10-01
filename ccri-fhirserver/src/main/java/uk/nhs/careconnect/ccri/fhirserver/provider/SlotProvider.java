@@ -95,14 +95,14 @@ public class SlotProvider implements ICCResourceProvider {
     public List<Slot> searchSlot(HttpServletRequest theRequest,
                                  @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
                                  @OptionalParam(name = Slot.SP_START) DateParam start,
-                                 //@OptionalParam(name = Slot.SP_RES_ID) TokenParam id,
+                                 @OptionalParam(name = Slot.SP_STATUS) StringParam status,
+                                 @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
                                  @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule
 
-   )
+    )
 
-  {
-        return slotDao.searchSlot(ctx, identifier,start,schedule);
-
+    {
+        return slotDao.searchSlot(ctx, identifier,start,status,id,schedule);
     }
 
     @Read()

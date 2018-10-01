@@ -1,18 +1,17 @@
 package uk.nhs.careconnect.ri.database.entity.slot;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hl7.fhir.dstu3.model.Slot;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
-import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
+
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "Slot1")
+@Table(name = "Slot")
 public class SlotEntity extends BaseResource {
 
     @Id
