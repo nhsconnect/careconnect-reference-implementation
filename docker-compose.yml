@@ -9,13 +9,14 @@ services:
     - POSTGRES_USER=${MYSQL_DB_USER}
     - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
     ports:
-    - 5432:5432
+    - 5433:5432
     networks:
     - ccri_net
 
   ccriserver:
     container_name: ccriserver
     image: thorlogic/ccri-fhirserver${IMAGE_TAG}
+    build: ccri-fhirserver
     depends_on:
       - ccrisql
     links:
@@ -47,11 +48,19 @@ services:
 
   ccrifhir:
     container_name: ccrifhir
+    build: ccri-fhir
     image: thorlogic/ccri-fhir${IMAGE_TAG}
     environment:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (unsecured)
+      - ccri.server.base=https://data.developer.nhs.uk/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
     ports:
@@ -67,6 +76,7 @@ services:
   ccridataload:
     container_name: ccridataload
     image: thorlogic/ccri-dataload${IMAGE_TAG}
+    build: ccri-dataload
     depends_on:
     - ccriserver
     environment:
@@ -99,7 +109,8 @@ services:
 
   ccriui:
     container_name: ccriui
-    image: thorlogic/ccri-ui${IMAGE_TAG}
+    build: ccri-management
+    image: thorlogic/ccri-management${IMAGE_TAG}
     environment:
       - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
       - fhir.resource.serverBase=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
@@ -108,7 +119,7 @@ services:
     depends_on:
       - ccrifhir
     ports:
-      - 81:80
+      - 81:8187
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
       - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
@@ -119,7 +130,7 @@ services:
       container_name: ccrimongo
       image: mongo:3.6.3
       ports:
-        - 8106:27107
+        - 27107:27107
       networks:
         - ccri_net
 
@@ -144,6 +155,22 @@ services:
        ccri_net:
          ipv4_address: 172.168.240.11
 
+  ccricat:
+    container_name: ccricat
+    image: thorlogic/ccri-cat${IMAGE_TAG}
+    environment:
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - KEYCLOAK_CLIENT_ID=ccri-cat
+      - SMART_OAUTH2_CLIENT_SECRET=${SMART_OAUTH2_CLIENT_SECRET}
+      - KEYCLOAK_AUTH_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - KEYCLOAK_SERVER_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - FHIR_SERVER_URL=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - KEYCLOAK_REALM=ReferenceImplementations
+      - CAT_COOKIE_DOMAIN=${FHIR_SERVER_BASE_HOST}
+      - SMART_GROWTH_CHART_URL=https://${FHIR_SERVER_BASE_HOST}/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+      - SMART_CARDIAC_URL=https://${FHIR_SERVER_BASE_HOST}/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
+    ports:
+      - 8108:80
 
 
 volumes:

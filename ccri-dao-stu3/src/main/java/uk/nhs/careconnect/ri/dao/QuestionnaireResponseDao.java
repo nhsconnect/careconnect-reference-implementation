@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
@@ -109,7 +110,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     }
 
     @Override
-    public List<QuestionnaireResponse> searchQuestionnaireResponse(FhirContext ctx, TokenParam identifier, TokenParam id, ReferenceParam questionnaire, ReferenceParam patient) {
+    public List<QuestionnaireResponse> searchQuestionnaireResponse(FhirContext ctx, TokenParam identifier, StringParam id,ReferenceParam questionnaire, ReferenceParam patient) {
         List<QuestionnaireResponseEntity> qryResults = searchQuestionnaireResponseEntity(ctx, identifier, id, questionnaire, patient);
         List<QuestionnaireResponse> results = new ArrayList<>();
 
@@ -124,7 +125,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     }
 
     @Override
-    public List<QuestionnaireResponseEntity> searchQuestionnaireResponseEntity(FhirContext ctx, TokenParam identifier, TokenParam resid, ReferenceParam questionnaire, ReferenceParam patient) {
+    public List<QuestionnaireResponseEntity> searchQuestionnaireResponseEntity(FhirContext ctx, TokenParam identifier, StringParam resid, ReferenceParam questionnaire, ReferenceParam patient) {
 
             List<QuestionnaireResponseEntity> qryResults = null;
 

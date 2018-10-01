@@ -1,0 +1,106 @@
+<mat-card>
+  <mat-card-title>Care Connect Reference Implementation</mat-card-title>
+ <!-- <mat-card-subtitle>About</mat-card-subtitle> -->
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div>
+      You are accessing the INTEROpen/NHS Digital Care Connect Reference Implementation FHIR server. <br>
+      <br>
+      For more information on Care Connect: <br>
+      <br>
+      <a href="https://nhsconnect.github.io/CareConnectAPI/">NHS Digital Care Connect API</a><br>
+      <a href="https://fhir-test.hl7.org.uk/">HL7 UK INTEROpen Care Connect FHIR Profiles</a><br>
+      <a href="https://fhir.nhs.uk/">NHS Digital FHIR Profiles</a><br>
+      <br>
+      <td-message label="Note" sublabel="All information provided is subject to on-going review." color="info" icon="info">
+
+      </td-message>
+
+    </div>
+    <br>
+    This is not a production server.  Do not store any information here that contains personal health information or any other confidential information. This server will be regularly purged and reloaded with fixed test data.
+    purged and reloaded with fixed test data.
+  </mat-card-content>
+  <mat-divider></mat-divider>
+ <!-- <mat-card-actions>
+    <a mat-button color="accent" class="text-upper" [routerLink]="['/']">
+      <span>View More</span>
+    </a>
+  </mat-card-actions> -->
+</mat-card>
+<mat-card>
+  <mat-card-title>Conformance Information</mat-card-title>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+      <span *ngIf="conformance != undefined">
+          <mat-list>
+
+              <mat-list-item>
+                  <span flex-auto fxLayoutAlign="space-between center">
+                  Server
+                  <b><span *ngIf="conformance.implementation !== undefined">
+                  {{conformance.implementation.description}}
+                  </span></b>
+                    </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center"> Implementation Guide <b>
+                <span *ngIf="conformance.implementationGuide != null">
+                  <span *ngFor="let url of conformance.implementationGuide">
+                    <a href="{{url}}">{{url}}</a>
+                  </span>
+                </span></b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Software <b>{{conformance.software.name}} ({{conformance.software.version}}) </b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Server Base <b>{{serverBase}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Version <b>{{conformance.fhirVersion}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Status <b>{{conformance.status}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Publisher <b>{{conformance.publisher}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item *ngFor="let format of conformance.format; let first = first;">
+                  <span flex-auto fxLayoutAlign="space-between center">
+                      <span *ngIf="first">Formats</span>
+                      <span *ngIf="!first">-</span>
+                  <b>{{format}}</b></span></mat-list-item>
+              <mat-divider></mat-divider>
+              <span *ngIf="conformance.rest !== undefined">
+                  <span *ngFor="let rest of conformance.rest">
+                      <span *ngIf="rest.security !== undefined && rest.security.service !== undefined">
+                          <span *ngFor="let service of rest.security.service">
+                              <mat-list-item>
+                                  <span flex-auto fxLayoutAlign="space-between center">
+                                      <span>Security</span>
+                                      <b>{{service.coding[0].display}}</b>
+                                  </span>
+                          </mat-list-item>
+                          </span>
+                      <span *ngIf="rest.security.extension !== undefined">
+                          <span *ngFor="let extension of rest.security.extension">
+                          <span *ngIf="extension.extension != undefined" >
+
+                              <mat-list-item *ngFor="let secext of extension.extension">
+                                  <span flex-auto fxLayoutAlign="space-between center">
+                                      <span>{{secext.url}}</span>
+                                      <b>{{secext.valueUri}}</b>
+                                  </span>
+                          </mat-list-item>
+                          </span>
+                              </span>
+                          </span>
+                      </span>
+                  </span>
+              </span>
+          </mat-list>
+        </span>
+  </mat-card-content>
+  <mat-divider></mat-divider>
+  <mat-card-actions>
+     <a mat-button color="accent" class="text-upper" [routerLink]="['/capabilitystatement']">
+       <span>Conformance Statement</span>
+     </a>
+   </mat-card-actions>
+</mat-card>

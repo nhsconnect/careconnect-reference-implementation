@@ -28,7 +28,7 @@ public interface PractitionerRepository extends BaseRepository<PractitionerEntit
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            ,@OptionalParam(name= Practitioner.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Practitioner.SP_RES_ID) StringParam id
 
 
     );
@@ -37,7 +37,7 @@ public interface PractitionerRepository extends BaseRepository<PractitionerEntit
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Practitioner.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            ,@OptionalParam(name= Practitioner.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Practitioner.SP_RES_ID) StringParam id
     );
 
 

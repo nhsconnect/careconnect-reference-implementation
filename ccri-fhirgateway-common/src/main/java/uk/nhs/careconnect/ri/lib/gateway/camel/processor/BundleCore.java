@@ -147,6 +147,7 @@ public class BundleCore {
                         resource = searchAddOrganisation(referenceId, sdsOrganization);
                     }
                 }
+                /*
                 if (referenceId.contains("Practitioner")) {
                     String sdsCode = referenceId.replace("https://directory.spineservices.nhs.uk/STU3/Practitioner/","");
                     Practitioner sdsPractitioner = client.read().resource(Practitioner.class).withId(sdsCode).execute();
@@ -155,6 +156,7 @@ public class BundleCore {
                         resource = searchAddPractitioner(referenceId, sdsPractitioner);
                     }
                 }
+                */
             } else {
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -188,9 +190,6 @@ public class BundleCore {
                             resource = searchAddMedicationRequest(referenceId, (MedicationRequest) iResource);
                         } else if (iResource instanceof MedicationStatement) {
                             resource = searchAddMedicationStatement(referenceId, (MedicationStatement) iResource);
-                        } else if (iResource instanceof Medication) {
-                            // We don't store medicationRequest, so return the resource as is 26th June 2018 KGM
-                            resource = iResource;
                         } else if (iResource instanceof ListResource) {
                             resource = searchAddList(referenceId, (ListResource) iResource);
                         } else if (iResource instanceof Immunization) {
@@ -238,6 +237,9 @@ public class BundleCore {
                                 case "RiskAssessment":
                                     resource = searchAddRiskAssessment(referenceId, (RiskAssessment) iResource);
                                     break;
+                                case "Medication":
+                                    resource = searchAddMedication(referenceId, (Medication) iResource);
+                                    break;
                                 default:
                                     log.info("Found in Bundle. Not processed (" + iResource.getClass());
                             }
@@ -275,7 +277,7 @@ public class BundleCore {
         //return null;
     }
 
-    public ListResource searchAddList(String listId,ListResource list) {
+    private ListResource searchAddList(String listId,ListResource list) {
         log.info("List searchAdd " +listId);
 
         if (list == null) throw new InternalErrorException("Bundle processing error");
@@ -507,6 +509,13 @@ public class BundleCore {
 
         InputStream inputStream = null;
 
+        // Prevent re-adding the same Organisation
+        if (organisation.getIdentifier().size() == 0) {
+            organisation.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(organisation.getId());
+        }
+
         for (Identifier identifier : organisation.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIROrganisation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
@@ -607,6 +616,13 @@ public class BundleCore {
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
+
+        // Prevent re-adding the same HealthcareService
+        if (service.getIdentifier().size() == 0) {
+            service.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(service.getId());
+        }
 
         log.info("Looking up HealthcareService Service " +serviceId);
         for (Identifier identifier : service.getIdentifier()) {
@@ -1743,20 +1759,10 @@ public class BundleCore {
             try {
                 reference = medicationRequest.getMedicationReference().getReference();
                 resource = searchAddResource(reference);
+                if (resource == null) referenceMissing(medicationRequest, medicationRequest.getMedicationReference().getReference());
+                medicationRequest.setMedication(getReference(resource));
             } catch (Exception exMed) {}
-            if (resource == null ) {
-                referenceMissing(medicationRequest, reference);
-            } else {
-                if (resource instanceof Medication) {
-                    Medication medication = (Medication) resource;
-                    // Remove coded profiling
-                    if (medication.hasCode()) {
-                        medicationRequest.setMedication(medication.getCode());
-                    } else {
-                        // TODO should abort here, we can't handle uncoded references
-                    }
-                }
-            }
+
         }
 
         IBaseResource iResource = null;
@@ -1805,6 +1811,106 @@ public class BundleCore {
 
         return eprMedicationRequest;
     }
+
+    public Medication searchAddMedication(String MedicationId,Medication Medication) {
+        log.info("Medication searchAdd " +MedicationId);
+
+        if (Medication == null) throw new InternalErrorException("Bundle processing error");
+
+        Medication eprMedication = (Medication) resourceMap.get(MedicationId);
+
+        // Organization already processed, quit with Organization
+        if (eprMedication != null) return eprMedication;
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Coding code : Medication.getCode().getCoding()) {
+            Exchange exchange = template.send("direct:FHIRMedication", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "code=" + code.getSystem() + "|" + code.getCode());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Medication");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprMedication = (Medication) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Medication = " + eprMedication.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Medication";
+        // Location found do not add
+        if (eprMedication != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Medication/"+eprMedication.getIdElement().getIdPart();
+            Medication.setId(eprMedication.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(Medication);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRMedication", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Medication) {
+            eprMedication = (Medication) iResource;
+            setResourceMap(MedicationId,eprMedication);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprMedication;
+    }
+
+
 
     public RiskAssessment searchAddRiskAssessment(String riskAssessmentId,RiskAssessment riskAssessment) {
         log.info("RiskAssessment searchAdd " +riskAssessmentId);
@@ -2395,23 +2501,13 @@ public class BundleCore {
         if (medicationDispense.hasMedicationReference()) {
             Resource resource = null;
             String reference = "";
-            try {
-                reference = medicationDispense.getMedicationReference().getReference();
-                resource = searchAddResource(reference);
-            } catch (Exception exMed) {}
-            if (resource == null ) {
-                referenceMissing(medicationDispense, reference);
-            } else {
-                if (resource instanceof Medication) {
-                    Medication medication = (Medication) resource;
-                    // Remove coded profiling
-                    if (medication.hasCode()) {
-                        medicationDispense.setMedication(medication.getCode());
-                    } else {
-                        // TODO should abort here, we can't handle uncoded references
-                    }
-                }
-            }
+           try {
+               reference = medicationDispense.getMedicationReference().getReference();
+               resource = searchAddResource(reference);
+               if (resource == null) referenceMissing(medicationDispense, medicationDispense.getMedicationReference().getReference());
+               medicationDispense.setMedication(getReference(resource));
+           } catch (Exception ex) {}
+
         }
 
         IBaseResource iResource = null;
@@ -2532,20 +2628,9 @@ public class BundleCore {
             try {
                 reference = medicationStatement.getMedicationReference().getReference();
                 resource = searchAddResource(reference);
-            } catch (Exception exMed) {}
-            if (resource == null ) {
-                referenceMissing(medicationStatement, reference);
-            } else {
-                if (resource instanceof Medication) {
-                    Medication medication = (Medication) resource;
-                    // Remove coded profiling
-                    if (medication.hasCode()) {
-                        medicationStatement.setMedication(medication.getCode());
-                    } else {
-                        // TODO should abort here, we can't handle uncoded references
-                    }
-                }
-            }
+                if (resource == null) referenceMissing(medicationStatement, medicationStatement.getMedicationReference().getReference());
+                medicationStatement.setMedication(getReference(resource));
+            } catch (Exception ex) {}
         }
         List<Reference> based = new ArrayList<>();
         if (medicationStatement.hasBasedOn()) {

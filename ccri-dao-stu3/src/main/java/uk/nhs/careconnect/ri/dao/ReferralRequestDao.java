@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -72,7 +73,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
     private static final Logger log = LoggerFactory.getLogger(ReferralRequestDao.class);
 
     @Override
-    public List<ReferralRequestEntity> searchReferralRequestEntity(FhirContext ctx, TokenParam identifier, TokenOrListParam codes, TokenParam id, ReferenceParam patient) {
+    public List<ReferralRequestEntity> searchReferralRequestEntity(FhirContext ctx, TokenParam identifier, TokenOrListParam codes, StringParam id, ReferenceParam patient) {
         List<ReferralRequestEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -225,7 +226,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
         }
         
         if (referralRequest.hasType()) {
-            ConceptEntity code = conceptDao.findCode(referralRequest.getType().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(referralRequest.getType().getCoding().get(0));
             if (code != null) { referralRequestEntity.setType(code); }
             else {
                 log.info("Type: Missing System/Code = "+ referralRequest.getType().getCoding().get(0).getSystem() +" code = "+referralRequest.getType().getCoding().get(0).getCode());
@@ -374,7 +375,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
     }
 
     @Override
-    public List<ReferralRequest> searchReferralRequest(FhirContext ctx, TokenParam identifier, TokenOrListParam codes, TokenParam id, ReferenceParam patient) {
+    public List<ReferralRequest> searchReferralRequest(FhirContext ctx, TokenParam identifier, TokenOrListParam codes, StringParam id,ReferenceParam patient) {
         List<ReferralRequestEntity> qryResults = searchReferralRequestEntity(ctx,identifier,codes,id,patient);
         List<ReferralRequest> results = new ArrayList<>();
 

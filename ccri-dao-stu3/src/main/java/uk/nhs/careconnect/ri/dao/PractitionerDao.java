@@ -226,7 +226,7 @@ public class PractitionerDao implements PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     ) {
         {
             List<PractitionerEntity> qryResults = null;
@@ -321,7 +321,7 @@ public class PractitionerDao implements PractitionerRepository {
             @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , TokenParam resid
+            , StringParam resid
     ) {
         List<Practitioner> results = new ArrayList<>();
         List<PractitionerEntity> qryResults = searchPractitionerEntity(ctx, identifier, name,postCode,resid);

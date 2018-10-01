@@ -1,0 +1,131 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let procedure"> {{procedure.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="performed">
+      <th mat-header-cell *matHeaderCellDef> Performed </th>
+      <td mat-cell *matCellDef="let procedure"> {{procedure.performedDateTime | date: 'dd-MMM-yyyy'}} </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef> Procedure </th>
+      <td mat-cell *matCellDef="let procedure"> <b>{{procedure.code.coding[0].display}}</b>
+
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="codelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let procedure">
+      <span *ngIf="procedure.code.coding[0].code != undefined" >
+        <span *ngIf="isSNOMED(procedure.code.coding[0].system)">
+          <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(procedure.code.coding[0].system)}} {{procedure.code.coding[0].code}}" (click)="getSNOMEDLink(procedure.code.coding[0])">
+              <mat-icon>book</mat-icon>
+          </button>
+        </span>
+         <span *ngIf="!isSNOMED(procedure.code.coding[0].system)">
+              <mat-icon matTooltip="{{getCodeSystem(procedure.code.coding[0].system)}} {{procedure.code.coding[0].code}}">book_outline</mat-icon>
+        </span>
+      </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="bodysite">
+      <th mat-header-cell *matHeaderCellDef> Body Site </th>
+      <td mat-cell *matCellDef="let procedure">
+     <span *ngIf="procedure.bodySite != undefined">
+
+        <div *ngFor="let code of procedure.bodySite">
+          {{code.coding[0].display}}
+         <!-- <span *ngIf="isSNOMED(code.coding[0].system)">
+            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+          </span> -->
+        </div>
+      </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="complication">
+      <th mat-header-cell *matHeaderCellDef> Complication </th>
+      <td mat-cell *matCellDef="let procedure">
+         <span *ngIf="procedure.complication != undefined">
+
+                <div *ngFor="let code of procedure.complication">
+                  {{code.coding[0].display}}
+                <!--  <span *ngIf="isSNOMED(code.coding[0].system)">
+                   &nbsp; <a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+                  </span> -->
+                </div>
+              </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let procedure"> {{procedure.status}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="contextLink">
+      <th mat-header-cell *matHeaderCellDef width="5%">Visit</th>
+      <td mat-cell *matCellDef="let procedure">
+        <span *ngIf="procedure.context != undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="showEncounter(procedure)"><mat-icon>today</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%">FHIR</th>
+      <td mat-cell *matCellDef="let procedure">  <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(procedure)"><mat-icon>code</mat-icon></button>  </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
+<!--<table >
+  <thead>
+  <tr >
+    <th scope="col" width="30%">Date</th>
+    <th scope="col" width="60%">Procedure</th>
+    <th scope="col" width="5%"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let procedure of procedures">
+
+    <td >
+
+      <span *ngIf="procedure.bodySite != undefined">
+        &nbsp;<span class="badge badge-light" >body site</span>
+        <span *ngFor="let code of procedure.bodySite">
+          {{code.coding[0].display}}
+          <span *ngIf="isSNOMED(code.coding[0].system)">
+            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+          </span>
+        </span>
+      </span>
+
+      &nbsp;<span class="badge badge-light" >status</span>
+      <i> {{procedure.status}}</i>
+    </td>
+    <td >
+      <button mat-icon-button color="accent" style="background-color: lightgray" (click)="select(procedure)"><mat-icon>code</mat-icon></button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+-->

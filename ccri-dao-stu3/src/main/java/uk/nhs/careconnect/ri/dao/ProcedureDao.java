@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,7 +262,7 @@ public class ProcedureDao implements ProcedureRepository {
 
 
     @Override
-    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject, TokenParam identifier, TokenParam resid) {
+    public List<Procedure> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date,  ReferenceParam subject, TokenParam identifier, StringParam resid) {
 
         List<ProcedureEntity> qryResults = searchEntity(ctx,patient, date, subject,identifier,resid);
         List<Procedure> results = new ArrayList<>();
@@ -281,7 +278,7 @@ public class ProcedureDao implements ProcedureRepository {
     }
 
     @Override
-    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject, TokenParam identifier, TokenParam resid) {
+    public List<ProcedureEntity> searchEntity(FhirContext ctx,ReferenceParam patient,DateRangeParam date,  ReferenceParam subject, TokenParam identifier, StringParam resid) {
         List<ProcedureEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

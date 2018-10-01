@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -174,7 +175,7 @@ public class CompositionDao implements CompositionRepository {
             for (Extension extension : composition.getExtension()) {
                 if (extension.getUrl().contains("https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1")) {
                     CodeableConcept concept = (CodeableConcept) extension.getValue();
-                    ConceptEntity code = conceptDao.findCode(concept.getCoding().get(0));
+                    ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
                     if (code != null) { compositionEntity.setClass_(code); }
                 }
             }
@@ -291,7 +292,7 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+    public List<Composition> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange) {
         List<CompositionEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange);
         List<Composition> results = new ArrayList<>();
@@ -306,7 +307,7 @@ public class CompositionDao implements CompositionRepository {
     }
 
     @Override
-    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id,TokenParam type
+    public List<CompositionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange) {
         List<CompositionEntity> qryResults = null;
 

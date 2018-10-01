@@ -10,7 +10,6 @@
     "experimentalDecorators": true,
     "target": "es5",
     "types": [
-      "fhir",
       "hammerjs"
     ],
     "typeRoots": [

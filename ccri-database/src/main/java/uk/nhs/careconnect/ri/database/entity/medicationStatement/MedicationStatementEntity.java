@@ -51,14 +51,14 @@ public class MedicationStatementEntity extends BaseResource {
 
     ConceptEntity categoryCode;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_CODE"))
-
     private ConceptEntity medicationCode;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name ="MEDICATION_ID", nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION"))
-
     private MedicationEntity medicationEntity;
 
     // Use start date for basic date, for periods populate end date
@@ -178,15 +178,6 @@ public class MedicationStatementEntity extends BaseResource {
 
     public MedicationStatementEntity setCategoryCode(ConceptEntity categoryCode) {
         this.categoryCode = categoryCode;
-        return this;
-    }
-
-    public ConceptEntity getMedicationCode() {
-        return medicationCode;
-    }
-
-    public MedicationStatementEntity setMedicationCode(ConceptEntity medicationCode) {
-        this.medicationCode = medicationCode;
         return this;
     }
 

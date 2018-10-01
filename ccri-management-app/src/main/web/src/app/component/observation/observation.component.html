@@ -1,0 +1,72 @@
+
+<div>
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> No. </th>
+    <td mat-cell *matCellDef="let observation"> {{observation.id}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef> Date </th>
+    <td mat-cell *matCellDef="let observation"> {{observation.effectiveDateTime | date: 'dd-MMM-yyyy HH:mm'}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let observation"> {{observation.status}} </td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef> Value </th>
+    <td mat-cell *matCellDef="let observation"> {{getValue(observation)}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef> Observation </th>
+    <td mat-cell *matCellDef="let observation"> <b>{{observation.code.coding[0].display}}</b>
+
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="codelink">
+    <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+    <td mat-cell *matCellDef="let observation">
+      <span *ngIf="observation.code.coding[0].code != undefined" >
+        <span *ngIf="isSNOMED(observation.code.coding[0].system)">
+          <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(observation.code.coding[0].system)}} {{observation.code.coding[0].code}}" (click)="getSNOMEDLink(observation.code.coding[0])">
+              <mat-icon>book</mat-icon>
+          </button>
+        </span>
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="category">
+    <th mat-header-cell *matHeaderCellDef> Category </th>
+    <td mat-cell *matCellDef="let observation">  <span *ngIf="observation.category != undefined">
+        <i *ngFor="let category of observation.category"> {{category.coding[0].display}}</i>
+      </span> </td>
+  </ng-container>
+
+  <ng-container matColumnDef="resource">
+    <th mat-header-cell *matHeaderCellDef width="5%">FHIR</th>
+    <td mat-cell *matCellDef="let observation">  <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(observation)"><mat-icon>code</mat-icon></button>  </td>
+  </ng-container>
+
+  <ng-container matColumnDef="chart">
+    <th mat-header-cell *matHeaderCellDef width="5%">Chart</th>
+    <td mat-cell *matCellDef="let observation">  <button mat-icon-button color="accent"  matTooltip="View Observation Chart" (click)="selectChart(observation)"><mat-icon>insert_chart</mat-icon></button></td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator> -->
+</div>

@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -34,7 +35,7 @@ public interface AllergyIntoleranceRepository extends BaseRepository<AllergyInto
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
 
     );
 
@@ -43,6 +44,6 @@ public interface AllergyIntoleranceRepository extends BaseRepository<AllergyInto
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
     );
 }

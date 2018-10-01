@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
@@ -30,7 +31,7 @@ public interface MedicationRequestRepository extends BaseRepository<MedicationRe
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name= MedicationRequest.SP_RES_ID) TokenParam id
+            , @OptionalParam(name= MedicationRequest.SP_RES_ID) StringParam id
             , @OptionalParam(name= MedicationRequest.SP_MEDICATION) ReferenceParam medication
     );
 
@@ -40,7 +41,7 @@ public interface MedicationRequestRepository extends BaseRepository<MedicationRe
             , @OptionalParam(name = MedicationRequest.SP_AUTHOREDON) DateRangeParam dateWritten
             , @OptionalParam(name = MedicationRequest.SP_STATUS) TokenParam status
             , @OptionalParam(name = MedicationRequest.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= MedicationRequest.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= MedicationRequest.SP_RES_ID) StringParam id
             , @OptionalParam(name= MedicationRequest.SP_MEDICATION) ReferenceParam medication
     );
 }

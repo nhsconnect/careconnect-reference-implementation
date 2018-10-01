@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>{{title}}</h2>
+<mat-dialog-content #chart >
+    <mat-grid-list cols="1" rowHeight="3:1">
+        <mat-grid-tile>
+            <ngx-charts-line-chart
+                    [scheme]="colorScheme"
+                    [results]="multi"
+                    [gradient]="gradient"
+                    [xAxis]="showXAxis"
+                    [yAxis]="showYAxis"
+                    [legend]="showLegend"
+                    [showXAxisLabel]="showXAxisLabel"
+                    [showYAxisLabel]="showYAxisLabel"
+                    [xAxisLabel]="xAxisLabel"
+                    [yAxisLabel]="yAxisLabel"
+                    [autoScale]="autoScale"
+                    [timeline]="timeline"
+                    [animations]="animations"
+                    [yAxisTickFormatting]="axisDigits">
+            </ngx-charts-line-chart>
+        </mat-grid-tile>
+    </mat-grid-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button color="accent" [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+</mat-dialog-actions>

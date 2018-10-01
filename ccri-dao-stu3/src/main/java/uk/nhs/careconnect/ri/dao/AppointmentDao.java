@@ -306,7 +306,7 @@ public class AppointmentDao implements AppointmentRepository {
     }
 
 /*    @Override
-    public List<HealthcareService> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<HealthcareService> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<AppointmentEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation);
         List<HealthcareService> results = new ArrayList<>();
 
@@ -320,7 +320,7 @@ public class AppointmentDao implements AppointmentRepository {
 
 /*
     @Override
-    public List<AppointmentEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<AppointmentEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<AppointmentEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

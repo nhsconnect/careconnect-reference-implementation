@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Goal;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -26,12 +27,12 @@ public interface GoalRepository extends BaseRepository<GoalEntity,Goal> {
     List<Goal> search(FhirContext ctx,
                           @OptionalParam(name = Goal.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Goal.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Goal.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Goal.SP_RES_ID) StringParam id
     );
 
     List<GoalEntity> searchEntity(FhirContext ctx,
                                       @OptionalParam(name = Goal.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Goal.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Goal.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Goal.SP_RES_ID) StringParam id
     );
 }

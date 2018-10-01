@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.param.*;
@@ -16,11 +17,13 @@ import uk.nhs.careconnect.ri.dao.transforms.ObservationEntityToFHIRObservationTr
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterParticipant;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
+import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,13 +46,20 @@ public class ObservationDao implements ObservationRepository {
     ConceptRepository conceptDao;
 
     @Autowired
+    @Lazy
     PatientRepository patientDao;
 
     @Autowired
+    @Lazy
     PractitionerRepository practitionerDao;
 
     @Autowired
+    @Lazy
     OrganisationRepository organisationDao;
+
+    @Autowired
+    @Lazy
+    QuestionnaireResponseRepository formDao;
 
     @Autowired
     @Lazy
@@ -116,7 +126,7 @@ public class ObservationDao implements ObservationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"),null,null);
+                    List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/observation"),null,null,null);
                     for (ObservationEntity con : results) {
                         observationEntity = con;
                         break;
@@ -132,7 +142,7 @@ public class ObservationDao implements ObservationRepository {
                         String[] spiltStr = query.split("%7C");
                         log.debug(spiltStr[1]);
 
-                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"),null,null);
+                        List<ObservationEntity> results = searchEntity(ctx, null, null,null, null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.health.phr.example.com/Id/observation"),null,null, null);
                         for (ObservationEntity con : results) {
                             observationEntity = con;
                             break;
@@ -508,6 +518,34 @@ public class ObservationDao implements ObservationRepository {
 
             em.persist(observationValue);
         }
+
+        if (observation.hasRelated()) {
+            for (ObservationRelated observationRelated : observationEntity.getRelatedResources()) {
+                em.remove(observationRelated);
+            }
+            observationEntity.setRelatedResources(new HashSet<>());
+
+            for (Observation.ObservationRelatedComponent observationRelatedComponent : observation.getRelated()) {
+                ObservationRelated observationRelated = new ObservationRelated();
+                observationRelated.setObservation(observationEntity);
+                if (observationRelatedComponent.hasType()) {
+                    observationRelated.setType(observationRelatedComponent.getType());
+                }
+                if (observationRelatedComponent.hasTarget()) {
+                    log.info("hasRelated");
+                    if (observationRelatedComponent.getTarget().getReference().contains("Observation")) {
+                        ObservationEntity observationRelatedEntity= readEntity(ctx, new IdType(observationRelatedComponent.getTarget().getReference()));
+                        observationRelated.setRelatedObservation(observationRelatedEntity);
+                    }
+                    if (observationRelatedComponent.getTarget().getReference().contains("QuestionnaireResponse")) {
+                        QuestionnaireResponseEntity questionnaireResponseEntity = formDao.readEntity(ctx, new IdType(observationRelatedComponent.getTarget().getReference()));
+                        observationRelated.setRelatedForm(questionnaireResponseEntity);
+                    }
+                }
+                em.persist(observationRelated);
+                observationEntity.getRelatedResources().add(observationRelated);
+            }
+        }
         observation = null;
         if (observationEntity != null) {
             observation = observationEntityToFHIRObservationTransformer.transform(observationEntity);
@@ -554,10 +592,10 @@ public class ObservationDao implements ObservationRepository {
 
 
     @Override
-    public List<Observation> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, TokenParam resid,
-                                    ReferenceParam subject) {
-        List<Observation> results = new ArrayList<Observation>();
-        List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid,subject);
+    public List<Resource> search(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, StringParam resid, ReferenceParam subject, Set<Include> includes) {
+
+        List<Resource> results = new ArrayList<>();
+        List<ObservationEntity> qryResults = searchEntity(ctx, category, codes, effectiveDate, patient, identifier,resid,subject, includes);
         log.debug("Found Observations = "+qryResults.size());
         for (ObservationEntity observationEntity : qryResults)
         {
@@ -573,18 +611,33 @@ public class ObservationDao implements ObservationRepository {
             }
             results.add(observation);
         }
+
+        if (includes !=null) {
+            for (ObservationEntity observationEntity : qryResults) {
+                for (Include include : includes) {
+                    switch(include.getValue()) {
+                        case "Observation.related":
+                        case "*":
+                            for (ObservationRelated relatedEntity : observationEntity.getRelatedResources())
+                            if (relatedEntity.getRelatedObservation() !=null) {
+                                ObservationEntity relatedObservation = relatedEntity.getRelatedObservation();
+                                results.add(observationEntityToFHIRObservationTransformer.transform(relatedObservation));
+                            }
+                            break;
+
+                    }
+                }
+            }
+        }
+
         return results;
     }
 
+
+
     @Override
-    public List<ObservationEntity> searchEntity(FhirContext ctx
-            ,TokenParam category
-            ,TokenOrListParam codes
-            ,DateRangeParam effectiveDate
-            ,ReferenceParam patient
-            ,TokenParam identifier
-            ,TokenParam resid
-        ,ReferenceParam subject) {
+    public List<ObservationEntity> searchEntity(FhirContext ctx, TokenParam category, TokenOrListParam codes, DateRangeParam effectiveDate, ReferenceParam patient, TokenParam identifier, StringParam resid, ReferenceParam subject, Set<Include> includes) {
+
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 

@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
@@ -66,10 +68,13 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     LocationRepository locationDao;
 
     @Autowired
-    MedicationRequestRepository prescriptionDao;
+    MedicationRequestRepository dispenseDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    MedicationRepository medicationDao;
     
     @Autowired
     MedicationDispenseEntityToFHIRMedicationDispenseTransformer medicationDispenseEntityToFHIRMedicationDispenseTransformer;
@@ -156,17 +161,28 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
 
         if (dispense.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findAddCode(dispense.getMedicationCodeableConcept().getCoding().get(0));
-                if (code != null) {
-                    dispenseEntity.setMedicationCode(code);
+                List<MedicationEntity> listMedication = medicationDao.searchEntity(ctx,new TokenParam()
+                        .setSystem(dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                        .setValue(dispense.getMedicationCodeableConcept().getCoding().get(0).getCode()),null);
+                if (listMedication.size() >0 ) {
+                    dispenseEntity.setMedicationEntity(listMedication.get(0));
                 } else {
-                    log.info("Code: Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
 
-                    throw new IllegalArgumentException("Missing System/Code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    Medication medication = new Medication();
+                    medication.getCode().addCoding()
+                            .setSystem(dispense.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                            .setDisplay(dispense.getMedicationCodeableConcept().getCoding().get(0).getDisplay())
+                            .setCode(dispense.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    MedicationEntity medicationNew = medicationDao.createEntity(ctx,medication,null,null);
+                    dispenseEntity.setMedicationEntity(medicationNew);
                 }
             } catch (Exception ex) {}
+        }
+        if (dispense.hasMedicationReference()) {
+            try {
+                MedicationEntity medicationEntity = medicationDao.readEntity(ctx, new IdType(dispense.getMedicationReference().getReference()));
+                dispenseEntity.setMedicationEntity(medicationEntity);
+            } catch(Exception ex) {}
         }
 
         PatientEntity patientEntity = null;
@@ -201,7 +217,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
         }
 
         if (dispense.hasAuthorizingPrescription()) {
-            MedicationRequestEntity medicationRequestEntity = prescriptionDao.readEntity(ctx, new IdType(dispense.getAuthorizingPrescriptionFirstRep().getReference()));
+            MedicationRequestEntity medicationRequestEntity = dispenseDao.readEntity(ctx, new IdType(dispense.getAuthorizingPrescriptionFirstRep().getReference()));
             dispenseEntity.setPrescription(medicationRequestEntity);
         }
 
@@ -472,7 +488,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     }
 
     @Override
-    public List<MedicationDispense> search(FhirContext ctx, ReferenceParam patient, TokenParam status, TokenParam id, TokenParam identifier, TokenParam code, ReferenceParam medication) {
+    public List<MedicationDispense> search(FhirContext ctx, ReferenceParam patient, TokenParam status, StringParam id, TokenParam identifier, TokenParam code, ReferenceParam medication) {
         List<MedicationDispenseEntity> qryResults = searchEntity(ctx,patient, status,id,identifier,code,medication);
         List<MedicationDispense> results = new ArrayList<>();
 
@@ -485,7 +501,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     }
 
     @Override
-    public List<MedicationDispenseEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam status, TokenParam resid, TokenParam identifier, TokenParam code, ReferenceParam medication) {
+    public List<MedicationDispenseEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam status, StringParam resid, TokenParam identifier, TokenParam code, ReferenceParam medication) {
         List<MedicationDispenseEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

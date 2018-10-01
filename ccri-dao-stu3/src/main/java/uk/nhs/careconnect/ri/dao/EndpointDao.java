@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 
@@ -181,7 +182,7 @@ public class EndpointDao implements EndpointRepository {
     }
 
     @Override
-    public List<Endpoint> searchEndpoint(FhirContext ctx, TokenParam identifier, TokenParam resid) {
+    public List<Endpoint> searchEndpoint(FhirContext ctx, TokenParam identifier, StringParam resid) {
         List<EndpointEntity> qryResults = searchEndpointEntity(ctx,identifier,resid);
         List<Endpoint> results = new ArrayList<>();
 
@@ -195,7 +196,7 @@ public class EndpointDao implements EndpointRepository {
     }
 
     @Override
-    public List<EndpointEntity> searchEndpointEntity(FhirContext ctx, TokenParam identifier, TokenParam resid) {
+    public List<EndpointEntity> searchEndpointEntity(FhirContext ctx, TokenParam identifier, StringParam resid) {
         List<EndpointEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

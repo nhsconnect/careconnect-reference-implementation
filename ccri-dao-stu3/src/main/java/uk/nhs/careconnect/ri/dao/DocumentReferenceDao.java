@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -146,7 +147,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
         }
 
         if (documentReference.hasType()) {
-            ConceptEntity code = conceptDao.findCode(documentReference.getType().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(documentReference.getType().getCoding().get(0));
             if (code != null) { documentReferenceEntity.setType(code); }
             else {
                 String message = "Type: Missing System/Code = "+ documentReference.getType().getCoding().get(0).getSystem() +" code = "+documentReference.getType().getCoding().get(0).getCode();
@@ -179,7 +180,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
         // KGM 10/4/2018 replace class with practice setting
         if (documentReference.hasContext() ) {
             if (documentReference.getContext().hasPracticeSetting()) {
-                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getPracticeSetting().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(documentReference.getContext().getPracticeSetting().getCoding().get(0));
                 if (code != null) {
                     documentReferenceEntity.setContextPracticeSetting(code);
                 } else {
@@ -189,7 +190,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
                 }
             }
             if (documentReference.getContext().hasFacilityType()) {
-                ConceptEntity code = conceptDao.findCode(documentReference.getContext().getFacilityType().getCoding().get(0));
+                ConceptEntity code = conceptDao.findAddCode(documentReference.getContext().getFacilityType().getCoding().get(0));
                 if (code != null) {
                     documentReferenceEntity.setContextFaciltityType(code);
                 } else {
@@ -311,7 +312,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
             , DateRangeParam dateRange, TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange, setting);
         List<DocumentReference> results = new ArrayList<>();
@@ -326,7 +327,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id, TokenParam type
+    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id,TokenParam type
             , DateRangeParam dateRange
             , TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = null;

@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.RiskAssessment;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -219,7 +220,7 @@ public class RiskAssessmentDao implements RiskAssessmentRepository {
     }
 
     @Override
-    public List<RiskAssessment> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<RiskAssessment> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id) {
         List<RiskAssessmentEntity> qryResults = searchEntity(ctx,patient, identifier,id);
         List<RiskAssessment> results = new ArrayList<>();
 
@@ -234,7 +235,7 @@ public class RiskAssessmentDao implements RiskAssessmentRepository {
     }
 
     @Override
-    public List<RiskAssessmentEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<RiskAssessmentEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid) {
         List<RiskAssessmentEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

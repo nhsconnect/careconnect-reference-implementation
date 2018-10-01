@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -58,7 +59,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<Questionnaire> searchQuestionnaire(FhirContext ctx, TokenParam identifier, TokenParam id, TokenOrListParam codes) {
+    public List<Questionnaire> searchQuestionnaire(FhirContext ctx, TokenParam identifier, StringParam id, TokenOrListParam codes) {
         List<QuestionnaireEntity> qryResults = searchQuestionnaireEntity(ctx, identifier, id, codes);
         List<Questionnaire> results = new ArrayList<>();
 
@@ -73,7 +74,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx, TokenParam identifier, TokenParam resid, TokenOrListParam codes) {
+    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx, TokenParam identifier, StringParam resid, TokenOrListParam codes) {
         List<QuestionnaireEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

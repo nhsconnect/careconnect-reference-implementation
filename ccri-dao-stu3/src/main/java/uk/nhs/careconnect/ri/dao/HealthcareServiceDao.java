@@ -152,7 +152,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
 
         log.debug("HealthcareService.saveCategory");
         if (service.hasCategory()) {
-            ConceptEntity code = conceptDao.findCode(service.getCategory().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(service.getCategory().getCoding().get(0));
             if (code != null) { serviceEntity.setCategory(code); }
             else {
                 log.info("Category: Missing System/Code = "+ service.getCategory().getCoding().get(0).getSystem() +" code = "+service.getCategory().getCoding().get(0).getCode());
@@ -264,7 +264,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareService> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<HealthcareService> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation);
         List<HealthcareService> results = new ArrayList<>();
 
@@ -277,7 +277,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, TokenParam id, ReferenceParam organisation) {
+    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
         List<HealthcareServiceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

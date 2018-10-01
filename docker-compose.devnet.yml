@@ -49,6 +49,11 @@ services:
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (unsecured)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
       - ccridocument
@@ -68,12 +73,16 @@ services:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.oauth=http4:194.189.27.194:20080?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
       - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (OAuth2 + SMARTonFHIR)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccriserver
       - ccridocument
@@ -115,7 +124,7 @@ services:
       - ccrisql
     environment:
       - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
-      - POSTGRES_JDBC=postgresql://ccrisql:5433/careconnect
+      - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
       - POSTGRES_USER=${MYSQL_DB_USER}
       - POSTGRES_USERNAME=${MYSQL_DB_USER}
       - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
@@ -181,7 +190,7 @@ services:
     container_name: ccri_oauth_server
     image: ${REGISTRY_PREFIX}ccri-oauthserver
     environment:
-      - oidc.issuer=v
+      - oidc.issuer=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/
       - ldap.url=ldap://oauthldap
       - ldap.server=ldap://oauthldap/dc=ccri,dc=com
       - oidc.datasource.mysql.schema=oic
@@ -200,11 +209,11 @@ services:
     container_name: ccricat
     image: ${REGISTRY_PREFIX}ccri-cat
     environment:
-    - KEYCLOAK_CLIENT_SECRET=709c79a1-7710-452f-859c-fb6edfb86027
+    - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
     - KEYCLOAK_CLIENT_ID=ccri-cat
-    - SMART_OAUTH2_CLIENT_SECRET=AM3ai-PGoZZRW-7osWbzvGlDBHjHq7M2aBlpNttreHeEyB5jequWy8fsHMVQP4JV0Kd0Fzrtu0iNEqGqguq69Qs
-    - KEYCLOAK_AUTH_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
-    - KEYCLOAK_SERVER_URL=https://enterprisearchitecture-test.digital.nhs.uk/auth
+    - SMART_OAUTH2_CLIENT_SECRET=${SMART_OAUTH2_CLIENT_SECRET}
+    - KEYCLOAK_AUTH_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
+    - KEYCLOAK_SERVER_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
     - FHIR_SERVER_URL=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
     - KEYCLOAK_REALM=ReferenceImplementations
     - CAT_COOKIE_DOMAIN=${FHIR_SERVER_BASE_HOST}

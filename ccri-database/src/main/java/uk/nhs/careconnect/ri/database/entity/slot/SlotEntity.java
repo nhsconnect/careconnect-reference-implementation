@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "Slot")
+@Table(name = "Slot1")
 public class SlotEntity extends BaseResource {
 
     @Id
@@ -27,15 +27,15 @@ public class SlotEntity extends BaseResource {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="SERVICE_CATEGORY",nullable = false)
+    @JoinColumn(name="SERVICE_CATEGORY")
     private ConceptEntity serviceCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="APPOINTMENT_TYPE",nullable = true)
+    @JoinColumn(name="APPOINTMENT_TYPE")
     private ConceptEntity appointmentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="SCHEDULE",nullable = false)
+    @JoinColumn(name="SCHEDULE")
     private ScheduleEntity schedule;
 
     @Temporal(TemporalType.TIMESTAMP)

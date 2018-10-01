@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.RelatedPerson;
@@ -28,12 +29,12 @@ public interface RelatedPersonRepository extends BaseRepository<RelatedPersonEnt
     List<Resource> search(FhirContext ctx,
                           @OptionalParam(name = RelatedPerson.SP_IDENTIFIER) TokenParam identifier,
                           @OptionalParam(name = RelatedPerson.SP_PATIENT) ReferenceParam patient,
-                          @OptionalParam(name = RelatedPerson.SP_RES_ID) TokenParam id
+                          @OptionalParam(name = RelatedPerson.SP_RES_ID) StringParam id
             );
 
     List<RelatedPersonEntity> searchEntity(FhirContext ctx,
                                            @OptionalParam(name = RelatedPerson.SP_IDENTIFIER) TokenParam identifier,
                                            @OptionalParam(name = RelatedPerson.SP_PATIENT) ReferenceParam patient,
-                                           @OptionalParam(name = RelatedPerson.SP_RES_ID) TokenParam id);
+                                           @OptionalParam(name = RelatedPerson.SP_RES_ID) StringParam id);
 
 }

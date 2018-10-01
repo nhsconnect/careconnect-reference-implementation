@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationStatement;
@@ -27,7 +28,7 @@ public interface MedicationStatementRepository  extends BaseRepository<Medicatio
             @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
-            ,@OptionalParam(name= MedicationStatement.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= MedicationStatement.SP_RES_ID) StringParam id
             , @OptionalParam(name = MedicationStatement.SP_IDENTIFIER) TokenParam identifier
 
     );
@@ -36,7 +37,7 @@ public interface MedicationStatementRepository  extends BaseRepository<Medicatio
             @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
-            ,@OptionalParam(name= MedicationStatement.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= MedicationStatement.SP_RES_ID) StringParam id
             , @OptionalParam(name = MedicationStatement.SP_IDENTIFIER) TokenParam identifier
 
     );

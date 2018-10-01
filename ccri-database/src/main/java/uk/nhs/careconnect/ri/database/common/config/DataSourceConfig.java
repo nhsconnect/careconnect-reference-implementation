@@ -154,7 +154,7 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.connection.username",username);
         extraProperties.put("hibernate.connection.password",password);
         extraProperties.put("hibernate.connection.provider_class","org.hibernate.connection.C3P0ConnectionProvider");
-        extraProperties.put("hibernate.generate_statistics","true");
+       // revisit for JMX monitoring extraProperties.put("hibernate.generate_statistics","true");
 
         return extraProperties;
     }

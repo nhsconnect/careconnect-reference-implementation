@@ -97,7 +97,7 @@ public class HealthcareServiceResourceProvider implements IResourceProvider {
                                                            @OptionalParam(name = HealthcareService.SP_IDENTIFIER) TokenParam identifier,
                                                            @OptionalParam(name = HealthcareService.SP_NAME) StringParam name,
                                                          //  @OptionalParam(name= HealthcareService.SP_TYPE) TokenOrListParam codes,
-                                                           @OptionalParam(name = HealthcareService.SP_RES_ID) TokenParam id
+                                                           @OptionalParam(name = HealthcareService.SP_RES_ID) StringParam id
                                                         //   @OptionalParam(name = HealthcareService.SP_ORGANIZATION) ReferenceParam organisation
               ) throws Exception {
 

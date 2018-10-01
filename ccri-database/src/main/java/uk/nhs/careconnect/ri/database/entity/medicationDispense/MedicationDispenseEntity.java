@@ -40,6 +40,7 @@ public class MedicationDispenseEntity extends BaseResource {
     @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_DISPENSE_CATEGORY_CONCEPT"))
     ConceptEntity categoryCode;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_DISPENSE_MEDICATION_CODE"))
     private ConceptEntity medicationCode;
@@ -163,9 +164,6 @@ public class MedicationDispenseEntity extends BaseResource {
         return patient;
     }
 
-    public ConceptEntity getMedicationCode() {
-        return medicationCode;
-    }
 
     public EncounterEntity getContextEncounter() {
         return contextEncounter;
@@ -176,10 +174,7 @@ public class MedicationDispenseEntity extends BaseResource {
         return this;
     }
 
-    public MedicationDispenseEntity setMedicationCode(ConceptEntity medicationCode) {
-        this.medicationCode = medicationCode;
-        return this;
-    }
+
 
     public EpisodeOfCareEntity getContextEpisodeOfCare() {
         return contextEpisodeOfCare;

@@ -134,7 +134,7 @@ public class ScheduleResourceProvider implements IResourceProvider {
                                          @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
                                          @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
                                          @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
-                                         @OptionalParam(name = Schedule.SP_RES_ID) TokenParam id
+                                         @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
               ) throws Exception {
 
         List<Schedule> results = new ArrayList<Schedule>();

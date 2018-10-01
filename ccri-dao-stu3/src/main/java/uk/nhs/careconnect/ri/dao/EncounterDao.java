@@ -2,10 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,8 +103,8 @@ public class  EncounterDao implements EncounterRepository {
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
     @Autowired
-    private MedicationRequestEntityToFHIRMedicationTransformer
-            medicationRequestEntityToFHIRMedicationTransformer;
+    private MedicationEntityToFHIRMedicationTransformer
+            medicationEntityToFHIRMedicationTransformer;
 
     @Autowired
     private RelatedPersonEntityToFHIRRelatedPersonTransformer
@@ -364,7 +361,7 @@ public class  EncounterDao implements EncounterRepository {
                 }
 
                 if (participant.hasType()) {
-                    ConceptEntity code = conceptDao.findCode(participant.getType().get(0).getCoding().get(0));
+                    ConceptEntity code = conceptDao.findAddCode(participant.getType().get(0).getCoding().get(0));
                     if (code != null) {
                         encounterParticipant.setParticipantType(code);
                     } else {
@@ -383,7 +380,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, TokenParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, StringParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
         List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes,includes);
         List<Resource> results = new ArrayList<>();
 
@@ -409,7 +406,9 @@ public class  EncounterDao implements EncounterRepository {
                     }
                     for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
                         addToResults(results,medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                        addToResults(results,medicationRequestEntityToFHIRMedicationTransformer.transform(medicationRequestEntity));
+                        if (medicationRequestEntity.getMedicationEntity() != null) {
+                            addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                        }
                     }
                     for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
                         addToResults(results,carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
@@ -534,7 +533,7 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,TokenParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,StringParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 
 import org.slf4j.Logger;
@@ -18,6 +15,7 @@ import uk.nhs.careconnect.ri.dao.transforms.MedicationStatementEntityToFHIRMedic
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.*;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
@@ -77,6 +75,9 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
     @Autowired
     EpisodeOfCareRepository episodeDao;
+
+    @Autowired
+    MedicationRepository medicationDao;
 
     private static final Logger log = LoggerFactory.getLogger(MedicationStatementDao.class);
 
@@ -188,18 +189,30 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
         if (statement.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findAddCode(statement.getMedicationCodeableConcept().getCoding().get(0));
-                if (code != null) {
-                    statementEntity.setMedicationCode(code);
+                List<MedicationEntity> listMedication = medicationDao.searchEntity(ctx,new TokenParam()
+                        .setSystem(statement.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                        .setValue(statement.getMedicationCodeableConcept().getCoding().get(0).getCode()),null);
+                if (listMedication.size() >0 ) {
+                    statementEntity.setMedicationEntity(listMedication.get(0));
                 } else {
-                    log.info("Code: Missing System/Code = " + statement.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + statement.getMedicationCodeableConcept().getCoding().get(0).getCode());
 
-                    throw new IllegalArgumentException("Missing System/Code = " + statement.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + statement.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    Medication medication = new Medication();
+                    medication.getCode().addCoding()
+                            .setSystem(statement.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                            .setDisplay(statement.getMedicationCodeableConcept().getCoding().get(0).getDisplay())
+                            .setCode(statement.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    MedicationEntity medicationNew = medicationDao.createEntity(ctx,medication,null,null);
+                    statementEntity.setMedicationEntity(medicationNew);
                 }
             } catch (Exception ex) {}
         }
+        if (statement.hasMedicationReference()) {
+            try {
+                MedicationEntity medicationEntity = medicationDao.readEntity(ctx, new IdType(statement.getMedicationReference().getReference()));
+                statementEntity.setMedicationEntity(medicationEntity);
+            } catch(Exception ex) {}
+        }
+
 
         if (statement.hasDateAsserted()) {
             statementEntity.setAssertedDate(statement.getDateAsserted());
@@ -258,20 +271,20 @@ public class MedicationStatementDao implements MedicationStatementRepository {
         em.persist(statementEntity);
 
         for (Identifier identifier : statement.getIdentifier()) {
-            MedicationStatementIdentifier prescriptionIdentifier = null;
+            MedicationStatementIdentifier statementIdentifier = null;
 
             for (MedicationStatementIdentifier orgSearch : statementEntity.getIdentifiers()) {
                 if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
-                    prescriptionIdentifier = orgSearch;
+                    statementIdentifier = orgSearch;
                     break;
                 }
             }
-            if (prescriptionIdentifier == null)  prescriptionIdentifier = new MedicationStatementIdentifier();
+            if (statementIdentifier == null)  statementIdentifier = new MedicationStatementIdentifier();
 
-            prescriptionIdentifier.setValue(identifier.getValue());
-            prescriptionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
-            prescriptionIdentifier.setMedicationStatement(statementEntity);
-            em.persist(prescriptionIdentifier);
+            statementIdentifier.setValue(identifier.getValue());
+            statementIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            statementIdentifier.setMedicationStatement(statementEntity);
+            em.persist(statementIdentifier);
         }
 
         // Don't attempt to rebuild dosages
@@ -517,7 +530,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatement> search(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
+    public List<MedicationStatement> search(FhirContext ctx, ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, StringParam resid, TokenParam identifier) {
         List<MedicationStatementEntity> statementEntities = searchEntity(ctx,patient,effectiveDate,status,resid,identifier);
         List<MedicationStatement> results = new ArrayList<>();
 
@@ -532,7 +545,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
     }
 
     @Override
-    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, TokenParam resid, TokenParam identifier) {
+    public List<MedicationStatementEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam effectiveDate, TokenParam status, StringParam resid, TokenParam identifier) {
         List<MedicationStatementEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

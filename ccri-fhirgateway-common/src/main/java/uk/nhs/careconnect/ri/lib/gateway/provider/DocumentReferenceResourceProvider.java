@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -14,6 +15,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
@@ -38,6 +40,9 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     @Autowired
     ResourceTestProvider resourceTestProvider;
 
+    @Value("${ccri.server.base}")
+    String serverBase;
+
     private static final Logger log = LoggerFactory.getLogger(DocumentReferenceResourceProvider.class);
 
 
@@ -53,6 +58,17 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
     */
+
+    private DocumentReference convertFromSmartUrl(DocumentReference documentReference) {
+    if (serverBase != null && serverBase.contains("ccri-fhir")) {
+        for (DocumentReference.DocumentReferenceContentComponent context: documentReference.getContent()) {
+            if (context.hasAttachment() && context.getAttachment().hasUrl()) {
+                context.getAttachment().setUrl(context.getAttachment().getUrl().replace("ccri-smartonfhir","ccri-fhir"));
+            }
+        }
+    }
+    return documentReference;
+}
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam DocumentReference documentReference) throws Exception {
 
@@ -82,7 +98,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             throw new InternalErrorException(ex.getMessage());
         }
         if (resource instanceof DocumentReference) {
-            documentReference = (DocumentReference) resource;
+            documentReference = convertFromSmartUrl((DocumentReference) resource);
+
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
         }
@@ -131,7 +148,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             throw new InternalErrorException(ex.getMessage());
         }
         if (resource instanceof DocumentReference) {
-            documentReference = (DocumentReference) resource;
+
+            documentReference = convertFromSmartUrl((DocumentReference) resource);
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
         }
@@ -141,8 +159,8 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<DocumentReference> searchDocumentReference(HttpServletRequest httpRequest
-            , @OptionalParam(name = DocumentReference.SP_RES_ID) TokenParam resid
+    public List<Resource> searchDocumentReference(HttpServletRequest httpRequest
+            , @OptionalParam(name = DocumentReference.SP_RES_ID) StringParam resid
             , @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_CREATED) DateRangeParam date
             , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
@@ -152,11 +170,9 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
 
 
 
-        List<DocumentReference> results = new ArrayList<DocumentReference>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
-
-
 
         InputStream inputStream = (InputStream) template.sendBody("direct:FHIRDocumentReference",
                 ExchangePattern.InOut,httpRequest);
@@ -174,8 +190,12 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                DocumentReference documentReference = (DocumentReference) entry.getResource();
-                results.add(documentReference);
+                if (entry.getResource() instanceof DocumentReference) {
+                    DocumentReference documentReference = convertFromSmartUrl((DocumentReference) entry.getResource());
+                    results.add(documentReference);
+                } else {
+                    results.add(entry.getResource());
+                }
             }
         } else {
             ProviderResponseLibrary.createException(ctx,resource);

@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -378,7 +379,7 @@ public class ConsentDao implements ConsentRepository {
     }
 
     @Override
-    public List<Consent> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<Consent> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id) {
         List<ConsentEntity> qryResults = searchEntity(ctx,patient, identifier,id);
         List<Consent> results = new ArrayList<>();
 
@@ -393,7 +394,7 @@ public class ConsentDao implements ConsentRepository {
     }
 
     @Override
-    public List<ConsentEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<ConsentEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid) {
         List<ConsentEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

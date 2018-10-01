@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.DiagnosticReport;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -26,13 +27,13 @@ public interface DiagnosticReportRepository extends BaseRepository<DiagnosticRep
 
                              @OptionalParam(name = DiagnosticReport.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DiagnosticReport.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = DiagnosticReport.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = DiagnosticReport.SP_RES_ID) StringParam id
 
     );
 
     List<DiagnosticReportEntity> searchEntity(FhirContext ctx,
                                          @OptionalParam(name = DiagnosticReport.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DiagnosticReport.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = DiagnosticReport.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = DiagnosticReport.SP_RES_ID) StringParam id
     );
 }

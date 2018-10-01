@@ -1,0 +1,144 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let medicationDispense"> {{medicationDispense.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="prepared">
+      <th mat-header-cell *matHeaderCellDef> Prepared </th>
+      <td mat-cell *matCellDef="let medicationDispense">  {{medicationDispense.whenPrepared | date: 'dd-MMM-yyyy HH:mm'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="handedover">
+      <th mat-header-cell *matHeaderCellDef> Handed Over </th>
+      <td mat-cell *matCellDef="let medicationDispense">  {{medicationDispense.whenHandedOver | date: 'dd-MMM-yyyy HH:mm'}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="medication">
+      <th mat-header-cell *matHeaderCellDef> Medication </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngIf="medicationDispense.medicationCodeableConcept !=undefined" >
+          <b *ngIf="medicationDispense.medicationCodeableConcept !=undefined">{{medicationDispense.medicationCodeableConcept.coding[0].display}}</b>
+
+        </span>
+        <span *ngIf="medicationDispense.medicationReference !=undefined">
+
+            <b>{{medicationDispense.medicationReference.display}}</b>
+
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="medicationlink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+
+          <span *ngIf="medicationDispense.medicationCodeableConcept !=undefined" >
+            <span *ngIf="isSNOMED(medicationDispense.medicationCodeableConcept.coding[0].system)">
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationDispense.medicationCodeableConcept.coding[0].system)}} {{medicationDispense.medicationCodeableConcept.coding[0].code}}" (click)="getSNOMEDLink(medicationDispense.medicationCodeableConcept.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationDispense.medicationCodeableConcept.coding[0].system)}} {{medicationDispense.medicationCodeableConcept.coding[0].code}}" (click)="getDMDLink(medicationDispense.medicationCodeableConcept.coding[0])">
+                  <mat-icon>turned_in</mat-icon>
+              </button>
+            </span>
+
+          </span>
+        <span *ngIf="medicationDispense.medicationReference !=undefined">
+
+              <button mat-icon-button color="accent" (click)="onClick( medicationDispense)">
+                  <mat-icon>colorize</mat-icon>
+              </button>
+
+          </span>
+
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dose">
+      <th mat-header-cell *matHeaderCellDef> Dose </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+            <span *ngIf="dosage.doseQuantity!=undefined">{{dosage.doseQuantity.value}} {{dosage.doseQuantity.unit}}</span>
+
+            <span *ngIf="dosage.asNeededBoolean"> as required</span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="form">
+      <th mat-header-cell *matHeaderCellDef> Form </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+              <span  > {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
+            </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantity">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Quantity </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngIf="medicationDispense.daysSupply != undefined && medicationDispense.daysSupply.value">{{medicationDispense.daysSupply.value}} {{medicationDispense.daysSupply.unit}}</span>
+        <span *ngIf="medicationDispense.quantity != undefined && medicationDispense.quantity.value != undefined">{{medicationDispense.quantity.value}} {{medicationDispense.quantity.unit}}</span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Status </th>
+      <td mat-cell *matCellDef="let medicationDispense"> <b>{{medicationDispense.status}}</b> </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="practitioner">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Pharmacist </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].actor != undefined">
+            <button mat-icon-button color="accent"  matTooltip="View Pharmacist" (click)="showPractitioner(medicationDispense)"><mat-icon>person</mat-icon></button>
+          </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="organisation">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Pharmacy </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].onBehalfOf != undefined">
+            <button mat-icon-button color="accent"  matTooltip="View Pharmacy" (click)="showOrganisation(medicationDispense)"><mat-icon>account_balance</mat-icon></button>
+          </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="detail">
+      <th mat-header-cell *matHeaderCellDef width="5%">Detail</th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <button mat-icon-button color="accent"  matTooltip="View Details" (click)="more(medicationDispense)"><mat-icon>more_horiz</mat-icon></button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>
+      <td mat-cell *matCellDef="let medicationDispense">
+        <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(medicationDispense)"><mat-icon>code</mat-icon></button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+

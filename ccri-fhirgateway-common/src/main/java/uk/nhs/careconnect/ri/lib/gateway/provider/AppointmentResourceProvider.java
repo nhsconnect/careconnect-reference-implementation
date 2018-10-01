@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -13,6 +11,7 @@ import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +45,6 @@ public class AppointmentResourceProvider implements IResourceProvider {
         return Appointment.class;
     }
 
-/*
-    @Validate
-    public MethodOutcome testResource(@ResourceParam Appointment resource,
-                                  @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResource(resource,theMode,theProfile);
-    }
-*/
-
     @Read
     public Appointment getAppointmentById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
 
@@ -69,7 +59,7 @@ public class AppointmentResourceProvider implements IResourceProvider {
                 inputStream = (InputStream) template.sendBody("direct:FHIRAppointment",
                         ExchangePattern.InOut, httpRequest);
             } else {
-                Exchange exchange = template.send("direct:FHIRHealthcareService",ExchangePattern.InOut, new Processor() {
+                Exchange exchange = template.send("direct:FHIRAppointment",ExchangePattern.InOut, new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
                         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
@@ -93,7 +83,7 @@ public class AppointmentResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Appointment> searchHealthcareService(HttpServletRequest httpRequest,
+    public List<Appointment> searchAppointment(HttpServletRequest httpRequest,
                                                            @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
                                                            @OptionalParam(name = Appointment.SP_LOCATION) StringParam location,
                                                          //  @OptionalParam(name= Appointment.SP_TYPE) TokenOrListParam codes,
@@ -105,7 +95,7 @@ public class AppointmentResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
-        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRHealthcareService",
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRAppointment",
                 ExchangePattern.InOut,httpRequest);
 
         Bundle bundle = null;
@@ -131,6 +121,49 @@ public class AppointmentResourceProvider implements IResourceProvider {
 
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Appointment appointment) throws Exception {
 
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(appointment);
+
+            Exchange exchangeBundle = template.send("direct:FHIRAppointment", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Appointment");
+                }
+            });
+
+            // This response is coming from an external FHIR Server, so uses inputstream
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Appointment) {
+            appointment = (Appointment) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
+    }
 
 }

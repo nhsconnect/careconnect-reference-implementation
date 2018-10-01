@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -30,7 +31,7 @@ public interface ConditionRepository extends BaseRepository<ConditionEntity,Cond
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Condition.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Condition.SP_RES_ID) StringParam id
 
     );
 
@@ -40,6 +41,6 @@ public interface ConditionRepository extends BaseRepository<ConditionEntity,Cond
             , @OptionalParam(name = Condition.SP_CLINICAL_STATUS) TokenParam clinicalstatus
             , @OptionalParam(name = Condition.SP_ASSERTED_DATE) DateRangeParam asserted
             , @OptionalParam(name = Condition.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Condition.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Condition.SP_RES_ID) StringParam id
     );
 }

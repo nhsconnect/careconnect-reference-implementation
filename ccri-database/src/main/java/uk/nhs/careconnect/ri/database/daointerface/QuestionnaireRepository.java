@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -26,14 +27,14 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
     List<Questionnaire> searchQuestionnaire(FhirContext ctx,
 
                     @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
-                    @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
+                    @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                             @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
 
     );
 
     List<QuestionnaireEntity> searchQuestionnaireEntity (FhirContext ctx,
                                                          @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
-                                                         @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
+                                                         @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                                          @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
 
 

@@ -93,7 +93,7 @@ public class PractitionerResourceProvider implements IResourceProvider {
 
                                                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
                                                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , @OptionalParam(name = PractitionerRole.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = PractitionerRole.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<Practitioner> results = new ArrayList<Practitioner>();

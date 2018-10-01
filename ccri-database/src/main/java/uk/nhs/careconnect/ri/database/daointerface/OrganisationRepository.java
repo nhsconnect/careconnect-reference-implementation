@@ -28,7 +28,7 @@ public interface OrganisationRepository extends BaseRepository<OrganisationEntit
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Organization.SP_NAME) StringParam name,
             @OptionalParam(name = Organization.SP_ADDRESS_POSTALCODE) StringParam postCode
-           ,@OptionalParam(name= Organization.SP_RES_ID) TokenParam id
+           ,@OptionalParam(name= Organization.SP_RES_ID) StringParam id
     );
 
 

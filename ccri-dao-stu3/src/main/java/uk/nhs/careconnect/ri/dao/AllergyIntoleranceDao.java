@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +222,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             }
             if (allergyReaction == null)  allergyReaction = new AllergyIntoleranceReaction();
 
-            ConceptEntity code = conceptDao.findCode(reaction.getManifestationFirstRep().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(reaction.getManifestationFirstRep().getCoding().get(0));
             if (code != null) {
 
                 AllergyIntoleranceManifestation man = null;
@@ -257,7 +254,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntolerance> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,TokenParam resid) {
+    public List<AllergyIntolerance> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier , StringParam resid) {
         List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus,identifier,resid);
         List<AllergyIntolerance> results = new ArrayList<>();
 
@@ -272,7 +269,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,TokenParam resid) {
+    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,StringParam resid) {
 
 
         List<AllergyIntoleranceEntity> qryResults = null;

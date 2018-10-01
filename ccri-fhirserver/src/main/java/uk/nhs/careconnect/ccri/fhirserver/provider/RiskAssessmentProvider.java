@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -94,7 +95,7 @@ public class RiskAssessmentProvider implements ICCResourceProvider {
     public List<RiskAssessment> search(HttpServletRequest theRequest,
                                  @OptionalParam(name = RiskAssessment.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = RiskAssessment.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = RiskAssessment.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = RiskAssessment.SP_RES_ID) StringParam id
     ) {
         return riskAssessmentDao.search(ctx,patient, identifier,id);
     }

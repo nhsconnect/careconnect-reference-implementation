@@ -1,0 +1,243 @@
+<mat-card>
+    <mat-card-title>{{currentResource}} Capabilities</mat-card-title>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+        <span *ngIf="rest !== undefined">
+            <span *ngIf="rest.profile != undefined && rest.profile.reference !=undefined">
+                <span *ngIf="!rest.profile.reference.includes('hl7.org/fhir/Profile')">
+                 <h3>FHIR Profile</h3>
+                    <td-message label="{{rest.profile.reference}}" color="blue" icon="info">
+                        <a td-message-actions mat-button href="{{rest.profile.reference}}" >VIEW PROFILE</a>
+                    </td-message>
+                </span>
+            </span>
+            <h3>Interactions</h3>
+            <span *ngFor="let interaction of rest.interaction">
+
+                <span *ngIf="interaction.code === 'read'">
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                       <mat-card>
+                           <mat-card-content>
+                               Read the current state of the resource<br><br>
+                                <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" icon="info"></td-message>
+                            </mat-card-content>
+                       </mat-card>
+                    </td-expansion-panel>
+                </span>
+                <span *ngIf="interaction.code === 'create'">
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                      <mat-card>
+                            <mat-card-content>
+                                Create a new resource with a server assigned id<br><br>
+                                <td-message label="POST {{base}}"  icon="info"></td-message>
+                             </mat-card-content>
+                        </mat-card>
+                    </td-expansion-panel>
+
+                </span>
+                <span *ngIf="interaction.code === 'update'">
+                    <td-expansion-panel label="{{interaction.code}}" [disabled]="disabled">
+                        <mat-card>
+                            <mat-card-content>
+                                Update an existing resource by its id (or create it if it is new)<br><br>
+                                <td-message label="PUT {{base}}/{{'{'}}id{{'}'}}"  icon="info"></td-message>
+                            </mat-card-content>
+                        </mat-card>
+                    </td-expansion-panel>
+                </span>
+                <span *ngIf="interaction.code === 'search-type'">
+                    <td-expansion-panel (expanded)="onExpand()" (collapsed)="onCollapse()" label="{{interaction.code}}" [disabled]="disabled">
+                        <mat-card>
+                            <mat-card-content>
+                                	Search the resource type based on some filter criteria<br><br>
+                        <td-message label="GET {{base}}?{{'{'}}search parameters{{'}'}}"  icon="info"></td-message>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="20%">Name</th>
+                                <th width="60%">Details</th>
+                                <th width="15%">Parameter Type</th>
+                                <th width="5%"></th>
+                            </tr>
+                            </thead>
+                            <tr *ngFor="let param of rest.searchParam">
+                                <td>{{param.name}}</td>
+                                <td>{{param.documentation}}</td>
+                                <td>{{param.type}}</td>
+                                <td>
+                                    <button mat-icon-button color="accent" (click)="onAdd(param)"><mat-icon>add_circle</mat-icon></button>
+                                </td>
+                            </tr>
+                        </table>
+                            </mat-card-content>
+                           </mat-card>
+                        <mat-card>
+                            <mat-card-subtitle>FHIR Search Form</mat-card-subtitle>
+                            <mat-card-content>
+                                Use the table above to add search fields (above) to this form.
+                                <td-dynamic-forms #dynform [elements]="elements">
+                                  <ng-template let-element ngFor [ngForOf]="elements">
+                                    <ng-template let-control="control" [tdDynamicFormsError]="element.name">
+                                        <span *ngIf="control.touched || !control.pristine">
+                                          <span *ngIf="control.hasError('required')">Required</span>
+                                          <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
+                                          <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
+                                          <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
+                                          <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
+                                        </span>
+                                    </ng-template>
+                                  </ng-template>
+                                </td-dynamic-forms>
+                                </mat-card-content>
+                            <mat-card-actions>
+                                <td-message *ngIf="query!==undefined" [label]="query" color="blue" icon="search"></td-message>
+                                <a mat-button [disabled]="!(dynform.valid && (elements.length >0))" color="accent" class="text-upper" (click)="onSearch()">
+                                  <span>Search</span></a>
+                                <a mat-button [disabled]="(elements.length === 0)" color="accent" class="text-upper" (click)="onClear()">
+                                  <span>Clear</span></a>
+                                <span *ngIf="progressBar">
+                                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                </span>
+                            </mat-card-actions>
+                        </mat-card>
+                </td-expansion-panel>
+                </span>
+            </span>
+        </span>
+    </mat-card-content>
+</mat-card>
+
+<span *ngIf="resource !== undefined || resourceString !== undefined">
+
+      <mat-card>
+          <mat-card-title>Results</mat-card-title>
+          <mat-card-subtitle>
+              <span flex-auto fxLayoutAlign="space-between center">
+                  <span>
+                    <span>Results: </span>
+                    <b *ngIf="resource.entry !== undefined"> {{resource.entry.length}} / {{resource.total}}</b>
+                  </span>
+                  <span>
+                      <span *ngFor="let link of resource.link.slice().reverse()">
+                        <span *ngIf="link.relation ==='previous'">
+                            <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_previous</mat-icon></button>
+                        </span>
+                        <span *ngIf="link.relation ==='next'">
+                            <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_next</mat-icon></button>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+          </mat-card-subtitle>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+              <span *ngIf="format === 'jsonf'">
+                  <td-json-formatter [data]="resource" key="response" [levelsOpen]="8">
+                  </td-json-formatter>
+              </span>
+               <span *ngIf="format === 'json'">
+                  <td-highlight lang="json" [content]="resourceString">
+                  </td-highlight>
+              </span>
+             <span *ngIf="format === 'xml'">
+                  <td-highlight lang="xml" [content]="resourceString">
+                  </td-highlight>
+              </span>
+            <span *ngIf="format === 'epr'">
+
+      <span *ngIf="allergies.length>0">
+              <h4>Allergies</h4>
+              <app-allergy-intolerance [allergies]="allergies" (allergy)="onResoureSelected($event)"></app-allergy-intolerance>
+          </span>
+          <span *ngIf="conditions.length>0">
+              <h4>Conditions</h4>
+              <app-condition [conditions]="conditions" [useBundle]="true" (condition)="onResoureSelected($event)"></app-condition>
+          </span>
+            <span *ngIf="consents.length>0">
+              <h4>Consent</h4>
+              <app-consent [consents]="consents" [useBundle]="true" (consent)="onResoureSelected($event)"></app-consent>
+          </span>
+            <span *ngIf="carePlans.length>0">
+              <h4>Care Plans</h4>
+              <app-care-plan [carePlans]="carePlans" [useBundle]="true" (carePlan)="onResoureSelected($event)"></app-care-plan>
+          </span>
+            <span *ngIf="impressions.length>0">
+              <h4>Clinical Impressions</h4>
+              <app-clinical-impression [clinicalImpressions]="impressions" [useBundle]="true" (clinicalImpressions)="onResoureSelected($event)"></app-clinical-impression>
+          </span>
+          <span *ngIf="patients.length>0">
+              <h4>Patient</h4>
+              <app-patient [patients]="patients" (patient)="onResoureSelected($event)"></app-patient>
+          </span>
+          <span *ngIf="practitioners.length>0">
+              <h4>Practitioner</h4>
+              <app-practitioner [practitioners]="practitioners" [useBundle]="true" (practitioner)="onResoureSelected($event)"></app-practitioner>
+          </span>
+          <span *ngIf="organisations.length>0">
+              <h4>Organisation</h4>
+              <app-organisation [organisations]="organisations" (organisation)="onResoureSelected($event)"></app-organisation>
+          </span>
+          <span *ngIf="observations.length>0">
+              <h4>Observations</h4>
+              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
+          </span>
+          <span *ngIf="encounters.length>0">
+              <h4>Encounter</h4>
+              <app-encounter [encounters]="encounters" [useBundle]="true" (encounter)="onResoureSelected($event)"></app-encounter>
+          </span>
+          <span *ngIf="medicationStatements.length>0">
+              <h4>Medication Statement</h4>
+              <app-medication-statement [medicationStatements]="medicationStatements" (medicationStatement)="onResoureSelected($event)"></app-medication-statement>
+          </span>
+          <span *ngIf="medicationDispenses.length>0">
+              <h4>Medication Dispense</h4>
+              <app-medication-dispense [medicationDispenses]="medicationDispenses" (medicationDispense)="onResoureSelected($event)"></app-medication-dispense>
+          </span>
+          <span *ngIf="procedures.length>0">
+              <h4>Procedure</h4>
+              <app-procedure [procedures]="procedures" [useBundle]="true" (procedure)="onResoureSelected($event)"></app-procedure>
+          </span>
+          <span *ngIf="medications.length > 0">
+              <h4>Medications</h4>
+              <app-medication [medications]="medications" (medication)="onResoureSelected($event)"></app-medication>
+          </span>
+          <span *ngIf="prescriptions.length>0">
+              <h4>Prescriptions</h4>
+              <app-medication-request [medicationRequests]="prescriptions" (medicationRequest)="onResoureSelected($event)"></app-medication-request>
+          </span>
+            <span *ngIf="immunisations.length>0">
+              <h4>Immunisations</h4>
+              <app-immunisation [immunisations]="immunisations" (immunisation)="onResoureSelected($event)"></app-immunisation>
+          </span>
+          <span *ngIf="roles.length>0">
+              <h4>PractitionerRole</h4>
+              <app-practitioner-role [roles]="roles" (practitionerRole)="onResoureSelected($event)"></app-practitioner-role>
+          </span>
+          <span *ngIf="services.length>0">
+              <h4>HealthcareService</h4>
+              <app-healthcare-service [services]="services" (healthcareService)="onResoureSelected($event)"></app-healthcare-service>
+          </span>
+          <span *ngIf="forms.length>0">
+              <h4>Questionnaire Response</h4>
+              <app-questionnaire-response [forms]="forms" (form)="onResoureSelected($event)"></app-questionnaire-response>
+          </span>
+            <span *ngIf="goals.length>0">
+              <h4>Care Goals</h4>
+              <app-goal [goals]="goals" (form)="onResoureSelected($event)"></app-goal>
+          </span>
+            <span *ngIf="risks.length>0">
+              <h4>Risk Assessment</h4>
+              <app-risk-assessment [risks]="risks" (form)="onResoureSelected($event)"></app-risk-assessment>
+          </span>
+                   <span *ngIf="documents.length>0">
+              <h4>Document Reference</h4>
+              <app-document-reference [documents]="documents" (form)="onResoureSelected($event)"></app-document-reference>
+          </span>
+  </span>
+
+          </mat-card-content>
+      </mat-card>
+
+
+
+</span>

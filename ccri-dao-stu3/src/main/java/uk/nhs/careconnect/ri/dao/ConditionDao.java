@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -242,7 +239,7 @@ public class ConditionDao implements ConditionRepository {
 
 
     @Override
-    public List<Condition> search(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, TokenParam resid) {
+    public List<Condition> search(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, StringParam resid) {
         List<ConditionEntity> qryResults = searchEntity(ctx,patient, category, clinicalstatus, asserted,identifier,resid);
         List<Condition> results = new ArrayList<>();
 
@@ -257,7 +254,8 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
-    public List<ConditionEntity> searchEntity(FhirContext ctx,ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, TokenParam resid) {
+    public List<ConditionEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam category, TokenParam clinicalstatus, DateRangeParam asserted, TokenParam identifier, StringParam id) {
+
         List<ConditionEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -283,8 +281,8 @@ public class ConditionDao implements ConditionRepository {
             }
 
         }
-        if (resid != null) {
-            Predicate p = builder.equal(root.get("id"),resid.getValue());
+        if (id != null) {
+            Predicate p = builder.equal(root.get("id"),id.getValue());
             predList.add(p);
         }
         if (identifier !=null)

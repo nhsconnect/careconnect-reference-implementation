@@ -29,7 +29,7 @@ public interface LocationRepository extends BaseRepository<LocationEntity,Locati
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            ,@OptionalParam(name= Location.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Location.SP_RES_ID) StringParam id
 
     );
 
@@ -38,7 +38,7 @@ public interface LocationRepository extends BaseRepository<LocationEntity,Locati
             @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifier,
             @OptionalParam(name = Location.SP_NAME) StringParam name,
             @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            ,@OptionalParam(name= Location.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Location.SP_RES_ID) StringParam id
 
     );
 }

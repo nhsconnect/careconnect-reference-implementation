@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -109,7 +110,7 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     @Search
     public List<Questionnaire> searchQuestionnaire(HttpServletRequest theRequest,
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
-                                                   @OptionalParam(name= Questionnaire.SP_RES_ID) TokenParam id,
+                                                   @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
     ) {
         return questionnaireDao.searchQuestionnaire(ctx, identifier,id,codes);

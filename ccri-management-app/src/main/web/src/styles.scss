@@ -1,5 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-
+/*
+.mat-select{
+  width:700px !important;
+}
+*/
 .td-search-box {
   .td-search-icon.mat-icon-button {
     margin: 0;
@@ -24,4 +28,19 @@
       border-top: 0;
     }
   }
+}
+
+.input-half-width {
+  width: 50%;
+}
+
+
+.example-full-width {
+  width: 100%;
+}
+
+.xlModal > .modal-dialog {
+  max-width: 1490px !important;
+  min-width: 971px !important;
+  width: 95% !important;
 }

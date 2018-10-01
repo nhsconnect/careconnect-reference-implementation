@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -107,7 +108,7 @@ public class MedicationStatementProvider implements ICCResourceProvider {
                                             @OptionalParam(name = MedicationStatement.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationStatement.SP_EFFECTIVE) DateRangeParam effectiveDate
             , @OptionalParam(name = MedicationStatement.SP_STATUS) TokenParam status
-            , @OptionalParam(name = MedicationStatement.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = MedicationStatement.SP_RES_ID) StringParam resid
             , @OptionalParam(name = MedicationStatement.SP_IDENTIFIER) TokenParam identifier
     ) {
         return statementDao.search(ctx,patient, effectiveDate, status,resid, identifier);

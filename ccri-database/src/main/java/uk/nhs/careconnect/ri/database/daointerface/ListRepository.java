@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ListResource;
@@ -25,14 +26,14 @@ public interface ListRepository extends BaseRepository<ListEntity,ListResource> 
     List<ListResource> searchListResource(FhirContext ctx,
 
                                                             @OptionalParam(name = ListResource.SP_IDENTIFIER) TokenParam identifier,
-                                                            @OptionalParam(name = ListResource.SP_RES_ID) TokenParam id,
+                                                            @OptionalParam(name = ListResource.SP_RES_ID) StringParam id,
                                                             @OptionalParam(name = ListResource.SP_PATIENT) ReferenceParam patient
 
     );
 
     List<ListEntity> searchListEntity(FhirContext ctx,
                                                                         @OptionalParam(name = ListResource.SP_IDENTIFIER) TokenParam identifier,
-                                                                        @OptionalParam(name = ListResource.SP_RES_ID) TokenParam id,
+                                                                        @OptionalParam(name = ListResource.SP_RES_ID) StringParam id,
                                                                         @OptionalParam(name = ListResource.SP_PATIENT) ReferenceParam patient
     );
 }

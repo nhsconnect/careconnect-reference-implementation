@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Endpoint;
@@ -92,7 +93,7 @@ public class EndpointProvider implements ICCResourceProvider {
     @Search
     public List<Endpoint> searchEndpoint(HttpServletRequest theRequest,
                                          @OptionalParam(name = Endpoint.SP_IDENTIFIER) TokenParam identifierCode,
-                                         @OptionalParam(name = Endpoint.SP_RES_ID) TokenParam resid
+                                         @OptionalParam(name = Endpoint.SP_RES_ID) StringParam resid
     ) {
         return endpointDao.searchEndpoint(ctx, identifierCode, resid);
     }

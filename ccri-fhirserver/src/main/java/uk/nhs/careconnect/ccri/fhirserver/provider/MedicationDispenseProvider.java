@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -98,7 +99,7 @@ public class MedicationDispenseProvider implements ICCResourceProvider {
     public List<MedicationDispense> search(HttpServletRequest theRequest,
                                            @OptionalParam(name = MedicationDispense.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = MedicationDispense.SP_STATUS) TokenParam status
-            , @OptionalParam(name = MedicationDispense.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = MedicationDispense.SP_RES_ID) StringParam id
             , @OptionalParam(name = MedicationDispense.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = MedicationDispense.SP_CODE) TokenParam code
             , @OptionalParam(name= MedicationDispense.SP_MEDICATION) ReferenceParam medication

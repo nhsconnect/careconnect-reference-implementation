@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,7 @@ import uk.nhs.careconnect.ri.dao.transforms.MedicationRequestEntityToFHIRMedicat
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -71,6 +69,9 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
     @Autowired
     LocationRepository locationDao;
+
+    @Autowired
+    MedicationRepository medicationDao;
 
 
 
@@ -197,17 +198,28 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
         if (prescription.hasMedicationCodeableConcept()) {
             try {
-                ConceptEntity code = conceptDao.findAddCode(prescription.getMedicationCodeableConcept().getCoding().get(0));
-                if (code != null) {
-                    prescriptionEntity.setMedicationCode(code);
+                List<MedicationEntity> listMedication = medicationDao.searchEntity(ctx,new TokenParam()
+                        .setSystem(prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                        .setValue(prescription.getMedicationCodeableConcept().getCoding().get(0).getCode()),null);
+                if (listMedication.size() >0 ) {
+                    prescriptionEntity.setMedicationEntity(listMedication.get(0));
                 } else {
-                    log.info("Code: Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
 
-                    throw new IllegalArgumentException("Missing System/Code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem()
-                            + " code = " + prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    Medication medication = new Medication();
+                    medication.getCode().addCoding()
+                            .setSystem(prescription.getMedicationCodeableConcept().getCoding().get(0).getSystem())
+                            .setDisplay(prescription.getMedicationCodeableConcept().getCoding().get(0).getDisplay())
+                            .setCode(prescription.getMedicationCodeableConcept().getCoding().get(0).getCode());
+                    MedicationEntity medicationNew = medicationDao.createEntity(ctx,medication,null,null);
+                    prescriptionEntity.setMedicationEntity(medicationNew);
                 }
             } catch (Exception ex) {}
+        }
+        if (prescription.hasMedicationReference()) {
+            try {
+                MedicationEntity medicationEntity = medicationDao.readEntity(ctx, new IdType(prescription.getMedicationReference().getReference()));
+                prescriptionEntity.setMedicationEntity(medicationEntity);
+            } catch(Exception ex) {}
         }
 
         if (prescription.hasAuthoredOn()) {
@@ -431,7 +443,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             , DateRangeParam authoredDate
             , TokenParam status
             , TokenParam identifier
-            , TokenParam resid
+            , StringParam resid
             , ReferenceParam medication) {
         List<MedicationRequestEntity> qryResults = searchEntity(ctx, patient, code, authoredDate, status, identifier,resid, medication);
         List<MedicationRequest> results = new ArrayList<>();
@@ -452,7 +464,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             , DateRangeParam authoredDate
             , TokenParam status
             , TokenParam identifier
-            , TokenParam resid
+            , StringParam resid
             , ReferenceParam medication) {
         List<MedicationRequestEntity> qryResults = null;
 

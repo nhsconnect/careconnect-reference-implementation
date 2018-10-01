@@ -1,0 +1,96 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let organisation"> {{organisation.id}} </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="organisation">
+      <th mat-header-cell *matHeaderCellDef > Organisation </th>
+      <td mat-cell *matCellDef="let organisation">
+
+        <b >{{organisation.name}}</b>
+
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="identifier">
+      <th mat-header-cell *matHeaderCellDef > Identifier </th>
+      <td mat-cell *matCellDef="let organisation">
+
+        <span *ngFor="let identifier of organisation.identifier">
+            <i>{{ getIdentifier(identifier) }}</i>
+            <b> {{identifier.value}}</b>
+          </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="contact">
+      <th mat-header-cell *matHeaderCellDef > Contact </th>
+      <td mat-cell *matCellDef="let organisation">
+
+
+          <div *ngFor="let telecom of organisation.telecom">
+            <i>{{telecom.use}}&nbsp;{{telecom.system}}</i>
+            <b>&nbsp;{{telecom.value}}</b>
+          </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef width="8%"> Select </th>
+      <td mat-cell *matCellDef="let organisation">
+        <button mat-icon-button color="accent"  matTooltip="Select Organisation" (click)="selectOrganisation(organisation)"><mat-icon>collections_bookmark</mat-icon></button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>
+      <td mat-cell *matCellDef="let organisation">
+        <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(organisation)"><mat-icon>code</mat-icon></button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
+<!--
+<mat-card>
+
+
+
+  <div *ngIf="detail && ((organisation.address !=undefined && organisation.address.length > 0) || (organisation.telecom !=undefined && organisation.telecom.length > 0))">
+
+    <mat-grid-list cols="3" rowHeight="8em">
+      <mat-grid-tile> <div  class="d-flex w-100 justify-content-left">
+        <div *ngIf="organisation.address != undefined && organisation.address.length>0">
+          <i>{{organisation.address[0].use}}</i>
+          <div *ngFor="let line of organisation.address[0].line">
+            <div>{{line}}</div>
+          </div>
+          <div>{{organisation.address[0].city}}</div>
+          <div>{{organisation.address[0].district}}</div>
+          <div>{{organisation.address[0].postalCode}}</div>
+        </div>
+      </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+
+
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</mat-card>
+-->

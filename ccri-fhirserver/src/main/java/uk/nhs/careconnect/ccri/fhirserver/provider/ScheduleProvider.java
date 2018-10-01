@@ -109,7 +109,7 @@ public class ScheduleProvider implements ICCResourceProvider {
                                                            @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
                                                            @OptionalParam(name = Schedule.SP_ACTOR) StringParam name,
                                                            @OptionalParam(name= Schedule.SP_TYPE) TokenOrListParam codes,
-                                                           @OptionalParam(name = Schedule.SP_RES_ID) TokenParam id
+                                                           @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
     ) {
         return scheduleDao.searchSchedule(ctx, identifier,name,codes,id);
     }

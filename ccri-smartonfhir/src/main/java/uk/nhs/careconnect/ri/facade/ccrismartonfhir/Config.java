@@ -26,14 +26,6 @@ public class Config {
     @Value("${datasource.cleardown.cron:0 19 21 * * *}")
     private String cron;
 
-    @Value("${fhir.resource.serverBase}")
-    private String serverBase;
-
-    @Value("${fhir.resource.serverName}")
-    private String serverName;
-
-    @Value("${fhir.resource.serverVersion}")
-    private String serverVersion;
 
     @Value("${fhir.oauth2.authorize:http://purple.testlab.nhs.uk:20080/authorize}")
     private String oauth2authorize;
@@ -44,17 +36,6 @@ public class Config {
     @Value("${fhir.oauth2.register:http://purple.testlab.nhs.uk:20080/register}")
     private String oauth2register;
 
-    public String getServerBase() {
-        return this.serverBase;
-    }
-
-    public String getServerName() {
-        return this.serverName;
-    }
-
-    public String getServerVersion() {
-        return this.serverVersion;
-    }
 
     public String getOauth2authorize() {
         return this.oauth2authorize;

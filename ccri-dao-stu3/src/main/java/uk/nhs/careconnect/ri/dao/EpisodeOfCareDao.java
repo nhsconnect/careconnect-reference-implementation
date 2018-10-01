@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -76,7 +77,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     }
 
     @Override
-    public List<EpisodeOfCare> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam resid) {
+    public List<EpisodeOfCare> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, StringParam resid) {
 
         List<EpisodeOfCareEntity> qryResults = searchEntity(ctx,patient, date,resid);
         List<EpisodeOfCare> results = new ArrayList<>();
@@ -91,7 +92,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
         return results;
     }
     @Override
-    public List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam resid) {
+    public List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, StringParam resid) {
         List<EpisodeOfCareEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

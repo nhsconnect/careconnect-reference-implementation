@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -131,7 +132,7 @@ public class GoalResourceProvider implements IResourceProvider {
     public List<Resource> searchGoal(HttpServletRequest httpRequest,
                                          @OptionalParam(name = Goal.SP_PATIENT) ReferenceParam patient
                                         ,@OptionalParam(name = Goal.SP_IDENTIFIER) TokenParam identifier
-                                        ,@OptionalParam(name = Goal.SP_RES_ID) TokenParam id
+                                        ,@OptionalParam(name = Goal.SP_RES_ID) StringParam id
     ) throws Exception {
 
         List<Resource> results = new ArrayList<>();

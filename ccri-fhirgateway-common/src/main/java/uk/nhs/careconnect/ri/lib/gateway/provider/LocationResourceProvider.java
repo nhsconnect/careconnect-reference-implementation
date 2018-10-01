@@ -93,7 +93,7 @@ public class LocationResourceProvider implements IResourceProvider {
     public List<Location> searchLocation(HttpServletRequest httpRequest,
                                          @OptionalParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode,
                                          @OptionalParam(name = Location.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , @OptionalParam(name = Location.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Location.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<Location> results = new ArrayList<Location>();

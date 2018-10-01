@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -102,7 +103,7 @@ public class ProcedureProvider implements ICCResourceProvider {
             , @OptionalParam(name = Procedure.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Procedure.SP_SUBJECT) ReferenceParam subject
             , @OptionalParam(name = Procedure.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Procedure.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Procedure.SP_RES_ID) StringParam resid
                                   ) {
         return procedureDao.search(ctx, patient, date, subject,identifier,resid);
     }

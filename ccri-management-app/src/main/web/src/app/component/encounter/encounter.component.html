@@ -1,0 +1,149 @@
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let encounter"> {{encounter.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="start">
+      <th mat-header-cell *matHeaderCellDef> Start </th>
+      <td mat-cell *matCellDef="let encounter">  <span *ngIf="encounter.period !== undefined  && encounter.period.start !== undefined"> {{encounter.period.start | date: 'dd-MMM-yyyy HH:mm'}} </span> </td>
+    </ng-container>
+    <ng-container matColumnDef="end">
+      <th mat-header-cell *matHeaderCellDef> End </th>
+      <td mat-cell *matCellDef="let encounter">  <span *ngIf="encounter.period !== undefined && encounter.period.end !== undefined"> {{encounter.period.end | date: 'dd-MMM-yyyy HH:mm'}} </span> </td>
+    </ng-container>
+
+
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Encounter </th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+          <b>{{encounter.type[0].coding[0].display}}</b>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="typelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+          <span *ngIf="encounter.type[0].coding[0].code != undefined" >
+            <span *ngIf="isSNOMED(encounter.type[0].coding[0].system)">
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}" (click)="getSNOMEDLink(encounter.type[0].coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+            </span>
+             <span *ngIf="!isSNOMED(encounter.type[0].coding[0].system)">
+                  <mat-icon matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}">book_outline</mat-icon>
+            </span>
+          </span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="participant">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Participant </th>
+      <td mat-cell *matCellDef="let encounter">
+         <span *ngFor="let participant of encounter.participant">
+          <span *ngIf="participant.individual != undefined"><i>{{participant.individual.display}}</i></span>
+      </span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="participantLink">
+      <th mat-header-cell *matHeaderCellDef width="5%"></th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.participant !=undefined && encounter.participant.length > 0">
+          <button mat-icon-button color="accent"  matTooltip="View Participants" (click)="showPractitioner(encounter)"><mat-icon>person</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="provider">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Provider </th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.serviceProvider!=undefined"> {{encounter.serviceProvider.display}}</span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="providerLink">
+      <th mat-header-cell *matHeaderCellDef width="5%"></th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.serviceProvider!=undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Providers" (click)="showOrganisation(encounter)"><mat-icon>local_hospital</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="locationLink">
+      <th mat-header-cell *matHeaderCellDef width="10%">Locations</th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.location!=undefined && encounter.location.length > 0">
+          <button mat-icon-button color="accent"  matTooltip="View Location" (click)="showLocation(encounter)"><mat-icon>language</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%">FHIR</th>
+      <td mat-cell *matCellDef="let encounter">
+
+          <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(encounter)"><mat-icon>code</mat-icon></button>
+
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+<!--<ng-template id="modalContent" #modalContent let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <span *ngIf="selectedEncounter.type != undefined && selectedEncounter.type[0].coding != undefined">
+      <h4>{{selectedEncounter.type[0].coding[0].display}}</h4>
+    </span>
+    <span *ngIf="selectedEncounter.type == undefined || selectedEncounter.type[0].coding == undefined">
+      <h4>Encounter</h4>
+    </span>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <app-encounter-detail [patientId]="patient.id" [encounterId]="selectedEncounter.id"></app-encounter-detail>
+  </div>
+</ng-template>
+
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col" width="30%">Date</th>
+    <th scope="col" width="60%">Encounter</th>
+    <th scope="col"></th>
+    <th scope="col" width="5%"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let encounter of encounters">
+
+
+    <td><a *ngIf="showDetail" (click)="onClick(modalContent, encounter)"> <span class="badge badge-success">view consultation</span></a> </td>
+    <td>
+      <button mat-icon-button color="accent" style="background-color: lightgray" (click)="select(encounter)"><mat-icon>code</mat-icon></button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+-->

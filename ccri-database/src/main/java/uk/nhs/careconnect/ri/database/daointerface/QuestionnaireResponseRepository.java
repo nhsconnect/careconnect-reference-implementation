@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
@@ -26,7 +27,7 @@ public interface QuestionnaireResponseRepository extends BaseRepository<Question
     List<QuestionnaireResponse> searchQuestionnaireResponse(FhirContext ctx,
 
                                             @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
-                                            @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) TokenParam id,
+                                            @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) StringParam id,
                                             @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
                                                             @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient
 
@@ -34,7 +35,7 @@ public interface QuestionnaireResponseRepository extends BaseRepository<Question
 
     List<QuestionnaireResponseEntity> searchQuestionnaireResponseEntity (FhirContext ctx,
                                                                          @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
-                                                                         @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) TokenParam id,
+                                                                         @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) StringParam id,
                                                                          @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
                                                                          @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient
     );

@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.CareTeam;
@@ -26,12 +27,12 @@ public interface CareTeamRepository extends BaseRepository<CareTeamEntity,CareTe
     List<CareTeam> search(FhirContext ctx,
                            @OptionalParam(name = CareTeam.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = CareTeam.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CareTeam.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = CareTeam.SP_RES_ID) StringParam id
     );
 
     List<CareTeamEntity> searchEntity(FhirContext ctx,
                                        @OptionalParam(name = CareTeam.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = CareTeam.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = CareTeam.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = CareTeam.SP_RES_ID) StringParam id
     );
 }

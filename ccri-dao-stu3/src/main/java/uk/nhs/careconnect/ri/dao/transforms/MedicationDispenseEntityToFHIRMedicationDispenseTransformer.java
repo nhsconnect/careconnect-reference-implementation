@@ -51,9 +51,9 @@ public class MedicationDispenseEntityToFHIRMedicationDispenseTransformer impleme
                     .setSystem(medicationDispenseEntity.getCategoryCode().getSystem())
                     .setCode(medicationDispenseEntity.getCategoryCode().getCode());
         }
-        if (medicationDispenseEntity.getMedicationCode() != null) {
-            medicationDispense.setMedication(new Reference("Medication/"+medicationDispenseEntity.getId())
-                    .setDisplay(medicationDispenseEntity.getMedicationCode().getDisplay()));
+        if (medicationDispenseEntity.getMedicationEntity() != null) {
+            medicationDispense.setMedication(new Reference("Medication/"+medicationDispenseEntity.getMedicationEntity().getId())
+                    .setDisplay(medicationDispenseEntity.getMedicationEntity().getMedicationCode().getDisplay()));
         }
 
         if (medicationDispenseEntity.getPatient() != null) {

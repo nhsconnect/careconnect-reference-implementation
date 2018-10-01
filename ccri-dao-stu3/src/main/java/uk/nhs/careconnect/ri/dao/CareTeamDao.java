@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.CareTeam;
@@ -238,7 +239,7 @@ public class CareTeamDao implements CareTeamRepository {
     }
 
     @Override
-    public List<CareTeam> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam id) {
+    public List<CareTeam> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id) {
         List<CareTeamEntity> qryResults = searchEntity(ctx,patient, identifier,id);
         List<CareTeam> results = new ArrayList<>();
 
@@ -253,7 +254,7 @@ public class CareTeamDao implements CareTeamRepository {
     }
 
     @Override
-    public List<CareTeamEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, TokenParam resid) {
+    public List<CareTeamEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid) {
         List<CareTeamEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

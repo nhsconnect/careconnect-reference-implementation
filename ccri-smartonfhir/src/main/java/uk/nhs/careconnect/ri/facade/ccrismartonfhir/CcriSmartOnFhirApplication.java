@@ -6,6 +6,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -27,6 +28,21 @@ public class CcriSmartOnFhirApplication {
     @Autowired
     ApplicationContext context;
 
+    @Value("${ccri.software.version}")
+    String softwareVersion;
+
+    @Value("${ccri.software.name}")
+    String softwareName;
+
+    @Value("${ccri.server}")
+    String server;
+
+    @Value("${ccri.guide}")
+    String guide;
+
+    @Value("${ccri.server.base}")
+    String serverBase;
+
     public static void main(String[] args) {
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
@@ -46,6 +62,13 @@ public class CcriSmartOnFhirApplication {
 
     @Bean
     public FhirContext getFhirContext() {
+
+        System.setProperty("ccri.server.base",this.serverBase);
+        System.setProperty("ccri.software.name",this.softwareName);
+        System.setProperty("ccri.software.version",this.softwareVersion);
+        System.setProperty("ccri.guide",this.guide);
+        System.setProperty("ccri.server",this.server);
+
         return FhirContext.forDstu3();
     }
 

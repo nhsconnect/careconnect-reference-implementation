@@ -206,7 +206,14 @@ http://127.0.0.1:8080/careconnect-ri/STU3
             }
             Integer resourceCount = 0;
 
-            if (theCommandLine.hasOption("a") ||theCommandLine.hasOption("prac")) {
+            Bundle pastResults = client
+                    .search()
+                    .forResource(Practitioner.class)
+                    .where(Practitioner.IDENTIFIER.exactly().code("G9910371"))
+                    .returnBundle(Bundle.class)
+                    .execute();
+
+            if (pastResults.getEntry().size()==0 && (theCommandLine.hasOption("a") ||theCommandLine.hasOption("prac"))) {
                 try {
                     System.out.println("Practitioner.csv");
                     resources.clear();
@@ -271,7 +278,7 @@ http://127.0.0.1:8080/careconnect-ri/STU3
 
 
             // Check patient
-            Bundle pastResults = client
+             pastResults = client
                     .search()
                     .forResource(Patient.class)
                     .where(Patient.IDENTIFIER.exactly().code("LOCAL1172"))

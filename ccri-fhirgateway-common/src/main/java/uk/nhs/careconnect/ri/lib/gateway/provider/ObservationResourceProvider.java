@@ -1,11 +1,11 @@
 package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ObservationResourceProvider implements IResourceProvider {
@@ -57,15 +58,18 @@ public class ObservationResourceProvider implements IResourceProvider {
 
         Bundle bundle = completeBundle.getBundle();
 
-        List<Observation> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null, null);
+        List<Resource> resources = searchObservation(null, null,null, null, new ReferenceParam().setValue(patientId.getValue()),null, null,null);
 
-        for (Observation resource : resources) {
-            for (Reference reference : resource.getPerformer()) {
-                if (reference.getReference().contains("Practitioner")) {
-                    completeBundle.addGetPractitioner(new IdType(reference.getReference()));
-                }
-                if (reference.getReference().contains("Organization")) {
-                    completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+        for (Resource resource : resources) {
+            if (resource instanceof Observation) {
+                Observation observation = (Observation) resource;
+                for (Reference reference : observation.getPerformer()) {
+                    if (reference.getReference().contains("Practitioner")) {
+                        completeBundle.addGetPractitioner(new IdType(reference.getReference()));
+                    }
+                    if (reference.getReference().contains("Organization")) {
+                        completeBundle.addGetOrganisation(new IdType(reference.getReference()));
+                    }
                 }
             }
             bundle.addEntry().setResource(resource);
@@ -104,16 +108,17 @@ public class ObservationResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<Observation> searchObservation(HttpServletRequest httpRequest,
+    public List<Resource> searchObservation(HttpServletRequest httpRequest,
                                                @OptionalParam(name= Observation.SP_CATEGORY) TokenParam category,
                                                @OptionalParam(name= Observation.SP_CODE) TokenOrListParam codes,
                                                @OptionalParam(name= Observation.SP_DATE) DateRangeParam effectiveDate,
                                                @OptionalParam(name = Observation.SP_PATIENT) ReferenceParam patient
-            , @OptionalParam(name = Observation.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Observation.SP_RES_ID) StringParam resid
              ,@OptionalParam(name = Observation.SP_SUBJECT) ReferenceParam subject
+            , @IncludeParam(allow = { "Observation.related" ,  "*" }) Set<Include> includes
                                        ) throws Exception {
 
-        List<Observation> results = new ArrayList<Observation>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -145,8 +150,7 @@ public class ObservationResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                Observation observation = (Observation) entry.getResource();
-                results.add(observation);
+                results.add(entry.getResource());
             }
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
@@ -155,6 +159,95 @@ public class ObservationResourceProvider implements IResourceProvider {
         return results;
 
     }
+
+    @Create
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Observation observation) throws Exception {
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(observation);
+
+            Exchange exchangeBundle = template.send("direct:FHIRObservation", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Observation");
+                }
+            });
+
+            // This response is coming from an external FHIR Server, so uses inputstream
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Observation) {
+            observation = (Observation) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
+    }
+
+
+    @Update
+    public MethodOutcome updateObservation(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(observation);
+
+
+            Exchange exchangeBundle = template.send("direct:FHIRObservation", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Observation/"+theId.getIdPart());
+                }
+            });
+
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Observation) {
+            observation = (Observation) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
+    }
+
 
 
 

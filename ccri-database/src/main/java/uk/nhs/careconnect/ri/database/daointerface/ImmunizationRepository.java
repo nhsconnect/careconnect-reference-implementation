@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Immunization;
@@ -30,7 +31,7 @@ public interface ImmunizationRepository extends BaseRepository<ImmunisationEntit
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Immunization.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Immunization.SP_RES_ID) StringParam id
 
     );
 
@@ -39,6 +40,6 @@ public interface ImmunizationRepository extends BaseRepository<ImmunisationEntit
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Immunization.SP_RES_ID) TokenParam id
+            ,@OptionalParam(name= Immunization.SP_RES_ID) StringParam id
     );
 }

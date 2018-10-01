@@ -227,7 +227,6 @@ public class SlotDao implements SlotRepository {
             em.persist(slotIdentifier);
         }
 
-        em.persist(slotEntity);
 
         log.info("Slot.Transform");
         return slotEntityToFHIRSlotTransformer.transform(slotEntity);

@@ -1,7 +1,42 @@
+<mat-menu #appMenu="matMenu">
+  <span *ngFor="let server of serverMenu">
+  <button mat-menu-item (click)="swapServer(server)">{{server.title}}</button>
+    </span>
+</mat-menu>
+<mat-menu #formatMenu>
+  <button mat-menu-item (click)="format('jsonf')">
+    <span *ngIf="outputFormat === 'jsonf';then other1i else other1e">
+    </span>
+    <ng-template #other1i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other1e><mat-icon></mat-icon></ng-template>
+    <span>JSON (Formatter)</span></button>
+  <button mat-menu-item (click)="format('json')">
+    <span *ngIf="outputFormat === 'json';then other2i else other2e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other2i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other2e><mat-icon></mat-icon></ng-template>
+    <span>JSON</span></button>
+  <button mat-menu-item (click)="format('xml')">
+    <span *ngIf="outputFormat === 'xml';then other3i else other3e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other3i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other3e><mat-icon></mat-icon></ng-template>
+    <span>XML</span></button>
+  <button mat-menu-item (click)="format('epr')">
+    <span *ngIf="outputFormat === 'epr';then other4i else other4e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #other4i><mat-icon>check</mat-icon></ng-template>
+    <ng-template #other4e><mat-icon></mat-icon></ng-template>
+    <span>EPR Mode</span></button>
+</mat-menu>
+
 <td-layout [class]="'theme-light'">
-  <td-navigation-drawer flex sidenavTitle="FHIR Server"  name="" email="" >
+  <td-navigation-drawer flex sidenavTitle="Applications"  name="" email="" >
     <mat-nav-list>
-      <a *ngFor="let item of routes" mat-list-item routerLink="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+      <a *ngFor="let item of routes" mat-list-item href="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
     </mat-nav-list>
     <div td-navigation-drawer-menu>
       <mat-nav-list>
@@ -10,23 +45,26 @@
     </div>
   </td-navigation-drawer>
   <td-layout-nav-list #navList
-                      color="accent"
+                      color="primary"
                       [opened]="media.registerQuery('gt-sm') | async"
                       [mode]="(media.registerQuery('gt-sm') | async) ? 'side' : 'over'"
                       [sidenavWidth]="(media.registerQuery('gt-xs') | async) ? '350px' : '100%'">
     <div td-sidenav-toolbar-content layout="row" layout-align="start center">
       <button mat-icon-button tdLayoutToggle>
-        <mat-icon>menu</mat-icon>
+        <mat-icon>apps</mat-icon>
       </button>
       <!-- <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon> -->
-      <span [routerLink]="['/']" class="cursor-pointer">Care Connect RI</span>
+      <span [routerLink]="['/']" class="cursor-pointer"><mat-icon color="accent">whatshot</mat-icon>FHIR Explorer</span>
     </div>
     <div td-toolbar-content layout="row" layout-align="start center" flex>
       <button mat-icon-button tdLayoutNavListOpen [hideWhenOpened]="true">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <span>Top Bar Menu</span>
+      <span>{{title}}</span>
       <span flex></span>
+      <button mat-icon-button matTooltip="Output format" [matMenuTriggerFor]="formatMenu"><mat-icon>text_format</mat-icon></button>
+      <button mat-icon-button matTooltip="Swap FHIR Server" [matMenuTriggerFor]="appMenu"><mat-icon>device_hub</mat-icon></button>
+
       <!--
       <a mat-icon-button matTooltip="Docs" href="https://teradata.github.io/covalent/" target="_blank"><mat-icon>chrome_reader_mode</mat-icon></a>
       <a mat-icon-button matTooltip="Github" href="https://github.com/teradata/covalent" target="_blank"><mat-icon svgIcon="assets:github"></mat-icon></a>

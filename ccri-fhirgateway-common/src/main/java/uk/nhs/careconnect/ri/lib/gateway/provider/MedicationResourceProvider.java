@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -81,7 +82,7 @@ public class MedicationResourceProvider implements IResourceProvider {
     @Search
     public List<Medication> searchMedicationRequest(HttpServletRequest httpRequest
             , @OptionalParam(name = Medication.SP_CODE) TokenParam code
-            , @OptionalParam(name = Medication.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Medication.SP_RES_ID) StringParam resid
     ) throws Exception {
 
         List<Medication> results = new ArrayList<>();

@@ -1,0 +1,197 @@
+<h2 mat-dialog-title>Medication Dispense</h2>
+<mat-dialog-content>
+  <table>
+    <tr>
+      <td>Medication</td>
+      <td><b> <span *ngIf="medicationDispense.medicationCodeableConcept !=undefined" >
+          <span *ngIf="medicationDispense.medicationCodeableConcept !=undefined">{{medicationDispense.medicationCodeableConcept.coding[0].display}}</span>
+
+        </span>
+        <span *ngIf="medicationDispense.medicationReference !=undefined">
+
+            <span>{{medicationDispense.medicationReference.display}}</span>
+
+        </span></b>
+        <span *ngIf="medicationDispense.medicationCodeableConcept !=undefined" >
+            <span *ngIf="isSNOMED(medicationDispense.medicationCodeableConcept.coding[0].system)">
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationDispense.medicationCodeableConcept.coding[0].system)}} {{medicationDispense.medicationCodeableConcept.coding[0].code}}" (click)="getSNOMEDLink(medicationDispense.medicationCodeableConcept.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationDispense.medicationCodeableConcept.coding[0].system)}} {{medicationDispense.medicationCodeableConcept.coding[0].code}}" (click)="getDMDLink(medicationDispense.medicationCodeableConcept.coding[0])">
+                  <mat-icon>turned_in</mat-icon>git
+
+              </button>
+            </span>
+
+          </span>
+        <span *ngIf="medicationDispense.medicationReference !=undefined">
+
+              <button mat-icon-button color="accent" (click)="onClick( medicationDispense)">
+                  <mat-icon>colorize</mat-icon>
+              </button>
+
+          </span></td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td><b> {{medicationDispense.status}}</b></td>
+    </tr>
+    <tr>
+      <td>Category</td>
+      <td><b><span *ngIf="medicationDispense.category != undefined">
+        {{medicationDispense.category.coding[0].display}}
+      </span></b></td>
+    </tr>
+    <tr>
+      <td>Handed Over</td>
+      <td><b> {{medicationDispense.whenHandedOver | date: 'dd-MMM-yyyy HH:mm'}}</b></td>
+    </tr>
+    <tr>
+      <td>Prepared</td>
+      <td><b>{{medicationDispense.whenPrepared | date: 'dd-MMM-yyyy HH:mm'}}</b></td>
+    </tr>
+
+    <tr>
+      <td>Supply type</td>
+      <td><b><span *ngIf="medicationDispense.type != undefined">
+        {{medicationDispense.type.coding[0].display}}
+      </span></b></td>
+    </tr>
+    <tr>
+      <td>Form</td>
+      <td><b>  <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+              <span> {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
+            </span>
+
+        </span></b></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><b>Dispensing Details</b></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Batch number</td>
+      <td><b></b></td>
+    </tr>
+    <tr>
+      <td>Site</td>
+      <td><b><b> <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+
+            <span *ngIf="dosage.site!=undefined && dosage.site.coding.length>0" >
+              {{dosage.site.coding[0].display}}
+            </span>
+        </span></b></b></td>
+    </tr>
+    <tr>
+      <td>Route</td>
+      <td><b> <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+
+            <span *ngIf="dosage.route!=undefined && dosage.route.coding.length>0" >
+              {{dosage.route.coding[0].display}}
+            </span>
+        </span></b></td>
+    </tr>
+    <tr>
+      <td>Method</td>
+      <td><b> <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+
+            <span *ngIf="dosage.method!=undefined && dosage.method.coding.length>0" >
+              {{dosage.method.coding[0].display}}
+            </span>
+        </span></b></td>
+    </tr>
+    <tr>
+      <td>Indication</td>
+      <td><b></b></td>
+    </tr>
+    <tr>
+      <td>Reason for supply</td>
+      <td><b></b></td>
+    </tr>
+    <tr>
+      <td>Reason for non supply</td>
+      <td>
+          <b><span *ngIf="medicationDispense.notDoneReasonCodeableConcept != undefined">
+        {{medicationDispense.notDoneReasonCodeableConcept.coding[0].display}}
+      </span></b>
+      </td>
+    </tr>
+    <tr>
+      <td>Total amount of medication supplied</td>
+      <td>
+          <span *ngFor="let extension of medicationDispense.quantity.extension">
+              <span *ngIf="extension.url === 'https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationQuantityText-1'">
+                  {{extension.valueString}} <br>
+              </span>
+          </span>
+          <span *ngIf="medicationDispense.daysSupply!=undefined">{{medicationDispense.daysSupply.value}} {{medicationDispense.daysSupply.unit}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Remove dose amount description</td>
+      <td><b></b></td>
+    </tr>
+    <tr>
+      <td>Remove dose timing description</td>
+      <td><b></b></td>
+    </tr>
+    <tr>
+      <td>Dose directions description</td>
+      <td>
+          <span *ngIf="medicationDispense.quantity!=undefined">{{medicationDispense.quantity.value}} {{medicationDispense.quantity.unit}}</span>
+          <span *ngFor="let dosage of medicationDispense.dosageInstruction">
+            <span *ngIf="dosage.asNeededBoolean"> as required/needed</span>
+        </span></td>
+    </tr>
+    <tr>
+      <td>Additional instructions</td>
+      <td><b><span *ngFor="let dosage of medicationDispense.dosageInstruction">
+          <span *ngFor="let instrs of dosage.additionalInstruction">
+                {{instrs.coding[0].display}}
+          </span>
+        </span></b></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><b>Administration Details</b></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Pharmacist</td>
+      <td><span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].actor != undefined">
+            <b>{{medicationDispense.performer[0].actor.display}}</b>
+            <button mat-icon-button color="accent"  matTooltip="View Pharmacist" (click)="showPractitioner(medicationDispense)"><mat-icon>person</mat-icon></button>
+          </span>
+        </span></td>
+    </tr>
+    <tr>
+      <td>Pharmacy</td>
+      <td>  <span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].onBehalfOf != undefined">
+            <b>{{medicationDispense.performer[0].onBehalfOf.display}}</b>
+            <button mat-icon-button color="accent"  matTooltip="View Pharmacy" (click)="showOrganisation(medicationDispense)"><mat-icon>account_balance</mat-icon></button>
+          </span>
+        </span></td>
+    </tr>
+  </table>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+</mat-dialog-actions>

@@ -115,30 +115,11 @@ public class MedicationStatementEntityToFHIRMedicationStatementTransformer imple
                medicationStatement.setStatus(medicationStatementEntity.getStatus());
             }
 
-
-            if (medicationStatementEntity.getMedicationCode() != null) {
-                medicationStatement.setMedication(new Reference("Medication/" + medicationStatementEntity.getId())
-                        .setDisplay(medicationStatementEntity.getMedicationCode().getDisplay()));
+            if (medicationStatementEntity.getMedicationEntity() != null) {
+                medicationStatement.setMedication(new Reference("Medication/"+medicationStatementEntity.getMedicationEntity().getId())
+                        .setDisplay(medicationStatementEntity.getMedicationEntity().getMedicationCode().getDisplay()));
             }
-        /*
-         Disabled due to profile constraint 28/02/2018 KGM
 
-         Leave in as we may go back to this method.
-
-        if (medicationStatementEntity.getMedicationCode() != null) {
-
-                CodeableConcept medicationRequest = new CodeableConcept();
-                medicationRequest.addCoding()
-                    .setDisplay(medicationStatementEntity.getMedicationCode().getDisplay())
-                    .setSystem(medicationStatementEntity.getMedicationCode().getSystem())
-                    .setCode(medicationStatementEntity.getMedicationCode().getCode());
-                medicationStatement.setMedication(medicationRequest);
-
-        } else if (medicationStatementEntity.getMedicationEntity() != null) {
-            medicationStatement.setMedication(new Reference("Medication/"+medicationStatementEntity.getMedicationEntity().getId())
-                    .setDisplay(medicationStatementEntity.getMedicationEntity().getMedicationCode().getDisplay()));
-        }
-        */
             if (medicationStatementEntity.getNotTakenCode() != null) {
                 CodeableConcept code = new CodeableConcept();
                 code.addCoding()

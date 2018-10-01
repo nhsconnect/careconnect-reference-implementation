@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.Consent;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -26,12 +27,12 @@ public interface ConsentRepository extends BaseRepository<ConsentEntity,Consent>
     List<Consent> search(FhirContext ctx,
                                     @OptionalParam(name = Consent.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Consent.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Consent.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Consent.SP_RES_ID) StringParam id
     );
 
     List<ConsentEntity> searchEntity(FhirContext ctx,
                                                 @OptionalParam(name = Consent.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Consent.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Consent.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = Consent.SP_RES_ID) StringParam id
     );
 }

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class ListDao implements ListRepository {
     }
 
     @Override
-    public List<ListResource> searchListResource(FhirContext ctx, TokenParam identifier, TokenParam id,  ReferenceParam patient) {
+    public List<ListResource> searchListResource(FhirContext ctx, TokenParam identifier, StringParam id, ReferenceParam patient) {
         List<ListEntity> qryResults = searchListEntity(ctx, identifier, id,  patient);
         List<ListResource> results = new ArrayList<>();
 
@@ -126,7 +127,7 @@ public class ListDao implements ListRepository {
     }
 
     @Override
-    public List<ListEntity> searchListEntity(FhirContext ctx, TokenParam identifier, TokenParam resid, ReferenceParam patient) {
+    public List<ListEntity> searchListEntity(FhirContext ctx, TokenParam identifier, StringParam resid, ReferenceParam patient) {
 
             List<ListEntity> qryResults = null;
 

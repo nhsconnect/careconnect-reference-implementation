@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -105,7 +106,7 @@ public class AllergyIntoleranceResourceProvider implements IResourceProvider {
                                                              @OptionalParam(name = AllergyIntolerance.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
-            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
         List<AllergyIntolerance> results = new ArrayList<AllergyIntolerance>();

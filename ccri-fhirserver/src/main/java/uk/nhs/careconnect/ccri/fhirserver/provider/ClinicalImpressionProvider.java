@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.ClinicalImpression;
@@ -94,7 +95,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
     public List<ClinicalImpression> search(HttpServletRequest theRequest,
                                  @OptionalParam(name = ClinicalImpression.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = ClinicalImpression.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) TokenParam id
+            , @OptionalParam(name = ClinicalImpression.SP_RES_ID) StringParam id
     ) {
         return impressionDao.search(ctx,patient, identifier,id);
     }

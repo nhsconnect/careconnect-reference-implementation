@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Encounter;
@@ -97,7 +98,7 @@ public class EncounterProvider implements ICCResourceProvider {
             , @OptionalParam(name = Encounter.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
-            , @OptionalParam(name = Encounter.SP_RES_ID) TokenParam resid
+            , @OptionalParam(name = Encounter.SP_RES_ID) StringParam resid
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
