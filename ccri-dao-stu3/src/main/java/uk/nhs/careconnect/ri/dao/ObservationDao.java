@@ -643,7 +643,7 @@ public class ObservationDao implements ObservationRepository {
 
         CriteriaQuery<ObservationEntity> criteria = builder.createQuery(ObservationEntity.class);
         Root<ObservationEntity> root = criteria.from(ObservationEntity.class);
-        List<Predicate> predList = new LinkedList<Predicate>();
+        List<Predicate> predList = new LinkedList<>();
 
         if (patient != null) {
             // KGM 4/1/2018 only search on patient id
@@ -685,7 +685,7 @@ public class ObservationDao implements ObservationRepository {
             predList.add(p);
         }
         if (codes!=null) {
-            List<Predicate> predOrList = new LinkedList<Predicate>();
+            List<Predicate> predOrList = new LinkedList<>();
             Join<ObservationEntity, ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
             Join<ConceptEntity, CodeSystemEntity> joinCodeSystem = joinConcept.join("codeSystemEntity", JoinType.LEFT);
 

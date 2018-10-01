@@ -86,6 +86,16 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
             .getPartOf().setDisplay(locationEntity.getPartOf().getName());
         }
 
+        if (locationEntity.getAltitude() != null) {
+            location.getPosition().setAltitude(locationEntity.getAltitude());
+        }
+        if (locationEntity.getLongitude() != null) {
+            location.getPosition().setLongitude(locationEntity.getLongitude());
+        }
+        if (locationEntity.getLatitude() != null) {
+            location.getPosition().setLatitude(locationEntity.getLatitude());
+        }
+
 
         return location;
 
