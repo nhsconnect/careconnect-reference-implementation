@@ -63,9 +63,9 @@ public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, 
 
 
 
-/*        if (slotEntity.getSchedule() != null) {
-            slotEntity.setSchedule(new Reference("Schedule/"+slotEntity.getSchedule().getId()));
-        }*/
+        if (slotEntity.getSchedule() != null) {
+            slot.setSchedule(new Reference("Schedule/"+slotEntity.getSchedule().getId()));
+        }
 
         if (slotEntity.getStatus() != null) {
             slot.setStatus(slotEntity.getStatus());
