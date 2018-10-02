@@ -140,9 +140,16 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
         if (service.hasActive()) {
             serviceEntity.setActive(service.getActive());
         }
+
+
+        if (service.hasComment()) {
+            serviceEntity.setComment(service.getComment());
+        }
+
         if (service.hasName()) {
             serviceEntity.setName(service.getName());
         }
+
         log.debug("HealthcareService.saveCategory");
         if (service.hasCategory()) {
             ConceptEntity code = conceptDao.findAddCode(service.getCategory().getCoding().get(0));

@@ -89,6 +89,8 @@ import {EprService} from "./service/epr.service";
 import {ResponseInterceptor} from "./response-interceptor";
 import {CompositionComponent} from "./component/composition/composition.component";
 import {AppConfig} from "./app-config";
+import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
+import {NgxChartsModule} from "@swimlane/ngx-charts";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -139,6 +141,8 @@ export function initializeApp(appConfig: AppConfig) {
     HealthcareServiceComponent,
     PractitionerRoleDialogComponent,
     EncounterDialogComponent,
+    ObservationChartDialogComponent,
+
 
 
   ],
@@ -152,7 +156,8 @@ export function initializeApp(appConfig: AppConfig) {
     PractitionerRoleDialogComponent,
     EncounterDialogComponent,
     MedicationDispenseDetailComponent,
-    ImmunisationDetailComponent
+    ImmunisationDetailComponent,
+      ObservationChartDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -197,11 +202,11 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentDynamicFormsModule,
     CovalentMediaModule,
     CovalentMessageModule,
-      CovalentJsonFormatterModule,
-      CovalentDialogsModule,
-      CovalentExpansionPanelModule
+    CovalentJsonFormatterModule,
+    CovalentDialogsModule,
+    CovalentExpansionPanelModule,
 
-
+    NgxChartsModule
   ],
   providers: [
       AppConfig,

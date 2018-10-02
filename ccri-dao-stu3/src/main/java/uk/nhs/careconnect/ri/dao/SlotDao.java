@@ -2,22 +2,23 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.dao.daoutils;
-import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
-import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
-
 import uk.nhs.careconnect.ri.dao.transforms.SlotEntityToFHIRSlotTransformer;
+import uk.nhs.careconnect.ri.database.daointerface.*;
+import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -29,9 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static uk.nhs.careconnect.ri.dao.daoutils.MAXROWS;
-import uk.nhs.careconnect.ri.dao.transforms.*;
-import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
-import uk.nhs.careconnect.ri.dao.transforms.*;
 
 @Repository
 @Transactional
@@ -40,11 +38,11 @@ public class SlotDao implements SlotRepository {
     @PersistenceContext
     EntityManager em;
 
-
     @Autowired
     SlotEntityToFHIRSlotTransformer slotEntityToFHIRSlotTransformer;
 
     @Autowired
+    @Lazy
     ConceptRepository conceptDao;
 
     @Autowired
@@ -54,7 +52,7 @@ public class SlotDao implements SlotRepository {
     OrganisationRepository organisationDao;
 
     @Autowired
-    LocationRepository locationDao;
+    ScheduleRepository scheduleDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -67,6 +65,20 @@ public class SlotDao implements SlotRepository {
         em.persist(slotEntity);
     }
 
+
+/*    @Override
+    public List<SlotEntity> searchSlotByStart(FhirContext ctx, StringParam start) {
+
+        List<SlotEntity> qryResults = searchSlotEntity(ctx, start); //,organisation
+        List<Slot> results = new ArrayList<>();
+
+        for (SlotEntity slotEntity : qryResults) {
+            Slot slot = slotEntityToFHIRSlotTransformer.transform(slotEntity);
+            results.add(slot);
+        }
+
+        return results;
+    }*/
 
     @Override
     public Slot read(FhirContext ctx, IdType theId) {
@@ -134,135 +146,87 @@ public class SlotDao implements SlotRepository {
             slotEntity = new SlotEntity();
         }
 
-        /* if (schedule.hasProvidedBy()) {
+        //em.persist(slotEntity);
 
-            OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(schedule.getProvidedBy().getReference()));
-            if (organisationEntity != null) {
-                scheduleEntity.setProvidedBy(organisationEntity);
-            }
-        } */
-/*        if (slot.hasActive()) {
-            slotEntity.setActive(slotEntity.getActive());
-        }*/
-        /*if (schedule.hasName()) {
-            scheduleEntity.setName(schedule.getName());
-        }*/
-        /*log.debug("Slot.saveCategory");
-        if (schedule.hasCategory()) {
-            ConceptEntity code = conceptDao.findCode(schedule.getCategory().getCoding().get(0));
-            if (code != null) { scheduleEntity.setCategory(code); }
-            else {
-                log.info("Category: Missing System/Code = "+ schedule.getCategory().getCoding().get(0).getSystem() +" code = "+schedule.getCategory().getCoding().get(0).getCode());
+         if (slot.hasServiceCategory()) {
 
-                throw new IllegalArgumentException("Missing System/Code = "+ schedule.getCategory().getCoding().get(0).getSystem()
-                        +" code = "+schedule.getCategory().getCoding().get(0).getCode());
+             ConceptEntity code = conceptDao.findCode(slot.getServiceCategory().getCoding().get(0));
+
+             if (code != null) {
+                slotEntity.setServiceCategory(code);
+             }
+         }
+
+        if(slot.hasAppointmentType()){
+
+            ConceptEntity code = conceptDao.findCode(slot.getAppointmentType().getCoding().get(0));
+
+            if(code != null){
+                slotEntity.setAppointmentType(code);
             }
-        }*/
+
+        }
+
+        if(slot.hasSchedule()){
+
+            ScheduleEntity scheduleEntity = (ScheduleEntity) scheduleDao.readEntity(ctx, new IdType(slot.getSchedule().getReference()));
+            //ScheduleEntity scheduleEntity = scheduleDao.readEntity(ctx, new IdType(slot.getSchedule().getReference()));
+
+            if(scheduleEntity != null){
+                slotEntity.setSchedule(scheduleEntity);
+            }
+
+        }
+
+        if(slot.hasStatus()) {
+            log.debug("Slot.Status" + slot.getStatus());
+            slotEntity.setStatus(slot.getStatus());
+        } else{
+            slotEntity.setStatus(null);
+        }
+
+
+        if(slot.hasStart()) {
+
+            slotEntity.setStart(slot.getStart());
+        } else{
+            slotEntity.setStart(null);
+        }
+
+        if(slot.hasEnd()) {
+            slotEntity.setEnd(slot.getEnd());
+        } else{
+            slotEntity.setEnd(null);
+        }
 
         em.persist(slotEntity);
-        /*log.debug("Slot.saveIdentifier");
-        for (Identifier identifier : schedule.getIdentifier()) {
-            SlotIdentifier scheduleIdentifier = null;
+
+        log.debug("Slot.saveIdentifier");
+        for (Identifier identifier : slot.getIdentifier()) {
+            SlotIdentifier slotIdentifier = null;
 
             for (SlotIdentifier orgSearch : slotEntity.getIdentifiers()) {
                 if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
-                    scheduleIdentifier = orgSearch;
+                    slotIdentifier = orgSearch;
                     break;
                 }
             }
-            if (scheduleIdentifier == null)  scheduleIdentifier = new SlotIdentifier();
+            if (slotIdentifier == null)  slotIdentifier = new SlotIdentifier();
 
-            scheduleIdentifier.setValue(identifier.getValue());
-            scheduleIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
-            scheduleIdentifier.setService(scheduleEntity);
-            em.persist(scheduleIdentifier);
-        }*/
-        /*log.debug("Slot.saveLocation");
-        for (Reference reference : schedule.getLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(reference.getReference()));
-            if (locationEntity != null) {
-                SlotLocation location = new SlotLocation();
-                location.setLocation(locationEntity);
-                location.setSlot(slotEntity);
-                em.persist(location);
-            }
-        }*/
-/*        for (CodeableConcept concept :schedule.getSpecialty()) {
+            slotIdentifier.setValue(identifier.getValue());
+            slotIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            slotIdentifier.setSlot(slotEntity);
+            em.persist(slotIdentifier);
+        }
 
-            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
-                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
-                if (conceptEntity != null) {
-                    SlotSpecialty specialtyEntity = null;
-                    // Look for existing categories
-                    for (SlotSpecialty cat :scheduleEntity.getSpecialties()) {
-                        if (cat.getSpecialty().getCode().equals(concept.getCodingFirstRep().getCode())) specialtyEntity = cat;
-                    }
-                    if (specialtyEntity == null) specialtyEntity = new SlotSpecialty();
 
-                    specialtyEntity.setSpecialty(conceptEntity);
-                    specialtyEntity.setSlot(scheduleEntity);
-                    em.persist(specialtyEntity);
-                    scheduleEntity.getSpecialties().add(specialtyEntity);
-                }
-                else {
-                    log.info("Missing ServiceRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                }
-            }
-        }*/
-        /*log.debug("Slot.saveType");
-        for (CodeableConcept concept :schedule.getType()) {
-
-            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
-                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
-                if (conceptEntity != null) {
-                    SlotType type = null;
-                    // Look for existing categories
-                    for (SlotType cat :scheduleEntity.getTypes()) {
-                        if (cat.getType_().getCode().equals(concept.getCodingFirstRep().getCode())) type = cat;
-                    }
-                    if (type == null) type = new SlotType();
-
-                    type.setType_(conceptEntity);
-                    type.setSlot(scheduleEntity);
-                    em.persist(type);
-                    scheduleEntity.getTypes().add(type);
-                }
-                else {
-                    log.info("Missing ServiceRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                }
-            }
-        }*/
-        /*log.debug("Slot.saveTelecom");
-        for (ContactPoint telecom : schedule.getTelecom()) {
-            SlotTelecom scheduleTelecom = null;
-
-            for (SlotTelecom orgSearch : scheduleEntity.getTelecoms()) {
-                if (telecom.getValue().equals(orgSearch.getValue())) {
-                    scheduleTelecom = orgSearch;
-                    break;
-                }
-            }
-            if (scheduleTelecom == null) {
-                scheduleTelecom = new SlotTelecom();
-                scheduleTelecom.setSlot(scheduleEntity);
-            }
-
-            scheduleTelecom.setValue(telecom.getValue());
-            scheduleTelecom.setSystem(telecom.getSystem());
-            if (telecom.hasUse()) { scheduleTelecom.setTelecomUse(telecom.getUse()); }
-
-            em.persist(scheduleTelecom);
-        }*/
         log.info("Slot.Transform");
         return slotEntityToFHIRSlotTransformer.transform(slotEntity);
 
     }
 
-
     @Override
-    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, StringParam id) {
+    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
 
         List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,schedule, id); //,organisation
         List<Slot> results = new ArrayList<>();
@@ -275,10 +239,8 @@ public class SlotDao implements SlotRepository {
         return results;
     }
 
-
-
     @Override
-    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, StringParam id) {
+    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
 
         List<SlotEntity> qryResults = null;
 

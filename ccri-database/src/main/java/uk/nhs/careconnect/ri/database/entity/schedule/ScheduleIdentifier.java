@@ -27,16 +27,11 @@ public class ScheduleIdentifier extends BaseIdentifier {
 	@JoinColumn (name = "SCHEDULE_ID",foreignKey= @ForeignKey(name="FK_SCHEDULE_SCHEDULE_IDENTIFIER"))
 	private ScheduleEntity schedule;
 
+	public Long getIdentifierId() { return identifierId; }
 
-    public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
+	public ScheduleEntity getSchedule() { return schedule; }
 
-	public ScheduleEntity getService() {
-		return schedule;
-	}
-
-	public void setService(ScheduleEntity schedule) {
-		this.schedule = schedule;
-	}
+	public void setSchedule(ScheduleEntity schedule) { this.schedule = schedule; }
 }

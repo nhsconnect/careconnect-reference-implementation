@@ -4,6 +4,7 @@ import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dia
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
 import {ObservationDataSource} from "../../data-source/observation-data-source";
 import {FhirService} from "../../service/fhir.service";
+import {ObservationChartDialogComponent} from "../../dialog/observation-chart-dialog/observation-chart-dialog.component";
 
 
 @Component({
@@ -25,7 +26,7 @@ export class ObservationComponent implements OnInit {
 
   dataSource : ObservationDataSource;
 
-  displayedColumns = ['date', 'code','codelink','category', 'status','value', 'resource'];
+  displayedColumns = ['date', 'code','codelink','category', 'status','value', 'chart', 'resource'];
 
   constructor(private linksService : LinksService,
              // private modalService: NgbModal,
@@ -123,4 +124,24 @@ export class ObservationComponent implements OnInit {
     };
     let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
+
+    selectChart(observation : fhir.Observation) {
+
+        if (observation != undefined) {
+            const dialogConfig = new MatDialogConfig();
+
+
+            dialogConfig.disableClose = true;
+            dialogConfig.autoFocus = true;
+            dialogConfig.height = '620px';
+            dialogConfig.width = '90%';
+            dialogConfig.data = {
+                resource: observation
+            };
+
+            console.log(observation.subject.reference);
+
+            this.dialog.open(ObservationChartDialogComponent, dialogConfig);
+        }
+    }
 }

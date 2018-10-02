@@ -6,6 +6,8 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +57,17 @@ public class LocationEntity extends BaseResource {
 	@JoinColumn(name="PART_OF_LOCATION_ID",foreignKey= @ForeignKey(name="FK_LOCATION_PARTOF_LOCATION"))
 
 	private LocationEntity partOf;
+
+	@Column(name="posn_longitude", precision=20, scale=10)
+	private BigDecimal longitude;
+
+	@Column(name="posn_latitude", precision=20, scale=10)
+	private BigDecimal latitude;
+
+
+	@Column(name="posn_altitude", precision=20, scale=10)
+	private BigDecimal altitude;
+
 
 	@Enumerated(EnumType.ORDINAL)
 	Location.LocationStatus status;
@@ -166,6 +179,34 @@ public class LocationEntity extends BaseResource {
 	public LocationEntity setPartOf(LocationEntity partOf) {
 		this.partOf = partOf;
 		return this;
+	}
+
+	public void setAddresses(List<LocationAddress> addresses) {
+		this.addresses = addresses;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
+	}
+
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(BigDecimal altitude) {
+		this.altitude = altitude;
 	}
 
 	public LocationEntity getPartOf() {

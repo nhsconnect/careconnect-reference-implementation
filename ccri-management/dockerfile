@@ -7,7 +7,7 @@ ENV JAVA_OPTS="-Xms128m -Xmx512m"
 # ADD robots.txt /usr/local/tomcat/webapps/ROOT/robots.txt
 
 
-ADD target/ccri.jar ccri-mananagement.jar
+ADD target/ccri-mananagement.jar ccri-mananagement.jar
 
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/ccri-mananagement.jar"]

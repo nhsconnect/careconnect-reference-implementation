@@ -21,7 +21,7 @@ public class ManagementApplication {
         System.setProperty("server.port", "8187");
         System.setProperty("server.context-path", "/ccri");
         //System.setProperty("server.servlet.context-path", "/ccri");
-        System.setProperty("management.contextPath","");
+        System.setProperty("management.contextPath","/");
 
         SpringApplication.run(ManagementApplication.class, args);
     }

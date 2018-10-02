@@ -1,24 +1,25 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.Slot;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Reference.*;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Schedule;
+import org.hl7.fhir.dstu3.model.Slot;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.slot.*;
+import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceLocation;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
-
-
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
 @Component
 public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, Slot> {
 
     
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SlotEntityToFHIRSlotTransformer.class);
-    
 
     @Override
     public Slot transform(final SlotEntity slotEntity) {
+
         final Slot slot = new Slot();
 
         Meta meta = new Meta(); //.addProfile(CareConnectProfile.Location_1);
@@ -42,48 +43,40 @@ public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, 
                     .setValue(identifier.getValue());
         }
 
-/*        if (slotEntity.getActive() != null) {
-            slot.setActive(slotEntity.getActive());
+        if (slotEntity.getServiceCategory() != null) {
+            slot.getServiceCategory()
+                    .addCoding()
+                    .setDisplay(slotEntity.getServiceCategory().getDisplay())
+                    .setSystem(slotEntity.getServiceCategory().getSystem())
+                    .setCode(slotEntity.getServiceCategory().getCode());
+        }
+
+        if (slotEntity.getAppointmentType() != null) {
+            slot.getAppointmentType()
+                    .addCoding()
+                    .setDisplay(slotEntity.getAppointmentType().getDisplay())
+                    .setSystem(slotEntity.getAppointmentType().getSystem())
+                    .setCode(slotEntity.getAppointmentType().getCode());
+        }
+
+
+
+
+
+/*        if (slotEntity.getSchedule() != null) {
+            slotEntity.setSchedule(new Reference("Schedule/"+slotEntity.getSchedule().getId()));
         }*/
-        /* if (scheduleEntity.getName() != null) {
-            schedule.setName(schedule.getName());
+
+        if (slotEntity.getStatus() != null) {
+            slot.setStatus(slotEntity.getStatus());
         }
-        if (scheduleEntity.getCategory() != null) {
-            schedule.getCategory()
-                    .addCoding()
-                    .setDisplay(scheduleEntity.getCategory().getDisplay())
-                    .setSystem(scheduleEntity.getCategory().getSystem())
-                    .setCode(scheduleEntity.getCategory().getCode());
+        if (slotEntity.getStart() != null) {
+            slot.setStart(slotEntity.getStart());
         }
 
-        if (scheduleEntity.getProvidedBy() != null) {
-            schedule.setProvidedBy(new Reference("Organization/"+scheduleEntity.getProvidedBy().getId()));
+        if (slotEntity.getEnd() != null) {
+            slot.setEnd(slotEntity.getEnd());
         }
-        for (ScheduleSpecialty scheduleSpecialty : scheduleEntity.getSpecialties()) {
-            schedule.addSpecialty()
-                    .addCoding()
-                        .setCode(scheduleSpecialty.getSpecialty().getCode())
-                        .setSystem(scheduleSpecialty.getSpecialty().getSystem())
-                        .setDisplay(scheduleSpecialty.getSpecialty().getDisplay());
-        }
-        for (ScheduleLocation scheduleLocation : scheduleEntity.getLocations()) {
-            schedule.addLocation(new Reference("Location/"+scheduleLocation.getLocation().getId()));
-        }
-        for (ScheduleTelecom scheduleTelecom : scheduleEntity.getTelecoms()) {
-            schedule.addTelecom()
-                    .setSystem(scheduleTelecom.getSystem())
-                    .setValue(scheduleTelecom.getValue())
-                    .setUse(scheduleTelecom.getTelecomUse());
-
-        }
-        for (ScheduleType scheduleType : scheduleEntity.getTypes()) {
-            schedule.addType()
-                    .addCoding()
-                    .setCode(scheduleType.getType_().getCode())
-                    .setSystem(scheduleType.getType_().getSystem())
-                    .setDisplay(scheduleType.getType_().getDisplay());
-        } */
-
 
         return slot;
 

@@ -45,8 +45,13 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
             service.setActive(serviceEntity.getActive());
         }
         if (serviceEntity.getName() != null) {
-            service.setName(service.getName());
+            service.setName(serviceEntity.getName());
         }
+
+        if (serviceEntity.getComment() != null) {
+            service.setComment(serviceEntity.getComment());
+        }
+
         if (serviceEntity.getCategory() != null) {
             service.getCategory()
                     .addCoding()
@@ -55,6 +60,7 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
                     .setCode(serviceEntity.getCategory().getCode());
         }
 
+        System.out.println("Provided By: " + serviceEntity.getProvidedBy().getId());
         if (serviceEntity.getProvidedBy() != null) {
             service.setProvidedBy(new Reference("Organization/"+serviceEntity.getProvidedBy().getId()));
         }
@@ -68,6 +74,7 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
         for (HealthcareServiceLocation serviceLocation : serviceEntity.getLocations()) {
             service.addLocation(new Reference("Location/"+serviceLocation.getLocation().getId()));
         }
+
         for (HealthcareServiceTelecom serviceTelecom : serviceEntity.getTelecoms()) {
             service.addTelecom()
                     .setSystem(serviceTelecom.getSystem())
@@ -75,13 +82,13 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
                     .setUse(serviceTelecom.getTelecomUse());
 
         }
-        for (HealthcareServiceType serviceType : serviceEntity.getTypes()) {
+/*        for (HealthcareServiceType serviceType : serviceEntity.getTypes()) {
             service.addType()
                     .addCoding()
                     .setCode(serviceType.getType_().getCode())
                     .setSystem(serviceType.getType_().getSystem())
                     .setDisplay(serviceType.getType_().getDisplay());
-        }
+        }*/
 
 
         return service;

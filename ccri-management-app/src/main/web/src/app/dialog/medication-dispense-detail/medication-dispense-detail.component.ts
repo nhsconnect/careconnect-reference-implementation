@@ -22,7 +22,7 @@ export class MedicationDispenseDetailComponent implements OnInit {
 
     selectedMeds : fhir.Medication[];
 
-    constructor( public dialogRef: MatDialogRef<MedicationDispenseDetailComponent>,
+    constructor(
                  private bundleService : BundleService,
                  private linksService : LinksService,
                  private fhirService : FhirService,
