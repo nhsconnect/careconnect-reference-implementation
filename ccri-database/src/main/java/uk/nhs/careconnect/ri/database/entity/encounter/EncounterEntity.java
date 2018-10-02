@@ -86,9 +86,16 @@ public class EncounterEntity extends BaseResource {
     @OneToMany(mappedBy="encounter", targetEntity = EncounterParticipant.class)
     Set<EncounterParticipant> participants = new HashSet<>();
 
+    @OneToMany(mappedBy="encounter", targetEntity = EncounterLocation.class)
+    Set<EncounterLocation> locations = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="PART_OF_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PART_OF_ENCOUNTER_ID"))
+    private EncounterEntity partOfEncounter;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_LOCATION_ID"))
-    private LocationEntity location;
+    private LocationEntity xxlocation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_ORGANISATION_ID"))
@@ -133,6 +140,8 @@ public class EncounterEntity extends BaseResource {
     @OneToMany(mappedBy="contextEncounter", targetEntity = ReferralRequestEntity.class)
     Set<ReferralRequestEntity> referrals = new HashSet<>();
     // Support for reverse includes End
+
+
 
     public Long getId() {
         return id;
@@ -244,8 +253,20 @@ public class EncounterEntity extends BaseResource {
         return reasons;
     }
 
-    public LocationEntity getLocation() {
-        return location;
+    public Set<EncounterLocation> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(Set<EncounterLocation> locations) {
+        this.locations = locations;
+    }
+
+    public LocationEntity getXxlocation() {
+        return xxlocation;
+    }
+
+    public void setXxlocation(LocationEntity xxlocation) {
+        this.xxlocation = xxlocation;
     }
 
     public EncounterEntity setDiagnoses(Set<EncounterDiagnosis> diagnoses) {
@@ -258,10 +279,6 @@ public class EncounterEntity extends BaseResource {
         return this;
     }
 
-    public EncounterEntity setLocation(LocationEntity location) {
-        this.location = location;
-        return this;
-    }
 
     public EncounterEntity setPriority(ConceptEntity priority) {
         this.priority = priority;
@@ -381,5 +398,13 @@ public class EncounterEntity extends BaseResource {
 
     public void setReferrals(Set<ReferralRequestEntity> referrals) {
         this.referrals = referrals;
+    }
+
+    public EncounterEntity getPartOfEncounter() {
+        return partOfEncounter;
+    }
+
+    public void setPartOfEncounter(EncounterEntity partOfEncounter) {
+        this.partOfEncounter = partOfEncounter;
     }
 }

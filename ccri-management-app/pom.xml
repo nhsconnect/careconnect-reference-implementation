@@ -34,8 +34,10 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}/src/main/web</workingDirectory>
-                            <executable>ng</executable>
+                            <executable>npm</executable>
                             <arguments>
+                                <argument>run</argument>
+                                <argument>ng</argument>
                                 <argument>build</argument>
                                 <argument>--prod</argument>
                                 <argument>--base-href=/ccri/</argument>

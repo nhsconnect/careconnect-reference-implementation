@@ -17,10 +17,7 @@ import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterDiagnosis;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterIdentifier;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterParticipant;
+import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
@@ -254,11 +251,6 @@ public class  EncounterDao implements EncounterRepository {
             }
         }
 
-        if (encounter.hasLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity(ctx,new IdType(encounter.getLocation().get(0).getLocation().getReference()));
-            encounterEntity.setLocation(locationEntity);
-        }
-
         if (encounter.hasStatus()) {
             encounterEntity.setStatus(encounter.getStatus());
         }
@@ -289,6 +281,11 @@ public class  EncounterDao implements EncounterRepository {
                 throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
 
             }
+        }
+
+        if (encounter.hasPartOf()) {
+            EncounterEntity partOf = readEntity(ctx, new IdType(encounter.getPartOf().getReference()));
+            if (partOf != null) encounterEntity.setPartOfEncounter(partOf);
         }
 
         if (encounter.hasServiceProvider()) {
@@ -373,6 +370,36 @@ public class  EncounterDao implements EncounterRepository {
                 }
                 em.persist(encounterParticipant);
 
+            }
+        }
+
+        if (encounter.hasLocation()) {
+            for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                em.remove(encounterLocation);
+            }
+            for (Encounter.EncounterLocationComponent locationComponent : encounter.getLocation()) {
+                EncounterLocation encounterLocation = new EncounterLocation();
+                encounterLocation.setEncounter(encounterEntity);
+                if (locationComponent.hasLocation()) {
+                    LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(locationComponent.getLocation().getReference()));
+                    if (locationEntity == null) {
+                        throw new OperationOutcomeException("Encounter","Encounter missing location", OperationOutcome.IssueType.CODEINVALID);
+                    }
+                    encounterLocation.setLocation(locationEntity);
+                }
+                if (locationComponent.hasStatus()) {
+                    encounterLocation.setStatus(locationComponent.getStatus());
+                }
+                if (locationComponent.hasPeriod()) {
+                    if (locationComponent.getPeriod().hasStart()) {
+                        encounterLocation.setPeriodStartDate(locationComponent.getPeriod().getStart());
+                    }
+                    if (locationComponent.getPeriod().hasEnd()) {
+                        encounterLocation.setPeriodEndDate(locationComponent.getPeriod().getEnd());
+                    }
+                }
+                em.persist(encounterLocation);
+                encounterEntity.getLocations().add(encounterLocation);
             }
         }
 
@@ -485,16 +512,20 @@ public class  EncounterDao implements EncounterRepository {
                             }
                             break;
                         case "Encounter.location":
-                            if (encounterEntity.getLocation()!=null) {
-                                addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                            if (encounterEntity.getLocations()!=null) {
+                                for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                                    addToResults(results, locationEntityToFHIRLocationTransformer.transform(encounterLocation.getLocation()));
+                                }
                             }
                             break;
                             case "*":
                                 if (encounterEntity.getServiceProvider()!=null) {
                                     addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
                                 }
-                                if (encounterEntity.getLocation()!=null) {
-                                    addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                                if (encounterEntity.getLocations()!=null) {
+                                    for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                                        addToResults(results, locationEntityToFHIRLocationTransformer.transform(encounterLocation.getLocation()));
+                                    }
                                 }
                                 for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
                                     if (encounterParticipant.getParticipant() != null) {

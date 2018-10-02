@@ -3496,6 +3496,16 @@ public class BundleCore {
                 encounter.getHospitalization().setDestination(getReference(resource));
             }
         }
+        if (encounter.hasPartOf()) {
+            Resource resource = searchAddResource(encounter.getPartOf().getReference());
+            if (resource == null) {
+                // Ideally would be an error but not currently supporting ServiceProvider
+                referenceMissingWarn(encounter, encounter.getPartOf().getReference());
+                encounter.setPartOf(null);
+            } else {
+                encounter.setPartOf(getReference(resource));
+            }
+        }
         if (encounter.hasServiceProvider()) {
             Resource resource = searchAddResource(encounter.getServiceProvider().getReference());
             if (resource == null) {
