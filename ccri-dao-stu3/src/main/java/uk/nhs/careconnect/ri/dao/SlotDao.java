@@ -1,11 +1,13 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +24,14 @@ import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import static uk.nhs.careconnect.ri.dao.daoutils.MAXROWS;
 
 @Repository
 @Transactional
@@ -64,21 +66,6 @@ public class SlotDao implements SlotRepository {
     public void save(FhirContext ctx, SlotEntity slotEntity) {
         em.persist(slotEntity);
     }
-
-
-/*    @Override
-    public List<SlotEntity> searchSlotByStart(FhirContext ctx, StringParam start) {
-
-        List<SlotEntity> qryResults = searchSlotEntity(ctx, start); //,organisation
-        List<Slot> results = new ArrayList<>();
-
-        for (SlotEntity slotEntity : qryResults) {
-            Slot slot = slotEntityToFHIRSlotTransformer.transform(slotEntity);
-            results.add(slot);
-        }
-
-        return results;
-    }*/
 
     @Override
     public Slot read(FhirContext ctx, IdType theId) {
@@ -128,7 +115,7 @@ public class SlotDao implements SlotRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<Slot> results = searchSlot(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null); //,null
+                    List<Slot> results = searchSlot(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null,null,null); //,null
                     for (Slot con : results) {
                         slot = con;
                         break;
@@ -170,7 +157,6 @@ public class SlotDao implements SlotRepository {
         if(slot.hasSchedule()){
 
             ScheduleEntity scheduleEntity = (ScheduleEntity) scheduleDao.readEntity(ctx, new IdType(slot.getSchedule().getReference()));
-            //ScheduleEntity scheduleEntity = scheduleDao.readEntity(ctx, new IdType(slot.getSchedule().getReference()));
 
             if(scheduleEntity != null){
                 slotEntity.setSchedule(scheduleEntity);
@@ -184,7 +170,6 @@ public class SlotDao implements SlotRepository {
         } else{
             slotEntity.setStatus(null);
         }
-
 
         if(slot.hasStart()) {
 
@@ -219,16 +204,14 @@ public class SlotDao implements SlotRepository {
             em.persist(slotIdentifier);
         }
 
-
         log.info("Slot.Transform");
         return slotEntityToFHIRSlotTransformer.transform(slotEntity);
 
     }
 
     @Override
-    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
-
-        List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,schedule, id); //,organisation
+    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam res_id, ReferenceParam schedule) {
+        List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,start,status,res_id,schedule);
         List<Slot> results = new ArrayList<>();
 
         for (SlotEntity slotEntity : qryResults) {
@@ -240,8 +223,7 @@ public class SlotDao implements SlotRepository {
     }
 
     @Override
-    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, StringParam schedule, TokenParam id) {
-
+    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam resid, ReferenceParam schedule) {
         List<SlotEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -251,7 +233,7 @@ public class SlotDao implements SlotRepository {
 
 
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<Organization> results = new ArrayList<Organization>();
+        List<Schedule> results = new ArrayList<Schedule>();
 
         if (identifier !=null)
         {
@@ -262,23 +244,37 @@ public class SlotDao implements SlotRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
-        if (id != null) {
-            Predicate p = builder.equal(root.get("id"),id.getValue());
-            predList.add(p);
-        }
-        /* if (name !=null)
+
+        ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
+        //ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
+
+        if (start !=null)
         {
 
-            Predicate p =
-                    builder.like(
-                            builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
-                    );
-
+            Predicate p = builder.greaterThanOrEqualTo(root.get("Start"), parameterLower);
             predList.add(p);
-        } */
-        
 
+        }
+
+        if (resid != null) {
+            Predicate p = builder.equal(root.get("id"),resid.getValue());
+            predList.add(p);
+        }
+
+        if (schedule != null) {
+
+            if (daoutils.isNumeric(schedule.getIdPart())) {
+                Join<SlotEntity, ScheduleEntity> join = root.join("schedule" , JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), schedule.getIdPart());
+                predList.add(p);
+            } else {
+                Join<SlotEntity, ScheduleEntity> join = root.join("schedule", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
+        }
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
@@ -291,7 +287,14 @@ public class SlotDao implements SlotRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).setMaxResults(MAXROWS).getResultList();
+        TypedQuery<SlotEntity> typedQuery = em.createQuery(criteria);
+
+        if (start != null) {
+
+                typedQuery.setParameter(parameterLower, start.getValue(), TemporalType.TIMESTAMP);
+        }
+
+        qryResults = typedQuery.setMaxResults(daoutils.MAXROWS).getResultList();
 
         return qryResults;
     }

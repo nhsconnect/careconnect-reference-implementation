@@ -3,6 +3,8 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -127,13 +129,14 @@ public class SlotResourceProvider implements IResourceProvider {
 
     @Search
     public List<Slot> searchSlot(HttpServletRequest httpRequest,
-                                                           @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name= Slot.SP_SCHEDULE) StringParam schedule,
-                                                           @OptionalParam(name = Slot.SP_STATUS) TokenParam status,
-                                                           @OptionalParam(name = Slot.SP_START) TokenParam start
-                                                           //@OptionalParam(name = Slot.SP_) TokenParam end
-                                                           //   @OptionalParam(name = Slot.SP_ORGANIZATION) ReferenceParam organisation
-              ) throws Exception {
+
+                                 @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                                 @OptionalParam(name = Slot.SP_START) DateParam start,
+                                 //@OptionalParam(name = Slot.SP_RES_ID) TokenParam id,
+                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule
+
+    ) throws Exception
+    {
 
         List<Slot> results = new ArrayList<>();
 

@@ -3,11 +3,8 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceLocation;
-import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
@@ -59,13 +56,9 @@ public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, 
                     .setCode(slotEntity.getAppointmentType().getCode());
         }
 
-
-
-
-
-/*        if (slotEntity.getSchedule() != null) {
-            slotEntity.setSchedule(new Reference("Schedule/"+slotEntity.getSchedule().getId()));
-        }*/
+        if (slotEntity.getSchedule() != null) {
+            slot.setSchedule(new Reference("Schedule/"+slotEntity.getSchedule().getId()));
+        }
 
         if (slotEntity.getStatus() != null) {
             slot.setStatus(slotEntity.getStatus());

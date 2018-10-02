@@ -4,15 +4,14 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Slot;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
-
 
 import java.util.List;
 
@@ -25,26 +24,20 @@ public interface SlotRepository extends BaseRepository<SlotEntity,Slot> {
 
     Slot create(FhirContext ctx, Slot slot, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
-
-
-    //List<SlotEntity> searchSlotByStart(FhirContext ctx, @OptionalParam(name = Slot.SP_START) StringParam identifier);
-
-
-
     List<Slot> searchSlot(FhirContext ctx,
-                                            @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
-                                            @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
-                                            @OptionalParam(name = Slot.SP_RES_ID) TokenParam id
-                                            //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
-
+                          @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                          @OptionalParam(name = Slot.SP_START) DateParam start,
+                          @OptionalParam(name = Slot.SP_STATUS) StringParam status,
+                          @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
+                          @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule
     );
 
     List<SlotEntity> searchSlotEntity(FhirContext ctx,
-
-                                            @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
-                                            @OptionalParam(name = Slot.SP_SCHEDULE) StringParam schedule,
-                                            @OptionalParam(name = Slot.SP_RES_ID) TokenParam id
-
-
+                                      @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                                      @OptionalParam(name = Slot.SP_START) DateParam start,
+                                      @OptionalParam(name = Slot.SP_STATUS) StringParam status,
+                                      @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
+                                      @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule
     );
+
 }
