@@ -26,7 +26,7 @@ public class ObservationRelated {
     private ObservationEntity relatedObservation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="RELATED_FORM_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RELATED_RELATED_OBSERVATION_ID"))
+    @JoinColumn(name="RELATED_FORM_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RELATED_RELATED_FORM_ID"))
     private QuestionnaireResponseEntity
             relatedForm;
 
