@@ -91,6 +91,7 @@ import {CompositionComponent} from "./component/composition/composition.componen
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
+import { EdDashboardComponent } from './modules/ed-dashboard/ed-dashboard.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -142,6 +143,7 @@ export function initializeApp(appConfig: AppConfig) {
     PractitionerRoleDialogComponent,
     EncounterDialogComponent,
     ObservationChartDialogComponent,
+    EdDashboardComponent,
 
 
 

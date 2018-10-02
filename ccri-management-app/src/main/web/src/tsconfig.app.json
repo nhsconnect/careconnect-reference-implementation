@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "types": [
-        "fhir"
+        "fhir",
+      "googlemaps"
     ],
     "typeRoots": [
       "node_modules/@types"
