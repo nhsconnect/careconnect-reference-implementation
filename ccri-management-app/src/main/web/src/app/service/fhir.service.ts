@@ -88,6 +88,24 @@ export class FhirService {
 
     }
 
+    getHeaders(contentType : boolean = true ): HttpHeaders {
+
+        let headers = new HttpHeaders(
+        );
+        if (contentType) {
+            headers = headers.append( 'Content-Type',  'application/fhir+json' );
+            headers = headers.append('Accept', 'application/fhir+json');
+        }
+        return headers;
+    }
+
+    getEPRHeaders(contentType : boolean = true ): HttpHeaders {
+
+        let headers = this.getHeaders(contentType);
+
+        return headers;
+    }
+
     public setOutputFormat(outputFormat : Formats) {
       this.format = outputFormat;
       this.formatChange.emit(outputFormat);
@@ -142,4 +160,43 @@ export class FhirService {
           return this.http.get<any>(url, {'headers': headers});
       }
   }
+
+    getBinary(id: string): Observable<fhir.Binary> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        return this.http.get<fhir.Binary>(url,{ 'headers' : this.getEPRHeaders(true)});
+
+    }
+    getBinaryRaw(id: string,): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        return this.http.get(url,{ 'headers' : this.getEPRHeaders(false) , responseType : 'blob' });
+
+    }
+
+    getCompositionDocumentHTML(id: string): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        let headers = this.getEPRHeaders(false);
+        headers = headers.append('Content-Type', 'text/html' );
+
+        return this.http
+            .get(url, {  headers , responseType : 'text' as 'text'});
+    }
+
+    getCompositionDocumentPDF(id: string): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        let headers = this.getEPRHeaders(false);
+        headers = headers.append(
+            'Content-Type', 'application/pdf' );
+
+        return this.http
+            .get(url, { headers, responseType : 'blob' as 'blob'} );
+    }
+
 }

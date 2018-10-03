@@ -94,6 +94,13 @@ import {NgxChartsModule} from "@swimlane/ngx-charts";
 import { EdDashboardComponent } from './modules/ed-dashboard/ed-dashboard.component';
 import { ExplorerMainComponent } from './modules/explorer-main/explorer-main.component';
 import {EprRoutingModule} from "./modules/epr-routing.module";
+import {BinaryComponent} from "./component/binary/binary/binary.component";
+import {PdfViewerComponent} from "./component/binary/pdf-viewer/pdf-viewer.component";
+import {ImgViewerComponent} from "./component/binary/img-viewer/img-viewer.component";
+import {ViewDocumentComponent} from "./component/binary/composition-view/view-document.component";
+import {ViewDocumentSectionComponent} from "./component/binary/composition-view-section/view-document-section.component";
+import {PdfViewerModule} from "ng2-pdf-viewer";
+import {ImageViewerModule} from "@hallysonh/ngx-imageviewer";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -108,6 +115,12 @@ export function initializeApp(appConfig: AppConfig) {
     ResourceComponent,
 
     AllergyIntoleranceComponent,
+      BinaryComponent,
+      PdfViewerComponent,
+      ImgViewerComponent,
+      ViewDocumentComponent,
+      ViewDocumentSectionComponent,
+
     ClinicalImpressionComponent,
     ConsentComponent,
     CarePlanComponent,
@@ -212,6 +225,9 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentExpansionPanelModule,
 
     NgxChartsModule,
+
+      PdfViewerModule,
+      ImageViewerModule,
 
     EprRoutingModule,
       AppRoutingModule,

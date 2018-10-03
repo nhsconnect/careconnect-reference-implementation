@@ -1,0 +1,20 @@
+
+
+
+<mat-card>
+  <mat-card-title>PDF Document</mat-card-title>
+  <mat-card-content>
+<div *ngIf="isLoaded" style="text-align: center;">
+  <button (click)="prevPage()" [disabled]="page === 1">Prev</button>
+  <span>{{ page }} / {{ totalPages }}</span>
+  <button (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+</div>
+<pdf-viewer [src]="pdfSrc"
+            [render-text]="true"
+            [show-all]="false"
+            [page]="page"
+            (after-load-complete)="afterLoadComplete($event)"
+            style="display: block;"
+></pdf-viewer>
+  </mat-card-content>
+</mat-card>

@@ -64,11 +64,11 @@ export class DocumentReferenceComponent implements OnInit {
   }
 
   selectDocument(document : fhir.DocumentReference) {
-   // console.log("DocumentRef clicked = " + document.id);
+
     if (document.content != undefined && document.content.length> 0) {
 
       this.patientEprService.setDocumentReference(document);
-      this.patientEprService.setSection('binary');
+        this.router.navigate(['exp', 'binary', document.id], );
 
     } else {
       let alertConfig : IAlertConfig = { message : 'Unable to locate document.'};
