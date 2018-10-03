@@ -92,6 +92,8 @@ import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 import { EdDashboardComponent } from './modules/ed-dashboard/ed-dashboard.component';
+import { ExplorerMainComponent } from './modules/explorer-main/explorer-main.component';
+import {EprRoutingModule} from "./modules/epr-routing.module";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -144,6 +146,7 @@ export function initializeApp(appConfig: AppConfig) {
     EncounterDialogComponent,
     ObservationChartDialogComponent,
     EdDashboardComponent,
+    ExplorerMainComponent,
 
 
 
@@ -165,7 +168,7 @@ export function initializeApp(appConfig: AppConfig) {
     BrowserModule,
     BrowserAnimationsModule,
       HttpClientModule,
-      AppRoutingModule,
+
       FormsModule,
       FlexLayoutModule,
 
@@ -208,7 +211,10 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentDialogsModule,
     CovalentExpansionPanelModule,
 
-    NgxChartsModule
+    NgxChartsModule,
+
+    EprRoutingModule,
+      AppRoutingModule,
   ],
   providers: [
       AppConfig,

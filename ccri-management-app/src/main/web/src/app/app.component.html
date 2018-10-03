@@ -49,13 +49,8 @@
                       [opened]="media.registerQuery('gt-sm') | async"
                       [mode]="(media.registerQuery('gt-sm') | async) ? 'side' : 'over'"
                       [sidenavWidth]="(media.registerQuery('gt-xs') | async) ? '350px' : '100%'">
-    <div td-sidenav-toolbar-content layout="row" layout-align="start center">
-      <button mat-icon-button tdLayoutToggle>
-        <mat-icon>apps</mat-icon>
-      </button>
-      <!-- <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon> -->
-      <span [routerLink]="['/']" class="cursor-pointer"><mat-icon color="accent">whatshot</mat-icon>FHIR Explorer</span>
-    </div>
+
+    <!-- Toolbar content -->
     <div td-toolbar-content layout="row" layout-align="start center" flex>
       <button mat-icon-button tdLayoutNavListOpen [hideWhenOpened]="true">
         <mat-icon>arrow_back</mat-icon>
@@ -65,18 +60,22 @@
       <button mat-icon-button matTooltip="Output format" [matMenuTriggerFor]="formatMenu"><mat-icon>text_format</mat-icon></button>
       <button mat-icon-button matTooltip="Swap FHIR Server" [matMenuTriggerFor]="appMenu"><mat-icon>device_hub</mat-icon></button>
 
-      <!--
-      <a mat-icon-button matTooltip="Docs" href="https://teradata.github.io/covalent/" target="_blank"><mat-icon>chrome_reader_mode</mat-icon></a>
-      <a mat-icon-button matTooltip="Github" href="https://github.com/teradata/covalent" target="_blank"><mat-icon svgIcon="assets:github"></mat-icon></a>
-      -->
     </div>
-    <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
+    <div td-sidenav-toolbar-content layout="row" layout-align="start center">
+      <button mat-icon-button tdLayoutToggle>
+        <mat-icon>apps</mat-icon>
+      </button>
+      <!-- <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon> -->
+      <span [routerLink]="['/']" class="cursor-pointer"><mat-icon color="accent">whatshot</mat-icon>FHIR Explorer</span>
+    </div>
+
+    <mat-nav-list td-sidenav-content >
       <a mat-list-item routerLink="/"><mat-icon matListAvatar>home</mat-icon> <h3 matLine>Home </h3></a>
       <mat-divider></mat-divider>
       <mat-list-item><h2 matLine>  Resources</h2></mat-list-item>
       <mat-divider></mat-divider>
       <ng-template let-item let-last="last" ngFor [ngForOf]="navmenu">
-        <a mat-list-item routerLink="resource/{{item.route}}">
+        <a mat-list-item routerLink="/exp/resource/{{item.route}}">
 
           <h3 matLine > {{item.title}} </h3><mat-chip-list>
           <span *ngIf="item.count > 0"><mat-chip>{{item.count}}</mat-chip></span>
@@ -86,12 +85,7 @@
         <mat-divider [inset]="false" *ngIf="!last"></mat-divider>
       </ng-template>
     </mat-nav-list>
-    <div tdMediaToggle="gt-xs" [mediaClasses]="['push-sm']">
-      <router-outlet></router-outlet>
-    </div>
-   <!-- <td-layout-footer-inner>
-      Optional inner footer
-    </td-layout-footer-inner> -->
+    <router-outlet></router-outlet>
     <td-layout-footer>
       <div layout="row" layout-align="start center">
         <span class="mat-caption">Copyright &copy; 2018 NHS Digital. All rights reserved</span>
