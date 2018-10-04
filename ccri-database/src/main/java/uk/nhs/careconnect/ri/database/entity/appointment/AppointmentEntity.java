@@ -145,9 +145,7 @@ public class AppointmentEntity extends BaseResource {
     }
 
     @Override
-    public Date getCreated() {
-        return created;
-    }
+    public Date getCreated() { return created; }
 
     public void setCreated(Date created) {
         this.created = created;

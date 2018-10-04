@@ -314,7 +314,9 @@ public class SlotDao implements SlotRepository {
                 predList.add(p);
             }
         }
+
         if (service != null) {
+
             if (daoutils.isNumeric(schedule.getIdPart())) {
                 Join<SlotEntity, ScheduleEntity> join = root.join("schedule" , JoinType.LEFT);
                 Join<ScheduleEntity, ScheduleActor> join1 = join.join("schedule" , JoinType.LEFT);

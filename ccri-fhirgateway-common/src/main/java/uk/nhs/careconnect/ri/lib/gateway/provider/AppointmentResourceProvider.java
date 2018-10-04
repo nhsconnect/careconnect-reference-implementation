@@ -84,11 +84,10 @@ public class AppointmentResourceProvider implements IResourceProvider {
 
     @Search
     public List<Appointment> searchAppointment(HttpServletRequest httpRequest,
-                                                           @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name = Appointment.SP_LOCATION) StringParam location,
-                                                         //  @OptionalParam(name= Appointment.SP_TYPE) TokenOrListParam codes,
-                                                           @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam appointmentType
-                                                        //   @OptionalParam(name = Appointment.SP_ORGANIZATION) ReferenceParam organisation
+                                               @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
+                                               @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam type,
+                                               @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
+                                               @OptionalParam(name = Appointment.SP_RES_ID) StringParam id
               ) throws Exception {
 
         List<Appointment> results = new ArrayList<Appointment>();

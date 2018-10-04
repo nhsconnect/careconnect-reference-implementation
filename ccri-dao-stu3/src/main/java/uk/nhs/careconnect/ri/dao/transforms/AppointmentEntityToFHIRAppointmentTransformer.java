@@ -32,7 +32,12 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         }
         appointment.setMeta(meta);
 
-        //appointment.setId(appointmentEntity.getId().toString());
+        System.out.println("Appointment Metadata:" + appointment.getMeta());
+        System.out.println("Appointment Id: " + appointmentEntity.getId().toString());
+
+        if(appointmentEntity.getId() != null){
+            appointment.setId(appointmentEntity.getId().toString());
+        }
 
         for(AppointmentIdentifier identifier : appointmentEntity.getIdentifiers())
         {
@@ -44,28 +49,37 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         if (appointmentEntity.getStatus() != null) {
             appointment.setStatus(appointmentEntity.getStatus());
         }
-        if (appointmentEntity.getApointmentType() != null) {
+/*        if (appointmentEntity.getApointmentType() != null) {
             appointment.setAppointmentType(appointment.getAppointmentType());
+        }*/
+
+/*        if (appointmentEntity.getReason() != null) {
+            appointment.setReason(appointment.getReason());
+        }*/
+
+        if (appointmentEntity.getApointmentType() != null) {
+            appointment.getAppointmentType()
+                    .addCoding()
+                    .setDisplay(appointmentEntity.getApointmentType().getDisplay())
+                    .setSystem(appointmentEntity.getApointmentType().getSystem())
+                    .setCode(appointmentEntity.getApointmentType().getCode());
         }
 
-        if (appointmentEntity.getReason() != null) {
-            appointment.setReason(appointment.getReason());
-        }
 
         if (appointmentEntity.getPriority() != 0) {
             appointment.setPriority(appointment.getPriority());
         }
 
         if (appointmentEntity.getDescription() != null) {
-            appointment.setDescription(appointment.getDescription());
+            appointment.setDescription(appointmentEntity.getDescription());
         }
 
         if (appointmentEntity.getStart() != null) {
-            appointment.setStart(appointment.getStart());
+            appointment.setStart(appointmentEntity.getStart());
         }
 
         if (appointmentEntity.getEnd() != null) {
-            appointment.setEnd(appointment.getEnd());
+            appointment.setEnd(appointmentEntity.getEnd());
         }
 
 /*        if (appointmentEntity.getCategory() != null) {
@@ -76,17 +90,21 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
                     .setCode(appointmentEntity.getCategory().getCode());
         }*/
 
-        if (appointmentEntity.getSlot() != null) {
+/*        if (appointmentEntity.getSlot() != null) {
             appointment.getSlot().add(new Reference("Slot/"+ appointmentEntity.getSlot().getId()));
-        }
+        }*/
 
         if (appointmentEntity.getCreated() != null) {
-            appointment.setCreated(appointment.getCreated());
+            appointment.setCreated(appointmentEntity.getCreated());
         }
 
         if (appointmentEntity.getComment() != null) {
-            appointment.setComment(appointment.getComment());
+            appointment.setComment(appointmentEntity.getComment());
         }
+
+/*        if(appointmentEntity.getParticipant() != null){
+            appointment.setParticipant(appointmentEntity.getParticipant());
+        }*/
 
         return appointment;
 

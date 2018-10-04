@@ -13,10 +13,13 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ScheduleEntityToFHIRScheduleTransformer;
+import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
 import uk.nhs.careconnect.ri.database.entity.schedule.*;
+import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,6 +56,13 @@ public class ScheduleDao implements ScheduleRepository {
 
     @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    PractitionerRoleRepository practitionerRoleDao;
+
+
+    @Autowired
+    HealthcareServiceRepository healthcareServiceDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -166,6 +176,32 @@ public class ScheduleDao implements ScheduleRepository {
                     actor.setPractitionerEntity(practitionerEntity);
                 }
             }
+            if (actorRef.getReference().contains("PractitonerRole")) {
+
+                PractitionerRole practitionerRole = practitionerRoleDao.readEntity(ctx, new IdType(actorRef.getReference()));
+                if (practitionerRole != null) {
+                    actor.setPractitionerRole(practitionerRole);
+                }
+            }
+            if (actorRef.getReference().contains("HealthcareService")) {
+
+
+                HealthcareServiceEntity healthcareService = healthcareServiceDao.readEntity(ctx, new IdType(actorRef.getReference()));
+                if (healthcareService != null) {
+                    actor.setHealthcareServiceEntity(healthcareService);
+                }
+            }
+            if (actorRef.getReference().contains("Location")) {
+
+
+                LocationEntity location = locationDao.readEntity(ctx, new IdType(actorRef.getReference()));
+                if (location != null) {
+                    actor.setLocationEntity(location);
+                }
+            }
+
+
+
             em.persist(actor);
 
         }
