@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "Slot")
+@Table(name = "Slot1")
 public class SlotEntity extends BaseResource {
 
     @Id

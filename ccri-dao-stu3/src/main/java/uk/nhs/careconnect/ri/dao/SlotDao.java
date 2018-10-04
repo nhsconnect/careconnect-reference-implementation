@@ -201,6 +201,7 @@ public class SlotDao implements SlotRepository {
             slotIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
             slotIdentifier.setSlot(slotEntity);
             em.persist(slotIdentifier);
+            slotEntity.getIdentifiers().add(slotIdentifier); // KGM add the identifier to the slot so transform includes the slot 2/10/2018
         }
 
         log.info("Slot.Transform");

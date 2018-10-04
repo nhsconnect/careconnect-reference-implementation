@@ -61,11 +61,19 @@ public class ProviderResponseLibrary {
             log.trace("RESPONSE InputStream");
             inputStream = (InputStream) message;
             Reader reader = new InputStreamReader(inputStream);
-            resource = ctx.newXmlParser().parseResource(reader);
+            try {
+                resource = ctx.newXmlParser().parseResource(reader);
+            } catch (Exception ex) {
+                resource = ctx.newJsonParser().parseResource(reader);
+            }
         } else
         if (message instanceof String) {
             log.trace("RESPONSE String = "+(String) message);
-            resource = ctx.newXmlParser().parseResource((String) message);
+            try {
+                resource = ctx.newXmlParser().parseResource((String) message);
+            } catch (Exception ex) {
+                resource = ctx.newJsonParser().parseResource((String) message);
+            }
             log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
         } else {
             log.info("MESSAGE TYPE "+message.getClass());

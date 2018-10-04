@@ -90,11 +90,12 @@ public class SlotResourceProvider implements IResourceProvider {
         ProducerTemplate template = context.createProducerTemplate();
 
         IBaseResource resource = null;
+        Exchange exchangeBundle = null;
         try {
             InputStream inputStream = null;
             String newXmlResource = ctx.newXmlParser().encodeResourceToString(slot);
 
-            Exchange exchangeBundle = template.send("direct:FHIRSlot", ExchangePattern.InOut, new Processor() {
+            exchangeBundle = template.send("direct:FHIRSlot", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
                     exchange.getIn().setBody(newXmlResource);
                     exchange.getIn().setHeader("Prefer", "return=representation");
@@ -110,6 +111,9 @@ public class SlotResourceProvider implements IResourceProvider {
 
         } catch(Exception ex) {
             log.error("XML Parse failed " + ex.getMessage());
+            if (exchangeBundle != null) {
+                log.error("Error Response = " + exchangeBundle.getIn());
+            }
             throw new InternalErrorException(ex.getMessage());
         }
         log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
