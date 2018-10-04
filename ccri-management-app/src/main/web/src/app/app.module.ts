@@ -230,7 +230,7 @@ export function initializeApp(appConfig: AppConfig) {
       ImageViewerModule,
 
     EprRoutingModule,
-      AppRoutingModule,
+      AppRoutingModule
   ],
   providers: [
       AppConfig,

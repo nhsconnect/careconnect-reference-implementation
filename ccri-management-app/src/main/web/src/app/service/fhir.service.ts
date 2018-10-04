@@ -99,6 +99,15 @@ export class FhirService {
         return headers;
     }
 
+    getNRLSHeader(headers : HttpHeaders) : HttpHeaders {
+        console.log('add nrls headers');
+        headers = headers.append('Authorization','Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzODU2OTkxNSwiaWF0IjoxNTM4NTY5NjE1LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
+        headers = headers.append('fromASID','200000000117');
+        headers = headers.append('toASID','999999999999');
+
+        return headers;
+    }
+
     getEPRHeaders(contentType : boolean = true ): HttpHeaders {
 
         let headers = this.getHeaders(contentType);
@@ -125,9 +134,13 @@ export class FhirService {
   }
 
   public get(search : string) : Observable<fhir.Bundle> {
-    let url = this.getFHIRServerBase() + search;
+      console.log('get');
+    let url : string = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );
+    if (url.includes('nrls-ri')) {
+        headers = this.getNRLSHeader(headers);
+    }
     if (this.format === 'xml') {
       headers = headers.append( 'Content-Type',  'application/fhir+xml' );
       headers = headers.append('Accept', 'application/fhir+xml');
@@ -138,9 +151,11 @@ export class FhirService {
   }
 
   public getResource(search : string) : Observable<any> {
+        console.log('getResource');
     let url = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );
+
     if (this.format === 'xml') {
       headers = headers.append( 'Content-Type',  'application/fhir+xml' );
       headers = headers.append('Accept', 'application/fhir+xml');
@@ -150,8 +165,11 @@ export class FhirService {
     }
   }
   public getResults(url : string) : Observable<fhir.Bundle> {
-      let headers = new HttpHeaders(
-      );
+      console.log('getResults');
+      let headers = new HttpHeaders();
+      if (url.includes('nrls-ri')) {
+          headers = this.getNRLSHeader(headers);
+      }
       if (this.format === 'xml') {
           headers = headers.append( 'Content-Type',  'application/fhir+xml' );
           headers = headers.append('Accept', 'application/fhir+xml');

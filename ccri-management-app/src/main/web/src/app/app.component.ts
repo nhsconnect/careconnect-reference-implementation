@@ -4,6 +4,8 @@ import {FhirService, Formats} from "./service/fhir.service";
 import {Router} from "@angular/router";
 import {MessageService} from "./service/message.service";
 
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -51,6 +53,11 @@ export class AppComponent {
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
         },
+      {
+          icon: 'swap_horiz',
+          route: 'https://data.developer-test.nhs.uk/nrls-ri',
+          title: 'NHS Digital NRLS RI'
+      }
     ];
 
   usermenu: Object[] = [{
