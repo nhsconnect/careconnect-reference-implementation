@@ -121,6 +121,11 @@ export class ResourceComponent implements OnInit,AfterViewInit {
           //console.log('activated route segment ='+url[0]);
           if (url[0].path === 'resource') {
               let resource = this.route.snapshot.paramMap.get('resourceType');
+              this.resource = undefined;
+              this.resourceString = undefined;
+              this.query = undefined;
+              this.clearDown();
+              this.onClear();
               this.buildOptions(resource);
           }
       });
@@ -406,7 +411,9 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   onClear() {
       this.elements = [];
-      this.form.refresh();
+      if (this.form != undefined) {
+        this.form.refresh();
+      }
   }
 
   getResults() {
