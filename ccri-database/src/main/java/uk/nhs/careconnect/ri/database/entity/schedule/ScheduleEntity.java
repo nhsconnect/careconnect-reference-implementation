@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.schedule;
 
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class ScheduleEntity extends BaseResource {
 
     @OneToMany(mappedBy="schedule", targetEntity = ScheduleActor.class)
     Set<ScheduleActor> actors = new HashSet<>();
+
+    @OneToMany(mappedBy="schedule", targetEntity = SlotEntity.class)
+    Set<SlotEntity> slots = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -79,5 +83,13 @@ public class ScheduleEntity extends BaseResource {
 
     public void setCategory(ConceptEntity category) {
         this.category = category;
+    }
+
+    public Set<SlotEntity> getSlots() {
+        return slots;
+    }
+
+    public void setSlots(Set<SlotEntity> slots) {
+        this.slots = slots;
     }
 }

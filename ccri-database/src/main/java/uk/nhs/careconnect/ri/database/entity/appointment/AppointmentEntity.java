@@ -49,7 +49,8 @@ public class AppointmentEntity extends BaseResource {
     @Column(name = "APPOINTMENT_END")
     private Date end;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPOINTMENT_SLOT_ID", foreignKey = @ForeignKey(name = "FK_APPOINTMENT_SLOT"))
     private SlotEntity slot;
 
@@ -62,6 +63,13 @@ public class AppointmentEntity extends BaseResource {
 
     @Column(name = "PARTICIPANT")
     private BackboneElement participant;
+
+    @OneToMany(mappedBy="appointment", targetEntity = AppointmentIdentifier.class)
+    Set<AppointmentIdentifier> identifiers = new HashSet<>();
+
+    public Set<AppointmentIdentifier> getIdentifiers() { return identifiers; }
+
+    public void setIdentifiers(Set<AppointmentIdentifier> identifiers) { this.identifiers = identifiers; }
 
     @Override
     public Long getId() {

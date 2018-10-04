@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.dao.transforms.SlotEntityToFHIRSlotTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.HealthcareServiceEntityToFHIRHealthcareServiceTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
@@ -19,6 +21,8 @@ import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +32,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @Transactional
@@ -40,6 +45,8 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     @Autowired
     HealthcareServiceEntityToFHIRHealthcareServiceTransformer serviceEntityToFHIRHealthcareServiceTransformer;
 
+    @Autowired
+    SlotEntityToFHIRSlotTransformer slotEntityToFHIRSlotTransformer;
     @Autowired
     @Lazy
     ConceptRepository conceptDao;
@@ -112,7 +119,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null,null);
+                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null,null,null);
                     for (HealthcareServiceEntity con : results) {
                         serviceEntity = con;
                         break;
@@ -264,20 +271,31 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareService> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
-        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation);
-        List<HealthcareService> results = new ArrayList<>();
+    public List<Resource> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation,Set<Include> reverseIncludes) {
+        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation,reverseIncludes);
+        List<Resource> results = new ArrayList<>();
 
         for (HealthcareServiceEntity healthcareServiceEntity : qryResults) {
             HealthcareService healthcareService = serviceEntityToFHIRHealthcareServiceTransformer.transform(healthcareServiceEntity);
             results.add(healthcareService);
+        }
+        for (Include include : reverseIncludes) {
+            if (include.getValue().equals("Slot") || include.getValue().equals("*")) {
+                for (HealthcareServiceEntity healthcareServiceEntity : qryResults) {
+                    for (ScheduleActor scheduleActor :healthcareServiceEntity.getScheduleActors()) {
+                        for (SlotEntity slot : scheduleActor.getScheduleEntity().getSlots()) {
+                            results.add(slotEntityToFHIRSlotTransformer.transform(slot) );
+                        }
+                    }
+                }
+            }
         }
 
         return results;
     }
 
     @Override
-    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
+    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation, Set<Include> reverseIncludes) {
         List<HealthcareServiceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

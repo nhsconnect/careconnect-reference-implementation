@@ -29,7 +29,8 @@ public interface SlotRepository extends BaseRepository<SlotEntity,Slot> {
                           @OptionalParam(name = Slot.SP_START) DateParam start,
                           @OptionalParam(name = Slot.SP_STATUS) StringParam status,
                           @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
-                          @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule
+                          @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule,
+                          @OptionalParam(name = "service") ReferenceParam service
     );
 
     List<SlotEntity> searchSlotEntity(FhirContext ctx,
@@ -37,7 +38,8 @@ public interface SlotRepository extends BaseRepository<SlotEntity,Slot> {
                                       @OptionalParam(name = Slot.SP_START) DateParam start,
                                       @OptionalParam(name = Slot.SP_STATUS) StringParam status,
                                       @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
-                                      @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule
+                                      @OptionalParam(name = Slot.SP_SCHEDULE) ReferenceParam schedule,
+                                      @OptionalParam(name = "service") ReferenceParam service
     );
 
 }

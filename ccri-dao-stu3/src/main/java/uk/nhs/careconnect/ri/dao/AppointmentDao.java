@@ -19,6 +19,9 @@ import uk.nhs.careconnect.ri.database.entity.appointment.*;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.EntityManager;
@@ -62,10 +65,9 @@ public class AppointmentDao implements AppointmentRepository {
 
     private static final Logger log = LoggerFactory.getLogger(AppointmentDao.class);
 
-
     @Override
-    public void save(FhirContext ctx, AppointmentEntity serviceEntity) {
-        em.persist(serviceEntity);
+    public void save(FhirContext ctx, AppointmentEntity appointmentEntity) {
+        em.persist(appointmentEntity);
     }
 
     @Override
@@ -95,30 +97,6 @@ public class AppointmentDao implements AppointmentRepository {
     }
 
     @Override
-    public void save(FhirContext ctx, HealthcareServiceEntity location) throws OperationOutcomeException {
-
-    }
-
-    @Override
-    public List<Appointment> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam type, StringParam codes, StringParam date, StringParam location) {
-        return null;
-    }
-
-    @Override
-    public List<Appointment> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam status, StringParam date) {
-        return null;
-    }
-
-    @Override
-    public Long count() {
-
-        CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(AppointmentEntity.class)));
-        return em.createQuery(cq).getSingleResult();
-    }
-
-    @Override
     public Appointment create(FhirContext ctx, Appointment appointment, IdType theId, String theConditional) throws OperationOutcomeException {
         log.debug("Appointment.save");
 
@@ -140,11 +118,11 @@ public class AppointmentDao implements AppointmentRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-/*                    List<AppointmentEntity> results = searchAppointmentEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"), null, null, null, null);
+                    List<AppointmentEntity> results = searchAppointmentEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"), null, null, null);
                     for (AppointmentEntity con : results) {
                         appointmentEntity = con;
                         break;
-                    }*/
+                    }
                 } else {
                     log.info("NOT SUPPORTED: Conditional Url = " + theConditional);
                 }
@@ -162,29 +140,28 @@ public class AppointmentDao implements AppointmentRepository {
             appointmentEntity.setStatus(appointment.getStatus());
         }
 
-        log.debug("Appointment.saveCategory");
-        if (appointment.hasAppointmentType()) {
-            ConceptEntity code = conceptDao.findCode(appointment.getAppointmentType().getCoding().get(0));
-            if (code != null) { appointmentEntity.setApointmentType(code); }
-            else {
-                log.info("Category: Missing System/Code = "+ appointment.getAppointmentType().getCoding().get(0).getSystem() +" code = "+appointment.getAppointmentType().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getAppointmentType().getCoding().get(0).getSystem()
-                        +" code = "+appointment.getAppointmentType().getCoding().get(0).getCode());
+        if(appointment.hasAppointmentType()){
+
+            ConceptEntity code = conceptDao.findCode(appointment.getAppointmentType().getCoding().get(0));
+
+            if(code != null){
+                appointmentEntity.setApointmentType(code);
             }
+
         }
 
-/*        log.debug("Appointment.saveReason");
+        log.debug("Appointment.saveReason");
         if (appointment.hasReason()) {
-            ConceptEntity code = conceptDao.findCode(appointment.getReason().getCoding().get(0));
+            ConceptEntity code = conceptDao.findCode(appointment.getReason().get(0).getCoding().get(0));
             if (code != null) { appointmentEntity.setReason(code); }
             else {
-                log.info("Category: Missing System/Code = "+ appointment.getReason().getCoding().get(0).getSystem() +" code = "+appointment.getReason().getCoding().get(0).getCode());
+                log.info("Category: Missing System/Code = "+ appointment.getReason().get(0).getCoding().get(0).getSystem() +" code = "+appointment.getReason().get(0).getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getReason().getCoding().get(0).getSystem()
-                        +" code = "+appointment.getReason().getCoding().get(0).getCode());
+                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getReason().get(0).getCoding().get(0).getSystem()
+                        +" code = "+appointment.getReason().get(0).getCoding().get(0).getCode());
             }
-        }*/
+        }
 
         if (appointment.hasPriority()) {
             appointmentEntity.setPriority(appointment.getPriority());
@@ -202,125 +179,48 @@ public class AppointmentDao implements AppointmentRepository {
             appointmentEntity.setEnd(appointment.getEnd());
         }
 
-/*        em.persist(appointmentEntity);
-        log.debug("HealthcareService.saveIdentifier");
-        for (Identifier identifier : appointment.getIdentifier()) {
-            AppointmentIdentifier serviceIdentifier = null;
-
-            for (AppointmentIdentifier orgSearch : appointmentEntity.getIdentifiers()) {
-                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
-                    serviceIdentifier = orgSearch;
-                    break;
-                }
-            }
-            if (serviceIdentifier == null)  serviceIdentifier = new AppointmentIdentifier();
-
-            serviceIdentifier.setValue(identifier.getValue());
-            serviceIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
-            serviceIdentifier.setService(appointmentEntity);
-            em.persist(serviceIdentifier);
-        }*/
-/*        log.debug("Appointment.saveSlot");
+        log.debug("Appointment.saveSlot");
         for (Reference reference : appointment.getSlot()) {
             SlotEntity slotEntity = slotDao.readEntity(ctx, new IdType(reference.getReference()));
             if (slotEntity != null) {
                 AppointmentSlot appointmentSlot = new AppointmentSlot();
-                appointmentSlot.setLocation(slotEntity);
-                appointmentSlot.setAppointment(appointmentEntity);
+                appointmentSlot.setSlot(slotEntity);
                 em.persist(appointmentSlot);
             }
-        }*/
-/*        for (CodeableConcept concept :appointment.getSpecialty()) {
-
-            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
-                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
-                if (conceptEntity != null) {
-                    AppointmentSpecialty specialtyEntity = null;
-                    // Look for existing categories
-                    for (AppointmentSpecialty cat :appointmentEntity.getSpecialties()) {
-                        if (cat.getSpecialty().getCode().equals(concept.getCodingFirstRep().getCode())) specialtyEntity = cat;
-                    }
-                    if (specialtyEntity == null) specialtyEntity = new AppointmentSpecialty();
-
-                    specialtyEntity.setSpecialty(conceptEntity);
-                    specialtyEntity.setAppointment(appointmentEntity);
-                    em.persist(specialtyEntity);
-                    appointmentEntity.getSpecialties().add(specialtyEntity);
-                }
-                else {
-                    log.info("Missing ServiceRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                }
-            }
-        }*/
-/*        log.debug("Appointment.saveType");
-        for (CodeableConcept concept :appointment.getType()) {
-
-            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
-                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
-                if (conceptEntity != null) {
-                    AppointmentType type = null;
-                    // Look for existing categories
-                    for (AppointmentType cat :appointmentEntity.getTypes()) {
-                        if (cat.getType_().getCode().equals(concept.getCodingFirstRep().getCode())) type = cat;
-                    }
-                    if (type == null) type = new AppointmentType();
-
-                    type.setType_(conceptEntity);
-                    type.setAppointment(appointmentEntity);
-                    em.persist(type);
-                    appointmentEntity.getTypes().add(type);
-                }
-                else {
-                    log.info("Missing AppointmentRequested. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                }
-            }
-        }*/
- /*       log.debug("Appointment.saveTelecom");
-        for (ContactPoint telecom : appointment.getTelecom()) {
-            AppointmentTelecom serviceTelecom = null;
-
-            for (AppointmentTelecom orgSearch : appointmentEntity.getTelecoms()) {
-                if (telecom.getValue().equals(orgSearch.getValue())) {
-                    serviceTelecom = orgSearch;
-                    break;
-                }
-            }
-            if (serviceTelecom == null) {
-                serviceTelecom = new AppointmentTelecom();
-                serviceTelecom.setAppointment(appointmentEntity);
-            }
-
-            serviceTelecom.setValue(telecom.getValue());
-            serviceTelecom.setSystem(telecom.getSystem());
-            if (telecom.hasUse()) { serviceTelecom.setTelecomUse(telecom.getUse()); }
-
-            em.persist(serviceTelecom);
         }
-        log.info("HealthcareService.Transform");
 
-        */
+        if (appointment.hasCreated()) {
+            appointmentEntity.setCreated(appointment.getCreated());
+        }
+
+        if (appointment.hasComment()) {
+            appointmentEntity.setComment(appointment.getComment());
+        }
+
+/*        if (appointment.hasParticipant()) {
+            appointmentEntity.setParticipant(appointment.getParticipant());
+        }*/
+
         return appointmentEntityToFHIRAppointmentTransformer.transform(appointmentEntity);
 
     }
 
-/*    @Override
-    public List<HealthcareService> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
-        List<AppointmentEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation);
-        List<HealthcareService> results = new ArrayList<>();
 
-        for (AppointmentEntity healthcareServiceEntity : qryResults) {
-            HealthcareService healthcareService = appointmentEntityToFHIRAppointmentTransformer.transform(appointmentEntity);
-            results.add(healthcareService);
+    @Override
+    public List<Appointment> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam appointmentType, StringParam status, StringParam id) { // , ReferenceParam organisation
+        List<AppointmentEntity> qryResults = searchAppointmentEntity(ctx,identifier,appointmentType,status, id); //,organisation
+        List<Appointment> results = new ArrayList<>();
+
+        for (AppointmentEntity appointmentEntity : qryResults) {
+            Appointment appointment = appointmentEntityToFHIRAppointmentTransformer.transform(appointmentEntity);
+            results.add(appointment);
         }
 
         return results;
-    }*/
+    }
 
-/*
     @Override
-    public List<AppointmentEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation) {
+    public List<AppointmentEntity> searchAppointmentEntity(FhirContext ctx, TokenParam identifier, StringParam appointmentType, StringParam status, StringParam id) { // , ReferenceParam organisation
         List<AppointmentEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -330,7 +230,7 @@ public class AppointmentDao implements AppointmentRepository {
 
 
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<Organization> results = new ArrayList<Organization>();
+        //List<Organization> results = new ArrayList<Organization>();
 
         if (identifier !=null)
         {
@@ -345,22 +245,8 @@ public class AppointmentDao implements AppointmentRepository {
             Predicate p = builder.equal(root.get("id"),id.getValue());
             predList.add(p);
         }
-        if (name !=null)
-        {
 
-            Predicate p =
-                    builder.like(
-                            builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
-                    );
-
-            predList.add(p);
-        }
-        
-*/
-
-
-/*        Predicate[] predArray = new Predicate[predList.size()];
+        Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
         if (predList.size()>0)
         {
@@ -374,14 +260,16 @@ public class AppointmentDao implements AppointmentRepository {
         qryResults = em.createQuery(criteria).setMaxResults(daoutils.MAXROWS).getResultList();
 
         return qryResults;
-    }*/
+    }
 
-/*        @Override
-        public Long count () {
-            CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-            cq.select(qb.count(cq.from(AppointmentEntity.class)));
-            return em.createQuery(cq).getSingleResult();
-        }*/
+
+    @Override
+    public Long count() {
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(AppointmentEntity.class)));
+        return em.createQuery(cq).getSingleResult();
+    }
 
 }

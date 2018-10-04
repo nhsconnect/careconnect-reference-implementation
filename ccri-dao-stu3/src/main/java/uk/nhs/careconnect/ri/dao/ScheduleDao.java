@@ -214,18 +214,6 @@ public class ScheduleDao implements ScheduleRepository {
             Predicate p = builder.equal(root.get("id"),id.getValue());
             predList.add(p);
         }
-        /* if (name !=null)
-        {
-
-            Predicate p =
-                    builder.like(
-                            builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
-                    );
-
-            predList.add(p);
-        } */
-        
 
 
         Predicate[] predArray = new Predicate[predList.size()];

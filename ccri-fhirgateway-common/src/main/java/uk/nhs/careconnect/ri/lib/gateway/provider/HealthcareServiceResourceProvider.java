@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
@@ -13,6 +11,7 @@ import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.HealthcareService;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class HealthcareServiceResourceProvider implements IResourceProvider {
@@ -93,15 +93,16 @@ public class HealthcareServiceResourceProvider implements IResourceProvider {
     }
 
     @Search
-    public List<HealthcareService> searchHealthcareService(HttpServletRequest httpRequest,
-                                                           @OptionalParam(name = HealthcareService.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name = HealthcareService.SP_NAME) StringParam name,
-                                                         //  @OptionalParam(name= HealthcareService.SP_TYPE) TokenOrListParam codes,
-                                                           @OptionalParam(name = HealthcareService.SP_RES_ID) StringParam id
-                                                        //   @OptionalParam(name = HealthcareService.SP_ORGANIZATION) ReferenceParam organisation
+    public List<Resource> searchHealthcareService(HttpServletRequest httpRequest,
+                                                  @OptionalParam(name = HealthcareService.SP_IDENTIFIER) TokenParam identifier,
+                                                  @OptionalParam(name = HealthcareService.SP_NAME) StringParam name,
+                                                  //  @OptionalParam(name= HealthcareService.SP_TYPE) TokenOrListParam codes,
+                                                  @OptionalParam(name = HealthcareService.SP_RES_ID) StringParam id,
+                                                  @IncludeParam(reverse=true, allow = {"Slot", "*"}) Set<Include> reverseIncludes
+                                                  //   @OptionalParam(name = HealthcareService.SP_ORGANIZATION) ReferenceParam organisation
               ) throws Exception {
 
-        List<HealthcareService> results = new ArrayList<HealthcareService>();
+        List<Resource> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 
@@ -120,8 +121,8 @@ public class HealthcareServiceResourceProvider implements IResourceProvider {
         if (resource instanceof Bundle) {
             bundle = (Bundle) resource;
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                HealthcareService patient = (HealthcareService) entry.getResource();
-                results.add(patient);
+                Resource resource1 =  entry.getResource();
+                results.add(resource1);
             }
         } else {
             ProviderResponseLibrary.createException(ctx,resource);

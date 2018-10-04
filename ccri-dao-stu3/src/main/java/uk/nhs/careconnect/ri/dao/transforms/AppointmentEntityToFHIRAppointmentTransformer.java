@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
 
 
 @Component
@@ -31,9 +32,8 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         }
         appointment.setMeta(meta);
 
-        appointment.setId(appointmentEntity.getId().toString());
+        //appointment.setId(appointmentEntity.getId().toString());
 
-/*
         for(AppointmentIdentifier identifier : appointmentEntity.getIdentifiers())
         {
             appointment.addIdentifier()
@@ -41,49 +41,52 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
                     .setValue(identifier.getValue());
         }
 
-        if (appointmentEntity.getActive() != null) {
-            appointment.setActive(appointmentEntity.getActive());
+        if (appointmentEntity.getStatus() != null) {
+            appointment.setStatus(appointmentEntity.getStatus());
         }
-        if (appointmentEntity.getName() != null) {
-            appointment.setName(appointment.getName());
+        if (appointmentEntity.getApointmentType() != null) {
+            appointment.setAppointmentType(appointment.getAppointmentType());
         }
-        if (appointmentEntity.getCategory() != null) {
+
+        if (appointmentEntity.getReason() != null) {
+            appointment.setReason(appointment.getReason());
+        }
+
+        if (appointmentEntity.getPriority() != 0) {
+            appointment.setPriority(appointment.getPriority());
+        }
+
+        if (appointmentEntity.getDescription() != null) {
+            appointment.setDescription(appointment.getDescription());
+        }
+
+        if (appointmentEntity.getStart() != null) {
+            appointment.setStart(appointment.getStart());
+        }
+
+        if (appointmentEntity.getEnd() != null) {
+            appointment.setEnd(appointment.getEnd());
+        }
+
+/*        if (appointmentEntity.getCategory() != null) {
             appointment.getCategory()
                     .addCoding()
                     .setDisplay(appointmentEntity.getCategory().getDisplay())
                     .setSystem(appointmentEntity.getCategory().getSystem())
                     .setCode(appointmentEntity.getCategory().getCode());
+        }*/
+
+        if (appointmentEntity.getSlot() != null) {
+            appointment.getSlot().add(new Reference("Slot/"+ appointmentEntity.getSlot().getId()));
         }
 
-        if (appointmentEntity.getProvidedBy() != null) {
-            appointment.setProvidedBy(new Reference("Organization/"+appointmentEntity.getProvidedBy().getId()));
+        if (appointmentEntity.getCreated() != null) {
+            appointment.setCreated(appointment.getCreated());
         }
-        for (AppointmentSpecialty serviceSpecialty : appointmentEntity.getSpecialties()) {
-            service.addSpecialty()
-                    .addCoding()
-                        .setCode(serviceSpecialty.getSpecialty().getCode())
-                        .setSystem(serviceSpecialty.getSpecialty().getSystem())
-                        .setDisplay(serviceSpecialty.getSpecialty().getDisplay());
-        }
-        for (AppointmentLocation serviceLocation : appointmentEntity.getLocations()) {
-            service.addLocation(new Reference("Location/"+serviceLocation.getLocation().getId()));
-        }
-        for (AppointmentTelecom serviceTelecom : appointmentEntity.getTelecoms()) {
-            service.addTelecom()
-                    .setSystem(serviceTelecom.getSystem())
-                    .setValue(serviceTelecom.getValue())
-                    .setUse(serviceTelecom.getTelecomUse());
 
+        if (appointmentEntity.getComment() != null) {
+            appointment.setComment(appointment.getComment());
         }
-        for (AppointmentType serviceType : appointmentEntity.getTypes()) {
-            service.addType()
-                    .addCoding()
-                    .setCode(serviceType.getType_().getCode())
-                    .setSystem(serviceType.getType_().getSystem())
-                    .setDisplay(serviceType.getType_().getDisplay());
-        }
-*/
-
 
         return appointment;
 

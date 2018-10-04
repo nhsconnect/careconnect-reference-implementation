@@ -18,14 +18,13 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.SlotEntityToFHIRSlotTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.net.URI;
@@ -115,7 +114,7 @@ public class SlotDao implements SlotRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<Slot> results = searchSlot(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null,null,null); //,null
+                    List<Slot> results = searchSlot(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null,null,null,null); //,null
                     for (Slot con : results) {
                         slot = con;
                         break;
@@ -210,8 +209,8 @@ public class SlotDao implements SlotRepository {
     }
 
     @Override
-    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam res_id, ReferenceParam schedule) {
-        List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,start,status,res_id,schedule);
+    public List<Slot> searchSlot(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam res_id, ReferenceParam schedule, ReferenceParam service) {
+        List<SlotEntity> qryResults = searchSlotEntity(ctx,identifier,start,status,res_id,schedule, service);
         List<Slot> results = new ArrayList<>();
 
         for (SlotEntity slotEntity : qryResults) {
@@ -223,7 +222,7 @@ public class SlotDao implements SlotRepository {
     }
 
     @Override
-    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam resid, ReferenceParam schedule) {
+    public List<SlotEntity> searchSlotEntity(FhirContext ctx, TokenParam identifier, DateParam start, StringParam status, StringParam resid, ReferenceParam schedule,ReferenceParam service) {
         List<SlotEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -261,12 +260,66 @@ public class SlotDao implements SlotRepository {
             predList.add(p);
         }
 
+/*        if (status != null) {
+            Predicate p = builder.equal(root.get("Status"),status.getValue());
+            predList.add(p);
+        }*/
+
+        if (status != null) {
+
+            System.out.println("root.get(\"Status\")" + root.get("Status"));
+            System.out.println("Integer.valueOf(status.getValue()" + status.getValue());
+            //System.out.println("Integer.valueOf(status.getValue()" + Integer.valueOf(status..getValue()));
+            System.out.println("Status = " + status);
+
+            String strStatus = null;
+
+
+            switch (Integer.valueOf(status.getValue())) {
+
+
+                case 1 :
+                    strStatus = "busy";
+                    break;
+                case 0 :
+                    strStatus = "free";
+                    break;
+
+                default:
+                    strStatus = "free";
+
+            }
+
+            System.out.println("Strstatus = " + strStatus);
+
+            System.out.println("root.get(\"Status\")" + root.get("Status"));
+
+            Predicate p = builder.equal(root.get("Status"), strStatus);
+            predList.add(p);
+
+        }
+
         if (schedule != null) {
 
             if (daoutils.isNumeric(schedule.getIdPart())) {
                 Join<SlotEntity, ScheduleEntity> join = root.join("schedule" , JoinType.LEFT);
 
                 Predicate p = builder.equal(join.get("id"), schedule.getIdPart());
+                predList.add(p);
+            } else {
+                Join<SlotEntity, ScheduleEntity> join = root.join("schedule", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
+        }
+        if (service != null) {
+            if (daoutils.isNumeric(schedule.getIdPart())) {
+                Join<SlotEntity, ScheduleEntity> join = root.join("schedule" , JoinType.LEFT);
+                Join<ScheduleEntity, ScheduleActor> join1 = join.join("schedule" , JoinType.LEFT);
+                Join<ScheduleActor, HealthcareServiceEntity> join2 = join1.join("healthcareServiceEntity" , JoinType.LEFT);
+
+                Predicate p = builder.equal(join2.get("id"), service.getIdPart());
                 predList.add(p);
             } else {
                 Join<SlotEntity, ScheduleEntity> join = root.join("schedule", JoinType.LEFT);
