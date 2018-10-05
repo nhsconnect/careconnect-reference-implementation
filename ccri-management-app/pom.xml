@@ -40,8 +40,10 @@
                                 <argument>ng</argument>
                                 <argument>build</argument>
                                 <argument>--prod</argument>
-                                <argument>--base-href=/ccri/</argument>
-                                <argument>--deploy-url=/ccri/</argument>
+                                <argument>--base-href</argument>
+                                <argument>/ccri/</argument>
+                                <argument>--deploy-url</argument>
+                                <argument>/ccri/</argument>
                             </arguments>
                         </configuration>
                         <goals>
