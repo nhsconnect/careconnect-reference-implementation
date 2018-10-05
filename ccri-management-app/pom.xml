@@ -9,7 +9,7 @@
     <version>3.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
-        <ngbuild>--prod --base-href=/ccri/ --deploy-url=/ccri/</ngbuild>
+        <ngbuild>build --prod --base-href=/ccri/ --deploy-url=/ccri/</ngbuild>
     </properties>
     <build>
         <plugins>
@@ -41,7 +41,6 @@
                             <arguments>
                                 <argument>run</argument>
                                 <argument>ng</argument>
-                                <argument>build</argument>
                                 <argument>${ngbuild}</argument>
                             </arguments>
                         </configuration>
