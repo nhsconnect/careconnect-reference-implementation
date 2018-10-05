@@ -36,7 +36,8 @@ export class AppComponent {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3',
             title: 'Care Connect RI (Secure)'
-        },
+        }
+        /*,
         {
             icon: 'swap_horiz',
             route: 'https://directory.spineservices.nhs.uk/STU3',
@@ -51,7 +52,7 @@ export class AppComponent {
             icon: 'swap_horiz',
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
-        },
+        },*/
     ];
 
   usermenu: Object[] = [{
