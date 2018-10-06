@@ -41,7 +41,8 @@
                             <arguments>
                                 <argument>run</argument>
                                 <argument>ng</argument>
-                                <argument>${ngbuild}</argument>
+                                <argument>build</argument>
+                                <argument>--base-href=/ccri/</argument>
                             </arguments>
                         </configuration>
                         <goals>
