@@ -2,9 +2,8 @@ import {Component, ViewContainerRef} from '@angular/core';
 import {IAlertConfig, IConfirmConfig, TdDialogService, TdMediaService} from "@covalent/core";
 import {FhirService, Formats} from "./service/fhir.service";
 import {Router} from "@angular/router";
+import {ErrorsHandler} from "./error-handler";
 import {MessageService} from "./service/message.service";
-
-
 
 @Component({
   selector: 'app-root',
@@ -37,7 +36,8 @@ export class AppComponent {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3',
             title: 'Care Connect RI (Secure)'
-        },
+        }
+        /*,
         {
             icon: 'swap_horiz',
             route: 'https://directory.spineservices.nhs.uk/STU3',
@@ -52,12 +52,7 @@ export class AppComponent {
             icon: 'swap_horiz',
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
-        },
-      {
-          icon: 'swap_horiz',
-          route: 'https://data.developer-test.nhs.uk/nrls-ri',
-          title: 'NHS Digital NRLS RI'
-      }
+        },*/
     ];
 
   usermenu: Object[] = [{
@@ -74,10 +69,7 @@ export class AppComponent {
     title: 'Sign out',
   },
   ];
-
-
-    navmenu: Object[] = [];
-
+  navmenu: Object[] = [];
 
   title : string ='Care Connect Reference Implemenation';
 
