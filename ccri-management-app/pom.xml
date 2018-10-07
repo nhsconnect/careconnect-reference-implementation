@@ -38,11 +38,10 @@
                         <configuration>
                             <workingDirectory>${project.basedir}/src/main/web</workingDirectory>
                             <executable>npm</executable>
+
                             <arguments>
                                 <argument>run</argument>
-                                <argument>ng</argument>
-                                <argument>build</argument>
-                                <argument>--base-href=/ccri/</argument>
+                                <argument>build-ccri</argument>
                             </arguments>
                         </configuration>
                         <goals>
