@@ -1,9 +1,16 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import OlMap from 'ol/Map';
-import OlXYZ from 'ol/source/XYZ';
-import OlTileLayer from 'ol/layer/Tile';
-import OlView from 'ol/View';
-import OlProj from 'ol/proj';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import XYZ from 'ol/source/XYZ';
+import VectorLayer from 'ol/layer/Vector';
+import Vector from 'ol/source/Vector';
+import { Style ,Icon } from 'ol/style';
+import Feature from 'ol/Feature.js';
+import Overlay from 'ol/Overlay.js';
+import Point from 'ol/geom/Point'
+import {fromLonLat} from 'ol/proj';
+import {transform} from 'ol/proj';
 
 @Component({
   selector: 'app-ed-dashboard',
@@ -13,75 +20,128 @@ import OlProj from 'ol/proj';
 export class EdDashboardComponent implements OnInit {
 
 
-    map: OlMap;
-    source: OlXYZ;
-    layer: OlTileLayer;
-    view: OlView;
-
+    map: Map;
+    source: XYZ;
+    layer: TileLayer;
+    markerlayer: TileLayer;
+    view: View;
+    markerEd: Style;
+    markerAmb: Style;
+    markerPat: Style;
+    markerSource : Vector;
 
     constructor() { }
 
   ngOnInit() {
-      this.source = new OlXYZ({
+
+      let proj = fromLonLat([-1.5230420347013478, 53.80634615690993]);
+      this.source = new XYZ({
           url: 'http://tile.osm.org/{z}/{x}/{y}.png'
       });
 
-      this.layer = new OlTileLayer({
+    this.markerEd = new Style({
+      image: new Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        opacity: 0.75,
+        scale: 0.3,
+        src: '/assets/marker.png'
+      }))
+    });
+
+    this.markerAmb = new Style({
+      image: new Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        opacity: 0.75,
+        scale: 0.3,
+        src: '/assets/tram-2.png'
+      }))
+    });
+
+    this.markerPat = new Style({
+      image: new Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        opacity: 0.75,
+        scale: 0.3,
+        src: '/assets/street_view.png'
+      }))
+    });
+
+    this.markerSource = new Vector();
+
+    this.layer = new TileLayer({
           source: this.source
       });
 
-      this.view = new OlView({
-          center: OlProj.fromLonLat([6.661594, 50.433237]),
-          zoom: 3
+    this.markerlayer = new VectorLayer({
+      source: this.markerSource,
+      style: this.markerAmb,
+    }),
+
+      this.view = new View({
+          center: proj,
+          zoom: 13
       });
 
-      this.map = new OlMap({
+      this.map = new Map({
           target: 'map',
-          layers: [this.layer],
+          layers: [this.layer, this.markerlayer],
           view: this.view
       });
-      /*
-      this.map = new ol.Map({
-          target: 'map',
-          layers: [
-              new ol.layer.Tile({
-                  source: new ol.source.OSM()
-              })
-          ],
-          view: new ol.View({
-              center: ol.proj.fromLonLat([-1.5230420347013478, 53.80634615690993]),
-              zoom: 13
-          })
-      });
 
-      var lonLat = new ol.LonLat(-1.5230420347013478 ,53.80634615690993  )
-          .transform(
-              new ol.Projection("EPSG:4326"), // transform from WGS 1984
-              this.map.getProjectionObject() // to Spherical Mercator Projection
-          );
+    let ambFeature = new Feature({
+      geometry: new Point(transform([-1.5295702591538431, 53.795387709017916, ],'EPSG:4326',
+        'EPSG:3857')),
+      name: 'Null Island',
+      population: 4000,
+      rainfall: 500
+    });
+    this.markerSource.addFeature(ambFeature);
 
-      var zoom=16;
+    let edFeature = new Feature({
+      geometry: new Point(transform([-1.5230420347013478,53.80634615690993],'EPSG:4326',
+        'EPSG:3857')),
+      name: 'Null Island',
+      population: 4000,
+      rainfall: 500
+    });
+    this.markerSource.addFeature(edFeature);
 
-      var markers = new ol.Layer.Markers( "Markers" );
-      this.map.addLayer(markers);
+    let patientFeature = new Feature({
+      geometry: new Point(transform([-1.5508230590282892,53.796284092469236],'EPSG:4326',
+        'EPSG:3857')),
+      name: 'Null Island',
+      population: 4000,
+      rainfall: 500
+    });
+    this.markerSource.addFeature(patientFeature);
 
-      markers.addMarker(new ol.Marker(lonLat));
+    this.map.on("click" , evt => {
+      alert( 'click' + evt);
+    } );
+
+   // iconFeature.on( 'click', this.clickMarker );
+
+
+
+    /*
+          let ed = new Overlay({
+            position: new Point(fromLonLat([-1.5230420347013478,53.80634615690993],'EPSG:4326',
+              'EPSG:3857')),
+            positioning: 'center-center',
+            style : this.markerStyle,
+            stopEvent: false
+          });
+          this.layer.addOverlay(ed);
 */
-     /*
-      let mapProp = {
-          center: new google.maps.LatLng(53.80634615690993, -1.5230420347013478),
-          zoom: 14,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-      this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
-
-*/
-
-      this.showCustomMarker();
 
   }
 
-    showCustomMarker() {
 
 /*
         this.map.setCenter(new google.maps.LatLng(53.80, -1.5295702591538431));
@@ -114,9 +174,9 @@ export class EdDashboardComponent implements OnInit {
             text: 'YAS'
         });
 
-        */
-    }
 
+    }
+*/
 
 
 }
