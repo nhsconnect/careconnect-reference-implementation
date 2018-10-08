@@ -1,11 +1,11 @@
 package uk.nhs.careconnect.ri.management;
 
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.Endpoint;
+import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http.SSLContextParametersSecureProtocolSocketFactory;
 import org.apache.camel.component.http4.HttpComponent;
+import org.apache.camel.spi.RestConfiguration;
 import org.apache.camel.util.jsse.KeyManagersParameters;
 import org.apache.camel.util.jsse.KeyStoreParameters;
 import org.apache.camel.util.jsse.SSLContextParameters;
@@ -25,6 +25,8 @@ public class CamelMonitorRoute extends RouteBuilder {
 	protected Environment env;
 
 
+	private String gpcAuth="Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.ewogICJpc3MiOiAiaHR0cDovL2VjMi01NC0xOTQtMTA5LTE4NC5ldS13ZXN0LTEuY29tcHV0ZS5hbWF6b25hd3MuY29tLyMvc2VhcmNoIiwKICAic3ViIjogIjEiLAogICJhdWQiOiAiaHR0cHM6Ly9hdXRob3JpemUuZmhpci5uaHMubmV0L3Rva2VuIiwKICAiZXhwIjogMTUyMDc4MjIwMCwKICAiaWF0IjogMTUyMDc4MTkwMCwKICAicmVhc29uX2Zvcl9yZXF1ZXN0IjogImRpcmVjdGNhcmUiLAogICJyZXF1ZXN0ZWRfc2NvcGUiOiAib3JnYW5pemF0aW9uLyoucmVhZCIsCiAgInJlcXVlc3RpbmdfZGV2aWNlIjogewogICAgInJlc291cmNlVHlwZSI6ICJEZXZpY2UiLAogICAgImlkZW50aWZpZXIiOiBbCiAgICAgIHsKICAgICAgICAic3lzdGVtIjogIldlYiBJbnRlcmZhY2UiLAogICAgICAgICJ2YWx1ZSI6ICJHUCBDb25uZWN0IERlbW9uc3RyYXRvciIKICAgICAgfQogICAgXSwKICAgICJtb2RlbCI6ICJEZW1vbnN0cmF0b3IiLAogICAgInZlcnNpb24iOiAiMS4wIiwKICAgICJ1cmwiOiAiaHR0cDovL2VjMi01NC0xOTQtMTA5LTE4NC5ldS13ZXN0LTEuY29tcHV0ZS5hbWF6b25hd3MuY29tLyMvc2VhcmNoIgogIH0sCiAgInJlcXVlc3Rpbmdfb3JnYW5pemF0aW9uIjogewogICAgInJlc291cmNlVHlwZSI6ICJPcmdhbml6YXRpb24iLAogICAgImlkZW50aWZpZXIiOiBbCiAgICAgIHsKICAgICAgICAic3lzdGVtIjogImh0dHBzOi8vZmhpci5uaHMudWsvSWQvb2RzLW9yZ2FuaXphdGlvbi1jb2RlIiwKICAgICAgICAidmFsdWUiOiAiQTExMTExIgogICAgICB9CiAgICBdLAogICAgIm5hbWUiOiAiR1AgQ29ubmVjdCBEZW1vbnN0cmF0b3IiCiAgfSwKICAicmVxdWVzdGluZ19wcmFjdGl0aW9uZXIiOiB7CiAgICAicmVzb3VyY2VUeXBlIjogIlByYWN0aXRpb25lciIsCiAgICAiaWQiOiAiMSIsCiAgICAiaWRlbnRpZmllciI6IFsKICAgICAgewogICAgICAgICJzeXN0ZW0iOiAiaHR0cHM6Ly9maGlyLm5ocy51ay9zZHMtdXNlci1pZCIsCiAgICAgICAgInZhbHVlIjogIkcxMzU3OTEzNSIKICAgICAgfSwKICAgICAgewogICAgICAgICJzeXN0ZW0iOiAiaHR0cHM6Ly9maGlyLm5ocy51ay9JZC9zZHMtcm9sZS1wcm9maWxlLWlkIiwKICAgICAgICAidmFsdWUiOiAiMTExMTExMTExIgogICAgICB9LAogICAgICB7CiAgICAgICAgInN5c3RlbSI6ICJMb2NhbFVzZXJTeXN0ZW0iLAogICAgICAgICJ2YWx1ZSI6ICIxIgogICAgICB9CiAgICBdLAogICAgIm5hbWUiOiBbCiAgICAgIHsKICAgICAgICAiZmFtaWx5IjogIkRlbW9uc3RyYXRvciIsCiAgICAgICAgImdpdmVuIjogWwogICAgICAgICAgIkdQQ29ubmVjdCIKICAgICAgICBdLAogICAgICAgICJwcmVmaXgiOiBbCiAgICAgICAgICAiTXIiCiAgICAgICAgXQogICAgICB9CiAgICBdCiAgfQp9.";
+
 	@Value("${jolokia.jmxendpoint.ccriserver}")
 	private String jmxCCRIServer;
 
@@ -43,22 +45,26 @@ public class CamelMonitorRoute extends RouteBuilder {
 	@Value("${nrls.fhirbase}")
 	private String nrlsServer;
 
+
+	@Value("${gpc.fhirbase}")
+	private String gpcServer;
+
     @Override
     public void configure() 
     {
-		Endpoint odsEndpoint = null;
-    	try {
-			odsEndpoint = setupSSLConext(getContext(),odsServer);
-		} catch (Exception ex) {
 
-		}
+		restConfiguration()
+				.component("servlet")
+				.contextPath("api")
+				.dataFormatProperty("prettyPrint", "true")
+				.enableCORS(true);
 
-		Endpoint nrlsEndpoint = null;
 		try {
-			nrlsEndpoint = setupSSLConext(getContext(),nrlsServer);
-		} catch (Exception ex) {
-
+			setupSSLConext(getContext(), odsServer);
+		} catch(Exception ex) {
+			log.error(ex.getMessage());
 		}
+
 
 		rest("/config")
 				.get("/http").to("direct:hello");
@@ -66,17 +72,51 @@ public class CamelMonitorRoute extends RouteBuilder {
 		from("direct:hello")
 				.transform().constant("{ \"fhirServer\" : \""+serverBase+"\" }");
 
-/*
-		from("servlet:nrls?matchOnUriPrefix=true")
-				.routeId("nrls")
+		rest("/fhir")
+				.get("/ods/{path}").to("direct:ods")
+				.get("/nrls/{path}").to("direct:nrls")
+				.get("/gpc/{path}").to("direct:gpc");
+
+
+		from("direct:nrls")
+				.routeId("nrlsREST")
 				// add in headers for NRLS
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						Message in = exchange.getIn();
+						exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path"));
+					}})
 				.to(nrlsServer);
 
-		// Just needs CORS support
-		from("servlet:ods?matchOnUriPrefix=true")
-				.routeId("ods")
-				.to(odsEndpoint);
-*/
+		from("direct:gpc")
+				.routeId("gpcREST")
+				// add in headers for GPC
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						Message in = exchange.getIn();
+						exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path"));
+						exchange.getIn().setHeader("Ssp-TraceID","1324");
+						exchange.getIn().setHeader("Ssp-From","200000000359");
+						exchange.getIn().setHeader("Ssp-To","200000000359");
+						exchange.getIn().setHeader("Ssp-InteractionID","urn:nhs:names:services:gpconnect:fhir:rest:read:metadata-1");
+						exchange.getIn().setHeader("Authorization",gpcAuth);
+					}})
+				.to(gpcServer);
+
+		from("direct:ods")
+				.routeId("odsREST")
+				.log("ods called")
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						Message in = exchange.getIn();
+						exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path"));
+					}})
+				.to(odsServer);
+
+
 		from("servlet:ccri-fhirserver?matchOnUriPrefix=true")
 				.routeId("ccri-fhiserver-jokolia")
 			.to(jmxCCRIServer);
@@ -92,11 +132,11 @@ public class CamelMonitorRoute extends RouteBuilder {
 
     }
 
-	private Endpoint setupSSLConext(CamelContext camelContext, String serverBase) throws Exception {
+	private void setupSSLConext(CamelContext camelContext, String serverBase) throws Exception {
 
 		KeyStoreParameters keyStoreParameters = new KeyStoreParameters();
 		// Change this path to point to your truststore/keystore as jks files
-		keyStoreParameters.setResource("/etc/ssl/demo.jks");
+		keyStoreParameters.setResource("keystore.jks");
 		keyStoreParameters.setPassword("password");
 
 		KeyManagersParameters keyManagersParameters = new KeyManagersParameters();
@@ -110,11 +150,10 @@ public class CamelMonitorRoute extends RouteBuilder {
 		sslContextParameters.setKeyManagers(keyManagersParameters);
 		sslContextParameters.setTrustManagers(trustManagersParameters);
 
-		HttpComponent httpComponent = camelContext.getComponent("http4s", HttpComponent.class);
+		HttpComponent httpComponent = camelContext.getComponent("https4", HttpComponent.class);
 		httpComponent.setSslContextParameters(sslContextParameters);
-		//This is important to make your cert skip CN/Hostname checks
-		httpComponent.setX509HostnameVerifier(new AllowAllHostnameVerifier());
 
-		return httpComponent.createEndpoint("http4s:"+serverBase+"?throwExceptionOnFailure=false&bridgeEndpoint=true");
+
+
 	}
 }

@@ -23,12 +23,21 @@ export class EdDashboardComponent implements OnInit {
     map: Map;
     source: XYZ;
     layer: TileLayer;
-    markerlayer: TileLayer;
+
+    ambLayer: TileLayer;
+    patLayer: TileLayer;
+    edLayer: TileLayer;
+
+
     view: View;
     markerEd: Style;
     markerAmb: Style;
     markerPat: Style;
-    markerSource : Vector;
+
+
+    edSource : Vector;
+    ambSource : Vector;
+    patSource : Vector;
 
     constructor() { }
 
@@ -38,6 +47,8 @@ export class EdDashboardComponent implements OnInit {
       this.source = new XYZ({
           url: 'http://tile.osm.org/{z}/{x}/{y}.png'
       });
+
+      // https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=<insert-your-apikey-here>
 
     this.markerEd = new Style({
       image: new Icon(/** @type {olx.style.IconOptions} */ ({
@@ -68,20 +79,30 @@ export class EdDashboardComponent implements OnInit {
         anchorYUnits: 'pixels',
         opacity: 0.75,
         scale: 0.3,
-        src: '/assets/street_view.png'
+        src: '/assets/street-view.png'
       }))
     });
 
-    this.markerSource = new Vector();
+    this.edSource = new Vector();
+      this.ambSource = new Vector();
+      this.patSource = new Vector();
 
     this.layer = new TileLayer({
           source: this.source
       });
 
-    this.markerlayer = new VectorLayer({
-      source: this.markerSource,
-      style: this.markerAmb,
-    }),
+    this.ambLayer = new VectorLayer({
+          source: this.ambSource,
+          style: this.markerAmb,
+      });
+      this.patLayer = new VectorLayer({
+          source: this.patSource,
+          style: this.markerPat,
+      });
+      this.edLayer = new VectorLayer({
+          source: this.edSource,
+          style: this.markerEd,
+      });
 
       this.view = new View({
           center: proj,
@@ -90,93 +111,59 @@ export class EdDashboardComponent implements OnInit {
 
       this.map = new Map({
           target: 'map',
-          layers: [this.layer, this.markerlayer],
+          layers: [this.layer, this.ambLayer, this.patLayer, this.edLayer],
           view: this.view
       });
 
     let ambFeature = new Feature({
       geometry: new Point(transform([-1.5295702591538431, 53.795387709017916, ],'EPSG:4326',
         'EPSG:3857')),
-      name: 'Null Island',
+      name: 'Ambulance: Danzig',
       population: 4000,
       rainfall: 500
     });
-    this.markerSource.addFeature(ambFeature);
+    this.ambSource.addFeature(ambFeature);
 
     let edFeature = new Feature({
       geometry: new Point(transform([-1.5230420347013478,53.80634615690993],'EPSG:4326',
         'EPSG:3857')),
-      name: 'Null Island',
+      name: 'ED: LTH',
       population: 4000,
       rainfall: 500
     });
-    this.markerSource.addFeature(edFeature);
+    this.edSource.addFeature(edFeature);
 
     let patientFeature = new Feature({
       geometry: new Point(transform([-1.5508230590282892,53.796284092469236],'EPSG:4326',
         'EPSG:3857')),
-      name: 'Null Island',
+      name: 'Patient: A',
       population: 4000,
       rainfall: 500
     });
-    this.markerSource.addFeature(patientFeature);
+    this.patSource.addFeature(patientFeature);
+
+      var featureListener = function ( event ) {
+          console.log("featureListenerCalled");
+          alert("Feature Listener Called");
+      };
 
     this.map.on("click" , evt => {
-      alert( 'click' + evt);
+        //console.log(evt.pixel);
+
+        var iconFeatureA = this.map.getFeaturesAtPixel(evt.pixel);
+        if (iconFeatureA !== null) {
+            for(let feature of iconFeatureA) {
+                console.log(feature);
+                alert(feature.values_.name);
+            }
+            //var adres = iconFeatureA[0].get("adres");
+
+            evt.preventDefault(); // avoid bubbling
+        }
     } );
 
-   // iconFeature.on( 'click', this.clickMarker );
-
-
-
-    /*
-          let ed = new Overlay({
-            position: new Point(fromLonLat([-1.5230420347013478,53.80634615690993],'EPSG:4326',
-              'EPSG:3857')),
-            positioning: 'center-center',
-            style : this.markerStyle,
-            stopEvent: false
-          });
-          this.layer.addOverlay(ed);
-*/
 
   }
-
-
-/*
-        this.map.setCenter(new google.maps.LatLng(53.80, -1.5295702591538431));
-
-        let location = new google.maps.LatLng(53.80634615690993, -1.5230420347013478);
-
-        var trafficLayer = new google.maps.TrafficLayer();
-        trafficLayer.setMap(this.map);
-
-        let marker = new google.maps.Marker({
-            position: location,
-            map: this.map,
-            icon: this.iconBase + "hospitals_maps.png",
-            text: 'YAS',
-            title: 'Got you!'
-        });
-        location = new google.maps.LatLng(53.795387709017916, -1.5295702591538431);
-        marker = new google.maps.Marker({
-            position: location,
-            map: this.map,
-            icon: this.iconBase + "cabs_maps.png",
-            text: 'YAS'
-        });
-
-        location = new google.maps.LatLng(53.796284092469236,-1.5508230590282892);
-        marker = new google.maps.Marker({
-            position: location,
-            map: this.map,
-            icon: this.iconBase + "man_maps.png",
-            text: 'YAS'
-        });
-
-
-    }
-*/
 
 
 }

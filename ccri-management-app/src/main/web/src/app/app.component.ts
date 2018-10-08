@@ -37,22 +37,32 @@ export class AppComponent {
             route: 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3',
             title: 'Care Connect RI (Secure)'
         }
-        /*,
-        {
+        ,{
             icon: 'swap_horiz',
-            route: 'https://directory.spineservices.nhs.uk/STU3',
+            route: 'http://127.0.0.1:8187/ccri/camel/fhir/ods',
             title: 'FHIR ODS API'
-        },
-        {
-            icon: 'swap_horiz',
-            route: 'https://fhir.hl7.org.uk/STU3',
-            title: 'HL7 UK FHIR Reference'
-        },
-        {
-            icon: 'swap_horiz',
-            route: 'https://fhir.nhs.uk/STU3',
-            title: 'NHS Digital FHIR Reference'
-        },*/
+        }
+      ,{
+          icon: 'swap_horiz',
+          route: 'http://127.0.0.1:8187/ccri/camel/fhir/nrls',
+          title: 'National Record Locator Service'
+      }
+      ,{
+          icon: 'swap_horiz',
+          route: 'http://127.0.0.1:8187/ccri/camel/fhir/gpc',
+          title: 'GP Connect'
+      }
+      /*
+      ,{
+          icon: 'swap_horiz',
+          route: 'https://fhir.hl7.org.uk/STU3',
+          title: 'HL7 UK FHIR Reference'
+      }
+      ,{
+          icon: 'swap_horiz',
+          route: 'https://fhir.nhs.uk/STU3',
+          title: 'NHS Digital FHIR Reference'
+      },*/
     ];
 
   usermenu: Object[] = [{
