@@ -90,7 +90,7 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
                 encounterLocationComponent.setStatus(encounterLocation.getStatus());
             }
             if (encounterLocation.getLocation() != null) {
-                encounter.addLocation()
+                encounterLocationComponent
                         .setLocation(new Reference("Location/" + encounterLocation.getLocation().getId())
                                 .setDisplay(encounterLocation.getLocation().getName()));
             }

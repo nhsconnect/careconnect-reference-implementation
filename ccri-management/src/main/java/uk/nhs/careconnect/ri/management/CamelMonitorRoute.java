@@ -104,6 +104,32 @@ public class CamelMonitorRoute extends RouteBuilder {
 						exchange.getIn().setHeader("Ssp-TraceID","1324");
 						exchange.getIn().setHeader("Ssp-From","200000000359");
 						exchange.getIn().setHeader("Ssp-To","200000000359");
+						//log.info("dude!");
+						if (in.getHeader("Accept") == null || in.getHeader("Accept").toString().isEmpty() || in.getHeader("Accept").toString().equals("*/*"))  {
+						//	log.info("accept is not present");
+							 if (in.getHeader(Exchange.CONTENT_TYPE) != null || !in.getHeader(Exchange.CONTENT_TYPE).toString().isEmpty()) {
+								 in.setHeader("Accept", in.getHeader(Exchange.CONTENT_TYPE));
+							 } else {
+						//	 	log.info("content type null");
+								 in.setHeader("Accept", "application/fhir+json");
+							 }
+						} else if (in.getHeader("Accept").toString().contains("xml")) {
+							in.setHeader("Accept", "application/fhir+xml");
+						} else if (in.getHeader("Accept").toString().contains("json")) {
+							in.setHeader("Accept", "application/fhir+json");
+						}
+
+						if (in.getHeader(Exchange.CONTENT_TYPE) == null || in.getHeader(Exchange.CONTENT_TYPE).toString().isEmpty()) {
+							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("xml")) {
+							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("json")) {
+							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+						}
+						if (in.getHeader(Exchange.HTTP_QUERY) != null || !in.getHeader(Exchange.HTTP_QUERY).toString().isEmpty()) {
+							in.setHeader(Exchange.HTTP_QUERY, in.getHeader(Exchange.HTTP_QUERY).toString().replace("&_format=xml",""));
+							in.setHeader(Exchange.HTTP_QUERY, in.getHeader(Exchange.HTTP_QUERY).toString().replace("_format=xml",""));
+						}
 						//exchange.getIn().setHeader(Exchange.HTTP_QUERY, in.getHeader("path").toString().replace("|",""));
 						exchange.getIn().setHeader("Authorization",gpcAuth);
 						String type="search";
@@ -131,7 +157,8 @@ public class CamelMonitorRoute extends RouteBuilder {
 						}
 					}})
 				.to("log:uk.nhs.careconnect.facade.gpc?level=INFO&showHeaders=true&showExchangeId=true")
-				.to(gpcServer);
+				.to(gpcServer)
+				.to("log:uk.nhs.careconnect.facade.gpc?level=INFO&showHeaders=true&showExchangeId=true");
 
 		from("direct:ods")
 				.routeId("odsREST")

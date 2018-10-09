@@ -375,21 +375,15 @@ public class PatientDao implements PatientRepository {
             em.persist(addr);
             em.persist(patientAdr);
         }
+        for (PatientTelecom telSearch : patientEntity.getTelecoms()) {
+            em.remove(telSearch);
+        }
         for (ContactPoint contact : patient.getTelecom()) {
-            PatientTelecom patientTel = null;
-            for (PatientTelecom telSearch : patientEntity.getTelecoms()) {
-
-                if (telSearch.getValue().equals(contact.getValue())) {
-                        patientTel = telSearch;
-                        break;
-                }
-            }
-            if (patientTel == null) {
-                patientTel = new PatientTelecom();
+            PatientTelecom patientTel  = new PatientTelecom();
                 patientTel.setPatientEntity(patientEntity);
                 patientEntity.addTelecom(patientTel);
                 patientTel.setValue(contact.getValue());
-            }
+
             if (contact.hasSystem())
                 patientTel.setSystem(contact.getSystem());
             if (contact.hasUse())
@@ -402,7 +396,7 @@ public class PatientDao implements PatientRepository {
 
         newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
         //patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
-        em.persist(patientEntity);
+        //em.persist(patientEntity);
 
 
         return newPatient;
