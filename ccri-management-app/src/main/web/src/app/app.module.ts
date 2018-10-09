@@ -101,6 +101,7 @@ import {ViewDocumentComponent} from "./component/binary/composition-view/view-do
 import {ViewDocumentSectionComponent} from "./component/binary/composition-view-section/view-document-section.component";
 import {PdfViewerModule} from "ng2-pdf-viewer";
 import {ImageViewerModule} from "@hallysonh/ngx-imageviewer";
+import { MapComponent } from './component/map/map.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -160,6 +161,7 @@ export function initializeApp(appConfig: AppConfig) {
     ObservationChartDialogComponent,
     EdDashboardComponent,
     ExplorerMainComponent,
+    MapComponent,
 
 
 

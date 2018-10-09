@@ -151,7 +151,7 @@ export class FhirService {
       headers = headers.append('Accept', 'application/fhir+xml');
       return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
     } else {
-      return this.http.get<any>(url, {'headers': headers});
+      return this.http.get<any>(url, {'headers': this.getHeaders(true)});
     }
   }
   public getResults(url : string) : Observable<fhir.Bundle> {
@@ -163,7 +163,7 @@ export class FhirService {
           headers = headers.append('Accept', 'application/fhir+xml');
           return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
       } else {
-          return this.http.get<any>(url, {'headers': headers});
+          return this.http.get<any>(url, {'headers': this.getHeaders(true)});
       }
   }
 

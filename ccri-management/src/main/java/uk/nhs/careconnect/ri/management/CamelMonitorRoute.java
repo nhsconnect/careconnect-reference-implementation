@@ -75,7 +75,8 @@ public class CamelMonitorRoute extends RouteBuilder {
 		rest("/fhir")
 				.get("/ods/{path}").to("direct:ods")
 				.get("/nrls/{path}").to("direct:nrls")
-				.get("/gpc/{path}").to("direct:gpc");
+				.get("/gpc/{path}").to("direct:gpc")
+				.get("/gpc/{path}/{id}").to("direct:gpc");;
 
 
 		from("direct:nrls")
@@ -97,12 +98,39 @@ public class CamelMonitorRoute extends RouteBuilder {
 					public void process(Exchange exchange) throws Exception {
 						Message in = exchange.getIn();
 						exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path"));
+						if (in.getHeader("id") != null) {
+							exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path")+"/"+in.getHeader("id"));
+						}
 						exchange.getIn().setHeader("Ssp-TraceID","1324");
 						exchange.getIn().setHeader("Ssp-From","200000000359");
 						exchange.getIn().setHeader("Ssp-To","200000000359");
-						exchange.getIn().setHeader("Ssp-InteractionID","urn:nhs:names:services:gpconnect:fhir:rest:read:metadata-1");
+						//exchange.getIn().setHeader(Exchange.HTTP_QUERY, in.getHeader("path").toString().replace("|",""));
 						exchange.getIn().setHeader("Authorization",gpcAuth);
+						String type="search";
+						if (in.getHeader("id") != null) type="read";
+
+						switch (in.getHeader("path").toString()) {
+							case "metadata":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:read:metadata-1");
+								break;
+							case "Patient":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":patient-1");
+								break;
+							case "Appointment":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":patient_appointments-1");
+								break;
+							case "Slot":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":slot-1");
+								break;
+							case "Practitioner":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":practitioner-1");
+								break;
+							case "Organization":
+								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":organization-1");
+								break;
+						}
 					}})
+				.to("log:uk.nhs.careconnect.facade.gpc?level=INFO&showHeaders=true&showExchangeId=true")
 				.to(gpcServer);
 
 		from("direct:ods")

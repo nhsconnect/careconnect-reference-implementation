@@ -373,7 +373,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                   break;
               case 'token':
                   query = query + '=';
-                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "|";
+                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "%7C";
                   if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
                   i++;
                   break;

@@ -1,16 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
-import VectorLayer from 'ol/layer/Vector';
-import Vector from 'ol/source/Vector';
-import { Style ,Icon } from 'ol/style';
-import Feature from 'ol/Feature.js';
-import Overlay from 'ol/Overlay.js';
-import Point from 'ol/geom/Point'
-import {fromLonLat} from 'ol/proj';
-import {transform} from 'ol/proj';
+
+
 
 @Component({
   selector: 'app-ed-dashboard',
@@ -20,147 +10,26 @@ import {transform} from 'ol/proj';
 export class EdDashboardComponent implements OnInit {
 
 
-    map: Map;
-    source: XYZ;
-    layer: TileLayer;
+    routes: Object[] = [{
+        icon: 'home',
+        route: '.',
+        title: 'ED Dashboard',
+    }, {
+        icon: 'library_books',
+        route: '.',
+        title: 'Documentation',
+    }
+    ];
 
-    ambLayer: TileLayer;
-    patLayer: TileLayer;
-    edLayer: TileLayer;
+    navmenu: Object[] = [];
+
+    title : string ='Elmet Emergency Dashboard - Ridings Ambulance Service';
 
 
-    view: View;
-    markerEd: Style;
-    markerAmb: Style;
-    markerPat: Style;
-
-
-    edSource : Vector;
-    ambSource : Vector;
-    patSource : Vector;
 
     constructor() { }
 
   ngOnInit() {
-
-      let proj = fromLonLat([-1.5230420347013478, 53.80634615690993]);
-      this.source = new XYZ({
-          url: 'http://tile.osm.org/{z}/{x}/{y}.png'
-      });
-
-      // https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=<insert-your-apikey-here>
-
-    this.markerEd = new Style({
-      image: new Icon(/** @type {olx.style.IconOptions} */ ({
-        anchor: [0.5, 46],
-        anchorXUnits: 'fraction',
-        anchorYUnits: 'pixels',
-        opacity: 0.75,
-        scale: 0.3,
-        src: '/assets/marker.png'
-      }))
-    });
-
-    this.markerAmb = new Style({
-      image: new Icon(/** @type {olx.style.IconOptions} */ ({
-        anchor: [0.5, 46],
-        anchorXUnits: 'fraction',
-        anchorYUnits: 'pixels',
-        opacity: 0.75,
-        scale: 0.3,
-        src: '/assets/tram-2.png'
-      }))
-    });
-
-    this.markerPat = new Style({
-      image: new Icon(/** @type {olx.style.IconOptions} */ ({
-        anchor: [0.5, 46],
-        anchorXUnits: 'fraction',
-        anchorYUnits: 'pixels',
-        opacity: 0.75,
-        scale: 0.3,
-        src: '/assets/street-view.png'
-      }))
-    });
-
-    this.edSource = new Vector();
-      this.ambSource = new Vector();
-      this.patSource = new Vector();
-
-    this.layer = new TileLayer({
-          source: this.source
-      });
-
-    this.ambLayer = new VectorLayer({
-          source: this.ambSource,
-          style: this.markerAmb,
-      });
-      this.patLayer = new VectorLayer({
-          source: this.patSource,
-          style: this.markerPat,
-      });
-      this.edLayer = new VectorLayer({
-          source: this.edSource,
-          style: this.markerEd,
-      });
-
-      this.view = new View({
-          center: proj,
-          zoom: 13
-      });
-
-      this.map = new Map({
-          target: 'map',
-          layers: [this.layer, this.ambLayer, this.patLayer, this.edLayer],
-          view: this.view
-      });
-
-    let ambFeature = new Feature({
-      geometry: new Point(transform([-1.5295702591538431, 53.795387709017916, ],'EPSG:4326',
-        'EPSG:3857')),
-      name: 'Ambulance: Danzig',
-      population: 4000,
-      rainfall: 500
-    });
-    this.ambSource.addFeature(ambFeature);
-
-    let edFeature = new Feature({
-      geometry: new Point(transform([-1.5230420347013478,53.80634615690993],'EPSG:4326',
-        'EPSG:3857')),
-      name: 'ED: LTH',
-      population: 4000,
-      rainfall: 500
-    });
-    this.edSource.addFeature(edFeature);
-
-    let patientFeature = new Feature({
-      geometry: new Point(transform([-1.5508230590282892,53.796284092469236],'EPSG:4326',
-        'EPSG:3857')),
-      name: 'Patient: A',
-      population: 4000,
-      rainfall: 500
-    });
-    this.patSource.addFeature(patientFeature);
-
-      var featureListener = function ( event ) {
-          console.log("featureListenerCalled");
-          alert("Feature Listener Called");
-      };
-
-    this.map.on("click" , evt => {
-        //console.log(evt.pixel);
-
-        var iconFeatureA = this.map.getFeaturesAtPixel(evt.pixel);
-        if (iconFeatureA !== null) {
-            for(let feature of iconFeatureA) {
-                console.log(feature);
-                alert(feature.values_.name);
-            }
-            //var adres = iconFeatureA[0].get("adres");
-
-            evt.preventDefault(); // avoid bubbling
-        }
-    } );
 
 
   }
