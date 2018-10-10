@@ -38,7 +38,8 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
-
+            , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Encounter.SP_STATUS) TokenParam status
     );
 
     List<EncounterEntity> searchEntity(FhirContext ctx,
@@ -50,6 +51,7 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
-
+            , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Encounter.SP_STATUS) TokenParam status
     );
 }
