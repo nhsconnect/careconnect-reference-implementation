@@ -3,6 +3,8 @@ import {FhirService, Formats} from "../../service/fhir.service";
 import {IAlertConfig, TdDialogService, TdMediaService} from "@covalent/core";
 import {Router} from "@angular/router";
 import {MessageService} from "../../service/message.service";
+import {MatIconRegistry} from "@angular/material";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-explorer-main',
@@ -38,17 +40,17 @@ export class ExplorerMainComponent implements OnInit {
         }
         ,{
             icon: 'swap_horiz',
-            route: 'http://127.0.0.1:8187/ccri/camel/fhir/ods',
+            route: '/ccri/camel/fhir/ods',
             title: 'FHIR ODS API'
         }
         ,{
             icon: 'swap_horiz',
-            route: 'http://127.0.0.1:8187/ccri/camel/fhir/nrls',
+            route: '/ccri/camel/fhir/nrls',
             title: 'National Record Locator Service'
         }
         ,{
             icon: 'swap_horiz',
-            route: 'http://127.0.0.1:8187/ccri/camel/fhir/gpc',
+            route: '/ccri/camel/fhir/gpc',
             title: 'GP Connect'
         }
         /*
@@ -87,9 +89,14 @@ export class ExplorerMainComponent implements OnInit {
               private router : Router,
               private messageService : MessageService,
               private _dialogService: TdDialogService,
-              private _viewContainerRef: ViewContainerRef) { }
+              private _viewContainerRef: ViewContainerRef,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
+      this.matIconRegistry.addSvgIcon(
+          "github",
+          this.domSanitizer.bypassSecurityTrustResourceUrl("/assets/github.svg"));
 
     this.fhirSrv.getRootUrlChange().subscribe(url =>
     {

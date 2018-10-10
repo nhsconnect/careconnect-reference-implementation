@@ -1,15 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
-import VectorLayer from 'ol/layer/Vector';
-import Vector from 'ol/source/Vector';
-import { Style ,Icon } from 'ol/style';
-import Feature from 'ol/Feature.js';
-import Point from 'ol/geom/Point'
-import {fromLonLat} from 'ol/proj';
-import {transform} from 'ol/proj';
+
 
 @Component({
   selector: 'app-map',
@@ -17,8 +7,9 @@ import {transform} from 'ol/proj';
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnInit {
-
+/*
     map: Map;
+
 
     source: XYZ;
     layer: TileLayer;
@@ -38,13 +29,13 @@ export class MapComponent implements OnInit {
     ambSource : Vector;
     patSource : Vector;
 
-
+*/
   //  @ViewChild('mapref') mapRef: ElementRef;
 
   constructor() { }
 
   ngOnInit() {
-
+/*
       console.log('init');
       let proj = fromLonLat([-1.5230420347013478, 53.80634615690993]);
       this.source = new XYZ({
@@ -54,7 +45,7 @@ export class MapComponent implements OnInit {
       // https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=<insert-your-apikey-here>
 
       this.markerEd = new Style({
-          image: new Icon(/** @type {olx.style.IconOptions} */ ({
+          image: new Icon( ({
               anchor: [0.5, 46],
               anchorXUnits: 'fraction',
               anchorYUnits: 'pixels',
@@ -65,7 +56,7 @@ export class MapComponent implements OnInit {
       });
 
       this.markerAmb = new Style({
-          image: new Icon(/** @type {olx.style.IconOptions} */ ({
+          image: new Icon( ({
               anchor: [0.5, 46],
               anchorXUnits: 'fraction',
               anchorYUnits: 'pixels',
@@ -76,7 +67,7 @@ export class MapComponent implements OnInit {
       });
 
       this.markerPat = new Style({
-          image: new Icon(/** @type {olx.style.IconOptions} */ ({
+          image: new Icon( ({
               anchor: [0.5, 46],
               anchorXUnits: 'fraction',
               anchorYUnits: 'pixels',
@@ -169,6 +160,8 @@ export class MapComponent implements OnInit {
     } );
 
       console.log('init - end');
+
+      */
   }
 
 }

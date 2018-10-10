@@ -119,14 +119,14 @@ public class CamelMonitorRoute extends RouteBuilder {
 							in.setHeader("Accept", "application/fhir+json");
 						}
 
-						if (in.getHeader(Exchange.CONTENT_TYPE) == null || in.getHeader(Exchange.CONTENT_TYPE).toString().isEmpty()) {
+						if (in.getHeader(Exchange.CONTENT_TYPE) == null || in.getHeader(Exchange.CONTENT_TYPE).toString() != null) {
 							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
 						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("xml")) {
 							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
 						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("json")) {
 							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
 						}
-						if (in.getHeader(Exchange.HTTP_QUERY) != null || (in.getHeader(Exchange.HTTP_QUERY)).toString() !=null) {
+						if (in.getHeader(Exchange.HTTP_QUERY) != null && (in.getHeader(Exchange.HTTP_QUERY)).toString() !=null) {
 							in.setHeader(Exchange.HTTP_QUERY, in.getHeader(Exchange.HTTP_QUERY).toString().replace("&_format=xml",""));
 							in.setHeader(Exchange.HTTP_QUERY, in.getHeader(Exchange.HTTP_QUERY).toString().replace("_format=xml",""));
 						}
