@@ -96,7 +96,7 @@ export class ExplorerMainComponent implements OnInit {
   ngOnInit() {
       this.matIconRegistry.addSvgIcon(
           "github",
-          this.domSanitizer.bypassSecurityTrustResourceUrl("/assets/github.svg"));
+          this.domSanitizer.bypassSecurityTrustResourceUrl("assets/github.svg"));
 
     this.fhirSrv.getRootUrlChange().subscribe(url =>
     {
