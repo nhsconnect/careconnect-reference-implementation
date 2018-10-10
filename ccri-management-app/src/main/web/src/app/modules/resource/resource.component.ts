@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {NavigationEnd, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {FhirService, Formats} from "../../service/fhir.service";
 import {MatSelect} from "@angular/material";
 import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
@@ -30,7 +30,7 @@ documentation:
 })
 export class ResourceComponent implements OnInit,AfterViewInit {
 
-  constructor(private router : Router, private fhirSrv : FhirService) { }
+
 
   public resource : fhir.Bundle = undefined;
 
@@ -104,19 +104,32 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
     ];
 
+
+    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute) { }
+
   ngOnInit() {
      // console.log('Resource Init called'+ this.router.url);
 
     this.clearDown();
 
 
-      if (this.router.url.startsWith('/resource')) {
-        //  console.log(' = Init Build');
-          let resource = this.router.url.replace('/resource/','');
-          this.buildOptions(resource);
+      let resource  = this.route.snapshot.paramMap.get('resourceType');
+      this.buildOptions(resource);
 
+      this.route.url.subscribe( url => {
+          //console.log('activated route url ='+url);
+          //console.log('activated route segment ='+url[0]);
+          if (url[0].path === 'resource') {
+              let resource = this.route.snapshot.paramMap.get('resourceType');
+              this.resource = undefined;
+              this.resourceString = undefined;
+              this.query = undefined;
+              this.clearDown();
+              this.onClear();
+              this.buildOptions(resource);
+          }
+      });
 
-      }
 
       this.format = this.fhirSrv.getFormat();
 
@@ -125,12 +138,13 @@ export class ResourceComponent implements OnInit,AfterViewInit {
           this.getResults();
       });
 
-
+/*
       this._routerSub = this.router.events
       // Here is one extra parenthesis it's missing in your code
           .subscribe( event  => {
+             // console.log('router event');
               if ((event instanceof NavigationEnd) && (event.url.startsWith('/resource'))) {
-              //    console.log(' + NavChange '+event.url);
+                  console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
                   if (this.form != undefined) {
@@ -144,7 +158,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                   this.clearDown();
                   this.buildOptions(resource);
               }
-          })
+          }) */
   }
 
   clearDown() {
@@ -326,7 +340,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   }
 
     ngAfterViewInit() {
-      console.log('afteer init');
+      console.log('after init');
 
         if (this.form != undefined) {
             this.form.form.valueChanges.subscribe((val) => {
@@ -359,7 +373,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                   break;
               case 'token':
                   query = query + '=';
-                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "|";
+                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "%7C";
                   if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
                   i++;
                   break;
@@ -397,7 +411,9 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   onClear() {
       this.elements = [];
-      this.form.refresh();
+      if (this.form != undefined) {
+        this.form.refresh();
+      }
   }
 
   getResults() {

@@ -84,10 +84,24 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
             encounter.setPeriod(period);
         }
 
-        if (encounterEntity.getLocation()!=null) {
-            encounter.addLocation()
-                    .setLocation(new Reference("Location/"+encounterEntity.getLocation().getId())
-                    .setDisplay(encounterEntity.getLocation().getName()));
+        for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+            Encounter.EncounterLocationComponent encounterLocationComponent = encounter.addLocation();
+            if (encounterLocation.getStatus() != null) {
+                encounterLocationComponent.setStatus(encounterLocation.getStatus());
+            }
+            if (encounterLocation.getLocation() != null) {
+                encounterLocationComponent
+                        .setLocation(new Reference("Location/" + encounterLocation.getLocation().getId())
+                                .setDisplay(encounterLocation.getLocation().getName()));
+            }
+            if (encounterLocation.getPeriodStartDate() != null || encounterLocation.getPeriodStartDate() != null) {
+                if (encounterLocation.getPeriodStartDate() != null) {
+                    encounterLocationComponent.getPeriod().setStart(encounterLocation.getPeriodStartDate());
+                }
+                if (encounterLocation.getPeriodStartDate() != null) {
+                    encounterLocationComponent.getPeriod().setEnd(encounterLocation.getPeriodEndDate());
+                }
+            }
         }
 
         for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
@@ -120,6 +134,10 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
 
         for (EncounterDiagnosis diagnosis : encounterEntity.getDiagnoses()) {
             encounter.addDiagnosis().setCondition(new Reference("Condition/"+diagnosis.getCondition().getId()));
+        }
+
+        if (encounterEntity.getPartOfEncounter() != null) {
+            encounter.setPartOf(new Reference("Encounter/"+encounterEntity.getPartOfEncounter().getId()));
         }
 
         return encounter;

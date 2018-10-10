@@ -51,8 +51,10 @@
                   </span>
                 </span></b></span></mat-list-item>
               <mat-divider></mat-divider>
+              <span *ngIf="conformance.sofware !== undefined">
               <mat-list-item><span flex-auto fxLayoutAlign="space-between center">Software <b>{{conformance.software.name}} ({{conformance.software.version}}) </b></span></mat-list-item>
               <mat-divider></mat-divider>
+                  </span>
               <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Server Base <b>{{serverBase}}</b></span></mat-list-item>
               <mat-divider></mat-divider>
               <mat-list-item><span flex-auto fxLayoutAlign="space-between center">FHIR Version <b>{{conformance.fhirVersion}}</b></span></mat-list-item>
@@ -99,7 +101,7 @@
   </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
-     <a mat-button color="accent" class="text-upper" [routerLink]="['/capabilitystatement']">
+     <a mat-button color="accent" class="text-upper" [routerLink]="['/exp/capabilitystatement']">
        <span>Conformance Statement</span>
      </a>
    </mat-card-actions>

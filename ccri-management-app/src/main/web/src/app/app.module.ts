@@ -91,6 +91,17 @@ import {CompositionComponent} from "./component/composition/composition.componen
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
+import { EdDashboardComponent } from './modules/ed-dashboard/ed-dashboard.component';
+import { ExplorerMainComponent } from './modules/explorer-main/explorer-main.component';
+import {EprRoutingModule} from "./modules/epr-routing.module";
+import {BinaryComponent} from "./component/binary/binary/binary.component";
+import {PdfViewerComponent} from "./component/binary/pdf-viewer/pdf-viewer.component";
+import {ImgViewerComponent} from "./component/binary/img-viewer/img-viewer.component";
+import {ViewDocumentComponent} from "./component/binary/composition-view/view-document.component";
+import {ViewDocumentSectionComponent} from "./component/binary/composition-view-section/view-document-section.component";
+import {PdfViewerModule} from "ng2-pdf-viewer";
+import {ImageViewerModule} from "@hallysonh/ngx-imageviewer";
+import { MapComponent } from './component/map/map.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -105,6 +116,12 @@ export function initializeApp(appConfig: AppConfig) {
     ResourceComponent,
 
     AllergyIntoleranceComponent,
+      BinaryComponent,
+      PdfViewerComponent,
+      ImgViewerComponent,
+      ViewDocumentComponent,
+      ViewDocumentSectionComponent,
+
     ClinicalImpressionComponent,
     ConsentComponent,
     CarePlanComponent,
@@ -142,6 +159,9 @@ export function initializeApp(appConfig: AppConfig) {
     PractitionerRoleDialogComponent,
     EncounterDialogComponent,
     ObservationChartDialogComponent,
+    EdDashboardComponent,
+    ExplorerMainComponent,
+    MapComponent,
 
 
 
@@ -163,7 +183,7 @@ export function initializeApp(appConfig: AppConfig) {
     BrowserModule,
     BrowserAnimationsModule,
       HttpClientModule,
-      AppRoutingModule,
+
       FormsModule,
       FlexLayoutModule,
 
@@ -206,7 +226,13 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentDialogsModule,
     CovalentExpansionPanelModule,
 
-    NgxChartsModule
+    NgxChartsModule,
+
+      PdfViewerModule,
+      ImageViewerModule,
+
+    EprRoutingModule,
+      AppRoutingModule
   ],
   providers: [
       AppConfig,

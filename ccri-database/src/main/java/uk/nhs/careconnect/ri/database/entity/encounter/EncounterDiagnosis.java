@@ -5,17 +5,17 @@ import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import javax.persistence.*;
 
 @Entity
-@Table(name="EncounterDiagnosis", uniqueConstraints= @UniqueConstraint(name="PK_ENCOUNTER_REASON", columnNames={"ENCOUNTER_REASON_ID"})
+@Table(name="EncounterDiagnosis1", uniqueConstraints= @UniqueConstraint(name="PK_ENCOUNTER_DIAGNOSIS", columnNames={"ENCOUNTER_DIAGNOSIS_ID"})
         ,indexes = {
-        @Index(name="IDX_ENCOUNTER_CONDITION", columnList = "DIAGNOSIS_CONDITION_ID"),
-        @Index(name="IDX_ENCOUNTER_DIAGNOSIS_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
+        @Index(name="IDX_ENCOUNTER_CONDITION1", columnList = "DIAGNOSIS_CONDITION_ID"),
+        @Index(name="IDX_ENCOUNTER_DIAGNOSIS1_ENCOUNTER_ID", columnList = "ENCOUNTER_ID")
 }
 )
 public class EncounterDiagnosis {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "ENCOUNTER_REASON_ID")
+    @Column(name= "ENCOUNTER_DIAGNOSIS_ID")
     private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)

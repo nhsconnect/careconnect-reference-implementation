@@ -98,7 +98,7 @@ public class LocationResourceProvider implements IResourceProvider {
             , @OptionalParam(name = Location.SP_RES_ID) StringParam resid
                                        ) throws Exception {
 
-        List<Location> results = new ArrayList<Location>();
+        List<Location> results = new ArrayList<>();
 
         ProducerTemplate template = context.createProducerTemplate();
 

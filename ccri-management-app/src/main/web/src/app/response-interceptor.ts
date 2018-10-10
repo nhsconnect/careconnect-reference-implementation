@@ -23,7 +23,7 @@ import {MessageService} from "./service/message.service";
            // console.log(event.status);
           }
         }, error => {
-
+          console.log(req);
           if (error.status == 401) {
             this.messageService.addMessage('401 UNAUTHORIZED - The request has not been applied because it lacks valid authentication credentials for the target resource.');
           } else if (error.status == 0) {

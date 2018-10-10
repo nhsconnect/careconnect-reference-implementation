@@ -88,6 +88,25 @@ export class FhirService {
 
     }
 
+    getHeaders(contentType : boolean = true ): HttpHeaders {
+
+        let headers = new HttpHeaders(
+        );
+        if (contentType) {
+            headers = headers.append( 'Content-Type',  'application/fhir+json' );
+            headers = headers.append('Accept', 'application/fhir+json');
+        }
+        return headers;
+    }
+
+
+    getEPRHeaders(contentType : boolean = true ): HttpHeaders {
+
+        let headers = this.getHeaders(contentType);
+
+        return headers;
+    }
+
     public setOutputFormat(outputFormat : Formats) {
       this.format = outputFormat;
       this.formatChange.emit(outputFormat);
@@ -95,7 +114,7 @@ export class FhirService {
 
     public getConformance() {
     //  console.log('called CapabilityStatement');
-      this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : {}}).subscribe(capabilityStatement =>
+      this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : this.getHeaders(true)}).subscribe(capabilityStatement =>
       {
           this.conformance = capabilityStatement;
 
@@ -107,9 +126,11 @@ export class FhirService {
   }
 
   public get(search : string) : Observable<fhir.Bundle> {
-    let url = this.getFHIRServerBase() + search;
+      console.log('get');
+    let url : string = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );
+
     if (this.format === 'xml') {
       headers = headers.append( 'Content-Type',  'application/fhir+xml' );
       headers = headers.append('Accept', 'application/fhir+xml');
@@ -120,26 +141,68 @@ export class FhirService {
   }
 
   public getResource(search : string) : Observable<any> {
+        console.log('getResource');
     let url = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );
+
     if (this.format === 'xml') {
       headers = headers.append( 'Content-Type',  'application/fhir+xml' );
       headers = headers.append('Accept', 'application/fhir+xml');
       return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
     } else {
-      return this.http.get<any>(url, {'headers': headers});
+      return this.http.get<any>(url, {'headers': this.getHeaders(true)});
     }
   }
   public getResults(url : string) : Observable<fhir.Bundle> {
-      let headers = new HttpHeaders(
-      );
+      console.log('getResults');
+      let headers = new HttpHeaders();
+
       if (this.format === 'xml') {
           headers = headers.append( 'Content-Type',  'application/fhir+xml' );
           headers = headers.append('Accept', 'application/fhir+xml');
           return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
       } else {
-          return this.http.get<any>(url, {'headers': headers});
+          return this.http.get<any>(url, {'headers': this.getHeaders(true)});
       }
   }
+
+    getBinary(id: string): Observable<fhir.Binary> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        return this.http.get<fhir.Binary>(url,{ 'headers' : this.getEPRHeaders(true)});
+
+    }
+    getBinaryRaw(id: string,): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        return this.http.get(url,{ 'headers' : this.getEPRHeaders(false) , responseType : 'blob' });
+
+    }
+
+    getCompositionDocumentHTML(id: string): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        let headers = this.getEPRHeaders(false);
+        headers = headers.append('Content-Type', 'text/html' );
+
+        return this.http
+            .get(url, {  headers , responseType : 'text' as 'text'});
+    }
+
+    getCompositionDocumentPDF(id: string): Observable<any> {
+
+        const url = this.baseUrl + '/Binary/'+id;
+
+        let headers = this.getEPRHeaders(false);
+        headers = headers.append(
+            'Content-Type', 'application/pdf' );
+
+        return this.http
+            .get(url, { headers, responseType : 'blob' as 'blob'} );
+    }
+
 }

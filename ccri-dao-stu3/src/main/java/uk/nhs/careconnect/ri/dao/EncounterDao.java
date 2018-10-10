@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -17,11 +18,9 @@ import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterDiagnosis;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterIdentifier;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterParticipant;
+import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
@@ -211,7 +210,7 @@ public class  EncounterDao implements EncounterRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null, null, null);
+                    List<EncounterEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/encounter"),null, null, null,null, null);
                     for (EncounterEntity enc : results) {
                         encounterEntity = enc;
                         break;
@@ -254,11 +253,6 @@ public class  EncounterDao implements EncounterRepository {
             }
         }
 
-        if (encounter.hasLocation()) {
-            LocationEntity locationEntity = locationDao.readEntity(ctx,new IdType(encounter.getLocation().get(0).getLocation().getReference()));
-            encounterEntity.setLocation(locationEntity);
-        }
-
         if (encounter.hasStatus()) {
             encounterEntity.setStatus(encounter.getStatus());
         }
@@ -289,6 +283,11 @@ public class  EncounterDao implements EncounterRepository {
                 throw new OperationOutcomeException("Patient",message, OperationOutcome.IssueType.CODEINVALID);
 
             }
+        }
+
+        if (encounter.hasPartOf()) {
+            EncounterEntity partOf = readEntity(ctx, new IdType(encounter.getPartOf().getReference()));
+            if (partOf != null) encounterEntity.setPartOfEncounter(partOf);
         }
 
         if (encounter.hasServiceProvider()) {
@@ -376,12 +375,45 @@ public class  EncounterDao implements EncounterRepository {
             }
         }
 
+        if (encounter.hasLocation()) {
+            for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                em.remove(encounterLocation);
+            }
+            for (Encounter.EncounterLocationComponent locationComponent : encounter.getLocation()) {
+                EncounterLocation encounterLocation = new EncounterLocation();
+                encounterLocation.setEncounter(encounterEntity);
+                if (locationComponent.hasLocation()) {
+                    LocationEntity locationEntity = locationDao.readEntity(ctx, new IdType(locationComponent.getLocation().getReference()));
+                    if (locationEntity == null) {
+                        throw new OperationOutcomeException("Encounter","Encounter missing location", OperationOutcome.IssueType.CODEINVALID);
+                    }
+                    encounterLocation.setLocation(locationEntity);
+                }
+                if (locationComponent.hasStatus()) {
+                    encounterLocation.setStatus(locationComponent.getStatus());
+                }
+                if (locationComponent.hasPeriod()) {
+                    if (locationComponent.getPeriod().hasStart()) {
+                        encounterLocation.setPeriodStartDate(locationComponent.getPeriod().getStart());
+                    }
+                    if (locationComponent.getPeriod().hasEnd()) {
+                        encounterLocation.setPeriodEndDate(locationComponent.getPeriod().getEnd());
+                    }
+                }
+                em.persist(encounterLocation);
+                encounterEntity.getLocations().add(encounterLocation);
+            }
+        }
+
         return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
     }
 
     @Override
-    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, StringParam resid, Set<Include> reverseIncludes, Set<Include> includes) {
-        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes,includes);
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier, StringParam resid, Set<Include> reverseIncludes, Set<Include> includes
+            , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Encounter.SP_STATUS) TokenParam status
+    ) {
+        List<EncounterEntity> qryResults = searchEntity(ctx,patient, date, episode, identifier,resid,reverseIncludes,includes, type,status);
         List<Resource> results = new ArrayList<>();
 
         for (EncounterEntity encounterEntity : qryResults)
@@ -485,16 +517,20 @@ public class  EncounterDao implements EncounterRepository {
                             }
                             break;
                         case "Encounter.location":
-                            if (encounterEntity.getLocation()!=null) {
-                                addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                            if (encounterEntity.getLocations()!=null) {
+                                for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                                    addToResults(results, locationEntityToFHIRLocationTransformer.transform(encounterLocation.getLocation()));
+                                }
                             }
                             break;
                             case "*":
                                 if (encounterEntity.getServiceProvider()!=null) {
                                     addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
                                 }
-                                if (encounterEntity.getLocation()!=null) {
-                                    addToResults(results,locationEntityToFHIRLocationTransformer.transform(encounterEntity.getLocation()));
+                                if (encounterEntity.getLocations()!=null) {
+                                    for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
+                                        addToResults(results, locationEntityToFHIRLocationTransformer.transform(encounterLocation.getLocation()));
+                                    }
                                 }
                                 for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
                                     if (encounterParticipant.getParticipant() != null) {
@@ -533,7 +569,10 @@ public class  EncounterDao implements EncounterRepository {
     }
 
     @Override
-    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,StringParam resid,Set<Include> reverseIncludes, Set<Include> includes) {
+    public List<EncounterEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, ReferenceParam episode, TokenParam identifier,StringParam resid,Set<Include> reverseIncludes, Set<Include> includes
+            , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
+            , @OptionalParam(name = Encounter.SP_STATUS) TokenParam status
+    ) {
         List<EncounterEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -571,6 +610,47 @@ public class  EncounterDao implements EncounterRepository {
                 Predicate p = builder.equal(join.get("id"), -1);
                 predList.add(p);
             }
+        }
+        if (type != null) {
+            log.trace("Search on Encounter.type code = "+type.getValue());
+
+            Join<EncounterEntity, ConceptEntity> joinConcept = root.join("type", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),type.getValue());
+            predList.add(p);
+        }
+
+        if (status != null) {
+            Integer encounterstatus = null;
+            switch (status.getValue().toLowerCase()) {
+                case "planned":
+                    encounterstatus = 0;
+                    break;
+                case "arrived":
+                    encounterstatus = 1;
+                    break;
+                case "triaged":
+                    encounterstatus = 2;
+                    break;
+                case "in-progress":
+                    encounterstatus = 3;
+                    break;
+                case "onleave":
+                    encounterstatus = 4;
+                    break;
+                case "finished":
+                    encounterstatus = 5;
+                    break;
+                case "cancelled":
+                    encounterstatus = 6;
+                    break;
+                default:
+                    encounterstatus=-1;
+            }
+
+
+            Predicate p = builder.equal(root.get("status"), encounterstatus);
+            predList.add(p);
+
         }
 
 

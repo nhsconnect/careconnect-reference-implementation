@@ -1,0 +1,56 @@
+<td-layout [class]="'theme-light'">
+    <td-navigation-drawer flex sidenavTitle="Quick Links" >
+        <mat-nav-list>
+            <a *ngFor="let item of routes" mat-list-item><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+        </mat-nav-list>
+
+    </td-navigation-drawer>
+    <td-layout-nav color="primary">
+        <div td-toolbar-content layout="row" layout-align="start center" flex>
+            <button mat-icon-button td-menu-button tdLayoutToggle>
+                <mat-icon>menu</mat-icon>
+            </button>
+            <span>{{title}}</span>
+            <span flex></span>
+        </div>
+        <app-map></app-map>
+        <!--
+        <div layout-gt-sm="row" tdMediaToggle="gt-xs" [mediaClasses]="['push-sm']">
+            <div flex-gt-sm="50">
+                <mat-card>
+                    <mat-card-title>Incidents Map</mat-card-title>
+                    <mat-card-subtitle>Rereshes</mat-card-subtitle>
+                    <mat-divider></mat-divider>
+                    <mat-card-content>
+
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+            <div flex-gt-sm="50">
+
+                <mat-card>
+                    <mat-card-title>Encounter List</mat-card-title>
+                    <mat-card-subtitle>Your favorite products</mat-card-subtitle>
+                    <mat-divider></mat-divider>
+                    <mat-card-content>
+                        card content
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <a mat-button color="accent" class="text-upper" [routerLink]="['/product']">
+                            <span>View More</span>
+                        </a>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+        -->
+        <td-layout-footer>
+            <div layout="row" layout-align="start center">
+                <span class="mat-caption">Copyright &copy; 2018 NHS Digital. All rights reserved</span>
+            </div>
+        </td-layout-footer>
+    </td-layout-nav>
+</td-layout>
+
+

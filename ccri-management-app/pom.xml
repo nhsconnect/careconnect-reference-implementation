@@ -8,6 +8,7 @@
     <artifactId>ccri-management-app</artifactId>
     <version>3.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -34,12 +35,11 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}/src/main/web</workingDirectory>
-                            <executable>ng</executable>
+                            <executable>npm</executable>
+
                             <arguments>
-                                <argument>build</argument>
-                                <argument>--prod</argument>
-                                <argument>--base-href=/ccri/</argument>
-                                <argument>--deploy-url=/ccri/</argument>
+                                <argument>run</argument>
+                                <argument>build-ccri</argument>
                             </arguments>
                         </configuration>
                         <goals>
