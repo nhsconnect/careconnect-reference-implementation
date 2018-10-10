@@ -13,7 +13,7 @@ import java.util.*;
 public class ScheduleEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="SERVICE_ID")
+    @Column(name="SCHEDULE_ID")
     private Long id;
 
     @Column(name="ACTIVE")

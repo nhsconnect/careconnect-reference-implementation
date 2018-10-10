@@ -5,10 +5,9 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Schedule;
-import org.hl7.fhir.dstu3.model.Slot;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.codesystems.OperationOutcomeEnumFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +160,7 @@ public class SlotDao implements SlotRepository {
                 slotEntity.setSchedule(scheduleEntity);
             }
 
+
         }
 
         if(slot.hasStatus()) {
@@ -268,34 +268,24 @@ public class SlotDao implements SlotRepository {
 
         if (status != null) {
 
-            System.out.println("root.get(\"Status\")" + root.get("Status"));
-            System.out.println("Integer.valueOf(status.getValue()" + status.getValue());
-            //System.out.println("Integer.valueOf(status.getValue()" + Integer.valueOf(status..getValue()));
-            System.out.println("Status = " + status);
+            Integer intStatus = 0;
 
-            String strStatus = null;
+            switch (status.getValue()) {
 
-
-            switch (Integer.valueOf(status.getValue())) {
-
-
-                case 1 :
-                    strStatus = "busy";
+                case "busy" :
+                    intStatus = 0;
                     break;
-                case 0 :
-                    strStatus = "free";
+                case "free" :
+                    intStatus = 1;
                     break;
 
                 default:
-                    strStatus = "free";
+                    intStatus = 1;
 
             }
 
-            System.out.println("Strstatus = " + strStatus);
 
-            System.out.println("root.get(\"Status\")" + root.get("Status"));
-
-            Predicate p = builder.equal(root.get("Status"), strStatus);
+            Predicate p = builder.equal(root.get("Status"), intStatus);
             predList.add(p);
 
         }
@@ -317,10 +307,15 @@ public class SlotDao implements SlotRepository {
 
         if (service != null) {
 
-            if (daoutils.isNumeric(schedule.getIdPart())) {
+            if (daoutils.isNumeric(service.getIdPart())) {
                 Join<SlotEntity, ScheduleEntity> join = root.join("schedule" , JoinType.LEFT);
+                //Join<ScheduleEntity, ScheduleActor> join1 = join.join("schedule" , JoinType.LEFT);
                 Join<ScheduleEntity, ScheduleActor> join1 = join.join("schedule" , JoinType.LEFT);
-                Join<ScheduleActor, HealthcareServiceEntity> join2 = join1.join("healthcareServiceEntity" , JoinType.LEFT);
+                //Join<ScheduleActor, HealthcareServiceEntity> join2 = join1.join("healthcareServiceEntity" , JoinType.LEFT);
+                Join<ScheduleActor, HealthcareServiceEntity> join2 = join1.join("service" , JoinType.LEFT);
+                System.out.println("join :" + join);
+                System.out.println("join1 :" + join1);
+                System.out.println("join2 :" + join2);
 
                 Predicate p = builder.equal(join2.get("id"), service.getIdPart());
                 predList.add(p);
@@ -334,6 +329,8 @@ public class SlotDao implements SlotRepository {
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
+        System.out.println("PredList:" + predList);
+        System.out.println("predArray:" + predArray);
         if (predList.size()>0)
         {
             criteria.select(root).where(predArray);

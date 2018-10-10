@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateParam;
@@ -26,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SlotResourceProvider implements IResourceProvider {
@@ -131,13 +133,59 @@ public class SlotResourceProvider implements IResourceProvider {
         return method;
     }
 
+/*    @Search
+    public List<Slot> searchSlot(HttpServletRequest httpRequest,
+
+                                 @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
+                                 @OptionalParam(name = Slot.SP_START) DateParam start,
+                                 @OptionalParam(name = Slot.SP_STATUS) StringParam status,
+                                 @OptionalParam(name = Slot.SP_RES_ID) TokenParam id,
+                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule,
+                                 @IncludeParam(allow = { "Slot:schedule", "Schedule:actor:service"}) Set<Include> theIncludes
+
+    ) throws Exception
+    {
+
+        List<Slot> results = new ArrayList<>();
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = (InputStream) template.sendBody("direct:FHIRSlot",
+                ExchangePattern.InOut,httpRequest);
+
+        Bundle bundle = null;
+        Reader reader = new InputStreamReader(inputStream);
+        IBaseResource resource = null;
+        try {
+            resource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (resource instanceof Bundle) {
+            bundle = (Bundle) resource;
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                Slot patient = (Slot) entry.getResource();
+                results.add(patient);
+            }
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        return results;
+
+    }*/
+
+
     @Search
     public List<Slot> searchSlot(HttpServletRequest httpRequest,
 
                                  @OptionalParam(name = Slot.SP_IDENTIFIER) TokenParam identifier,
                                  @OptionalParam(name = Slot.SP_START) DateParam start,
-                                 //@OptionalParam(name = Slot.SP_RES_ID) TokenParam id,
-                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule
+                                 @OptionalParam(name = Slot.SP_STATUS) StringParam status,
+                                 @OptionalParam(name = Slot.SP_RES_ID) TokenParam id,
+                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule,
+                                 @IncludeParam(allow = { "Slot:schedule", "Schedule:actor:service"}) Set<Include> theIncludes
 
     ) throws Exception
     {
@@ -171,6 +219,65 @@ public class SlotResourceProvider implements IResourceProvider {
         return results;
 
     }
+
+
+/*    @Search
+    public Bundle getSlotByIds(@OptionalParam(name = "start") DateParam startDate,
+                               @OptionalParam(name = "end") DateParam endDate,
+                               @OptionalParam(name = "status") String status,
+                               @IncludeParam(allow = { "Slot:schedule", "Schedule:actor:HealthcareService"}) Set<Include> theIncludes) {
+
+        Bundle bundle = new Bundle();
+        boolean actorHealthcareService = false;
+        boolean actorLocation = false;
+        String bookingOdsCode = "";
+        String bookingOrgType = "";
+
+*//*        if (!status.equals("free")) {
+            throwInvalidParameterOperationalOutcome("Status incorrect: Must be equal to free");
+        }*//*
+
+*//*        try {
+            startDate.isEmpty();
+            endDate.isEmpty();
+        } catch (Exception e) {
+            throwInvalidParameterOperationalOutcome("Start Date and End Date must be populated with a correct date format");
+        }*//*
+
+*//*        if (startDate.getPrefix() != ParamPrefixEnum.GREATERTHAN_OR_EQUALS
+                || endDate.getPrefix() != ParamPrefixEnum.LESSTHAN_OR_EQUALS) {
+            throwInvalidParameterOperationalOutcome("Invalid Prefix used");
+
+        }*//*
+
+*//*        validateStartDateParamAndEndDateParam(startDate, endDate);*//*
+
+
+
+*//*        try {
+            bookingOdsCode.isEmpty();
+            bookingOrgType.isEmpty();
+        } catch (Exception e) {
+            throwInvalidParameterOperationalOutcome("The ODS code and organisation type for the booking organisation must be supplied.");
+        }*//*
+
+        for (Include include : theIncludes) {
+
+            if (include.getValue().equals("Schedule:actor:HealthcareService")) {
+                actorHealthcareService = true;
+            }
+
+        }
+        startDate.getValueAsInstantDt().getValue();
+        getScheduleOperation.populateBundle(bundle, new OperationOutcome(), startDate.getValueAsInstantDt().getValue(),
+                endDate.getValueAsInstantDt().getValue(), actorHealthcareService, bookingOdsCode, bookingOrgType);
+
+        return bundle;
+
+    }*/
+
+
+
 
 
 

@@ -6,6 +6,7 @@ import uk.nhs.careconnect.ri.database.entity.appointment.*;
 
 import org.hl7.fhir.dstu3.model.Appointment.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.referral.ReferralRequestReason;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.*;
@@ -102,6 +103,17 @@ public class AppointmentEntity extends BaseResource {
 
     public void setReason(ConceptEntity reason) {
         this.reason = reason;
+    }
+
+    @OneToMany(mappedBy="appointment", targetEntity= AppointmentReason.class)
+    private Set<AppointmentReason> reasons = new HashSet<>();
+
+    public Set<AppointmentReason> getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(Set<AppointmentReason> reasons) {
+        this.reasons = reasons;
     }
 
     public int getPriority() {

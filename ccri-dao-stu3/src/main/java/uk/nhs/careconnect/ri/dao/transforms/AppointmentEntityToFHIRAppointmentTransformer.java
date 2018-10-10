@@ -2,11 +2,13 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Appointment;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentReason;
 
 
 @Component
@@ -49,13 +51,6 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         if (appointmentEntity.getStatus() != null) {
             appointment.setStatus(appointmentEntity.getStatus());
         }
-/*        if (appointmentEntity.getApointmentType() != null) {
-            appointment.setAppointmentType(appointment.getAppointmentType());
-        }*/
-
-/*        if (appointmentEntity.getReason() != null) {
-            appointment.setReason(appointment.getReason());
-        }*/
 
         if (appointmentEntity.getApointmentType() != null) {
             appointment.getAppointmentType()
@@ -65,6 +60,13 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
                     .setCode(appointmentEntity.getApointmentType().getCode());
         }
 
+        for (AppointmentReason appointmentReasonEntity : appointmentEntity.getReasons()) {
+            CodeableConcept concept = appointment.addReason();
+            concept.addCoding()
+                    .setSystem(appointmentReasonEntity.getReason().getSystem())
+                    .setCode(appointmentReasonEntity.getReason().getCode())
+                    .setDisplay(appointmentReasonEntity.getReason().getDisplay());
+        }
 
         if (appointmentEntity.getPriority() != 0) {
             appointment.setPriority(appointment.getPriority());
@@ -82,17 +84,9 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
             appointment.setEnd(appointmentEntity.getEnd());
         }
 
-/*        if (appointmentEntity.getCategory() != null) {
-            appointment.getCategory()
-                    .addCoding()
-                    .setDisplay(appointmentEntity.getCategory().getDisplay())
-                    .setSystem(appointmentEntity.getCategory().getSystem())
-                    .setCode(appointmentEntity.getCategory().getCode());
-        }*/
-
-/*        if (appointmentEntity.getSlot() != null) {
-            appointment.getSlot().add(new Reference("Slot/"+ appointmentEntity.getSlot().getId()));
-        }*/
+        if (appointmentEntity.getSlot() != null) {
+            appointment.addSlot(new Reference("Slot/"+ appointmentEntity.getSlot().getId()));
+        }
 
         if (appointmentEntity.getCreated() != null) {
             appointment.setCreated(appointmentEntity.getCreated());
@@ -103,7 +97,7 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         }
 
 /*        if(appointmentEntity.getParticipant() != null){
-            appointment.setParticipant(appointmentEntity.getParticipant());
+            appointment.addParticipant().(appointmentEntity.getParticipant());
         }*/
 
         return appointment;

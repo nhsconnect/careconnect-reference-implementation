@@ -15,6 +15,7 @@ import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentReason;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentSlot;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
@@ -145,7 +146,7 @@ public class AppointmentDao implements AppointmentRepository {
 
         if(appointment.hasAppointmentType()){
 
-            ConceptEntity code = conceptDao.findCode(appointment.getAppointmentType().getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(appointment.getAppointmentType().getCoding().get(0));
 
             if(code != null){
                 appointmentEntity.setApointmentType(code);
@@ -179,9 +180,6 @@ public class AppointmentDao implements AppointmentRepository {
             appointmentEntity.setEnd(appointment.getEnd());
         }
 
-
-
-
         em.persist(appointmentEntity);
 
         log.debug("Appointment.saveIdentifier");
@@ -203,11 +201,29 @@ public class AppointmentDao implements AppointmentRepository {
         }
 
 
+        for (CodeableConcept concept :appointment.getReason()) {
+            // Category must have a code 15/Jan/2018 testing with Synthea examples
+            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
+                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
+                if (conceptEntity != null) {
+                    AppointmentReason reason = null;
+                    // Look for existing categories
+                    for (AppointmentReason cat :appointmentEntity.getReasons()) {
+                        if (cat.getReason().getCode().equals(concept.getCodingFirstRep().getCode())) reason= cat;
+                    }
+                    if (reason == null) reason = new AppointmentReason();
 
-
-
-
-
+                    reason.setReason(conceptEntity);
+                    reason.setAppointment(appointmentEntity);
+                    em.persist(reason);
+                    appointmentEntity.getReasons().add(reason);
+                }
+                else {
+                    log.info("Missing Reason. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
+                }
+            }
+        }
 
         log.debug("Appointment.saveReason");
         if (appointment.hasReason()) {
@@ -216,35 +232,20 @@ public class AppointmentDao implements AppointmentRepository {
             if (codeEntity != null) appointmentEntity.setReason(codeEntity);
         }
 
-
-/*        log.debug("Appointment.saveReason");
-        if (appointment.hasReason()) {
-            ConceptEntity code = conceptDao.findCode(appointment.getReason().get(0).getCoding().get(0));
-            if (code != null) { appointmentEntity.setReason(code); }
-            else {
-                log.info("Category: Missing System/Code = "+ appointment.getReason().get(0).getCoding().get(0).getSystem() +" code = "+appointment.getReason().get(0).getCoding().get(0).getCode());
-
-                throw new IllegalArgumentException("Missing System/Code = "+ appointment.getReason().get(0).getCoding().get(0).getSystem()
-                        +" code = "+appointment.getReason().get(0).getCoding().get(0).getCode());
-            }
-        }*/
+        //Appointment appointment = new Appointment();
+        Appointment.AppointmentParticipantComponent appointmentParticipantComponent = appointment.addParticipant();
+        appointmentParticipantComponent.setActor(new Reference("Patient/1"));
 
 
         log.debug("Appointment.saveSlot");
         for (Reference reference : appointment.getSlot()) {
-            AppointmentEntity appointmentEntity1 = appointmentDao.readEntity(ctx, new IdType(reference.getReference()));
-            if (appointmentEntity1 != null) {
+            SlotEntity slotEntity = slotDao.readEntity(ctx, new IdType(reference.getReference()));
+            if (appointment.hasSlot()) {
                 AppointmentSlot appointmentSlot = new AppointmentSlot();
-                appointmentSlot.setSlot(appointmentEntity1.getSlot());
+                appointmentSlot.setSlot(appointmentSlot.getSlot());
                 em.persist(appointmentSlot);
             }
         }
-
-
-
-
-
-
 
         if (appointment.hasCreated()) {
             appointmentEntity.setCreated(appointment.getCreated());

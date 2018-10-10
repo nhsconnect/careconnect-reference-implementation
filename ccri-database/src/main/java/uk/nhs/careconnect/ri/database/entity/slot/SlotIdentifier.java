@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="SlotIdentifier1", uniqueConstraints= @UniqueConstraint(name="PK_SLOT_IDENTIFIER", columnNames={"SLOT_IDENTIFIER_ID"})
+@Table(name="SlotIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_SLOT_IDENTIFIER", columnNames={"SLOT_IDENTIFIER_ID"})
 		)
 public class SlotIdentifier extends BaseIdentifier {
 
