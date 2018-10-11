@@ -3,55 +3,63 @@
   <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
   <mat-card-content>
 
-    <mat-grid-list cols="5" rowHeight="2:1" >
-      <mat-grid-tile colspan="4" rowspan="2">
-        <div class="container" width="100%">
-      <span *ngIf="patient != undefined">
-        <div class="container" layout="row" layout-align="start center" flex>
-          <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
-          <span flex ></span>
+    <div class="bounds">
+      <div class="content"
+           fxLayout="row"
+           fxFlexFill >
 
-          &nbsp; <i>DOB:</i><b>&nbsp;{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+        <!-- Left pane -->
+        <div fxFlex="75" class="sec1" layout-margin="3%">
+          <div>
+          <span *ngIf="patient != undefined">
+            <div class="container" layout="row" layout-align="start center" flex>
+              <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
+              <span flex ></span>
 
+              &nbsp; <i>DOB:</i><b>&nbsp;{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+
+              <span flex></span>
+              <span>
+                                   &nbsp;<i>Gender:</i><b>&nbsp; {{ patient.gender }}</b>
+                                </span>
+              <span flex></span>
+
+              &nbsp;<i>NHS No:</i><b>&nbsp;{{ getNHSIdentifier(patient) }}</b>
+
+            </div>
+          </span>
+          <br>
+          <div class="container" layout="row" layout-align="start center" flex>
+           <span *ngFor="let diagnosis of encounter.diagnosis">
+          Problem <b>{{diagnosis.condition.display}}</b>
+          </span>
+        </div>
+          <br>
+          <div class="container" layout="row" layout-align="start center" flex>
+          <span> Status <b>{{encounter.status}}</b></span>
           <span flex></span>
-          <span>
-                               &nbsp;<i>Gender:</i><b>&nbsp; {{ patient.gender }}</b>
-                            </span>
-          <span flex></span>
+          <span>Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
+        </div>
+          <br>
+          <td-expansion-panel disableRipple>
+              <ng-template td-expansion-panel-label>
+                <span>Encounter Details</span>
+              </ng-template>
+              <span *ngIf="encounters.length>0">
+                <app-encounter [encounters]="encounters"></app-encounter>
+              </span>
 
-          &nbsp;<i>NHS No:</i><b>&nbsp;{{ getNHSIdentifier(patient) }}</b>
+          </td-expansion-panel>
+          </div>
+        </div>
+       <!-- righy map pane -->
+        <div fxFlex="15" class="sec2" layout-margin="3%">
+
+          <img class="img-responsive" width="150%" src="assets/strava.png">
 
         </div>
-      </span>
-    <br>
-    <div class="container" layout="row" layout-align="start center" flex>
-       <span *ngFor="let diagnosis of encounter.diagnosis">
-      Problem <b>{{diagnosis.condition.display}}</b>
-      </span>
-    </div>
-    <br>
-    <div class="container" layout="row" layout-align="start center" flex>
-      <span> Status <b>{{encounter.status}}</b></span>
-      <span flex></span>
-      <span>Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
-    </div>
-    <br>
-    <td-expansion-panel disableRipple>
-      <ng-template td-expansion-panel-label>
-        <span>Encounter Details</span>
-      </ng-template>
-      <span *ngIf="encounters.length>0">
-        <app-encounter [encounters]="encounters"></app-encounter>
-      </span>
-
-    </td-expansion-panel>
       </div>
-      </mat-grid-tile>
-      <mat-grid-tile colspan="1" [rowspan]="2">
-        <img class="img-responsive" src="assets/strava.png">
-      </mat-grid-tile>
-    </mat-grid-list>
-
+    </div>
   </mat-card-content>
 <!--  <mat-card-actions>
     <button mat-button>LIKE</button>

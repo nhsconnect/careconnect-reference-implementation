@@ -15,7 +15,7 @@ export class AppConfig {
         },
             () => {
             console.log('No server deteted');
-            this.fhirServer.setRootUrl('http://127.0.0.1:8183/ccri-fhir/STU3');
+           // this.fhirServer.setRootUrl('http://127.0.0.1:8183/ccri-fhir/STU3');
             })
     }
 

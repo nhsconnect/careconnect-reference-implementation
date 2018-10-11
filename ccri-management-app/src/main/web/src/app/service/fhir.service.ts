@@ -16,7 +16,8 @@ export enum Formats {
 export class FhirService {
 
 
-  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+  private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
+  //private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
 
   private format : Formats = Formats.JsonFormatted;
 
