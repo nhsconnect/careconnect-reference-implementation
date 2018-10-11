@@ -105,6 +105,8 @@ import { MapComponent } from './component/map/map.component';
 import { EdEncounterListComponent } from './modules/ed-encounter-list/ed-encounter-list.component';
 import {EdRoutingModule} from "./modules/ed-routing.module";
 import { EdEncounterCardComponent } from './modules/ed-encounter-card/ed-encounter-card.component';
+import {NguiMapModule} from "@ngui/map";
+import { PatientDetailsComponent } from './modules/patient-details/patient-details.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -167,6 +169,7 @@ export function initializeApp(appConfig: AppConfig) {
     MapComponent,
     EdEncounterListComponent,
     EdEncounterCardComponent,
+    PatientDetailsComponent,
 
 
 
@@ -235,6 +238,8 @@ export function initializeApp(appConfig: AppConfig) {
 
       PdfViewerModule,
       ImageViewerModule,
+     // NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyDC8GmtqZiQXc16qf1v870NKy-phjv-1N0'}),
+      NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key='}),
 
     EprRoutingModule,
     EdRoutingModule,

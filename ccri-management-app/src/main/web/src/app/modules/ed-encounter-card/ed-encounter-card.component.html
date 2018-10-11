@@ -1,15 +1,9 @@
 <mat-card>
-
-  <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
   <mat-card-content>
-
-    <div class="bounds">
-      <div class="content"
-           fxLayout="row"
+      <div fxLayout="row"
            fxFlexFill >
-
         <!-- Left pane -->
-        <div fxFlex="75" class="sec1" layout-margin="3%">
+        <div fxFlex="75" layout-margin="3%">
           <div>
           <span *ngIf="patient != undefined">
             <div class="container" layout="row" layout-align="start center" flex>
@@ -30,15 +24,13 @@
           </span>
           <br>
           <div class="container" layout="row" layout-align="start center" flex>
-           <span *ngFor="let diagnosis of encounter.diagnosis">
-          Problem <b>{{diagnosis.condition.display}}</b>
-          </span>
-        </div>
-          <br>
-          <div class="container" layout="row" layout-align="start center" flex>
-          <span> Status <b>{{encounter.status}}</b></span>
+            <span *ngFor="let diagnosis of encounter.diagnosis">
+                <h2>{{diagnosis.condition.display}}</h2>
+            </span>
+            <span flex></span>
+             <span> Status <b>{{encounter.status}}</b></span>
           <span flex></span>
-          <span>Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
+          <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
         </div>
           <br>
           <td-expansion-panel disableRipple>
@@ -50,19 +42,25 @@
               </span>
 
           </td-expansion-panel>
+              <br>
+            <button mat-button color="accent" fxFlexAlign="end" (click)="viewDetails(patient)">Patient Record</button>
           </div>
         </div>
        <!-- righy map pane -->
-        <div fxFlex="15" class="sec2" layout-margin="3%">
-
-          <img class="img-responsive" width="150%" src="assets/strava.png">
-
+        <div fxFlex="25" layout-margin="3%" >
+          <span *ngIf="coords!==undefined">
+            <ngui-map class="map" zoom="13"
+                      [center]="coords"
+                      (mapReady$)="onMapReady($event)"
+                      (mapClick)="onMapClick($event)"
+                      (idle)="onIdle($event)">
+              <marker *ngFor="let pos of positions" [position]="pos"></marker>
+            </ngui-map>
+          </span>
         </div>
       </div>
-    </div>
   </mat-card-content>
-<!--  <mat-card-actions>
-    <button mat-button>LIKE</button>
-    <button mat-button>SHARE</button>
+ <!-- <mat-card-actions>
+
   </mat-card-actions> -->
 </mat-card>
