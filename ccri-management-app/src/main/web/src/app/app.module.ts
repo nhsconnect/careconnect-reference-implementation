@@ -24,8 +24,8 @@ import {
   MatButtonModule,
   MatCardModule, MatChipsModule,
   MatDatepickerModule,
-  MatDialogModule,
-  MatGridListModule,
+  MatDialogModule, MatGridListModule,
+
   MatIconModule,
   MatIconRegistry,
   MatInputModule,
@@ -215,8 +215,8 @@ export function initializeApp(appConfig: AppConfig) {
       MatProgressBarModule,
       MatRadioModule,
     MatTooltipModule,
-
-
+    MatGridListModule,
+    MatGridListModule,
 
     CovalentLayoutModule,
     CovalentStepsModule,

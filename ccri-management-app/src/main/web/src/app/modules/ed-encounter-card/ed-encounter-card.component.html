@@ -2,6 +2,10 @@
 
   <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
   <mat-card-content>
+
+    <mat-grid-list cols="5" rowHeight="2:1" >
+      <mat-grid-tile colspan="4" rowspan="2">
+        <div class="container" width="100%">
       <span *ngIf="patient != undefined">
         <div class="container" layout="row" layout-align="start center" flex>
           <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
@@ -41,6 +45,12 @@
       </span>
 
     </td-expansion-panel>
+      </div>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="1" [rowspan]="2">
+        <img class="img-responsive" src="assets/strava.png">
+      </mat-grid-tile>
+    </mat-grid-list>
 
   </mat-card-content>
 <!--  <mat-card-actions>
