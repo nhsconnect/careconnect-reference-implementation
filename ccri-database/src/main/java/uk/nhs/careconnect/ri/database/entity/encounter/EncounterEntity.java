@@ -141,7 +141,8 @@ public class EncounterEntity extends BaseResource {
     Set<ReferralRequestEntity> referrals = new HashSet<>();
     // Support for reverse includes End
 
-
+    @OneToMany(mappedBy="partOfEncounter", targetEntity = EncounterEntity.class)
+    Set<EncounterEntity> childEncounters = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -150,6 +151,14 @@ public class EncounterEntity extends BaseResource {
     public EncounterEntity setPatient(PatientEntity patient) {
         this.patient = patient;
         return this;
+    }
+
+    public Set<EncounterEntity> getChildEncounters() {
+        return childEncounters;
+    }
+
+    public void setChildEncounters(Set<EncounterEntity> childEncounters) {
+        this.childEncounters = childEncounters;
     }
 
     public PatientEntity getPatient() {

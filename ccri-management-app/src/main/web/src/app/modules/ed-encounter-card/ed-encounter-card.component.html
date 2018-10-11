@@ -1,0 +1,50 @@
+<mat-card>
+
+  <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+  <mat-card-content>
+      <span *ngIf="patient != undefined">
+        <div class="container" layout="row" layout-align="start center" flex>
+          <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
+          <span flex ></span>
+
+          &nbsp; <i>DOB:</i><b>&nbsp;{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+
+          <span flex></span>
+          <span>
+                               &nbsp;<i>Gender:</i><b>&nbsp; {{ patient.gender }}</b>
+                            </span>
+          <span flex></span>
+
+          &nbsp;<i>NHS No:</i><b>&nbsp;{{ getNHSIdentifier(patient) }}</b>
+
+        </div>
+      </span>
+    <br>
+    <div class="container" layout="row" layout-align="start center" flex>
+       <span *ngFor="let diagnosis of encounter.diagnosis">
+      Problem <b>{{diagnosis.condition.display}}</b>
+      </span>
+    </div>
+    <br>
+    <div class="container" layout="row" layout-align="start center" flex>
+      <span> Status <b>{{encounter.status}}</b></span>
+      <span flex></span>
+      <span>Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
+    </div>
+    <br>
+    <td-expansion-panel disableRipple>
+      <ng-template td-expansion-panel-label>
+        <span>Encounter Details</span>
+      </ng-template>
+      <span *ngIf="encounters.length>0">
+        <app-encounter [encounters]="encounters"></app-encounter>
+      </span>
+
+    </td-expansion-panel>
+
+  </mat-card-content>
+<!--  <mat-card-actions>
+    <button mat-button>LIKE</button>
+    <button mat-button>SHARE</button>
+  </mat-card-actions> -->
+</mat-card>

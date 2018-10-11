@@ -16,13 +16,14 @@ export class EncounterDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Encounter[]> {
 
-    console.log('encounters DataSource connect '+this.patientId);
+
 
     let _encounters : BehaviorSubject<fhir.Encounter[]> =<BehaviorSubject<fhir.Encounter[]>>new BehaviorSubject([]);
 
     this.dataStore = { encounters: [] };
 
     if (this.patientId != undefined) {
+      console.log('encounters DataSource connect '+this.patientId);
       this.fhirService.get('/Encounter?patient='+this.patientId).subscribe((bundle => {
         if (bundle != undefined && bundle.entry != undefined) {
           for (let entry of bundle.entry) {

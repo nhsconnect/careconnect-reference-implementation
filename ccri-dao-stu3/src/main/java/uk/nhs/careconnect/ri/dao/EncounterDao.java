@@ -317,15 +317,19 @@ public class  EncounterDao implements EncounterRepository {
             em.persist(encounterIdentifier);
         }
 
+        for (EncounterDiagnosis searchEncounter : encounterEntity.getDiagnoses()) {
+            em.remove(searchEncounter);
+        }
         for (Encounter.DiagnosisComponent component:encounter.getDiagnosis()) {
 
             EncounterDiagnosis encounterDiagnosis = null;
+            /*
             for (EncounterDiagnosis searchEncounter : encounterEntity.getDiagnoses()) {
                 if (searchEncounter.getCondition().getId().equals(component.getCondition().getIdElement().getValue())) {
                     encounterDiagnosis = searchEncounter;
                     break;
                 }
-            }
+            }*/
             if (encounterDiagnosis == null) {
                 encounterDiagnosis= new EncounterDiagnosis();
                 encounterDiagnosis.setEncounter(encounterEntity);
@@ -426,57 +430,68 @@ public class  EncounterDao implements EncounterRepository {
         if (reverseIncludes!= null) {
             log.info("Reverse includes");
             for (EncounterEntity encounterEntity : qryResults) {
-                if (reverseIncludes.size() > 0) {
-                    for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
-                        addToResults(results,procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
-                    }
-                    for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
-                        addToResults(results,observationEntityToFHIRObservationTransformer.transform(observationEntity));
-                    }
-                    for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
-                        addToResults(results,conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
-                    }
-                    for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
-                        addToResults(results,medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                        if (medicationRequestEntity.getMedicationEntity() != null) {
-                            addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                for (Include include : reverseIncludes) {
+                    if (include.getValue().equals("*")) {
+                        for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
+                            addToResults(results, procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                        }
+                        for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
+                            addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                        }
+                        for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
+                            addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                        }
+                        for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                            addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                            if (medicationRequestEntity.getMedicationEntity() != null) {
+                                addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                            }
+                        }
+                        for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
+                            addToResults(results, carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
+                        }
+                        for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
+                            addToResults(results, diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
+                        }
+
+                        // Docs
+                        for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
+                            addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                        }
+
+                        // Imms
+                        for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
+                            addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                        }
+
+                        // List
+                        for (ListEntity listEntity : encounterEntity.getLists()) {
+                            addToResults(results, listEntityToFHIRListResourceTransformer.transform(listEntity));
+
+                        }
+
+                        // QuestionnaireResponse
+                        for (QuestionnaireResponseEntity questionnaireResponseEntity : encounterEntity.getForms()) {
+                            addToResults(results, questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(questionnaireResponseEntity));
+                        }
+
+                        // Risk Assessment
+                        for (RiskAssessmentEntity riskAssessmentEntity : encounterEntity.getRisks()) {
+                            addToResults(results, riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(riskAssessmentEntity));
+                        }
+                        // Referrals
+                        for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
+                            addToResults(results, referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity));
+                        }
+
+                        for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
+                            addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
                         }
                     }
-                    for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
-                        addToResults(results,carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
-                    }
-                    for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
-                        addToResults(results,diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
-                    }
-
-                    // Docs
-                    for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
-                        addToResults(results,documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
-                    }
-
-                    // Imms
-                    for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
-                        addToResults(results,immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
-                    }
-
-                    // List
-                    for (ListEntity listEntity : encounterEntity.getLists()) {
-                        addToResults(results,listEntityToFHIRListResourceTransformer.transform(listEntity));
-
-                    }
-
-                    // QuestionnaireResponse
-                    for (QuestionnaireResponseEntity questionnaireResponseEntity : encounterEntity.getForms()) {
-                        addToResults(results,questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(questionnaireResponseEntity));
-                    }
-
-                    // Risk Assessment
-                    for (RiskAssessmentEntity riskAssessmentEntity : encounterEntity.getRisks()) {
-                        addToResults(results,riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(riskAssessmentEntity));
-                    }
-                    // Referrals
-                    for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
-                        addToResults(results,referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity));
+                    if (include.getValue().equals("partOf")) {
+                        for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
+                            addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
+                        }
                     }
 
                 }

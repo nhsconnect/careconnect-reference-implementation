@@ -5,7 +5,7 @@ import {MapComponent} from "./component/map/map.component";
 
 const routes: Routes = [
   {  path: '', redirectTo: 'exp', pathMatch: 'full' },
-  {  path: 'ed', component: EdDashboardComponent },
+
     {  path: 'map', component: MapComponent
     }
 ];

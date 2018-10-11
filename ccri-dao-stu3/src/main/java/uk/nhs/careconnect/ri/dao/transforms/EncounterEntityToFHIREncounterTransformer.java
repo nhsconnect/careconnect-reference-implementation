@@ -133,7 +133,7 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
         }
 
         for (EncounterDiagnosis diagnosis : encounterEntity.getDiagnoses()) {
-            encounter.addDiagnosis().setCondition(new Reference("Condition/"+diagnosis.getCondition().getId()));
+            encounter.addDiagnosis().setCondition(new Reference("Condition/"+diagnosis.getCondition().getId()).setDisplay(diagnosis.getCondition().getCode().getDisplay()));
         }
 
         if (encounterEntity.getPartOfEncounter() != null) {

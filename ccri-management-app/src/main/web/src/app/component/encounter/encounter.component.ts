@@ -36,7 +36,7 @@ export class EncounterComponent implements OnInit {
 
   dataSource : EncounterDataSource;
 
-  displayedColumns = ['start','end', 'type','typelink','provider','providerLink','participant','participantLink', 'locationLink','resource'];
+  displayedColumns = ['start','end','status', 'type','typelink','provider','providerLink','participant','participantLink', 'locationLink','resource'];
 
   constructor(private linksService : LinksService,
     public bundleService : BundleService,
@@ -93,23 +93,29 @@ export class EncounterComponent implements OnInit {
           );
         }
     } else {
+      let count = encounter.location.length;
       for (let reference of encounter.location) {
         console.log(reference);
+
         let refArray: string[] = reference.location.reference.split('/');
+
         if (refArray.length>1) {
-          this.fhirService.getResource('/Encounter/'+reference.location.reference).subscribe(data => {
+          this.fhirService.getResource('/'+reference.location.reference).subscribe(data => {
               if (data != undefined) {
                 this.locations.push(<fhir.Location>data);
 
               }
-              const dialogConfig = new MatDialogConfig();
-              dialogConfig.disableClose = true;
-              dialogConfig.autoFocus = true;
-              dialogConfig.data = {
-                id: 1,
-                locations: this.locations
-              };
-              let resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
+              count--;
+              if (count == 0) {
+                const dialogConfig = new MatDialogConfig();
+                dialogConfig.disableClose = true;
+                dialogConfig.autoFocus = true;
+                dialogConfig.data = {
+                  id: 1,
+                  locations: this.locations
+                };
+                let resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
+              }
             },
             error1 => {
             },

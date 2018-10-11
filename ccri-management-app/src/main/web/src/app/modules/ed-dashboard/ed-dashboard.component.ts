@@ -23,7 +23,7 @@ export class EdDashboardComponent implements OnInit {
 
     navmenu: Object[] = [];
 
-    title : string ='Elmet Emergency Dashboard - Ridings Ambulance Service';
+    title : string ='Garforth Sector - Yorkshire Ambulance Service';
 
 
 

@@ -102,6 +102,9 @@ import {ViewDocumentSectionComponent} from "./component/binary/composition-view-
 import {PdfViewerModule} from "ng2-pdf-viewer";
 import {ImageViewerModule} from "@hallysonh/ngx-imageviewer";
 import { MapComponent } from './component/map/map.component';
+import { EdEncounterListComponent } from './modules/ed-encounter-list/ed-encounter-list.component';
+import {EdRoutingModule} from "./modules/ed-routing.module";
+import { EdEncounterCardComponent } from './modules/ed-encounter-card/ed-encounter-card.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -162,6 +165,8 @@ export function initializeApp(appConfig: AppConfig) {
     EdDashboardComponent,
     ExplorerMainComponent,
     MapComponent,
+    EdEncounterListComponent,
+    EdEncounterCardComponent,
 
 
 
@@ -232,6 +237,7 @@ export function initializeApp(appConfig: AppConfig) {
       ImageViewerModule,
 
     EprRoutingModule,
+    EdRoutingModule,
       AppRoutingModule
   ],
   providers: [

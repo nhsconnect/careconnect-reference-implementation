@@ -13,38 +13,7 @@
             <span>{{title}}</span>
             <span flex></span>
         </div>
-        <app-map></app-map>
-        <!--
-        <div layout-gt-sm="row" tdMediaToggle="gt-xs" [mediaClasses]="['push-sm']">
-            <div flex-gt-sm="50">
-                <mat-card>
-                    <mat-card-title>Incidents Map</mat-card-title>
-                    <mat-card-subtitle>Rereshes</mat-card-subtitle>
-                    <mat-divider></mat-divider>
-                    <mat-card-content>
-
-                    </mat-card-content>
-                </mat-card>
-
-            </div>
-            <div flex-gt-sm="50">
-
-                <mat-card>
-                    <mat-card-title>Encounter List</mat-card-title>
-                    <mat-card-subtitle>Your favorite products</mat-card-subtitle>
-                    <mat-divider></mat-divider>
-                    <mat-card-content>
-                        card content
-                    </mat-card-content>
-                    <mat-card-actions>
-                        <a mat-button color="accent" class="text-upper" [routerLink]="['/product']">
-                            <span>View More</span>
-                        </a>
-                    </mat-card-actions>
-                </mat-card>
-            </div>
-        </div>
-        -->
+        <router-outlet></router-outlet>
         <td-layout-footer>
             <div layout="row" layout-align="start center">
                 <span class="mat-caption">Copyright &copy; 2018 NHS Digital. All rights reserved</span>
