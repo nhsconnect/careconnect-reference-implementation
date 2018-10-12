@@ -173,6 +173,15 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                 observation.setValue(quantity);
             }
 
+            if (observationEntity.getValueConcept() != null) {
+                CodeableConcept concept  = new CodeableConcept();
+                concept.addCoding()
+                        .setSystem(observationEntity.getValueConcept().getSystem())
+                        .setDisplay(observationEntity.getValueConcept().getDisplay())
+                        .setCode(observationEntity.getValueConcept().getCode());
+                observation.setValue(concept);
+            }
+
             // Components e.g. Blood Pressure
             // Plus ValueQuantity
 

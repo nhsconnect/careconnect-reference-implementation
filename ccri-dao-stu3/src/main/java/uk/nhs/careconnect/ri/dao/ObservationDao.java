@@ -208,6 +208,18 @@ public class ObservationDao implements ObservationRepository {
             }
         } catch (Exception ex) { }
 
+        try {
+            if (observation.hasValueCodeableConcept()) {
+
+                ConceptEntity concept = conceptDao.findAddCode(observation.getValueCodeableConcept().getCoding().get(0));
+                if (concept != null) { observationEntity.setValueConcept(concept);}
+                else {
+                    log.info("Value: Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
+                }
+            }
+        } catch (Exception ex) { }
+
         // Body Site
 
         if (observation.hasBodySite()) {
@@ -618,10 +630,11 @@ public class ObservationDao implements ObservationRepository {
                     switch(include.getValue()) {
                         case "Observation.related":
                         case "*":
-                            for (ObservationRelated relatedEntity : observationEntity.getRelatedResources())
-                            if (relatedEntity.getRelatedObservation() !=null) {
-                                ObservationEntity relatedObservation = relatedEntity.getRelatedObservation();
-                                results.add(observationEntityToFHIRObservationTransformer.transform(relatedObservation));
+                            for (ObservationRelated relatedEntity : observationEntity.getRelatedResources()) {
+                                if (relatedEntity.getRelatedObservation() != null) {
+                                    ObservationEntity relatedObservation = relatedEntity.getRelatedObservation();
+                                    results.add(observationEntityToFHIRObservationTransformer.transform(relatedObservation));
+                                }
                             }
                             break;
 

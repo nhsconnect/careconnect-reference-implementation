@@ -66,13 +66,7 @@ public class ObservationEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
 
-    public String getComments() {
-        return comments;
-    }
 
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
 
     @Column(name="COMMENT",length = MAX_DESC_LENGTH,nullable = true)
     private String comments;
@@ -108,6 +102,10 @@ public class ObservationEntity extends BaseResource {
     private BigDecimal valueString;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="valueConcept",foreignKey= @ForeignKey(name="FK_OBSERVATION_VALUE_CONCEPT_ID"))
+    private ConceptEntity valueConcept;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_ENCOUNTER_ID"))
     private EncounterEntity contextEncounter;
 
@@ -115,7 +113,13 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_INTERPRETATION_CONCEPT_ID"))
     private ConceptEntity interpretation;
 
+    public String getComments() {
+        return comments;
+    }
 
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
     public Long getId() {
         return id;
@@ -156,6 +160,14 @@ public class ObservationEntity extends BaseResource {
     public ObservationEntity setObservationType(ObservationType observationType) {
         this.observationType = observationType;
         return this;
+    }
+
+    public ConceptEntity getValueConcept() {
+        return valueConcept;
+    }
+
+    public void setValueConcept(ConceptEntity valueConcept) {
+        this.valueConcept = valueConcept;
     }
 
     public void setEffectiveDateTime(Date effectiveDateTime) {

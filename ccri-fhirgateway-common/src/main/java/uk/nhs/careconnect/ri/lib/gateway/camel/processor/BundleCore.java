@@ -1379,6 +1379,13 @@ public class BundleCore {
             if (resource == null) referenceMissing(observation, observation.getContext().getReference());
             observation.setContext(getReference(resource));
         }
+        if (observation.hasRelated()) {
+            for (Observation.ObservationRelatedComponent relatedComponent : observation.getRelated()) {
+                if (relatedComponent.hasTarget()) {
+                    relatedComponent.setTarget(getReference(searchAddResource(relatedComponent.getTarget().getReference())));
+                }
+            }
+        }
 
         IBaseResource iResource = null;
 
