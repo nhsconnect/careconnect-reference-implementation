@@ -23,12 +23,23 @@ export class EdEncounterListComponent implements OnInit {
   }
 
   getEncounters() {
-    this.fhirService.get("/Encounter?type=409971007&status=in-progress").subscribe(bundle => {
       this.encounters= [];
-      for (let entry of bundle.entry) {
-        this.encounters.push(<fhir.Encounter> entry.resource);
+    this.fhirService.get("/Encounter?type=409971007&status=triaged").subscribe(bundle => {
+
+      if (bundle.entry !== undefined) {
+          for (let entry of bundle.entry) {
+              this.encounters.push(<fhir.Encounter> entry.resource);
+          }
       }
     });
+      this.fhirService.get("/Encounter?type=409971007&status=in-progress").subscribe(bundle => {
+
+          if (bundle.entry !== undefined) {
+              for (let entry of bundle.entry) {
+                  this.encounters.push(<fhir.Encounter> entry.resource);
+              }
+          }
+      });
 
   }
 

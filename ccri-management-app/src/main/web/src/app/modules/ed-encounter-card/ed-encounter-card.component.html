@@ -22,7 +22,7 @@
 
             </div>
           </span>
-          <br>
+
           <div class="container" layout="row" layout-align="start center" flex>
             <span *ngFor="let diagnosis of encounter.diagnosis">
                 <h2>{{diagnosis.condition.display}}</h2>
@@ -32,8 +32,17 @@
           <span flex></span>
           <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
         </div>
-          <br>
-          <td-expansion-panel disableRipple>
+
+              <mat-chip-list>
+                  <span *ngIf="news2 !== undefined"><mat-chip color="warn" selected="true"><mat-icon>warning</mat-icon> NEWS2 - {{news2}}</mat-chip></span>
+                  <span *ngIf="heart!==undefined"><mat-chip>Pulse - {{heart}}</mat-chip></span>
+                  <span *ngIf="temp!==undefined"><mat-chip>Temp - {{temp}}</mat-chip></span>
+                  <span *ngIf="bp !== undefined"><mat-chip>BP - {{bp}}</mat-chip></span>
+                  <span *ngIf="o2 !==undefined"><mat-chip>O2 - {{o2}}%</mat-chip></span>
+                  <span *ngIf="air !== undefined"><mat-chip>Air - {{air}}</mat-chip></span>
+                  <span *ngIf="alert !== undefined"><mat-chip>Alert - {{alert}}</mat-chip></span>
+              </mat-chip-list>
+        <!--  <td-expansion-panel disableRipple>
               <ng-template td-expansion-panel-label>
                 <span>Encounter Details</span>
               </ng-template>
@@ -41,7 +50,7 @@
                 <app-encounter [encounters]="encounters"></app-encounter>
               </span>
 
-          </td-expansion-panel>
+          </td-expansion-panel> -->
               <br>
             <button mat-button color="accent" fxFlexAlign="end" (click)="viewDetails(patient)">Patient Record</button>
           </div>

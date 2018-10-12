@@ -79,11 +79,13 @@ export class PatientDetailsComponent implements OnInit {
 
     getNRLSData(nhsNumber : string) {
         this.fhirSrv.getNRLS('/DocumentReference?subject=https%3A%2F%2Fdemographics.spineservices.nhs.uk%2FSTU3%2FPatient%2F'+nhsNumber).subscribe( bundle => {
-            for(let entry of bundle.entry) {
-                let document : fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
-                this.nrlsdocuments.push(document);
+           if (bundle.entry !== undefined) {
+               for (let entry of bundle.entry) {
+                   let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
+                   this.nrlsdocuments.push(document);
 
-            }
+               }
+           }
         })
     }
 

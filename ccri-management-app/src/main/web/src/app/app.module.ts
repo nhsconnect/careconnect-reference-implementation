@@ -4,6 +4,7 @@ import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {
+    CovalentChipsModule,
     CovalentDialogsModule, CovalentExpansionPanelModule,
     CovalentJsonFormatterModule,
     CovalentLayoutModule,
@@ -233,6 +234,7 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentJsonFormatterModule,
     CovalentDialogsModule,
     CovalentExpansionPanelModule,
+      CovalentChipsModule,
 
     NgxChartsModule,
 

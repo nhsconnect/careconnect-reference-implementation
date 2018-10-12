@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FhirService} from "../../service/fhir.service";
 import {Router} from "@angular/router";
+import {isLineBreak} from "codelyzer/angular/sourceMappingVisitor";
 
 @Component({
   selector: 'app-ed-encounter-card',
@@ -12,6 +13,15 @@ export class EdEncounterCardComponent implements OnInit {
   @Input()
   encounter : fhir.Encounter;
 
+  heart : string = undefined;
+  temp : string = undefined;
+  resp : string = undefined;
+  bp : string = undefined;
+    news2 : string = undefined;
+    o2 : string = undefined;
+    alert : string = undefined;
+    air : string = undefined;
+
   patient : fhir.Patient = undefined;
   encounters : fhir.Encounter[] = [];
 
@@ -19,7 +29,9 @@ export class EdEncounterCardComponent implements OnInit {
 
     public positions=[];
 
-  constructor(private fhirService : FhirService,
+
+
+    constructor(private fhirService : FhirService,
               private router : Router) { }
 
   ngOnInit() {
@@ -40,6 +52,7 @@ export class EdEncounterCardComponent implements OnInit {
                   this.coords = location.position.latitude + ', '+location.position.longitude;
                   }
                 this.positions.push([location.position.latitude, location.position.longitude]);
+                this.getObs(sub.id);
               })
             }
           }
@@ -58,6 +71,55 @@ export class EdEncounterCardComponent implements OnInit {
     if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
     return name;
 
+  }
+
+  getObs(encounterId) {
+      this.fhirService.get('/Encounter?_id='+encounterId+'&_revinclude=*').subscribe(bundle => {
+        //console.log(bundle);
+          this.heart = undefined;
+          this.temp = undefined;
+          this.resp = undefined;
+          this.bp = undefined;
+          this.news2 = undefined;
+          this.o2 = undefined;
+          this.air = undefined;
+          this.alert = undefined;
+
+        for (let entry of bundle.entry) {
+          if (entry.resource.resourceType === 'Observation') {
+            let obs : fhir.Observation = <fhir.Observation> entry.resource;
+            switch (obs.code.coding[0].code) {
+                case '364075005':
+                  this.heart = obs.valueQuantity.value.toString();
+                  break;
+                case '276885007':
+                    this.temp = obs.valueQuantity.value.toString();
+                    break;
+                case '86290005':
+                    this.resp = obs.valueQuantity.value.toString();
+                    break;
+                case "859261000000108":
+                    this.news2 = obs.valueQuantity.value.toString();
+                    break;
+                case "365933000":
+                    this.alert = obs.valueCodeableConcept.coding[0].display;
+                    break;
+                case "75367002":
+                    this.bp = obs.component[0].valueQuantity.value.toString() + '/'+obs.component[1].valueQuantity.value.toString();
+                    break;
+                case "431314004":
+                    this.o2 = obs.valueQuantity.value.toString();
+                    break;
+                case "301282008":
+                  this.air = obs.valueCodeableConcept.coding[0].display;
+                  break;
+                default :
+                    console.log(obs);
+            }
+
+          }
+        }
+      })
   }
   getFirstName(patient :fhir.Patient) : String {
     if (patient == undefined) return "";
