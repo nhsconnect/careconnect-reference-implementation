@@ -16,9 +16,13 @@
     <mat-card>
       <mat-card-title>National Records</mat-card-title>
       <mat-card-content>
-        <mat-card>
-          <mat-card-content>Documents</mat-card-content>
-        </mat-card>
+        <span *ngIf="nrlsdocuments.length>0">
+              <h4>Document Reference</h4>
+              <app-document-reference [documents]="nrlsdocuments" (form)="onResoureSelected($event)"></app-document-reference>
+          </span>
+        <span *ngIf="nrlsdocuments.length===0">
+          No records found
+        </span>
       </mat-card-content>
     </mat-card>
   </div>
@@ -26,12 +30,21 @@
     <mat-card>
     <mat-card-title>YAS Record</mat-card-title>
     <mat-card-content>
-      <mat-card>
-        <mat-card-content>Documents</mat-card-content>
-      </mat-card>
-      <mat-card>
-        <mat-card-content>Observations</mat-card-content>
-      </mat-card>
+          <span *ngIf="documents.length>0">
+              <h4>Document Reference</h4>
+              <app-document-reference [documents]="documents" (form)="onResoureSelected($event)"></app-document-reference>
+          </span>
+          <span *ngIf="encounters.length>0">
+              <h4>Encounter</h4>
+              <app-encounter [encounters]="encounters" [useBundle]="true" (encounter)="onResoureSelected($event)"></app-encounter>
+          </span>
+
+         <span *ngIf="observations.length>0">
+              <h4>Observations</h4>
+              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
+          </span>
+
+
     </mat-card-content>
     </mat-card>
   </div>

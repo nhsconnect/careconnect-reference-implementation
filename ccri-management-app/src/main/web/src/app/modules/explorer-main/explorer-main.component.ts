@@ -45,7 +45,7 @@ export class ExplorerMainComponent implements OnInit {
         }
         ,{
             icon: 'swap_horiz',
-            route: '/ccri/camel/fhir/nrls',
+            route: 'https://data.developer.nhs.uk/nrls-ri',
             title: 'National Record Locator Service'
         }
         ,{

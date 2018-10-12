@@ -17,7 +17,12 @@ export class FhirService {
 
 
   private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
-  //private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+    //private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+
+  //private GPCbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
+    private GPCbaseUrl : string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
+
+    private NRLSbaseUrl : string = 'https://data.developer.nhs.uk/nrls-ri';
 
   private format : Formats = Formats.JsonFormatted;
 
@@ -80,14 +85,23 @@ export class FhirService {
         return this.format;
     }
 
-  public getFHIRServerBase() {
-    return this.baseUrl;
-  }
+      public getFHIRServerBase() {
+        return this.baseUrl;
+      }
+    public getFHIRGPCServerBase() {
+        return this.GPCbaseUrl;
+    }
+
+    public getFHIRNRLSServerBase() {
+        return this.NRLSbaseUrl;
+    }
 
     public setFHIRServerBase(server : string) {
         this.baseUrl = server;
 
     }
+
+
 
     getHeaders(contentType : boolean = true ): HttpHeaders {
 
@@ -140,6 +154,35 @@ export class FhirService {
       return this.http.get<any>(url, {'headers': headers});
     }
   }
+
+    public getNRLS(search : string) : Observable<fhir.Bundle> {
+        console.log('get');
+        let url : string = this.getFHIRNRLSServerBase() + search;
+        let headers = new HttpHeaders(
+        );
+
+
+         //   headers = headers.append( 'Content-Type',  'application/fhir+json' );
+        headers = headers.append('Accept', 'application/fhir+json');
+        headers = headers.append('Authorization','Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
+        headers = headers.append('fromASID','200000000117');
+        headers = headers.append('toASID','999999999999');
+
+        return this.http.get<any>(url, {'headers': headers});
+
+    }
+
+    public postGPC(nhsNumber : string) : Observable<fhir.Bundle> {
+        console.log('get');
+        let url : string = this.getFHIRGPCServerBase() +'/Patient/$gpc.getstructuredrecord' ;
+        let headers = new HttpHeaders(
+        );
+        headers = headers.append( 'Content-Type',  'application/fhir+json' );
+        headers = headers.append('Accept', 'application/fhir+json');
+        let body = '{ "resourceType": "Parameters", "parameter": [ { "name": "patientNHSNumber", "valueIdentifier": { "system": "https://fhir.nhs.uk/Id/nhs-number", "value": "'+nhsNumber+'" } }, { "name": "includeAllergies","part": [{"name": "includeResolvedAllergies","valueBoolean": true}]},{"name": "includeMedication","part": [{"name": "includePrescriptionIssues","valueBoolean": true}]}]}';
+
+        return this.http.post<any>(url, body,{'headers': headers});
+    }
 
   public getResource(search : string) : Observable<any> {
         console.log('getResource');

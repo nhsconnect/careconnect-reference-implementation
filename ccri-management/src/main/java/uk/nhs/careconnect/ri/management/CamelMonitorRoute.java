@@ -76,7 +76,8 @@ public class CamelMonitorRoute extends RouteBuilder {
 				.get("/ods/{path}").to("direct:ods")
 				.get("/nrls/{path}").to("direct:nrls")
 				.get("/gpc/{path}").to("direct:gpc")
-				.get("/gpc/{path}/{id}").to("direct:gpc");;
+				.get("/gpc/{path}/{id}").to("direct:gpc")
+				.post("/gpc/{path}/{id}").to("direct:gpc");
 
 
 		from("direct:nrls")
@@ -92,7 +93,7 @@ public class CamelMonitorRoute extends RouteBuilder {
 
 		from("direct:gpc")
 				.routeId("gpcREST")
-				// add in headers for GPC
+				.log("gpc called")
 				.process(new Processor() {
 					@Override
 					public void process(Exchange exchange) throws Exception {
@@ -140,7 +141,11 @@ public class CamelMonitorRoute extends RouteBuilder {
 								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:read:metadata-1");
 								break;
 							case "Patient":
-								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":patient-1");
+								if (exchange.getIn().getHeader(Exchange.HTTP_METHOD).toString().equals("GET")) {
+									exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:" + type + ":patient-1");
+								} else {
+									exchange.getIn().setHeader("Ssp-InteractionID","urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1");
+								}
 								break;
 							case "Appointment":
 								exchange.getIn().setHeader("Ssp-InteractionID", "urn:nhs:names:services:gpconnect:fhir:rest:"+type+":patient_appointments-1");
