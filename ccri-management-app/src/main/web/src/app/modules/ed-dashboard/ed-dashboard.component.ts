@@ -27,7 +27,7 @@ export class EdDashboardComponent implements OnInit {
             title: 'OAuth2 (SMART on FHIR) Server',
         }
         , {
-            icon: 'file_copy',
+            icon: 'note',
             route: 'https://data.developer.nhs.uk/document-viewer/',
             title: 'FHIR Document Viewer',
         }

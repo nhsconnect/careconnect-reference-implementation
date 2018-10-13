@@ -24,27 +24,27 @@
           </span>
 
           <div class="container" layout="row" layout-align="start center" flex>
-            <span *ngFor="let diagnosis of encounter.diagnosis">
-                <h2>{{diagnosis.condition.display}}</h2>
-            </span>
+                <span *ngFor="let diagnosis of encounter.diagnosis">
+                    <h2>{{diagnosis.condition.display}}</h2>
+                </span>
             <span flex></span>
-<mat-icon>phone</mat-icon><mat-icon>airport_shuttle</mat-icon>&nbsp;airware 543123
+              <mat-icon>airport_shuttle</mat-icon>&nbsp;airware 543123&nbsp;<mat-icon>phone</mat-icon>
               <span flex></span>
               <span *ngIf="encounter.status == 'in-progress'">
-                <mat-icon>phone</mat-icon><mat-icon>local_hospital</mat-icon>&nbsp;0113 2123123
+                <mat-icon>local_hospital</mat-icon>&nbsp;0113 2123123&nbsp;<mat-icon>phone</mat-icon>
               </span>
               <span *ngIf="encounter.status == 'triaged'">
-                <mat-icon>phone</mat-icon><mat-icon>person</mat-icon>&nbsp;0113 2567567
+                <mat-icon>person</mat-icon>&nbsp;0113 2567567&nbsp;<mat-icon>phone</mat-icon>
               </span>
-              <span flex></span>
-          <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
-              &nbsp; &nbsp;
-              <span>
+            <span flex></span>
+                <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
+                &nbsp; &nbsp;
+                <span>
                     <!-- Status <b>{{encounter.status}}</b> -->
                     <span *ngIf="encounter.status == 'triaged'"><mat-icon>airport_shuttle</mat-icon><mat-icon>chevron_right</mat-icon><mat-icon>person</mat-icon></span>
                 <span *ngIf="encounter.status == 'in-progress'"><mat-icon>airport_shuttle</mat-icon><mat-icon>chevron_right</mat-icon><mat-icon>local_hospital</mat-icon> </span>
 
-              </span>
+                </span>
           </div>
 
               <mat-chip-list>
