@@ -15,7 +15,18 @@ export class ExplorerMainComponent implements OnInit {
 
     public outputFormat : Formats = Formats.JsonFormatted;
 
-    routes: Object[] = [ {
+    routes: Object[] = [{
+        icon: 'home',
+        route: '/',
+        title: 'FHIR Explorer',
+    }
+        ,
+        {
+            icon: 'local_hospital',
+            route: '/ed',
+            title: 'ED Dashboard Demo',
+        }
+        ,{
         icon: 'lock',
         route: 'https://data.developer.nhs.uk/ccri-auth/',
         title: 'OAuth2 (SMART on FHIR) Server',

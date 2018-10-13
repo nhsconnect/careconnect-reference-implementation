@@ -1,14 +1,14 @@
 <td-layout [class]="'theme-light'">
     <td-navigation-drawer flex sidenavTitle="Quick Links" >
         <mat-nav-list>
-            <a *ngFor="let item of routes" mat-list-item><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+            <a *ngFor="let item of routes" mat-list-item href="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
         </mat-nav-list>
 
     </td-navigation-drawer>
     <td-layout-nav color="primary">
         <div td-toolbar-content layout="row" layout-align="start center" flex>
             <button mat-icon-button td-menu-button tdLayoutToggle>
-                <mat-icon>menu</mat-icon>
+                <mat-icon>apps</mat-icon>
             </button>
             <span>{{title}}</span>
             <span flex></span>

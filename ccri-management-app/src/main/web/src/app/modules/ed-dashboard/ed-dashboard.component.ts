@@ -12,13 +12,25 @@ export class EdDashboardComponent implements OnInit {
 
     routes: Object[] = [{
         icon: 'home',
-        route: '.',
-        title: 'ED Dashboard',
-    }, {
-        icon: 'library_books',
-        route: '.',
-        title: 'Documentation',
+        route: '/',
+        title: 'FHIR Explorer',
     }
+        ,
+        {
+            icon: 'local_hospital',
+            route: '/ed',
+            title: 'ED Dashboard Demo',
+        }
+        ,{
+            icon: 'lock',
+            route: 'https://data.developer.nhs.uk/ccri-auth/',
+            title: 'OAuth2 (SMART on FHIR) Server',
+        }
+        , {
+            icon: 'file_copy',
+            route: 'https://data.developer.nhs.uk/document-viewer/',
+            title: 'FHIR Document Viewer',
+        }
     ];
 
     navmenu: Object[] = [];

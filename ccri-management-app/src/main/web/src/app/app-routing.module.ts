@@ -6,7 +6,7 @@ import {MapComponent} from "./component/map/map.component";
 const routes: Routes = [
   {  path: '', redirectTo: 'exp', pathMatch: 'full' },
 
-    {  path: 'map', component: MapComponent
+    {  path: 'error', redirectTo: 'exp'
     }
 ];
 
