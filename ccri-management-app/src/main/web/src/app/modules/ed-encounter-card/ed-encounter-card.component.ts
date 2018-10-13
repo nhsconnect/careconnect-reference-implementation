@@ -24,6 +24,7 @@ export class EdEncounterCardComponent implements OnInit {
 
   patient : fhir.Patient = undefined;
   encounters : fhir.Encounter[] = [];
+  nrlsdocuments : fhir.DocumentReference[] = [];
 
   coords = undefined;
 
@@ -38,6 +39,12 @@ export class EdEncounterCardComponent implements OnInit {
 
     this.fhirService.getResource('/'+this.encounter.subject.reference).subscribe(patient => {
       this.patient = patient;
+        for(let identifier of patient.identifier) {
+            if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
+                this.getNRLSData(identifier.value);
+            }
+        }
+
     })
     this.fhirService.get('/Encounter?_id='+this.encounter.id+'&_revinclude=*').subscribe( bundle => {
       this.encounters = [];
@@ -72,6 +79,18 @@ export class EdEncounterCardComponent implements OnInit {
     return name;
 
   }
+
+    getNRLSData(nhsNumber : string) {
+        this.fhirService.getNRLS('/DocumentReference?subject=https%3A%2F%2Fdemographics.spineservices.nhs.uk%2FSTU3%2FPatient%2F'+nhsNumber).subscribe( bundle => {
+            if (bundle.entry !== undefined) {
+                for (let entry of bundle.entry) {
+                    let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
+                    this.nrlsdocuments.push(document);
+
+                }
+            }
+        })
+    }
 
   getObs(encounterId) {
       this.fhirService.get('/Encounter?_id='+encounterId+'&_revinclude=*').subscribe(bundle => {

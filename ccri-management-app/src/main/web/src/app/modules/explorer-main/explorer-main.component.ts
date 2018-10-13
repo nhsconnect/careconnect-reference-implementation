@@ -48,12 +48,13 @@ export class ExplorerMainComponent implements OnInit {
             route: 'https://data.developer.nhs.uk/nrls-ri',
             title: 'National Record Locator Service'
         }
+        /*
         ,{
             icon: 'swap_horiz',
             route: '/ccri/camel/fhir/gpc',
             title: 'GP Connect'
         }
-        /*
+
         ,{
             icon: 'swap_horiz',
             route: 'https://fhir.hl7.org.uk/STU3',
@@ -63,7 +64,7 @@ export class ExplorerMainComponent implements OnInit {
             icon: 'swap_horiz',
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
-        },*/
+        }*/
     ];
 
     usermenu: Object[] = [{

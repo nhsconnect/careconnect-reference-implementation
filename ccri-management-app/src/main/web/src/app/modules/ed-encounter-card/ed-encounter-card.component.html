@@ -28,7 +28,11 @@
                 <h2>{{diagnosis.condition.display}}</h2>
             </span>
             <span flex></span>
-             <span> Status <b>{{encounter.status}}</b></span>
+                <span>
+                    <!-- Status <b>{{encounter.status}}</b> -->
+                    <span *ngIf="encounter.status == 'triaged'"><mat-icon>phone</mat-icon><mat-icon>chevron_right</mat-icon><mat-icon>airport_shuttle</mat-icon></span>
+                <span *ngIf="encounter.status == 'in-progress'"><mat-icon>airport_shuttle</mat-icon><mat-icon>chevron_right</mat-icon><mat-icon>local_hospital</mat-icon> </span>
+             </span>
           <span flex></span>
           <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
         </div>
@@ -51,11 +55,16 @@
               </span>
 
           </td-expansion-panel> -->
-              <br>
+          <span *ngIf="nrlsdocuments !== undefined && nrlsdocuments.length > 0">
+                <td-message #messageDemo color="warn" label="Mental Health Care Plan" icon="warning" >
+                  <button td-message-actions mat-icon-button (click)="messageDemo.close()"><mat-icon>cancel</mat-icon></button>
+                </td-message>
+          </span>
             <button mat-button color="accent" fxFlexAlign="end" (click)="viewDetails(patient)">Patient Record</button>
           </div>
         </div>
        <!-- righy map pane -->
+          <!--
         <div fxFlex="25" layout-margin="3%" >
           <span *ngIf="coords!==undefined">
             <ngui-map class="map" zoom="13"
@@ -67,6 +76,7 @@
             </ngui-map>
           </span>
         </div>
+        -->
       </div>
   </mat-card-content>
  <!-- <mat-card-actions>

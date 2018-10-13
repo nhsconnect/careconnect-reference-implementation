@@ -59,6 +59,12 @@ export class ObservationComponent implements OnInit {
       return observation.valueQuantity.value.toPrecision(4) + " " + unit;
     }
 
+      if (observation.valueCodeableConcept != undefined ) {
+
+          let unit: string = "";
+          return observation.valueCodeableConcept.coding[0].display;
+      }
+
     if (observation.component == undefined || observation.component.length < 2)
       return "";
     // Only coded for blood pressures at present
