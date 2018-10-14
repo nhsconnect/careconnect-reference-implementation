@@ -188,25 +188,23 @@ public class LocationDao implements LocationRepository {
             em.persist(locationIdentifier);
         }
 
-        for (ContactPoint telecom : location.getTelecom()) {
-            LocationTelecom locationTelecom = null;
+        // Remove old entries
 
-            for (LocationTelecom orgSearch : locationEntity.getTelecoms()) {
-                if (telecom.getValue().equals(orgSearch.getValue())) {
-                    locationTelecom = orgSearch;
-                    break;
-                }
-            }
-            if (locationTelecom == null) {
-                locationTelecom = new LocationTelecom();
-                locationTelecom.setLocation(locationEntity);
-            }
+        for (LocationTelecom orgSearch : locationEntity.getTelecoms()) {
+            em.remove(orgSearch);
+        }
+        for (ContactPoint telecom : location.getTelecom()) {
+            LocationTelecom locationTelecom = new LocationTelecom();
+
+            locationTelecom.setLocation(locationEntity);
 
             locationTelecom.setValue(telecom.getValue());
             locationTelecom.setSystem(telecom.getSystem());
             locationTelecom.setTelecomUse(telecom.getUse());
 
             em.persist(locationTelecom);
+
+            locationEntity.addTelecom(locationTelecom);
         }
         Address address =location.getAddress();
 

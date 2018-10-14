@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.database.entity.location.LocationTelecom;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -52,12 +53,12 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
 
         location.setName(locationEntity.getName());
 
-        for(int f=0;f<locationEntity.getTelecoms().size();f++)
+        for(LocationTelecom locationTelecom : locationEntity.getTelecoms())
         {
             location.addTelecom()
-                    .setSystem(locationEntity.getTelecoms().get(f).getSystem())
-                    .setValue(locationEntity.getTelecoms().get(f).getValue())
-                    .setUse(locationEntity.getTelecoms().get(f).getTelecomUse());
+                    .setSystem(locationTelecom.getSystem())
+                    .setValue(locationTelecom.getValue())
+                    .setUse(locationTelecom.getTelecomUse());
         }
 
         for (LocationAddress locationAddress : locationEntity.getAddresses()){

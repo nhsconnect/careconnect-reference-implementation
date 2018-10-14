@@ -141,7 +141,7 @@ export class FhirService {
   }
 
   public get(search : string) : Observable<fhir.Bundle> {
-      console.log('get');
+
     let url : string = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );
@@ -156,7 +156,7 @@ export class FhirService {
   }
 
     public getNRLS(search : string) : Observable<fhir.Bundle> {
-        console.log('get');
+
         let url : string = this.getFHIRNRLSServerBase() + search;
         let headers = new HttpHeaders(
         );
@@ -173,7 +173,7 @@ export class FhirService {
     }
 
     public postGPC(nhsNumber : string) : Observable<fhir.Bundle> {
-        console.log('get');
+
         let url : string = this.getFHIRGPCServerBase() +'/Patient/$gpc.getstructuredrecord' ;
         let headers = new HttpHeaders(
         );
@@ -185,7 +185,7 @@ export class FhirService {
     }
 
   public getResource(search : string) : Observable<any> {
-        console.log('getResource');
+
     let url = this.getFHIRServerBase() + search;
     let headers = new HttpHeaders(
     );

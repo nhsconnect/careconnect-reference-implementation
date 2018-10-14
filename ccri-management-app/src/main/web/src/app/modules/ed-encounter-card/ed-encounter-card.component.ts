@@ -30,6 +30,9 @@ export class EdEncounterCardComponent implements OnInit {
 
     public positions=[];
 
+    ambulanceLoc : fhir.Location = undefined;
+    plannedLoc :fhir.Location = undefined;
+
 
 
     constructor(private fhirService : FhirService,
@@ -51,23 +54,41 @@ export class EdEncounterCardComponent implements OnInit {
       for (let entry of bundle.entry) {
         let sub : fhir.Encounter = <fhir.Encounter> entry.resource;
         if (sub.id !== this.encounter.id) {
-          console.log('found one');
-          if (sub.type != undefined && sub.type.length>0 && sub.type[0].coding.length >0 ) {
-            for(let location of sub.location) {
-              this.fhirService.getResource('/'+location.location.reference).subscribe( location => {
-                if (sub.type[0].coding[0].code === '245581009') {
-                  this.coords = location.position.latitude + ', '+location.position.longitude;
-                  }
-                this.positions.push([location.position.latitude, location.position.longitude]);
-                this.getObs(sub.id);
-              })
-            }
-          }
           //his.coords = sub.53.80634, -1.52304
           this.encounters.push(sub);
         }
       }
-    })
+    },
+        ()=>{
+
+        }
+        , ()=> {
+            this.ambulanceLoc = undefined;
+            this.plannedLoc = undefined;
+            for (let enc of this.encounters) {
+
+                // ambulance encounter is the only one we are interested in - the triage should be finished and handedover
+                if (enc.status !=='finished' ) {
+                    for (let location of enc.location) {
+
+                        if (location.status == 'planned' || location.status == 'active') {
+                            this.fhirService.getResource('/' + location.location.reference).subscribe(location => {
+                               /* if (enc.type[0].coding[0].code === '245581009') {
+                                    this.coords = location.position.latitude + ', ' + location.position.longitude;
+                                } */
+                               // this.positions.push([location.position.latitude, location.position.longitude]);
+                                if (location.type.coding[0].code === 'AMB') {
+                                    this.ambulanceLoc = location;
+                                } else {
+                                    this.plannedLoc = location;
+                                }
+                            })
+                        }
+                    }
+                    this.getObs(enc.id);
+                }
+            }
+        })
   }
   getLastName(patient :fhir.Patient) : String {
     if (patient == undefined) return "";
