@@ -29,38 +29,41 @@
                 </span>
                 <span flex></span>
                   <span *ngIf="ambulanceLoc !== undefined && ambulanceLoc.telecom !== undefined">
-                        <mat-icon>airport_shuttle</mat-icon>
-                            &nbsp;{{ambulanceLoc.telecom[0].value}} &nbsp;<mat-icon>phone</mat-icon>
+                        <mat-icon>phone</mat-icon>
+                            &nbsp;{{ambulanceLoc.telecom[0].value}} &nbsp;<mat-icon [matTooltip]="ambulanceLoc.name" >airport_shuttle</mat-icon>
                         <span flex></span>
                   </span>
+              <span *ngIf="ambulanceLoc !== undefined && plannedLoc !== undefined" flex></span>
                   <span *ngIf="plannedLoc !== undefined && plannedLoc.telecom !== undefined">
-                       <span *ngIf="plannedLoc.type.coding[0].code === 'ETU' || plannedLoc.type.coding[0].code === 'ER'">
-                                <mat-icon>local_hospital</mat-icon>
+                       <mat-icon>phone</mat-icon>&nbsp;{{plannedLoc.telecom[0].value}}&nbsp;
+                      <span *ngIf="plannedLoc.type.coding[0].code === 'ETU' || plannedLoc.type.coding[0].code === 'ER'">
+                                <mat-icon [matTooltip]="plannedLoc.name">local_hospital</mat-icon>
                        </span>
                       <span *ngIf="plannedLoc.type.coding[0].code == 'ACC'">
-                        <mat-icon>person</mat-icon>
+                        <mat-icon [matTooltip]="plannedLoc.name">person</mat-icon>
                       </span>
-                        &nbsp;{{plannedLoc.telecom[0].value}}&nbsp;<mat-icon>phone</mat-icon>
-                        <span flex></span>
+
+
                    </span>
+                 <span flex></span>
                 <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
                 &nbsp; &nbsp;
                 <span>
                     <span *ngIf="ambulanceLoc !== undefined">
-                        <mat-icon>airport_shuttle</mat-icon>
+                        <mat-icon [matTooltip]="ambulanceLoc.name">airport_shuttle</mat-icon>
                     </span>
                     <span *ngIf="ambulanceLoc === undefined">
                         <mat-icon color="warn">priority_high</mat-icon>
                     </span>
                     <!-- Status <b>{{encounter.status}}</b> -->
-                    <span *ngIf="encounter.status == 'triaged'"><mat-icon>chevron_right</mat-icon></span>
-                <span *ngIf="encounter.status == 'in-progress'"><mat-icon>chevron_right</mat-icon> </span>
+                    <span *ngIf="plannedLocStatus"><mat-icon>chevron_right</mat-icon></span>
+                    <span *ngIf="!plannedLocStatus"><mat-icon>drag_handle</mat-icon> </span>
                     <span *ngIf="plannedLoc !== undefined">
                         <span *ngIf="plannedLoc.type.coding[0].code == 'ACC'">
-                            <mat-icon>person</mat-icon>
+                            <mat-icon [matTooltip]="plannedLoc.name">person</mat-icon>
                         </span>
                          <span *ngIf="plannedLoc.type.coding[0].code === 'ETU' || plannedLoc.type.coding[0].code === 'ER'">
-                            <mat-icon>local_hospital</mat-icon>
+                            <mat-icon [matTooltip]="plannedLoc.name">local_hospital</mat-icon>
                         </span>
                     </span>
                 </span>

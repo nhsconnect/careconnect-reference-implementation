@@ -1,7 +1,8 @@
 <td-layout [class]="'theme-light'">
     <td-navigation-drawer flex sidenavTitle="Quick Links" >
         <mat-nav-list>
-            <a *ngFor="let item of routes" mat-list-item href="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+            <a *ngFor="let item of routes" mat-list-item (click)="onClick(item.route)"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
+            <a *ngFor="let item of routesExt" mat-list-item href="{{item.route}}"><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
         </mat-nav-list>
 
     </td-navigation-drawer>

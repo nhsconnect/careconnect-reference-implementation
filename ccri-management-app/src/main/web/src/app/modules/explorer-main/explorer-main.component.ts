@@ -15,18 +15,21 @@ export class ExplorerMainComponent implements OnInit {
 
     public outputFormat : Formats = Formats.JsonFormatted;
 
+
     routes: Object[] = [{
         icon: 'home',
         route: '/',
         title: 'FHIR Explorer',
     }
-        ,
+    ,
         {
             icon: 'local_hospital',
             route: '/ed',
             title: 'ED Dashboard Demo',
         }
-        ,{
+
+    ];
+    routesExt : Object[] = [{
         icon: 'lock',
         route: 'https://data.developer.nhs.uk/ccri-auth/',
         title: 'OAuth2 (SMART on FHIR) Server',
@@ -199,5 +202,8 @@ export class ExplorerMainComponent implements OnInit {
       this.fhirSrv.getConformance();
   }
 
+  onClick(route) {
+      this.router.navigateByUrl(route);
+  }
 
 }

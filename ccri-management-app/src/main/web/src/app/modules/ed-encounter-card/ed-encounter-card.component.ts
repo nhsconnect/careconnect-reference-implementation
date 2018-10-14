@@ -27,6 +27,7 @@ export class EdEncounterCardComponent implements OnInit {
   nrlsdocuments : fhir.DocumentReference[] = [];
 
   coords = undefined;
+  plannedLocStatus : boolean = true;
 
     public positions=[];
 
@@ -69,18 +70,25 @@ export class EdEncounterCardComponent implements OnInit {
 
                 // ambulance encounter is the only one we are interested in - the triage should be finished and handedover
                 if (enc.status !=='finished' ) {
-                    for (let location of enc.location) {
+                    for (let enclocation of enc.location) {
 
-                        if (location.status == 'planned' || location.status == 'active') {
-                            this.fhirService.getResource('/' + location.location.reference).subscribe(location => {
+                        if (enclocation.status == 'planned' || enclocation.status == 'active') {
+                            this.fhirService.getResource('/' + enclocation.location.reference).subscribe(location => {
                                /* if (enc.type[0].coding[0].code === '245581009') {
                                     this.coords = location.position.latitude + ', ' + location.position.longitude;
                                 } */
                                // this.positions.push([location.position.latitude, location.position.longitude]);
                                 if (location.type.coding[0].code === 'AMB') {
                                     this.ambulanceLoc = location;
+
                                 } else {
                                     this.plannedLoc = location;
+                                    console.log(enclocation.status);
+                                    if (enclocation.status == 'active') {
+                                        this.plannedLocStatus = true;
+                                    } else {
+                                        this.plannedLocStatus = false;
+                                    }
                                 }
                             })
                         }

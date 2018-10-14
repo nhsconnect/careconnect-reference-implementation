@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {Router} from "@angular/router";
 
 
 
@@ -21,11 +22,13 @@ export class EdDashboardComponent implements OnInit {
             route: '/ed',
             title: 'ED Dashboard Demo',
         }
-        ,{
-            icon: 'lock',
-            route: 'https://data.developer.nhs.uk/ccri-auth/',
-            title: 'OAuth2 (SMART on FHIR) Server',
-        }
+
+    ];
+    routesExt : Object[] = [{
+        icon: 'lock',
+        route: 'https://data.developer.nhs.uk/ccri-auth/',
+        title: 'OAuth2 (SMART on FHIR) Server',
+    }
         , {
             icon: 'note',
             route: 'https://data.developer.nhs.uk/document-viewer/',
@@ -39,12 +42,16 @@ export class EdDashboardComponent implements OnInit {
 
 
 
-    constructor() { }
+    constructor( private router : Router) { }
 
   ngOnInit() {
 
 
   }
+
+    onClick(route) {
+        this.router.navigateByUrl(route);
+    }
 
 
 }

@@ -24,33 +24,37 @@ export class PatientDetailsComponent implements OnInit {
       this.clearDown();
       this.fhirSrv.get('/Observation?patient='+patientid).subscribe(
           bundle => {
+              if (bundle.entry !== undefined) {
+                  for (let entry of bundle.entry) {
+                      let observation: fhir.Observation = <fhir.Observation> entry.resource;
+                      this.observations.push(observation);
 
-            for(let entry of bundle.entry) {
-              let observation : fhir.Observation = <fhir.Observation> entry.resource;
-              this.observations.push(observation);
-
-            }
+                  }
+              }
 
           }
       );
       this.fhirSrv.get('/DocumentReference?patient='+patientid).subscribe(
           bundle => {
 
-              for(let entry of bundle.entry) {
-                  let document : fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
-                  this.documents.push(document);
+              if (bundle.entry !== undefined) {
+                  for (let entry of bundle.entry) {
+                      let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
+                      this.documents.push(document);
 
+                  }
               }
 
           }
       );
       this.fhirSrv.get('/Encounter?patient='+patientid).subscribe(
           bundle => {
+              if (bundle.entry !== undefined) {
+                  for (let entry of bundle.entry) {
+                      let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
+                      this.encounters.push(encounter);
 
-              for(let entry of bundle.entry) {
-                  let encounter : fhir.Encounter = <fhir.Encounter> entry.resource;
-                  this.encounters.push(encounter);
-
+                  }
               }
 
           }
@@ -73,6 +77,9 @@ export class PatientDetailsComponent implements OnInit {
   getGPData(nhsNumber : string) {
       this.fhirSrv.postGPC(nhsNumber).subscribe( bundle => {
             console.log(bundle);
+          if (bundle.entry !== undefined) {
+
+          }
       });
 
   }
