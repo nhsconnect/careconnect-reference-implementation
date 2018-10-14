@@ -103,7 +103,7 @@ public class LocationDao implements LocationRepository {
         LocationEntity locationEntity = null;
         log.debug("Called Location Create Condition Url: "+theConditional);
         if (location.hasId()) {
-            locationEntity =  (LocationEntity) em.find(LocationEntity.class,Long.parseLong(location.getId()));
+            locationEntity =  (LocationEntity) em.find(LocationEntity.class,Long.parseLong(theId.getIdPart()));
         }
         if (theConditional != null) {
             try {

@@ -27,27 +27,22 @@
                 <span *ngFor="let diagnosis of encounter.diagnosis">
                     <h2>{{diagnosis.condition.display}}</h2> <!-- <i>({{diagnosis.verificationStatus}})</i>  not retrieving Condition -->
                 </span>
-            <span flex></span>
-              <span *ngIf="ambulanceLoc !== undefined">
-                    <mat-icon>airport_shuttle</mat-icon>
-                    <span *ngIf="ambulanceLoc.telecom !== undefined">
-                        &nbsp;{{ambulanceLoc.telecom[0].value}} &nbsp;<mat-icon>phone</mat-icon>
-                    </span>
-                    <span flex></span>
-              </span>
-              <span *ngIf="plannedLoc !== undefined">
-                   <span *ngIf="plannedLoc.type.coding[0].code === 'ETU' || plannedLoc.type.coding[0].code === 'ER'">
-                            <mat-icon>local_hospital</mat-icon>
+                <span flex></span>
+                  <span *ngIf="ambulanceLoc !== undefined && ambulanceLoc.telecom !== undefined">
+                        <mat-icon>airport_shuttle</mat-icon>
+                            &nbsp;{{ambulanceLoc.telecom[0].value}} &nbsp;<mat-icon>phone</mat-icon>
+                        <span flex></span>
+                  </span>
+                  <span *ngIf="plannedLoc !== undefined && plannedLoc.telecom !== undefined">
+                       <span *ngIf="plannedLoc.type.coding[0].code === 'ETU' || plannedLoc.type.coding[0].code === 'ER'">
+                                <mat-icon>local_hospital</mat-icon>
+                       </span>
+                      <span *ngIf="plannedLoc.type.coding[0].code == 'ACC'">
+                        <mat-icon>person</mat-icon>
+                      </span>
+                        &nbsp;{{plannedLoc.telecom[0].value}}&nbsp;<mat-icon>phone</mat-icon>
+                        <span flex></span>
                    </span>
-                  <span *ngIf="plannedLoc.type.coding[0].code == 'ACC'">
-                    <mat-icon>person</mat-icon>
-                  </span>
-                  <span *ngIf="plannedLoc.telecom !== undefined">
-                    &nbsp;{{plannedLoc.telecom[0].value}}&nbsp;<mat-icon>phone</mat-icon>
-                  </span>
-
-                    <span flex></span>
-               </span>
                 <span>Incident Start <span *ngIf="encounter.period !== undefined"><b> {{encounter.period.start | date: 'HH:mm'}} </b></span></span>
                 &nbsp; &nbsp;
                 <span>

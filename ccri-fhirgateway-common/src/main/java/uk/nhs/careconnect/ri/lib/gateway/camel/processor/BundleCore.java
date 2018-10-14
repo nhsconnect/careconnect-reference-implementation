@@ -775,11 +775,7 @@ public class BundleCore {
                 }
             }
         }
-        // Location found do not add
-        if (eprLocation != null) {
-            setResourceMap(locationId,eprLocation);
-            return eprLocation;
-        }
+
 
         // Location not found. Add to database
 
@@ -791,16 +787,32 @@ public class BundleCore {
         }
 
         IBaseResource iResource = null;
-        String jsonResource = ctx.newJsonParser().encodeResourceToString(location);
+
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Location";
+        // Location found do not add
+        if (eprLocation != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Location/"+eprLocation.getIdElement().getIdPart();
+            location.setId(eprLocation.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(location);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
         try {
+            // Location found do not add
+
             Exchange exchange = template.send("direct:FHIRLocation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
+
                     exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Location");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
                     exchange.getIn().setHeader("Prefer","return=representation");
                     exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
-                    exchange.getIn().setBody(jsonResource);
+                    exchange.getIn().setBody(httpBody);
                 }
             });
             inputStream = (InputStream) exchange.getIn().getBody();

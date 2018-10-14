@@ -38,7 +38,7 @@ public class LocationTelecom extends BaseContactPoint {
 	public LocationEntity getLocation() {
 	        return this.locationEntity;
 	}
-	public void setLocation(LocationEntity organisationEntity) {
+	public void setLocation(LocationEntity locationEntity) {
 	        this.locationEntity = locationEntity;
 	}
 
