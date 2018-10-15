@@ -3,6 +3,8 @@ import {FhirService} from "../service/fhir.service";
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class DocumentReferenceDataSource extends DataSource<any> {
+
+
   constructor(public fhirService : FhirService, public patientId : string,public documents : fhir.DocumentReference[]
   ) {
 

@@ -24,29 +24,37 @@
         </mat-card>
     </div>
   <div fxFlex="50">
-    <mat-card>
-      <mat-card-title>GP Record</mat-card-title>
-      <mat-card-content>
-        <mat-card>
-          <mat-card-content>Allergies and Intolerances</mat-card-content>
-        </mat-card>
-        <mat-card>
-          <mat-card-content>Medications</mat-card-content>
-        </mat-card>
-      </mat-card-content>
-    </mat-card>
-    <mat-card>
-      <mat-card-title>National Record Locator Service</mat-card-title>
-      <mat-card-content>
+      <mat-card>
+          <mat-card-title>National Record Locator Service</mat-card-title>
+          <mat-card-content>
         <span *ngIf="nrlsdocuments.length>0">
               <h4>Document Reference</h4>
               <app-document-reference [documents]="nrlsdocuments" (form)="onResoureSelected($event)"></app-document-reference>
           </span>
-        <span *ngIf="nrlsdocuments.length===0">
+              <span *ngIf="nrlsdocuments.length===0">
           No records found
+        </span>
+          </mat-card-content>
+      </mat-card>
+    <mat-card>
+      <mat-card-title>GP Record</mat-card-title>
+      <mat-card-content>
+        <span *ngIf="gpallergies.length>0">
+            <h2>Allergies and Intolerances</h2>
+          <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
+        </span>
+
+        <span *ngIf="gpMedicationRequest.length>0">
+             <h2>Prescriptions Issues</h2>
+          <app-medication-request [medicationRequests]="gpMedicationRequest"> </app-medication-request>
+        </span>
+          <span *ngIf="gpMedicationStatement.length>0">
+               <h2>Medication Statement</h2>
+          <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>
         </span>
       </mat-card-content>
     </mat-card>
+
   </div>
 
 </div>

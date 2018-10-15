@@ -14,6 +14,12 @@ export class PatientDetailsComponent implements OnInit {
     nrlsdocuments : fhir.DocumentReference[];
     encounters : fhir.Encounter[];
 
+    gpallergies : fhir.AllergyIntolerance[] = [];
+    gpMedicationStatement : fhir.MedicationStatement[]= [];
+    gpMedicationRequest : fhir.MedicationRequest[] = [];
+    gpMedication : fhir.Medication[] = [];
+
+
     observations : fhir.Observation[];
 
   constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute) { }
@@ -73,10 +79,50 @@ export class PatientDetailsComponent implements OnInit {
   }
 
   getGPData(nhsNumber : string) {
+      this.gpallergies = [];
+      this.gpMedicationStatement = [];
+      this.gpMedicationRequest  = [];
+
       this.fhirSrv.postGPC(nhsNumber).subscribe( bundle => {
             console.log(bundle);
           if (bundle.entry !== undefined) {
+                for (let entry of bundle.entry) {
+                   // console.log(entry.resource.resourceType);
+                    switch (entry.resource.resourceType) {
+                        case 'AllergyIntolerance':
+                            this.gpallergies.push(<fhir.AllergyIntolerance> entry.resource);
+                            break;
+                        case 'MedicationRequest':
+                            this.gpMedicationRequest.push(<fhir.MedicationRequest> entry.resource);
+                            break;
+                        case 'MedicationStatement':
+                            this.gpMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
+                            break;
+                        case 'Medication':
+                            this.gpMedication.push(<fhir.Medication> entry.resource);
+                            break;
 
+                    }
+                }
+          }
+          for (let pres of this.gpMedicationRequest) {
+              let meds = pres.medicationReference.reference.split('/');
+              for (let med of this.gpMedication) {
+
+                  if (meds[1] == med.id) {
+                      console.log(med);
+                      pres.medicationReference.display = med.code.coding[0].display;
+                  }
+              }
+          }
+          for (let pres of this.gpMedicationStatement) {
+              let meds = pres.medicationReference.reference.split('/');
+              for (let med of this.gpMedication) {
+                  if (meds[1] == med.id) {
+                      console.log(med);
+                      pres.medicationReference.display = med.code.coding[0].display;
+                  }
+              }
           }
       });
 

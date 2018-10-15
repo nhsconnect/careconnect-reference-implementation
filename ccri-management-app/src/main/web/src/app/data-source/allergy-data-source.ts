@@ -19,7 +19,7 @@ export class AllergyIntoleranceDataSource extends DataSource<any> {
 
     console.log('allergies DataSource connect '+this.patientId);
 
-    let _allergies : BehaviorSubject<fhir.AllergyIntolerance[]> =<BehaviorSubject<fhir.AllergyIntolerance[]>>new BehaviorSubject([]);
+    let _allergies : BehaviorSubject<fhir.AllergyIntolerance[]> = <BehaviorSubject<fhir.AllergyIntolerance[]>>new BehaviorSubject([]);
 
     this.dataStore = { allergies: [] };
 
@@ -34,9 +34,9 @@ export class AllergyIntoleranceDataSource extends DataSource<any> {
         _allergies.next(Object.assign({}, this.dataStore).allergies);
       }));
     } else
-    if (this.allergies != []) {
-      for (let encounter of this.allergies) {
-        this.dataStore.allergies.push(<fhir.AllergyIntolerance> encounter);
+    if (this.allergies != [] && this.allergies !== undefined) {
+      for (let allergy of this.allergies) {
+        this.dataStore.allergies.push(<fhir.AllergyIntolerance> allergy);
       }
       _allergies.next(Object.assign({}, this.dataStore).allergies);
     }

@@ -243,9 +243,12 @@ public class ServerInterceptor extends InterceptorAdapter {
         log.info("oR Content-Type = "+theRequestDetails.getHeader("Accept"));
         String acceptType = theRequestDetails.getHeader("Accept");
 
-        if (theRequestDetails.getParameters().containsKey("_format")) {
-                acceptType = theRequestDetails.getParameters().get("_format").toString();
+        String[] value = theRequestDetails.getParameters().get("_format");
+        if (value != null) {
+            for (String nextParam : value) {
+                acceptType = nextParam;
                 log.info("_format = "+acceptType);
+            }
         }
 
         log.trace("Response resource instance of "+resource.getClass().getSimpleName());

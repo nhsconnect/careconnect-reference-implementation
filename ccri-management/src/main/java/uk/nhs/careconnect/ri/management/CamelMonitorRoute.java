@@ -102,16 +102,16 @@ public class CamelMonitorRoute extends RouteBuilder {
 						if (in.getHeader("id") != null) {
 							exchange.getIn().setHeader(Exchange.HTTP_PATH, in.getHeader("path")+"/"+in.getHeader("id"));
 						}
-						exchange.getIn().setHeader("Ssp-TraceID","1324");
+						exchange.getIn().setHeader("Ssp-TraceID",exchange.getIn().getMessageId());
 						exchange.getIn().setHeader("Ssp-From","200000000359");
 						exchange.getIn().setHeader("Ssp-To","200000000359");
 						//log.info("dude!");
 						if (in.getHeader("Accept") == null || in.getHeader("Accept").toString().isEmpty() || in.getHeader("Accept").toString().equals("*/*"))  {
-						//	log.info("accept is not present");
+
 							 if (in.getHeader(Exchange.CONTENT_TYPE) != null || !in.getHeader(Exchange.CONTENT_TYPE).toString().isEmpty()) {
 								 in.setHeader("Accept", in.getHeader(Exchange.CONTENT_TYPE));
 							 } else {
-						//	 	log.info("content type null");
+
 								 in.setHeader("Accept", "application/fhir+json");
 							 }
 						} else if (in.getHeader("Accept").toString().contains("xml")) {
@@ -121,7 +121,7 @@ public class CamelMonitorRoute extends RouteBuilder {
 						}
 
 						if (in.getHeader(Exchange.CONTENT_TYPE) == null || in.getHeader(Exchange.CONTENT_TYPE).toString() != null) {
-							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
 						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("xml")) {
 							in.setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
 						} else if (in.getHeader(Exchange.CONTENT_TYPE).toString().contains("json")) {
