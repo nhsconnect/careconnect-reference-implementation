@@ -110,6 +110,7 @@ import {NguiMapModule} from "@ngui/map";
 import { PatientDetailsComponent } from './modules/patient-details/patient-details.component';
 
 
+
 export function initializeApp(appConfig: AppConfig) {
     return () => appConfig.load();
 }
@@ -154,6 +155,7 @@ export function initializeApp(appConfig: AppConfig) {
     RiskAssessmentComponent,
 
 
+
     ResourceDialogComponent,
     MedicationDialogComponent,
     IssueDialogComponent,
@@ -186,7 +188,8 @@ export function initializeApp(appConfig: AppConfig) {
     EncounterDialogComponent,
     MedicationDispenseDetailComponent,
     ImmunisationDetailComponent,
-      ObservationChartDialogComponent
+      ObservationChartDialogComponent,
+
   ],
   imports: [
     BrowserModule,

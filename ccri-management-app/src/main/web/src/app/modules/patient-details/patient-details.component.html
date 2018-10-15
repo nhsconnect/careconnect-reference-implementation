@@ -1,6 +1,28 @@
 <div fxLayout="row"
      fxFlexFill >
   <!-- Left pane -->
+    <div fxFlex="50">
+        <mat-card>
+            <mat-card-title>Emergency Record</mat-card-title>
+            <mat-card-content>
+          <span *ngIf="documents.length>0">
+              <h4>Document Reference</h4>
+              <app-document-reference [documents]="documents" (form)="onResoureSelected($event)"></app-document-reference>
+          </span>
+                <span *ngIf="encounters.length>0">
+              <h4>Encounter</h4>
+              <app-encounter [encounters]="encounters" [useBundle]="true" (encounter)="onResoureSelected($event)"></app-encounter>
+          </span>
+
+                <span *ngIf="observations.length>0">
+              <h4>Observations</h4>
+              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
+          </span>
+
+
+            </mat-card-content>
+        </mat-card>
+    </div>
   <div fxFlex="50">
     <mat-card>
       <mat-card-title>GP Record</mat-card-title>
@@ -14,7 +36,7 @@
       </mat-card-content>
     </mat-card>
     <mat-card>
-      <mat-card-title>National Records</mat-card-title>
+      <mat-card-title>National Record Locator Service</mat-card-title>
       <mat-card-content>
         <span *ngIf="nrlsdocuments.length>0">
               <h4>Document Reference</h4>
@@ -26,27 +48,6 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div fxFlex="50">
-    <mat-card>
-    <mat-card-title>YAS Record</mat-card-title>
-    <mat-card-content>
-          <span *ngIf="documents.length>0">
-              <h4>Document Reference</h4>
-              <app-document-reference [documents]="documents" (form)="onResoureSelected($event)"></app-document-reference>
-          </span>
-          <span *ngIf="encounters.length>0">
-              <h4>Encounter</h4>
-              <app-encounter [encounters]="encounters" [useBundle]="true" (encounter)="onResoureSelected($event)"></app-encounter>
-          </span>
 
-         <span *ngIf="observations.length>0">
-              <h4>Observations</h4>
-              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
-          </span>
-
-
-    </mat-card-content>
-    </mat-card>
-  </div>
 </div>
 

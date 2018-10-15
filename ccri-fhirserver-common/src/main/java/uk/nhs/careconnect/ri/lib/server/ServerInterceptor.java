@@ -240,8 +240,15 @@ public class ServerInterceptor extends InterceptorAdapter {
             response.addHeader("X-Correlation-ID", val);
            // theServletResponse.setHeader("X-Request-ID","");
         }
-        log.debug("oR Content-Type = "+theRequestDetails.getHeader("Content-Type"));
-        String contentType = theRequestDetails.getHeader("Content-Type");
+        log.info("oR Content-Type = "+theRequestDetails.getHeader("Accept"));
+        String acceptType = theRequestDetails.getHeader("Accept");
+
+        if (theRequestDetails.getParameters().containsKey("_format")) {
+            if (acceptType == null || acceptType.isEmpty()) {
+                acceptType = theRequestDetails.getParameters().get("_format").toString();
+                log.info("_format = "+acceptType);
+            }
+        }
 
         log.trace("Response resource instance of "+resource.getClass().getSimpleName());
         if (theRequestDetails != null && theRequestDetails.getResourceName() != null) log.trace("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
@@ -267,7 +274,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                 log.debug("Parsed resource type = " + resourceBundle.getClass().getSimpleName());
                 if (resourceBundle instanceof Bundle) {
                     // XML is default for FHIR documents
-                    if (contentType == null || (contentType.contains("fhir") && contentType.contains("xml"))) {
+                    if (acceptType == null || (acceptType.contains("fhir") && acceptType.contains("xml"))) {
                         try {
 
                             // Response was json, convert to xml
@@ -276,7 +283,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                             response.setStatus(200);
                             response.setContentType("application/fhir+xml");
 
-                            if (contentType == null) {
+                            if (acceptType == null) {
                                 // if not asked for format return xml as default
                                 response.getOutputStream().write(ctx.newXmlParser().encodeResourceToString(resourceBundle).getBytes());
                             } else {
@@ -288,7 +295,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                             ex.printStackTrace();
                         }
                         return false;
-                    } else if ( contentType.equals("text/html")) {
+                    } else if ( acceptType.equals("text/html")) {
                         try {
                             // requested document as html
                             response.setStatus(200);
@@ -300,7 +307,7 @@ public class ServerInterceptor extends InterceptorAdapter {
                             ex.printStackTrace();
                         }
                         return false;
-                    } else if (contentType.equals("application/pdf")) {
+                    } else if (acceptType.equals("application/pdf")) {
                         try {
                             // requested document as pdf
                             response.setStatus(200);

@@ -56,8 +56,8 @@
                         <mat-icon color="warn">priority_high</mat-icon>
                     </span>
                     <!-- Status <b>{{encounter.status}}</b> -->
-                    <span *ngIf="plannedLocStatus"><mat-icon>chevron_right</mat-icon></span>
-                    <span *ngIf="!plannedLocStatus"><mat-icon>drag_handle</mat-icon> </span>
+                    <span *ngIf="plannedLocStatus"><mat-icon [matTooltip]="'en route'">chevron_right</mat-icon></span>
+                    <span *ngIf="!plannedLocStatus"><mat-icon [matTooltip]="'at location'">drag_handle</mat-icon> </span>
                     <span *ngIf="plannedLoc !== undefined">
                         <span *ngIf="plannedLoc.type.coding[0].code == 'ACC'">
                             <mat-icon [matTooltip]="plannedLoc.name">person</mat-icon>

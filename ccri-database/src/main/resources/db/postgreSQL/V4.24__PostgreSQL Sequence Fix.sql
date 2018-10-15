@@ -132,8 +132,8 @@ LOCK TABLE encounteridentifier IN EXCLUSIVE MODE;
 SELECT setval('encounteridentifier_encounter_identifier_id_seq', COALESCE((SELECT MAX(encounter_identifier_id)+1 FROM encounteridentifier), 1), false)
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 
-LOCK TABLE encounterdiagnosis IN EXCLUSIVE MODE;
-SELECT setval('encounterdiagnosis_encounter_reason_id_seq', COALESCE((SELECT MAX(encounter_reason_id)+1 FROM encounterdiagnosis), 1), false)
+LOCK TABLE encounterdiagnosis1 IN EXCLUSIVE MODE;
+SELECT setval('encounterdiagnosis1_encounter_diagnosis_id_seq', COALESCE((SELECT MAX(encounter_diagnosis_id)+1 FROM encounterdiagnosis1), 1), false)
 WHERE EXISTS (SELECT 1 FROM pg_class c WHERE c.relkind = 'S');
 
 LOCK TABLE encounterepisodeofcare IN EXCLUSIVE MODE;

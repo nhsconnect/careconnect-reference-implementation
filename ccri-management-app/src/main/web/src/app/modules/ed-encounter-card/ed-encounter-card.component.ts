@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FhirService} from "../../service/fhir.service";
 import {Router} from "@angular/router";
-import {isLineBreak} from "codelyzer/angular/sourceMappingVisitor";
+
 
 @Component({
   selector: 'app-ed-encounter-card',
@@ -83,7 +83,7 @@ export class EdEncounterCardComponent implements OnInit {
 
                                 } else {
                                     this.plannedLoc = location;
-                                    console.log(enclocation.status);
+
                                     if (enclocation.status == 'active') {
                                         this.plannedLocStatus = true;
                                     } else {

@@ -61,8 +61,6 @@ export class PatientDetailsComponent implements OnInit {
       );
       this.fhirSrv.getResource('/Patient/'+patientid).subscribe(
           patient => {
-
-              console.log(patient);
               for(let identifier of patient.identifier) {
                   if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
                       this.getGPData(identifier.value);
