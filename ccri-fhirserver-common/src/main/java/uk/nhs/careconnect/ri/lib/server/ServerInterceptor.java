@@ -244,10 +244,8 @@ public class ServerInterceptor extends InterceptorAdapter {
         String acceptType = theRequestDetails.getHeader("Accept");
 
         if (theRequestDetails.getParameters().containsKey("_format")) {
-            if (acceptType == null || acceptType.isEmpty()) {
                 acceptType = theRequestDetails.getParameters().get("_format").toString();
                 log.info("_format = "+acceptType);
-            }
         }
 
         log.trace("Response resource instance of "+resource.getClass().getSimpleName());
