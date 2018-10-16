@@ -13,14 +13,14 @@ export class EdEncounterCardComponent implements OnInit {
   @Input()
   encounter : fhir.Encounter;
 
-  heart : string = undefined;
-  temp : string = undefined;
-  resp : string = undefined;
-  bp : string = undefined;
-    news2 : string = undefined;
-    o2 : string = undefined;
-    alert : string = undefined;
-    air : string = undefined;
+  heart : fhir.Observation = undefined;
+  temp : fhir.Observation = undefined;
+  resp : fhir.Observation = undefined;
+  bp : fhir.Observation = undefined;
+    news2 : fhir.Observation = undefined;
+    o2 : fhir.Observation = undefined;
+    alert : fhir.Observation = undefined;
+    air : fhir.Observation = undefined;
 
   patient : fhir.Patient = undefined;
   encounters : fhir.Encounter[] = [];
@@ -110,7 +110,10 @@ export class EdEncounterCardComponent implements OnInit {
   }
 
     getNRLSData(nhsNumber : string) {
-        this.fhirService.getNRLS('/DocumentReference?subject=https%3A%2F%2Fdemographics.spineservices.nhs.uk%2FSTU3%2FPatient%2F'+nhsNumber).subscribe( bundle => {
+
+      // Mock up using CCRI for now (EOLC not supported in NRLS until next phase
+
+        this.fhirService.get('/DocumentReference?patient='+this.patient.id).subscribe( bundle => {
             if (bundle.entry !== undefined) {
                 for (let entry of bundle.entry) {
                     let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
@@ -138,28 +141,30 @@ export class EdEncounterCardComponent implements OnInit {
             let obs : fhir.Observation = <fhir.Observation> entry.resource;
             switch (obs.code.coding[0].code) {
                 case '364075005':
-                  this.heart = obs.valueQuantity.value.toString();
+                  this.heart = obs;
                   break;
                 case '276885007':
-                    this.temp = obs.valueQuantity.value.toString();
+                    this.temp = obs;
                     break;
                 case '86290005':
-                    this.resp = obs.valueQuantity.value.toString();
+                    this.resp = obs;
                     break;
                 case "859261000000108":
-                    this.news2 = obs.valueQuantity.value.toString();
+                    this.news2 = obs;
                     break;
                 case "365933000":
-                    this.alert = obs.valueCodeableConcept.coding[0].display;
+                    this.alert = obs;
                     break;
                 case "75367002":
-                    this.bp = obs.component[0].valueQuantity.value.toString() + '/'+obs.component[1].valueQuantity.value.toString();
+                    this.bp = obs;
                     break;
                 case "431314004":
-                    this.o2 = obs.valueQuantity.value.toString();
+              case "866661000000106":
+              case "866701000000100":
+                    this.o2 = obs;
                     break;
                 case "301282008":
-                  this.air = obs.valueCodeableConcept.coding[0].display;
+                  this.air = obs;
                   break;
                 default :
                     console.log(obs);
@@ -194,6 +199,142 @@ export class EdEncounterCardComponent implements OnInit {
     }
     return NHSNumber;
 
+  }
+
+  getValue(obs : fhir.Observation) {
+      let value = "";
+
+      if (obs.valueQuantity != undefined) {
+        value = obs.valueQuantity.value.toString()
+      }
+    if (obs.valueCodeableConcept != undefined) {
+      value = obs.valueCodeableConcept.coding[0].display;
+    }
+    if (obs.component!=undefined && obs.component.length > 1) {
+      value = obs.component[0].valueQuantity.value.toString() + '/'+obs.component[1].valueQuantity.value.toString();
+    }
+      return value;
+  }
+
+  getColour(obs : fhir.Observation) {
+      let colour : string = undefined;
+    let value : number = undefined;
+
+      if (obs.code.coding !== undefined) {
+        switch (obs.code.coding[0].code) {
+          case "859261000000108":
+            // news2
+            value = Number(this.getValue(obs));
+            if (value > 6) {
+              colour = 'warn';
+            } else if (value > 4 ) {
+              colour = 'accent';
+            }
+            /// how is a aggregate score of 3 identified
+            break;
+
+          case '364075005':
+            // pulese
+            value = Number(this.getValue(obs));
+
+            if (value > 130 || value <40 ) {
+              colour = 'warn';
+            } else if (value > 110  ) {
+              colour = 'accent';
+            } else if (value > 90 || value< 51  ) {
+              colour = 'accent'; // yellow
+            }
+            break;
+          case '276885007':
+            // temp
+            value  = Number(this.getValue(obs));
+            if (value <= 35 ) {
+              colour = 'warn';
+            } else if (value > 39  ) {
+              colour = 'accent';
+            } else if (value > 38 || value< 36.1  ) {
+              colour = 'accent'; // yellow
+            }
+            break;
+          case '86290005':
+            // resp
+            value = Number(this.getValue(obs));
+            if (value > 24 || value <9 ) {
+              colour = 'warn';
+            } else if (value > 20  ) {
+              colour = 'accent';
+            } else if ( value< 12  ) {
+              colour = 'accent'; // yellow
+            }
+            break;
+
+          case "365933000":
+            // alert
+            if (obs.valueCodeableConcept.coding[0].code == '422768004') {
+              colour = 'accent';
+            }
+            if (obs.valueCodeableConcept.coding[0].code == '130987000') {
+              colour = 'accent';
+            }
+            break;
+          case "75367002":
+            // bp
+            console.log('bp - '+value);
+            value  = Number(obs.component[0].valueQuantity.value);
+            if (value < 91 || value>219 ) {
+              colour = 'warn';
+            } else if (value < 101  ) {
+              colour = 'accent';
+            } else if ( value< 111  ) {
+              colour = 'accent'; // yellow
+            }
+            break;
+
+          case "431314004":
+          case "866661000000106":
+          case "866701000000100":
+  // o2
+            value = Number(this.getValue(obs));
+            let onair :boolean = false;
+            if (this.air !== undefined) {
+              onair = this.air.valueCodeableConcept.coding[0].code == '371825009';
+            }
+            if (onair) {
+              if (value < 84 || value > 96) {
+                colour = 'warn';
+              } else if (value < 86 || value > 94) {
+                colour = 'accent';
+              } else if (value < 88 || value > 92) {
+                colour = 'accent'; // yellow
+              }
+            } else {
+              if (value < 92) {
+                colour = 'warn';
+              } else if (value < 94) {
+                colour = 'accent';
+              } else if (value < 96) {
+                colour = 'accent'; // yellow
+              }
+            }
+            break;
+
+          case "301282008":
+            if (obs.valueCodeableConcept.coding[0].code == '371825009') {
+              colour = 'accent';
+            }
+            break;
+        }
+      }
+
+      return colour;
+  }
+  getSelected(obs : fhir.Observation) :boolean {
+      let value = this.getColour(obs);
+
+      if (value !== undefined ) {
+
+        return true;
+      } else return false;
   }
 
     onMapReady(map) {
