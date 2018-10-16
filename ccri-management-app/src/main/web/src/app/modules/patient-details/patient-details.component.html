@@ -43,11 +43,12 @@
             <h2>Allergies and Intolerances</h2>
           <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
         </span>
-
+<!--
         <span *ngIf="gpMedicationRequest.length>0">
              <h2>Prescriptions Issues</h2>
           <app-medication-request [medicationRequests]="gpMedicationRequest"> </app-medication-request>
         </span>
+        -->
           <span *ngIf="gpMedicationStatement.length>0">
                <h2>Medication Statement</h2>
           <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>

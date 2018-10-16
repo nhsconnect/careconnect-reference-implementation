@@ -110,8 +110,11 @@ export class PatientDetailsComponent implements OnInit {
               for (let med of this.gpMedication) {
 
                   if (meds[1] == med.id) {
-                      console.log(med);
+                     // console.log(med);
                       pres.medicationReference.display = med.code.coding[0].display;
+                      if (med.code.coding[0].display === undefined || med.code.coding[0].display == '') {
+                          pres.medicationReference.display = med.code.coding[0].extension[0].extension[1].valueString;
+                      }
                   }
               }
           }
@@ -119,8 +122,11 @@ export class PatientDetailsComponent implements OnInit {
               let meds = pres.medicationReference.reference.split('/');
               for (let med of this.gpMedication) {
                   if (meds[1] == med.id) {
-                      console.log(med);
+                     // console.log(med);
                       pres.medicationReference.display = med.code.coding[0].display;
+                      if (med.code.coding[0].display === undefined || med.code.coding[0].display == '') {
+                          pres.medicationReference.display = med.code.coding[0].extension[0].extension[1].valueString;
+                      }
                   }
               }
           }
