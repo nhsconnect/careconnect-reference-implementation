@@ -19,7 +19,7 @@ export class EdEncounterCardComponent implements OnInit {
   bp : fhir.Observation = undefined;
     news2 : fhir.Observation = undefined;
     o2 : fhir.Observation = undefined;
-    alert : fhir.Observation = undefined;
+    alert2 : fhir.Observation = undefined;
     air : fhir.Observation = undefined;
 
   patient : fhir.Patient = undefined;
@@ -134,7 +134,7 @@ export class EdEncounterCardComponent implements OnInit {
           this.news2 = undefined;
           this.o2 = undefined;
           this.air = undefined;
-          this.alert = undefined;
+          this.alert2 = undefined;
 
         for (let entry of bundle.entry) {
           if (entry.resource.resourceType === 'Observation') {
@@ -153,7 +153,7 @@ export class EdEncounterCardComponent implements OnInit {
                     this.news2 = obs;
                     break;
                 case "365933000":
-                    this.alert = obs;
+                    this.alert2 = obs;
                     break;
                 case "75367002":
                     this.bp = obs;
@@ -211,14 +211,24 @@ export class EdEncounterCardComponent implements OnInit {
       value = obs.valueCodeableConcept.coding[0].display;
     }
     if (obs.component!=undefined && obs.component.length > 1) {
-      value = obs.component[0].valueQuantity.value.toString() + '/'+obs.component[1].valueQuantity.value.toString();
+      let sys = 0;
+      let dia = 0;
+      for (let comp of obs.component) {
+        if (comp.code.coding[0].code =='72313002') {
+          sys = Number(comp.valueQuantity.value);
+        }
+        if (comp.code.coding[0].code =='271650006') {
+          dia = Number(comp.valueQuantity.value);
+        }
+      }
+      value = sys + '/'+dia;
     }
       return value;
   }
 
   getColour(obs : fhir.Observation) {
       let colour : string = undefined;
-    let value : number = undefined;
+      let value : number = undefined;
 
       if (obs.code.coding !== undefined) {
         switch (obs.code.coding[0].code) {
@@ -242,7 +252,7 @@ export class EdEncounterCardComponent implements OnInit {
             } else if (value > 110  ) {
               colour = 'accent';
             } else if (value > 90 || value< 51  ) {
-              colour = 'accent'; // yellow
+              colour = ''; // yellow
             }
             break;
           case '276885007':
@@ -253,7 +263,7 @@ export class EdEncounterCardComponent implements OnInit {
             } else if (value > 39  ) {
               colour = 'accent';
             } else if (value > 38 || value< 36.1  ) {
-              colour = 'accent'; // yellow
+              colour = ''; // yellow
             }
             break;
           case '86290005':
@@ -264,7 +274,7 @@ export class EdEncounterCardComponent implements OnInit {
             } else if (value > 20  ) {
               colour = 'accent';
             } else if ( value< 12  ) {
-              colour = 'accent'; // yellow
+              colour = ''; // yellow
             }
             break;
 
@@ -279,14 +289,23 @@ export class EdEncounterCardComponent implements OnInit {
             break;
           case "75367002":
             // bp
-            console.log('bp - '+value);
-            value  = Number(obs.component[0].valueQuantity.value);
-            if (value < 91 || value>219 ) {
-              colour = 'warn';
-            } else if (value < 101  ) {
-              colour = 'accent';
-            } else if ( value< 111  ) {
-              colour = 'accent'; // yellow
+            value=undefined;
+
+            for (let comp of obs.component) {
+            //  console.log(comp.code.coding[0].code);
+              if (comp.code.coding[0].code ==='72313002') {
+                value = Number(obs.component[0].valueQuantity.value);
+              }
+            }
+            if (value !== undefined) {
+             // console.log('bp '+value);
+              if (value < 91 || value > 219) {
+                colour = 'warn';
+              } else if (value < 101) {
+                colour = 'accent';
+              } else if (value < 111) {
+                colour = ''; // yellow
+              }
             }
             break;
 
@@ -305,7 +324,7 @@ export class EdEncounterCardComponent implements OnInit {
               } else if (value < 86 || value > 94) {
                 colour = 'accent';
               } else if (value < 88 || value > 92) {
-                colour = 'accent'; // yellow
+                colour = ''; // yellow
               }
             } else {
               if (value < 92) {
@@ -313,7 +332,7 @@ export class EdEncounterCardComponent implements OnInit {
               } else if (value < 94) {
                 colour = 'accent';
               } else if (value < 96) {
-                colour = 'accent'; // yellow
+                colour = ''; // yellow
               }
             }
             break;
