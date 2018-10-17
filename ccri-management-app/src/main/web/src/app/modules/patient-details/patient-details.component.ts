@@ -18,6 +18,9 @@ export class PatientDetailsComponent implements OnInit {
     gpMedicationStatement : fhir.MedicationStatement[]= [];
     gpMedicationRequest : fhir.MedicationRequest[] = [];
     gpMedication : fhir.Medication[] = [];
+    gpPatient : fhir.Patient[];
+    gpOrganisation : fhir.Organization[];
+    gpPractitioner : fhir.Practitioner[];
 
 
     observations : fhir.Observation[];
@@ -82,6 +85,9 @@ export class PatientDetailsComponent implements OnInit {
       this.gpallergies = [];
       this.gpMedicationStatement = [];
       this.gpMedicationRequest  = [];
+      this.gpPatient  = [];
+      this.gpPractitioner  = [];
+      this.gpOrganisation = [];
 
       this.fhirSrv.postGPC(nhsNumber).subscribe( bundle => {
             console.log(bundle);
@@ -101,7 +107,15 @@ export class PatientDetailsComponent implements OnInit {
                         case 'Medication':
                             this.gpMedication.push(<fhir.Medication> entry.resource);
                             break;
-
+                        case 'Patient':
+                            this.gpPatient.push(<fhir.Patient> entry.resource);
+                            break;
+                        case 'Practitioner':
+                            this.gpPractitioner.push(<fhir.Practitioner> entry.resource);
+                            break;
+                        case 'Organization':
+                            this.gpOrganisation.push(<fhir.Organization> entry.resource);
+                            break;
                     }
                 }
           }

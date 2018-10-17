@@ -73,7 +73,7 @@ export class FhirService {
   }
 
     setGPCNRLSUrl(baseUrl : string) {
-        this.GPCbaseUrl = baseUrl +'/camel/fhir/gpc';
+        this.GPCbaseUrl = baseUrl +'camel/fhir/gpc';
        // GP Connect only at present
     }
 

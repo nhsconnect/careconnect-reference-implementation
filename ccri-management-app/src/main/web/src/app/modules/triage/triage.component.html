@@ -10,7 +10,7 @@
 <td-steps>
   <td-step #step1 label="Breathing" sublabel="Is the patient breathing" [active]="true" [disabled]="disabled" (activated)="activeStep1Event()" (deactivated)="deactiveStep1Event()">
 
-    <form class="example-form" [formGroup]="triageFormGroup">
+    <form  [formGroup]="triageFormGroup">
       <ng-template matStepLabel>Breathing</ng-template>
       <mat-radio-group class="example-radio-group" formControlName="breathingCtrl">
         <mat-radio-button class="example-radio-button" *ngFor="let opt of yesno" [value]="opt.viewValue">
@@ -23,7 +23,7 @@
 
   <td-step #step2 label="Conscious" sublabel="Is the patient concious?" [active]="false" [disabled]="disabled" (activated)="activeStep1Event()" (deactivated)="deactiveStep1Event()">
 
-    <form class="example-form" [formGroup]="triageFormGroup">
+    <form  [formGroup]="triageFormGroup">
       <ng-template matStepLabel>Breathing</ng-template>
       <mat-radio-group class="example-radio-group" formControlName="breathingCtrl">
         <mat-radio-button class="example-radio-button" *ngFor="let opt of yesno" [value]="opt.viewValue">
@@ -36,7 +36,7 @@
 
   <td-step #step3 label="What happened" sublabel="Can you tell me what happened?" [active]="false" [disabled]="disabled" (activated)="activeStep1Event()" (deactivated)="deactiveStep1Event()">
     <ng-template matStepLabel>What dis?</ng-template>
-    <form class="example-form" [formGroup]="triageFormGroup">
+    <form  [formGroup]="triageFormGroup">
 
       <mat-form-field>
         <textarea matInput placeholder="What happened"></textarea>
