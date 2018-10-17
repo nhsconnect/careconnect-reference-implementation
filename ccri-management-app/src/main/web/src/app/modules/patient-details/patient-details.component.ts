@@ -18,9 +18,9 @@ export class PatientDetailsComponent implements OnInit {
     gpMedicationStatement : fhir.MedicationStatement[]= [];
     gpMedicationRequest : fhir.MedicationRequest[] = [];
     gpMedication : fhir.Medication[] = [];
-    gpPatient : fhir.Patient[];
-    gpOrganisation : fhir.Organization[];
-    gpPractitioner : fhir.Practitioner[];
+    gpPatient : fhir.Patient[] = [];
+    gpOrganisation : fhir.Organization[] = [];
+    gpPractitioner : fhir.Practitioner[] =[];
 
 
     observations : fhir.Observation[];
