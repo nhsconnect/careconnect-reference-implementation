@@ -12,6 +12,7 @@ export class AppConfig {
         this.http.get<any>(document.baseURI+'camel/config/http').subscribe( result => {
             console.log(result);
                 this.fhirServer.setRootUrl(result.fhirServer);
+                this.fhirServer.setGPCNRLSUrl(document.baseURI);
         },
             () => {
             console.log('No server deteted');

@@ -18,26 +18,26 @@ import {CovalentMarkdownModule} from "@covalent/markdown";
 import {CovalentDynamicFormsModule} from "@covalent/dynamic-forms";
 import {AppRoutingModule} from "./app-routing.module";
 import {
-  DateAdapter,
-  MAT_DATE_FORMATS,
-  MAT_DATE_LOCALE,
-  MatBadgeModule,
-  MatButtonModule,
-  MatCardModule, MatChipsModule,
-  MatDatepickerModule,
-  MatDialogModule, MatGridListModule,
+    DateAdapter,
+    MAT_DATE_FORMATS,
+    MAT_DATE_LOCALE,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCardModule, MatChipsModule,
+    MatDatepickerModule,
+    MatDialogModule, MatFormFieldModule, MatGridListModule,
 
-  MatIconModule,
-  MatIconRegistry,
-  MatInputModule,
-  MatListModule,
-  MatMenuModule,
-  MatPaginatorModule, MatProgressBarModule, MatRadioModule,
-  MatSelectModule,
-  MatSidenavModule,
-  MatSnackBarModule,
-  MatTableModule,
-  MatToolbarModule, MatTooltipModule,
+    MatIconModule,
+    MatIconRegistry,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatPaginatorModule, MatProgressBarModule, MatRadioModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSnackBarModule,
+    MatTableModule,
+    MatToolbarModule, MatTooltipModule,
 
 
 } from "@angular/material";
@@ -46,7 +46,7 @@ import {MainComponent} from "./modules/main/main.component";
 import { ConformanceComponent } from './modules/conformance/conformance.component';
 import { ResourceComponent } from './modules/resource/resource.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {ErrorsHandler} from "./error-handler";
 import {MessageService} from "./service/message.service";
@@ -108,6 +108,8 @@ import {EdRoutingModule} from "./modules/ed-routing.module";
 import { EdEncounterCardComponent } from './modules/ed-encounter-card/ed-encounter-card.component';
 import {NguiMapModule} from "@ngui/map";
 import { PatientDetailsComponent } from './modules/patient-details/patient-details.component';
+import { TriageComponent } from './modules/triage/triage.component';
+import {PatientSearchComponent} from "./component/patient-search/patient-search.component";
 
 
 
@@ -173,6 +175,8 @@ export function initializeApp(appConfig: AppConfig) {
     EdEncounterListComponent,
     EdEncounterCardComponent,
     PatientDetailsComponent,
+    TriageComponent,
+      PatientSearchComponent
 
 
 
@@ -189,6 +193,7 @@ export function initializeApp(appConfig: AppConfig) {
     MedicationDispenseDetailComponent,
     ImmunisationDetailComponent,
       ObservationChartDialogComponent,
+      TriageComponent
 
   ],
   imports: [
@@ -198,6 +203,9 @@ export function initializeApp(appConfig: AppConfig) {
 
       FormsModule,
       FlexLayoutModule,
+      ReactiveFormsModule,
+      MatFormFieldModule,
+
 
 
     MatMomentDateModule,

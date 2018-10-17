@@ -20,8 +20,8 @@ export class FhirService {
   private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
     //private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
 
-  //private GPCbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
-    private GPCbaseUrl : string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
+  private GPCbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
+   // private GPCbaseUrl : string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
 
     private NRLSbaseUrl : string = 'https://data.developer.nhs.uk/nrls-ri';
 
@@ -71,6 +71,11 @@ export class FhirService {
         this.baseUrl = rootUrl;
         this.rootUrlChange.emit(rootUrl);
   }
+
+    setGPCNRLSUrl(baseUrl : string) {
+        this.GPCbaseUrl = baseUrl +'/camel/fhir/gpc';
+       // GP Connect only at present
+    }
 
   public getRootUrlChange() {
         return this.rootUrlChange;
@@ -251,14 +256,14 @@ export class FhirService {
         return this.http
             .get(url, { headers, responseType : 'blob' as 'blob'} );
     }
-
+/*
     getCatClientSecret() {
         // This is a marker for entryPoint.sh to replace
         let secret :string = 'SMART_OAUTH2_CLIENT_SECRET';
         if (secret.indexOf('SECRET') != -1) secret = environment.oauth2.client_secret;
         return secret;
     }
-
+*/
     /*
     getClients() {
 

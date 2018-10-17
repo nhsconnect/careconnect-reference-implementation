@@ -1,0 +1,12 @@
+<div id="search-results">
+  <form class="example-form">
+    <mat-form-field class="input-half-width">
+      <input #searchBox matInput placeholder="Patient Find (NHS Number or name)" (keyup)="search(searchBox.value)" >
+    </mat-form-field>
+  </form>
+
+  <app-patient [patientsObservable]="patients$"  [useObservable]="true" [showResourceLink]="false" (patient)="selectPatient($event)"></app-patient>
+
+</div>
+
+

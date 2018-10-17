@@ -11,17 +11,24 @@ import {Router} from "@angular/router";
 export class EdDashboardComponent implements OnInit {
 
 
-    routes: Object[] = [{
-        icon: 'home',
-        route: '/',
-        title: 'FHIR Explorer',
-    }
+    routes: Object[] = [
+        {
+            icon: 'add_circle_outline',
+            route: '/ed',
+            title: 'ED Triage',
+        }
         ,
         {
             icon: 'local_hospital',
-            route: '/ed',
-            title: 'ED Dashboard Demo',
+            route: '/ed/caseload',
+            title: 'ED Caseload',
+        },
+        {
+            icon: 'search',
+            route: '/',
+            title: 'FHIR Explorer',
         }
+
 
     ];
     routesExt : Object[] = [{
