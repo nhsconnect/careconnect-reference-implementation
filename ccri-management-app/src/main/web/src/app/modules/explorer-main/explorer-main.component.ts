@@ -16,17 +16,27 @@ export class ExplorerMainComponent implements OnInit {
     public outputFormat : Formats = Formats.JsonFormatted;
 
 
-    routes: Object[] = [{
-        icon: 'home',
+    routes: Object[] = [
+      {
+        icon: 'search',
         route: '/',
         title: 'FHIR Explorer',
-    }
-    ,
-        {
-            icon: 'local_hospital',
-            route: '/ed',
-            title: 'ED Dashboard Demo',
-        }
+      }
+      ,{
+        icon: 'add_circle_outline',
+        route: '/ed',
+        title: 'Emergency Triage',
+      }
+      ,{
+        icon: 'local_hospital',
+        route: '/ed/caseload',
+        title: 'Ambulance Caseload',
+      }
+      ,{
+        icon: 'dashboard',
+        route: '/ed/capacity',
+        title: 'Emergency Planning',
+      }
 
     ];
     routesExt : Object[] = [{

@@ -4,6 +4,7 @@ import {EdDashboardComponent} from "./ed-dashboard/ed-dashboard.component";
 import {EdEncounterListComponent} from "./ed-encounter-list/ed-encounter-list.component";
 import {PatientDetailsComponent} from "./patient-details/patient-details.component";
 import {TriageComponent} from "./triage/triage.component";
+import {CapacityComponent} from "./capacity/capacity.component";
 
 
 
@@ -13,6 +14,7 @@ const edRoutes: Routes = [
     children : [
         {  path: '', component: TriageComponent },
         {  path: 'caseload', component: EdEncounterListComponent },
+      {  path: 'capacity', component: CapacityComponent },
         {  path: 'patient/:patientid', component: PatientDetailsComponent }
     ]
 }

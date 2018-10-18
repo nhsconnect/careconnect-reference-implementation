@@ -26,10 +26,8 @@ export class EdEncounterCardComponent implements OnInit {
   encounters : fhir.Encounter[] = [];
   nrlsdocuments : fhir.DocumentReference[] = [];
 
-  coords = undefined;
-  plannedLocStatus : boolean = true;
 
-    public positions=[];
+  plannedLocStatus : boolean = true;
 
     ambulanceLoc : fhir.Location = undefined;
     plannedLoc :fhir.Location = undefined;
@@ -356,20 +354,7 @@ export class EdEncounterCardComponent implements OnInit {
       } else return false;
   }
 
-    onMapReady(map) {
-        console.log('map', map);
-        console.log('markers', map.markers);  // to get all markers as an array
-    }
-    onIdle(event) {
-        console.log('map', event.target);
-    }
-    onMarkerInit(marker) {
-        console.log('marker', marker);
-    }
-    onMapClick(event) {
-        this.positions.push(event.latLng);
-        event.target.panTo(event.latLng);
-    }
+
 
     viewDetails(patient : fhir.Patient) {
         this.router.navigateByUrl('/ed/patient/'+patient.id);

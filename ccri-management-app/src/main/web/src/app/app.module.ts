@@ -110,6 +110,7 @@ import {NguiMapModule} from "@ngui/map";
 import { PatientDetailsComponent } from './modules/patient-details/patient-details.component';
 import { TriageComponent } from './modules/triage/triage.component';
 import {PatientSearchComponent} from "./component/patient-search/patient-search.component";
+import { CapacityComponent } from './modules/capacity/capacity.component';
 
 
 
@@ -176,7 +177,8 @@ export function initializeApp(appConfig: AppConfig) {
     EdEncounterCardComponent,
     PatientDetailsComponent,
     TriageComponent,
-      PatientSearchComponent
+      PatientSearchComponent,
+      CapacityComponent
 
 
 
@@ -251,8 +253,8 @@ export function initializeApp(appConfig: AppConfig) {
 
       PdfViewerModule,
       ImageViewerModule,
-     // NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyDC8GmtqZiQXc16qf1v870NKy-phjv-1N0'}),
-      NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key='}),
+     NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key=AIzaSyDC8GmtqZiQXc16qf1v870NKy-phjv-1N0'}),
+    //  NguiMapModule.forRoot({apiUrl: 'https://maps.google.com/maps/api/js?key='}),
 
     EprRoutingModule,
     EdRoutingModule,

@@ -12,23 +12,26 @@ export class EdDashboardComponent implements OnInit {
 
 
     routes: Object[] = [
-        {
-            icon: 'add_circle_outline',
-            route: '/ed',
-            title: 'ED Triage',
-        }
-        ,
-        {
-            icon: 'local_hospital',
-            route: '/ed/caseload',
-            title: 'ED Caseload',
-        },
-        {
-            icon: 'search',
-            route: '/',
-            title: 'FHIR Explorer',
-        }
-
+      {
+        icon: 'search',
+        route: '/',
+        title: 'FHIR Explorer',
+      }
+      ,{
+        icon: 'add_circle_outline',
+        route: '/ed',
+        title: 'Emergency Triage',
+      }
+      ,{
+        icon: 'local_hospital',
+        route: '/ed/caseload',
+        title: 'Ambulance Caseload',
+      }
+      ,{
+        icon: 'dashboard',
+        route: '/ed/capacity',
+        title: 'Emergency Planning',
+      }
 
     ];
     routesExt : Object[] = [{
