@@ -13,6 +13,7 @@ export class PatientDetailsComponent implements OnInit {
     documents : fhir.DocumentReference[];
     nrlsdocuments : fhir.DocumentReference[];
     encounters : fhir.Encounter[];
+    patient : fhir.Patient = undefined;
 
     gpallergies : fhir.AllergyIntolerance[] = [];
     gpMedicationStatement : fhir.MedicationStatement[]= [];
@@ -23,6 +24,12 @@ export class PatientDetailsComponent implements OnInit {
     gpPractitioner : fhir.Practitioner[] =[];
 
 
+    lhcreEncounters : fhir.Encounter[];
+    lhcreAllergies : fhir.AllergyIntolerance[] = [];
+    lhcreMedicationStatement : fhir.MedicationStatement[]= [];
+    lhcreConditions : fhir.Condition[];
+
+
     observations : fhir.Observation[];
 
   constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute) { }
@@ -31,6 +38,34 @@ export class PatientDetailsComponent implements OnInit {
 
       let patientid = this.route.snapshot.paramMap.get('patientid');
       this.clearDown();
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=*').subscribe(
+          bundle => {
+              if (bundle.entry !== undefined) {
+                  for (let entry of bundle.entry) {
+                      if (entry.resource.resourceType == 'Patient') {
+                          let patient: fhir.Patient = <fhir.Patient> entry.resource;
+                          this.patient = patient;
+                      }
+                      if (entry.resource.resourceType == 'Condition') {
+                          this.lhcreConditions.push(<fhir.Condition> entry.resource);
+                      }
+                      if (entry.resource.resourceType == 'AllergyIntolerance') {
+                          this.lhcreAllergies.push(<fhir.AllergyIntolerance> entry.resource);
+                      }
+                      if (entry.resource.resourceType == 'MedicationStatement') {
+                          this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
+                      }
+                      if (entry.resource.resourceType == 'MedicationStatement') {
+                          this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
+                      }
+                      if (entry.resource.resourceType == 'Encounter') {
+                          this.lhcreEncounters.push(<fhir.Encounter> entry.resource);
+                      }
+                  }
+              }
+
+          }
+      );
       this.fhirSrv.get('/Observation?patient='+patientid).subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
@@ -164,9 +199,53 @@ export class PatientDetailsComponent implements OnInit {
 
         this.observations=[];
         this.encounters=[];
+        this.patient=undefined;
 
         this.documents=[];
         this.nrlsdocuments = [];
+
+        this.lhcreEncounters =[];
+        this.lhcreAllergies =[];
+        this.lhcreMedicationStatement =[];
+        this.lhcreConditions =[];
+    }
+
+    getFirstName(patient :fhir.Patient) : String {
+        if (patient == undefined) return "";
+        if (patient.name == undefined || patient.name.length == 0)
+            return "";
+        // Move to address
+        let name = "";
+        if (patient.name[0].given != undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
+
+        if (patient.name[0].prefix != undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
+        return name;
+
+    }
+
+    getNHSIdentifier(patient : fhir.Patient) : String {
+        if (patient == undefined) return "";
+        if (patient.identifier == undefined || patient.identifier.length == 0)
+            return "";
+        // Move to address
+        var NHSNumber :String = "";
+        for (var f=0;f<patient.identifier.length;f++) {
+            if (patient.identifier[f].system.includes("nhs-number") )
+                NHSNumber = patient.identifier[f].value;
+        }
+        return NHSNumber;
+
+    }
+
+    getLastName(patient :fhir.Patient) : String {
+        if (patient == undefined) return "";
+        if (patient.name == undefined || patient.name.length == 0)
+            return "";
+
+        let name = "";
+        if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
+        return name;
+
     }
 
 }

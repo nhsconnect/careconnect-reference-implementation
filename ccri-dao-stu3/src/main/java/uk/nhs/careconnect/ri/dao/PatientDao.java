@@ -23,6 +23,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.*;
@@ -76,6 +77,9 @@ public class PatientDao implements PatientRepository {
     @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
             medicationRequestEntityToFHIRMedicationRequestTransformer;
+
+    @Autowired
+    private MedicationStatementEntityToFHIRMedicationStatementTransformer medicationStatementEntityToFHIRMedicationStatementTransformer;
 
     @Autowired
     private EncounterEntityToFHIREncounterTransformer encounterEntityToFHIREncounterTransformer;
@@ -461,9 +465,11 @@ public class PatientDao implements PatientRepository {
                     for (ProcedureEntity procedureEntity : patientEntity.getPatientProcedures()) {
                         results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
                     }
+                    /*
                     for (ObservationEntity observationEntity : patientEntity.getPatientObservations()) {
                         results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
                     }
+                       */
                     for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
                         results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
                     }
@@ -475,12 +481,18 @@ public class PatientDao implements PatientRepository {
                     for (ImmunisationEntity immunisation : patientEntity.getPatientImmunisations()) {
                         results.add(immunisationEntityToFHIRImmunizationTransformer.transform(immunisation));
                     }
-                    for (MedicationRequestEntity medicationRequestEntity : patientEntity.getPatientMedicationRequests()) {
-                        results.add(medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+
+                    for (MedicationStatementEntity medicationStatementEntity : patientEntity.getMedicationStatements()) {
+                        if (medicationStatementEntity.getStatus() != null && medicationStatementEntity.getStatus().equals(MedicationStatement.MedicationStatementStatus.ACTIVE)) {
+                            results.add(medicationStatementEntityToFHIRMedicationStatementTransformer.transform(medicationStatementEntity));
+                        }
                     }
+
+
                     for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
                         results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
                     }
+
                 }
             }
         }

@@ -1,5 +1,31 @@
 <div fxLayout="row"
      fxFlexFill >
+    <div fxFlex="100">
+        <span *ngIf="patient !== undefined">
+            <mat-card>
+                <mat-card-content>
+                <div class="container" layout="row" layout-align="start center" flex>
+              <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
+              <span flex ></span>
+
+              &nbsp; <i>DOB:</i><b>&nbsp;{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+
+              <span flex></span>
+              <span>
+                                   &nbsp;<i>Gender:</i><b>&nbsp; {{ patient.gender }}</b>
+                                </span>
+              <span flex></span>
+
+              &nbsp;<i>NHS No:</i><b>&nbsp;{{ getNHSIdentifier(patient) }}</b>
+
+            </div>
+                    </mat-card-content>
+                </mat-card>
+            </span>
+    </div>
+</div>
+<div fxLayout="row"
+     fxFlexFill >
   <!-- Left pane -->
     <div fxFlex="50">
         <mat-card>
@@ -63,4 +89,53 @@
   </div>
 
 </div>
+<div fxLayout="row"
+     fxFlexFill >
+    <div fxFlex="100">
+
+            <mat-card>
+                <mat-card-content>
+               <h2>LHCRE Record</h2>
+                </mat-card-content>
+            </mat-card>
+                    <span *ngIf="lhcreConditions.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                        <h2>Conditions</h2>
+                        <app-condition [conditions]="lhcreConditions"> </app-condition>
+                         </mat-card-content>
+                         </mat-card>
+                    </span>
+                    <span *ngIf="lhcreAllergies.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                        <h2>Allergies and Intolerances</h2>
+                        <app-allergy-intolerance [allergies]="lhcreAllergies"> </app-allergy-intolerance>
+                             </mat-card-content>
+                         </mat-card>
+                    </span>
+                    <span *ngIf="lhcreMedicationStatement.length>0">
+                         <mat-card>
+                         <mat-card-content>
+
+                        <h2>Medication Statement</h2>
+                        <app-medication-statement [medicationStatements]="lhcreMedicationStatement"> </app-medication-statement>
+                             </mat-card-content>
+                         </mat-card>
+                    </span>
+                    <span *ngIf="lhcreEncounters.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                        <h2>Encounter</h2>
+                        <app-encounter [encounters]="lhcreEncounters"> </app-encounter>
+
+                             </mat-card-content>
+                         </mat-card>
+                    </span>
+
+
+    </div>
+</div>
+
+
 

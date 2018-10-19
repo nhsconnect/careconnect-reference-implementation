@@ -165,17 +165,21 @@ export class ExplorerMainComponent implements OnInit {
 
     this.messageService.getMessageEvent().subscribe(
         error => {
+            if (this.router.url.includes('exp')) {
+                let alertConfig: IAlertConfig = {
+                    message: error
+                };
+                alertConfig.disableClose = false; // defaults to false
+                alertConfig.viewContainerRef = this._viewContainerRef;
+                alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
 
-            let alertConfig : IAlertConfig = {
-                message : error};
-            alertConfig.disableClose =  false; // defaults to false
-            alertConfig.viewContainerRef = this._viewContainerRef;
-            alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+                alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+                this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
 
-            alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
-            this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
-
-            } );
+                });
+            } else {
+                console.log('not my baby');
+            }
 
         }
 

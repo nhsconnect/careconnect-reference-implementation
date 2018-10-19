@@ -5,6 +5,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -94,31 +95,27 @@ public class PatientEntity extends BaseResource {
     // For Reverse Includes
 
     @OneToMany(mappedBy="patient", targetEntity = ProcedureEntity.class)
-
     Set<ProcedureEntity> patientProcedures = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ObservationEntity.class)
-
     Set<ObservationEntity> patientObservations = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ConditionEntity.class)
-
     Set<ConditionEntity> patientConditions = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = MedicationRequestEntity.class)
-
     Set<MedicationRequestEntity> patientMedicationRequests = new HashSet<>();
 
-    @OneToMany(mappedBy="patient", targetEntity = EncounterEntity.class)
+    @OneToMany(mappedBy="patient", targetEntity = MedicationStatementEntity.class)
+    Set<MedicationStatementEntity> medicationStatements = new HashSet<>();
 
+    @OneToMany(mappedBy="patient", targetEntity = EncounterEntity.class)
     Set<EncounterEntity> patientEncounters = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity =AllergyIntoleranceEntity.class)
-
     Set<AllergyIntoleranceEntity> patientAlelrgies = new HashSet<>();
 
     @OneToMany(mappedBy="patient", targetEntity = ImmunisationEntity.class)
-
     Set<ImmunisationEntity> patientImmunisations = new HashSet<>();
 
     // Support for reverse includes
@@ -347,5 +344,13 @@ public class PatientEntity extends BaseResource {
 
     public void setPatientImmunisations(Set<ImmunisationEntity> patientImmunisations) {
         this.patientImmunisations = patientImmunisations;
+    }
+
+    public Set<MedicationStatementEntity> getMedicationStatements() {
+        return medicationStatements;
+    }
+
+    public void setMedicationStatements(Set<MedicationStatementEntity> medicationStatement) {
+        this.medicationStatements = medicationStatement;
     }
 }
