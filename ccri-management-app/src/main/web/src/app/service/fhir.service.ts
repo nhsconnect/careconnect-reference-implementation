@@ -74,12 +74,15 @@ export class FhirService {
         if (retStr === undefined) {
             if (document.baseURI.includes('localhost')) {
                 retStr = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+                this.baseUrl = retStr;
             }
             if (document.baseURI.includes('data.developer-test.nhs.uk')) {
                 retStr = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
+                this.baseUrl = retStr;
             }
             if (document.baseURI.includes('data.developer.nhs.uk')) {
                 retStr = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
+                this.baseUrl = retStr;
             }
         }
         return retStr;
@@ -113,7 +116,7 @@ export class FhirService {
     }
 
       public getFHIRServerBase() {
-        return this.baseUrl;
+        return this.getBaseUrl();
       }
     public getFHIRGPCServerBase() {
         return this.GPCbaseUrl;
