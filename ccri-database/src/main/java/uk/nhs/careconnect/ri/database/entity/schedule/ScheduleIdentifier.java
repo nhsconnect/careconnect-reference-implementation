@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="ScheduleIdentifier", uniqueConstraints= @UniqueConstraint(name="PK_SCHEDULE_IDENTIFIER", columnNames={"SCHEDULE_IDENTIFIER_ID"})
+@Table(name="ScheduleIdentifier2", uniqueConstraints= @UniqueConstraint(name="PK_SCHEDULE_IDENTIFIER", columnNames={"SCHEDULE_IDENTIFIER_ID"})
 		)
 public class ScheduleIdentifier extends BaseIdentifier {
 

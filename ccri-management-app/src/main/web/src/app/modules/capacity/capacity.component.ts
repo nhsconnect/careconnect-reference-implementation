@@ -126,14 +126,14 @@ export class CapacityComponent implements OnInit {
 
 
   onMapReady(map) {
-    console.log('map', map);
-    console.log('markers', map.markers);  // to get all markers as an array
+   // console.log('map', map);
+  //  console.log('markers', map.markers);  // to get all markers as an array
   }
   onIdle(event) {
-    console.log('map', event.target);
+    //console.log('map', event.target);
   }
   onMarkerInit(marker) {
-    console.log('marker', marker);
+   // console.log('marker', marker);
   }
   onMapClick(event) {
     this.positions.push(event.latLng);

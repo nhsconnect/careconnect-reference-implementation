@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "Schedule")
+@Table(name = "Schedule2")
 public class ScheduleEntity extends BaseResource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -32,26 +32,37 @@ export class BinaryComponent implements OnInit {
 
      this.documentReferenceId = this.route.snapshot.paramMap.get('docid');
 
+
      if (this.documentReferenceId !== undefined) {
-         this.fhirService.getResource('/DocumentReference/' + this.documentReferenceId).subscribe(resource => {
-             this.document = <fhir.DocumentReference> resource;
+         if (this.documentReferenceId.length > 8 && this.patientEprService.documentReference !== undefined ) {
+              // do magic
+
+             this.document = this.patientEprService.documentReference;
              this.processDocument();
 
-             if ((this.patientEprService.patient == undefined) || (this.document.subject != undefined && ('Patient/'+this.patientEprService.patient.id) !== this.document.subject.reference)){
-                 this.fhirService.getResource('/'+this.document.subject.reference).subscribe( patient => {
-                     this.patientEprService.set(<fhir.Patient> patient);
-                 })
-             }
-         },
-             () => {
-                 let alertConfig : IAlertConfig = { message : 'Unable to locate document.'};
-                 alertConfig.disableClose =  false; // defaults to false
-                 alertConfig.viewContainerRef = this._viewContainerRef;
-                 alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
-                 alertConfig.closeButton = 'Close'; //OPTIONAL, defaults to 'CLOSE'
-                 alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
-                 this._dialogService.openAlert(alertConfig);
-             });
+
+
+         } else {
+             this.fhirService.getResource('/DocumentReference/' + this.documentReferenceId).subscribe(resource => {
+                     this.document = <fhir.DocumentReference> resource;
+                     this.processDocument();
+
+                     if ((this.patientEprService.patient == undefined) || (this.document.subject != undefined && ('Patient/' + this.patientEprService.patient.id) !== this.document.subject.reference)) {
+                         this.fhirService.getResource('/' + this.document.subject.reference).subscribe(patient => {
+                             this.patientEprService.set(<fhir.Patient> patient);
+                         })
+                     }
+                 },
+                 () => {
+                     let alertConfig: IAlertConfig = {message: 'Unable to locate document.'};
+                     alertConfig.disableClose = false; // defaults to false
+                     alertConfig.viewContainerRef = this._viewContainerRef;
+                     alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+                     alertConfig.closeButton = 'Close'; //OPTIONAL, defaults to 'CLOSE'
+                     alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+                     this._dialogService.openAlert(alertConfig);
+                 });
+         }
      }
 
   }

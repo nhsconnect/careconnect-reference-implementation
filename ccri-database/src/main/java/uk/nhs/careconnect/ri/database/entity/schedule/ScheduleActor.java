@@ -9,7 +9,7 @@ import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ScheduleActor")
+@Table(name = "ScheduleActor2")
 public class ScheduleActor extends BaseResource {
 
     @Id

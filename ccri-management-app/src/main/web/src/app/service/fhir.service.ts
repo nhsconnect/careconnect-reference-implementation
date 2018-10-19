@@ -185,6 +185,26 @@ export class FhirService {
     }
   }
 
+    public getNRLSResource(search : string) : Observable<any> {
+
+        let url = this.getFHIRNRLSServerBase() + search;
+        let headers = new HttpHeaders(
+        );
+
+        headers = headers.append('Authorization','Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
+        headers = headers.append('fromASID','200000000117');
+        headers = headers.append('toASID','999999999999');
+
+        if (this.format === 'xml') {
+            headers = headers.append( 'Content-Type',  'application/fhir+xml' );
+            headers = headers.append('Accept', 'application/fhir+xml');
+            return this.http.get(url, { headers, responseType : 'blob' as 'blob'});
+        } else {
+            headers = headers.append('Accept', 'application/fhir+json');
+            return this.http.get<any>(url, {'headers': this.getHeaders(true)});
+        }
+    }
+
     public getNRLS(search : string) : Observable<fhir.Bundle> {
 
         let url : string = this.getFHIRNRLSServerBase() + search;
@@ -228,6 +248,9 @@ export class FhirService {
       return this.http.get<any>(url, {'headers': this.getHeaders(true)});
     }
   }
+
+
+
   public getResults(url : string) : Observable<fhir.Bundle> {
       console.log('getResults');
       let headers = new HttpHeaders();
