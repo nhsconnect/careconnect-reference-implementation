@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -21,6 +22,7 @@ import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SlotProvider implements ICCResourceProvider {
@@ -97,12 +99,12 @@ public class SlotProvider implements ICCResourceProvider {
                                  @OptionalParam(name = Slot.SP_START) DateParam start,
                                  @OptionalParam(name = Slot.SP_STATUS) StringParam status,
                                  @OptionalParam(name = Slot.SP_RES_ID) StringParam id,
-                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule
-
+                                 @OptionalParam(name =Slot.SP_SCHEDULE) ReferenceParam schedule,
+                                 @OptionalParam(name = "service") ReferenceParam service
     )
 
     {
-        return slotDao.searchSlot(ctx, identifier,start,status,id,schedule);
+        return slotDao.searchSlot(ctx, identifier,start,status,id,schedule,service);
     }
 
     @Read()

@@ -22,25 +22,17 @@ public interface ScheduleRepository extends BaseRepository<ScheduleEntity,Schedu
 
     Schedule create(FhirContext ctx, Schedule location, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
-
-
     List<Schedule> searchSchedule(FhirContext ctx,
-
-                                  @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
-                                  @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
-                                  @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
-                                  @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
-                                  //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
-
-    );
-
-    List<ScheduleEntity> searchScheduleEntity(FhirContext ctx,
-
                                               @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
                                               @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
                                               @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
                                               @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
-                                              //@OptionalParam(name = Schedule.SP_ORGANIZATION) ReferenceParam organisation
+    );
 
+    List<ScheduleEntity> searchScheduleEntity(FhirContext ctx,
+                                              @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
+                                              @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
+                                              @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
+                                              @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
     );
 }

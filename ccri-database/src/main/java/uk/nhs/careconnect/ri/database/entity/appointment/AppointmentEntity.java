@@ -6,6 +6,7 @@ import uk.nhs.careconnect.ri.database.entity.appointment.*;
 
 import org.hl7.fhir.dstu3.model.Appointment.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.referral.ReferralRequestReason;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.*;
@@ -49,7 +50,8 @@ public class AppointmentEntity extends BaseResource {
     @Column(name = "APPOINTMENT_END")
     private Date end;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPOINTMENT_SLOT_ID", foreignKey = @ForeignKey(name = "FK_APPOINTMENT_SLOT"))
     private SlotEntity slot;
 
@@ -62,6 +64,13 @@ public class AppointmentEntity extends BaseResource {
 
     @Column(name = "PARTICIPANT")
     private BackboneElement participant;
+
+    @OneToMany(mappedBy="appointment", targetEntity = AppointmentIdentifier.class)
+    Set<AppointmentIdentifier> identifiers = new HashSet<>();
+
+    public Set<AppointmentIdentifier> getIdentifiers() { return identifiers; }
+
+    public void setIdentifiers(Set<AppointmentIdentifier> identifiers) { this.identifiers = identifiers; }
 
     @Override
     public Long getId() {
@@ -94,6 +103,17 @@ public class AppointmentEntity extends BaseResource {
 
     public void setReason(ConceptEntity reason) {
         this.reason = reason;
+    }
+
+    @OneToMany(mappedBy="appointment", targetEntity= AppointmentReason.class)
+    private Set<AppointmentReason> reasons = new HashSet<>();
+
+    public Set<AppointmentReason> getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(Set<AppointmentReason> reasons) {
+        this.reasons = reasons;
     }
 
     public int getPriority() {
@@ -137,9 +157,7 @@ public class AppointmentEntity extends BaseResource {
     }
 
     @Override
-    public Date getCreated() {
-        return created;
-    }
+    public Date getCreated() { return created; }
 
     public void setCreated(Date created) {
         this.created = created;

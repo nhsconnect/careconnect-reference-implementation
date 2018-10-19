@@ -1,9 +1,12 @@
 package uk.nhs.careconnect.ri.database.entity.healthcareService;
 
+import org.hl7.fhir.dstu3.model.Schedule;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
+import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 
 
 import javax.persistence.*;
@@ -47,6 +50,9 @@ public class HealthcareServiceEntity extends BaseResource {
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceLocation.class)
     Set<HealthcareServiceLocation> locations = new HashSet<>();
+
+    @OneToMany(mappedBy="healthcareServiceEntity", targetEntity = ScheduleActor.class)
+    Set<ScheduleActor> scheduleActors = new HashSet<>();
 
     @OneToMany(mappedBy="service", targetEntity = HealthcareServiceType.class)
 
@@ -140,5 +146,13 @@ public class HealthcareServiceEntity extends BaseResource {
     public HealthcareServiceEntity setIdentifiers(Set<HealthcareServiceIdentifier> identifiers) {
         this.identifiers = identifiers;
         return this;
+    }
+
+    public Set<ScheduleActor> getScheduleActors() {
+        return scheduleActors;
+    }
+
+    public void setScheduleActors(Set<ScheduleActor> scheduleActors) {
+        this.scheduleActors = scheduleActors;
     }
 }

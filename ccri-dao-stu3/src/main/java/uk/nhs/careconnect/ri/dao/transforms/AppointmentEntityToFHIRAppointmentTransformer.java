@@ -2,10 +2,13 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Appointment;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
+import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentReason;
 
 
 @Component
@@ -31,9 +34,13 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         }
         appointment.setMeta(meta);
 
-        appointment.setId(appointmentEntity.getId().toString());
+        System.out.println("Appointment Metadata:" + appointment.getMeta());
+        System.out.println("Appointment Id: " + appointmentEntity.getId().toString());
 
-/*
+        if(appointmentEntity.getId() != null){
+            appointment.setId(appointmentEntity.getId().toString());
+        }
+
         for(AppointmentIdentifier identifier : appointmentEntity.getIdentifiers())
         {
             appointment.addIdentifier()
@@ -41,49 +48,57 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
                     .setValue(identifier.getValue());
         }
 
-        if (appointmentEntity.getActive() != null) {
-            appointment.setActive(appointmentEntity.getActive());
-        }
-        if (appointmentEntity.getName() != null) {
-            appointment.setName(appointment.getName());
-        }
-        if (appointmentEntity.getCategory() != null) {
-            appointment.getCategory()
-                    .addCoding()
-                    .setDisplay(appointmentEntity.getCategory().getDisplay())
-                    .setSystem(appointmentEntity.getCategory().getSystem())
-                    .setCode(appointmentEntity.getCategory().getCode());
+        if (appointmentEntity.getStatus() != null) {
+            appointment.setStatus(appointmentEntity.getStatus());
         }
 
-        if (appointmentEntity.getProvidedBy() != null) {
-            appointment.setProvidedBy(new Reference("Organization/"+appointmentEntity.getProvidedBy().getId()));
-        }
-        for (AppointmentSpecialty serviceSpecialty : appointmentEntity.getSpecialties()) {
-            service.addSpecialty()
+        if (appointmentEntity.getApointmentType() != null) {
+            appointment.getAppointmentType()
                     .addCoding()
-                        .setCode(serviceSpecialty.getSpecialty().getCode())
-                        .setSystem(serviceSpecialty.getSpecialty().getSystem())
-                        .setDisplay(serviceSpecialty.getSpecialty().getDisplay());
+                    .setDisplay(appointmentEntity.getApointmentType().getDisplay())
+                    .setSystem(appointmentEntity.getApointmentType().getSystem())
+                    .setCode(appointmentEntity.getApointmentType().getCode());
         }
-        for (AppointmentLocation serviceLocation : appointmentEntity.getLocations()) {
-            service.addLocation(new Reference("Location/"+serviceLocation.getLocation().getId()));
-        }
-        for (AppointmentTelecom serviceTelecom : appointmentEntity.getTelecoms()) {
-            service.addTelecom()
-                    .setSystem(serviceTelecom.getSystem())
-                    .setValue(serviceTelecom.getValue())
-                    .setUse(serviceTelecom.getTelecomUse());
 
+        for (AppointmentReason appointmentReasonEntity : appointmentEntity.getReasons()) {
+            CodeableConcept concept = appointment.addReason();
+            concept.addCoding()
+                    .setSystem(appointmentReasonEntity.getReason().getSystem())
+                    .setCode(appointmentReasonEntity.getReason().getCode())
+                    .setDisplay(appointmentReasonEntity.getReason().getDisplay());
         }
-        for (AppointmentType serviceType : appointmentEntity.getTypes()) {
-            service.addType()
-                    .addCoding()
-                    .setCode(serviceType.getType_().getCode())
-                    .setSystem(serviceType.getType_().getSystem())
-                    .setDisplay(serviceType.getType_().getDisplay());
-        }
-*/
 
+        if (appointmentEntity.getPriority() != 0) {
+            appointment.setPriority(appointment.getPriority());
+        }
+
+        if (appointmentEntity.getDescription() != null) {
+            appointment.setDescription(appointmentEntity.getDescription());
+        }
+
+        if (appointmentEntity.getStart() != null) {
+            appointment.setStart(appointmentEntity.getStart());
+        }
+
+        if (appointmentEntity.getEnd() != null) {
+            appointment.setEnd(appointmentEntity.getEnd());
+        }
+
+        if (appointmentEntity.getSlot() != null) {
+            appointment.addSlot(new Reference("Slot/"+ appointmentEntity.getSlot().getId()));
+        }
+
+        if (appointmentEntity.getCreated() != null) {
+            appointment.setCreated(appointmentEntity.getCreated());
+        }
+
+        if (appointmentEntity.getComment() != null) {
+            appointment.setComment(appointmentEntity.getComment());
+        }
+
+/*        if(appointmentEntity.getParticipant() != null){
+            appointment.addParticipant().(appointmentEntity.getParticipant());
+        }*/
 
         return appointment;
 
