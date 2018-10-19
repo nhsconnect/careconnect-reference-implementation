@@ -18,7 +18,7 @@ export class FhirService {
 
 
   //private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
-    private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+    private baseUrl : string = undefined;
 
   private GPCbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
    // private GPCbaseUrl : string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
@@ -64,6 +64,25 @@ export class FhirService {
 
 
 
+  }
+
+  public getBaseUrl() :string {
+        let retStr = this.baseUrl;
+
+        // this should be resolved by app-config.ts but to stop start up errors
+
+        if (retStr === undefined) {
+            if (document.baseURI.includes('localhost')) {
+                retStr = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+            }
+            if (document.baseURI.includes('data.developer-test.nhs.uk')) {
+                retStr = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
+            }
+            if (document.baseURI.includes('data.developer.nhs.uk')) {
+                retStr = 'https://data.developer.nhs.uk/ccri-fhir/STU3';
+            }
+        }
+        return retStr;
   }
 
   public setRootUrl(rootUrl :string) {
@@ -137,7 +156,7 @@ export class FhirService {
 
     public getConformance() {
     //  console.log('called CapabilityStatement');
-      this.http.get<any>(this.baseUrl+'/metadata',{ 'headers' : this.getHeaders(true)}).subscribe(capabilityStatement =>
+      this.http.get<any>(this.getBaseUrl()+'/metadata',{ 'headers' : this.getHeaders(true)}).subscribe(capabilityStatement =>
       {
           this.conformance = capabilityStatement;
 
@@ -221,14 +240,14 @@ export class FhirService {
 
     getBinary(id: string): Observable<fhir.Binary> {
 
-        const url = this.baseUrl + '/Binary/'+id;
+        const url = this.getBaseUrl() + '/Binary/'+id;
 
         return this.http.get<fhir.Binary>(url,{ 'headers' : this.getEPRHeaders(true)});
 
     }
     getBinaryRaw(id: string,): Observable<any> {
 
-        const url = this.baseUrl + '/Binary/'+id;
+        const url = this.getBaseUrl() + '/Binary/'+id;
 
         return this.http.get(url,{ 'headers' : this.getEPRHeaders(false) , responseType : 'blob' });
 
@@ -236,7 +255,7 @@ export class FhirService {
 
     getCompositionDocumentHTML(id: string): Observable<any> {
 
-        const url = this.baseUrl + '/Binary/'+id;
+        const url =this.getBaseUrl() + '/Binary/'+id;
 
         let headers = this.getEPRHeaders(false);
         headers = headers.append('Content-Type', 'text/html' );
@@ -247,7 +266,7 @@ export class FhirService {
 
     getCompositionDocumentPDF(id: string): Observable<any> {
 
-        const url = this.baseUrl + '/Binary/'+id;
+        const url = this.getBaseUrl() + '/Binary/'+id;
 
         let headers = this.getEPRHeaders(false);
         headers = headers.append(

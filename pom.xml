@@ -170,8 +170,8 @@
         <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
 
-<!--        <module>ccri-management-app</module>
-        <module>ccri-management</module>-->
+        <module>ccri-management-app</module>
+        <module>ccri-management</module>
 
     </modules>
 <!--
