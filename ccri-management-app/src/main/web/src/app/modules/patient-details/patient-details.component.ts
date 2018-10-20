@@ -38,82 +38,72 @@ export class PatientDetailsComponent implements OnInit {
 
       let patientid = this.route.snapshot.paramMap.get('patientid');
       this.clearDown();
-      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=*').subscribe(
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_count=100').subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
                   for (let entry of bundle.entry) {
-                      if (entry.resource.resourceType == 'Patient') {
-                          let patient: fhir.Patient = <fhir.Patient> entry.resource;
-                          this.patient = patient;
+                      switch (entry.resource.resourceType) {
+                          case 'Patient':
+                              let patient: fhir.Patient = <fhir.Patient> entry.resource;
+                              this.patient = patient;
+                              break;
+                          case 'Condition':
+                              this.lhcreConditions.push(<fhir.Condition> entry.resource);
+                              break;
+                          case 'AllergyIntolerance':
+                              this.lhcreAllergies.push(<fhir.AllergyIntolerance> entry.resource);
+                              break;
+                          case 'MedicationStatement':
+                              this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
+                              break;
                       }
-                      if (entry.resource.resourceType == 'Condition') {
-                          this.lhcreConditions.push(<fhir.Condition> entry.resource);
-                      }
-                      if (entry.resource.resourceType == 'AllergyIntolerance') {
-                          this.lhcreAllergies.push(<fhir.AllergyIntolerance> entry.resource);
-                      }
-                      if (entry.resource.resourceType == 'MedicationStatement') {
-                          this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
-                      }
-                      if (entry.resource.resourceType == 'MedicationStatement') {
-                          this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
-                      }
+                      /*
                       if (entry.resource.resourceType == 'Encounter') {
                           this.lhcreEncounters.push(<fhir.Encounter> entry.resource);
                       }
+                      */
                   }
               }
 
           }
-      );
-      this.fhirSrv.get('/Observation?patient='+patientid).subscribe(
-          bundle => {
-              if (bundle.entry !== undefined) {
-                  for (let entry of bundle.entry) {
-                      let observation: fhir.Observation = <fhir.Observation> entry.resource;
-                      this.observations.push(observation);
-
-                  }
-              }
-
-          }
-      );
-      this.fhirSrv.get('/DocumentReference?patient='+patientid).subscribe(
-          bundle => {
-
-              if (bundle.entry !== undefined) {
-                  for (let entry of bundle.entry) {
-                      let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
-                      this.documents.push(document);
-
-                  }
-              }
-
-          }
-      );
-      this.fhirSrv.get('/Encounter?patient='+patientid).subscribe(
-          bundle => {
-              if (bundle.entry !== undefined) {
-                  for (let entry of bundle.entry) {
-                      let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
-                      this.encounters.push(encounter);
-
-                  }
-              }
-
-          }
-      );
-      this.fhirSrv.getResource('/Patient/'+patientid).subscribe(
-          patient => {
-              for(let identifier of patient.identifier) {
+          ,()=> {}
+          , ()=> {
+              for(let identifier of this.patient.identifier) {
                   if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
                       this.getGPData(identifier.value);
                       this.getNRLSData(identifier.value);
                   }
               }
+          }
+      );
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Observation:patient&_revinclude=DocumentReference:patient&_revinclude=Encounter:patient&_count=100').subscribe(
+          bundle => {
+              if (bundle.entry !== undefined) {
+                  for (let entry of bundle.entry) {
+
+                      switch (entry.resource.resourceType) {
+
+                          case 'Observation':
+                              let observation: fhir.Observation = <fhir.Observation> entry.resource;
+                              this.observations.push(observation);
+                              break;
+                          case 'DocumentReference':
+                              let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
+                              this.documents.push(document);
+                              break;
+                          case 'Encounter':
+                              let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
+                              this.encounters.push(encounter);
+                              break;
+                      }
+
+                  }
+              }
 
           }
       );
+
+
   }
 
   getGPData(nhsNumber : string) {

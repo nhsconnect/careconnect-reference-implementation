@@ -21,9 +21,11 @@ import uk.nhs.careconnect.ri.database.entity.AddressEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.*;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -94,6 +96,8 @@ public class PatientDao implements PatientRepository {
     @Autowired
     private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
 
+    @Autowired
+    private DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
     private static final Logger log = LoggerFactory.getLogger(PatientDao.class);
 
 
@@ -416,7 +420,7 @@ public class PatientDao implements PatientRepository {
                                              @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                              @OptionalParam(name= Patient.SP_PHONE) StringParam phone
             , @OptionalParam(name= Patient.SP_RES_ID) StringParam resid
-            ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            ,@IncludeParam(reverse=true, allow = {"Observation:patient","Procedure:patient","Encounter:patient","DocumentReference:patient","*"}) Set<Include> reverseIncludes
             ,@IncludeParam(allow= {
                 "Patient:general-practitioner"
                 ,"Patient:organization"
@@ -445,52 +449,106 @@ public class PatientDao implements PatientRepository {
         if (reverseIncludes!= null || includes!=null) {
             log.info("Reverse includes");
             for (PatientEntity patientEntity : qryResults) {
-                if (includes !=null) {
+                if (includes.size() > 0) {
                     for (Include include : includes) {
-                        switch(include.getValue()) {
+                        log.info("_Include  = "+include.getValue());
+                        switch (include.getValue()) {
                             case "Patient:general-practitioner":
                                 PractitionerEntity practitioner = patientEntity.getGP();
-                                if (practitioner !=null) results.add(practitionerEntityToFHIRPractitionerTransformer.transform(practitioner));
+                                if (practitioner != null)
+                                    results.add(practitionerEntityToFHIRPractitionerTransformer.transform(practitioner));
                                 break;
                             case "Patient:organization":
                                 OrganisationEntity organisation = patientEntity.getPractice();
-                                if (organisation !=null) results.add(organisationEntityToFHIROrganizationTransformer.transform(organisation));
+                                if (organisation != null)
+                                    results.add(organisationEntityToFHIROrganizationTransformer.transform(organisation));
                                 break;
                         }
                     }
                 }
                 if (reverseIncludes.size() > 0) {
-                    for (ProcedureEntity procedureEntity : patientEntity.getPatientProcedures()) {
-                        results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
-                    }
-                    /*
-                    for (ObservationEntity observationEntity : patientEntity.getPatientObservations()) {
-                        results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
-                    }
-                       */
-                    for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
-                        results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
-                    }
-                    //allegry
-                    for (AllergyIntoleranceEntity allergy : patientEntity.getPatientAlelrgies()) {
-                        results.add(allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergy));
-                    }
-                    //immunisation
-                    for (ImmunisationEntity immunisation : patientEntity.getPatientImmunisations()) {
-                        results.add(immunisationEntityToFHIRImmunizationTransformer.transform(immunisation));
-                    }
 
-                    for (MedicationStatementEntity medicationStatementEntity : patientEntity.getMedicationStatements()) {
-                        if (medicationStatementEntity.getStatus() != null && medicationStatementEntity.getStatus().equals(MedicationStatement.MedicationStatementStatus.ACTIVE)) {
-                            results.add(medicationStatementEntityToFHIRMedicationStatementTransformer.transform(medicationStatementEntity));
+                    for (Include revinclude : reverseIncludes) {
+
+                        log.info("_revInclude  = "+revinclude.getValue());
+                        switch (revinclude.getValue()) {
+
+                            case "*":
+                                for (ProcedureEntity procedureEntity : patientEntity.getPatientProcedures()) {
+                                    results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                                }
+
+                                for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
+                                    results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                                }
+                                //allegry
+                                for (AllergyIntoleranceEntity allergy : patientEntity.getPatientAlelrgies()) {
+                                    results.add(allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergy));
+                                }
+                                //immunisation
+                                for (ImmunisationEntity immunisation : patientEntity.getPatientImmunisations()) {
+                                    results.add(immunisationEntityToFHIRImmunizationTransformer.transform(immunisation));
+                                }
+
+                                for (MedicationStatementEntity medicationStatementEntity : patientEntity.getMedicationStatements()) {
+                                    if (medicationStatementEntity.getStatus() != null && medicationStatementEntity.getStatus().equals(MedicationStatement.MedicationStatementStatus.ACTIVE)) {
+                                        results.add(medicationStatementEntityToFHIRMedicationStatementTransformer.transform(medicationStatementEntity));
+                                    }
+                                }
+
+
+                                for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
+                                    results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
+                                }
+                                break;
+                            case "AllergyIntolerance:patient":
+                                for (AllergyIntoleranceEntity allergy : patientEntity.getPatientAlelrgies()) {
+                                    results.add(allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergy));
+                                }
+                                break;
+
+                            case "Condition:patient":
+                                for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
+                                    results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                                }
+                                break;
+                            case "MedicationStatement:patient":
+                                for (MedicationStatementEntity medicationStatementEntity : patientEntity.getMedicationStatements()) {
+                                    if (medicationStatementEntity.getStatus() != null && medicationStatementEntity.getStatus().equals(MedicationStatement.MedicationStatementStatus.ACTIVE)) {
+                                        results.add(medicationStatementEntityToFHIRMedicationStatementTransformer.transform(medicationStatementEntity));
+                                    }
+                                }
+                                break;
+                            case "Immunization:patient":
+                                for (ImmunisationEntity immunisation : patientEntity.getPatientImmunisations()) {
+                                    results.add(immunisationEntityToFHIRImmunizationTransformer.transform(immunisation));
+                                }
+                                break;
+
+                            case "Observation:patient":
+                                for (ObservationEntity observationEntity : patientEntity.getPatientObservations()) {
+                                    results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                                }
+                                break;
+
+                            case "Procedure:patient":
+                                for (ProcedureEntity procedureEntity : patientEntity.getPatientProcedures()) {
+                                    results.add(procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                                }
+                                break;
+                            case "Encounter:patient":
+                                for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
+                                    results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
+                                }
+                                break;
+                            case "DocumentReference:patient":
+                                for (DocumentReferenceEntity documentReferenceEntity : patientEntity.getPatientDocuments()) {
+                                    results.add(documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                                }
+                                break;
+
                         }
                     }
-
-
-                    for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
-                        results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
-                    }
-
                 }
             }
         }
@@ -509,7 +567,7 @@ public class PatientDao implements PatientRepository {
             @OptionalParam(name= Patient.SP_NAME) StringParam name,
             @OptionalParam(name= Patient.SP_PHONE) StringParam phone
             , StringParam resid
-            ,@IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            ,@IncludeParam(reverse=true, allow = {"Observation:encounter","Procedure:patient","Encounter:patient","DocumentReference:patient","*"}) Set<Include> reverseIncludes
             ,@IncludeParam(allow= {
                 "Patient:general-practitioner"
                 ,"Patient:organization"

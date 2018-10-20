@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.database.entity.patient;
 
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
@@ -78,15 +79,12 @@ public class PatientEntity extends BaseResource {
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
 
     private List<PatientIdentifier> identifiers = new ArrayList<>();
-
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
 
     private List<PatientAddress> addresses;
-
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
 
     private List<PatientTelecom> telecoms;
-
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
 
     private List<PatientName> names;
@@ -117,6 +115,9 @@ public class PatientEntity extends BaseResource {
 
     @OneToMany(mappedBy="patient", targetEntity = ImmunisationEntity.class)
     Set<ImmunisationEntity> patientImmunisations = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = DocumentReferenceEntity.class)
+    Set<DocumentReferenceEntity> patientDocuments = new HashSet<>();
 
     // Support for reverse includes
 
@@ -352,5 +353,13 @@ public class PatientEntity extends BaseResource {
 
     public void setMedicationStatements(Set<MedicationStatementEntity> medicationStatement) {
         this.medicationStatements = medicationStatement;
+    }
+
+    public Set<DocumentReferenceEntity> getPatientDocuments() {
+        return patientDocuments;
+    }
+
+    public void setPatientDocuments(Set<DocumentReferenceEntity> patientDocuments) {
+        this.patientDocuments = patientDocuments;
     }
 }
