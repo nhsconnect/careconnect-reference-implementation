@@ -132,6 +132,21 @@ export class DocumentReferenceComponent implements OnInit {
     }
   }
 
+  getMime(mimeType : string) {
+
+    switch (mimeType) {
+        case 'application/fhir+xml':
+        case 'application/fhir+json':
+          return 'FHIR Document';
+
+        case 'application/pdf':
+          return 'PDF';
+        case 'image/jpeg':
+          return 'Image';
+    }
+    return mimeType;
+  }
+
   select(resource) {
     const dialogConfig = new MatDialogConfig();
 

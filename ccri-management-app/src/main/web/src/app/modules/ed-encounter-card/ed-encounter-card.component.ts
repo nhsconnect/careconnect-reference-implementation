@@ -24,6 +24,7 @@ export class EdEncounterCardComponent implements OnInit {
 
   patient : fhir.Patient = undefined;
   encounters : fhir.Encounter[] = [];
+  observations : fhir.Observation[] = [];
   nrlsdocuments : fhir.DocumentReference[] = [];
 
 
@@ -39,23 +40,27 @@ export class EdEncounterCardComponent implements OnInit {
 
   ngOnInit() {
 
-    this.fhirService.getResource('/'+this.encounter.subject.reference).subscribe(patient => {
-      this.patient = patient;
-        for(let identifier of patient.identifier) {
-            if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
-                this.getNRLSData(identifier.value);
-            }
-        }
 
-    })
-    this.fhirService.get('/Encounter?_id='+this.encounter.id+'&_revinclude=*').subscribe( bundle => {
+      // Main encounter lookup
+    this.fhirService.get('/Encounter?_id='+this.encounter.id+'&_include=Encounter:patient&_revinclude=Encounter:part-of').subscribe( bundle => {
       this.encounters = [];
+      this.observations = [];
       for (let entry of bundle.entry) {
-        let sub : fhir.Encounter = <fhir.Encounter> entry.resource;
-        if (sub.id !== this.encounter.id) {
-          //his.coords = sub.53.80634, -1.52304
-          this.encounters.push(sub);
-        }
+          switch (entry.resource.resourceType) {
+              case "Encounter":
+                  let sub : fhir.Encounter = <fhir.Encounter> entry.resource;
+                  if (sub.id !== this.encounter.id) {
+                      //his.coords = sub.53.80634, -1.52304
+                      this.encounters.push(sub);
+                  }
+                  break;
+              case 'Patient':
+                  this.patient = <fhir.Patient> entry.resource;
+                  break;
+              default:
+                  console.log('Udder '+entry.resource.resourceType);
+          }
+
       }
     },
         ()=>{
@@ -64,48 +69,72 @@ export class EdEncounterCardComponent implements OnInit {
         , ()=> {
             this.ambulanceLoc = undefined;
             this.plannedLoc = undefined;
+
+            for(let identifier of this.patient.identifier) {
+                if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
+                    this.getNRLSData(identifier.value);
+                }
+            }
+
+            let locations : fhir.Location[] = [];
+
             for (let enc of this.encounters) {
+                this.fhirService.get('/Encounter?_id='+enc.id+'&_include=Encounter:location&_revinclude=Observation:context').subscribe(
+                    bundle => {
+                        for (let entry of bundle.entry) {
+                            switch (entry.resource.resourceType) {
 
-                // ambulance encounter is the only one we are interested in - the triage should be finished and handedover
-                if (enc.status !=='finished' ) {
-                    for (let enclocation of enc.location) {
+                                case 'Observation':
 
-                        if (enclocation.status == 'planned' || enclocation.status == 'active') {
-                            this.fhirService.getResource('/' + enclocation.location.reference).subscribe(location => {
-                               /* if (enc.type[0].coding[0].code === '245581009') {
-                                    this.coords = location.position.latitude + ', ' + location.position.longitude;
-                                } */
-                               // this.positions.push([location.position.latitude, location.position.longitude]);
-                                if (location.type.coding[0].code === 'AMB') {
-                                    this.ambulanceLoc = location;
+                                    let obs : fhir.Observation = <fhir.Observation> entry.resource;
+                                    this.observations.push(obs);
+                                    break;
+                                case 'Location':
+                                    locations.push(<fhir.Location> entry.resource);
+                                    break;
+                                default:
+                                    console.log(entry.resource.resourceType);
+                            }
 
-                                } else {
-                                    this.plannedLoc = location;
+                        }
+                    },
+                    ()=>{},
+                    ()=>
+                    {
+                        this.getObs();
+                        if (enc.status !=='finished' ) {
+                            for (let enclocation of enc.location) {
 
-                                    if (enclocation.status == 'active') {
-                                        this.plannedLocStatus = true;
-                                    } else {
-                                        this.plannedLocStatus = false;
+                                if (enclocation.status == 'planned' || enclocation.status == 'active') {
+                                    for (let location of locations) {
+                                        if (enclocation.location.reference.includes('/'+location.id)) {
+                                            if (location.type.coding[0].code === 'AMB') {
+                                                this.ambulanceLoc = location;
+
+                                            } else {
+                                                this.plannedLoc = location;
+
+                                                if (enclocation.status == 'active') {
+                                                    this.plannedLocStatus = true;
+                                                } else {
+                                                    this.plannedLocStatus = false;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            })
+                            }
+
                         }
-                    }
-                    this.getObs(enc.id);
-                }
+
+                    });
+
+                // ambulance encounter is the only one we are interested in - the triage should be finished and handedover
+
             }
         })
   }
-  getLastName(patient :fhir.Patient) : String {
-    if (patient == undefined) return "";
-    if (patient.name == undefined || patient.name.length == 0)
-      return "";
 
-    let name = "";
-    if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
-    return name;
-
-  }
 
     getNRLSData(nhsNumber : string) {
 
@@ -122,56 +151,65 @@ export class EdEncounterCardComponent implements OnInit {
         })
     }
 
-  getObs(encounterId) {
-      this.fhirService.get('/Encounter?_id='+encounterId+'&_revinclude=*').subscribe(bundle => {
-        //console.log(bundle);
-          this.heart = undefined;
-          this.temp = undefined;
-          this.resp = undefined;
-          this.bp = undefined;
-          this.news2 = undefined;
-          this.o2 = undefined;
-          this.air = undefined;
-          this.alert2 = undefined;
+  getObs() {
 
-        for (let entry of bundle.entry) {
-          if (entry.resource.resourceType === 'Observation') {
-            let obs : fhir.Observation = <fhir.Observation> entry.resource;
-            switch (obs.code.coding[0].code) {
-                case '364075005':
+      this.heart = undefined;
+      this.temp = undefined;
+      this.resp = undefined;
+      this.bp = undefined;
+      this.news2 = undefined;
+      this.o2 = undefined;
+      this.air = undefined;
+      this.alert2 = undefined;
+
+      for(let obs of this.observations) {
+
+          switch (obs.code.coding[0].code) {
+              case '364075005':
                   this.heart = obs;
                   break;
-                case '276885007':
-                    this.temp = obs;
-                    break;
-                case '86290005':
-                    this.resp = obs;
-                    break;
-                case "859261000000108":
-                    this.news2 = obs;
-                    break;
-                case "365933000":
-                    this.alert2 = obs;
-                    break;
-                case "75367002":
-                    this.bp = obs;
-                    break;
-                case "431314004":
+              case '276885007':
+                  this.temp = obs;
+                  break;
+              case '86290005':
+                  this.resp = obs;
+                  break;
+              case "859261000000108":
+                  this.news2 = obs;
+                  break;
+              case "365933000":
+                  this.alert2 = obs;
+                  break;
+              case "75367002":
+                  this.bp = obs;
+                  break;
+              case "431314004":
               case "866661000000106":
               case "866701000000100":
-                    this.o2 = obs;
-                    break;
-                case "301282008":
+                  this.o2 = obs;
+                  break;
+              case "301282008":
                   this.air = obs;
                   break;
-                default :
-                    console.log(obs);
-            }
-
+              default :
+                  console.log(obs);
+                  break;
           }
-        }
-      })
+      }
+
   }
+
+    getLastName(patient :fhir.Patient) : String {
+        if (patient == undefined) return "";
+        if (patient.name == undefined || patient.name.length == 0)
+            return "";
+
+        let name = "";
+        if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
+        return name;
+
+    }
+
   getFirstName(patient :fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.name == undefined || patient.name.length == 0)

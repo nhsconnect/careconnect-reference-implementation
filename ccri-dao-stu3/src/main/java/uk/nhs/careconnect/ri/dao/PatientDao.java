@@ -24,14 +24,12 @@ import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
-import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.*;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.database.entity.patient.*;
+
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 

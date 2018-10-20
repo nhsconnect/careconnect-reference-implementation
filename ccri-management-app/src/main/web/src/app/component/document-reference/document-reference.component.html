@@ -82,7 +82,7 @@
     <ng-container matColumnDef="mime">
       <th mat-header-cell *matHeaderCellDef> mime </th>
       <td mat-cell *matCellDef="let document">
-        <span *ngIf="document.content != undefined" class="badge badge-info">{{document.content[0].attachment.contentType}}</span>
+        <span *ngIf="document.content != undefined" class="badge badge-info">getMime({{document.content[0].attachment.contentType}})</span>
       </td>
     </ng-container>
 

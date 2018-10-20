@@ -431,67 +431,76 @@ public class  EncounterDao implements EncounterRepository {
             log.info("Reverse includes");
             for (EncounterEntity encounterEntity : qryResults) {
                 for (Include include : reverseIncludes) {
-                    if (include.getValue().equals("*")) {
-                        for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
-                            addToResults(results, procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
-                        }
-                        for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
-                            addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
-                        }
-                        for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
-                            addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
-                        }
-                        for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
-                            addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                            if (medicationRequestEntity.getMedicationEntity() != null) {
-                                addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                    switch(include.getValue()) {
+
+                        case "*":
+                            for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
+                                addToResults(results, procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
                             }
-                        }
-                        for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
-                            addToResults(results, carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
-                        }
-                        for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
-                            addToResults(results, diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
-                        }
+                            for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
+                                addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                            }
+                            for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
+                                addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                            }
+                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                                if (medicationRequestEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                                }
+                            }
+                            for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
+                                addToResults(results, carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
+                            }
+                            for (DiagnosticReportEntity diagnosticReportEntity : encounterEntity.getDiagnosticReports()) {
+                                addToResults(results, diagnosticReportEntityToFHIRDiagnosticReportTransformer.transform(diagnosticReportEntity));
+                            }
 
-                        // Docs
-                        for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
-                            addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
-                        }
+                            // Docs
+                            for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
+                                addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                            }
 
-                        // Imms
-                        for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
-                            addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
-                        }
+                            // Imms
+                            for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
+                                addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                            }
 
-                        // List
-                        for (ListEntity listEntity : encounterEntity.getLists()) {
-                            addToResults(results, listEntityToFHIRListResourceTransformer.transform(listEntity));
+                            // List
+                            for (ListEntity listEntity : encounterEntity.getLists()) {
+                                addToResults(results, listEntityToFHIRListResourceTransformer.transform(listEntity));
 
-                        }
+                            }
 
-                        // QuestionnaireResponse
-                        for (QuestionnaireResponseEntity questionnaireResponseEntity : encounterEntity.getForms()) {
-                            addToResults(results, questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(questionnaireResponseEntity));
-                        }
+                            // QuestionnaireResponse
+                            for (QuestionnaireResponseEntity questionnaireResponseEntity : encounterEntity.getForms()) {
+                                addToResults(results, questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer.transform(questionnaireResponseEntity));
+                            }
 
-                        // Risk Assessment
-                        for (RiskAssessmentEntity riskAssessmentEntity : encounterEntity.getRisks()) {
-                            addToResults(results, riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(riskAssessmentEntity));
-                        }
-                        // Referrals
-                        for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
-                            addToResults(results, referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity));
-                        }
+                            // Risk Assessment
+                            for (RiskAssessmentEntity riskAssessmentEntity : encounterEntity.getRisks()) {
+                                addToResults(results, riskAssessmentEntityToFHIRRiskAssessmentTransformer.transform(riskAssessmentEntity));
+                            }
+                            // Referrals
+                            for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
+                                addToResults(results, referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity));
+                            }
 
-                        for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
-                            addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
-                        }
-                    }
-                    if (include.getValue().equals("partOf")) {
-                        for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
-                            addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
-                        }
+                            for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
+                                addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
+                            }
+
+                            break;
+                        case "Encounter:part-of":
+                            for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
+                                addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
+                            }
+                            break;
+                        case "Observation:context":
+                            for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
+                                addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                            }
+                            break;
                     }
 
                 }
@@ -503,7 +512,7 @@ public class  EncounterDao implements EncounterRepository {
                 for (Include include : includes) {
                     switch(include.getValue()) {
                         case
-                            "Encounter.participant":
+                            "Encounter:participant":
                             for (EncounterParticipant encounterParticipant : encounterEntity.getParticipants()) {
                                 if (encounterParticipant.getParticipant() != null) {
                                     addToResults(results, practitionerEntityToFHIRPractitionerTransformer.transform(encounterParticipant.getParticipant()));
@@ -514,31 +523,33 @@ public class  EncounterDao implements EncounterRepository {
                             }
                             break;
                         case
-                            "Encounter.subject":
+                            "Encounter:patient":
                             if (encounterEntity.getPatient()!=null) {
                                 PatientEntity patientEntity = encounterEntity.getPatient();
                                 addToResults(results,patientEntityToFHIRPatientTransformer.transform(patientEntity));
+                                /*
                                 if (patientEntity.getGP()!=null) {
                                     addToResults(results,practitionerEntityToFHIRPractitionerTransformer.transform(patientEntity.getGP()));
                                 }
                                 if (patientEntity.getPractice()!=null) {
                                     addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(patientEntity.getPractice()));
                                 }
+                                */
                             }
                             break;
-                        case "Encounter.service-provider":
+                        case "Encounter:service-provider":
                             if (encounterEntity.getServiceProvider()!=null) {
                                 addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
                             }
                             break;
-                        case "Encounter.location":
+                        case "Encounter:location":
                             if (encounterEntity.getLocations()!=null) {
                                 for (EncounterLocation encounterLocation : encounterEntity.getLocations()) {
                                     addToResults(results, locationEntityToFHIRLocationTransformer.transform(encounterLocation.getLocation()));
                                 }
                             }
                             break;
-                            case "*":
+                        case "*":
                                 if (encounterEntity.getServiceProvider()!=null) {
                                     addToResults(results,organisationEntityToFHIROrganizationTransformer.transform(encounterEntity.getServiceProvider()));
                                 }

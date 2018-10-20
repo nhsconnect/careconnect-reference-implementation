@@ -99,8 +99,8 @@ public class EncounterProvider implements ICCResourceProvider {
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Encounter.SP_RES_ID) StringParam resid
-            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
-            , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
+            , @IncludeParam(reverse=true, allow = {"Observation:context","Encounter:part-of","*"}) Set<Include> reverseIncludes
+            , @IncludeParam(allow = { "Encounter:participant" , "Encounter:patient" ,"Encounter:service-provider", "Encounter:location", "*"
     }) Set<Include> includes
             , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
             , @OptionalParam(name = Encounter.SP_STATUS) TokenParam status
