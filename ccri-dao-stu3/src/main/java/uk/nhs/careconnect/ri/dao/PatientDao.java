@@ -527,7 +527,9 @@ public class PatientDao implements PatientRepository {
 
                             case "Observation:patient":
                                 for (ObservationEntity observationEntity : patientEntity.getPatientObservations()) {
-                                    results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                                    if (observationEntity.getParentObservation() == null) {
+                                        results.add(observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                                    }
                                 }
                                 break;
 

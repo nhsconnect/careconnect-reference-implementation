@@ -498,7 +498,9 @@ public class  EncounterDao implements EncounterRepository {
                             break;
                         case "Observation:context":
                             for (ObservationEntity observationEntity : encounterEntity.getObservationEncounters()) {
-                                addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                                if (observationEntity.getParentObservation() == null) {
+                                    addToResults(results, observationEntityToFHIRObservationTransformer.transform(observationEntity));
+                                }
                             }
                             break;
                     }
