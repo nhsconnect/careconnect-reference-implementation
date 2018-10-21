@@ -95,7 +95,12 @@ export class FhirService {
   }
 
     setGPCNRLSUrl(baseUrl : string) {
-        this.GPCbaseUrl = baseUrl +'camel/fhir/gpc';
+        if (baseUrl.includes('4203')) {
+            this.GPCbaseUrl = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
+        } else {
+
+            this.GPCbaseUrl = baseUrl + 'camel/fhir/gpc';
+        }
        // GP Connect only at present
     }
 

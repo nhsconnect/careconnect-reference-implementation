@@ -54,7 +54,7 @@
                         <table>
                             <thead>
                             <tr>
-                                <th width="20%">Name</th>
+                                <th width="20%">Parameter Name</th>
                                 <th width="60%">Details</th>
                                 <th width="15%">Parameter Type</th>
                                 <th width="5%"></th>
@@ -69,6 +69,27 @@
                                 </td>
                             </tr>
                         </table>
+                                <span *ngIf="rest.searchInclude !== undefined">
+                                   <td-expansion-panel (expanded)="onExpand()" (collapsed)="onCollapse()" label="Include Resources" [disabled]="disabled">
+
+                                    <table>
+                                         <thead>
+                                            <tr>
+                                                <th width="90%">Resource:path</th>
+                                                <th width="10%"></th>
+                                            </tr>
+                                        </thead>
+                                         <tr *ngFor="let include of rest.searchInclude">
+                                            <td>{{include}}</td>
+                                            <td>
+                                                <button mat-icon-button color="accent" (click)="onAdd(param)"><mat-icon>add_circle</mat-icon></button>
+                                            </td>
+                                         </tr>
+                                    </table>
+
+                                   </td-expansion-panel>
+                                </span>
+                                <!-- also includ reverse includes when HAPI fixed -->
                             </mat-card-content>
                            </mat-card>
                         <mat-card>
@@ -103,6 +124,7 @@
                 </td-expansion-panel>
                 </span>
             </span>
+
         </span>
     </mat-card-content>
 </mat-card>

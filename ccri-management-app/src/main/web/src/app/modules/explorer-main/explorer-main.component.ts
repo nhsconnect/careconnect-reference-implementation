@@ -51,7 +51,7 @@ export class ExplorerMainComponent implements OnInit {
         }
     ];
 
-    serverMenu : Object[] = [
+    serverMenu : any[] = [
         {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/ccri-fhir/STU3',
@@ -72,7 +72,7 @@ export class ExplorerMainComponent implements OnInit {
             route: 'https://data.developer.nhs.uk/nrls-ri',
             title: 'National Record Locator Service'
         }
-        /*
+
         ,{
             icon: 'swap_horiz',
             route: '/ccri/camel/fhir/gpc',
@@ -88,7 +88,7 @@ export class ExplorerMainComponent implements OnInit {
             icon: 'swap_horiz',
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
-        }*/
+        }
     ];
 
     usermenu: Object[] = [{
@@ -119,6 +119,16 @@ export class ExplorerMainComponent implements OnInit {
               private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
+
+      // Work around for local systems
+
+      if (document.baseURI.includes('4203')) {
+          for(let menu of this.serverMenu) {
+              if (menu.route.includes('/ccri/camel')) {
+                  menu.route = 'http://127.0.0.1:8187'+menu.route;
+              }
+          }
+      }
       this.matIconRegistry.addSvgIcon(
           "github",
           this.domSanitizer.bypassSecurityTrustResourceUrl("assets/github.svg"));
