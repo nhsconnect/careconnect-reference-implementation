@@ -38,12 +38,7 @@ public class BundleResourceProvider implements IResourceProvider {
         return Bundle.class;
     }
 
-    @Validate
-    public MethodOutcome testResource(@ResourceParam Bundle bundle,
-                                  @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResource(bundle,theMode,theProfile);
-    }
+
 
     private Exchange buildBundlePost(Exchange exchange, String newXmlResource, String query, String method) {
         exchange.getIn().setBody(newXmlResource);
@@ -54,7 +49,14 @@ public class BundleResourceProvider implements IResourceProvider {
         exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
         return exchange;
     }
-
+ /*
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Bundle bundle,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(bundle,theMode,theProfile);
+    }
+    */
 
 
     @Create

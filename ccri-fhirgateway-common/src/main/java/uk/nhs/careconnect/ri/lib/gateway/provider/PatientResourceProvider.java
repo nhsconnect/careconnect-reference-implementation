@@ -80,6 +80,8 @@ public class PatientResourceProvider implements IResourceProvider {
         return Patient.class;
     }
 
+    /*
+
     @Operation(name = "$getrecord3", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public Parameters getGetRecord3(
             @OperationParam(name="patientNHSnumber") TokenParam
@@ -139,9 +141,7 @@ public class PatientResourceProvider implements IResourceProvider {
         }
         if (resource instanceof Parameters) {
             Parameters param = (Parameters) resource;
-          /*  for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                entry.getResource().setId(entry.getFullUrl().replace("urn:uuid:",""));
-            } */
+
 
             return param;
 
@@ -151,6 +151,9 @@ public class PatientResourceProvider implements IResourceProvider {
 
         return null;
     }
+    */
+
+    /*
 
     @Operation(name = "$getrecord4", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
     public Parameters getCareRecord4(
@@ -219,6 +222,8 @@ public class PatientResourceProvider implements IResourceProvider {
         return null;
 
     }
+
+    */
 
 
     @Read

@@ -84,6 +84,8 @@ public class EncounterResourceProvider implements IResourceProvider {
     }
     */
 
+
+    /*
     @Operation(name = "document", idempotent = true, bundleType= BundleTypeEnum.DOCUMENT)
     public Bundle encounterDocumentOperation(
             @IdParam IdType encounterId
@@ -116,12 +118,7 @@ public class EncounterResourceProvider implements IResourceProvider {
             bundle = (Bundle) resource;
 
             return bundle;
-            /*
-            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 
-                results.add(entry.getResource());
-            }
-            */
         } else {
             ProviderResponseLibrary.createException(ctx,resource);
         }
@@ -129,6 +126,7 @@ public class EncounterResourceProvider implements IResourceProvider {
         return null;
 
     }
+    */
 
     @Read
     public Encounter getEncounterById(HttpServletRequest httpRequest, @IdParam IdType internalId) throws Exception {
