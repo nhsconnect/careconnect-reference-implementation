@@ -114,7 +114,20 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
 
       let resource  = this.route.snapshot.paramMap.get('resourceType');
-      this.buildOptions(resource);
+
+      if (this.fhirSrv.conformance !== undefined ) {
+          this.buildOptions(resource);
+      } else {
+          this.fhirSrv.getConformance();
+
+          this.fhirSrv.getConformanceChange().subscribe(
+              conformance => {
+                  if (this.fhirSrv.conformance !== undefined) {
+                      this.buildOptions(resource);
+                  }
+              }
+          )
+      }
 
       this.route.url.subscribe( url => {
           //console.log('activated route url ='+url);
@@ -449,7 +462,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   buildOptions(resource : string) {
       this.searchVisible = false;
-      if (this.fhirSrv.conformance != undefined ) {
+      if (this.fhirSrv.conformance !== undefined ) {
           if (this.currentResource !== resource) {
               this.currentResource = resource;
               this.base = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource;
@@ -478,7 +491,8 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               }
           }
       } else {
-          this.router.navigateByUrl('/');
+          console.log('In Resource - Forcing naviagation to root');
+          //this.router.navigateByUrl('/');
       }
 
   }

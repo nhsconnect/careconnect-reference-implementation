@@ -222,6 +222,7 @@ export class ExplorerMainComponent implements OnInit {
   swapServer(menuItem : any ) {
       this.fhirSrv.setFHIRServerBase(menuItem.route);
       this.title = menuItem.title;
+      console.log('Forcing naviagation to root');
       this.router.navigateByUrl('/');
       this.fhirSrv.getConformance();
   }
