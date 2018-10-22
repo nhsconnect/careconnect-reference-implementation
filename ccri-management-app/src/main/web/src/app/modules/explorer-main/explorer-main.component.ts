@@ -73,11 +73,11 @@ export class ExplorerMainComponent implements OnInit {
             title: 'National Record Locator Service'
         }
 
-        ,{
+/*        ,{
             icon: 'swap_horiz',
             route: '/ccri/camel/fhir/gpc',
             title: 'GP Connect'
-        }
+        } */
 
         ,{
             icon: 'swap_horiz',

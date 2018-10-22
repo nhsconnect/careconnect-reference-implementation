@@ -91,12 +91,15 @@ public class ServerInterceptor extends InterceptorAdapter {
                         return false;
                     }
                     // Allow support for Binary 30/Apr/2018
-                    if (outcome.getIssueFirstRep().getDiagnostics().contains("Unsupported media type:") && (!theRequestDetails.getResourceName().equals("Binary"))) {
-                        theServletResponse.setStatus(415);
-                        theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
-                        theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
-                        theServletResponse.getWriter().close();
-                        return false;
+                    if (outcome.getIssueFirstRep().getDiagnostics().contains("Unsupported media type:")) {
+                        if (theRequestDetails.getResourceName() == null || (!theRequestDetails.getResourceName().equals("Binary"))) {
+                            theServletResponse.setStatus(415);
+                            theServletResponse.setContentType("application/json+fhir;charset=UTF-8");
+                            theServletResponse.getWriter().append(ctx.newJsonParser().encodeResourceToString(theException.getOperationOutcome()));
+                            theServletResponse.getWriter().close();
+                            return false;
+                        }
+
                     }
                 }
             }
@@ -166,6 +169,10 @@ public class ServerInterceptor extends InterceptorAdapter {
 
             if (request.getContentType() != null ) {
                checkContentType(request.getContentType());
+            }
+
+            if (request.getHeader("Accept")  != null && !request.getHeader("Accept").equals("*/*")) {
+                checkContentType(request.getHeader("Accept"));
             }
 
             if (request.getQueryString() != null) {
