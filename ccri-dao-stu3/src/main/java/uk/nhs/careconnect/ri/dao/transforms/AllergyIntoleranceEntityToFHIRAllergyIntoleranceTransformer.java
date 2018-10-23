@@ -84,6 +84,15 @@ public class AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer impleme
             }
             if (allergyEntity.getVerificationStatus() != null) {
                 allergy.setVerificationStatus(allergyEntity.getVerificationStatus());
+
+                // Validation rule i
+                if (!allergyEntity.getVerificationStatus().equals(AllergyIntolerance.AllergyIntoleranceVerificationStatus.ENTEREDINERROR) && allergyEntity.getClinicalStatus() == null)  {
+                    allergy.setClinicalStatus(AllergyIntolerance.AllergyIntoleranceClinicalStatus.INACTIVE);
+                }
+            } else {
+                if (allergyEntity.getClinicalStatus() == null)  {
+                    allergy.setClinicalStatus(AllergyIntolerance.AllergyIntoleranceClinicalStatus.INACTIVE);
+                }
             }
 
             for (AllergyIntoleranceReaction reactionEntity : allergyEntity.getReactions()) {

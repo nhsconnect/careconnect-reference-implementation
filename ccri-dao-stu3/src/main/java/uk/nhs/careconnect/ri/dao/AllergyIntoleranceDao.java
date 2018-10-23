@@ -332,6 +332,11 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
 
         }
 
+        // Exclude entered-in-error due to profiling constraint
+
+        Predicate pverify = builder.notEqual(root.get("verificationStatus"), 3);
+        predList.add(pverify);
+
         ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
         ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
 

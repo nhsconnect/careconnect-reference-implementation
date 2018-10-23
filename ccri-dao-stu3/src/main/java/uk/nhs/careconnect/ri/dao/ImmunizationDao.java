@@ -17,6 +17,8 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationIdentifier;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationCategory;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 
@@ -374,7 +376,10 @@ public class ImmunizationDao implements ImmunizationRepository {
 
         }
 
-
+        // Hard code to SNOMED only (this matches profile)
+        Join<ImmunisationEntity, ConceptEntity> join = root.join("vacinationCode", JoinType.LEFT);
+        Predicate p = builder.equal(join.get("codeSystemEntity"),9);
+        predList.add(p);
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);

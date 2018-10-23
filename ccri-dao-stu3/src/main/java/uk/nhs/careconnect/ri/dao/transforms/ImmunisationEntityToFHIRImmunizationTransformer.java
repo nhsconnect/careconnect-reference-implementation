@@ -130,7 +130,8 @@ public class ImmunisationEntityToFHIRImmunizationTransformer implements Transfor
                     .setSystem(immunisationEntity.getRoute().getSystem())
                     .setDisplay(immunisationEntity.getRoute().getDisplay());
         }
-        if (immunisationEntity.getVacinationCode() != null) {
+        // Validation rule
+        if (immunisationEntity.getVacinationCode() != null && immunisationEntity.getVacinationCode().getSystem().equals("http://snomed.info/sct")) {
             immunisation.getVaccineCode().addCoding()
                     .setCode(immunisationEntity.getVacinationCode().getCode())
                     .setSystem(immunisationEntity.getVacinationCode().getSystem())

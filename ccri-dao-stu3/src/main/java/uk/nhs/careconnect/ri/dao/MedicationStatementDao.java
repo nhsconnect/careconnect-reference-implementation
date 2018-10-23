@@ -701,6 +701,8 @@ public class MedicationStatementDao implements MedicationStatementRepository {
 
         }
 
+        Predicate pmed = builder.isNotNull(root.get("medicationEntity"));
+        predList.add(pmed);
 
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);

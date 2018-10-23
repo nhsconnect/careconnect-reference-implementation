@@ -551,6 +551,8 @@ public class MedicationRequestDao implements MedicationRequestRepository {
 
         }
 
+        Predicate pmed = builder.isNotNull(root.get("medicationEntity"));
+        predList.add(pmed);
 
         ParameterExpression<java.util.Date> parameterLower = builder.parameter(java.util.Date.class);
         ParameterExpression<java.util.Date> parameterUpper = builder.parameter(java.util.Date.class);
