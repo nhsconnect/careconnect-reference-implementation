@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {StepState} from "@covalent/core";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {EprService} from "../../service/epr.service";
 
 @Component({
   selector: 'app-triage',
@@ -10,9 +11,10 @@ import {Router} from "@angular/router";
 })
 export class TriageComponent implements OnInit {
 
-  constructor(private _formBuilder: FormBuilder,private router: Router) { }
+  constructor(private _formBuilder: FormBuilder,private router: Router, private eprService : EprService) { }
 
   ngOnInit() {
+    this.eprService.setTitle('Triage (+ Patient Find)');
 
       this.triageFormGroup = this._formBuilder.group({
           breathingCtrl: ['', Validators.required]

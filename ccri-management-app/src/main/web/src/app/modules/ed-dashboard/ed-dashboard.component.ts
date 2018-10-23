@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
+import {EprService} from "../../service/epr.service";
 
 
 
@@ -12,38 +13,9 @@ export class EdDashboardComponent implements OnInit {
 
 
     routes: Object[] = [
-      {
-        icon: 'search',
-        route: '/',
-        title: 'FHIR Explorer',
-      }
-      ,{
-        icon: 'add_circle_outline',
-        route: '/ed',
-        title: 'Emergency Triage',
-      }
-      ,{
-        icon: 'local_hospital',
-        route: '/ed/caseload',
-        title: 'Ambulance Caseload',
-      }
-      ,{
-        icon: 'dashboard',
-        route: '/ed/capacity',
-        title: 'Emergency Planning',
-      }
-
     ];
-    routesExt : Object[] = [{
-        icon: 'lock',
-        route: 'https://data.developer.nhs.uk/ccri-auth/',
-        title: 'OAuth2 (SMART on FHIR) Server',
-    }
-        , {
-            icon: 'note',
-            route: 'https://data.developer.nhs.uk/document-viewer/',
-            title: 'FHIR Document Viewer',
-        }
+
+    routesExt : Object[] = [
     ];
 
     navmenu: Object[] = [];
@@ -52,10 +24,16 @@ export class EdDashboardComponent implements OnInit {
 
 
 
-    constructor( private router : Router) { }
+    constructor( private router : Router, private eprService : EprService) { }
 
   ngOnInit() {
 
+    this.routes = this.eprService.routes;
+    this.routesExt = this.eprService.routesExt;
+
+  this.eprService.getTitleChange().subscribe( title => {
+    this.title = title;
+  })
 
   }
 

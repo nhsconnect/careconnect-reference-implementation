@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
+import {EprService} from "../../service/epr.service";
+import {MatChip} from "@angular/material";
 
 @Component({
   selector: 'app-patient-details',
@@ -29,14 +31,23 @@ export class PatientDetailsComponent implements OnInit {
     lhcreMedicationStatement : fhir.MedicationStatement[]= [];
     lhcreConditions : fhir.Condition[];
 
+    yascolor = 'info';
+    acutecolor = 'info';
+    gpcolor = 'info';
+    nrlscolor = 'info';
+    @ViewChild('gpchip') gpchip : MatChip;
+
 
     observations : fhir.Observation[];
 
-  constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute) { }
+  constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
   ngOnInit() {
 
       let patientid = this.route.snapshot.paramMap.get('patientid');
+    this.eprService.setTitle('Health Information Exchange Portal');
+      this.acutecolor = 'info';
+      this.yascolor = 'info';
       this.clearDown();
       this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_count=100').subscribe(
           bundle => {
@@ -64,9 +75,13 @@ export class PatientDetailsComponent implements OnInit {
                       */
                   }
               }
-
+            this.acutecolor = 'primary';
+            this.yascolor = 'primary';
           }
-          ,()=> {}
+          ,()=> {
+            this.acutecolor = 'warn';
+            this.yascolor = 'warn';
+        }
           , ()=> {
               for(let identifier of this.patient.identifier) {
                   if (identifier.system === 'https://fhir.nhs.uk/Id/nhs-number') {
@@ -113,6 +128,8 @@ export class PatientDetailsComponent implements OnInit {
       this.gpPatient  = [];
       this.gpPractitioner  = [];
       this.gpOrganisation = [];
+      this.gpcolor = 'info';
+
 
       this.fhirSrv.postGPC(nhsNumber).subscribe( bundle => {
             console.log(bundle);
@@ -169,11 +186,17 @@ export class PatientDetailsComponent implements OnInit {
                   }
               }
           }
+          this.gpcolor= 'primary';
+      },()=>
+      {
+        console.log('failed to retrieve data from GP Connect');
+        this.gpcolor = 'warn';
       });
 
   }
 
     getNRLSData(nhsNumber : string) {
+        this.nrlscolor = 'info';
         this.fhirSrv.getNRLS('/DocumentReference?subject=https%3A%2F%2Fdemographics.spineservices.nhs.uk%2FSTU3%2FPatient%2F'+nhsNumber).subscribe( bundle => {
            if (bundle.entry !== undefined) {
                for (let entry of bundle.entry) {
@@ -182,7 +205,12 @@ export class PatientDetailsComponent implements OnInit {
 
                }
            }
-        })
+           this.nrlscolor='primary';
+        },
+          ()=> {
+          console.log('failed to retrieve data from NRLS');
+          this.gpcolor = 'warn';
+          })
     }
 
     clearDown() {

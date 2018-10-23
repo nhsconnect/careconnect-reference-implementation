@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {MessageService} from "../../service/message.service";
 import {MatIconRegistry} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
+import {EprService} from "../../service/epr.service";
 
 @Component({
   selector: 'app-explorer-main',
@@ -16,40 +17,11 @@ export class ExplorerMainComponent implements OnInit {
     public outputFormat : Formats = Formats.JsonFormatted;
 
 
-    routes: Object[] = [
-      {
-        icon: 'search',
-        route: '/',
-        title: 'FHIR Explorer',
-      }
-      ,{
-        icon: 'add_circle_outline',
-        route: '/ed',
-        title: 'Emergency Triage',
-      }
-      ,{
-        icon: 'local_hospital',
-        route: '/ed/caseload',
-        title: 'Ambulance Caseload',
-      }
-      ,{
-        icon: 'dashboard',
-        route: '/ed/capacity',
-        title: 'Emergency Planning',
-      }
+  routes: Object[] = [
+  ];
 
-    ];
-    routesExt : Object[] = [{
-        icon: 'lock',
-        route: 'https://data.developer.nhs.uk/ccri-auth/',
-        title: 'OAuth2 (SMART on FHIR) Server',
-    }
-        , {
-            icon: 'note',
-            route: 'https://data.developer.nhs.uk/document-viewer/',
-            title: 'FHIR Document Viewer',
-        }
-    ];
+  routesExt : Object[] = [
+  ];
 
     serverMenu : any[] = [
         {
@@ -116,11 +88,14 @@ export class ExplorerMainComponent implements OnInit {
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef,
               private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer) { }
+              private domSanitizer: DomSanitizer,
+              private eprService : EprService) { }
 
   ngOnInit() {
 
       // Work around for local systems
+    this.routes = this.eprService.routes;
+    this.routesExt = this.eprService.routesExt;
 
       if (document.baseURI.includes('4203')) {
           for(let menu of this.serverMenu) {

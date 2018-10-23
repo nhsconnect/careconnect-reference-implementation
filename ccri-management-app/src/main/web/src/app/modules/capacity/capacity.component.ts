@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FhirService} from "../../service/fhir.service";
 import {NguiMapComponent} from "@ngui/map";
+import {EprService} from "../../service/epr.service";
 
 
 declare class MarkerPosition {
@@ -36,10 +37,11 @@ export class CapacityComponent implements OnInit {
 
   encounters : fhir.Encounter[] = [];
 
-  constructor(private fhirService : FhirService) { }
+  constructor(private fhirService : FhirService, private eprService : EprService) { }
 
   ngOnInit() {
     this.getEncounters();
+    this.eprService.setTitle('Emergency Planning - Garforth Sector');
   }
 
   getEncounters() {

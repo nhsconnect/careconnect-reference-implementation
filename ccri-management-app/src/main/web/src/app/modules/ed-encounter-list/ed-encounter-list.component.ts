@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FhirService} from "../../service/fhir.service";
+import {EprService} from "../../service/epr.service";
 
 @Component({
   selector: 'app-ed-encounter-list',
@@ -8,12 +9,13 @@ import {FhirService} from "../../service/fhir.service";
 })
 export class EdEncounterListComponent implements OnInit {
 
-  constructor(private fhirService : FhirService) { }
+  constructor(private fhirService : FhirService, private eprService : EprService) { }
 
   encounters : fhir.Encounter[] = [];
 
   ngOnInit() {
     this.getEncounters();
+    this.eprService.setTitle('Caseload - Garforth Sector');
     this.fhirService.getConformanceChange().subscribe(capabilityStatement =>
     {
       this.getEncounters();
