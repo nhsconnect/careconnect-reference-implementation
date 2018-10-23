@@ -115,7 +115,7 @@
                             <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
                         </div>
           <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
-
+§z§x§z§x§<x></x>
       </mat-card-content>
     </mat-card>
 </span>
@@ -250,12 +250,11 @@
      fxFlexFill >
   <!-- Left pane -->
   <div fxFlex="100">
-      <span *ngIf="encounters.length>0">
+      <span *ngIf="observations.length>0">
     <mat-card>
 
       <mat-card-content>
 
-      <span *ngIf="observations.length>0">
                <div fxLayout="row"
                     fxFlexFill >
                             <h2>Observations</h2>
@@ -263,7 +262,6 @@
                             <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
                         </div>
               <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
-          </span>
 
       </mat-card-content>
     </mat-card>
