@@ -109,7 +109,8 @@ public class 	ConceptEntity extends BaseResource {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		if (description != null) description = description.trim();
+    	this.description = description;
 	}
 
 	public String getCode() {
@@ -134,11 +135,15 @@ public class 	ConceptEntity extends BaseResource {
 	
 
 	public String getDisplay() {
+    	if (myDisplay!=null) return myDisplay.trim();
+
 		return myDisplay;
 	}
+
 	public ConceptEntity setDisplay(String theDisplay) {
 		myDisplay = theDisplay;
 		if (theDisplay != null && !theDisplay.isEmpty() && theDisplay.length() > MAX_DESC_LENGTH) {
+			myDisplay = myDisplay.trim();
 			myDisplay = myDisplay.substring(0, MAX_DESC_LENGTH);
 		}
 		return this;
