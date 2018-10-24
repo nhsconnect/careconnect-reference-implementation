@@ -1,7 +1,5 @@
 <mat-menu #appMenu="matMenu">
-  <span *ngFor="let server of serverMenu">
-  <button mat-menu-item (click)="swapServer(server)">{{server.title}}</button>
-    </span>
+  <button *ngFor="let server of serverMenu" mat-menu-item (click)="swapServer(server)">{{server.title}}</button>
 </mat-menu>
 <mat-menu #formatMenu>
     <button mat-menu-item (click)="format('jsonf')">
@@ -32,6 +30,13 @@
         <ng-template #other4e><mat-icon></mat-icon></ng-template>
         <span>EPR Mode</span></button>
 </mat-menu>
+<mat-menu #documentMenu>
+    <a mat-menu-item href="https://nhsconnect.github.io/CareConnectAPI/" target="_blank">NHS Digital Care Connect API</a>
+    <a mat-menu-item href="https://fhir-test.hl7.org.uk/" target="_blank">HL7 UK FHIR Profiles</a>
+    <a mat-menu-item href="https://fhir.nhs.uk/" target="_blank">NHS Digital FHIR Profiles</a>
+    <mat-divider></mat-divider>
+    <a mat-menu-item href="https://github.com/nhsconnect/careconnect-reference-implementation" target="_blank"><mat-icon svgIcon="github"></mat-icon>Care Connect Github</a>
+</mat-menu>
 
 <td-layout [class]="'theme-light'">
     <td-navigation-drawer flex sidenavTitle="Applications"  name="" email="" >
@@ -42,6 +47,7 @@
         </mat-nav-list>
         <div td-navigation-drawer-menu>
             <mat-nav-list>
+                <a *ngFor="let item of usermenu" mat-list-item><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
                 <a *ngFor="let item of usermenu" mat-list-item><mat-icon>{{item.icon}}</mat-icon>{{item.title}}</a>
             </mat-nav-list>
         </div>
@@ -59,14 +65,15 @@
             </button>
             <span>{{title}}</span>
             <span flex></span>
-            <a mat-icon-button matTooltip="Github" href="https://github.com/nhsconnect/careconnect-reference-implementation" target="_blank"><mat-icon svgIcon="github"></mat-icon></a>
+           <!-- <a mat-icon-button matTooltip="Github" href="https://github.com/nhsconnect/careconnect-reference-implementation" target="_blank"><mat-icon svgIcon="github"></mat-icon></a> -->
             <button mat-icon-button matTooltip="Output format" [matMenuTriggerFor]="formatMenu"><mat-icon>text_format</mat-icon></button>
             <button mat-icon-button matTooltip="Swap FHIR Server" [matMenuTriggerFor]="appMenu"><mat-icon>device_hub</mat-icon></button>
+            <button mat-icon-button [matMenuTriggerFor]="documentMenu"><mat-icon>help</mat-icon></button>
 
         </div>
         <div td-sidenav-toolbar-content layout="row" layout-align="start center">
             <button mat-icon-button tdLayoutToggle>
-                <mat-icon>apps</mat-icon>
+                <mat-icon>menu</mat-icon>
             </button>
             <!-- <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon> -->
             <span [routerLink]="['/']" class="cursor-pointer"><mat-icon color="accent">whatshot</mat-icon>FHIR Explorer</span>

@@ -1,0 +1,76 @@
+<div fxLayout="row"
+     fxFlexFill >
+    <div fxFlex="100">
+        <span *ngIf="patient !== undefined">
+            <mat-card>
+                <mat-card-content>
+                <div class="container" layout="row" layout-align="start center" flex>
+              <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
+              <span flex ></span>
+
+              &nbsp; <i>DOB:</i><b>&nbsp;{{patient.birthDate | date: 'dd-MMM-yyyy'}}</b>
+
+              <span flex></span>
+              <span>
+                                   &nbsp;<i>Gender:</i><b>&nbsp; {{ patient.gender }}</b>
+                                </span>
+              <span flex></span>
+
+              &nbsp;<i>NHS No:</i><b>&nbsp;{{ getNHSIdentifier(patient) }}</b>
+                  <span flex></span>
+              <mat-chip-list>
+                <mat-chip #yaschip [color]="yascolor" selected=true>YAS</mat-chip>
+                  <mat-chip #acutechip [color]="acutecolor" selected=true>Acute</mat-chip>
+                <mat-chip #gpchip [color]="gpcolor" selected=true>GP</mat-chip>
+                <mat-chip #nrlschip [color]="nrlscolor" selected=true>NRLS</mat-chip>
+              </mat-chip-list>
+            </div>
+                    </mat-card-content>
+                <mat-card-actions>
+                    <button #bs mat-button (click)="onClick($event,'bs' )">Summary</button>
+                    <button #bo mat-button (click)="onClick($event,'bo')">Observations</button>
+                    <button #be mat-button (click)="onClick($event,'be')">Encounters</button>
+                    <button #bd mat-button (click)="onClick($event,'bd')">Documents</button>
+                </mat-card-actions>
+                </mat-card>
+            </span>
+    </div>
+</div>
+
+
+<router-outlet></router-outlet>
+<!-- GP Connect
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+       <span *ngIf="gpPatient.length>0">
+    <mat-card>
+
+      <mat-card-content>
+
+
+            <div fxLayout="row"
+                 fxFlexFill >
+          <h2>Patient</h2>
+          <span flex></span>
+          <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
+        </div>
+
+          <app-patient [patients]="gpPatient"> </app-patient>
+
+      </mat-card-content>
+    </mat-card>
+</span>
+  </div>
+
+</div>
+
+-->
+
+
+
+
+
+
+
+

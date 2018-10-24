@@ -8,18 +8,18 @@ export class EprService {
 
   public routes: Object[] = [
     {
-      icon: 'search',
+      icon: 'home',
       route: '/',
       title: 'FHIR Explorer',
     }
     ,{
-      icon: 'add_circle_outline',
+      icon: 'search',
       route: '/ed',
-      title: 'Triage (+ Patient Find)' +
+      title: 'Patient Find (+ Triage)' +
         '',
     }
     ,{
-      icon: 'local_hospital',
+      icon: 'hotel',
       route: '/ed/caseload',
       title: 'Caseload',
     }
@@ -54,6 +54,11 @@ export class EprService {
   userName : string;
 
   userEmail : string;
+
+  gpConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+
+  nrlsConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+
 
   patientAllergies : fhir.AllergyIntolerance[] = [];
 
@@ -98,6 +103,15 @@ export class EprService {
   getPatientChangeEmitter() {
     return this.patientChangeEvent;
   }
+
+
+
+    getGPCStatusChangeEvent() {
+        return this.gpConnectStatusEmitter;
+    }
+    getNRLSStatusChangeEvent() {
+        return this.nrlsConnectStatusEmitter;
+    }
 
   getResourceChangeEvent() {
     return this.resourceChangeEvent;

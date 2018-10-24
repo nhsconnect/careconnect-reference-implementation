@@ -107,10 +107,14 @@ import { EdEncounterListComponent } from './modules/ed-encounter-list/ed-encount
 import {EdRoutingModule} from "./modules/ed-routing.module";
 import { EdEncounterCardComponent } from './modules/ed-encounter-card/ed-encounter-card.component';
 import {NguiMapModule} from "@ngui/map";
-import { PatientDetailsComponent } from './modules/patient-details/patient-details.component';
+import { PatientMainComponent } from './modules/patient-main/patient-main.component';
 import { TriageComponent } from './modules/triage/triage.component';
 import {PatientSearchComponent} from "./component/patient-search/patient-search.component";
 import { CapacityComponent } from './modules/capacity/capacity.component';
+import { PatientSummaryComponent } from './modules/patient-summary/patient-summary.component';
+import { PatientVitalSignsComponent } from './modules/patient-vital-signs/patient-vital-signs.component';
+import { PatientEncountersComponent } from './modules/patient-encounters/patient-encounters.component';
+import { PatientDocumentsComponent } from './modules/patient-documents/patient-documents.component';
 
 
 
@@ -175,10 +179,14 @@ export function initializeApp(appConfig: AppConfig) {
     MapComponent,
     EdEncounterListComponent,
     EdEncounterCardComponent,
-    PatientDetailsComponent,
+    PatientMainComponent,
     TriageComponent,
       PatientSearchComponent,
-      CapacityComponent
+      CapacityComponent,
+      PatientSummaryComponent,
+      PatientVitalSignsComponent,
+      PatientEncountersComponent,
+      PatientDocumentsComponent
 
 
 

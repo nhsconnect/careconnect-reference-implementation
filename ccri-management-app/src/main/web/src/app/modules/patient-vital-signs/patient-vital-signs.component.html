@@ -1,0 +1,25 @@
+<div fxLayout="row"
+     fxFlexFill >
+  <!-- Left pane -->
+  <div fxFlex="100">
+
+    <mat-card>
+
+      <mat-card-content>
+
+               <div fxLayout="row"
+                    fxFlexFill >
+                            <h2>Observations</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
+                        </div>
+          <span *ngIf="observations.length>0">
+              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
+ </span>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>
+

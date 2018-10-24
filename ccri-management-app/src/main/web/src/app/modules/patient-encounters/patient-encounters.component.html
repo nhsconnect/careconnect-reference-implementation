@@ -1,0 +1,28 @@
+
+<div fxLayout="row"
+     fxFlexFill >
+  <!-- Left pane -->
+  <div fxFlex="100">
+
+    <mat-card>
+
+      <mat-card-content>
+
+
+                 <div fxLayout="row"
+                      fxFlexFill >
+                            <h2>Encounters</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
+                        </div>
+          <span *ngIf="encounters.length>0">
+              <app-encounter [encounters]="encounters" [useBundle]="true" (encounter)="onResoureSelected($event)"></app-encounter>
+
+          </span>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>

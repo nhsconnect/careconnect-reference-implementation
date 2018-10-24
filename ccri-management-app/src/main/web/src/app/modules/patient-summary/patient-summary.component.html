@@ -1,0 +1,131 @@
+<!-- Conditions -->
+
+
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+                    <span *ngIf="lhcreConditions.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                        <div fxLayout="row"
+                             fxFlexFill >
+                            <h2>Conditions</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                        </div>
+                        <app-condition [conditions]="lhcreConditions"> </app-condition>
+                         </mat-card-content>
+                         </mat-card>
+                    </span>
+  </div>
+</div>
+
+<!-- National Documents -->
+
+<!-- NRLS -->
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+    <span *ngIf="nrlsdocuments.length>0">
+    <mat-card>
+      <mat-card-content>
+
+              <h4>Document Reference</h4>
+              <app-document-reference [documents]="nrlsdocuments" (form)="onResoureSelected($event)"></app-document-reference>
+
+      </mat-card-content>
+    </mat-card>
+</span>
+  </div>
+
+</div>
+
+<!-- GP Connect -->
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+     <span *ngIf="gpallergies.length>0">
+    <mat-card>
+      <mat-card-content>
+
+            <div fxLayout="row"
+                 fxFlexFill >
+                            <h2>Allergies and Intolerances</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
+                        </div>
+          <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
+      </mat-card-content>
+    </mat-card>
+</span>
+  </div>
+</div>
+
+<!-- Alergies and Intolerance -->
+
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+                    <span *ngIf="lhcreAllergies.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                           <div fxLayout="row"
+                                fxFlexFill >
+                        <h2>Allergies and Intolerances</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                        </div>
+
+
+
+                        <app-allergy-intolerance [allergies]="lhcreAllergies"> </app-allergy-intolerance>
+                             </mat-card-content>
+                         </mat-card>
+                    </span>
+  </div>
+</div>
+
+<!-- Medication Statements -->
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+    <span *ngIf="gpMedicationStatement.length>0">
+    <mat-card>
+
+      <mat-card-content>
+
+
+             <div fxLayout="row"
+                  fxFlexFill >
+                            <h2>Medication Statement</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
+                        </div>
+          <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>
+
+      </mat-card-content>
+    </mat-card>
+</span>
+  </div>
+
+</div>
+
+
+<div fxLayout="row"
+     fxFlexFill >
+  <div fxFlex="100">
+                    <span *ngIf="lhcreMedicationStatement.length>0">
+                         <mat-card>
+                         <mat-card-content>
+                           <div fxLayout="row"
+                                fxFlexFill >
+                        <h2>Medication Statement</h2>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                        </div>
+                        <app-medication-statement [medicationStatements]="lhcreMedicationStatement"> </app-medication-statement>
+                             </mat-card-content>
+                         </mat-card>
+                    </span>
+  </div>
+</div>

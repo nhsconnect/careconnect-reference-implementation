@@ -14,7 +14,7 @@ export class TriageComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,private router: Router, private eprService : EprService) { }
 
   ngOnInit() {
-    this.eprService.setTitle('Triage (+ Patient Find)');
+    this.eprService.setTitle('Patient Find (+ Triage)');
 
       this.triageFormGroup = this._formBuilder.group({
           breathingCtrl: ['', Validators.required]
