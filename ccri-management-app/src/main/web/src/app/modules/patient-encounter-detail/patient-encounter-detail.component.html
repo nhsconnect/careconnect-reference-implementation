@@ -1,0 +1,66 @@
+<div>
+
+  <span *ngIf="encounter != undefined">
+    <mat-card>
+        <mat-card-content>
+
+              <div *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+
+
+                              <h2>{{encounter.type[0].coding[0].display}}</h2>
+
+                              <span *ngIf="isSNOMED(encounter.type[0].coding[0].system)">
+                                &nbsp;<a (click)="getSNOMEDLink(encounter.type[0].coding[0])"><span *ngIf="encounter.type[0].coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}"></span> </a>
+                              </span>
+                              <span *ngIf="!isSNOMED(encounter.type[0].coding[0].system)">
+                                &nbsp;<span *ngIf="encounter.type[0].coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}"></span>
+                              </span>
+               </div>
+
+                <div *ngFor="let participant of encounter.participant">
+                    <span *ngIf="participant.individual != undefined"><i>{{participant.individual.display}}</i></span>
+                </div>
+
+                <div *ngIf="encounter.serviceProvider!=undefined"> {{encounter.serviceProvider.display}}</div>
+      </mat-card-content>
+      </mat-card>
+    </span>
+
+
+  <span *ngIf="conditionTotal>0">
+    <mat-card>
+        <mat-card-content>
+            <h2>Condition</h2>
+            <app-condition [conditions]="conditions"></app-condition>
+        </mat-card-content>
+    </mat-card>
+  </span>
+
+  <span *ngIf="procTotal>0">
+    <mat-card>
+        <mat-card-content>
+          <h2>Procedures</h2>
+          <app-procedure [procedures]="procedures"></app-procedure>
+        </mat-card-content>
+    </mat-card>
+  </span>
+
+  <span *ngIf="presTotal>0">
+    <mat-card>
+        <mat-card-content>
+          <h2>Prescriptions</h2>
+          <app-medication-request [medicationRequests]="prescriptions"></app-medication-request>
+        </mat-card-content>
+    </mat-card>
+  </span>
+
+  <span *ngIf="obsTotal>0">
+     <mat-card>
+        <mat-card-content>
+          <h2>Observations</h2>
+          <app-observation [showDetail]="false" [observations]="observations"></app-observation>
+        </mat-card-content>
+     </mat-card>
+  </span>
+</div>
+

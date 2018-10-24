@@ -9,7 +9,7 @@ import {LocationDialogComponent} from "../../dialog/location-dialog/location-dia
 import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 import {BundleService} from "../../service/bundle.service";
-import {MedicationDialogComponent} from "../../dialog/medication-dialog/medication-dialog.component";
+
 
 @Component({
   selector: 'app-encounter',
@@ -36,7 +36,7 @@ export class EncounterComponent implements OnInit {
 
   dataSource : EncounterDataSource;
 
-  displayedColumns = ['start','end','status', 'type','typelink','provider','providerLink','participant','participantLink', 'locationLink','resource'];
+  displayedColumns = ['select','start','end','status', 'type','typelink','provider','providerLink','participant','participantLink', 'locationLink','resource'];
 
   constructor(private linksService : LinksService,
     public bundleService : BundleService,
@@ -188,4 +188,8 @@ export class EncounterComponent implements OnInit {
     };
     let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
+
+    selectEncounter(encounter : fhir.Encounter) {
+        this.encounter.emit(encounter);
+    }
 }

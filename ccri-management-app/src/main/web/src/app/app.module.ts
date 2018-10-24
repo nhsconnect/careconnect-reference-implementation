@@ -62,7 +62,6 @@ import {ObservationComponent} from "./component/observation/observation.componen
 import {ImmunisationDetailComponent} from './dialog/immunisation-detail/immunisation-detail.component';
 import {ImmunisationComponent} from "./component/immunisation/immunisation.component";
 
-import {EncounterDetailComponent} from "./component/encounter-detail/encounter-detail.component";
 import {ResourceDialogComponent} from "./dialog/resource-dialog/resource-dialog.component";
 import {OrganisationComponent} from "./component/organisation/organisation.component";
 import {PractitionerComponent} from "./component/practitioner/practitioner.component";
@@ -115,6 +114,8 @@ import { PatientSummaryComponent } from './modules/patient-summary/patient-summa
 import { PatientVitalSignsComponent } from './modules/patient-vital-signs/patient-vital-signs.component';
 import { PatientEncountersComponent } from './modules/patient-encounters/patient-encounters.component';
 import { PatientDocumentsComponent } from './modules/patient-documents/patient-documents.component';
+import { PatientEncounterDetailComponent } from './modules/patient-encounter-detail/patient-encounter-detail.component';
+import { PatientProcedureComponent } from './modules/patient-procedure/patient-procedure.component';
 
 
 
@@ -142,7 +143,6 @@ export function initializeApp(appConfig: AppConfig) {
     ConditionComponent,
     CompositionComponent,
     DocumentReferenceComponent,
-    EncounterDetailComponent,
     EncounterComponent,
     GoalComponent,
     ImmunisationComponent,
@@ -186,7 +186,9 @@ export function initializeApp(appConfig: AppConfig) {
       PatientSummaryComponent,
       PatientVitalSignsComponent,
       PatientEncountersComponent,
-      PatientDocumentsComponent
+      PatientDocumentsComponent,
+      PatientEncounterDetailComponent,
+      PatientProcedureComponent
 
 
 

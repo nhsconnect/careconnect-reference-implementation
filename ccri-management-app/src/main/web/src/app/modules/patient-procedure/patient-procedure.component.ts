@@ -4,31 +4,29 @@ import {FhirService} from "../../service/fhir.service";
 import {EprService} from "../../service/epr.service";
 
 @Component({
-  selector: 'app-patient-encounters',
-  templateUrl: './patient-encounters.component.html',
-  styleUrls: ['./patient-encounters.component.css']
+  selector: 'app-patient-procedure',
+  templateUrl: './patient-procedure.component.html',
+  styleUrls: ['./patient-procedure.component.css']
 })
-export class PatientEncountersComponent implements OnInit {
+export class PatientProcedureComponent implements OnInit {
 
-    encounters : fhir.Encounter[] = [];
-
-    encounter : fhir.Encounter = undefined;
+    procedures : fhir.Procedure[] = [];
 
     constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
         let patientid = this.route.snapshot.paramMap.get('patientid');
 
-        this.fhirSrv.get('/Encounter?patient='+patientid).subscribe(
+        this.fhirSrv.get('/Procedure?patient='+patientid).subscribe(
             bundle => {
                 if (bundle.entry !== undefined) {
                     for (let entry of bundle.entry) {
 
                         switch (entry.resource.resourceType) {
 
-                            case 'Encounter':
-                                let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
-                                this.encounters.push(encounter);
+                            case 'Procedure':
+                                let procedure: fhir.Procedure = <fhir.Procedure> entry.resource;
+                                this.procedures.push(procedure);
                                 break;
                         }
 
@@ -37,11 +35,6 @@ export class PatientEncountersComponent implements OnInit {
 
             }
         );
-    }
-
-    onResourceSelected(encounter : fhir.Encounter) {
-        this.encounter = encounter;
-        this.router.navigate([this.encounter.id], {relativeTo: this.route });
     }
 
 }

@@ -9,6 +9,8 @@ import {PatientSummaryComponent} from "./patient-summary/patient-summary.compone
 import {PatientVitalSignsComponent} from "./patient-vital-signs/patient-vital-signs.component";
 import {PatientEncountersComponent} from "./patient-encounters/patient-encounters.component";
 import {PatientDocumentsComponent} from "./patient-documents/patient-documents.component";
+import {PatientEncounterDetailComponent} from "./patient-encounter-detail/patient-encounter-detail.component";
+import {PatientProcedureComponent} from "./patient-procedure/patient-procedure.component";
 
 
 
@@ -23,9 +25,11 @@ const edRoutes: Routes = [
            children : [
                { path: '', component: PatientSummaryComponent },
                { path: 'summary', component: PatientSummaryComponent },
-               { path: 'vital-signs', component: PatientVitalSignsComponent },
-               { path: 'encounters', component: PatientEncountersComponent },
-               { path: 'documents', component: PatientDocumentsComponent },
+               { path: 'observation', component: PatientVitalSignsComponent },
+               { path: 'encounter', component: PatientEncountersComponent },
+               { path: 'encounter/:encounterid', component: PatientEncounterDetailComponent },
+               { path: 'document', component: PatientDocumentsComponent },
+               { path: 'procedure', component: PatientProcedureComponent },
            ]}
     ]
 }

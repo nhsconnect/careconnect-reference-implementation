@@ -503,6 +503,36 @@ public class  EncounterDao implements EncounterRepository {
                                 }
                             }
                             break;
+                        case "Procedure:context":
+                            for (ProcedureEntity procedureEntity : encounterEntity.getProcedureEncounters()) {
+                                addToResults(results, procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
+                            }
+                            break;
+                        case "Condition:context":
+                            for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
+                                addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                            }
+                            break;
+                        case "MedicationRequest:context":
+                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                                if (medicationRequestEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                                }
+                            }
+                            break;
+                        case "Immunization:encounter" :
+                            // Imms
+                            for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
+                                addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                            }
+                            break;
+                        case "DocumentReference:context" :
+                            for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
+                                addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                            }
+                            break;
+
                     }
 
                 }
