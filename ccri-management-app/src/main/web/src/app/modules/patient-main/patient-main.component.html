@@ -27,10 +27,10 @@
             </div>
                     </mat-card-content>
                 <mat-card-actions>
-                    <button #bs mat-button (click)="onClick($event,'bs' )">Summary</button>
-                    <button #bo mat-button (click)="onClick($event,'bo')">Observations</button>
-                    <button #be mat-button (click)="onClick($event,'be')">Encounters</button>
-                    <button #bd mat-button (click)="onClick($event,'bd')">Documents</button>
+                    <button #bs mat-button (click)="onClick($event,'bs' )" [color]="bscolour">Summary</button>
+                    <button #bo mat-button (click)="onClick($event,'bo')" [color]="bocolour">Observations</button>
+                    <button #be mat-button (click)="onClick($event,'be')" [color]="becolour">Encounters</button>
+                    <button #bd mat-button (click)="onClick($event,'bd')" [color]="bdcolour">Documents</button>
                 </mat-card-actions>
                 </mat-card>
             </span>
@@ -39,33 +39,7 @@
 
 
 <router-outlet></router-outlet>
-<!-- GP Connect
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
-       <span *ngIf="gpPatient.length>0">
-    <mat-card>
 
-      <mat-card-content>
-
-
-            <div fxLayout="row"
-                 fxFlexFill >
-          <h2>Patient</h2>
-          <span flex></span>
-          <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
-        </div>
-
-          <app-patient [patients]="gpPatient"> </app-patient>
-
-      </mat-card-content>
-    </mat-card>
-</span>
-  </div>
-
-</div>
-
--->
 
 
 

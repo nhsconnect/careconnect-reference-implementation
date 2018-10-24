@@ -4,7 +4,7 @@
 <div fxLayout="row"
      fxFlexFill >
   <div fxFlex="100">
-                    <span *ngIf="lhcreConditions.length>0">
+
                          <mat-card>
                          <mat-card-content>
                         <div fxLayout="row"
@@ -13,10 +13,12 @@
                                <span flex></span>
                             <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
                         </div>
+                             <span *ngIf="lhcreConditions.length>0">
                         <app-condition [conditions]="lhcreConditions"> </app-condition>
+                                 </span>
                          </mat-card-content>
                          </mat-card>
-                    </span>
+
   </div>
 </div>
 
@@ -26,16 +28,22 @@
 <div fxLayout="row"
      fxFlexFill >
   <div fxFlex="100">
-    <span *ngIf="nrlsdocuments.length>0">
+
     <mat-card>
       <mat-card-content>
+          <div fxLayout="row"
+               fxFlexFill >
+              <h2>Important Documents</h2>
+              <span flex></span>
+              <mat-chip-list><mat-chip [color]="nrlscolor" selected=true>NRLS</mat-chip></mat-chip-list>
+          </div>
 
-              <h4>Document Reference</h4>
+          <span *ngIf="nrlsdocuments.length>0">
               <app-document-reference [documents]="nrlsdocuments" (form)="onResoureSelected($event)"></app-document-reference>
-
+        </span>
       </mat-card-content>
     </mat-card>
-</span>
+
   </div>
 
 </div>
@@ -44,44 +52,32 @@
 <div fxLayout="row"
      fxFlexFill >
   <div fxFlex="100">
-     <span *ngIf="gpallergies.length>0">
+
     <mat-card>
       <mat-card-content>
-
+          <h2>Allergies and Intolerances</h2>
             <div fxLayout="row"
                  fxFlexFill >
-                            <h2>Allergies and Intolerances</h2>
+
                                <span flex></span>
-                            <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
+                            <mat-chip-list><mat-chip [color]="gpcolor" selected=true>GP</mat-chip></mat-chip-list>
                         </div>
+          <span *ngIf="gpallergies.length>0">
           <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
-      </mat-card-content>
-    </mat-card>
-</span>
-  </div>
-</div>
-
-<!-- Alergies and Intolerance -->
-
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
-                    <span *ngIf="lhcreAllergies.length>0">
-                         <mat-card>
-                         <mat-card-content>
+              </span>
                            <div fxLayout="row"
                                 fxFlexFill >
-                        <h2>Allergies and Intolerances</h2>
                                <span flex></span>
                             <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
                         </div>
 
-
+                             <span *ngIf="lhcreAllergies.length>0">
 
                         <app-allergy-intolerance [allergies]="lhcreAllergies"> </app-allergy-intolerance>
+                                  </span>
                              </mat-card-content>
                          </mat-card>
-                    </span>
+
   </div>
 </div>
 
@@ -89,43 +85,32 @@
 <div fxLayout="row"
      fxFlexFill >
   <div fxFlex="100">
-    <span *ngIf="gpMedicationStatement.length>0">
+
     <mat-card>
 
       <mat-card-content>
-
+          <h2>Medication Statement</h2>
 
              <div fxLayout="row"
                   fxFlexFill >
-                            <h2>Medication Statement</h2>
+
                                <span flex></span>
-                            <mat-chip-list><mat-chip>GP</mat-chip></mat-chip-list>
+                            <mat-chip-list><mat-chip [color]="gpcolor" selected=true>GP</mat-chip></mat-chip-list>
                         </div>
-          <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>
+                         <span *ngIf="gpMedicationStatement.length>0">
+                                <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>
+                        </span>
 
-      </mat-card-content>
-    </mat-card>
-</span>
-  </div>
-
-</div>
-
-
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
-                    <span *ngIf="lhcreMedicationStatement.length>0">
-                         <mat-card>
-                         <mat-card-content>
                            <div fxLayout="row"
                                 fxFlexFill >
-                        <h2>Medication Statement</h2>
                                <span flex></span>
                             <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
                         </div>
+                             <span *ngIf="lhcreMedicationStatement.length>0">
                         <app-medication-statement [medicationStatements]="lhcreMedicationStatement"> </app-medication-statement>
+                                 </span>
                              </mat-card-content>
                          </mat-card>
-                    </span>
+
   </div>
 </div>

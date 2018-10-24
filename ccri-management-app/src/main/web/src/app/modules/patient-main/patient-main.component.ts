@@ -18,6 +18,13 @@ export class PatientMainComponent implements OnInit {
     acutecolor = 'info';
     gpcolor = 'info';
     nrlscolor = 'info';
+
+    bscolour= 'accent';
+    bocolour = 'info';
+    becolour= 'info';
+    bdcolour = 'info';
+
+
     @ViewChild('gpchip') gpchip : MatChip;
 
 
@@ -54,18 +61,26 @@ export class PatientMainComponent implements OnInit {
 
     onClick(event, btn) {
       console.log(event);
+        this.bscolour= 'info';
+        this.bocolour = 'info';
+        this.becolour= 'info';
+        this.bdcolour = 'info';
       switch (btn) {
           case 'bs':
               this.router.navigate(['summary'], {relativeTo: this.route });
+              this.bscolour = 'accent';
               break;
           case 'bo':
               this.router.navigate(['vital-signs'], {relativeTo: this.route });
+              this.bocolour = 'accent';
               break;
           case 'be':
               this.router.navigate(['encounters'], {relativeTo: this.route });
+              this.becolour = 'accent';
               break;
           case 'bd':
               this.router.navigate(['documents'], {relativeTo: this.route });
+              this.bdcolour = 'accent';
               break;
       }
     }

@@ -31,6 +31,11 @@ export class PatientSummaryComponent implements OnInit {
     lhcreMedicationStatement : fhir.MedicationStatement[]= [];
     lhcreConditions : fhir.Condition[] =[];
 
+    yascolor = 'info';
+    acutecolor = 'info';
+    gpcolor = 'info';
+    nrlscolor = 'info';
+
 
     @ViewChild('gpchip') gpchip : MatChip;
 
@@ -79,6 +84,13 @@ export class PatientSummaryComponent implements OnInit {
               }
           }
       );
+
+      this.eprService.getGPCStatusChangeEvent().subscribe( colour => {
+          this.gpcolor = colour;
+      });
+      this.eprService.getNRLSStatusChangeEvent().subscribe( colour => {
+          this.nrlscolor = colour;
+      });
   }
 
     getGPData(nhsNumber : string) {
