@@ -24,7 +24,7 @@ export class EdDashboardComponent implements OnInit {
 
 
 
-    constructor( private router : Router, private eprService : EprService) { }
+    constructor( private router : Router, public eprService : EprService) { }
 
   ngOnInit() {
 
