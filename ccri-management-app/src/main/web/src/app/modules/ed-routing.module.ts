@@ -11,6 +11,7 @@ import {PatientEncountersComponent} from "./patient-encounters/patient-encounter
 import {PatientDocumentsComponent} from "./patient-documents/patient-documents.component";
 import {PatientEncounterDetailComponent} from "./patient-encounter-detail/patient-encounter-detail.component";
 import {PatientProcedureComponent} from "./patient-procedure/patient-procedure.component";
+import {BinaryComponent} from "../component/binary/binary/binary.component";
 
 
 
@@ -30,6 +31,7 @@ const edRoutes: Routes = [
                { path: 'encounter/:encounterid', component: PatientEncounterDetailComponent },
                { path: 'document', component: PatientDocumentsComponent },
                { path: 'procedure', component: PatientProcedureComponent },
+               { path: 'document/:docid', component: BinaryComponent },
            ]}
     ]
 }

@@ -16,6 +16,9 @@
                              <span *ngIf="lhcreConditions.length>0">
                         <app-condition [conditions]="lhcreConditions"> </app-condition>
                                  </span>
+                             <span *ngIf="lhcreConditions.length==0">
+                                 No results found.
+                             </span>
                          </mat-card-content>
                          </mat-card>
 
@@ -40,7 +43,12 @@
 
           <span *ngIf="nrlsdocuments.length>0">
               <app-document-reference [documents]="nrlsdocuments" (form)="onResoureSelected($event)"></app-document-reference>
+
         </span>
+
+          <span *ngIf="nrlsdocuments.length==0">
+                                 No results found.
+              </span>
       </mat-card-content>
     </mat-card>
 
@@ -65,6 +73,9 @@
           <span *ngIf="gpallergies.length>0">
           <app-allergy-intolerance [allergies]="gpallergies"> </app-allergy-intolerance>
               </span>
+          <span *ngIf="gpallergies.length==0">
+                                 No results found.
+              </span>
                            <div fxLayout="row"
                                 fxFlexFill >
                                <span flex></span>
@@ -75,6 +86,9 @@
 
                         <app-allergy-intolerance [allergies]="lhcreAllergies"> </app-allergy-intolerance>
                                   </span>
+          <span *ngIf="lhcreAllergies.length==0">
+                                 No results found.
+              </span>
                              </mat-card-content>
                          </mat-card>
 
@@ -100,6 +114,9 @@
                          <span *ngIf="gpMedicationStatement.length>0">
                                 <app-medication-statement [medicationStatements]="gpMedicationStatement"> </app-medication-statement>
                         </span>
+          <span *ngIf="gpMedicationStatement.length==0">
+                                 No results found.
+              </span>
 
                            <div fxLayout="row"
                                 fxFlexFill >
@@ -109,6 +126,9 @@
                              <span *ngIf="lhcreMedicationStatement.length>0">
                         <app-medication-statement [medicationStatements]="lhcreMedicationStatement"> </app-medication-statement>
                                  </span>
+          <span *ngIf="lhcreMedicationStatement.length.length==0">
+                                 No results found.
+              </span>
                              </mat-card-content>
                          </mat-card>
 
