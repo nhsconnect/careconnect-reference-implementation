@@ -25,8 +25,7 @@ export class PatientMainComponent implements OnInit {
     bdcolour = 'info';
     bpcolour = 'info';
 
-
-    @ViewChild('gpchip') gpchip : MatChip;
+     @ViewChild('gpchip') gpchip : MatChip;
 
 
 
@@ -40,9 +39,20 @@ export class PatientMainComponent implements OnInit {
       this.acutecolor = 'info';
       this.yascolor = 'info';
 
-      this.fhirSrv.getResource('/Patient/'+patientid).subscribe(patient => {
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Flag:patient').subscribe(bundle => {
 
-              this.patient = patient;
+          if (bundle.entry !== undefined) {
+              for (let entry of bundle.entry) {
+                 switch (entry.resource.resourceType) {
+                   case 'Patient' :
+                     this.patient = <fhir.Patient> entry.resource;
+                     break;
+                   case 'Flag':
+                     this.eprService.addFlag(<fhir.Flag> entry.resource);
+                 }
+              }
+          }
+
               this.acutecolor = 'primary';
               this.yascolor = 'primary';
           }

@@ -278,7 +278,15 @@ public class PatientResourceProvider implements IResourceProvider {
                                        @OptionalParam(name= Patient.SP_NAME) StringParam name,
                                        @OptionalParam(name= Patient.SP_PHONE) StringParam phone
                                         , @OptionalParam(name = Patient.SP_RES_ID) StringParam resid
-                                       ,@IncludeParam(reverse=true, allow = {"AllergyIntolerance:patient","Condition:patient","Immunization:patient","MedicationStatement:patient","Observation:patient","Procedure:patient","Encounter:patient","DocumentReference:patient","*"}) Set<Include> reverseIncludes
+                                       ,@IncludeParam(reverse=true, allow = {"AllergyIntolerance:patient",
+            "Condition:patient",
+            "Immunization:patient",
+            "MedicationStatement:patient",
+            "Observation:patient",
+            "Procedure:patient",
+            "Encounter:patient",
+            "DocumentReference:patient",
+            "Flag:patient","*"}) Set<Include> reverseIncludes
                                      ,@IncludeParam(allow= {
                                         "Patient:general-practitioner"
                                         ,"Patient:organization"

@@ -85,6 +85,7 @@ public class FlagResourceProvider implements IResourceProvider {
         return form;
     }
 
+    /*
     @Create
     public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam Flag form) throws Exception {
 
@@ -129,7 +130,7 @@ public class FlagResourceProvider implements IResourceProvider {
 
         return method;
     }
-
+*/
     @Search
     public List<Flag> searchFlag(HttpServletRequest httpRequest,
                                                                    @OptionalParam(name = Flag.SP_IDENTIFIER) TokenParam identifier,

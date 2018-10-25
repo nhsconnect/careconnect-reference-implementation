@@ -5,6 +5,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
@@ -119,6 +120,8 @@ public class PatientEntity extends BaseResource {
     @OneToMany(mappedBy="patient", targetEntity = DocumentReferenceEntity.class)
     Set<DocumentReferenceEntity> patientDocuments = new HashSet<>();
 
+    @OneToMany(mappedBy="patient", targetEntity = FlagEntity.class)
+    Set<FlagEntity> patientFlags = new HashSet<>();
     // Support for reverse includes
 
     public Long getId() {
@@ -361,5 +364,13 @@ public class PatientEntity extends BaseResource {
 
     public void setPatientDocuments(Set<DocumentReferenceEntity> patientDocuments) {
         this.patientDocuments = patientDocuments;
+    }
+
+    public Set<FlagEntity> getPatientFlags() {
+        return patientFlags;
+    }
+
+    public void setPatientFlags(Set<FlagEntity> patientFlags) {
+        this.patientFlags = patientFlags;
     }
 }

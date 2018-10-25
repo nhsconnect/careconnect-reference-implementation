@@ -31,6 +31,8 @@ public class FlagEntityToFHIRFlagTransformer implements Transformer<FlagEntity
                 meta.setLastUpdated(flagEntity.getCreated());
             }
         }
+        meta.addProfile("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Flag-1");
+
         flag.setMeta(meta);
 
         flag.setId(flagEntity.getId().toString());
@@ -82,7 +84,7 @@ public class FlagEntityToFHIRFlagTransformer implements Transformer<FlagEntity
         }
 
         if (flagEntity.getAuthorOrganisation() != null) {
-            flag.setAuthor(new Reference("Organization/"+flagEntity.getAuthorOrganisation().getId()).setDisplay(flagEntity.getAuthorOrganisation().getNames().get(0).getDisplayName()));
+            flag.setAuthor(new Reference("Organization/"+flagEntity.getAuthorOrganisation().getId()).setDisplay(flagEntity.getAuthorOrganisation().getName()));
         }
 
 

@@ -13,6 +13,39 @@
             </button>
             <span>{{title}}</span>
             <span flex></span>
+
+          <!-- alert -->
+
+          <span *ngIf="eprService.patientFlags.length >0">
+        <button mat-icon-button matTooltip="Alerts" [matMenuTriggerFor]="notificationsMenu">
+          <td-notification-count color="accent" [notifications]="eprService.patientFlags.length">
+            <mat-icon>notifications</mat-icon>
+          </td-notification-count>
+        </button>
+        <mat-menu #notificationsMenu="matMenu">
+          <td-menu>
+            <div td-menu-header class="mat-subhead">Alerts</div>
+            <mat-nav-list dense>
+
+               <ng-template let-last="last" ngFor let-item [ngForOf]="eprService.patientFlags">
+                <a mat-list-item>
+                  <mat-icon>warning</mat-icon>
+                  <h4 mat-line>
+                     <span *ngIf="item.code != undefined && item.code.coding.length > 0">
+                        {{item.code.coding[0].display}}
+                     </span>
+
+                  </h4>
+
+                </a>
+                <mat-divider *ngIf="!last"></mat-divider>
+              </ng-template>
+
+            </mat-nav-list>
+
+          </td-menu>
+        </mat-menu>
+      </span>
         </div>
         <router-outlet></router-outlet>
         <td-layout-footer>

@@ -23,6 +23,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
@@ -95,6 +96,9 @@ public class PatientDao implements PatientRepository {
 
     @Autowired
     private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
+
+    @Autowired
+    private FlagEntityToFHIRFlagTransformer flagEntityToFHIRFlagTransformer;
 
     @Autowired
     private DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
@@ -500,6 +504,14 @@ public class PatientDao implements PatientRepository {
                                 for (EncounterEntity encounterEntity : patientEntity.getPatientEncounters()) {
                                     results.add(encounterEntityToFHIREncounterTransformer.transform(encounterEntity));
                                 }
+
+                                for (DocumentReferenceEntity documentReferenceEntity : patientEntity.getPatientDocuments()) {
+                                    results.add(documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                                }
+
+                                for (FlagEntity flagEntity : patientEntity.getPatientFlags()) {
+                                    results.add(flagEntityToFHIRFlagTransformer.transform(flagEntity));
+                                }
                                 break;
                             case "AllergyIntolerance:patient":
                                 for (AllergyIntoleranceEntity allergy : patientEntity.getPatientAlelrgies()) {
@@ -548,7 +560,11 @@ public class PatientDao implements PatientRepository {
                                     results.add(documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
                                 }
                                 break;
-
+                            case "Flag:patient":
+                                for (FlagEntity flagEntity : patientEntity.getPatientFlags()) {
+                                    results.add(flagEntityToFHIRFlagTransformer.transform(flagEntity));
+                                }
+                                break;
                         }
                     }
                 }

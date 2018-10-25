@@ -4,13 +4,13 @@ import 'hammerjs';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {
-    CovalentChipsModule,
-    CovalentDialogsModule, CovalentExpansionPanelModule,
-    CovalentJsonFormatterModule,
-    CovalentLayoutModule,
-    CovalentMediaModule,
-    CovalentMessageModule,
-    CovalentStepsModule
+  CovalentChipsModule,
+  CovalentDialogsModule, CovalentExpansionPanelModule,
+  CovalentJsonFormatterModule,
+  CovalentLayoutModule,
+  CovalentMediaModule, CovalentMenuModule,
+  CovalentMessageModule, CovalentNotificationsModule,
+  CovalentStepsModule
 } from "@covalent/core";
 import {CovalentHttpModule} from "@covalent/http";
 import {CovalentHighlightModule} from "@covalent/highlight";
@@ -259,6 +259,8 @@ export function initializeApp(appConfig: AppConfig) {
     CovalentDialogsModule,
     CovalentExpansionPanelModule,
       CovalentChipsModule,
+    CovalentNotificationsModule,
+    CovalentMenuModule,
 
     NgxChartsModule,
 

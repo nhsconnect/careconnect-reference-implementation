@@ -271,6 +271,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Questionnaire":
                         //resource.getProfile().setReference(CareConnectProfile.Medication_1);
                         break;
+                    case "Flag":
+                        resource.getProfile().setReference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Flag-1");
+                        break;
                     case "QuestionnaireResponse":
                     case "List":
                     case "RelatedPerson":
@@ -284,6 +287,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Schedule":
                     case "Slot":
                     case "Appointment":
+
                         //resource.getProfile().setReference(CareConnectProfile.Medication_1);
                         break;
 
@@ -463,7 +467,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Schedule":
                 case "Slot":
                 case "Appointment":
-
+                case "Flag":
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
                     if (resourceToMethods.containsKey(resourceName) == false) {

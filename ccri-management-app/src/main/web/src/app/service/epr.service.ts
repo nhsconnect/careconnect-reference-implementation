@@ -59,8 +59,11 @@ export class EprService {
 
   nrlsConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
 
+  flagEmitter : EventEmitter<fhir.Flag> = new EventEmitter();
 
   patientAllergies : fhir.AllergyIntolerance[] = [];
+
+  patientFlags : fhir.Flag[] = [];
 
   constructor(
     private fhirService : FhirService
@@ -92,6 +95,8 @@ export class EprService {
   }
 
   setTitle(title : string) {
+    this.patientFlags = [];
+    this.getFlagChangeEmitter().emit(undefined);
     this.title = title;
     this.titleChangeEvent.emit(title);
   }
@@ -104,6 +109,14 @@ export class EprService {
     return this.patientChangeEvent;
   }
 
+  getFlagChangeEmitter() {
+     return this.flagEmitter;
+  }
+
+  addFlag(flag : fhir.Flag) {
+    this.patientFlags.push(flag);
+    this.flagEmitter.emit(flag);
+  }
 
 
     getGPCStatusChangeEvent() {

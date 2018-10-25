@@ -48,7 +48,7 @@ export class PatientSummaryComponent implements OnInit {
       console.log(patientid);
 
       this.clearDown();
-      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_count=100').subscribe(
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_revinclude=Flag:patient&_count=100').subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
                   for (let entry of bundle.entry) {
