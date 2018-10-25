@@ -153,7 +153,8 @@ public class MedicationDao implements MedicationRepository {
 
         if (daoutils.isNumeric(theId.getIdPart())) {
             MedicationEntity medicationEntity = readEntity(ctx, theId);
-
+            // 25/10/2018 KGM Not sure why this line wasn't present
+            if (medicationEntity != null) return medicationRequestEntityToFHIRMedicationTransformer.transform(medicationEntity);
         }
         return medication;
     }

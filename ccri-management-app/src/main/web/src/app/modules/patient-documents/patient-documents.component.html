@@ -13,7 +13,7 @@
                             <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
                         </div>
           <span *ngIf="documents.length>0">
-              <app-document-reference [documents]="documents"></app-document-reference>
+              <app-document-reference [documents]="documents" (documentReference)="selectResource($event)"></app-document-reference>
           </span>
 
       </mat-card-content>

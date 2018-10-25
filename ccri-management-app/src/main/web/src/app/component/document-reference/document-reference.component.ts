@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
 import {Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
 import {IAlertConfig, TdDialogService} from "@covalent/core";
@@ -23,6 +23,8 @@ export class DocumentReferenceComponent implements OnInit {
   @Input() documentsTotal :number;
 
   @Input() patientId : string;
+
+  @Output() documentReference = new EventEmitter<any>();
 
   practitioners : fhir.Practitioner[];
 
@@ -65,20 +67,8 @@ export class DocumentReferenceComponent implements OnInit {
 
   selectDocument(document : fhir.DocumentReference) {
 
-    if (document.content != undefined && document.content.length> 0) {
+    this.documentReference.emit(document);
 
-      this.patientEprService.setDocumentReference(document);
-        this.router.navigate(['exp', 'binary', document.id], );
-
-    } else {
-      let alertConfig : IAlertConfig = { message : 'Unable to locate document.'};
-      alertConfig.disableClose =  false; // defaults to false
-      alertConfig.viewContainerRef = this._viewContainerRef;
-      alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
-      alertConfig.closeButton = 'Close'; //OPTIONAL, defaults to 'CLOSE'
-      alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
-      this._dialogService.openAlert(alertConfig);
-    }
   }
 
   showCustodian(document) {

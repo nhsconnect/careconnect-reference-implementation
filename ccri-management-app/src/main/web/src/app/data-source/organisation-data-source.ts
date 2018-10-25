@@ -17,9 +17,9 @@ export class OrganisationDataSource extends DataSource<any> {
   };
 
   connect(): Observable<fhir.Organization[]> {
-    console.log('calling data service');
+  //  console.log('calling data service');
     if (this.useObservable) {
-      console.log('Organization Observable ');
+ //     console.log('Organization Observable ');
       return this.organisationsObservable;
     }
 

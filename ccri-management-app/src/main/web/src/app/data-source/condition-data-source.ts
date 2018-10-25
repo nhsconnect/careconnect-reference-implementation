@@ -16,7 +16,7 @@ export class ConditionDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Condition[]> {
 
-    console.log('conditions DataSource connect '+this.patientId);
+   // console.log('conditions DataSource connect '+this.patientId);
     let _conditions : BehaviorSubject<fhir.Condition[]> =<BehaviorSubject<fhir.Condition[]>>new BehaviorSubject([]);;
 
     this.dataStore = { conditions: [] };

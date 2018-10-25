@@ -213,6 +213,9 @@ public class BundleCore {
                                 case "DocumentReference":
                                     resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
                                     break;
+                                case "Flag":
+                                    resource = searchAddFlag(referenceId, (Flag) iResource);
+                                    break;
                                 case "Goal":
                                     resource = searchAddGoal(referenceId, (Goal) iResource);
                                     break;
@@ -2309,6 +2312,121 @@ public class BundleCore {
         return eprConsent;
     }
 
+    public Flag searchAddFlag(String flagId,Flag flag) {
+        log.info("Flag searchAdd " +flagId);
+
+        if (flag == null) throw new InternalErrorException("Bundle processing error");
+
+        Flag eprFlag = (Flag) resourceMap.get(flagId);
+
+        // Organization already processed, quit with Organization
+        if (eprFlag != null) return eprFlag;
+
+        // Prevent re-adding the same Practitioner
+        if (flag.getIdentifier().size() == 0) {
+            flag.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(flag.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : flag.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRFlag", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Flag");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprFlag = (Flag) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Flag = " + eprFlag.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (flag.hasSubject()) {
+            Resource resource = searchAddResource(flag.getSubject().getReference());
+            if (resource == null) referenceMissing(flag, flag.getSubject().getReference());
+            flag.setSubject(getReference(resource));
+        }
+
+        if (flag.hasAuthor()) {
+            Resource resource = searchAddResource(flag.getAuthor().getReference());
+            if (resource == null) referenceMissing(flag, flag.getAuthor().getReference());
+            flag.setAuthor(getReference(resource));
+        }
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "Flag";
+        // Location found do not add
+        if (eprFlag != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "Flag/"+eprFlag.getIdElement().getIdPart();
+            flag.setId(eprFlag.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(flag);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRFlag", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Flag) {
+            eprFlag = (Flag) iResource;
+            setResourceMap(flagId,eprFlag);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprFlag;
+    }
+
+
     public Goal searchAddGoal(String goalId,Goal goal) {
         log.info("Goal searchAdd " +goalId);
 
@@ -2417,6 +2535,7 @@ public class BundleCore {
 
         return eprGoal;
     }
+
 
     public MedicationDispense searchAddMedicationDispense(String medicationDispenseId,MedicationDispense medicationDispense) {
         log.info("MedicationDispense searchAdd " +medicationDispenseId);

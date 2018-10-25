@@ -31,7 +31,8 @@ export class PatientEncounterDetailComponent implements OnInit {
 
     immunisations : fhir.Immunization[];
 
-    documents : fhir.DocumentReference[];
+    documents : fhir.DocumentReference[] = [];
+    compositions : fhir.Composition[] = [];
 
 
   constructor(private route: ActivatedRoute,private fhirService : FhirService
@@ -42,18 +43,27 @@ export class PatientEncounterDetailComponent implements OnInit {
       this.patientid = this.route.snapshot.paramMap.get('patientid');
       this.encounterid = this.route.snapshot.paramMap.get('encounterid');
 
-      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=Observation:context&_revinclude=Encounter:part-of&_revinclude=Procedure:context&_revinclude=Condition:context&_revinclude=MedicationRequest:context&_revinclude=Immunization:encounter&_revinclude=DocumentReference:context&_count=50').subscribe(bundle=> {
-              this.observations = [];
-              this.obsTotal = 0;
+    this.observations = [];
+    this.obsTotal = 0;
 
-              this.prescriptions = [];
-              this.presTotal = 0;
+    this.prescriptions = [];
+    this.presTotal = 0;
 
-              this.conditions = [];
-              this.conditionTotal = 0;
+    this.conditions = [];
+    this.conditionTotal = 0;
 
-              this.procedures = [];
-              this.procTotal = 0;
+    this.procedures = [];
+    this.procTotal = 0;
+
+    this.allergies = [];
+
+    this.documents = [];
+    this.compositions = [];
+
+    this.immunisations = [];
+
+      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=Observation:context&_revinclude=Encounter:part-of&_revinclude=Procedure:context&_revinclude=Condition:context&_revinclude=MedicationRequest:context&_revinclude=Immunization:encounter&_revinclude=DocumentReference:context&_revinclude=Composition:encounter&_count=50').subscribe(bundle=> {
+
               if (bundle.entry != undefined) {
 
                   for (let entry of bundle.entry) {
@@ -87,7 +97,10 @@ export class PatientEncounterDetailComponent implements OnInit {
                             this.documents.push(<fhir.DocumentReference> entry.resource);
 
                             break;
-                        case 'Encounter':
+                      case 'Composition':
+                        this.compositions.push(<fhir.Composition> entry.resource);
+                        break;
+                      case 'Encounter':
                                 this.encounter = <fhir.Encounter> entry.resource;
                                 break;
                     }

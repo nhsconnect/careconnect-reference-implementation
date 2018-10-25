@@ -19,9 +19,9 @@ export class PractitionerDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Practitioner[]> {
 
-    console.log('calling data service');
+  //  console.log('calling data service');
     if (this.useObservable) {
-      console.log('Practitioners Observable ');
+  //    console.log('Practitioners Observable ');
       return this.practitionersObservable;
     }
 

@@ -61,7 +61,7 @@ export class PatientMainComponent implements OnInit {
   }
 
     onClick(event, btn) {
-      console.log(event);
+    //  console.log(event);
         this.bscolour= 'info';
         this.bocolour = 'info';
         this.becolour= 'info';

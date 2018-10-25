@@ -17,7 +17,9 @@ export class ConditionComponent implements OnInit {
 
   @Input() conditions : fhir.Condition[];
 
-  @Output() condition = new EventEmitter<any>();
+  @Output() condition = new EventEmitter<fhir.Condition>();
+
+  @Output() encounter = new EventEmitter<fhir.Reference>();
 
   @Input() patientId : string;
 
@@ -92,26 +94,7 @@ export class ConditionComponent implements OnInit {
 
   showEncounter(condition : fhir.Condition) {
 
-    let contexts = [];
-
-    this.bundleService.getResource(condition.context.reference).subscribe((encounter) => {
-        if (encounter != undefined && encounter.resourceType === "Encounter") {
-          contexts.push(<fhir.Encounter> encounter);
-
-          const dialogConfig = new MatDialogConfig();
-
-          dialogConfig.disableClose = true;
-          dialogConfig.autoFocus = true;
-          // dialogConfig.width="800px";
-          dialogConfig.data = {
-            id: 1,
-            encounters : contexts,
-            useBundle : this.useBundle
-          };
-          let resourceDialog: MatDialogRef<EncounterDialogComponent> = this.dialog.open(EncounterDialogComponent, dialogConfig);
-        }
-      }
-    );
+    this.encounter.emit(condition.context);
 
   }
 

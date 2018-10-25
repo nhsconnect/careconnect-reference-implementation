@@ -6,7 +6,7 @@
         </mat-card-title>
         <mat-card-subtitle> <td-message label="Info" sublabel="Generated from the FHIR Document structured content" color="accent" icon="info"></td-message></mat-card-subtitle>
         <mat-card-content>
-            <app-composition [composition] = "composition" [encounter]="encounter"></app-composition>
+            <app-composition-detail [composition] = "composition" [encounter]="encounter"></app-composition-detail>
         </mat-card-content>
         <mat-card-actions>
             <button mat-button  color="accent"  placement="top" (click)="openResource(composition)"><mat-icon>code</mat-icon>

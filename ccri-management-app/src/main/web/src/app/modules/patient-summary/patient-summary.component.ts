@@ -204,4 +204,12 @@ export class PatientSummaryComponent implements OnInit {
         this.lhcreConditions =[];
     }
 
+    selectEncounter(encounter : fhir.Reference) {
+
+        let str = encounter.reference.split('/');
+        console.log(this.route.root);
+        this.router.navigate(['..','encounter',str[1]] , { relativeTo : this.route});
+
+    }
+
 }

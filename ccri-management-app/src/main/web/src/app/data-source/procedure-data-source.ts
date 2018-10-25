@@ -16,7 +16,7 @@ export class ProcedureDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Procedure[]> {
 
-    console.log('procedures DataSource connect '+this.patientId);
+ //   console.log('procedures DataSource connect '+this.patientId);
     let _procedures : BehaviorSubject<fhir.Procedure[]> =<BehaviorSubject<fhir.Procedure[]>>new BehaviorSubject([]);;
 
     this.dataStore = { procedures: [] };

@@ -9,12 +9,12 @@
                          <mat-card-content>
                         <div fxLayout="row"
                              fxFlexFill >
-                            <h2>Conditions</h2>
+                            <h3>Conditions</h3>
                                <span flex></span>
                             <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
                         </div>
                              <span *ngIf="lhcreConditions.length>0">
-                        <app-condition [conditions]="lhcreConditions"> </app-condition>
+                        <app-condition [conditions]="lhcreConditions" (encounter)="selectEncounter($event)"> </app-condition>
                                  </span>
                              <span *ngIf="lhcreConditions.length==0">
                                  No results found.
@@ -36,7 +36,7 @@
       <mat-card-content>
           <div fxLayout="row"
                fxFlexFill >
-              <h2>Important Documents</h2>
+              <h3>Important Documents</h3>
               <span flex></span>
               <mat-chip-list><mat-chip [color]="nrlscolor" selected=true>NRLS</mat-chip></mat-chip-list>
           </div>
@@ -63,7 +63,7 @@
 
     <mat-card>
       <mat-card-content>
-          <h2>Allergies and Intolerances</h2>
+          <h3>Allergies and Intolerances</h3>
             <div fxLayout="row"
                  fxFlexFill >
 
@@ -103,7 +103,7 @@
     <mat-card>
 
       <mat-card-content>
-          <h2>Medication Statement</h2>
+          <h3>Medication Statement</h3>
 
              <div fxLayout="row"
                   fxFlexFill >

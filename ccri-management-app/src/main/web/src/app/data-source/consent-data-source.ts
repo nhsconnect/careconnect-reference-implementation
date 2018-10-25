@@ -17,7 +17,7 @@ export class ConsentDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Consent[]> {
 
-    console.log('consents DataSource connect '+this.patientId);
+   // console.log('consents DataSource connect '+this.patientId);
 
     let _consents : BehaviorSubject<fhir.Consent[]> =<BehaviorSubject<fhir.Consent[]>>new BehaviorSubject([]);
 

@@ -17,7 +17,7 @@ export class ClinicalImpressionDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.ClinicalImpression[]> {
 
-    console.log('clinicalImpressions DataSource connect '+this.patientId);
+  //  console.log('clinicalImpressions DataSource connect '+this.patientId);
 
     let _clinicalImpressions : BehaviorSubject<fhir.ClinicalImpression[]> =<BehaviorSubject<fhir.ClinicalImpression[]>>new BehaviorSubject([]);
 

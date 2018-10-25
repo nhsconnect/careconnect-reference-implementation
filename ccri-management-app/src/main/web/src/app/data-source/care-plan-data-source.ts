@@ -16,7 +16,7 @@ export class CarePlanDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.CarePlan[]> {
 
-    console.log('carePlans DataSource connect '+this.patientId);
+  //  console.log('carePlans DataSource connect '+this.patientId);
 
     let _carePlans : BehaviorSubject<fhir.CarePlan[]> =<BehaviorSubject<fhir.CarePlan[]>>new BehaviorSubject([]);
 

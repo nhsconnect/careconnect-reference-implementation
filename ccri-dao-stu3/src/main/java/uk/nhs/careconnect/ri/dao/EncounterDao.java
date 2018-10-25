@@ -15,6 +15,7 @@ import uk.nhs.careconnect.ri.dao.transforms.*;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
+import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
@@ -96,6 +97,9 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
+
+    @Autowired
+    private CompositionEntityToFHIRCompositionTransformer compositionEntityToFHIRCompositionTransformer;
 
     @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
@@ -532,7 +536,11 @@ public class  EncounterDao implements EncounterRepository {
                                 addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
                             }
                             break;
-
+                        case "Composition:encounter" :
+                            for (CompositionEntity compositionEntity : encounterEntity.getCompositions()) {
+                                addToResults(results, compositionEntityToFHIRCompositionTransformer.transform(compositionEntity));
+                            }
+                            break;
                     }
 
                 }

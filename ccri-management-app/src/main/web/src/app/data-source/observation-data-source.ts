@@ -20,7 +20,7 @@ export class ObservationDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Observation[]> {
 
-    console.log('Obs DataSource connect '+this.patientId);
+   // console.log('Obs DataSource connect '+this.patientId);
     let _obs : BehaviorSubject<fhir.Observation[]> =<BehaviorSubject<fhir.Observation[]>>new BehaviorSubject([]);
 
     this.dataStore = { observations: [] };

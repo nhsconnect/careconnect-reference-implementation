@@ -17,7 +17,7 @@ export class MedicationDispenseDataSource extends DataSource<any> {
   };
 
   connect(): Observable<fhir.MedicationDispense[]> {
-    console.log('medicationDispenses DataSource connect '+this.patientId);
+  //  console.log('medicationDispenses DataSource connect '+this.patientId);
 
 
     let _dispenses : BehaviorSubject<fhir.MedicationDispense[]> =<BehaviorSubject<fhir.MedicationDispense[]>>new BehaviorSubject([]);;

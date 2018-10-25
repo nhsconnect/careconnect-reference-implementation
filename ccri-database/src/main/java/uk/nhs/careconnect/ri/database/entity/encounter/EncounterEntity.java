@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.encounter;
 
 import org.hl7.fhir.dstu3.model.*;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
@@ -143,6 +144,9 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="partOfEncounter", targetEntity = EncounterEntity.class)
     Set<EncounterEntity> childEncounters = new HashSet<>();
+
+    @OneToMany(mappedBy="encounter", targetEntity = CompositionEntity.class)
+    Set<CompositionEntity> compositions = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -415,5 +419,13 @@ public class EncounterEntity extends BaseResource {
 
     public void setPartOfEncounter(EncounterEntity partOfEncounter) {
         this.partOfEncounter = partOfEncounter;
+    }
+
+    public Set<CompositionEntity> getCompositions() {
+        return compositions;
+    }
+
+    public void setCompositions(Set<CompositionEntity> compositions) {
+        this.compositions = compositions;
     }
 }

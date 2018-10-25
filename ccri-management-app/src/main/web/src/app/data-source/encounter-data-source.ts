@@ -23,7 +23,7 @@ export class EncounterDataSource extends DataSource<any> {
     this.dataStore = { encounters: [] };
 
     if (this.patientId != undefined) {
-      console.log('encounters DataSource connect '+this.patientId);
+   //   console.log('encounters DataSource connect '+this.patientId);
       this.fhirService.get('/Encounter?patient='+this.patientId).subscribe((bundle => {
         if (bundle != undefined && bundle.entry != undefined) {
           for (let entry of bundle.entry) {

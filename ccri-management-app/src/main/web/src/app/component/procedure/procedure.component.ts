@@ -18,7 +18,9 @@ export class ProcedureComponent implements OnInit {
 
   @Input() procedures : fhir.Procedure[];
 
-  @Output() procedure = new EventEmitter<any>();
+  @Output() procedure = new EventEmitter<fhir.Procedure>();
+
+  @Output() encounterRef = new EventEmitter<fhir.Reference>();
 
   @Input() patientId : string;
 
@@ -55,6 +57,9 @@ export class ProcedureComponent implements OnInit {
   }
 
   showEncounter(procedure : fhir.Procedure) {
+
+    this.encounterRef.emit(procedure.context);
+    /*
     let contexts = [];
 
 
@@ -76,6 +81,7 @@ export class ProcedureComponent implements OnInit {
         }
       }
     );
+    */
 
   }
   select(resource) {

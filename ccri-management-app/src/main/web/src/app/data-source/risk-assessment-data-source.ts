@@ -17,7 +17,7 @@ export class RiskAssessmentDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.RiskAssessment[]> {
 
-    console.log('risks DataSource connect '+this.patientId);
+   // console.log('risks DataSource connect '+this.patientId);
 
     let _risks : BehaviorSubject<fhir.RiskAssessment[]> =<BehaviorSubject<fhir.RiskAssessment[]>>new BehaviorSubject([]);
 

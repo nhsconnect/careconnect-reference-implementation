@@ -36,5 +36,12 @@ export class PatientProcedureComponent implements OnInit {
             }
         );
     }
+  selectEncounter(encounter : fhir.Reference) {
+
+    let str = encounter.reference.split('/');
+    console.log(this.route.root);
+    this.router.navigate(['..','encounter',str[1]] , { relativeTo : this.route});
+
+  }
 
 }

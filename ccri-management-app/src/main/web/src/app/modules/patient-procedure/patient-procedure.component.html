@@ -8,14 +8,16 @@
 
         <div fxLayout="row"
              fxFlexFill >
-          <h2>Procedures</h2>
+          <h3>Procedures</h3>
           <span flex></span>
           <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
         </div>
         <span *ngIf="procedures.length>0">
-              <app-procedure  [procedures]="procedures"></app-procedure>
+              <app-procedure  [procedures]="procedures" (encounterRef)="selectEncounter($event)"></app-procedure>
           </span>
-
+        <span *ngIf="procedures.length==0">
+              No results found.
+          </span>
       </mat-card-content>
     </mat-card>
 

@@ -17,7 +17,7 @@ export class AllergyIntoleranceDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.AllergyIntolerance[]> {
 
-    console.log('allergies DataSource connect '+this.patientId);
+   // console.log('allergies DataSource connect '+this.patientId);
 
     let _allergies : BehaviorSubject<fhir.AllergyIntolerance[]> = <BehaviorSubject<fhir.AllergyIntolerance[]>>new BehaviorSubject([]);
 

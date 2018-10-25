@@ -87,7 +87,6 @@ import {MedicationDispenseDetailComponent} from "./dialog/medication-dispense-de
 import {LinksService} from "./service/links.service";
 import {EprService} from "./service/epr.service";
 import {ResponseInterceptor} from "./response-interceptor";
-import {CompositionComponent} from "./component/composition/composition.component";
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
@@ -116,7 +115,8 @@ import { PatientEncountersComponent } from './modules/patient-encounters/patient
 import { PatientDocumentsComponent } from './modules/patient-documents/patient-documents.component';
 import { PatientEncounterDetailComponent } from './modules/patient-encounter-detail/patient-encounter-detail.component';
 import { PatientProcedureComponent } from './modules/patient-procedure/patient-procedure.component';
-
+import {CompositionDetailComponent} from "./component/composition-detail/composition-detail.component";
+import {CompositionComponent} from "./component/composition/composition.component";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -142,6 +142,7 @@ export function initializeApp(appConfig: AppConfig) {
     CarePlanComponent,
     ConditionComponent,
     CompositionComponent,
+    CompositionDetailComponent,
     DocumentReferenceComponent,
     EncounterComponent,
     GoalComponent,

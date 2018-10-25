@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FhirService} from "../../service/fhir.service";
 import {EprService} from "../../service/epr.service";
+import {MatDialog} from "@angular/material";
+import {IAlertConfig, TdDialogService} from "@covalent/core";
 
 @Component({
   selector: 'app-patient-documents',
@@ -12,7 +14,14 @@ export class PatientDocumentsComponent implements OnInit {
 
     documents : fhir.DocumentReference[] = [];
 
-    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+    constructor(private router : Router,
+                private fhirSrv : FhirService,
+                private route: ActivatedRoute,
+                private eprService : EprService,
+                public dialog: MatDialog,
+                private _dialogService: TdDialogService,
+                private _viewContainerRef: ViewContainerRef
+    ) { }
 
     ngOnInit() {
         let patientid = this.route.snapshot.paramMap.get('patientid');
@@ -37,4 +46,23 @@ export class PatientDocumentsComponent implements OnInit {
         );
     }
 
+    selectResource(document : fhir.DocumentReference) {
+
+      if (document.content != undefined && document.content.length> 0) {
+
+        this.eprService.setDocumentReference(document);
+
+        this.router.navigate([document.id], {relativeTo: this.route });
+
+      } else {
+        let alertConfig : IAlertConfig = { message : 'Unable to locate document.'};
+        alertConfig.disableClose =  false; // defaults to false
+        alertConfig.viewContainerRef = this._viewContainerRef;
+        alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+        alertConfig.closeButton = 'Close'; //OPTIONAL, defaults to 'CLOSE'
+        alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+        this._dialogService.openAlert(alertConfig);
+      }
+
+    }
 }

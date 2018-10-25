@@ -122,6 +122,8 @@ public class CCRIFHIRServerHAPIConfig extends RestfulServer {
                 , applicationContext.getBean(SlotProvider.class)
                 , applicationContext.getBean(AppointmentProvider.class)
 
+                , applicationContext.getBean(FlagProvider.class)
+
         ));
 
         // Replace built in conformance provider (CapabilityStatement)

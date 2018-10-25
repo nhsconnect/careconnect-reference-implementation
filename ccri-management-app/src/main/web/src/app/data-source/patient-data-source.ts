@@ -21,9 +21,9 @@ export class PatientDataSource extends DataSource<any> {
   connect(): Observable<fhir.Patient[]> {
 
     //
-    console.log('calling data service');
+ //   console.log('calling data service');
     if (this.useObservable) {
-      console.log('Patient Observable ');
+   //   console.log('Patient Observable ');
       return this.patientObservable;
     }
 

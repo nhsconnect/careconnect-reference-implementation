@@ -17,7 +17,7 @@ export class ImmunizationDataSource extends DataSource<any> {
 
   connect(): Observable<fhir.Immunization[]> {
 
-    console.log('immunisations DataSource connect '+this.patientId);
+  //  console.log('immunisations DataSource connect '+this.patientId);
     let _immunisations : BehaviorSubject<fhir.Immunization[]> =<BehaviorSubject<fhir.Immunization[]>>new BehaviorSubject([]);;
 
     this.dataStore = { immunisations: [] };
