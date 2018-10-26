@@ -25,6 +25,7 @@ export class PatientMainComponent implements OnInit {
     bdcolour = 'info';
     bpcolour = 'info';
     btcolour = 'info';
+    bicolour = 'info';
 
      @ViewChild('gpchip') gpchip : MatChip;
 
@@ -79,6 +80,7 @@ export class PatientMainComponent implements OnInit {
         this.bdcolour = 'info';
         this.bpcolour = 'info';
         this.btcolour = 'info';
+        this.bicolour = 'info';
       switch (btn) {
           case 'bs':
               this.router.navigate(['summary'], {relativeTo: this.route });
@@ -103,6 +105,10 @@ export class PatientMainComponent implements OnInit {
           case 'bt':
               this.router.navigate(['timeline'], {relativeTo: this.route });
               this.btcolour = 'accent';
+              break;
+          case 'bi':
+              this.router.navigate(['immunisation'], {relativeTo: this.route });
+              this.bicolour = 'accent';
               break;
       }
     }

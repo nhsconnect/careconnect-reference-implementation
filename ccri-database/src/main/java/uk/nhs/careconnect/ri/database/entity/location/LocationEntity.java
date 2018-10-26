@@ -81,7 +81,10 @@ public class LocationEntity extends BaseResource {
 	}
 
 	public String getName() {
-		return name.trim();
+		if (name != null) {
+			return name.trim();
+		}
+		return name;
 	}
 
 	public void setName(String name) {

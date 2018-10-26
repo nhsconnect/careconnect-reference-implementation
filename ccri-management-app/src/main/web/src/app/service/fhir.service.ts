@@ -295,6 +295,18 @@ export class FhirService {
             .get(url, {  headers , responseType : 'text' as 'text'});
     }
 
+    searchPatients(term: string): Observable<fhir.Bundle> {
+        let url =  this.getBaseUrl();
+        if (!isNaN(parseInt(term))) {
+            return this.http.get<fhir.Bundle>(url + `/Patient?identifier=${term}`, { 'headers' : this.getEPRHeaders() });
+        } else {
+
+            return this.http.get<fhir.Bundle>(url + `/Patient?name=${term}`, {'headers': this.getEPRHeaders()});
+
+        }
+
+    }
+
     getCompositionDocumentPDF(id: string): Observable<any> {
 
         const url = this.getBaseUrl() + '/Binary/'+id;

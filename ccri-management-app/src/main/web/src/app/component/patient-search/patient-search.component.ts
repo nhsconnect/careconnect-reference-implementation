@@ -58,7 +58,7 @@ export class PatientSearchComponent implements OnInit {
 
       // switch to new search observable each time the term changes
       switchMap((term: string) => {
-         return this.fhirService.get('/Patient?name='+term) }
+         return this.fhirService.searchPatients(term) }
 
       ),
 

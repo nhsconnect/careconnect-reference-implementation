@@ -119,6 +119,7 @@ import {CompositionDetailComponent} from "./component/composition-detail/composi
 import {CompositionComponent} from "./component/composition/composition.component";
 import { PatientTimeSeriesComponent } from './modules/patient-time-series/patient-time-series.component';
 import {PatientTimelineComponent} from "./component/patient-timeline/patient-timeline.component";
+import { PatientImmunisationComponent } from './modules/patient-immunisation/patient-immunisation.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -193,7 +194,8 @@ export function initializeApp(appConfig: AppConfig) {
       PatientEncounterDetailComponent,
       PatientProcedureComponent,
       PatientTimelineComponent,
-      PatientTimeSeriesComponent
+      PatientTimeSeriesComponent,
+      PatientImmunisationComponent
 
 
 
