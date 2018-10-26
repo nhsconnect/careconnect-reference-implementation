@@ -117,6 +117,8 @@ import { PatientEncounterDetailComponent } from './modules/patient-encounter-det
 import { PatientProcedureComponent } from './modules/patient-procedure/patient-procedure.component';
 import {CompositionDetailComponent} from "./component/composition-detail/composition-detail.component";
 import {CompositionComponent} from "./component/composition/composition.component";
+import { PatientTimeSeriesComponent } from './modules/patient-time-series/patient-time-series.component';
+import {PatientTimelineComponent} from "./component/patient-timeline/patient-timeline.component";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -189,7 +191,9 @@ export function initializeApp(appConfig: AppConfig) {
       PatientEncountersComponent,
       PatientDocumentsComponent,
       PatientEncounterDetailComponent,
-      PatientProcedureComponent
+      PatientProcedureComponent,
+      PatientTimelineComponent,
+      PatientTimeSeriesComponent
 
 
 

@@ -41,6 +41,7 @@
     "ng2-pdf-viewer": "^5.2.0",
     "pdfjs-dist": "^2.0.550",
     "rxjs": "~6.3.3",
+    "vis": "^4.21.0",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {

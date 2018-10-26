@@ -12,6 +12,7 @@ import {PatientDocumentsComponent} from "./patient-documents/patient-documents.c
 import {PatientEncounterDetailComponent} from "./patient-encounter-detail/patient-encounter-detail.component";
 import {PatientProcedureComponent} from "./patient-procedure/patient-procedure.component";
 import {BinaryComponent} from "../component/binary/binary/binary.component";
+import {PatientTimeSeriesComponent} from "./patient-time-series/patient-time-series.component";
 
 
 
@@ -26,6 +27,7 @@ const edRoutes: Routes = [
            children : [
                { path: '', component: PatientSummaryComponent },
                { path: 'summary', component: PatientSummaryComponent },
+               { path: 'timeline', component: PatientTimeSeriesComponent },
                { path: 'observation', component: PatientVitalSignsComponent },
                { path: 'encounter', component: PatientEncountersComponent },
                { path: 'encounter/:encounterid', component: PatientEncounterDetailComponent },

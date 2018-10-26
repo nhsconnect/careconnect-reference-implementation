@@ -4,6 +4,13 @@
   width:700px !important;
 }
 */
+
+table { border: none;   table-layout: fixed; text-align: left; width: 100%;}
+th.default {padding: 3px; color: #000000;  text-align: left;}
+th {padding: 3px; font-size: 10pt;}
+td {padding: 3px; font-size: 10pt;}
+
+
 .td-search-box {
   .td-search-icon.mat-icon-button {
     margin: 0;

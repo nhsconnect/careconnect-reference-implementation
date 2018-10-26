@@ -24,8 +24,6 @@ export class PatientSummaryComponent implements OnInit {
     gpOrganisation : fhir.Organization[] = [];
     gpPractitioner : fhir.Practitioner[] =[];
 
-
-
     lhcreEncounters : fhir.Encounter[];
     lhcreAllergies : fhir.AllergyIntolerance[] = [];
     lhcreMedicationStatement : fhir.MedicationStatement[]= [];
