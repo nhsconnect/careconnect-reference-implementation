@@ -25,10 +25,11 @@
             "styles": [
               "node_modules/@covalent/core/common/platform.scss",
               "src/styles.scss",
-              "src/theme.scss"
+              "src/theme.scss",
+              "node_modules/vis/dist/vis.css"
             ],
             "scripts": [
-
+              "node_modules/vis/dist/vis.min.js"
             ]
           },
           "configurations": {

@@ -1,12 +1,12 @@
 <div fxLayout="row"
      fxFlexFill >
   <div fxFlex="100">
-
+<span *ngIf="ready">
           <mat-card>
               <mat-card-content>
-                <app-patient-timeline [conditions]="conditions" [encounters]="encounters" [procedures]="procedures"></app-patient-timeline>
+                <app-patient-timeline [conditions]="conditions" [encounters]="encounters" [procedures]="procedures" (encounterId)="selectEncounter($event)"></app-patient-timeline>
               </mat-card-content>
           </mat-card>
-
+</span>
   </div>
 </div>

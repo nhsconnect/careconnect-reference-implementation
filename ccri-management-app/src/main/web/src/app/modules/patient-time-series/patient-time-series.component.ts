@@ -10,9 +10,11 @@ import {EprService} from "../../service/epr.service";
 })
 export class PatientTimeSeriesComponent implements OnInit {
 
-  conditions : fhir.Condition[] = [];
-  encounters : fhir.Encounter[] = [];
-  procedures : fhir.Procedure[] =[];
+  conditions : fhir.Condition[] ;
+  encounters : fhir.Encounter[] ;
+  procedures : fhir.Procedure[] ;
+
+  ready = false;
 
   constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
@@ -25,9 +27,11 @@ export class PatientTimeSeriesComponent implements OnInit {
       console.log(patientid);
 
       this.clearDown();
-      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_revinclude=Flag:patient&_count=100').subscribe(
+      this.ready= false;
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=Encounter:patient&_revinclude=Procedure:patient&_count=100').subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
+
                   for (let entry of bundle.entry) {
                       switch (entry.resource.resourceType) {
 
@@ -50,10 +54,15 @@ export class PatientTimeSeriesComponent implements OnInit {
 
           }
           , ()=> {
-
+this.ready = true;
           }
       );
 
+  }
+
+  selectEncounter(encounterId : string) {
+      console.log(encounterId);
+      this.router.navigate([ '../encounter/'+encounterId], {relativeTo: this.route });
   }
 
     clearDown() {

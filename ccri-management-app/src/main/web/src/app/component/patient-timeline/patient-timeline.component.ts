@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import {DataSet, Timeline, TimelineOptions} from "vis";
 
 
@@ -19,7 +19,7 @@ export class PatientTimelineComponent implements OnInit {
 
   @Input() patient : fhir.Patient;
 
-  encounterId : string;
+  @Output() encounterId = new EventEmitter<any>();
 
   constructor(private elementRef: ElementRef) { }
 
@@ -44,71 +44,84 @@ export class PatientTimelineComponent implements OnInit {
     let items = new DataSet([]);
 
     for (let condition of this.conditions) {
-      if (condition.code != undefined && condition.code.coding.length > 0) {
-        items.add({
-          id: 'Condition/' + condition.id,
-          group: 0,
-          content: condition.code.coding[0].display,
-          start: this.getConditionDate(condition),
-          className: 'green'
-        });
-      } else {
-        items.add({
-          id: 'Condition/' + condition.id,
-          group: 0,
-          content: 'nos',
-          className: 'green',
-          start: this.getConditionDate(condition)
-        });
-      }
+        let date = this.getConditionDate(condition);
+        if (date !== undefined) {
+            console.log(condition);
+        if (condition.code != undefined && condition.code.coding.length > 0) {
+
+            items.add({
+                id: 'Condition/' + condition.id,
+                group: 0,
+                content: condition.code.coding[0].display,
+                start: date,
+                className: 'green'
+            });
+        } else {
+            items.add({
+                id: 'Condition/' + condition.id,
+                group: 0,
+                content: 'nos',
+                className: 'green',
+                start: date
+            });
+        }
+    }
     }
 
     for (let procedure of this.procedures) {
-      if (procedure.code != undefined && procedure.code.coding.length > 0) {
-        items.add({
-          id: 'Procedure/' + procedure.id,
-          group: 1,
-          content: procedure.code.coding[0].display,
-          start: this.getProcedureDate(procedure),
-          className: 'red'
-        });
-      } else {
-        items.add({
-          id: 'Procedure/' + procedure.id,
-          group: 1,
-          content: 'nos',
-          className: 'red',
-          start: this.getProcedureDate(procedure)
-        });
+
+      let date = this.getProcedureDate(procedure);
+      if (date !== undefined) {
+          console.log(procedure);
+          if (procedure.code != undefined && procedure.code.coding.length > 0) {
+              items.add({
+                  id: 'Procedure/' + procedure.id,
+                  group: 1,
+                  content: procedure.code.coding[0].display,
+                  start: date,
+                  className: 'red'
+              });
+          } else {
+              items.add({
+                  id: 'Procedure/' + procedure.id,
+                  group: 1,
+                  content: 'nos',
+                  className: 'red',
+                  start: date
+              });
+          }
       }
     }
 
     for (let encounter of this.encounters) {
-      if (encounter.type != undefined && encounter.type.length > 0) {
-        items.add({
-          id: 'Encounter/' + encounter.id,
-          group: 2,
-          content: encounter.type[0].coding[0].display,
-          start: encounter.period.start
-          //,end: encounter.period.end
-        });
-      } else {
-        items.add({
-          id: 'Encounter/' + encounter.id,
-          group: 2,
-          content: 'nos',
-          start: encounter.period.start
-          //,end: encounter.period.end
-        });
+      if (encounter.period !== undefined && encounter.period.start !== undefined) {
+        console.log(encounter);
+          if (encounter.type != undefined && encounter.type.length > 0) {
+              items.add({
+                  id: 'Encounter/' + encounter.id,
+                  group: 2,
+                  content: encounter.type[0].coding[0].display,
+                  start: encounter.period.start
+                  //,end: encounter.period.end
+              });
+          } else {
+              items.add({
+                  id: 'Encounter/' + encounter.id,
+                  group: 2,
+                  content: 'nos',
+                  start: encounter.period.start
+                  //,end: encounter.period.end
+              });
+          }
       }
     }
 
 
     let optiont: TimelineOptions = {
       width: '100%',
-      height: '650px',
+      height: '350px',
       start: '2016-05-02',
-      end: '2018-05-08'
+      end: '2019-01-01'
       /*,
       rollingMode : {
         follow : false,
@@ -129,7 +142,7 @@ export class PatientTimelineComponent implements OnInit {
             //let content =  this.tref.nativeElement.textContent;
             console.log(this.tref);
             console.log('Encounter Selected');
-            this.encounterId = itemstr[1];
+            this.encounterId.emit(itemstr[1]);
            // this.modalService.open(this.tref, {windowClass: 'dark-modal'});
           }
         }
