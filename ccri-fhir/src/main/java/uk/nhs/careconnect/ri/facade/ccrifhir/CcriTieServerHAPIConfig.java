@@ -95,6 +95,7 @@ public class CcriTieServerHAPIConfig extends RestfulServer {
 				,applicationContext.getBean(AppointmentResourceProvider.class)
 				,applicationContext.getBean(SlotResourceProvider.class)
 				,applicationContext.getBean(FlagResourceProvider.class)
+				,applicationContext.getBean(MedicationDispenseResourceProvider.class)
 
 		));
 

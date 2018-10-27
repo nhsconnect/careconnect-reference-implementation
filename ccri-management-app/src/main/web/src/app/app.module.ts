@@ -120,6 +120,7 @@ import {CompositionComponent} from "./component/composition/composition.componen
 import { PatientTimeSeriesComponent } from './modules/patient-time-series/patient-time-series.component';
 import {PatientTimelineComponent} from "./component/patient-timeline/patient-timeline.component";
 import { PatientImmunisationComponent } from './modules/patient-immunisation/patient-immunisation.component';
+import { PatientMedicationComponent } from './modules/patient-medication/patient-medication.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -195,7 +196,8 @@ export function initializeApp(appConfig: AppConfig) {
       PatientProcedureComponent,
       PatientTimelineComponent,
       PatientTimeSeriesComponent,
-      PatientImmunisationComponent
+      PatientImmunisationComponent,
+      PatientMedicationComponent
 
 
 

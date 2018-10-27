@@ -14,6 +14,7 @@ import {PatientProcedureComponent} from "./patient-procedure/patient-procedure.c
 import {BinaryComponent} from "../component/binary/binary/binary.component";
 import {PatientTimeSeriesComponent} from "./patient-time-series/patient-time-series.component";
 import {PatientImmunisationComponent} from "./patient-immunisation/patient-immunisation.component";
+import {PatientMedicationComponent} from "./patient-medication/patient-medication.component";
 
 
 
@@ -29,6 +30,7 @@ const edRoutes: Routes = [
                { path: '', component: PatientSummaryComponent },
                { path: 'summary', component: PatientSummaryComponent },
                { path: 'immunisation', component: PatientImmunisationComponent },
+               { path: 'medication', component: PatientMedicationComponent },
                { path: 'timeline', component: PatientTimeSeriesComponent },
                { path: 'observation', component: PatientVitalSignsComponent },
                { path: 'encounter', component: PatientEncountersComponent },

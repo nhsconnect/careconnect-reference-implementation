@@ -114,6 +114,7 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 				,applicationContext.getBean(AppointmentResourceProvider.class)
 				,applicationContext.getBean(SlotResourceProvider.class)
 				,applicationContext.getBean(FlagResourceProvider.class)
+				,applicationContext.getBean(MedicationDispenseResourceProvider.class)
 		));
 
 		// Replace built in conformance provider (CapabilityStatement)
