@@ -5,6 +5,7 @@ import {ConformanceComponent} from "./conformance/conformance.component";
 import {ResourceComponent} from "./resource/resource.component";
 import {ExplorerMainComponent} from "./explorer-main/explorer-main.component";
 import {BinaryComponent} from "../component/binary/binary/binary.component";
+import {AuthGuard} from "../service/auth-guard";
 
 
 
@@ -14,9 +15,10 @@ const eprRoutes: Routes = [
     children : [
     {  path: '', component: MainComponent },
     {  path: 'capabilitystatement', component: ConformanceComponent },
-    {  path: 'resource/:resourceType', component: ResourceComponent },
+    {  path: 'resource/:resourceType', canActivate: [AuthGuard], component: ResourceComponent },
         {
             path: 'binary/:docid',
+            canActivate: [AuthGuard],
             component: BinaryComponent
         },
     ]

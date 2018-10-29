@@ -15,6 +15,7 @@ import {BinaryComponent} from "../component/binary/binary/binary.component";
 import {PatientTimeSeriesComponent} from "./patient-time-series/patient-time-series.component";
 import {PatientImmunisationComponent} from "./patient-immunisation/patient-immunisation.component";
 import {PatientMedicationComponent} from "./patient-medication/patient-medication.component";
+import {AuthGuard} from "../service/auth-guard";
 
 
 
@@ -22,10 +23,10 @@ const edRoutes: Routes = [
     {
     path: 'ed',  component: EdDashboardComponent,
     children : [
-        {  path: '', component: TriageComponent },
-        {  path: 'caseload', component: EdEncounterListComponent },
-      {  path: 'capacity', component: CapacityComponent },
-        {  path: 'patient/:patientid', component: PatientMainComponent,
+        {  path: '', canActivate: [AuthGuard], component: TriageComponent },
+        {  path: 'caseload',canActivate: [AuthGuard], component: EdEncounterListComponent },
+      {  path: 'capacity',canActivate: [AuthGuard], component: CapacityComponent },
+        {  path: 'patient/:patientid', canActivate: [AuthGuard], component: PatientMainComponent,
            children : [
                { path: '', component: PatientSummaryComponent },
                { path: 'summary', component: PatientSummaryComponent },

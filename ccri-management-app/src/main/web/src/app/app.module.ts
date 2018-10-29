@@ -121,6 +121,11 @@ import { PatientTimeSeriesComponent } from './modules/patient-time-series/patien
 import {PatientTimelineComponent} from "./component/patient-timeline/patient-timeline.component";
 import { PatientImmunisationComponent } from './modules/patient-immunisation/patient-immunisation.component';
 import { PatientMedicationComponent } from './modules/patient-medication/patient-medication.component';
+import {AuthGuard} from "./service/auth-guard";
+import {AuthService} from "./service/auth.service";
+import {Oauth2Service} from "./service/oauth2.service";
+import {CookieModule, CookieService} from "ngx-cookie";
+import {LoginComponent} from "./modules/login/login.component";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -133,6 +138,7 @@ export function initializeApp(appConfig: AppConfig) {
     MainComponent,
     ConformanceComponent,
     ResourceComponent,
+      LoginComponent,
 
     AllergyIntoleranceComponent,
       BinaryComponent,
@@ -227,6 +233,8 @@ export function initializeApp(appConfig: AppConfig) {
       ReactiveFormsModule,
       MatFormFieldModule,
 
+      CookieModule
+          .forRoot(),
 
 
     MatMomentDateModule,
@@ -290,6 +298,10 @@ export function initializeApp(appConfig: AppConfig) {
       MessageService,
     LinksService,
     EprService,
+      AuthGuard,
+      AuthService,
+      CookieService,
+      Oauth2Service,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
