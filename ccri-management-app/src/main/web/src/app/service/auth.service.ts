@@ -78,11 +78,12 @@ export class AuthService {
 
 
     getLogonServer() {
+        if (document.baseURI.includes('data.developer-test.nhs.uk')) return 'https://data.developer-test.nhs.uk/document-viewer';
+        if (document.baseURI.includes('data.developer.nhs.uk')) return 'https://data.developer.nhs.uk/document-viewer';
 
         let loginUrl :string = 'http://localhost:4200';
         // if (loginUrl.indexOf('LOGIN_') != -1) loginUrl = environment.login;
         return loginUrl;
-
     }
 
     getCookie() {

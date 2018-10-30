@@ -16,10 +16,33 @@ public class AngularController {
     }
 
 
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public Object handleLogin() {
+        return new ModelAndView
+                ("forward:/" );
+    }
+
+    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    public Object handlePing() {
+        return new ModelAndView
+                ("forward:/" );
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public Object handleLogout() {
+        return new ModelAndView
+                ("forward:/" );
+    }
+
+    @RequestMapping(value = "/callback", method = RequestMethod.GET)
+    public Object handleCallback() {
+        return new ModelAndView
+                ("forward:/" );
+    }
 
     @RequestMapping(value = "/ed", method = RequestMethod.GET)
     public Object handleAmb() {
-       // System.out.println("Amb base");
+
         return new ModelAndView
                 ("forward:/" );
     }
