@@ -92,7 +92,7 @@ export class ExplorerMainComponent implements OnInit {
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private eprService : EprService,
-              private authService : AuthService,
+              public authService : AuthService,
               private oauth2 : Oauth2Service) { }
 
   ngOnInit() {

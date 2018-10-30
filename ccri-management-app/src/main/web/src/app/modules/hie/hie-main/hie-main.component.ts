@@ -8,11 +8,11 @@ import {AuthService} from "../../../service/auth.service";
 
 
 @Component({
-  selector: 'app-ed-dashboard',
-  templateUrl: './ed-dashboard.component.html',
-  styleUrls: ['./ed-dashboard.component.css']
+  selector: 'app-hie-main',
+  templateUrl: './hie-main.component.html',
+  styleUrls: ['./hie-main.component.css']
 })
-export class EdDashboardComponent implements OnInit {
+export class HieMainComponent implements OnInit {
 
 
     routes: Object[] = [
@@ -32,7 +32,7 @@ export class EdDashboardComponent implements OnInit {
                  private _dialogService: TdDialogService,
                  private _viewContainerRef: ViewContainerRef,
                  private messageService : MessageService,
-                 private authService : AuthService
+                 public authService : AuthService
       ) { }
 
   ngOnInit() {

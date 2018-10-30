@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
-import {EdDashboardComponent} from "./hie/hie-main/ed-dashboard.component";
 import {EdEncounterListComponent} from "./hie/ed-encounter-list/ed-encounter-list.component";
 import {PatientMainComponent} from "./patient/patient-main/patient-main.component";
 import {CapacityComponent} from "./hie/capacity/capacity.component";
@@ -18,12 +17,13 @@ import {AuthGuard} from "../service/auth-guard";
 import {PatientFindComponent} from "./hie/patient-find/patient-find.component";
 import {SmartAppsComponent} from "./hie/smart-apps/smart-apps.component";
 import {AuthGuardOauth2} from "../service/auth-guard-oauth2";
+import {HieMainComponent} from "./hie/hie-main/hie-main.component";
 
 
 
 const edRoutes: Routes = [
     {
-    path: 'ed',  component: EdDashboardComponent,
+    path: 'ed',  component: HieMainComponent,
     children : [
         {  path: '', canActivate: [AuthGuard], component: PatientFindComponent },
         {  path: 'caseload',canActivate: [AuthGuard], component: EdEncounterListComponent },

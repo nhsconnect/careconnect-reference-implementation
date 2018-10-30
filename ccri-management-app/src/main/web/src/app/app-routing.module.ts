@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
-import {EdDashboardComponent} from "./modules/hie/hie-main/ed-dashboard.component";
-import {MapComponent} from "./component/map/map.component";
 import {LoginComponent} from "./security/login/login.component";
 import {CallbackComponent} from "./security/callback/callback.component";
 import {LogoutComponent} from "./security/logout/logout.component";

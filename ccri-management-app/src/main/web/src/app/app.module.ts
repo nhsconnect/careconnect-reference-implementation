@@ -90,7 +90,6 @@ import {ResponseInterceptor} from "./response-interceptor";
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
-import { EdDashboardComponent } from './modules/hie/hie-main/ed-dashboard.component';
 import { ExplorerMainComponent } from './modules/explorer/explorer-main/explorer-main.component';
 import {EprRoutingModule} from "./modules/epr-routing.module";
 import {BinaryComponent} from "./component/binary/binary/binary.component";
@@ -133,6 +132,7 @@ import {SmartAppsComponent} from "./modules/hie/smart-apps/smart-apps.component"
 import {RegisterSmartComponent} from "./dialog/register-smart/register-smart.component";
 import {RegisterSmartSecretComponent} from "./dialog/register-smart-secret/register-smart-secret.component";
 import {AuthGuardOauth2} from "./service/auth-guard-oauth2";
+import {HieMainComponent} from "./modules/hie/hie-main/hie-main.component";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -196,7 +196,7 @@ export function initializeApp(appConfig: AppConfig) {
     PractitionerRoleDialogComponent,
     EncounterDialogComponent,
     ObservationChartDialogComponent,
-    EdDashboardComponent,
+    HieMainComponent,
     ExplorerMainComponent,
     MapComponent,
     EdEncounterListComponent,
