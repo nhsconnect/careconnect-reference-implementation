@@ -1,11 +1,12 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {FhirService} from "./service/fhir.service";
+import {AuthService} from "./service/auth.service";
 
 @Injectable()
 export class AppConfig {
 
-    constructor(private http: HttpClient, private fhirServer : FhirService) {}
+    constructor(private http: HttpClient, private fhirServer : FhirService, private authService : AuthService) {}
 
     load() {
         // console.log('hello App' + document.baseURI);
@@ -14,6 +15,9 @@ export class AppConfig {
             this.http.get<any>(document.baseURI + 'camel/config/http').subscribe(result => {
                     console.log(result);
                     this.fhirServer.setRootUrl(result.fhirServer);
+                    if (this.authService.isLoggedOn()) {
+                       this.authService.setBaseUrlOAuth2();
+                    }
                     this.fhirServer.setGPCNRLSUrl(document.baseURI);
                 },
                 () => {

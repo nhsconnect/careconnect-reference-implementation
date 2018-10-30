@@ -179,13 +179,15 @@ export class AuthService {
 
   setBaseUrlOAuth2() {
     if (this.fhirService.getBaseUrl().includes('8183/ccri-fhir')) {
-      console.log('swapping to smartonfhir instance');
-      //this.fhirService.setRootUrl('http://127.0.0.1:8184/ccri-smartonfhir/STU3');
-      this.fhirService.setRootUrl('https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3');
-    } else {
+      let newbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
+      console.log('swapping to smartonfhir instance: '+newbaseUrl);
+      this.fhirService.setRootUrl(newbaseUrl);
+    }
+    else {
       if (this.fhirService.getBaseUrl().includes('ccri-fhir')) {
-        console.log('swapping to smartonfhir instance');
-        this.fhirService.setRootUrl(this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir'));
+        let newbaseUrl : string = this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir');
+        console.log('swapping to smartonfhir instance: '+ newbaseUrl);
+        this.fhirService.setRootUrl(newbaseUrl);
       }
     }
 
