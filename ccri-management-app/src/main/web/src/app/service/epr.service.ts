@@ -15,7 +15,7 @@ export class EprService {
     ,{
       icon: 'search',
       route: '/ed',
-      title: 'Patient Find (+ Triage)' +
+      title: 'Patient Find' +
         '',
     }
     ,{
@@ -27,6 +27,11 @@ export class EprService {
       icon: 'dashboard',
       route: '/ed/capacity',
       title: 'Emergency Planning',
+    }
+    ,{
+      icon: 'apps',
+      route: '/ed/smart',
+      title: 'SMART on FHIR Apps',
     }
 
   ];
@@ -41,7 +46,25 @@ export class EprService {
       route: 'https://data.developer.nhs.uk/document-viewer/',
       title: 'FHIR Document Viewer',
     }
+    , {
+      icon: 'library_books',
+      route: 'https://nhsconnect.github.io/CareConnectAPI/',
+      title: 'NHS Digital Care Connect API',
+    }
+    , {
+      icon: 'library_books',
+      route: 'https://fhir-test.hl7.org.uk/',
+      title: 'HL7 UK FHIR Profiles',
+    }
+    , {
+      icon: 'library_books',
+      route: 'https://fhir.nhs.uk/',
+      title: 'NHS Digital FHIR Profiles',
+    }
   ];
+
+
+
 
 
 

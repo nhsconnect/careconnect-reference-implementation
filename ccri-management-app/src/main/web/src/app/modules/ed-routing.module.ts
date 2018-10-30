@@ -1,21 +1,23 @@
 import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
-import {EdDashboardComponent} from "./ed-dashboard/ed-dashboard.component";
-import {EdEncounterListComponent} from "./ed-encounter-list/ed-encounter-list.component";
-import {PatientMainComponent} from "./patient-main/patient-main.component";
-import {TriageComponent} from "./triage/triage.component";
-import {CapacityComponent} from "./capacity/capacity.component";
-import {PatientSummaryComponent} from "./patient-summary/patient-summary.component";
-import {PatientVitalSignsComponent} from "./patient-vital-signs/patient-vital-signs.component";
-import {PatientEncountersComponent} from "./patient-encounters/patient-encounters.component";
-import {PatientDocumentsComponent} from "./patient-documents/patient-documents.component";
-import {PatientEncounterDetailComponent} from "./patient-encounter-detail/patient-encounter-detail.component";
-import {PatientProcedureComponent} from "./patient-procedure/patient-procedure.component";
+import {EdDashboardComponent} from "./hie/hie-main/ed-dashboard.component";
+import {EdEncounterListComponent} from "./hie/ed-encounter-list/ed-encounter-list.component";
+import {PatientMainComponent} from "./patient/patient-main/patient-main.component";
+import {CapacityComponent} from "./hie/capacity/capacity.component";
+import {PatientSummaryComponent} from "./patient/patient-summary/patient-summary.component";
+import {PatientVitalSignsComponent} from "./patient/patient-vital-signs/patient-vital-signs.component";
+import {PatientEncountersComponent} from "./patient/patient-encounters/patient-encounters.component";
+import {PatientDocumentsComponent} from "./patient/patient-documents/patient-documents.component";
+import {PatientEncounterDetailComponent} from "./patient/patient-encounter-detail/patient-encounter-detail.component";
+import {PatientProcedureComponent} from "./patient/patient-procedure/patient-procedure.component";
 import {BinaryComponent} from "../component/binary/binary/binary.component";
-import {PatientTimeSeriesComponent} from "./patient-time-series/patient-time-series.component";
-import {PatientImmunisationComponent} from "./patient-immunisation/patient-immunisation.component";
-import {PatientMedicationComponent} from "./patient-medication/patient-medication.component";
+import {PatientTimeSeriesComponent} from "./patient/patient-time-series/patient-time-series.component";
+import {PatientImmunisationComponent} from "./patient/patient-immunisation/patient-immunisation.component";
+import {PatientMedicationComponent} from "./patient/patient-medication/patient-medication.component";
 import {AuthGuard} from "../service/auth-guard";
+import {PatientFindComponent} from "./hie/patient-find/patient-find.component";
+import {SmartAppsComponent} from "./hie/smart-apps/smart-apps.component";
+import {AuthGuardOauth2} from "../service/auth-guard-oauth2";
 
 
 
@@ -23,9 +25,10 @@ const edRoutes: Routes = [
     {
     path: 'ed',  component: EdDashboardComponent,
     children : [
-        {  path: '', canActivate: [AuthGuard], component: TriageComponent },
+        {  path: '', canActivate: [AuthGuard], component: PatientFindComponent },
         {  path: 'caseload',canActivate: [AuthGuard], component: EdEncounterListComponent },
       {  path: 'capacity',canActivate: [AuthGuard], component: CapacityComponent },
+      {  path: 'smart',canActivate: [AuthGuardOauth2], component: SmartAppsComponent },
         {  path: 'patient/:patientid', canActivate: [AuthGuard], component: PatientMainComponent,
            children : [
                { path: '', component: PatientSummaryComponent },

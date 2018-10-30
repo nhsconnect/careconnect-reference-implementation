@@ -66,6 +66,26 @@ export class FhirService {
 
   }
 
+  public oauth2Required() : boolean {
+
+
+
+      if (this.conformance !== undefined) {
+        for (let rest of this.conformance.rest) {
+          if (rest.security !== undefined && rest.security.service !== undefined) {
+            for (let service of rest.security.service) {
+              if (service.coding != undefined && service.coding.length > 0) {
+                if (service.coding[0].system == 'SMART-on-FHIR') {
+
+                  return true;
+                }
+              }
+            }
+          }
+        }
+      }
+      return false;
+  }
   public getBaseUrl() :string {
         let retStr = this.baseUrl;
 
@@ -173,6 +193,28 @@ export class FhirService {
           this.conformance = undefined;
           this.conformanceChange.emit(undefined);
       });
+  }
+
+  public postAny(url : string, body : string, httpHeaders : HttpHeaders) {
+    return this.http.post<any>(url, body, { headers : httpHeaders});
+  }
+
+  public post(resource : string , body : any) : Observable<any> {
+
+    let headers :HttpHeaders = this.getEPRHeaders(false);
+    headers.append('Content-Type','application/fhir+json');
+    headers.append('Prefer','return=representation');
+    return this.http.post<any>(this.getFHIRServerBase()+ resource, body, { headers : headers});
+  }
+
+  public put(resource : string, body : any) : Observable<any> {
+
+    let headers :HttpHeaders = this.getEPRHeaders(false);
+    headers.append('Content-Type','application/fhir+json');
+    headers.append('Prefer','return=representation');
+    const url = this.getFHIRServerBase() + resource;
+
+    return this.http.put<fhir.Endpoint>(url,body,{ 'headers' :headers});
   }
 
   public get(search : string) : Observable<fhir.Bundle> {
@@ -318,54 +360,6 @@ export class FhirService {
         return this.http
             .get(url, { headers, responseType : 'blob' as 'blob'} );
     }
-/*
-    getCatClientSecret() {
-        // This is a marker for entryPoint.sh to replace
-        let secret :string = 'SMART_OAUTH2_CLIENT_SECRET';
-        if (secret.indexOf('SECRET') != -1) secret = environment.oauth2.client_secret;
-        return secret;
-    }
-*/
-    /*
-    getClients() {
-
-        this.authService.setCookie();
-
-        if (this.registerUri === undefined) {
-            this.registerUri = localStorage.getItem("registerUri");
-        }
-        let url = this.registerUri.replace('register','');
-        url = url + 'api/clients';
-        console.log('url = '+url);
-
-        let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
-
-        let headers = new HttpHeaders({'Authorization': bearerToken });
-        headers= headers.append('Content-Type','application/json');
-        headers = headers.append('Accept','application/json');
 
 
-        return this.http.get(url, {'headers' : headers }  );
-    }
-    */
-
-    /*
-    launchSMART(appId : string, contextId : string, patientId : string) :Observable<any> {
-
-        // Calls OAuth2 Server to register launch context for SMART App.
-
-        // https://healthservices.atlassian.net/wiki/spaces/HSPC/pages/119734296/Registering+a+Launch+Context
-
-        let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
-
-        const url = localStorage.getItem("tokenUri").replace('token', '') + 'Launch';
-        let payload = JSON.stringify({launch_id: contextId, parameters: []});
-
-        let headers = new HttpHeaders({'Authorization': bearerToken });
-        headers= headers.append('Content-Type','application/json');
-
-        console.log(payload);
-        return this.http.post<any>(url,"{ launch_id : '"+contextId+"', parameters : { username : 'Get Details From Keycloak', patient : '"+patientId+"' }  }", {'headers': headers});
-    }
-*/
 }

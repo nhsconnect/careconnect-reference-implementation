@@ -6,4 +6,5 @@ export const environment = {
         client_secret : 'APa5oCe6SHhty_or2q34WpNcq0-X957n6p48TkAJw14YCtmZeQil60XvCfuByIPd8DlXyusxAGxp5_Z5UKlgZJU',
         cookie_domain : 'localhost'
     }
+    ,apps: []
 };

@@ -115,7 +115,7 @@ export class PatientComponent implements OnInit {
     var NHSNumber :String = "";
     for (var f=0;f<patient.identifier.length;f++) {
       if (patient.identifier[f].system.includes("nhs-number") )
-        NHSNumber = patient.identifier[f].value;
+        NHSNumber = patient.identifier[f].value.substring(0,3)+ ' '+patient.identifier[f].value.substring(3,6)+ ' '+patient.identifier[f].value.substring(6);
     }
     return NHSNumber;
 

@@ -42,9 +42,9 @@ import {
 
 } from "@angular/material";
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
-import {MainComponent} from "./modules/main/main.component";
-import { ConformanceComponent } from './modules/conformance/conformance.component';
-import { ResourceComponent } from './modules/resource/resource.component';
+import {MainComponent} from "./modules/explorer/main/main.component";
+import { ConformanceComponent } from './modules/explorer/conformance/conformance.component';
+import { ResourceComponent } from './modules/explorer/resource/resource.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FlexLayoutModule} from "@angular/flex-layout";
@@ -90,8 +90,8 @@ import {ResponseInterceptor} from "./response-interceptor";
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
-import { EdDashboardComponent } from './modules/ed-dashboard/ed-dashboard.component';
-import { ExplorerMainComponent } from './modules/explorer-main/explorer-main.component';
+import { EdDashboardComponent } from './modules/hie/hie-main/ed-dashboard.component';
+import { ExplorerMainComponent } from './modules/explorer/explorer-main/explorer-main.component';
 import {EprRoutingModule} from "./modules/epr-routing.module";
 import {BinaryComponent} from "./component/binary/binary/binary.component";
 import {PdfViewerComponent} from "./component/binary/pdf-viewer/pdf-viewer.component";
@@ -101,31 +101,38 @@ import {ViewDocumentSectionComponent} from "./component/binary/composition-view-
 import {PdfViewerModule} from "ng2-pdf-viewer";
 import {ImageViewerModule} from "@hallysonh/ngx-imageviewer";
 import { MapComponent } from './component/map/map.component';
-import { EdEncounterListComponent } from './modules/ed-encounter-list/ed-encounter-list.component';
+import { EdEncounterListComponent } from './modules/hie/ed-encounter-list/ed-encounter-list.component';
 import {EdRoutingModule} from "./modules/ed-routing.module";
-import { EdEncounterCardComponent } from './modules/ed-encounter-card/ed-encounter-card.component';
+import { EdEncounterCardComponent } from './modules/hie/ed-encounter-card/ed-encounter-card.component';
 import {NguiMapModule} from "@ngui/map";
-import { PatientMainComponent } from './modules/patient-main/patient-main.component';
-import { TriageComponent } from './modules/triage/triage.component';
+import { PatientMainComponent } from './modules/patient/patient-main/patient-main.component';
+import { PatientFindComponent } from './modules/hie/patient-find/patient-find.component';
 import {PatientSearchComponent} from "./component/patient-search/patient-search.component";
-import { CapacityComponent } from './modules/capacity/capacity.component';
-import { PatientSummaryComponent } from './modules/patient-summary/patient-summary.component';
-import { PatientVitalSignsComponent } from './modules/patient-vital-signs/patient-vital-signs.component';
-import { PatientEncountersComponent } from './modules/patient-encounters/patient-encounters.component';
-import { PatientDocumentsComponent } from './modules/patient-documents/patient-documents.component';
-import { PatientEncounterDetailComponent } from './modules/patient-encounter-detail/patient-encounter-detail.component';
-import { PatientProcedureComponent } from './modules/patient-procedure/patient-procedure.component';
+import { CapacityComponent } from './modules/hie/capacity/capacity.component';
+import { PatientSummaryComponent } from './modules/patient/patient-summary/patient-summary.component';
+import { PatientVitalSignsComponent } from './modules/patient/patient-vital-signs/patient-vital-signs.component';
+import { PatientEncountersComponent } from './modules/patient/patient-encounters/patient-encounters.component';
+import { PatientDocumentsComponent } from './modules/patient/patient-documents/patient-documents.component';
+import { PatientEncounterDetailComponent } from './modules/patient/patient-encounter-detail/patient-encounter-detail.component';
+import { PatientProcedureComponent } from './modules/patient/patient-procedure/patient-procedure.component';
 import {CompositionDetailComponent} from "./component/composition-detail/composition-detail.component";
 import {CompositionComponent} from "./component/composition/composition.component";
-import { PatientTimeSeriesComponent } from './modules/patient-time-series/patient-time-series.component';
+import { PatientTimeSeriesComponent } from './modules/patient/patient-time-series/patient-time-series.component';
 import {PatientTimelineComponent} from "./component/patient-timeline/patient-timeline.component";
-import { PatientImmunisationComponent } from './modules/patient-immunisation/patient-immunisation.component';
-import { PatientMedicationComponent } from './modules/patient-medication/patient-medication.component';
+import { PatientImmunisationComponent } from './modules/patient/patient-immunisation/patient-immunisation.component';
+import { PatientMedicationComponent } from './modules/patient/patient-medication/patient-medication.component';
 import {AuthGuard} from "./service/auth-guard";
 import {AuthService} from "./service/auth.service";
 import {Oauth2Service} from "./service/oauth2.service";
 import {CookieModule, CookieService} from "ngx-cookie";
-import {LoginComponent} from "./modules/login/login.component";
+import {LoginComponent} from "./security/login/login.component";
+import {CallbackComponent} from "./security/callback/callback.component";
+import {PingComponent} from "./security/ping/ping.component";
+import {LogoutComponent} from "./security/logout/logout.component";
+import {SmartAppsComponent} from "./modules/hie/smart-apps/smart-apps.component";
+import {RegisterSmartComponent} from "./dialog/register-smart/register-smart.component";
+import {RegisterSmartSecretComponent} from "./dialog/register-smart-secret/register-smart-secret.component";
+import {AuthGuardOauth2} from "./service/auth-guard-oauth2";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -139,6 +146,10 @@ export function initializeApp(appConfig: AppConfig) {
     ConformanceComponent,
     ResourceComponent,
       LoginComponent,
+    CallbackComponent,
+    PingComponent,
+    LogoutComponent,
+    SmartAppsComponent,
 
     AllergyIntoleranceComponent,
       BinaryComponent,
@@ -191,7 +202,7 @@ export function initializeApp(appConfig: AppConfig) {
     EdEncounterListComponent,
     EdEncounterCardComponent,
     PatientMainComponent,
-    TriageComponent,
+    PatientFindComponent,
       PatientSearchComponent,
       CapacityComponent,
       PatientSummaryComponent,
@@ -203,9 +214,11 @@ export function initializeApp(appConfig: AppConfig) {
       PatientTimelineComponent,
       PatientTimeSeriesComponent,
       PatientImmunisationComponent,
-      PatientMedicationComponent
+      PatientMedicationComponent,
 
 
+      RegisterSmartComponent,
+      RegisterSmartSecretComponent
 
   ],
   entryComponents: [
@@ -220,7 +233,9 @@ export function initializeApp(appConfig: AppConfig) {
     MedicationDispenseDetailComponent,
     ImmunisationDetailComponent,
       ObservationChartDialogComponent,
-      TriageComponent
+      PatientFindComponent,
+    RegisterSmartComponent,
+    RegisterSmartSecretComponent
 
   ],
   imports: [
@@ -299,6 +314,7 @@ export function initializeApp(appConfig: AppConfig) {
     LinksService,
     EprService,
       AuthGuard,
+    AuthGuardOauth2,
       AuthService,
       CookieService,
       Oauth2Service,

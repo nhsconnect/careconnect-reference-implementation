@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
-import {EdDashboardComponent} from "./modules/ed-dashboard/ed-dashboard.component";
+import {EdDashboardComponent} from "./modules/hie/hie-main/ed-dashboard.component";
 import {MapComponent} from "./component/map/map.component";
-import {LoginComponent} from "./modules/login/login.component";
+import {LoginComponent} from "./security/login/login.component";
+import {CallbackComponent} from "./security/callback/callback.component";
+import {LogoutComponent} from "./security/logout/logout.component";
+import {PingComponent} from "./security/ping/ping.component";
 
 const routes: Routes = [
   {  path: '', redirectTo: 'exp', pathMatch: 'full' },
@@ -11,6 +14,15 @@ const routes: Routes = [
     },
     {  path: 'login', component : LoginComponent
     }
+  ,
+  {  path: 'ping', component : PingComponent
+  }
+  ,
+  {  path: 'logout', component : LogoutComponent
+  }
+  ,
+  {  path: 'callback', component : CallbackComponent
+  }
 ];
 
 @NgModule({

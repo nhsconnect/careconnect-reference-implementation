@@ -4,17 +4,41 @@ import {HttpEvent, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/internal/Observable';
 import {tap} from "rxjs/operators";
 import {MessageService} from "./service/message.service";
+import {Oauth2Service} from "./service/oauth2.service";
+import {FhirService} from "./service/fhir.service";
+import {AuthService} from "./service/auth.service";
 
 
   @Injectable()
   export class ResponseInterceptor implements HttpInterceptor {
 
-    constructor(private messageService : MessageService
+    constructor(private messageService : MessageService,
+                private oauth2 : Oauth2Service,
+                public fhirService : FhirService,
+                public authService : AuthService
     )  {
     }
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-      //console.info('req.headers =', req.headers, ';');
-      return next.handle(req).pipe(
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+
+      if ((request.url.indexOf(this.fhirService.getBaseUrl()) !== -1) && (request.url.indexOf('metadata') == -1 ) && this.fhirService.oauth2Required()) {
+        console.log('Does token need refreshing ' + !this.oauth2.isAuthenticated());
+        if (request.method == "PUT" || request.method == "POST") {
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${this.oauth2.getToken()}`,
+              Prefer: 'return=representation'
+            }
+          });
+        } else {
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${this.oauth2.getToken()}`
+            }
+          });
+        }
+      }
+      return next.handle(request).pipe(
         tap(event => {
           if (event instanceof HttpResponse) {
 
@@ -23,7 +47,7 @@ import {MessageService} from "./service/message.service";
            // console.log(event.status);
           }
         }, error => {
-          console.log(req);
+          console.log(request);
           if (error.status == 401) {
             this.messageService.addMessage('401 UNAUTHORIZED - The request has not been applied because it lacks valid authentication credentials for the target resource.');
           } else if (error.status == 0) {
@@ -38,7 +62,5 @@ import {MessageService} from "./service/message.service";
       )
         ;
     }
-
-
 
 }

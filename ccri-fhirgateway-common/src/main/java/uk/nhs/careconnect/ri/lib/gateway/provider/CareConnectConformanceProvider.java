@@ -236,7 +236,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                         break;
                     case "Observation":
                         // Observation is not currently profiled on STU3 Care Connect
-                        // resource.getProfile().setReference(CareConnectITKProfile.Observation_1);
+                         resource.getProfile().setReference(CareConnectProfile.Observation_1);
                         break;
                     case "Encounter":
                         resource.getProfile().setReference(CareConnectProfile.Encounter_1);

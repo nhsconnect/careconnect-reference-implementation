@@ -16,4 +16,6 @@ public class CareConnectProfile {
     public static final String Patient_1 = "https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Patient-1";
     public static final String Practitioner_1 = "https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1";
 
+
+
 }

@@ -6,6 +6,9 @@ import {CookieService} from "ngx-cookie";
 import {Oauth2Service} from "./oauth2.service";
 import {FhirService} from "./fhir.service";
 import {Oauth2token} from "../model/oauth2token";
+import {EprService} from "./epr.service";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Observable} from "rxjs";
 
 
 @Injectable()
@@ -40,7 +43,8 @@ export class AuthService {
              private router: Router,
              private oauth2 : Oauth2Service,
              private _cookieService:CookieService,
-             private fhirService : FhirService
+             private fhirService : FhirService,
+             private http : HttpClient
 
 
               ) {
@@ -48,7 +52,9 @@ export class AuthService {
     this.updateUser();
 
   }
-
+  getOAuthChangeEmitter() {
+    return this.oauthTokenChange;
+  }
 
   setLocalUser(User : User) {
     if (User != undefined) console.log('User set ' + User.email + ' ' + User.userName );
@@ -65,12 +71,15 @@ export class AuthService {
     return this.oauth2.getToken();
   }
 
-
+  isLoggedOn() : boolean {
+    if (this.oauth2.getToken() != undefined) return true;
+    return false;
+  }
 
 
     getLogonServer() {
 
-        let loginUrl :string = 'http://127.0.0.1:4200/document-viewer';
+        let loginUrl :string = 'http://localhost:4200';
         // if (loginUrl.indexOf('LOGIN_') != -1) loginUrl = environment.login;
         return loginUrl;
 
@@ -88,15 +97,22 @@ export class AuthService {
         return this.UserEvent;
   }
 
-    updateUser() {
+  updateUser() {
 
 
-      let basicUser = new User();
+    let basicUser = new User();
 
-      basicUser.cat_access_token = this.oauth2.getToken();
+    basicUser.cat_access_token = this.oauth2.getToken();
 
-      this.setLocalUser(basicUser);
-    }
+    this.setLocalUser(basicUser);
+  }
+
+  getCatClientSecret() {
+    // This is a marker for entryPoint.sh to replace
+    let secret :string = 'SMART_OAUTH2_CLIENT_SECRET';
+    if (secret.indexOf('SECRET') != -1) secret = environment.oauth2.client_secret;
+    return secret;
+  }
     getCookieDomain() {
 
         let cookieDomain :string = 'CAT_COOKIE_DOMAIN';
@@ -122,54 +138,217 @@ export class AuthService {
        }
     }
 
+  performGetAccessToken(authCode :string ) {
+
+
+    let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
+    let headers = new HttpHeaders( {'Authorization' : bearerToken});
+    headers= headers.append('Content-Type','application/x-www-form-urlencoded');
+
+    const url = localStorage.getItem("tokenUri");
+
+    let body = new URLSearchParams();
+    body.set('grant_type', 'authorization_code');
+    body.set('code', authCode);
+    body.set('redirect_uri',document.baseURI+'/callback');
+
+
+    this.fhirService.postAny(url,body.toString(),  headers  ).subscribe( response => {
+        // console.log(response);
+        this.smartToken = response;
+        console.log('OAuth2Token : '+response);
+        this.auth = true;
+        this.oauth2.setToken( this.smartToken.access_token);
+
+        this.oauth2.setScope(this.smartToken.scope);
+
+        this.updateUser();
+      }
+      , (error: any) => {
+        console.log(error);
+      }
+      ,() => {
+        // Emit event
+
+        this.oauthTokenChange.emit(this.smartToken);
+
+      }
+    );
+  }
+
+  setBaseUrlOAuth2() {
+    if (this.fhirService.getBaseUrl().includes('8183/ccri-fhir')) {
+      console.log('swapping to smartonfhir instance');
+      //this.fhirService.setRootUrl('http://127.0.0.1:8184/ccri-smartonfhir/STU3');
+      this.fhirService.setRootUrl('https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3');
+    } else {
+      if (this.fhirService.getBaseUrl().includes('ccri-fhir')) {
+        console.log('swapping to smartonfhir instance');
+        this.fhirService.setRootUrl(this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir'));
+      }
+    }
+
+  }
 
     authoriseOAuth2() : void  {
 
         console.log('authoriseOAuth2');
-        this.fhirService.getResource('/metadata').subscribe(
-            conformance  => {
+        this.setBaseUrlOAuth2();
 
-                console.log('conformance response');
+        this.fhirService.getConformance();
 
-                for (let rest of conformance.rest) {
-                    for (let extension of rest.security.extension) {
+        this.fhirService.getConformanceChange().subscribe( conformance => {
+          for (let rest of conformance.rest) {
+            if (rest.security !== undefined) {
+              for (let extension of rest.security.extension) {
 
-                        if (extension.url == "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris") {
+                if (extension.url == "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris") {
 
-                            for (let smartextension of extension.extension) {
+                  for (let smartextension of extension.extension) {
 
-                                switch (smartextension.url) {
-                                    case "authorize" : {
-                                        this.authoriseUri = smartextension.valueUri;
-                                        break;
-                                    }
-                                    case "register" : {
-                                        this.registerUri = smartextension.valueUri;
-                                        break;
-                                    }
-                                    case "token" : {
-                                        this.tokenUri = smartextension.valueUri;
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
+                    switch (smartextension.url) {
+                      case "authorize" : {
+                        this.authoriseUri = smartextension.valueUri;
+                        break;
+                      }
+                      case "register" : {
+                        this.registerUri = smartextension.valueUri;
+                        break;
+                      }
+                      case "token" : {
+                        this.tokenUri = smartextension.valueUri;
+                        break;
+                      }
                     }
+
+                  }
                 }
-
-            },
-            error1 => {},
-            () => {
-
-                console.log('call performAuthorise PUT ME BACK');
-               // this.performAuthorise(environment.oauth2.client_id, this.getCatClientSecret());
-
-                return this.authoriseUri;
+              }
             }
-        )
+          }
+          console.log('done conformance retrieval');
+            console.log('call performAuthorise');
+            this.performAuthorise(environment.oauth2.client_id, this.getCatClientSecret());
+        },
+          error1 => {},
+          () => {
+            // Check here for client id - need to store in database
+            // If no registration then register client
+            // Dynamic registration not present at the mo but   this.performRegister();
+
+
+            return this.authoriseUri;
+          });
     }
 
 
 
+  performAuthorise (clientId : string, clientSecret :string){
+
+
+
+    localStorage.setItem("authoriseUri", this.authoriseUri);
+    localStorage.setItem("tokenUri", this.tokenUri);
+    localStorage.setItem("registerUri", this.registerUri);
+
+    if (this.oauth2.getToken() !== undefined) {
+      // access token is present so forgo access token retrieval
+
+      this.updateUser();
+      // Check token expiry
+      if (!this.oauth2.isAuthenticated()) {
+        const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri='+document.baseURI+'/callback&aud=https://test.careconnect.nhs.uk';
+        // Perform redirect to
+        window.location.href = url;
+      }
+      // if token is ok perform a PING (if above code is working we may remove this)
+      this.router.navigateByUrl('ping');
+    } else {
+
+      const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri='+document.baseURI+'/callback&aud=https://test.careconnect.nhs.uk';
+      // Perform redirect to
+      window.location.href = url;
+    }
+
+  }
+
+
+
+  getClients() {
+
+    this.setCookie();
+
+    if (this.registerUri === undefined) {
+      this.registerUri = localStorage.getItem("registerUri");
+    }
+    let url = this.registerUri.replace('register','');
+    url = url + 'api/clients';
+    console.log('url = '+url);
+
+    let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
+
+    let headers = new HttpHeaders({'Authorization': bearerToken });
+    headers= headers.append('Content-Type','application/json');
+    headers = headers.append('Accept','application/json');
+
+
+    return this.http.get(url, {'headers' : headers }  );
+  }
+
+  launchSMART(appId : string, contextId : string, patientId : string) :Observable<any> {
+
+    // Calls OAuth2 Server to register launch context for SMART App.
+
+    // https://healthservices.atlassian.net/wiki/spaces/HSPC/pages/119734296/Registering+a+Launch+Context
+
+    let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
+
+    const url = localStorage.getItem("tokenUri").replace('token', '') + 'Launch';
+    let payload = JSON.stringify({launch_id: contextId, parameters: []});
+
+    let headers = new HttpHeaders({'Authorization': bearerToken });
+    headers= headers.append('Content-Type','application/json');
+
+    console.log(payload);
+    return this.http.post<any>(url,"{ launch_id : '"+contextId+"', parameters : { username : 'Get Details From Keycloak', patient : '"+patientId+"' }  }", {'headers': headers});
+  }
+
+  performRegisterSMARTApp(clientName: string,
+                          clientURI: string,
+                          redirect: string[],
+                          logo: string,
+                          supplier: string
+  ): Observable<any> {
+    if (this.registerUri === undefined) {
+      this.registerUri = localStorage.getItem("registerUri");
+    }
+    const url = this.registerUri;
+    console.log('url = '+url);
+
+    let bearerToken = 'Basic '+btoa(environment.oauth2.client_id+":"+this.getCatClientSecret());
+
+    let headers = new HttpHeaders({'Authorization': bearerToken });
+    headers= headers.append('Content-Type','application/json');
+    headers = headers.append('Accept','application/json');
+
+    if (supplier === undefined) {
+      supplier = '';
+    }
+
+
+    let payload = JSON.stringify({
+      client_name : clientName ,
+      redirect_uris : redirect,
+      client_uri : clientURI,
+      grant_types: ["authorization_code"],
+      scope: "user/*.read user/*.read profile launch launch/patient",
+      token_endpoint_auth_method: 'none',
+      logo_uri: logo,
+      software_id: supplier
+    });
+
+    console.log(payload);
+
+    return this.http.post(url,payload,{ 'headers' : headers }  );
+  }
 }

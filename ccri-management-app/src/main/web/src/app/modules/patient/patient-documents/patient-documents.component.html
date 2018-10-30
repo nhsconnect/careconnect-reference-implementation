@@ -1,0 +1,25 @@
+<div fxLayout="row"
+     fxFlexFill >
+    <!-- Left pane -->
+    <div fxFlex="100">
+
+    <mat-card>
+      <mat-card-content>
+
+             <div fxLayout="row"
+                  fxFlexFill >
+                            <h3>Documents</h3>
+                               <span flex></span>
+                            <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
+                        </div>
+          <span *ngIf="documents.length>0">
+              <app-document-reference [documents]="documents" (documentReference)="selectResource($event)"></app-document-reference>
+          </span>
+
+      </mat-card-content>
+    </mat-card>
+
+    </div>
+
+</div>
+
