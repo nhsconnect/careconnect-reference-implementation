@@ -1,14 +1,12 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.database.entity.condition.ConditionNote;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -89,6 +87,19 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
                 condition.addIdentifier()
                         .setSystem(identifier.getSystem().getUri())
                         .setValue(identifier.getValue());
+            }
+            for (ConditionNote conditionNote : conditionEntity.getNotes()) {
+                Annotation annotation = condition.addNote();
+
+                annotation.setText(conditionNote.getNote());
+                if (conditionNote.getDateTime() != null) {
+                    annotation.setTime(conditionNote.getDateTime());
+                }
+                if (conditionNote.getAuthorPractitoner() != null) {
+                    annotation.setAuthor(new Reference("Practitioner/" + conditionNote.getAuthorPractitoner().getId())
+                            .setDisplay(conditionNote.getAuthorPractitoner().getNames().get(0).getDisplayName()));
+                }
+
             }
         }
          catch (Exception ex) {

@@ -2,10 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.*;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.database.entity.condition.ConditionNote;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -180,6 +178,16 @@ public class ConditionDao implements ConditionRepository {
         if (condition.hasAssertedDate()) {
             conditionEntity.setAssertedDateTime(condition.getAssertedDate());
         }
+
+        if (condition.hasOnset()) {
+            try {
+                if (condition.hasOnsetDateTimeType()) {
+                    conditionEntity.setOnsetDateTime(condition.getOnsetDateTimeType().getValue());
+                }
+            } catch (Exception ex) {
+
+            }
+        }
         if (condition.hasContext() && condition.getContext().getReference().contains("Encounter")) {
             EncounterEntity encounterEntity = encounterDao.readEntity(ctx, new IdType(condition.getContext().getReference()));
             conditionEntity.setContextEncounter(encounterEntity);
@@ -232,6 +240,26 @@ public class ConditionDao implements ConditionRepository {
                 log.info("Category Code: Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                 throw new IllegalArgumentException("Missing Category System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
             }
+        }
+        for (ConditionNote note : conditionEntity.getNotes()) {
+            em.remove(note);
+        }
+        for (Annotation annotation : condition.getNote()) {
+            ConditionNote note = new ConditionNote();
+            note.setCondition(conditionEntity);
+            note.setNote(annotation.getText());
+            try {
+                if (annotation.hasAuthorReference() && annotation.getAuthorReference().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setAuthorPractitoner(practitionerEntity);
+                }
+            } catch (Exception ex) {
+
+            }
+            if (annotation.hasTime()) {
+                note.setDateTime(annotation.getTime());
+            }
+            em.persist(note);
         }
 
         return conditionEntityToFHIRConditionTransformer.transform(conditionEntity);

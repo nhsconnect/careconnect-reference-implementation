@@ -255,7 +255,7 @@ public class PatientDao implements PatientRepository {
 
         if (patient.hasMaritalStatus()) {
             CodeableConcept martial = patient.getMaritalStatus();
-            ConceptEntity code = conceptDao.findCode(martial.getCoding().get(0));
+            ConceptEntity code = conceptDao.findAddCode(martial.getCoding().get(0));
             if (code != null) { patientEntity.setMaritalCode(code); }
             else {
                 String message = "Marital: Missing System/Code = "+ martial.getCoding().get(0).getSystem() +" code = "+martial.getCoding().get(0).getCode();

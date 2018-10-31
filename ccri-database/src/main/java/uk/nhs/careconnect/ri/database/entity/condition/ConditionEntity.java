@@ -72,8 +72,10 @@ public class ConditionEntity extends BaseResource {
     private Condition.ConditionVerificationStatus verificationStatus;
 
     @OneToMany(mappedBy="condition", targetEntity = ConditionIdentifier.class)
-
     Set<ConditionIdentifier> identifiers = new HashSet<>();
+
+    @OneToMany(mappedBy="condition", targetEntity = ConditionNote.class)
+    Set<ConditionNote> notes = new HashSet<>();
 
     public Set<ConditionIdentifier> getIdentifiers() {
         return identifiers;
@@ -187,5 +189,11 @@ public class ConditionEntity extends BaseResource {
         return this;
     }
 
+    public Set<ConditionNote> getNotes() {
+        return notes;
+    }
 
+    public void setNotes(Set<ConditionNote> notes) {
+        this.notes = notes;
+    }
 }

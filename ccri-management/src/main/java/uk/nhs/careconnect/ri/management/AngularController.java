@@ -56,7 +56,21 @@ public class AngularController {
 
     @RequestMapping(value = "/ed/{path}/{patient}", method = RequestMethod.GET)
     public Object handlePatient() {
-       // System.out.println("handlePatient");
+
+        return new ModelAndView
+                ("forward:/" );
+    }
+
+    @RequestMapping(value = "/ed/{path}/{patient}/{subSection}", method = RequestMethod.GET)
+    public Object handlePatientSection() {
+
+        return new ModelAndView
+                ("forward:/" );
+    }
+
+    @RequestMapping(value = "/ed/{path}/{patient}/{subSection}/{item}", method = RequestMethod.GET)
+    public Object handlePatientSectionItem() {
+
         return new ModelAndView
                 ("forward:/" );
     }
