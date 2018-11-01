@@ -62,6 +62,10 @@ export class AuthService {
     this.UserEvent.emit(this._User);
   }
 
+  isLoggedOn() : boolean {
+    return this.oauth2.isAuthenticated();
+  }
+
   getAccessToken() {
     if (this._User == undefined) {
       this.updateUser();
@@ -71,10 +75,6 @@ export class AuthService {
     return this.oauth2.getToken();
   }
 
-  isLoggedOn() : boolean {
-    if (this.oauth2.getToken() != undefined) return true;
-    return false;
-  }
 
 
     getLogonServer() {

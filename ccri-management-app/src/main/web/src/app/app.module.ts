@@ -86,7 +86,7 @@ import {PatientComponent} from "./component/patient/patient.component";
 import {MedicationDispenseDetailComponent} from "./dialog/medication-dispense-detail/medication-dispense-detail.component";
 import {LinksService} from "./service/links.service";
 import {EprService} from "./service/epr.service";
-import {ResponseInterceptor} from "./response-interceptor";
+import {ResponseInterceptor} from "./service/response-interceptor";
 import {AppConfig} from "./app-config";
 import { ObservationChartDialogComponent } from './dialog/observation-chart-dialog/observation-chart-dialog.component';
 import {NgxChartsModule} from "@swimlane/ngx-charts";

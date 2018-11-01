@@ -2,12 +2,13 @@ import {CanActivate, Router} from "@angular/router";
 import {AuthService} from "./auth.service";
 import {Injectable} from "@angular/core";
 import {FhirService} from "./fhir.service";
+import {Oauth2Service} from "./oauth2.service";
 
 @Injectable()
 export class AuthGuard  implements CanActivate {
 
 
-  constructor(public authService: AuthService,public router: Router, private fhirService : FhirService) {
+  constructor(public authService: AuthService,public router: Router, private fhirService : FhirService, private oauth2 : Oauth2Service) {
 
   }
   canActivate() {
@@ -16,7 +17,7 @@ export class AuthGuard  implements CanActivate {
     console.log('guard');
 
 
-    if (this.authService.isLoggedOn()) return true;
+    if (this.oauth2.isAuthenticated()) return true;
     if (!this.fhirService.oauth2Required()) return true;
 
     if (this.authService.getCookie() !== undefined) {

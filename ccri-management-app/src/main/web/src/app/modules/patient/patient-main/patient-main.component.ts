@@ -102,7 +102,7 @@ export class PatientMainComponent implements OnInit {
               source: '',
               clientId: client.clientId
             }
-            this.cards.push(newclient);
+            this.addClient(newclient);
           }
         }
 
@@ -111,7 +111,33 @@ export class PatientMainComponent implements OnInit {
 
   }
 
-    onClick(event, btn) {
+  addClient(client) {
+    this.fhirSrv.get('/Endpoint?identifier='+client.clientId).subscribe( result => {
+        let bundle: fhir.Bundle = result;
+        let endpoint: fhir.Endpoint = undefined;
+        if (bundle.entry !== undefined) {
+          for (const entry of bundle.entry) {
+            let resource: fhir.Resource = entry.resource;
+            if (resource.resourceType === 'Endpoint') {
+              client.endpoint = resource;
+              if (client.endpoint.address !== undefined) {
+                this.cards.push(client);
+              }
+            }
+          }
+        }
+      },
+      ()=>{
+
+      },
+      () => {
+
+      });
+
+  }
+
+
+  onClick(event, btn) {
     //  console.log(event);
         this.bscolour= 'info';
         this.bocolour = 'info';

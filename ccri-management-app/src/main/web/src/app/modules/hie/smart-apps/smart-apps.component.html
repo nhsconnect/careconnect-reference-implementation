@@ -11,6 +11,7 @@
 
 
 <mat-drawer-content>
+  <span *ngIf="cards !== undefined">
    <span *ngFor="let card of cards, let index = index, let even = even, let odd = odd">
      <span *ngIf="odd">
   <div fxLayout="row"
@@ -26,12 +27,14 @@
 
               <mat-card-content>
                 {{card.notes}}
-
+                <span *ngIf="card.endpoint !== undefined">
+                  Endpoint: <b>{{card.endpoint.address}} </b>
+                </span>
               </mat-card-content>
 
             <mat-card-actions >
                <span *ngIf="card.url === ''">
-                     <button mat-icon-button color="accent" (click)="smartAppConfig(card)"><mat-icon>settings</mat-icon> Settings</button>
+                     <button mat-icon-button color="accent" (click)="smartAppConfig(card)"><mat-icon>settings</mat-icon></button>
                 </span>
 
             </mat-card-actions>
@@ -51,7 +54,7 @@
 
             <mat-card-actions >
                <span *ngIf="cards[index+1].url === ''">
-                     <button mat-icon-button color="accent" (click)="smartAppConfig(cards[index+1])"><mat-icon>settings</mat-icon> Settings</button>
+                     <button mat-icon-button color="accent" (click)="smartAppConfig(cards[index+1])"><mat-icon>settings</mat-icon></button>
                 </span>
 
             </mat-card-actions>
@@ -62,5 +65,6 @@
   </div>
        </span>
       </span>
+    </span>
 </mat-drawer-content>
   </mat-drawer-container>

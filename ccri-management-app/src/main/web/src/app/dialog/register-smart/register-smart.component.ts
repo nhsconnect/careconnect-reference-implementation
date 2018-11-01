@@ -187,24 +187,49 @@ export class RegisterSmartComponent implements OnInit {
             this.endpoint.name = this.registerForm.controls['appName'].value;
             this.endpoint.address = this.registerForm.controls['appLaunch'].value;
 
-            this.fhirService.put('/Endpoint/'+this.endpoint.id,this.endpoint).subscribe(resp => {
-                    console.log(resp);
-                    const dialogConfig = new MatDialogConfig();
+            if (this.endpoint.id === undefined) {
+             // console.log(this.registerForm.controls['appName'].value.value);
+              this.endpoint.name = this.registerForm.controls['appName'].value.value;
+              this.fhirService.post('/Endpoint', this.endpoint).subscribe(resp => {
+                  console.log(resp);
+                  /*
+                  const dialogConfig = new MatDialogConfig();
 
-                    dialogConfig.disableClose = true;
-                    dialogConfig.autoFocus = true;
-                    dialogConfig.data = {
-                        id: 1
-                    };
-                    this.dialog.open(RegisterSmartSecretComponent, dialogConfig);
+                  dialogConfig.disableClose = true;
+                  dialogConfig.autoFocus = true;
+                  dialogConfig.data = {
+                    id: 1
+                  };
+                  this.dialog.open(RegisterSmartSecretComponent, dialogConfig);*/
                 },
                 (error: any) => {
-                    console.log("Register Response Error = " + error);
+                  console.log("Register Response Error = " + error);
                 },
                 () => {
-                    this.dialogRef.close();
+                  this.dialogRef.close();
+                })
+            } else {
+              this.fhirService.put('/Endpoint/' + this.endpoint.id, this.endpoint).subscribe(resp => {
+                  console.log(resp);
+                  /*
+                  const dialogConfig = new MatDialogConfig();
+
+                  dialogConfig.disableClose = true;
+                  dialogConfig.autoFocus = true;
+                  dialogConfig.data = {
+                    id: 1
+                  };
+                  this.dialog.open(RegisterSmartSecretComponent, dialogConfig);
+                  */
+                },
+                (error: any) => {
+                  console.log("Register Response Error = " + error);
+                },
+                () => {
+                  this.dialogRef.close();
+                }
+              )
             }
-            )
         }
     }
 

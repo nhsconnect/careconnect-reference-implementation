@@ -21,7 +21,7 @@ export class SmartAppsComponent implements OnInit {
               private eprService: EprService,
               private authService: AuthService) { }
 
-  cards = [];
+  cards = undefined;
 
   title : string ='SMART on FHIR';
 
@@ -57,7 +57,7 @@ export class SmartAppsComponent implements OnInit {
                         source: '',
                         clientId: client.clientId
                     }
-                    this.cards.push(newclient);
+                    this.addClient(newclient);
                 }
             }
 
@@ -66,7 +66,27 @@ export class SmartAppsComponent implements OnInit {
 
   }
 
+  addClient(client) {
+    this.fhirService.get('/Endpoint?identifier='+client.clientId).subscribe( result => {
+      let bundle: fhir.Bundle = result;
+      let endpoint: fhir.Endpoint = undefined;
+      if (bundle.entry !== undefined) {
+        for (const entry of bundle.entry) {
+          let resource: fhir.Resource = entry.resource;
+          if (resource.resourceType === 'Endpoint') {
+              client.endpoint = resource;
+          }
+        }
+      }
+      },
+      ()=>{
 
+      },
+      () => {
+      this.cards.push(client);
+    });
+
+  }
 
     smartAppConfig(card) {
 
@@ -75,29 +95,63 @@ export class SmartAppsComponent implements OnInit {
         this.fhirService.get('/Endpoint?identifier='+card.clientId).subscribe( result => {
 
             let bundle: fhir.Bundle = result;
+            let endpoint: fhir.Endpoint = undefined;
             if (bundle.entry !== undefined) {
                 for (const entry of bundle.entry) {
-                    let resource: fhir.Resource = entry.resource;
-                    if (resource.resourceType === 'Endpoint') {
-                        let endpoint: fhir.Endpoint = <fhir.Endpoint> resource;
-                        const dialogConfig = new MatDialogConfig();
-
-                        dialogConfig.disableClose = true;
-                        dialogConfig.autoFocus = true;
-
-                        dialogConfig.data = {
-                            endpoint: endpoint
-                        };
-                        let resourceDialog : MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
-
-                        resourceDialog.afterClosed().subscribe( result => {
-                            this.getClients();
-                          }
-                        );
+                  let resource: fhir.Resource = entry.resource;
+                  if (resource.resourceType === 'Endpoint') {
+                    console.log('Found endpoint');
+                    console.log(resource);
+                    endpoint= <fhir.Endpoint> resource;
 
                     }
                 }
             }
+
+            if (endpoint === undefined) {
+              console.log(card);
+              endpoint = {
+                resourceType: 'Endpoint',
+                identifier: [{
+                  system: 'https://fhir.leedsth.nhs.uk/Id/clientId',
+                  value: card.clientId
+                }],
+                status: 'active',
+                "connectionType": {
+                  "system": "http://hl7.org/fhir/endpoint-connection-type",
+                  "code": "direct-project"
+                },
+                name: card.name,
+                payloadType: [
+                  {
+                    "coding": [
+                      {
+                        "system": "http://hl7.org/fhir/resource-types",
+                        "code": "Endpoint"
+                      }
+                    ]
+                  }
+                ],
+                address: ''
+              };
+            }
+          const dialogConfig = new MatDialogConfig();
+
+
+
+          dialogConfig.disableClose = true;
+          dialogConfig.autoFocus = true;
+
+          dialogConfig.data = {
+            endpoint: endpoint
+          };
+          let resourceDialog : MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
+
+          resourceDialog.afterClosed().subscribe( result => {
+              this.getClients();
+            }
+          );
+
         })
 
     }

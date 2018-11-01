@@ -200,7 +200,7 @@ export class ExplorerMainComponent implements OnInit {
 
   swapServer(menuItem : any ) {
 
-      if (menuItem.route.include('smartonfhir') && !this.authService.isLoggedOn() ) {
+      if (menuItem.route.include('smartonfhir') && !this.oauth2.isAuthenticated() ) {
         // force login
         this.router.navigateByUrl('login');
       }

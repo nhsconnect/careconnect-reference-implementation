@@ -19,6 +19,7 @@ export class AppConfig {
 
                   const access_token = localStorage.getItem('access_token_' + environment.oauth2.client_id);
                   let rootUrl : string = result.fhirServer;
+                  /*
                   if (access_token === "" || access_token === null) {
                     //
                   } else {
@@ -35,6 +36,7 @@ export class AppConfig {
                       }
                     }
                   }
+                  */
                   this.fhirService.setRootUrl(rootUrl);
                   this.fhirService.setGPCNRLSUrl(document.baseURI);
               },

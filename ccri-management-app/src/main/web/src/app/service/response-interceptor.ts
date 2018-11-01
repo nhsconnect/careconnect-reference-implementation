@@ -3,10 +3,10 @@ import {HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest} from "@ang
 import {HttpEvent, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/internal/Observable';
 import {tap} from "rxjs/operators";
-import {MessageService} from "./service/message.service";
-import {Oauth2Service} from "./service/oauth2.service";
-import {FhirService} from "./service/fhir.service";
-import {AuthService} from "./service/auth.service";
+import {MessageService} from "./message.service";
+import {Oauth2Service} from "./oauth2.service";
+import {FhirService} from "./fhir.service";
+import {AuthService} from "./auth.service";
 
 
   @Injectable()
@@ -22,7 +22,7 @@ import {AuthService} from "./service/auth.service";
 
 
       if ((request.url.indexOf(this.fhirService.getBaseUrl()) !== -1) && (request.url.indexOf('metadata') == -1 ) && this.fhirService.oauth2Required()) {
-        console.log('Does token need refreshing ' + !this.oauth2.isAuthenticated());
+        //console.log('Does token need refreshing ' + !this.oauth2.isAuthenticated());
         if (request.method == "PUT" || request.method == "POST") {
           request = request.clone({
             setHeaders: {
