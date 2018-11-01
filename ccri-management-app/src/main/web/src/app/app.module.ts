@@ -133,6 +133,7 @@ import {RegisterSmartComponent} from "./dialog/register-smart/register-smart.com
 import {RegisterSmartSecretComponent} from "./dialog/register-smart-secret/register-smart-secret.component";
 import {AuthGuardOauth2} from "./service/auth-guard-oauth2";
 import {HieMainComponent} from "./modules/hie/hie-main/hie-main.component";
+import {OAuthModule} from "angular-oauth2-oidc";
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -302,7 +303,9 @@ export function initializeApp(appConfig: AppConfig) {
 
     EprRoutingModule,
     EdRoutingModule,
-      AppRoutingModule
+      AppRoutingModule,
+
+    OAuthModule.forRoot()
   ],
   providers: [
       AppConfig,

@@ -82,6 +82,8 @@ export class EprService {
 
   nrlsConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
 
+  acuteConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+
   flagEmitter : EventEmitter<fhir.Flag> = new EventEmitter();
 
   patientAllergies : fhir.AllergyIntolerance[] = [];
@@ -139,6 +141,10 @@ export class EprService {
   addFlag(flag : fhir.Flag) {
     this.patientFlags.push(flag);
     this.flagEmitter.emit(flag);
+  }
+
+  getAcuteStatusChangeEvent() {
+    return this.acuteConnectStatusEmitter;
   }
 
 

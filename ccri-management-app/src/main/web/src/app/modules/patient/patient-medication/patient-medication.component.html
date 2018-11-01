@@ -13,12 +13,42 @@
              fxFlexFill >
           <h3>Medication Issues</h3>
           <span flex></span>
-          <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+          <mat-chip-list><mat-chip [color]="acutecolor" selected=true >Acute</mat-chip></mat-chip-list>
         </div>
         <span *ngIf="medicationRequests.length>0">
               <app-medication-request [medicationRequests]="medicationRequests" ></app-medication-request>
           </span>
         <span *ngIf="medicationRequests.length==0">
+              No results found.
+          </span>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>
+
+<div fxLayout="row"
+     fxFlexFill >
+  <!-- Left pane -->
+  <div fxFlex="100">
+
+    <mat-card>
+
+      <mat-card-content>
+
+
+        <div fxLayout="row"
+             fxFlexFill >
+          <h3>Medication Issues</h3>
+          <span flex></span>
+          <mat-chip-list><mat-chip [color]="gpcolor" selected=true>GP</mat-chip></mat-chip-list>
+        </div>
+        <span *ngIf="gpMedicationRequest.length>0">
+              <app-medication-request [medicationRequests]="gpMedicationRequest" ></app-medication-request>
+          </span>
+        <span *ngIf="gpMedicationRequest.length==0">
               No results found.
           </span>
 
@@ -42,7 +72,7 @@
              fxFlexFill >
           <h3>Medication Dispensed</h3>
           <span flex></span>
-          <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+          <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
         </div>
         <span *ngIf="medicationDispenses.length>0">
               <app-medication-dispense [medicationDispenses]="medicationDispenses" ></app-medication-dispense>
@@ -71,7 +101,7 @@
              fxFlexFill >
           <h3>Medication Statements</h3>
           <span flex></span>
-          <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+          <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
         </div>
         <span *ngIf="medicationStatements.length>0">
               <app-medication-statement [medicationStatements]="medicationStatements" ></app-medication-statement>

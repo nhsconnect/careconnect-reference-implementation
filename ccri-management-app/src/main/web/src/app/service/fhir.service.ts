@@ -120,6 +120,14 @@ export class FhirService {
               this.baseUrl = retStr;
             }
           }
+        } else {
+
+            if (retStr.includes('ccri-smartonfhir')) {
+              retStr = retStr.replace('ccri-smartonfhir', 'ccri-fhir');
+              console.log('swapping to unsec fhir instance: ' + retStr);
+              this.baseUrl = retStr;
+
+          }
         }
       return retStr;
 }

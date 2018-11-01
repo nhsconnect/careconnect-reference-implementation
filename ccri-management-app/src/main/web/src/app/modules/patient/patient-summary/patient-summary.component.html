@@ -11,7 +11,7 @@
                              fxFlexFill >
                             <h3>Conditions</h3>
                                <span flex></span>
-                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                            <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
                         </div>
                              <span *ngIf="lhcreConditions.length>0">
                         <app-condition [conditions]="lhcreConditions" (encounter)="selectEncounter($event)"> </app-condition>
@@ -79,7 +79,7 @@
                            <div fxLayout="row"
                                 fxFlexFill >
                                <span flex></span>
-                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                            <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
                         </div>
 
                              <span *ngIf="lhcreAllergies.length>0">
@@ -121,7 +121,7 @@
                            <div fxLayout="row"
                                 fxFlexFill >
                                <span flex></span>
-                            <mat-chip-list><mat-chip>Acute</mat-chip></mat-chip-list>
+                            <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
                         </div>
                              <span *ngIf="lhcreMedicationStatement.length>0">
                         <app-medication-statement [medicationStatements]="lhcreMedicationStatement"> </app-medication-statement>

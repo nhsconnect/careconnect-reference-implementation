@@ -4,6 +4,7 @@ import {FhirService} from "../../../service/fhir.service";
 import {EprService} from "../../../service/epr.service";
 import {MatChip} from "@angular/material";
 import {AuthService} from "../../../service/auth.service";
+import {Oauth2Service} from "../../../service/oauth2.service";
 
 @Component({
   selector: 'app-patient-details',
@@ -40,7 +41,8 @@ export class PatientMainComponent implements OnInit {
               private fhirSrv : FhirService,
               private route: ActivatedRoute,
               private eprService : EprService,
-              private authService : AuthService) { }
+              private authService : AuthService,
+              private oauth2 : Oauth2Service) { }
 
   ngOnInit() {
 
@@ -79,36 +81,37 @@ export class PatientMainComponent implements OnInit {
           this.nrlscolor = colour;
       });
 
-    this.authService.getClients().subscribe( response => {
-      //console.log(clients);
-      const clients: any[] = response as any[];
-      for (let client of clients) {
+      if (this.oauth2.isAuthenticated()) {
+        this.authService.getClients().subscribe( response => {
+          //console.log(clients);
+          const clients: any[] = response as any[];
+          for (let client of clients) {
 
-        if (client.scope.includes("launch")) {
-          let found = false;
-          for (let search of this.cards) {
-            if (search.clientId === client.clientId) {
-              found=true;
+            if (client.scope.includes("launch")) {
+              let found = false;
+              for (let search of this.cards) {
+                if (search.clientId === client.clientId) {
+                  found = true;
+                }
+              }
+              if (!found) {
+                console.log(client);
+                let newclient = {
+                  id: client.id,
+                  name: client.clientName,
+                  image: client.logoUri,
+                  url: '',
+                  notes: client.clientDescription,
+                  source: '',
+                  clientId: client.clientId
+                }
+                this.addClient(newclient);
+              }
             }
           }
-          if (!found) {
-            console.log(client);
-            let newclient = {
-              id: client.id,
-              name: client.clientName,
-              image: client.logoUri,
-              url: '',
-              notes: client.clientDescription,
-              source: '',
-              clientId: client.clientId
-            }
-            this.addClient(newclient);
-          }
-        }
 
+        });
       }
-    })
-
   }
 
   addClient(client) {

@@ -68,10 +68,11 @@ export class PatientSummaryComponent implements OnInit {
 
                   }
               }
+            this.eprService.acuteConnectStatusEmitter.emit('primary');
 
           }
           ,()=> {
-
+              this.eprService.acuteConnectStatusEmitter.emit('warn');
           }
           , ()=> {
               for(let identifier of this.patient.identifier) {
@@ -89,6 +90,10 @@ export class PatientSummaryComponent implements OnInit {
       this.eprService.getNRLSStatusChangeEvent().subscribe( colour => {
           this.nrlscolor = colour;
       });
+
+    this.eprService.getAcuteStatusChangeEvent().subscribe( colour => {
+      this.acutecolor = colour;
+    });
   }
 
     getGPData(nhsNumber : string) {

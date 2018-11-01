@@ -9,6 +9,7 @@ import {Oauth2token} from "../model/oauth2token";
 import {EprService} from "./epr.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
+import {AuthConfig, OAuthService} from "angular-oauth2-oidc";
 
 
 @Injectable()
@@ -34,14 +35,14 @@ export class AuthService {
 
     oauthTokenChange : EventEmitter<Oauth2token> = new EventEmitter();
 
-
-  public auth : boolean = false;
+   public auth : boolean = false;
 
 
 
   constructor(
              private router: Router,
              private oauth2 : Oauth2Service,
+             private oauth2service : OAuthService,
              private _cookieService:CookieService,
              private fhirService : FhirService,
              private http : HttpClient
@@ -190,6 +191,17 @@ export class AuthService {
         this.fhirService.setRootUrl(newbaseUrl);
       }
     }
+
+  }
+
+  logonOAuth2() : void {
+
+    // https://www.npmjs.com/package/angular-oauth2-oidc-codeflow
+
+    this.oauth2service.clientId = environment.oauth2.client_id;
+
+    this.oauth2service.tokenEndpoint = this.tokenUri;
+
 
   }
 
