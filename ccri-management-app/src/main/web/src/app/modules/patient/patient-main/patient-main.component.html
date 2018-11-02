@@ -3,9 +3,7 @@
   <button mat-menu-item *ngFor="let card of cards" (click)="smartApp(card)">{{card.name}}</button>
 
 </mat-menu>
-<div fxLayout="row"
-     fxFlexFill >
-    <div fxFlex="100">
+
         <span *ngIf="patient !== undefined">
             <mat-card>
                 <mat-card-content>
@@ -44,8 +42,7 @@
                 </mat-card-actions>
                 </mat-card>
             </span>
-    </div>
-</div>
+
 
 
 <router-outlet></router-outlet>

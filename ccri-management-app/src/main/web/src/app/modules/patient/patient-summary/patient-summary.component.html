@@ -1,36 +1,30 @@
 <!-- Conditions -->
 
 
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
 
-                         <mat-card>
-                         <mat-card-content>
-                        <div fxLayout="row"
-                             fxFlexFill >
-                            <h3>Conditions</h3>
-                               <span flex></span>
-                            <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
-                        </div>
-                             <span *ngIf="lhcreConditions.length>0">
-                        <app-condition [conditions]="lhcreConditions" (encounter)="selectEncounter($event)"> </app-condition>
-                                 </span>
-                             <span *ngIf="lhcreConditions.length==0">
-                                 No results found.
-                             </span>
-                         </mat-card-content>
-                         </mat-card>
 
-  </div>
-</div>
+     <mat-card>
+     <mat-card-content>
+    <div fxLayout="row"
+         fxFlexFill >
+        <h3>Conditions</h3>
+           <span flex></span>
+        <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
+    </div>
+         <span *ngIf="lhcreConditions.length>0">
+    <app-condition [conditions]="lhcreConditions" (encounter)="selectEncounter($event)"> </app-condition>
+             </span>
+         <span *ngIf="lhcreConditions.length==0">
+             No results found.
+         </span>
+     </mat-card-content>
+     </mat-card>
+
+
 
 <!-- National Documents -->
 
 <!-- NRLS -->
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
 
     <mat-card>
       <mat-card-content>
@@ -52,14 +46,10 @@
       </mat-card-content>
     </mat-card>
 
-  </div>
 
-</div>
 
 <!-- GP Connect -->
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
+
 
     <mat-card>
       <mat-card-content>
@@ -92,13 +82,9 @@
                              </mat-card-content>
                          </mat-card>
 
-  </div>
-</div>
 
 <!-- Medication Statements -->
-<div fxLayout="row"
-     fxFlexFill >
-  <div fxFlex="100">
+
 
     <mat-card>
 
@@ -132,5 +118,3 @@
                              </mat-card-content>
                          </mat-card>
 
-  </div>
-</div>
