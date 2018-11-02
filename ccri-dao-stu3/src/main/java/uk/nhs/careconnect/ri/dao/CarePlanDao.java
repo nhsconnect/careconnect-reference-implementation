@@ -332,28 +332,20 @@ public class CarePlanDao implements CarePlanRepository {
             }
 
         }
+        // Remove previous activitiy
+        for (CarePlanActivity searchActivity : carePlanEntity.getActivities()) {
+
+            for (CarePlanActivityDetail searchDetail : searchActivity.getDetails()) {
+                em.remove(searchDetail);
+            }
+            em.remove(searchActivity);
+        }
 
         log.debug("CarePlan.saveActivity");
         for (CarePlan.CarePlanActivityComponent component : carePlan.getActivity()) {
             CarePlanActivity activity= null;
             CarePlanActivityDetail detail = null;
-            if (component.hasDetail()) {
-                for (CarePlanActivity searchActivity : carePlanEntity.getActivities()) {
-                    for (CarePlanActivityDetail searchDetail : searchActivity.getDetails()) {
-                        if (searchDetail.getCode() != null) {
-                            if (searchDetail.getCode().getCode().equals(component.getDetail().getCode())) {
-                                activity = searchActivity;
-                                detail = searchDetail;
-                                break;
-                            }
-                        } else {
-                            // Can't find solid reference to activity so remove
-                            em.remove(searchDetail);
-                        }
 
-                    }
-                }
-            }
             if (activity == null ) {
                 activity =  new CarePlanActivity();
                 activity.setCarePlan(carePlanEntity);

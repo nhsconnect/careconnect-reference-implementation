@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.AddressEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
@@ -99,6 +100,9 @@ public class PatientDao implements PatientRepository {
 
     @Autowired
     private FlagEntityToFHIRFlagTransformer flagEntityToFHIRFlagTransformer;
+
+    @Autowired
+    private CarePlanEntityToFHIRCarePlanTransformer carePlanEntityToFHIRCarePlanTransformer;
 
     @Autowired
     private DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
@@ -518,7 +522,11 @@ public class PatientDao implements PatientRepository {
                                     results.add(allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergy));
                                 }
                                 break;
-
+                            case "CarePlan:patient":
+                                for (CarePlanEntity carePlanEntity : patientEntity.getPatientCarePlans()) {
+                                    results.add(carePlanEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
+                                }
+                                break;
                             case "Condition:patient":
                                 for (ConditionEntity conditionEntity : patientEntity.getPatientConditions()) {
                                     results.add(conditionEntityToFHIRConditionTransformer.transform(conditionEntity));

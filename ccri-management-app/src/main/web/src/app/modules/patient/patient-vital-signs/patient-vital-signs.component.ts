@@ -17,7 +17,7 @@ export class PatientVitalSignsComponent implements OnInit {
   ngOnInit() {
       let patientid = this.route.snapshot.paramMap.get('patientid');
 
-      this.fhirSrv.get('/Observation?patient='+patientid).subscribe(
+      this.fhirSrv.get('/Observation?patient='+patientid+'&_count=20').subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
                   for (let entry of bundle.entry) {

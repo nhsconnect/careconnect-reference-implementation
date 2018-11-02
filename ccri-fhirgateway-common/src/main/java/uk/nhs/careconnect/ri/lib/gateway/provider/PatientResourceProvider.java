@@ -286,7 +286,8 @@ public class PatientResourceProvider implements IResourceProvider {
             "Procedure:patient",
             "Encounter:patient",
             "DocumentReference:patient",
-            "Flag:patient","*"}) Set<Include> reverseIncludes
+            "Flag:patient",
+            "CarePlan:patient","*"}) Set<Include> reverseIncludes
                                      ,@IncludeParam(allow= {
                                         "Patient:general-practitioner"
                                         ,"Patient:organization"

@@ -14,6 +14,7 @@ export class PatientSummaryComponent implements OnInit {
     documents : fhir.DocumentReference[] =[];
     nrlsdocuments : fhir.DocumentReference[]=[];
     encounters : fhir.Encounter[]=[];
+    careplans : fhir.CarePlan[]=[];
     patient : fhir.Patient = undefined;
 
     gpallergies : fhir.AllergyIntolerance[] = [];
@@ -46,7 +47,7 @@ export class PatientSummaryComponent implements OnInit {
       console.log(patientid);
 
       this.clearDown();
-      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_revinclude=Flag:patient&_count=100').subscribe(
+      this.fhirSrv.get('/Patient?_id='+patientid+'&_revinclude=Condition:patient&_revinclude=AllergyIntolerance:patient&_revinclude=MedicationStatement:patient&_revinclude=Flag:patient&_revinclude=CarePlan:patient&_count=100').subscribe(
           bundle => {
               if (bundle.entry !== undefined) {
                   for (let entry of bundle.entry) {
@@ -64,6 +65,9 @@ export class PatientSummaryComponent implements OnInit {
                           case 'MedicationStatement':
                               this.lhcreMedicationStatement.push(<fhir.MedicationStatement> entry.resource);
                               break;
+                        case 'CarePlan':
+                            this.careplans.push(<fhir.CarePlan> entry.resource);
+                            break;
                       }
 
                   }
@@ -196,6 +200,7 @@ export class PatientSummaryComponent implements OnInit {
 
 
         this.encounters=[];
+        this.careplans= [];
         this.patient=undefined;
 
         this.documents=[];

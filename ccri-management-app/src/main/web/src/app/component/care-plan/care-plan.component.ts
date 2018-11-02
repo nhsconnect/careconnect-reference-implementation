@@ -5,6 +5,7 @@ import {BundleService} from "../../service/bundle.service";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
 import {FhirService} from "../../service/fhir.service";
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
+import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 
 @Component({
   selector: 'app-care-plan',
@@ -23,7 +24,7 @@ export class CarePlanComponent implements OnInit {
 
     dataSource : CarePlanDataSource;
 
-    displayedColumns = ['id', 'resource'];
+    displayedColumns = ['start','end','category','status','intent', 'authorLink', 'resource'];
 
     constructor(private linksService : LinksService,
                 public bundleService : BundleService,
@@ -49,4 +50,29 @@ export class CarePlanComponent implements OnInit {
         };
         let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
+
+  showPractitioner(careplan :fhir.CarePlan) {
+    let practitioners = [];
+
+    for (let reference of careplan.author) {
+      this.bundleService.getResource(reference.reference).subscribe((practitioner) => {
+          if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+            practitioners.push(<fhir.Practitioner> practitioner);
+
+            const dialogConfig = new MatDialogConfig();
+
+            dialogConfig.disableClose = true;
+            dialogConfig.autoFocus = true;
+            // dialogConfig.width="800px";
+            dialogConfig.data = {
+              id: 1,
+              practitioners: practitioners,
+              useBundle : this.useBundle
+            };
+            let resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
+          }
+        }
+      );
+    }
+  }
 }

@@ -2,6 +2,7 @@
 package uk.nhs.careconnect.ri.database.entity.patient;
 
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
@@ -122,6 +123,9 @@ public class PatientEntity extends BaseResource {
 
     @OneToMany(mappedBy="patient", targetEntity = FlagEntity.class)
     Set<FlagEntity> patientFlags = new HashSet<>();
+
+    @OneToMany(mappedBy="patient", targetEntity = CarePlanEntity.class)
+    Set<CarePlanEntity> patientCarePlans = new HashSet<>();
     // Support for reverse includes
 
     public Long getId() {
@@ -372,5 +376,13 @@ public class PatientEntity extends BaseResource {
 
     public void setPatientFlags(Set<FlagEntity> patientFlags) {
         this.patientFlags = patientFlags;
+    }
+
+    public Set<CarePlanEntity> getPatientCarePlans() {
+        return patientCarePlans;
+    }
+
+    public void setPatientCarePlans(Set<CarePlanEntity> patientCarePlans) {
+        this.patientCarePlans = patientCarePlans;
     }
 }

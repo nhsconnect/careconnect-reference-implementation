@@ -1021,6 +1021,14 @@ public class BundleCore {
         }
         carePlan.setAddresses(references);
 
+        references = new ArrayList<>();
+        for (Reference reference : carePlan.getAuthor()) {
+            Resource resource = searchAddResource(reference.getReference());
+
+            if (resource!=null) references.add(getReference(resource));
+        }
+        carePlan.setAuthor(references);
+
         List<Reference> referenceTeam = new ArrayList<>();
         for (Reference reference : carePlan.getCareTeam()) {
             Resource resource = searchAddResource(reference.getReference());

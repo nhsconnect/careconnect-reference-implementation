@@ -148,6 +148,7 @@ public class PatientProvider implements ICCResourceProvider {
             "Encounter:patient",
             "DocumentReference:patient",
             "Flag:patient",
+            "CarePlan:patient",
             "*"}) Set<Include> reverseIncludes
             ,@IncludeParam(allow= {
                                         "Patient:general-practitioner"
