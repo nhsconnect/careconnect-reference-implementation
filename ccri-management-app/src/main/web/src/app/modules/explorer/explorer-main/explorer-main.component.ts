@@ -200,20 +200,28 @@ export class ExplorerMainComponent implements OnInit {
 
   swapServer(menuItem : any ) {
 
-      if (menuItem.route.include('smartonfhir') && !this.oauth2.isAuthenticated() ) {
-        // force login
-        this.router.navigateByUrl('login');
-      }
-      if (menuItem.route.include('ccrifhir')) {
-        // force logoff
-        this.oauth2.removeToken();
-      }
-      this.fhirSrv.setFHIRServerBase(menuItem.route);
-      this.title = menuItem.title;
+      console.log(menuItem);
 
-      console.log('Forcing naviagation to root');
-      this.router.navigateByUrl('/');
-      this.fhirSrv.getConformance();
+      // let server : string = menuItem.route;
+
+      if (menuItem.route.includes('smartonfhir') && !this.oauth2.isAuthenticated() ) {
+        // force login
+          console.log('Login required detected')
+        this.router.navigateByUrl('/login');
+
+      } else {
+          if (menuItem.route.includes('ccrifhir')) {
+              // force logoff
+              this.oauth2.removeToken();
+          } else {
+              this.fhirSrv.setFHIRServerBase(menuItem.route);
+              this.title = menuItem.title;
+
+              console.log('Forcing naviagation to root');
+              this.router.navigateByUrl('/');
+              this.fhirSrv.getConformance();
+          }
+      }
   }
 
   onClick(route) {
