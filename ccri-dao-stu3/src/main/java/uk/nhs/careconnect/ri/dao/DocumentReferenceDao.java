@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +11,14 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.DocumentReferenceEntityToFHIRDocumentReferenceTransformer;
+import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceAttachment;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceAuthor;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceIdentifier;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -312,7 +311,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenParam type
+    public List<DocumentReference> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenOrListParam type
             , DateRangeParam dateRange, TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = searchEntity(ctx,patient, identifier, id, type, dateRange, setting);
         List<DocumentReference> results = new ArrayList<>();
@@ -327,7 +326,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     }
 
     @Override
-    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id,TokenParam type
+    public List<DocumentReferenceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id, TokenOrListParam type
             , DateRangeParam dateRange
             , TokenParam setting) {
         List<DocumentReferenceEntity> qryResults = null;
@@ -368,6 +367,30 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
+
+        if (type!=null) {
+            List<Predicate> predOrList = new LinkedList<>();
+            Join<DocumentReferenceEntity, ConceptEntity> joinConcept = root.join("type", JoinType.LEFT);
+            Join<ConceptEntity, CodeSystemEntity> joinCodeSystem = joinConcept.join("codeSystemEntity", JoinType.LEFT);
+
+            for (TokenParam code : type.getValuesAsQueryTokens()) {
+                log.trace("Search on DocumentReference.type code = " + code.getValue());
+
+                Predicate p = null;
+                if (code.getSystem() != null) {
+                    p = builder.and(builder.equal(joinCodeSystem.get("codeSystemUri"), code.getSystem()),builder.equal(joinConcept.get("code"), code.getValue()));
+                } else {
+                    p = builder.equal(joinConcept.get("code"), code.getValue());
+                }
+                predOrList.add(p);
+
+            }
+            if (predOrList.size()>0) {
+                Predicate p = builder.or(predOrList.toArray(new Predicate[0]));
+                predList.add(p);
+            }
+        }
+        /*
         if (type!=null) {
             log.trace("Search on DocumentReference.type code = "+type.getValue());
 
@@ -375,6 +398,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             Predicate p = builder.equal(joinConcept.get("code"),type.getValue());
             predList.add(p);
         }
+        */
         if (setting!=null) {
             log.trace("Search on DocumentReference.practiceSetting code = "+setting.getValue());
 

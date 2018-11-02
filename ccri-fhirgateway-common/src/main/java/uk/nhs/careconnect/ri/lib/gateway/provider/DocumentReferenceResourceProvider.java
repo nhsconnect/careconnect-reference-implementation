@@ -3,10 +3,7 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
@@ -163,7 +160,7 @@ public class DocumentReferenceResourceProvider implements IResourceProvider {
             , @OptionalParam(name = DocumentReference.SP_RES_ID) StringParam resid
             , @OptionalParam(name = DocumentReference.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = DocumentReference.SP_CREATED) DateRangeParam date
-            , @OptionalParam(name = DocumentReference.SP_TYPE) TokenParam type
+            , @OptionalParam(name = DocumentReference.SP_TYPE) TokenOrListParam type
             , @OptionalParam(name = DocumentReference.SP_PERIOD)DateRangeParam dateRange
             , @OptionalParam(name = DocumentReference.SP_SETTING) TokenParam setting
     ) throws Exception {
