@@ -15,6 +15,7 @@ export class PatientMainComponent implements OnInit {
 
     patient : fhir.Patient = undefined;
 
+    sidenavopen = false;
 
     yascolor = 'info';
     acutecolor = 'info';
@@ -271,5 +272,10 @@ export class PatientMainComponent implements OnInit {
 
   }
 
+  onToggle(event : any) {
+      console.log(this.sidenavopen);
+
+      this.sidenavopen = !this.sidenavopen;
+  }
 
 }

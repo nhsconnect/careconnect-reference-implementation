@@ -1,4 +1,24 @@
+<mat-drawer-container fullscreen>
+    <mat-drawer mode="side" [opened]="sidenavopen">
 
+        <mat-nav-list td-sidenav-content >
+
+            <button #bs mat-menu-item (click)="onClick($event,'bs' )" ><mat-icon>person_outline</mat-icon>Summary</button>
+            <button #bt mat-menu-item (click)="onClick($event,'bt' )" ><mat-icon>date_range</mat-icon>Timeline</button> <!-- <mat-icon>calendar_view_day</mat-icon> -->
+            <button #be mat-menu-item (click)="onClick($event,'be')" ><mat-icon>today</mat-icon>Encounters</button>
+            <button #bd mat-menu-item (click)="onClick($event,'bd')" ><mat-icon>collections_bookmark</mat-icon>Documents</button>
+            <button #bp mat-menu-item (click)="onClick($event,'bp')" ><mat-icon>local_hospital</mat-icon>Procedures</button>
+            <button #bo mat-menu-item (click)="onClick($event,'bo')" ><mat-icon>timeline</mat-icon>Observations</button>
+            <button #bm mat-menu-item (click)="onClick($event,'bm')" ><mat-icon>colorize</mat-icon>Medications</button>
+            <button #bi mat-menu-item (click)="onClick($event,'bi' )" ><mat-icon>directions_boat</mat-icon>Immunisation</button>
+
+            <button #ba mat-menu-item matTooltip="SMART on FHIR Applications" [matMenuTriggerFor]="smartMenu"><mat-icon>apps</mat-icon>Applications</button>
+        </mat-nav-list>
+
+    </mat-drawer>
+
+
+    <mat-drawer-content>
 <mat-menu #smartMenu >
   <button mat-menu-item *ngFor="let card of cards" (click)="smartApp(card)">{{card.name}}</button>
 
@@ -8,6 +28,10 @@
             <mat-card>
                 <mat-card-content>
                 <div class="container" layout="row" layout-align="start center" flex>
+
+                    <button mat-icon-button (click)="onToggle($event)">
+                       <mat-icon>menu</mat-icon>
+                    </button>
               <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
               <span flex ></span>
 
@@ -29,23 +53,14 @@
               </mat-chip-list>
             </div>
                     </mat-card-content>
-                <mat-card-actions>
-                    <button #bs mat-button (click)="onClick($event,'bs' )" [color]="bscolour">Summary</button>
-                    <button #bt mat-button (click)="onClick($event,'bt' )" [color]="btcolour">Timeline</button>
-                    <button #be mat-button (click)="onClick($event,'be')" [color]="becolour">Encounters</button>
-                    <button #bd mat-button (click)="onClick($event,'bd')" [color]="bdcolour">Documents</button>
-                    <button #bp mat-button (click)="onClick($event,'bp')" [color]="bpcolour">Procedures</button>
-                    <button #bo mat-button (click)="onClick($event,'bo')" [color]="bocolour">Observations</button>
-                    <button #bm mat-button (click)="onClick($event,'bm')" [color]="bmcolour">Medications</button>
-                    <button #bi mat-button (click)="onClick($event,'bi' )" [color]="bicolour">Immunisation</button>
-                    <button #ba mat-icon-button matTooltip="SMART on FHIR Applications" [matMenuTriggerFor]="smartMenu"><mat-icon>apps</mat-icon></button>
-                </mat-card-actions>
                 </mat-card>
             </span>
 
 
 
-<router-outlet></router-outlet>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>
 
 
 
