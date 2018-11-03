@@ -1,11 +1,8 @@
-<mat-card>
-    <mat-card-content>
-        <h3>Timeline</h3>
-    </mat-card-content>
-</mat-card>
+
 <span *ngIf="ready">
           <mat-card>
               <mat-card-content>
+                   <h3>Timeline</h3>
                 <app-patient-timeline [conditions]="conditions" [encounters]="encounters" [procedures]="procedures" (encounterId)="selectEncounter($event)"></app-patient-timeline>
               </mat-card-content>
           </mat-card>
