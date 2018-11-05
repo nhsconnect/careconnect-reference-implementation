@@ -14,6 +14,8 @@ export class PatientDocumentsComponent implements OnInit {
 
     documents : fhir.DocumentReference[] = [];
 
+    resource : fhir.Bundle;
+
     constructor(private router : Router,
                 private fhirSrv : FhirService,
                 private route: ActivatedRoute,
@@ -28,22 +30,47 @@ export class PatientDocumentsComponent implements OnInit {
 
         this.fhirSrv.get('/DocumentReference?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'DocumentReference':
-                                let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
-                                this.documents.push(document);
-                                break;
-                        }
-
-                    }
-                }
+                this.resource = bundle;
+                this.getResources();
 
             }
         );
+    }
+
+    clearDown() {
+        this.documents = [];
+    }
+
+    getResources() {
+        let bundle = this.resource;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'DocumentReference':
+                        let document: fhir.DocumentReference = <fhir.DocumentReference> entry.resource;
+                        this.documents.push(document);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+    onMore(linkUrl : string) {
+
+        this.clearDown();
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resource = bundle;
+                this.getResources();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
     }
 
     selectResource(document : fhir.DocumentReference) {

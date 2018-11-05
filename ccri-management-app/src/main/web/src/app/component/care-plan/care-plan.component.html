@@ -7,6 +7,13 @@
       <td mat-cell *matCellDef="let carePlan"> {{carePlan.id}} </td>
     </ng-container>
 
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef width="8%"> View </th>
+      <td mat-cell *matCellDef="let carePlan">
+        <button mat-icon-button color="accent"  matTooltip="View Care Plan" (click)="view(carePlan)"><mat-icon>chrome_reader_mode</mat-icon></button>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="start">
       <th mat-header-cell *matHeaderCellDef> Start </th>
       <td mat-cell *matCellDef="let carePlan">  <span *ngIf="carePlan.period !== undefined  && carePlan.period.start !== undefined"> {{carePlan.period.start | date: 'dd-MMM-yyyy'}} </span> </td>

@@ -18,6 +18,7 @@ import {PatientFindComponent} from "./hie/patient-find/patient-find.component";
 import {SmartAppsComponent} from "./hie/smart-apps/smart-apps.component";
 import {AuthGuardOauth2} from "../service/auth-guard-oauth2";
 import {HieMainComponent} from "./hie/hie-main/hie-main.component";
+import {PatientCarePlanComponent} from "./patient/patient-care-plan/patient-care-plan.component";
 
 
 
@@ -42,6 +43,7 @@ const edRoutes: Routes = [
                { path: 'document', component: PatientDocumentsComponent },
                { path: 'procedure', component: PatientProcedureComponent },
                { path: 'document/:docid', component: BinaryComponent },
+               { path: 'careplan/:planid', component: PatientCarePlanComponent },
            ]}
     ]
 }

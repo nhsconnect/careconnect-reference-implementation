@@ -30,6 +30,12 @@ export class PatientMedicationComponent implements OnInit {
 
     patient : fhir.Patient = undefined;
 
+    resourceIssue : fhir.Bundle;
+
+    resourceStatement : fhir.Bundle;
+
+    resourceDispense : fhir.Bundle;
+
   acutecolor = 'info';
   gpcolor = 'info';
 
@@ -49,38 +55,16 @@ export class PatientMedicationComponent implements OnInit {
 
         this.fhirSrv.get('/MedicationRequest?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'MedicationRequest':
-                                let medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> entry.resource;
-                                this.medicationRequests.push(medicationRequest);
-                                break;
-                        }
-
-                    }
-                }
+                this.resourceIssue = bundle;
+                this.getResourcesIssue();
 
             }
         );
 
         this.fhirSrv.get('/MedicationStatement?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'MedicationStatement':
-                                let medicationStatement: fhir.MedicationStatement = <fhir.MedicationStatement> entry.resource;
-                                this.medicationStatements.push(medicationStatement);
-                                break;
-                        }
-
-                    }
-                }
+                this.resourceStatement = bundle;
+                this.getResourcesStatement();
               this.eprService.acuteConnectStatusEmitter.emit('primary');
             },
           ()=> {
@@ -91,19 +75,8 @@ export class PatientMedicationComponent implements OnInit {
 
         this.fhirSrv.get('/MedicationDispense?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'MedicationDispense':
-                                let medicationDispense: fhir.MedicationDispense = <fhir.MedicationDispense> entry.resource;
-                                this.medicationDispenses.push(medicationDispense);
-                                break;
-                        }
-
-                    }
-                }
+                this.resourceDispense = bundle;
+                this.getResourcesDispense();
 
             }
         );
@@ -192,4 +165,98 @@ export class PatientMedicationComponent implements OnInit {
 
   }
 
+    getResourcesIssue() {
+        let bundle = this.resourceIssue;
+        this.medicationRequests=[];
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'MedicationRequest':
+                        let medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> entry.resource;
+                        this.medicationRequests.push(medicationRequest);
+                        break;
+                }
+
+            }
+        }
+    }
+
+    getResourcesDispense() {
+        let bundle = this.resourceDispense;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'MedicationDispense':
+                        let medicationDispense: fhir.MedicationDispense = <fhir.MedicationDispense> entry.resource;
+                        this.medicationDispenses.push(medicationDispense);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+    getResourcesStatement() {
+        let bundle = this.resourceStatement;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'MedicationStatement':
+                        let medicationStatement: fhir.MedicationStatement = <fhir.MedicationStatement> entry.resource;
+                        this.medicationStatements.push(medicationStatement);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+
+    onMoreIssue(linkUrl : string) {
+
+        this.medicationRequests = [];
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resourceIssue = bundle;
+                this.getResourcesIssue();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
+    onMoreDispense(linkUrl : string) {
+
+        this.medicationDispenses=[];
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resourceDispense = bundle;
+                this.getResourcesDispense();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
+    onMoreStatement(linkUrl : string) {
+
+        this.medicationStatements=[];
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resourceStatement = bundle;
+                this.getResourcesStatement();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
 }

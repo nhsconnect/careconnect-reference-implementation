@@ -32,7 +32,7 @@
       <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
     </div>
     <span *ngIf="careplans.length>0">
-        <app-care-plan [carePlans]="careplans" > </app-care-plan>
+        <app-care-plan [carePlans]="careplans" (carePlan)="selectCarePlan($event)"> </app-care-plan>
     </span>
     <span *ngIf="careplans.length==0">
              No results found.

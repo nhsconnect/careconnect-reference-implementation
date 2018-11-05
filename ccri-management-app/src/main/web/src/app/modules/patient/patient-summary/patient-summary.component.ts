@@ -220,4 +220,10 @@ export class PatientSummaryComponent implements OnInit {
 
     }
 
+    selectCarePlan(carePlan : fhir.Reference) {
+
+        this.router.navigate(['..','careplan',carePlan.id] , { relativeTo : this.route});
+
+    }
+
 }

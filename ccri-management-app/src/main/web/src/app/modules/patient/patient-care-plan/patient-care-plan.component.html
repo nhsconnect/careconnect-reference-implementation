@@ -1,0 +1,24 @@
+<span *ngIf="careplan !== undefined">
+<mat-card>
+  <mat-card-content>
+    <span *ngIf="careplan.category !== undefined && careplan.category.length > 0; else noid">
+      <h3>{{careplan.category[0].coding[0].display}}</h3>
+    </span>
+    <ng-template #noid>
+       <h3>Care Plan</h3>
+    </ng-template>
+    <h4>Addresses</h4>
+
+    <h4>Activity</h4>
+    <span *ngFor="let activity of careplan.activity">
+      <span *ngIf="activity.detail !==undefined">
+        <span *ngIf="activity.detail.code !== undefined && activity.detail.code.coding !== undefined">
+        {{activity.detail.code.coding[0].display}}
+        </span>
+        <p>{{activity.detail.status}}</p>
+        <p>{{activity.detail.description}}</p>
+      </span>
+    </span>
+  </mat-card-content>
+</mat-card>
+</span>

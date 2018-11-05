@@ -106,7 +106,7 @@ export class FhirService {
                 this.baseUrl = retStr;
             }
         }
-        if (this.oauth2.isAuthenticated()) {
+        if (this.oauth2.isAuthenticated() || this.oauth2.isAuthenticating()) {
 
           if (retStr.includes('8183/ccri-fhir')) {
             retStr = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';

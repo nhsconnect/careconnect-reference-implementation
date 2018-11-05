@@ -21,6 +21,7 @@ export class Oauth2Service {
 
   removeToken() {
     localStorage.removeItem('access_token_' + environment.oauth2.client_id);
+    localStorage.removeItem('ccri-jwt');
   }
 
   setToken(access_token : string) {
@@ -30,6 +31,12 @@ export class Oauth2Service {
   setScope(scope : string) {
     this.scope = scope;
     localStorage.setItem('scope_' + environment.oauth2.client_id, scope);
+  }
+
+  public isAuthenticating() : boolean {
+     const token = localStorage.getItem('ccri-jwt');
+     if (token === undefined) return false;
+     return true;
   }
 
   public isAuthenticated(): boolean {

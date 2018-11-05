@@ -12,6 +12,8 @@ export class PatientVitalSignsComponent implements OnInit {
 
     observations : fhir.Observation[] = [];
 
+    resource : fhir.Bundle;
+
   constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
   ngOnInit() {
@@ -19,22 +21,45 @@ export class PatientVitalSignsComponent implements OnInit {
 
       this.fhirSrv.get('/Observation?patient='+patientid+'&_count=20').subscribe(
           bundle => {
-              if (bundle.entry !== undefined) {
-                  for (let entry of bundle.entry) {
-
-                      switch (entry.resource.resourceType) {
-
-                          case 'Observation':
-                              let observation: fhir.Observation = <fhir.Observation> entry.resource;
-                              this.observations.push(observation);
-                              break;
-                      }
-
-                  }
-              }
-
+              this.resource = bundle;
+              this.getResources();
           }
       );
   }
+
+    getResources()  {
+       let bundle = this.resource;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'Observation':
+                        let observation: fhir.Observation = <fhir.Observation> entry.resource;
+                        this.observations.push(observation);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+  clearDown() {
+      this.observations = [];
+  }
+    onMore(linkUrl : string) {
+
+        this.clearDown();
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resource = bundle;
+                this.getResources();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
 
 }

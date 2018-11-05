@@ -24,7 +24,7 @@ export class CarePlanComponent implements OnInit {
 
     dataSource : CarePlanDataSource;
 
-    displayedColumns = ['start','end','category','status','intent', 'authorLink', 'resource'];
+    displayedColumns = ['select','start','end','category','status','intent', 'authorLink', 'resource'];
 
     constructor(private linksService : LinksService,
                 public bundleService : BundleService,
@@ -75,4 +75,8 @@ export class CarePlanComponent implements OnInit {
       );
     }
   }
+
+    view(carePlan : fhir.CarePlan) {
+        this.carePlan.emit(carePlan);
+    }
 }

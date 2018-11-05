@@ -12,6 +12,8 @@ export class PatientProcedureComponent implements OnInit {
 
     procedures : fhir.Procedure[] = [];
 
+    resource : fhir.Bundle;
+
     constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
@@ -19,24 +21,50 @@ export class PatientProcedureComponent implements OnInit {
 
         this.fhirSrv.get('/Procedure?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'Procedure':
-                                let procedure: fhir.Procedure = <fhir.Procedure> entry.resource;
-                                this.procedures.push(procedure);
-                                break;
-                        }
-
-                    }
-                }
+                this.resource = bundle;
+                this.getResources();
 
             }
         );
     }
-  selectEncounter(encounter : fhir.Reference) {
+
+    clearDown() {
+        this.procedures = [];
+    }
+
+    getResources() {
+        let bundle = this.resource;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'Procedure':
+                        let procedure: fhir.Procedure = <fhir.Procedure> entry.resource;
+                        this.procedures.push(procedure);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+    onMore(linkUrl : string) {
+
+        this.clearDown();
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resource = bundle;
+                this.getResources();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
+
+    selectEncounter(encounter : fhir.Reference) {
 
     let str = encounter.reference.split('/');
     console.log(this.route.root);

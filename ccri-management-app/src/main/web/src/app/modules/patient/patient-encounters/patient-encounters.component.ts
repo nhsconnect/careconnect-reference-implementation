@@ -14,6 +14,8 @@ export class PatientEncountersComponent implements OnInit {
 
     encounter : fhir.Encounter = undefined;
 
+    resource : fhir.Bundle;
+
     constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
@@ -21,24 +23,45 @@ export class PatientEncountersComponent implements OnInit {
 
         this.fhirSrv.get('/Encounter?patient='+patientid).subscribe(
             bundle => {
-                if (bundle.entry !== undefined) {
-                    for (let entry of bundle.entry) {
-
-                        switch (entry.resource.resourceType) {
-
-                            case 'Encounter':
-                                let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
-                                this.encounters.push(encounter);
-                                break;
-                        }
-
-                    }
-                }
-
+               this.resource = bundle;
+                this.getResources();
             }
         );
     }
 
+    getResources() {
+        let bundle = this.resource;
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'Encounter':
+                        let encounter: fhir.Encounter = <fhir.Encounter> entry.resource;
+                        this.encounters.push(encounter);
+                        break;
+                }
+
+            }
+        }
+    }
+
+    clearDown() {
+        this.encounters=[];
+    }
+    onMore(linkUrl : string) {
+
+        this.clearDown();
+        this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
+
+                this.resource = bundle;
+                this.getResources();
+
+            },
+            () => {
+                //this.progressBar = false;
+            })
+    }
     onResourceSelected(encounter : fhir.Encounter) {
         this.encounter = encounter;
         this.router.navigate([this.encounter.id], {relativeTo: this.route });
