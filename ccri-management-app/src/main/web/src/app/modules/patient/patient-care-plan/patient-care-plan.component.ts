@@ -18,6 +18,8 @@ export class PatientCarePlanComponent implements OnInit {
 
   forms : fhir.QuestionnaireResponse[] = [];
 
+  conditions : fhir.Condition[] = [];
+
   constructor(private route: ActivatedRoute,
     private fhirService : FhirService) { }
 
@@ -30,7 +32,7 @@ export class PatientCarePlanComponent implements OnInit {
 
 
       this.forms = [];
-      this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=*&_revinclude=*&_count=50').subscribe(bundle=> {
+      this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=CarePlan:condition&_include=CarePlan:supporting-information&_count=50').subscribe(bundle=> {
 
           if (bundle.entry != undefined) {
               for (let entry of bundle.entry) {
@@ -41,6 +43,10 @@ export class PatientCarePlanComponent implements OnInit {
                       case 'QuestionnaireResponse' :
                         this.forms.push(<fhir.QuestionnaireResponse> entry.resource);
                         break;
+
+                      case 'Condition' :
+                          this.conditions.push(<fhir.Condition> entry.resource);
+                          break;
                   }
               }
           }

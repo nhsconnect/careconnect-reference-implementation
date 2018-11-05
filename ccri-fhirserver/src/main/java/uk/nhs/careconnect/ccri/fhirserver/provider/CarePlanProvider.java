@@ -101,8 +101,10 @@ public class CarePlanProvider implements ICCResourceProvider {
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam resid
             , @IncludeParam(allow= {
-            "CarePlan:subject"
-            ,"CarePlan:supportingInformation"
+            "CarePlan:patient"
+            ,"CarePlan:condition"
+            ,"CarePlan:supporting-information"
+            ,"CarePlan:goal"
             , "*"}) Set<Include> includes
     ) {
         return carePlanDao.search(ctx,patient, date, categories,identifier,resid, includes);

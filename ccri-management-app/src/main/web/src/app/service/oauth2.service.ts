@@ -35,7 +35,8 @@ export class Oauth2Service {
 
   public isAuthenticating() : boolean {
      const token = localStorage.getItem('ccri-jwt');
-     if (token === undefined) return false;
+
+     if (token === undefined || token === null) return false;
      return true;
   }
 

@@ -8,7 +8,12 @@
        <h3>Care Plan</h3>
     </ng-template>
     <h4>Addresses</h4>
-
+          <span *ngIf="conditions.length>0; else noresults">
+             <app-condition [conditions]="conditions"> </app-condition>
+          </span>
+          <ng-template #noresults>
+             No results found.
+          </ng-template>
     <h4>Activity</h4>
     <span *ngFor="let activity of careplan.activity">
       <span *ngIf="activity.detail !==undefined">

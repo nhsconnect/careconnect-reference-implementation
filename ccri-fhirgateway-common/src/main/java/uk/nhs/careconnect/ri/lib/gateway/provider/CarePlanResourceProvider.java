@@ -186,8 +186,10 @@ public class CarePlanResourceProvider implements IResourceProvider {
             , @OptionalParam(name = CarePlan.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = CarePlan.SP_RES_ID) StringParam id
             , @IncludeParam(allow= {
-            "CarePlan:subject"
-            ,"CarePlan:supportingInplanation"
+            "CarePlan:patient"
+            ,"CarePlan:condition"
+            ,"CarePlan:supporting-information"
+            ,"CarePlan:goal"
             , "*"}) Set<Include> includes
     ) throws Exception {
 

@@ -130,6 +130,9 @@ public class CarePlanDao implements CarePlanRepository {
     @Autowired
     private ConsentEntityToFHIRConsentTransformer consentEntityToFHIRConsentTransformer;
 
+    @Autowired
+    private GoalEntityToFHIRGoalTransformer goalEntityToFHIRGoalTransformer;
+
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
     List<Resource> results = null;
@@ -482,10 +485,24 @@ public class CarePlanDao implements CarePlanRepository {
                                 PatientEntity patientEntity = carePlanEntity.getPatient();
                                 if (patientEntity !=null) resultsAddIfNotPresent(patientEntityToFHIRPatientTransformer.transform(patientEntity));
                                 break;
-                            case "CarePlan:supportingInformation":
+                            case "CarePlan:supporting-information":
                                 for (CarePlanSupportingInformation carePlanSupportingInformation : carePlanEntity.getSupportingInformation()) {
                                     addResource(carePlanSupportingInformation);
 
+                                }
+                                break;
+                            case "CarePlan:condition":
+                                for (CarePlanCondition carePlanCondition : carePlanEntity.getAddresses()) {
+                                    if (carePlanCondition.getCondition() !=null) {
+                                        resultsAddIfNotPresent(conditionEntityToFHIRConditionTransformer.transform(carePlanCondition.getCondition()));
+                                    }
+                                }
+                                break;
+                            case "CarePlan:goal":
+                                for (CarePlanGoal carePlanGoal : carePlanEntity.getGoals()) {
+                                    if (carePlanGoal.getGoal() != null) {
+                                        resultsAddIfNotPresent(goalEntityToFHIRGoalTransformer.transform(carePlanGoal.getGoal()));
+                                    }
                                 }
                                 break;
                             case "*":
