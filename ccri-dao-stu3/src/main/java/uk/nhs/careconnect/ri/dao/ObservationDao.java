@@ -205,6 +205,8 @@ public class ObservationDao implements ObservationRepository {
                     if (concept != null) observationEntity.setValueUnitOfMeasure(concept);
 
                 }
+            } else {
+                observationEntity.setValueConcept(null);
             }
         } catch (Exception ex) { }
 
@@ -217,6 +219,10 @@ public class ObservationDao implements ObservationRepository {
                     log.info("Value: Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
                     throw new IllegalArgumentException("Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
                 }
+            } else {
+                // to cope with child concept being removed
+                // 6/11/2018 KGM
+                observationEntity.setValueConcept(null);
             }
         } catch (Exception ex) { }
 
@@ -230,6 +236,8 @@ public class ObservationDao implements ObservationRepository {
                 throw new IllegalArgumentException("Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
             }
 
+        } else {
+            observationEntity.setBodySite(null);
         }
 
         // Method
@@ -376,6 +384,11 @@ public class ObservationDao implements ObservationRepository {
             }
         }
 
+
+        for (ObservationCategory observationCategory : observationEntity.getCategories()) {
+            em.remove(observationCategory);
+        }
+
         for (CodeableConcept concept :observation.getCategory()) {
             // Category must have a code 15/Jan/2018 testing with Synthea examples
             if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
@@ -398,6 +411,11 @@ public class ObservationDao implements ObservationRepository {
                     throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                 }
             }
+        }
+
+        // Remove previous entries
+        for (ObservationEntity observationComponent : observationEntity.getComponents()) {
+            em.remove(observationComponent);
         }
 
         for (Observation.ObservationComponentComponent component :observation.getComponent()) {
