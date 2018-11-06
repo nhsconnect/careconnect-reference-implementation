@@ -178,10 +178,10 @@ export class EdEncounterCardComponent implements OnInit {
               case '86290005':
                   this.resp = obs;
                   break;
-              case "859261000000108":
+              case "1104051000000101":
                   this.news2 = obs;
                   break;
-              case "365933000":
+              case "1104441000000107":
                   this.alert2 = obs;
                   break;
               case "75367002":
@@ -193,6 +193,8 @@ export class EdEncounterCardComponent implements OnInit {
                   this.o2 = obs;
                   break;
               case "301282008":
+              case "371825009":
+            case "722742002":
                   this.air = obs;
                   break;
               default :
@@ -260,8 +262,15 @@ export class EdEncounterCardComponent implements OnInit {
         if (comp.code.coding[0].code =='271650006') {
           dia = Number(comp.valueQuantity.value);
         }
+        if (comp.code.coding[0].code =='1091811000000102') {
+          dia = Number(comp.valueQuantity.value);
+        }
       }
+
       value = sys + '/'+dia;
+    }
+    if (value === "" && obs.code !== undefined && obs.code.coding !== undefined) {
+      value = obs.code.coding[0].display;
     }
       return value;
   }
@@ -272,7 +281,7 @@ export class EdEncounterCardComponent implements OnInit {
 
       if (obs.code.coding !== undefined) {
         switch (obs.code.coding[0].code) {
-          case "859261000000108":
+          case "1104051000000101":
             // news2
             value = Number(this.getValue(obs));
             if (value > 6) {
@@ -284,7 +293,7 @@ export class EdEncounterCardComponent implements OnInit {
             break;
 
           case '364075005':
-            // pulese
+            // pulse
             value = Number(this.getValue(obs));
 
             if (value > 130 || value <40 ) {
@@ -356,7 +365,7 @@ export class EdEncounterCardComponent implements OnInit {
             value = Number(this.getValue(obs));
             let onair :boolean = false;
             if (this.air !== undefined) {
-              onair = this.air.valueCodeableConcept.coding[0].code == '371825009';
+              onair = this.air.code.coding[0].code == '371825009';
             }
             if (onair) {
               if (value < 84 || value > 96) {
@@ -376,7 +385,9 @@ export class EdEncounterCardComponent implements OnInit {
               }
             }
             break;
-
+          case "371825009":
+            colour = 'accent';
+            break;
           case "301282008":
             if (obs.valueCodeableConcept.coding[0].code == '371825009') {
               colour = 'accent';

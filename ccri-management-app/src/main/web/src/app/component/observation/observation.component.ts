@@ -74,17 +74,18 @@ export class ObservationComponent implements OnInit {
       return "";
     let unit0: string = "";
     let unit1: string = "";
-    if (observation.component[0].valueQuantity.unit !== undefined) {
-      unit0 = observation.component[0].valueQuantity.unit;
-    }
-    if (observation.component[1].valueQuantity.unit !== undefined) {
-      unit1 = observation.component[1].valueQuantity.unit;
-    }
+
     if (observation.component[0].code !== undefined && observation.component[0].code.coding !== undefined && observation.component[0].code.coding.length > 0) {
       unit0 = observation.component[0].code.coding[0].display;
     }
     if (observation.component[1].code !== undefined && observation.component[1].code.coding !== undefined && observation.component[1].code.coding.length > 0) {
       unit1 = observation.component[1].code.coding[0].display;
+    }
+    if (observation.component[0].valueQuantity.unit !== undefined) {
+      unit0 = observation.component[0].valueQuantity.unit;
+    }
+    if (observation.component[1].valueQuantity.unit !== undefined) {
+      unit1 = observation.component[1].valueQuantity.unit;
     }
 
     if (unit0 === unit1 || unit1==="") {
