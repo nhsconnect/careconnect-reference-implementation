@@ -127,11 +127,15 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
                 );
             }
              else if (answerEntity.getReferenceCondition() != null) {
-                    answer.setValue(new Reference("Condition/"+answerEntity.getReferenceCondition().getId())
+                    answer.setValue(new Reference("Condition/"+answerEntity.getReferenceCondition().getId()).setDisplay(answerEntity.getReferenceCondition().getCode().getDisplay())
                     );
                 }
             else if (answerEntity.getReferenceObservation() != null) {
-                answer.setValue(new Reference("Observation/"+answerEntity.getReferenceObservation().getId())
+                answer.setValue(new Reference("Observation/"+answerEntity.getReferenceObservation().getId()).setDisplay(answerEntity.getReferenceObservation().getCode().getDisplay())
+                );
+            }
+            else if (answerEntity.getReferencePractitioner() != null) {
+                answer.setValue(new Reference("Practitioner/"+answerEntity.getReferencePractitioner().getId()).setDisplay(answerEntity.getReferencePractitioner().getNames().get(0).getDisplayName())
                 );
             }
         }

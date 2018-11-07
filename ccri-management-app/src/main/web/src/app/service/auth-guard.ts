@@ -14,7 +14,7 @@ export class AuthGuard  implements CanActivate {
   canActivate() {
 
     // If not SMART on FHIR or OAuth2 then quit
-    console.log('guard');
+   // console.log('guard');
 
 
     if (this.oauth2.isAuthenticated()) return true;

@@ -92,6 +92,9 @@ export class EdEncounterCardComponent implements OnInit {
                                 case 'Location':
                                     locations.push(<fhir.Location> entry.resource);
                                     break;
+                                case 'Encounter':
+                                    //locations.push(<fhir.Location> entry.resource);
+                                    break;
                                 default:
                                     console.log(entry.resource.resourceType);
                             }
@@ -198,6 +201,7 @@ export class EdEncounterCardComponent implements OnInit {
                   this.air = obs;
                   break;
               default :
+                  console.log('Not processed');
                   console.log(obs);
                   break;
           }

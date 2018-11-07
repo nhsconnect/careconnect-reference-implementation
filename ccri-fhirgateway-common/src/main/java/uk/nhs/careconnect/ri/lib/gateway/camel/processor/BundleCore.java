@@ -1281,6 +1281,9 @@ public class BundleCore {
             if (resource == null) referenceMissing(form, form.getAuthor().getReference());
             form.setAuthor(getReference(resource));
         }
+        if (form.hasItem()) {
+                form = questionnaireItem(form);
+        }
 
 
         IBaseResource iResource = null;
@@ -1327,6 +1330,27 @@ public class BundleCore {
         }
 
         return eprQuestionnaireResponse;
+    }
+
+
+    public QuestionnaireResponse questionnaireItem(QuestionnaireResponse form) {
+        for (QuestionnaireResponse.QuestionnaireResponseItemComponent itemComponent :form.getItem()) {
+            if (itemComponent.hasAnswer()) {
+                for (QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent answerComponent : itemComponent.getAnswer()) {
+                    if (answerComponent.hasValueReference()) {
+                        try {
+                            Resource resource = searchAddResource(answerComponent.getValueReference().getReference());
+
+                            if (resource == null) referenceMissing(form, form.getAuthor().getReference());
+                            answerComponent.setValue(getReference(resource));
+                        } catch (Exception ex) {
+
+                        }
+                    }
+                }
+            }
+        }
+        return form;
     }
 
 

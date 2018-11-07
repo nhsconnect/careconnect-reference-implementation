@@ -24,6 +24,18 @@
         <p>{{activity.detail.description}}</p>
       </span>
     </span>
+      <h4>Questionnaire Responses</h4>
+      <span *ngFor="let form of forms">
+          <span *ngFor="let item of form.item">
+              <p>
+                  <i>{{item.text}}</i> &nbsp;
+                  <b *ngIf="item.answer != undefined && item.answer.length>0">
+                      {{item.answer[0].valueString}}
+                      <span *ngIf="item.answer[0].valueReference !== undefined">{{item.answer[0].valueReference.display}}</span>
+                  </b>
+              </p>
+          </span>
+      </span>
   </mat-card-content>
 </mat-card>
 </span>

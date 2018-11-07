@@ -458,6 +458,9 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                             } else if (reference.getReference().contains("Observation")) {
                                 ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
                                 answerEntity.setReferenceObservation(observationEntity);
+                            } else if (reference.getReference().contains("Practitioner")) {
+                                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                                answerEntity.setReferencePractitioner(practitionerEntity);
                             }
                         }
                     }
