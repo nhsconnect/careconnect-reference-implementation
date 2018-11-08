@@ -79,7 +79,7 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             form.setSubject(new Reference("Patient/"+formEntity.getPatient().getId()).setDisplay(formEntity.getPatient().getNames().get(0).getDisplayName()));
         }
         if (formEntity.getQuestionnaire() != null) {
-            form.setQuestionnaire(new Reference("Questionnaire/"+formEntity.getQuestionnaire().getId()));
+            form.setQuestionnaire(new Reference("Questionnaire/"+formEntity.getQuestionnaire().getId()).setDisplay(formEntity.getQuestionnaire().getName()));
         }
         if (formEntity.getSourcePatient() != null) {
             form.setSource(new Reference("Patient/"+formEntity.getSourcePatient().getId()).setDisplay(formEntity.getSourcePatient().getNames().get(0).getDisplayName()));

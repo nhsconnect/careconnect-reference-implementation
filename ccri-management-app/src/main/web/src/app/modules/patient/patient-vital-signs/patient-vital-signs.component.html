@@ -9,7 +9,7 @@
                                <span flex></span>
                             <mat-chip-list><mat-chip>YAS</mat-chip></mat-chip-list>
                         </div>
-          <span *ngIf="observations.length>0">
+          <span *ngIf="observations.length>0; else noresources">
               <span flex-auto fxLayoutAlign="space-between center">
                   <span>
                     <span>Results: </span>
@@ -28,9 +28,9 @@
                   </span>
               <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
  </span>
-          <span *ngIf="observations.length==0">
+          <ng-template #noresources>
                                  No results found.
-              </span>
+          </ng-template>
       </mat-card-content>
     </mat-card>
 
