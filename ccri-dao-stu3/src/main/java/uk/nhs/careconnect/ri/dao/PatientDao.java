@@ -315,6 +315,9 @@ public class PatientDao implements PatientRepository {
         }
         em.persist(patientEntity);
 
+        for (PatientName nameSearch : patientEntity.getNames()) {
+           em.remove(nameSearch);
+        }
         for (HumanName name : patient.getName()) {
             PatientName patientName = null;
             for (PatientName nameSearch : patientEntity.getNames()) {
