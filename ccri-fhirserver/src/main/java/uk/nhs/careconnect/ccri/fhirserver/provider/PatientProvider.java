@@ -69,7 +69,7 @@ public class PatientProvider implements ICCResourceProvider {
     }
 
     @Update
-    public MethodOutcome updatePatient(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
         log.debug("Update Patient Provider called");
 
