@@ -5,16 +5,17 @@
       <h3>{{careplan.category[0].coding[0].display}}</h3>
     </span>
     <ng-template #noid>
-       <h3>Care Plan</h3>
+       <h3>End Of Life Care</h3>
     </ng-template>
-    <h4>Addresses</h4>
+    <h4>Addresses (Advanced Treatment Preference Problem)</h4>
           <span *ngIf="conditions.length>0; else noresults">
              <app-condition [conditions]="conditions"> </app-condition>
           </span>
           <ng-template #noresults>
              No results found.
           </ng-template>
-    <h4>Activity</h4>
+
+    <h4>Activity (Advanced Treatment Preferences)</h4>
     <span *ngFor="let activity of careplan.activity">
       <span *ngIf="activity.detail !==undefined">
         <span *ngIf="activity.detail.code !== undefined && activity.detail.code.coding !== undefined">
@@ -24,8 +25,19 @@
         <p>{{activity.detail.description}}</p>
       </span>
     </span>
+     </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-content>
       <h4>Questionnaire Responses</h4>
       <span *ngFor="let form of forms">
+
+        <span *ngIf="form.item !== undefined">
+          <mat-card>
+            <mat-card-content>
+               <span *ngIf="form.questionnaire !== undefined">
+              <h4>{{form.questionnaire.display}}</h4>
+            </span>
           <span *ngFor="let item of form.item">
               <p>
                   <i>{{item.text}}</i> &nbsp;
@@ -35,7 +47,36 @@
                   </b>
               </p>
           </span>
+              </mat-card-content>
+            </mat-card>
+          </span>
       </span>
+     </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-content>
+        <h4>Alerts</h4>
+          <span *ngIf="flags.length>0; else noflags">
+
+
+              <app-flag [flags]="flags" ></app-flag>
+          </span>
+          <ng-template #noflags>
+                                 No results found.
+          </ng-template>
+     </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-content>
+        <h4>Functional Status</h4>
+          <span *ngIf="observations.length>0; else noresources">
+
+
+              <app-observation [observations]="observations" (observation)="onResoureSelected($event)"></app-observation>
+          </span>
+          <ng-template #noresources>
+                                 No results found.
+          </ng-template>
   </mat-card-content>
 </mat-card>
 </span>

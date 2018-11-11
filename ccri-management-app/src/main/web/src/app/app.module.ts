@@ -135,6 +135,7 @@ import {AuthGuardOauth2} from "./service/auth-guard-oauth2";
 import {HieMainComponent} from "./modules/hie/hie-main/hie-main.component";
 import {OAuthModule} from "angular-oauth2-oidc";
 import { PatientCarePlanComponent } from './modules/patient/patient-care-plan/patient-care-plan.component';
+import { FlagComponent } from './component/flag/flag.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -168,6 +169,7 @@ export function initializeApp(appConfig: AppConfig) {
     CompositionDetailComponent,
     DocumentReferenceComponent,
     EncounterComponent,
+    FlagComponent,
     GoalComponent,
     ImmunisationComponent,
     ImmunisationDetailComponent,
@@ -221,7 +223,8 @@ export function initializeApp(appConfig: AppConfig) {
 
       RegisterSmartComponent,
       RegisterSmartSecretComponent,
-      PatientCarePlanComponent
+      PatientCarePlanComponent,
+      FlagComponent
 
   ],
   entryComponents: [

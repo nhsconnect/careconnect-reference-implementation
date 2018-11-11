@@ -231,6 +231,9 @@ public class BundleCore {
                                 case "QuestionnaireResponse":
                                     resource = searchAddQuestionnaireResponse(referenceId, (QuestionnaireResponse) iResource);
                                     break;
+                                case "Questionnaire":
+                                    resource = searchAddQuestionnaire(referenceId, (Questionnaire) iResource);
+                                    break;
                                 case "RelatedPerson":
                                     resource = searchAddRelatedPerson(referenceId, (RelatedPerson) iResource);
                                     break;
@@ -1274,6 +1277,12 @@ public class BundleCore {
 
             if (resource == null) referenceMissing(form, form.getSource().getReference());
             form.setSource(getReference(resource));
+        }
+        if (form.hasQuestionnaire()) {
+            Resource resource = searchAddResource(form.getQuestionnaire().getReference());
+
+            if (resource == null) referenceMissing(form, form.getQuestionnaire().getReference());
+            form.setQuestionnaire(getReference(resource));
         }
         if (form.hasAuthor()) {
             Resource resource = searchAddResource(form.getAuthor().getReference());
@@ -3852,6 +3861,90 @@ public class BundleCore {
             }
 
         return eprPatient;
+    }
+
+    public Questionnaire searchAddQuestionnaire(String formId, Questionnaire form) {
+
+        log.info("Questionnaire searchAdd " + formId);
+
+        if (form == null) throw new InternalErrorException("Bundle processing error");
+
+        Questionnaire eprQuestionnaire = (Questionnaire) resourceMap.get(formId);
+
+        // Questionnaire already processed, quit with Questionnaire
+        if (eprQuestionnaire != null) return eprQuestionnaire;
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : form.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRQuestionnaire", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Questionnaire");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch (Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size() > 0) {
+                    eprQuestionnaire = (Questionnaire) returnedBundle.getEntry().get(0).getResource();
+                    log.info("Found Questionnaire = " + eprQuestionnaire.getId());
+                    // KGM 31/Jan/2018 Missing break on finding form
+                    break;
+                }
+            }
+        }
+        // Questionnaire found do not add
+        if (eprQuestionnaire != null) {
+            setResourceMap(formId, eprQuestionnaire);
+
+            return eprQuestionnaire;
+        }
+
+        IBaseResource iResource = null;
+        String jsonResource = ctx.newJsonParser().encodeResourceToString(form);
+        try {
+            Exchange exchange = template.send("direct:FHIRQuestionnaire", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Questionnaire");
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(jsonResource);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch (Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof Questionnaire) {
+            eprQuestionnaire = (Questionnaire) iResource;
+            setResourceMap(formId, eprQuestionnaire);
+        } else if (iResource instanceof OperationOutcome) {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprQuestionnaire;
     }
 
     public RelatedPerson searchAddRelatedPerson(String personId, RelatedPerson person) {

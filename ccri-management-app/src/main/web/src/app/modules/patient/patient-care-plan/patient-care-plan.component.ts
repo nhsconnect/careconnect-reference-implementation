@@ -18,7 +18,12 @@ export class PatientCarePlanComponent implements OnInit {
 
   forms : fhir.QuestionnaireResponse[] = [];
 
+
+  flags : fhir.Flag[] = [];
+
   conditions : fhir.Condition[] = [];
+
+  observations : fhir.Observation[] = [];
 
   constructor(private route: ActivatedRoute,
     private fhirService : FhirService) { }
@@ -32,7 +37,32 @@ export class PatientCarePlanComponent implements OnInit {
 
 
       this.forms = [];
-      this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=CarePlan:condition&_include=CarePlan:supporting-information&_count=50').subscribe(bundle=> {
+      this.fhirService.get('/Flag?patient='+this.patientid).subscribe( bundle => {
+        if (bundle.entry != undefined) {
+          for (let entry of bundle.entry) {
+            switch (entry.resource.resourceType) {
+              case 'Flag' :
+                this.flags.push(<fhir.Flag> entry.resource);
+                break;
+            }
+          }
+        }
+      });
+
+    this.fhirService.get('/Observation?patient='+this.patientid+'&code=761869008').subscribe( bundle => {
+      if (bundle.entry != undefined) {
+        for (let entry of bundle.entry) {
+          switch (entry.resource.resourceType) {
+            case 'Observation' :
+              this.observations.push(<fhir.Observation> entry.resource);
+              break;
+          }
+        }
+      }
+    });
+
+
+    this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=CarePlan:condition&_include=CarePlan:supporting-information&_count=50').subscribe(bundle=> {
 
           if (bundle.entry != undefined) {
               for (let entry of bundle.entry) {
