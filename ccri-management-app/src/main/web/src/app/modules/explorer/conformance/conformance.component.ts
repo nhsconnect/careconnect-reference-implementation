@@ -11,7 +11,7 @@ export class ConformanceComponent implements OnInit {
 
   public resource : any;
 
-  public resourceString : string = undefined;
+  public resourceString : any = undefined;
 
   public format : Formats;
 

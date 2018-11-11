@@ -34,7 +34,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   public resource : fhir.Bundle = undefined;
 
-  public resourceString : string = undefined;
+  public resourceString : any = undefined;
 
   public query = undefined;
 
