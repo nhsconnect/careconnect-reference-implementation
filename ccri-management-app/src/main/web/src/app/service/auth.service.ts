@@ -224,14 +224,18 @@ export class AuthService {
                     switch (smartextension.url) {
                       case "authorize" : {
                         this.authoriseUri = smartextension.valueUri;
+                        localStorage.setItem("authoriseUri", this.authoriseUri);
                         break;
                       }
                       case "register" : {
                         this.registerUri = smartextension.valueUri;
+                        localStorage.setItem("registerUri", this.registerUri);
                         break;
                       }
                       case "token" : {
                         this.tokenUri = smartextension.valueUri;
+                          localStorage.setItem("tokenUri", this.tokenUri);
+
                         break;
                       }
                     }
@@ -262,11 +266,13 @@ export class AuthService {
 
 
 
-    localStorage.setItem("authoriseUri", this.authoriseUri);
-    localStorage.setItem("tokenUri", this.tokenUri);
-    localStorage.setItem("registerUri", this.registerUri);
+    if (this.authoriseUri === undefined) localStorage.getItem("authoriseUri");
+    if (this.tokenUri === undefined) localStorage.getItem("tokenUri");
+    if (this.registerUri === undefined) localStorage.getItem("registerUri");
 
-    if (this.oauth2.getToken() !== undefined) {
+
+
+      if (this.oauth2.getToken() !== undefined) {
       // access token is present so forgo access token retrieval
 
       this.updateUser();
