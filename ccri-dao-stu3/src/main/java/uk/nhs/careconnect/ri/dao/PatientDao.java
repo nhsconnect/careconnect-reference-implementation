@@ -315,8 +315,14 @@ public class PatientDao implements PatientRepository {
         }
         em.persist(patientEntity);
 
+        for (PatientName nameSearch : patientEntity.getNames()) {
+           em.remove(nameSearch);
+        }
+        patientEntity.setNames(new ArrayList<>());
+
         for (HumanName name : patient.getName()) {
             PatientName patientName = null;
+            /*
             for (PatientName nameSearch : patientEntity.getNames()) {
                 // look for matching surname and also if the have matching given name
                 if (nameSearch.getFamilyName().equals(name.getFamily())) {
@@ -332,6 +338,7 @@ public class PatientDao implements PatientRepository {
                     }
                 }
             }
+            */
             if (patientName == null)  {
                 patientName = patientEntity.addName();
                 patientName.setPatientEntity(patientEntity);
