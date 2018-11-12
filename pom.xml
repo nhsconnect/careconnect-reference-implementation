@@ -165,12 +165,11 @@
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver-common</module>
         <module>ccri-fhirgateway-common</module>
-     <!--   <module>ccri</module> -->
         <module>ccri-fhir</module>
         <module>ccri-smartonfhir</module>
         <module>ccri-fhirserver</module>
 
-        <module>ccri-management-app</module>
+      <!--  <module>ccri-management-app</module> -->
         <module>ccri-management</module>
 
     </modules>
