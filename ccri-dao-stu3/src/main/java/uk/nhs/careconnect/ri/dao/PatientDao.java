@@ -462,7 +462,7 @@ public class PatientDao implements PatientRepository {
         }
 
         if (reverseIncludes!= null || includes!=null) {
-            log.info("Reverse includes");
+            //log.info("Reverse includes");
             for (PatientEntity patientEntity : qryResults) {
                 if (includes.size() > 0) {
                     for (Include include : includes) {
@@ -485,7 +485,7 @@ public class PatientDao implements PatientRepository {
 
                     for (Include revinclude : reverseIncludes) {
 
-                        log.info("_revInclude  = "+revinclude.getValue());
+                        log.debug("_revInclude  = "+revinclude.getValue());
                         switch (revinclude.getValue()) {
 
                             case "*":

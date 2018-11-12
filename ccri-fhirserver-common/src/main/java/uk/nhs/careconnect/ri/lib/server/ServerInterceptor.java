@@ -209,20 +209,20 @@ public class ServerInterceptor extends InterceptorAdapter {
                 MediaType media = MediaType.parseMediaType(contentType);
                 // TODO improve the logic here
                 if (media.getSubtype() != null && !media.getSubtype().contains("xml") && !media.getSubtype().contains("fhir") && !media.getSubtype().contains("json") && !media.getSubtype().contains("plain")) {
-                    log.info("Unsupported media type: " + contentType);
+                    log.debug("Unsupported media type: " + contentType);
                     throw new InvalidRequestException("Unsupported media type: sub " + contentType);
                 } else {
                     if (!contentType.contains("xml") && !contentType.contains("json")) {
-                        log.info("Unsupported media type: " + contentType);
+                        log.debug("Unsupported media type: " + contentType);
                         throw new InvalidRequestException("Unsupported media type: content " + contentType);
                     }
                 }
 
         } catch (InvalidMediaTypeException e) {
-            log.info("Unsupported media type: " + contentType);
+            log.debug("Unsupported media type: " + contentType);
             // KGM 26/02/2018 Don't throw error for xml and json
             if (!contentType.contains("xml") && !contentType.contains("json")) {
-                log.info("Unsupported media type: " + contentType);
+                log.debug("Unsupported media type: " + contentType);
                 throw new InvalidRequestException("Unsupported media type: content " + contentType);
             }
         }
@@ -247,7 +247,7 @@ public class ServerInterceptor extends InterceptorAdapter {
             response.addHeader("X-Correlation-ID", val);
            // theServletResponse.setHeader("X-Request-ID","");
         }
-        log.info("oR Content-Type = "+theRequestDetails.getHeader("Accept"));
+        log.debug("oR Content-Type = "+theRequestDetails.getHeader("Accept"));
         String acceptType = theRequestDetails.getHeader("Accept");
 
         String[] value = theRequestDetails.getParameters().get("_format");

@@ -59,7 +59,7 @@ public class FlagProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
     try {
-        log.info(theId.getId());
+        log.trace(theId.getId());
         Flag newList = flagDao.create(ctx, flag, theId, theConditional);
         method.setId(newList.getIdElement());
         method.setResource(newList);

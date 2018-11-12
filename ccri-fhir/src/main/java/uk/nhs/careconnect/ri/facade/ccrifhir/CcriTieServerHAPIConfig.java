@@ -100,6 +100,7 @@ public class CcriTieServerHAPIConfig extends RestfulServer {
 
 				//EOLC
 				,applicationContext.getBean(CarePlanResourceProvider.class)
+				,applicationContext.getBean(EpisodeOfCareResourceProvider.class)
 
 		));
 

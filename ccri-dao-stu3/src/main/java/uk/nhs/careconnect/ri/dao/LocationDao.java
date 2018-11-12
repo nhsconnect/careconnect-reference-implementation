@@ -150,15 +150,15 @@ public class LocationDao implements LocationRepository {
 
         if (location.hasPosition()) {
             if (location.getPosition().hasLatitude()) {
-                log.info(location.getPosition().getLatitude().toPlainString());
+                log.debug(location.getPosition().getLatitude().toPlainString());
                 locationEntity.setLatitude(location.getPosition().getLatitude());
             }
             if (location.getPosition().hasLongitude()) {
-                log.info(location.getPosition().getLongitude().toPlainString());
+                log.debug(location.getPosition().getLongitude().toPlainString());
                 locationEntity.setLongitude(location.getPosition().getLongitude());
             }
             if (location.getPosition().hasAltitude()) {
-                log.info(location.getPosition().getAltitude().toPlainString());
+                log.debug(location.getPosition().getAltitude().toPlainString());
                 locationEntity.setAltitude(location.getPosition().getAltitude());
             }
         }

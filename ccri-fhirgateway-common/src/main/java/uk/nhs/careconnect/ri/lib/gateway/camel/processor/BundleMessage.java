@@ -63,7 +63,7 @@ public class BundleMessage implements Processor {
                     }
                 }
                 if (resource instanceof DocumentReference) {
-                    log.info("Document Reference Location " + resource.getId());
+                    log.debug("Document Reference Location " + resource.getId());
                     exchange.getIn().setHeader("Location",resource.getId());
                     exchange.getIn().setHeader("Content-Location",resource.getId());
                 }
@@ -97,7 +97,7 @@ public class BundleMessage implements Processor {
 
             setExchange(exchange,operationOutcome);
         }
-        log.info("Finishing Message Bundle Processing");
+        log.debug("Finishing Message Bundle Processing");
 
     }
 

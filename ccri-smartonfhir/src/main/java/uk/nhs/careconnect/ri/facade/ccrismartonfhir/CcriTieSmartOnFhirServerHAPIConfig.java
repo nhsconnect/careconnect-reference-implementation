@@ -122,6 +122,7 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 
 				//EOLC
 				,applicationContext.getBean(CarePlanResourceProvider.class)
+				,applicationContext.getBean(EpisodeOfCareResourceProvider.class)
 		));
 
 		// Replace built in conformance provider (CapabilityStatement)

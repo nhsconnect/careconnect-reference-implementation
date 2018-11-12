@@ -88,16 +88,16 @@ public class BundleCore {
 
     public Boolean checkCircularReference(Encounter encounter) {
         Boolean found = false;
-        log.info("Checking Encounter id="+encounter.getId());
-        log.info("Checking Encounter idElement="+encounter.getIdElement());
+        log.debug("Checking Encounter id="+encounter.getId());
+        log.debug("Checking Encounter idElement="+encounter.getIdElement());
         if (encounter.hasDiagnosis()) {
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 if (entry.getResource() instanceof Condition) {
                     Condition condition = (Condition) entry.getResource();
-                    log.info("Check condition = "+condition.getId());
+                    log.debug("Check condition = "+condition.getId());
                     if (condition.hasContext()) {
                         for (Encounter.DiagnosisComponent diagnosis : encounter.getDiagnosis()) {
-                            log.info("Check encounter.diagnosis = "+diagnosis.getCondition().getReference());
+                            log.debug("Check encounter.diagnosis = "+diagnosis.getCondition().getReference());
                             if (diagnosis.getCondition().getReference().equals(condition.getId())) {
 
                                 if (condition.getContext().getReference().equals(encounter.getId())) {
@@ -123,20 +123,20 @@ public class BundleCore {
 
     public Resource searchAddResource(String referenceId) {
         try {
-            log.info("searchAddResource " + referenceId);
+            log.debug("searchAddResource " + referenceId);
             if (referenceId == null) {
                 return null; //throw new InternalErrorException("Null Reference");
             }
             Resource resource = resourceMap.get(referenceId);
             // Don't process, if already processed.
             if (resource != null) {
-                log.info("Already Processed " + resource.getId());
+                log.debug("Already Processed " + resource.getId());
                 return resource;
             }
 
             if (referenceId.contains("demographics.spineservices.nhs.uk")) {
                 //
-                log.info("NHS Number detected");
+                log.debug("NHS Number detected");
             }
             if (referenceId.contains("directory.spineservices.nhs.uk")) {
                 if (referenceId.contains("Organization")) {
@@ -213,6 +213,9 @@ public class BundleCore {
                                 case "DocumentReference":
                                     resource = searchAddDocumentReference(referenceId, (DocumentReference) iResource);
                                     break;
+                                case "EpisodeOfCare":
+                                    resource = searchAddEpisodeOfCare(referenceId, (EpisodeOfCare) iResource);
+                                    break;
                                 case "Flag":
                                     resource = searchAddFlag(referenceId, (Flag) iResource);
                                     break;
@@ -247,7 +250,7 @@ public class BundleCore {
                                     resource = searchAddMedication(referenceId, (Medication) iResource);
                                     break;
                                 default:
-                                    log.info("Found in Bundle. Not processed (" + iResource.getClass());
+                                    log.debug("Found in Bundle. Not processed (" + iResource.getClass());
                             }
 
                         }
@@ -258,7 +261,7 @@ public class BundleCore {
                     //}
                 }
             }
-            if (resource == null) log.info("Search Not Found " + referenceId);
+            if (resource == null) log.debug("Search Not Found " + referenceId);
             if (this.operationOutcome != null) return operationOutcome;
             return resource;
         } catch (Exception ex) {
@@ -284,7 +287,7 @@ public class BundleCore {
     }
 
     private ListResource searchAddList(String listId,ListResource list) {
-        log.info("List searchAdd " +listId);
+        log.debug("List searchAdd " +listId);
 
         if (list == null) throw new InternalErrorException("Bundle processing error");
 
@@ -328,7 +331,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprListResource = (ListResource) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found ListResource = " + eprListResource.getId());
+                    log.debug("Found ListResource = " + eprListResource.getId());
                 }
             }
         }
@@ -409,7 +412,7 @@ public class BundleCore {
 
     public Practitioner searchAddPractitioner(String practitionerId,Practitioner practitioner) {
 
-        log.info("Practitioner searchAdd " +practitionerId);
+        log.debug("Practitioner searchAdd " +practitionerId);
 
         if (practitioner == null) throw new InternalErrorException("Bundle processing error");
 
@@ -452,7 +455,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size() > 0) {
                     eprPractitioner = (Practitioner) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Practitioner = " + eprPractitioner.getId());
+                    log.debug("Found Practitioner = " + eprPractitioner.getId());
                 }
             }
         }
@@ -502,7 +505,7 @@ public class BundleCore {
     }
 
     public Organization searchAddOrganisation(String organisationId,Organization organisation) {
-        log.info("Orgnisation searchAdd " +organisationId);
+        log.debug("Orgnisation searchAdd " +organisationId);
 
         if (organisation == null) throw new InternalErrorException("Bundle processing error");
 
@@ -545,7 +548,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprOrganization = (Organization) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Organization = " + eprOrganization.getId());
+                    log.debug("Found Organization = " + eprOrganization.getId());
                 }
             }
         }
@@ -559,7 +562,7 @@ public class BundleCore {
 
         if (organisation.getPartOf().getReference() != null) {
             Resource resource = searchAddResource(organisation.getPartOf().getReference());
-            log.info("Found PartOfOrganization = "+resource.getId());
+            log.debug("Found PartOfOrganization = "+resource.getId());
 
             if (resource == null) referenceMissing(organisation, organisation.getPartOf().getReference());
             organisation.setPartOf(getReference(resource));
@@ -610,7 +613,7 @@ public class BundleCore {
     }
 
     public HealthcareService searchAddHealthcareService(String serviceId,HealthcareService service) {
-        log.info("HealthcareService searchAdd " +serviceId);
+        log.debug("HealthcareService searchAdd " +serviceId);
 
         if (service== null) throw new InternalErrorException("Bundle processing error");
 
@@ -630,7 +633,7 @@ public class BundleCore {
                     .setValue(service.getId());
         }
 
-        log.info("Looking up HealthcareService Service " +serviceId);
+        log.debug("Looking up HealthcareService Service " +serviceId);
         for (Identifier identifier : service.getIdentifier()) {
             Exchange exchange = template.send("direct:FHIRHealthcareService", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
@@ -654,11 +657,11 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprService = (HealthcareService) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found HealthcareService = " + eprService.getId());
+                    log.debug("Found HealthcareService = " + eprService.getId());
                 }
             }
         }
-        log.info("Adding HealthcareService Service " +serviceId);
+        log.debug("Adding HealthcareService Service " +serviceId);
         // HealthcareService found do not add
         if (eprService != null) {
             setResourceMap(serviceId,eprService);
@@ -670,7 +673,7 @@ public class BundleCore {
         if (service.getProvidedBy().getReference() != null) {
             Resource resource = searchAddResource(service.getProvidedBy().getReference());
 
-            log.info("Found PartOf HealthcareService = "+resource.getId());
+            log.debug("Found PartOf HealthcareService = "+resource.getId());
             if (resource == null) referenceMissing(service, service.getProvidedBy().getReference());
             service.setProvidedBy(getReference(resource));
         }
@@ -680,7 +683,7 @@ public class BundleCore {
             if (reference.getReference() != null) {
                 Resource resource = searchAddResource(reference.getReference());
 
-                log.info("Found Location Reference HealthcareService = " + resource.getId());
+                log.debug("Found Location Reference HealthcareService = " + resource.getId());
                 if (resource == null) referenceMissing(service, reference.getReference());
                 locations.add(getReference(resource));
             }
@@ -734,7 +737,7 @@ public class BundleCore {
     }
 
     public Location searchAddLocation(String locationId,Location location) {
-        log.info("Location searchAdd " +locationId);
+        log.debug("Location searchAdd " +locationId);
 
         if (location == null) throw new InternalErrorException("Bundle processing error");
 
@@ -777,7 +780,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprLocation = (Location) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Location = " + eprLocation.getId());
+                    log.debug("Found Location = " + eprLocation.getId());
                 }
             }
         }
@@ -843,7 +846,7 @@ public class BundleCore {
     }
 
     public AllergyIntolerance searchAddAllergyIntolerance(String allergyIntoleranceId,AllergyIntolerance allergyIntolerance) {
-        log.info("AllergyIntolerance searchAdd " +allergyIntoleranceId);
+        log.debug("AllergyIntolerance searchAdd " +allergyIntoleranceId);
 
         if (allergyIntolerance == null) throw new InternalErrorException("Bundle processing error");
 
@@ -887,7 +890,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprAllergyIntolerance = (AllergyIntolerance) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found AllergyIntolerance = " + eprAllergyIntolerance.getId());
+                    log.debug("Found AllergyIntolerance = " + eprAllergyIntolerance.getId());
                 }
             }
         }
@@ -896,7 +899,7 @@ public class BundleCore {
 
             Resource resource = searchAddResource(allergyIntolerance.getAsserter().getReference());
 
-            log.info("Found Practitioner = " + resource.getId());
+            log.debug("Found Practitioner = " + resource.getId());
             if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getAsserter().getReference());
             allergyIntolerance.setAsserter(getReference(resource));
 
@@ -955,7 +958,7 @@ public class BundleCore {
     }
 
     public CarePlan searchAddCarePlan(String carePlanId,CarePlan carePlan) {
-        log.info("CarePlan searchAdd " +carePlanId);
+        log.debug("CarePlan searchAdd " +carePlanId);
 
         if (carePlan == null) throw new InternalErrorException("Bundle processing error");
 
@@ -999,7 +1002,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprCarePlan = (CarePlan) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found CarePlan = " + eprCarePlan.getId());
+                    log.debug("Found CarePlan = " + eprCarePlan.getId());
                 }
             }
         }
@@ -1094,7 +1097,7 @@ public class BundleCore {
     }
 
     public CareTeam searchAddCareTeam(String careTeamId,CareTeam careTeam) {
-        log.info("CareTeam searchAdd " +careTeamId);
+        log.debug("CareTeam searchAdd " +careTeamId);
 
         if (careTeam == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1138,7 +1141,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprCareTeam = (CareTeam) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found CareTeam = " + eprCareTeam.getId());
+                    log.debug("Found CareTeam = " + eprCareTeam.getId());
                 }
             }
         }
@@ -1211,7 +1214,7 @@ public class BundleCore {
 
 
     public QuestionnaireResponse searchAddQuestionnaireResponse(String formId,QuestionnaireResponse form) {
-        log.info("QuestionnaireResponse searchAdd " +formId);
+        log.debug("QuestionnaireResponse searchAdd " +formId);
 
         if (form == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1255,7 +1258,7 @@ public class BundleCore {
             Bundle returnedBundle = (Bundle) iresource;
             if (returnedBundle.getEntry().size()>0) {
                 eprQuestionnaireResponse = (QuestionnaireResponse) returnedBundle.getEntry().get(0).getResource();
-                log.info("Found QuestionnaireResponse = " + eprQuestionnaireResponse.getId());
+                log.debug("Found QuestionnaireResponse = " + eprQuestionnaireResponse.getId());
             }
         }
 
@@ -1364,7 +1367,7 @@ public class BundleCore {
 
 
     public Observation searchAddObservation(String observationId,Observation observation) {
-        log.info("Observation searchAdd " +observationId);
+        log.debug("Observation searchAdd " +observationId);
 
         if (observation == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1408,7 +1411,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprObservation = (Observation) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Observation = " + eprObservation.getId());
+                    log.debug("Found Observation = " + eprObservation.getId());
                 }
             }
         }
@@ -1494,7 +1497,7 @@ public class BundleCore {
 
 
     public DiagnosticReport searchAddDiagnosticReport(String diagnosticReportId,DiagnosticReport diagnosticReport) {
-        log.info("DiagnosticReport searchAdd " +diagnosticReportId);
+        log.debug("DiagnosticReport searchAdd " +diagnosticReportId);
 
         if (diagnosticReport == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1537,7 +1540,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprDiagnosticReport = (DiagnosticReport) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found DiagnosticReport = " + eprDiagnosticReport.getId());
+                    log.debug("Found DiagnosticReport = " + eprDiagnosticReport.getId());
                 }
             }
         }
@@ -1624,7 +1627,7 @@ public class BundleCore {
     // KGM 22/Jan/2018 Added Immunization processing
 
     public Immunization searchAddImmunization(String immunisationId,Immunization immunisation) {
-        log.info("Immunization searchAdd " +immunisationId);
+        log.debug("Immunization searchAdd " +immunisationId);
 
         if (immunisation == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1669,7 +1672,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprImmunization = (Immunization) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Immunization = " + eprImmunization.getId());
+                    log.debug("Found Immunization = " + eprImmunization.getId());
                 }
             }
         }
@@ -1745,7 +1748,7 @@ public class BundleCore {
 
 
      public MedicationRequest searchAddMedicationRequest(String medicationRequestId,MedicationRequest medicationRequest) {
-        log.info("MedicationRequest searchAdd " +medicationRequestId);
+        log.debug("MedicationRequest searchAdd " +medicationRequestId);
 
         if (medicationRequest == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1789,7 +1792,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprMedicationRequest = (MedicationRequest) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found MedicationRequest = " + eprMedicationRequest.getId());
+                    log.debug("Found MedicationRequest = " + eprMedicationRequest.getId());
                 }
             }
         }
@@ -1876,7 +1879,7 @@ public class BundleCore {
     }
 
     public Medication searchAddMedication(String MedicationId,Medication Medication) {
-        log.info("Medication searchAdd " +MedicationId);
+        log.debug("Medication searchAdd " +MedicationId);
 
         if (Medication == null) throw new InternalErrorException("Bundle processing error");
 
@@ -1914,7 +1917,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprMedication = (Medication) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Medication = " + eprMedication.getId());
+                    log.debug("Found Medication = " + eprMedication.getId());
                 }
             }
         }
@@ -1976,7 +1979,7 @@ public class BundleCore {
 
 
     public RiskAssessment searchAddRiskAssessment(String riskAssessmentId,RiskAssessment riskAssessment) {
-        log.info("RiskAssessment searchAdd " +riskAssessmentId);
+        log.debug("RiskAssessment searchAdd " +riskAssessmentId);
 
         if (riskAssessment == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2021,7 +2024,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprRiskAssessment = (RiskAssessment) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found RiskAssessment = " + eprRiskAssessment.getId());
+                    log.debug("Found RiskAssessment = " + eprRiskAssessment.getId());
                 }
             }
         }
@@ -2096,7 +2099,7 @@ public class BundleCore {
 
 
     public ClinicalImpression searchAddClinicalImpression(String impressionId,ClinicalImpression impression) {
-        log.info("ClinicalImpression searchAdd " +impressionId);
+        log.debug("ClinicalImpression searchAdd " +impressionId);
 
         if (impression == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2140,7 +2143,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprClinicalImpression = (ClinicalImpression) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found ClinicalImpression = " + eprClinicalImpression.getId());
+                    log.debug("Found ClinicalImpression = " + eprClinicalImpression.getId());
                 }
             }
         }
@@ -2215,7 +2218,7 @@ public class BundleCore {
     }
 
     public Consent searchAddConsent(String consentId,Consent consent) {
-        log.info("Consent searchAdd " +consentId);
+        log.debug("Consent searchAdd " +consentId);
 
         if (consent == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2260,7 +2263,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprConsent = (Consent) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Consent = " + eprConsent.getId());
+                    log.debug("Found Consent = " + eprConsent.getId());
                 }
             }
         }
@@ -2354,7 +2357,7 @@ public class BundleCore {
     }
 
     public Flag searchAddFlag(String flagId,Flag flag) {
-        log.info("Flag searchAdd " +flagId);
+        log.debug("Flag searchAdd " +flagId);
 
         if (flag == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2398,7 +2401,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprFlag = (Flag) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Flag = " + eprFlag.getId());
+                    log.debug("Found Flag = " + eprFlag.getId());
                 }
             }
         }
@@ -2469,7 +2472,7 @@ public class BundleCore {
 
 
     public Goal searchAddGoal(String goalId,Goal goal) {
-        log.info("Goal searchAdd " +goalId);
+        log.debug("Goal searchAdd " +goalId);
 
         if (goal == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2513,7 +2516,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprGoal = (Goal) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Goal = " + eprGoal.getId());
+                    log.debug("Found Goal = " + eprGoal.getId());
                 }
             }
         }
@@ -2579,7 +2582,7 @@ public class BundleCore {
 
 
     public MedicationDispense searchAddMedicationDispense(String medicationDispenseId,MedicationDispense medicationDispense) {
-        log.info("MedicationDispense searchAdd " +medicationDispenseId);
+        log.debug("MedicationDispense searchAdd " +medicationDispenseId);
 
         if (medicationDispense == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2623,7 +2626,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprMedicationDispense = (MedicationDispense) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found MedicationDispense = " + eprMedicationDispense.getId());
+                    log.debug("Found MedicationDispense = " + eprMedicationDispense.getId());
                 }
             }
         }
@@ -2737,7 +2740,7 @@ public class BundleCore {
     }
 
     public MedicationStatement searchAddMedicationStatement(String medicationStatementId,MedicationStatement medicationStatement) {
-        log.info("MedicationStatement searchAdd " +medicationStatementId);
+        log.debug("MedicationStatement searchAdd " +medicationStatementId);
 
         if (medicationStatement == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2781,7 +2784,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprMedicationStatement = (MedicationStatement) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found MedicationStatement = " + eprMedicationStatement.getId());
+                    log.debug("Found MedicationStatement = " + eprMedicationStatement.getId());
                 }
             }
         }
@@ -2905,7 +2908,7 @@ public class BundleCore {
 
 
     public Condition searchAddCondition(String conditionId, Condition condition) {
-        log.info("Condition searchAdd " +conditionId);
+        log.debug("Condition searchAdd " +conditionId);
 
         if (condition == null) throw new InternalErrorException("Bundle processing error");
 
@@ -2949,7 +2952,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprCondition = (Condition) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Condition = " + eprCondition.getId());
+                    log.debug("Found Condition = " + eprCondition.getId());
                 }
             }
         }
@@ -2959,7 +2962,7 @@ public class BundleCore {
 
             Resource resource = searchAddResource(condition.getAsserter().getReference());
             if (resource == null) referenceMissing(condition, condition.getAsserter().getReference());
-            log.info("Found Resource = " + resource.getId());
+            log.debug("Found Resource = " + resource.getId());
             condition.setAsserter(getReference(resource));
         }
         if (condition.getSubject() != null) {
@@ -3020,7 +3023,7 @@ public class BundleCore {
     }
 
     public Composition searchAddComposition(String compositionId,Composition composition) {
-        log.info("Composition searchAdd " +compositionId);
+        log.debug("Composition searchAdd " +compositionId);
 
         if (composition == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3069,7 +3072,7 @@ public class BundleCore {
             Bundle returnedBundle = (Bundle) iresource;
             if (returnedBundle.getEntry().size()>0) {
                 eprComposition = (Composition) returnedBundle.getEntry().get(0).getResource();
-                log.info("Found Composition = " + eprComposition.getId());
+                log.debug("Found Composition = " + eprComposition.getId());
             }
         }
 
@@ -3078,7 +3081,7 @@ public class BundleCore {
         for (Reference reference : composition.getAuthor()) {
             Resource resource = searchAddResource(reference.getReference());
             if (resource != null) {
-                log.info("Found Resource = " + resource.getId());
+                log.debug("Found Resource = " + resource.getId());
                 authors.add(getReference(resource));
             }
 
@@ -3088,7 +3091,7 @@ public class BundleCore {
         if (composition.getSubject() != null) {
             Resource resource = searchAddResource(composition.getSubject().getReference());
             if (resource != null) {
-                log.info("Patient resource = "+resource.getId());
+                log.debug("Patient resource = "+resource.getId());
             }
             composition.setSubject(getReference(resource));
         }
@@ -3167,7 +3170,7 @@ public class BundleCore {
     }
 
     public DocumentReference searchAddDocumentReference(String documentReferenceId,DocumentReference documentReference) {
-        log.info("DocumentReference searchAdd " +documentReferenceId);
+        log.debug("DocumentReference searchAdd " +documentReferenceId);
 
         if (documentReference == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3213,7 +3216,7 @@ public class BundleCore {
             Bundle returnedBundle = (Bundle) iresource;
             if (returnedBundle.getEntry().size()>0) {
                 eprDocumentReference = (DocumentReference) returnedBundle.getEntry().get(0).getResource();
-                log.info("Found DocumentReference = " + eprDocumentReference.getId());
+                log.debug("Found DocumentReference = " + eprDocumentReference.getId());
             }
         }
 
@@ -3222,7 +3225,7 @@ public class BundleCore {
         for (Reference reference : documentReference.getAuthor()) {
             Resource resource = searchAddResource(reference.getReference());
             if (resource != null) {
-                log.info("Found Resource = " + resource.getId());
+                log.debug("Found Resource = " + resource.getId());
                 authors.add(getReference(resource));
             }
 
@@ -3232,7 +3235,7 @@ public class BundleCore {
         if (documentReference.getSubject() != null) {
             Resource resource = searchAddResource(documentReference.getSubject().getReference());
             if (resource != null) {
-                log.info("Patient resource = "+resource.getId());
+                log.debug("Patient resource = "+resource.getId());
             }
             documentReference.setSubject(getReference(resource));
         }
@@ -3240,7 +3243,7 @@ public class BundleCore {
         if (documentReference.getCustodian() != null) {
             Resource resource = searchAddResource(documentReference.getCustodian().getReference());
             if (resource != null) {
-                log.info("Organization resource = "+resource.getId());
+                log.debug("Organization resource = "+resource.getId());
                 documentReference.setCustodian(getReference(resource));
             }
 
@@ -3295,7 +3298,7 @@ public class BundleCore {
 
 
     public Procedure searchAddProcedure(String procedureId,Procedure procedure) {
-        log.info("Procedure searchAdd " +procedureId);
+        log.debug("Procedure searchAdd " +procedureId);
 
         if (procedure == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3339,7 +3342,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprProcedure = (Procedure) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Procedure = " + eprProcedure.getId());
+                    log.debug("Found Procedure = " + eprProcedure.getId());
                 }
             }
         }
@@ -3350,7 +3353,7 @@ public class BundleCore {
             Reference reference = performer.getActor();
             Resource resource = searchAddResource(reference.getReference());
             if (resource == null) referenceMissing(procedure, reference.getReference());
-            log.info("Found Resource = " + resource.getId());
+            log.debug("Found Resource = " + resource.getId());
             performer.setActor(getReference(resource));
 
         }
@@ -3424,7 +3427,7 @@ public class BundleCore {
     }
 
     public ReferralRequest searchAddReferralRequest(String referralRequestId,ReferralRequest referralRequest) {
-        log.info("ReferralRequest searchAdd " +referralRequestId);
+        log.debug("ReferralRequest searchAdd " +referralRequestId);
 
         if (referralRequest == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3468,7 +3471,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprReferralRequest = (ReferralRequest) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found ReferralRequest = " + eprReferralRequest.getId());
+                    log.debug("Found ReferralRequest = " + eprReferralRequest.getId());
                 }
             }
         }
@@ -3573,7 +3576,7 @@ public class BundleCore {
     }
 
     public Encounter searchAddEncounter(String encounterId,Encounter encounter) {
-        log.info("Encounter searchAdd " +encounterId);
+        log.debug("Encounter searchAdd " +encounterId);
 
         if (encounter == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3623,7 +3626,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size()>0) {
                     eprEncounter = (Encounter) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Encounter = " + eprEncounter.getId());
+                    log.debug("Found Encounter = " + eprEncounter.getId());
                 }
             }
         }
@@ -3637,11 +3640,11 @@ public class BundleCore {
             Resource resource = searchAddResource(reference.getReference());
 
             if (resource != null) {
-                log.info("Found Resource = " + resource.getId());
+                log.debug("Found Resource = " + resource.getId());
                 performer.setIndividual(getReference(resource));
                 performertemp.add(performer);
             } else {
-                log.info("Not processed "+reference.getReference());
+                log.debug("Not processed "+reference.getReference());
             }
         }
         encounter.setParticipant(performertemp);
@@ -3651,6 +3654,14 @@ public class BundleCore {
             if (resource == null) referenceMissing(encounter, encounter.getSubject().getReference());
             encounter.setSubject(getReference(resource));
         }
+
+        List<Reference> episodes = new ArrayList<>();
+        for (Reference reference : encounter.getEpisodeOfCare()) {
+            Resource resource = searchAddResource(reference.getReference());
+            if (resource == null) referenceMissing(encounter, encounter.getSubject().getReference());
+            episodes.add(getReference(resource));
+        }
+        encounter.setEpisodeOfCare(episodes);
 
         for (Encounter.DiagnosisComponent component : encounter.getDiagnosis()) {
             if (component.getCondition().getReference() != null) {
@@ -3761,10 +3772,150 @@ public class BundleCore {
         return eprEncounter;
     }
 
+    public EpisodeOfCare searchAddEpisodeOfCare(String episodeOfCareId,EpisodeOfCare episodeOfCare) {
+        log.debug("EpisodeOfCare searchAdd " +episodeOfCareId);
+
+        if (episodeOfCare == null) throw new InternalErrorException("Bundle processing error");
+
+
+        EpisodeOfCare eprEpisodeOfCare = (EpisodeOfCare) resourceMap.get(episodeOfCareId);
+
+        // Organization already processed, quit with Organization
+        if (eprEpisodeOfCare != null) return eprEpisodeOfCare;
+
+        // Prevent re-adding the same Practitioner
+        if (episodeOfCare.getIdentifier().size() == 0) {
+            episodeOfCare.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(episodeOfCare.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : episodeOfCare.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIREpisodeOfCare", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "EpisodeOfCare");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprEpisodeOfCare = (EpisodeOfCare) returnedBundle.getEntry().get(0).getResource();
+                    log.debug("Found EpisodeOfCare = " + eprEpisodeOfCare.getId());
+                }
+            }
+        }
+
+
+        if (episodeOfCare.getPatient() != null) {
+            Resource resource = searchAddResource(episodeOfCare.getPatient().getReference());
+            if (resource == null) referenceMissing(episodeOfCare, episodeOfCare.getPatient().getReference());
+            episodeOfCare.setPatient(getReference(resource));
+        }
+
+        for (EpisodeOfCare.DiagnosisComponent component : episodeOfCare.getDiagnosis()) {
+            if (component.getCondition().getReference() != null) {
+
+                Resource resource = searchAddResource(component.getCondition().getReference());
+                if (resource == null) referenceMissing(episodeOfCare, component.getCondition().getReference());
+                component.setCondition(getReference(resource));
+            }
+        }
+
+
+        if (episodeOfCare.hasManagingOrganization()) {
+            Resource resource = searchAddResource(episodeOfCare.getManagingOrganization().getReference());
+            if (resource == null) {
+                // Ideally would be an error but not currently supporting ServiceProvider
+                referenceMissingWarn(episodeOfCare, episodeOfCare.getManagingOrganization().getReference());
+                episodeOfCare.setManagingOrganization(null);
+            } else {
+                episodeOfCare.setManagingOrganization(getReference(resource));
+            }
+        }
+
+        if (episodeOfCare.hasCareManager()) {
+            Resource resource = searchAddResource(episodeOfCare.getCareManager().getReference());
+            if (resource == null) {
+                referenceMissingWarn(episodeOfCare, episodeOfCare.getCareManager().getReference());
+                episodeOfCare.setCareManager(null);
+            } else {
+                episodeOfCare.setCareManager(getReference(resource));
+            }
+        }
+
+
+
+        IBaseResource iResource = null;
+        String xhttpMethod = "POST";
+        String xhttpPath = "EpisodeOfCare";
+        // Location found do not add
+        if (eprEpisodeOfCare != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "EpisodeOfCare/"+eprEpisodeOfCare.getIdElement().getIdPart();
+            episodeOfCare.setId(eprEpisodeOfCare.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(episodeOfCare);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIREpisodeOfCare", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof EpisodeOfCare) {
+            eprEpisodeOfCare = (EpisodeOfCare) iResource;
+            setResourceMap(eprEpisodeOfCare.getId(),eprEpisodeOfCare);
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprEpisodeOfCare;
+    }
+
+
 
     public Patient searchAddPatient(String patientId, Patient patient) {
 
-            log.info("Patient searchAdd " + patientId);
+            log.debug("Patient searchAdd " + patientId);
 
             if (patient == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3801,7 +3952,7 @@ public class BundleCore {
                     Bundle returnedBundle = (Bundle) iresource;
                     if (returnedBundle.getEntry().size() > 0) {
                         eprPatient = (Patient) returnedBundle.getEntry().get(0).getResource();
-                        log.info("Found Patient = " + eprPatient.getId());
+                        log.debug("Found Patient = " + eprPatient.getId());
                         // KGM 31/Jan/2018 Missing break on finding patient
                         break;
                     }
@@ -3818,14 +3969,14 @@ public class BundleCore {
 
             if (patient.getManagingOrganization().getReference() != null) {
                 Resource resource = searchAddResource(patient.getManagingOrganization().getReference());
-                log.info("Found ManagingOrganization = " + resource.getId());
+                log.debug("Found ManagingOrganization = " + resource.getId());
                 if (resource == null) referenceMissing(patient, patient.getManagingOrganization().getReference());
                 patient.setManagingOrganization(getReference(resource));
             }
             for (Reference reference : patient.getGeneralPractitioner()) {
                 Resource resource = searchAddResource(reference.getReference());
                 if (resource == null) referenceMissing(patient, reference.getReference());
-                log.info("Found Patient Practitioner = " + reference.getId());
+                log.debug("Found Patient Practitioner = " + reference.getId());
                 // This resets the first gp only (should only be one gp)
                 patient.getGeneralPractitioner().get(0).setReference(getReference(resource).getReference());
             }
@@ -3865,7 +4016,7 @@ public class BundleCore {
 
     public Questionnaire searchAddQuestionnaire(String formId, Questionnaire form) {
 
-        log.info("Questionnaire searchAdd " + formId);
+        log.debug("Questionnaire searchAdd " + formId);
 
         if (form == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3901,7 +4052,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size() > 0) {
                     eprQuestionnaire = (Questionnaire) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found Questionnaire = " + eprQuestionnaire.getId());
+                    log.debug("Found Questionnaire = " + eprQuestionnaire.getId());
                     // KGM 31/Jan/2018 Missing break on finding form
                     break;
                 }
@@ -3949,7 +4100,7 @@ public class BundleCore {
 
     public RelatedPerson searchAddRelatedPerson(String personId, RelatedPerson person) {
 
-        log.info("RelatedPerson searchAdd " + personId);
+        log.debug("RelatedPerson searchAdd " + personId);
 
         if (person == null) throw new InternalErrorException("Bundle processing error");
 
@@ -3985,7 +4136,7 @@ public class BundleCore {
                 Bundle returnedBundle = (Bundle) iresource;
                 if (returnedBundle.getEntry().size() > 0) {
                     eprRelatedPerson = (RelatedPerson) returnedBundle.getEntry().get(0).getResource();
-                    log.info("Found RelatedPerson = " + eprRelatedPerson.getId());
+                    log.debug("Found RelatedPerson = " + eprRelatedPerson.getId());
                     // KGM 31/Jan/2018 Missing break on finding person
                     break;
                 }
@@ -4059,7 +4210,7 @@ public class BundleCore {
 
     private void processOperationOutcome(OperationOutcome operationOutcome) {
         this.operationOutcome = operationOutcome;
-        log.info("Server Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+        log.debug("Server Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
         OperationOutcomeFactory.convertToException(operationOutcome);
     }
     private void setResourceMap(String referenceId,Resource resource) {
@@ -4069,7 +4220,7 @@ public class BundleCore {
             resourceMap.put(referenceId,resource);
 
         }
-        log.info("setResourceMap = " +resource.getId());
+        log.debug("setResourceMap = " +resource.getId());
         if (resourceMap.get(resource.getId()) != null) {
             resourceMap.replace(resource.getId(),resource);
         } else {

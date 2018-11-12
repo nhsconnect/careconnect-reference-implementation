@@ -108,7 +108,7 @@ public class ObservationDao implements ObservationRepository {
         ObservationEntity observationEntity = null;
 
         if (theId != null && daoutils.isNumeric(theId.getIdPart())) {
-            log.info("theId.getIdPart()="+theId.getIdPart());
+            log.debug("theId.getIdPart()="+theId.getIdPart());
             observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
@@ -562,7 +562,7 @@ public class ObservationDao implements ObservationRepository {
                     observationRelated.setType(observationRelatedComponent.getType());
                 }
                 if (observationRelatedComponent.hasTarget()) {
-                    log.info("hasRelated");
+                    //log.info("hasRelated");
                     if (observationRelatedComponent.getTarget().getReference().contains("Observation")) {
                         ObservationEntity observationRelatedEntity= readEntity(ctx, new IdType(observationRelatedComponent.getTarget().getReference()));
                         observationRelated.setRelatedObservation(observationRelatedEntity);
@@ -590,7 +590,7 @@ public class ObservationDao implements ObservationRepository {
     @Override
     public Observation read(FhirContext ctx, IdType theId) {
 
-        log.info("Looking for Observation = "+theId.getIdPart());
+        log.debug("Looking for Observation = "+theId.getIdPart());
         if (theId.getIdPart() != null && (daoutils.isNumeric(theId.getIdPart()))) {
             ObservationEntity observationEntity = (ObservationEntity) em.find(ObservationEntity.class, Long.parseLong(theId.getIdPart()));
 

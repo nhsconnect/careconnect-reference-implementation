@@ -11,6 +11,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
+import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -46,8 +47,33 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
         return episodeDao.count();
     }
 
+
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam EpisodeOfCare episode) {
+
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+        try {
+            EpisodeOfCare newEpisodeOfCare = episodeDao.create(ctx, episode, null, null);
+            method.setId(newEpisodeOfCare.getIdElement());
+            method.setResource(newEpisodeOfCare);
+        } catch (Exception ex) {
+
+            ProviderResponseLibrary.handleException(method,ex);
+        }
+
+
+        return method;
+    }
+
+
     @Update
-    public MethodOutcome updateEpisodeOfCare(HttpServletRequest theRequest, @ResourceParam EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
 
         MethodOutcome method = new MethodOutcome();
@@ -72,15 +98,16 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     }
 
     @Search
-    public List<EpisodeOfCare> searchEpisodeOfCare(HttpServletRequest theRequest,
+    public List<EpisodeOfCare> search(HttpServletRequest theRequest,
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
-            , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) StringParam resid) {
-        return episodeDao.search(ctx,patient, date,resid);
+            , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) StringParam resid
+            ,@OptionalParam(name= EpisodeOfCare.SP_IDENTIFIER) TokenParam identifier) {
+        return episodeDao.search(ctx,patient, date,resid, identifier);
     }
 
     @Read()
-    public EpisodeOfCare getEpisodeOfCare(@IdParam IdType episodeId) {
+    public EpisodeOfCare get(@IdParam IdType episodeId) {
 
         EpisodeOfCare episode = episodeDao.read(ctx,episodeId);
 

@@ -81,6 +81,7 @@ public class EpisodeOfCareResourceProvider implements IResourceProvider {
                                                    @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
           //  , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
             , @OptionalParam(name = EpisodeOfCare.SP_RES_ID) StringParam resid
+            ,@OptionalParam(name= EpisodeOfCare.SP_IDENTIFIER) TokenParam identifier
                                        ) throws Exception {
 
         List<EpisodeOfCare> results = new ArrayList<EpisodeOfCare>();

@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.*;
+import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
@@ -76,6 +77,9 @@ public class  EncounterDao implements EncounterRepository {
 
     @Autowired
     ConditionRepository conditionDao;
+
+    @Autowired
+    EpisodeOfCareRepository episodeDao;
 
     @Autowired
     ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
@@ -413,6 +417,22 @@ public class  EncounterDao implements EncounterRepository {
             }
         }
 
+        for (EncounterEpisode encounterEpisode : encounterEntity.getEpisodes()) {
+            em.remove(encounterEpisode);
+        }
+        if (encounter.hasEpisodeOfCare()) {
+            for (Reference reference : encounter.getEpisodeOfCare()) {
+                EncounterEpisode encounterEpisode = new EncounterEpisode();
+                encounterEpisode.setEncounter(encounterEntity);
+
+                EpisodeOfCareEntity episode = episodeDao.readEntity(ctx,new IdType(reference.getReference()));
+                encounterEpisode.setEpisode(episode);
+                em.persist(encounterEpisode);
+
+            }
+
+        }
+
         return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
     }
 
@@ -432,7 +452,7 @@ public class  EncounterDao implements EncounterRepository {
         }
         // If reverse include selected
         if (reverseIncludes!= null) {
-            log.info("Reverse includes");
+            //log.info("Reverse includes");
             for (EncounterEntity encounterEntity : qryResults) {
                 for (Include include : reverseIncludes) {
                     switch(include.getValue()) {

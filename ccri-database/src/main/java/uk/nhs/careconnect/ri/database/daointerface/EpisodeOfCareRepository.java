@@ -29,12 +29,14 @@ public interface EpisodeOfCareRepository extends BaseRepository<EpisodeOfCareEnt
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
             ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) StringParam id
+            ,@OptionalParam(name= EpisodeOfCare.SP_IDENTIFIER) TokenParam identifier
             );
 
     List<EpisodeOfCareEntity> searchEntity(FhirContext ctx,
             @OptionalParam(name = EpisodeOfCare.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date
             ,@OptionalParam(name= EpisodeOfCare.SP_RES_ID) StringParam id
+            ,@OptionalParam(name= EpisodeOfCare.SP_IDENTIFIER) TokenParam identifier
 
     );
 }
