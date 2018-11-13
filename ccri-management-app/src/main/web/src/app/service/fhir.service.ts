@@ -87,7 +87,23 @@ export class FhirService {
       }
       return false;
   }
+
+
+    storeBaseUrl(baseUrl : string) {
+        localStorage.setItem('baseUrl',baseUrl);
+    }
+
+    getStoredBaseUrl() : string {
+        return localStorage.getItem('baseUrl');
+    }
+
   public getBaseUrl() :string {
+
+
+        if (this.getStoredBaseUrl() !== undefined && this.getStoredBaseUrl() !== null) {
+            this.baseUrl = this.getStoredBaseUrl();
+            return this.baseUrl;
+        }
         let retStr = this.baseUrl;
 
         // this should be resolved by app-config.ts but to stop start up errors
@@ -129,10 +145,12 @@ export class FhirService {
 
           }
         }
+        this.storeBaseUrl(retStr);
       return retStr;
 }
 
 public setRootUrl(rootUrl :string) {
+    this.storeBaseUrl(rootUrl);
 this.rootUrl = rootUrl;
 this.baseUrl = rootUrl;
 this.rootUrlChange.emit(rootUrl);
@@ -176,7 +194,8 @@ return this.NRLSbaseUrl;
 }
 
 public setFHIRServerBase(server : string) {
-this.baseUrl = server;
+    this.baseUrl = server;
+    this.storeBaseUrl(server);
 
 }
 

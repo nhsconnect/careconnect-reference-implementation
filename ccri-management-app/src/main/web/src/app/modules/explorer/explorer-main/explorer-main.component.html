@@ -31,7 +31,7 @@
         <span>EPR Mode</span></button>
 </mat-menu>
 <mat-menu #personMenu>
-  <button *ngIf="!authService.isLoggedOn()" mat-menu-item routerLink="/login">Sign In</button>
+  <button *ngIf="!authService.isLoggedOn()" mat-menu-item (click)="onLogin()">Sign In</button>
   <button *ngIf="authService.isLoggedOn()" mat-menu-item routerLink="/logout">Sign Out</button>
 </mat-menu>
 

@@ -22,6 +22,7 @@ export class Oauth2Service {
   removeToken() {
     localStorage.removeItem('access_token_' + environment.oauth2.client_id);
     localStorage.removeItem('ccri-jwt');
+    localStorage.removeItem('baseUrl');
   }
 
   setToken(access_token : string) {

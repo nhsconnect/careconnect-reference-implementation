@@ -67,6 +67,8 @@ export class AuthService {
     return this.oauth2.isAuthenticated();
   }
 
+
+
   getAccessToken() {
     if (this._User == undefined) {
       this.updateUser();
@@ -262,7 +264,8 @@ export class AuthService {
 
 
 
-  performAuthorise (clientId : string, clientSecret :string){
+
+  performAuthorise(clientId : string, clientSecret :string){
 
 
 
@@ -271,24 +274,26 @@ export class AuthService {
     if (this.registerUri === undefined) localStorage.getItem("registerUri");
 
 
+    if (this.authoriseUri !== undefined) {
 
-      if (this.oauth2.getToken() !== undefined) {
-      // access token is present so forgo access token retrieval
+        if (this.oauth2.getToken() !== undefined) {
+            // access token is present so forgo access token retrieval
 
-      this.updateUser();
-      // Check token expiry
-      if (!this.oauth2.isAuthenticated()) {
-        const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri='+document.baseURI+'/callback&aud=https://test.careconnect.nhs.uk';
-        // Perform redirect to
-        window.location.href = url;
-      }
-      // if token is ok perform a PING (if above code is working we may remove this)
-      this.router.navigateByUrl('ping');
-    } else {
+            this.updateUser();
+            // Check token expiry
+            if (!this.oauth2.isAuthenticated()) {
+                const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri=' + document.baseURI + '/callback&aud=https://test.careconnect.nhs.uk';
+                // Perform redirect to
+                window.location.href = url;
+            }
+            // if token is ok perform a PING (if above code is working we may remove this)
+            this.router.navigateByUrl('ping');
+        } else {
 
-      const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri='+document.baseURI+'/callback&aud=https://test.careconnect.nhs.uk';
-      // Perform redirect to
-      window.location.href = url;
+            const url = this.authoriseUri + '?client_id=' + clientId + '&response_type=code&redirect_uri=' + document.baseURI + '/callback&aud=https://test.careconnect.nhs.uk';
+            // Perform redirect to
+            window.location.href = url;
+        }
     }
 
   }

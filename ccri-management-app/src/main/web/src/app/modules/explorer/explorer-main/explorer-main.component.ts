@@ -203,18 +203,18 @@ export class ExplorerMainComponent implements OnInit {
       console.log(menuItem);
 
       // let server : string = menuItem.route;
-
+      this.fhirSrv.setFHIRServerBase(menuItem.route);
       if (menuItem.route.includes('smartonfhir') && !this.oauth2.isAuthenticated() ) {
         // force login
           console.log('Login required detected')
-        this.router.navigateByUrl('/login');
+          this.router.navigateByUrl('/login');
 
       } else {
           if (menuItem.route.includes('ccrifhir')) {
               // force logoff
               this.oauth2.removeToken();
           } else {
-              this.fhirSrv.setFHIRServerBase(menuItem.route);
+
               this.title = menuItem.title;
 
               console.log('Forcing naviagation to root');
@@ -224,6 +224,10 @@ export class ExplorerMainComponent implements OnInit {
       }
   }
 
+  onLogin() {
+      this.authService.setBaseUrlOAuth2();
+      this.router.navigateByUrl('/login');
+  }
   onClick(route) {
       this.router.navigateByUrl(route);
   }

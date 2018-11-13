@@ -1,9 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {FhirService} from "./service/fhir.service";
-import {AuthService} from "./service/auth.service";
 import {environment} from "../environments/environment";
-import {root} from "rxjs/internal-compatibility";
 
 @Injectable()
 export class AppConfig {
