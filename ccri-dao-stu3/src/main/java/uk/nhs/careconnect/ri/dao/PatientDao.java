@@ -283,6 +283,19 @@ public class PatientDao implements PatientRepository {
 
         em.persist(patientEntity);
 
+        // Remove all identifiers with systems that match the updated Patient, leave unmatched identifiers alone.
+        for (PatientIdentifier orgSearch : patientEntity.getIdentifiers()) {
+            Boolean found = false;
+            for (Identifier identifier : patient.getIdentifier()) {
+                if (identifier.getSystem().equals(orgSearch.getSystemUri())) {
+                    found = true;
+                }
+            }
+            if (found) {
+                em.remove(orgSearch);
+            }
+        }
+
         for (Identifier identifier : patient.getIdentifier()) {
             if (identifier.getSystem().equals(CareConnectSystem.NHSNumber) && identifier.getExtension().size()>0) {
                 CodeableConcept nhsVerification = (CodeableConcept) identifier.getExtension().get(0).getValue();
@@ -296,12 +309,18 @@ public class PatientDao implements PatientRepository {
                 }
             }
             PatientIdentifier patientIdentifier = null;
+            /* No longer necessary
             for (PatientIdentifier orgSearch : patientEntity.getIdentifiers()) {
-                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
+                // overwrites existing
+                if (identifier.getSystem().equals(orgSearch.getSystemUri())) {
+
+                }
+                    if ( identifier.getValue().equals(orgSearch.getValue())) {
                     patientIdentifier = orgSearch;
                     break;
                 }
             }
+            */
             if (patientIdentifier == null) {
                 patientIdentifier = new PatientIdentifier();
                 patientEntity.addIdentifier(patientIdentifier);

@@ -267,7 +267,12 @@ public class BundleCore {
         } catch (Exception ex) {
 
             String errorMessage = "Exception while processing reference "+referenceId;
-            if (ex instanceof BaseServerResponseException) {
+
+
+            if (ex.getStackTrace().length >0) {
+                errorMessage = errorMessage + " (Line: "+ex.getStackTrace()[0].getLineNumber() + " Method: " + ex.getStackTrace()[0].getMethodName() + " " + ex.getStackTrace()[0].getClassName() + ")";
+            }
+            if (ex instanceof BaseServerResponseException &&  this.operationOutcome != null && this.operationOutcome.getIssueFirstRep() != null) {
                 //log.error("HAPI Exception " +ex.getClass().getSimpleName() );
 
                 errorMessage = errorMessage + " Diagnostics: " + this.operationOutcome.getIssueFirstRep().getDiagnostics();
@@ -3969,8 +3974,9 @@ public class BundleCore {
 
             if (patient.getManagingOrganization().getReference() != null) {
                 Resource resource = searchAddResource(patient.getManagingOrganization().getReference());
-                log.debug("Found ManagingOrganization = " + resource.getId());
+
                 if (resource == null) referenceMissing(patient, patient.getManagingOrganization().getReference());
+                log.debug("Found ManagingOrganization = " + resource.getId());
                 patient.setManagingOrganization(getReference(resource));
             }
             for (Reference reference : patient.getGeneralPractitioner()) {

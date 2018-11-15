@@ -90,8 +90,8 @@ public class BundleResourceProvider implements IResourceProvider {
             String newXmlResource = ctx.newXmlParser().encodeResourceToString(bundle);
 
             switch (bundle.getType()) {
-                case COLLECTION:
 
+/*
                     Exchange exchangeBundle = template.send("direct:FHIRBundleCollection", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
@@ -102,7 +102,8 @@ public class BundleResourceProvider implements IResourceProvider {
                     // This response is coming from an external FHIR Server, so uses inputstream
                     resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
                     break;
-
+                    */
+                case COLLECTION:
                 case MESSAGE:
                     // Sync to get response
 

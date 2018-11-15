@@ -374,5 +374,49 @@ public class PatientResourceProvider implements IResourceProvider {
         return method;
     }
 
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(patient);
+            //log.info("getId()"+theId.getId());
+            //log.info("getIdValue()"+theId.getValue());
+            //log.info("getIdPart()"+theId.getIdPart());
+
+            Exchange exchangeBundle = template.send("direct:FHIRPatient", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Patient");
+                }
+            });
+
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof Patient) {
+            patient = (Patient) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
+    }
 
 }

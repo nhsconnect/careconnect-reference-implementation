@@ -79,7 +79,10 @@ public class BundleMessage implements Processor {
             if (ex.getMessage()!= null) {
                 errorMessage = ex.getMessage();
             } else {
-                errorMessage = "BundleMessage Exception"+ex.getClass().getSimpleName();
+                errorMessage = "BundleMessage Exception "+ex.getClass().getSimpleName();
+            }
+            if (ex.getStackTrace().length >0) {
+                errorMessage = errorMessage + " (Line: "+ex.getStackTrace()[0].getLineNumber() + " Method: " + ex.getStackTrace()[0].getMethodName() + " " + ex.getStackTrace()[0].getClassName() + ")";
             }
             log.error(errorMessage);
             OperationOutcome operationOutcome = null;
