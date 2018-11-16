@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.lib.gateway.camel;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import uk.nhs.careconnect.ri.lib.gateway.camel.processor.BundleMessage;
 import uk.nhs.careconnect.ri.lib.gateway.camel.processor.CompositionDocumentBundle;
 
 import java.io.InputStream;
+
+import static org.apache.camel.model.rest.RestParamType.header;
 
 @Component
 public class CamelRoute extends RouteBuilder {
@@ -45,10 +48,10 @@ public class CamelRoute extends RouteBuilder {
 		GatewayPostProcessor camelPostProcessor = new GatewayPostProcessor();
 
 		FhirContext ctx = FhirContext.forDstu3();
-		BundleMessage bundleMessage = new BundleMessage(ctx);
+		BundleMessage bundleMessage = new BundleMessage(ctx, hapiBase);
         CompositionDocumentBundle compositionDocumentBundle = new CompositionDocumentBundle(ctx, hapiBase);
         //DocumentReferenceDocumentBundle documentReferenceDocumentBundle = new DocumentReferenceDocumentBundle(ctx,hapiBase);
-        BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
+       // BinaryResource binaryResource = new BinaryResource(ctx, hapiBase);
 
 
 
@@ -60,26 +63,29 @@ public class CamelRoute extends RouteBuilder {
 
 
 		// Complex processing
-
+/*
 		from("direct:FHIRBundleCollection")
 				.routeId("Bundle Collection Queue")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.wireTap("seda:FHIRBundleCollection");
-
+*/
 		// This bundle goes to the EDMS Server. See also Binary
-		from("direct:FHIRBundleDocumentCreate")
+		from("direct:FHIRBundleDocument")
 				.routeId("Bundle Document")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.enrich("direct:EDMSServer", compositionDocumentBundle);
-				//.enrich("direct:FHIRBundleMessage"); // Send a copy to EPR for main CCRI load
+				.enrich("direct:EDMSServer", compositionDocumentBundle)
+				.choice()
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo("200") ).enrich("direct:FHIRBundleMessage")
+					.when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo("201") ).enrich("direct:FHIRBundleMessage")
+				.end(); // Send a copy to EPR for main CCRI load
 
-
+/*
 		from("direct:FHIRBundleDocumentUpdate")
 				.routeId("Bundle Document Update")
 				.process(camelProcessor) // Add in correlation Id if not present
 				.enrich("direct:EDMSServer", compositionDocumentBundle);
-
-
+*/
+/*
 		from("seda:FHIRBundleCollection")
 				.routeId("Bundle Processing")
 				.to("direct:FHIRDocumentReferenceBundle") //, documentReferenceDocumentBundle)
@@ -88,15 +94,16 @@ public class CamelRoute extends RouteBuilder {
 		from("seda:FHIRBundleMessageQueue")
 				.routeId("Bundle Message Processing Queue")
 				.process(bundleMessage); // Goes direct to EPR FHIR Server
-
+*/
 		from("direct:FHIRBundleMessage")
 				.routeId("Bundle Message Processing")
 				.process(bundleMessage); // Goes direct to EPR FHIR Server
 
+		/*
 		from("direct:FHIRDocumentReferenceBundle")
 				.routeId("Bundle Process Binary")
 				.process(binaryResource);
-
+*/
 	// Integration Server (TIE)
 
 		from("direct:FHIREncounterDocument")

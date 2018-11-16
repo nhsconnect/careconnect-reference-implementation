@@ -1,12 +1,15 @@
 package uk.nhs.careconnect.ri.lib.gateway.camel.processor;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
@@ -21,11 +24,12 @@ import java.util.Map;
 
 public class BundleCore {
 
-    public BundleCore(FhirContext ctx, CamelContext camelContext, Bundle bundle) {
+    public BundleCore(FhirContext ctx, CamelContext camelContext, Bundle bundle,String hapiBase) {
         this.ctx = ctx;
         this.bundle = bundle;
         this.context = camelContext;
         this.client = FhirContext.forDstu3().newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3");
+        this.hapiBase = hapiBase;
     }
 
     CamelContext context;
@@ -33,6 +37,8 @@ public class BundleCore {
     FhirContext ctx;
 
     IGenericClient client;
+
+    private String hapiBase;
 
 /*
     private FHIRMedicationStatementToFHIRMedicationRequestTransformer
@@ -141,8 +147,12 @@ public class BundleCore {
             if (referenceId.contains("directory.spineservices.nhs.uk")) {
                 if (referenceId.contains("Organization")) {
                     String sdsCode = referenceId.replace("https://directory.spineservices.nhs.uk/STU3/Organization/","");
-                    Organization sdsOrganization = client.read().resource(Organization.class).withId(sdsCode).execute();
-
+                    Organization sdsOrganization = null;
+                    try {
+                        sdsOrganization = client.read().resource(Organization.class).withId(sdsCode).execute();
+                    } catch(Exception ex) {
+                        throw new ResourceNotFoundException("https://directory.spineservices.nhs.uk/STU3/Organization/"+sdsCode);
+                    }
                     if (sdsOrganization != null) {
                         resource = searchAddOrganisation(referenceId, sdsOrganization);
                     }
@@ -198,6 +208,9 @@ public class BundleCore {
                         } else {
 
                             switch (iResource.getClass().getSimpleName()) {
+                                case "Binary":
+                                    resource = searchAddBinary(referenceId, (Binary) iResource);
+                                    break;
                                 case "CarePlan":
                                     resource = searchAddCarePlan(referenceId, (CarePlan) iResource);
                                     break;
@@ -3174,6 +3187,36 @@ public class BundleCore {
         return eprComposition;
     }
 
+    public Binary searchAddBinary(String binaryId,Binary binary) {
+
+        ProducerTemplate template = context.createProducerTemplate();
+        String jsonResource = ctx.newXmlParser().encodeResourceToString(binary);
+        try {
+            Exchange edmsExchange = template.send("direct:FHIRBinary", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "Binary");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setBody(jsonResource);
+                }
+            });
+
+            if (edmsExchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE) != null && (edmsExchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE).toString().equals("201"))) {
+                // Now update the document links
+                String[] path = edmsExchange.getIn().getHeader("Location").toString().split("/");
+                String resourceId = path[path.length - 1];
+                log.info("Binary resource Id = " + resourceId);
+                //contentComponent.getAttachment().setUrl(hapiBase + "/Binary/" + resourceId);
+                binary.setId(resourceId);
+            }
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        return binary;
+    }
+
     public DocumentReference searchAddDocumentReference(String documentReferenceId,DocumentReference documentReference) {
         log.debug("DocumentReference searchAdd " +documentReferenceId);
 
@@ -3252,6 +3295,21 @@ public class BundleCore {
                 documentReference.setCustodian(getReference(resource));
             }
 
+        }
+
+        if (documentReference.hasContent()) {
+            for (DocumentReference.DocumentReferenceContentComponent contentComponent : documentReference.getContent()) {
+                if (contentComponent.hasAttachment()) {
+                    if (contentComponent.getAttachment().getUrl().contains("urn:uuid")) {
+                        Resource resource = searchAddResource(contentComponent.getAttachment().getUrl());
+                        if (resource == null) {
+                            referenceMissing(documentReference, contentComponent.getAttachment().getUrl());
+                        }
+                        contentComponent.getAttachment().setUrl(hapiBase + "/Binary/" + resource.getId());
+                    }
+
+                }
+            }
         }
 
         IBaseResource iResource = null;

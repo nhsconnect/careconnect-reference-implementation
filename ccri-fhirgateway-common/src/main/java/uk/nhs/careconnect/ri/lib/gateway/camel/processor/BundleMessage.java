@@ -13,13 +13,18 @@ import java.util.Map;
 
 public class BundleMessage implements Processor {
 
-    public BundleMessage(FhirContext ctx) {
+    public BundleMessage(FhirContext ctx,String hapiBase) {
+
         this.ctx = ctx;
+        this.hapiBase = hapiBase;
     }
 
     CamelContext context;
 
     FhirContext ctx;
+
+    private String hapiBase;
+
     private Map<String,Resource> resourceMap;
 
     private Bundle bundle;
@@ -38,8 +43,13 @@ public class BundleMessage implements Processor {
         String bundleString = exchange.getIn().getBody().toString();
 
         IParser parser = ctx.newXmlParser();
-        bundle = parser.parseResource(Bundle.class,bundleString);
-        BundleCore bundleCore = new BundleCore(ctx,context,bundle);
+        try {
+            bundle = parser.parseResource(Bundle.class, bundleString);
+        } catch (Exception ex) {
+            log.info("Failed to parse: "+bundleString);
+            throw ex;
+        }
+        BundleCore bundleCore = new BundleCore(ctx,context,bundle, hapiBase);
         try {
 
 

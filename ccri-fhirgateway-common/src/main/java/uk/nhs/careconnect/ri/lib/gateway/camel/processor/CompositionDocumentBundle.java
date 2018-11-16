@@ -66,7 +66,7 @@ public class CompositionDocumentBundle implements AggregationStrategy {
 
                     }
                     try {
-                        BundleCore bundleCore = new BundleCore(ctx, context, bundle);
+                        BundleCore bundleCore = new BundleCore(ctx, context, bundle, hapiBase);
                         if (patient != null) {
                             if (patient.getId() != null) {
                                 bundleCore.searchAddResource(patient.getId());

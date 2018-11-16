@@ -122,7 +122,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     // Send a copy for EPR processing - Consider moving to camel route
 
                     // Main Message send to EDMS
-                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocumentCreate", ExchangePattern.InOut, new Processor() {
+                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,null,"POST");
 
@@ -178,7 +178,7 @@ public class BundleResourceProvider implements IResourceProvider {
                     break;
 
                 case DOCUMENT:
-                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocumentUpdate", ExchangePattern.InOut, new Processor() {
+                    Exchange exchangeDocument = template.send("direct:FHIRBundleDocument", ExchangePattern.InOut, new Processor() {
                         public void process(Exchange exchange) throws Exception {
                             exchange = buildBundlePost(exchange,newXmlResource,conditional,"PUT");
                         }

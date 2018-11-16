@@ -31,55 +31,54 @@ documentation:
 export class ResourceComponent implements OnInit,AfterViewInit {
 
 
+    public resource : fhir.Bundle = undefined;
 
-  public resource : fhir.Bundle = undefined;
+    public resourceString : any = undefined;
 
-  public resourceString : any = undefined;
+    public query = undefined;
 
-  public query = undefined;
+    public rest : any;
 
-  public rest : any;
+    private _routerSub ;
 
-  private _routerSub ;
-
-  public base : string;
+    public base : string;
 
     public format : Formats;
 
     progressBar : boolean = false;
-    
+
     searchVisible : boolean = false;
 
     expanded : boolean = false;
 
-  entries : any[];
+    entries : any[];
 
     allergies : fhir.AllergyIntolerance[];
     carePlans : fhir.CarePlan[];
     consents : fhir.Consent[];
     impressions : fhir.ClinicalImpression[];
-  conditions : fhir.Condition[];
-  documents : fhir.DocumentReference[];
+    conditions : fhir.Condition[];
+    documents : fhir.DocumentReference[];
     encounters : fhir.Encounter[];
     goals : fhir.Goal[];
     services : fhir.HealthcareService[];
     immunisations : fhir.Immunization[];
     locations : fhir.Location[];
     medications : fhir.Medication[];
-  medicationStatements : fhir.MedicationStatement[];
-  medicationDispenses : fhir.MedicationDispense[];
+    medicationStatements : fhir.MedicationStatement[];
+    medicationDispenses : fhir.MedicationDispense[];
     observations : fhir.Observation[];
     organisations : fhir.Organization[];
 
-  prescriptions : fhir.MedicationRequest[];
+    prescriptions : fhir.MedicationRequest[];
     forms : fhir.QuestionnaireResponse[];
 
-  procedures : fhir.Procedure[];
-  patients : fhir.Patient[];
-  practitioners : fhir.Practitioner[];
+    procedures : fhir.Procedure[];
+    patients : fhir.Patient[];
+    practitioners : fhir.Practitioner[];
 
     risks : fhir.RiskAssessment[];
-  roles : fhir.PractitionerRole[];
+    roles : fhir.PractitionerRole[];
 
 
 

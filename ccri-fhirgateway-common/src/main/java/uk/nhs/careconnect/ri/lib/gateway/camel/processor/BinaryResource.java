@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 public class BinaryResource implements Processor {
 
+    /// LEAVE FOR NOW BUT CODE MOVED TO BundleCore
+
+    // SCHEDULED FOR DELETION
+
     private FhirContext ctx;
 
     private String hapiBase;
