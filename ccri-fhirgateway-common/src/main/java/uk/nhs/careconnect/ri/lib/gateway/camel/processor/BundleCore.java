@@ -3542,13 +3542,13 @@ public class BundleCore {
         // Location not found. Add to database
 
 
-        if (referralRequest.getSubject() != null) {
+        if (referralRequest.hasSubject()) {
             Resource resource = searchAddResource(referralRequest.getSubject().getReference());
             if (resource == null) referenceMissing(referralRequest, referralRequest.getSubject().getReference());
             referralRequest.setSubject(getReference(resource));
         }
 
-        if (referralRequest.getContext().getReference() != null) {
+        if (referralRequest.hasContext() && referralRequest.getContext().getReference() != null) {
             Resource resource = searchAddResource(referralRequest.getContext().getReference());
             if (resource == null) referenceMissing(referralRequest, referralRequest.getContext().getReference());
             referralRequest.setContext(getReference(resource));
@@ -3585,9 +3585,11 @@ public class BundleCore {
 
         List<Reference> reasons = new ArrayList<>();
         for (Reference reference : referralRequest.getReasonReference()) {
-            Resource resource = searchAddResource(reference.getReference());
-            if (resource == null) referenceMissing(referralRequest, reference.getReference());
-            if (resource != null) reasons.add(getReference(resource));
+            if (reference.hasReference()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(referralRequest, reference.getReference());
+                if (resource != null) reasons.add(getReference(resource));
+            }
         }
         referralRequest.setReasonReference(reasons);
 
@@ -3714,38 +3716,38 @@ public class BundleCore {
 
         if (encounter.getSubject() != null) {
             Resource resource = searchAddResource(encounter.getSubject().getReference());
-            if (resource == null) referenceMissing(encounter, encounter.getSubject().getReference());
+            if (resource == null) referenceMissing(encounter, "patient: "+encounter.getSubject().getReference());
             encounter.setSubject(getReference(resource));
         }
 
         List<Reference> episodes = new ArrayList<>();
         for (Reference reference : encounter.getEpisodeOfCare()) {
             Resource resource = searchAddResource(reference.getReference());
-            if (resource == null) referenceMissing(encounter, encounter.getSubject().getReference());
+            if (resource == null) referenceMissing(encounter, "episode: "+encounter.getSubject().getReference());
             episodes.add(getReference(resource));
         }
         encounter.setEpisodeOfCare(episodes);
 
         for (Encounter.DiagnosisComponent component : encounter.getDiagnosis()) {
-            if (component.getCondition().getReference() != null) {
+            if (component.getCondition().hasReference()) {
 
                     Resource resource = searchAddResource(component.getCondition().getReference());
-                    if (resource == null) referenceMissing(encounter, component.getCondition().getReference());
+                    if (resource == null) referenceMissing(encounter, "diagnosis: "+component.getCondition().getReference());
                     component.setCondition(getReference(resource));
                 }
         }
 
         for (Encounter.EncounterLocationComponent component : encounter.getLocation()) {
-            if (component.getLocation().getReference() != null) {
+            if (component.getLocation().hasReference()) {
                 Resource resource = searchAddResource(component.getLocation().getReference());
-                if (resource == null) referenceMissing(encounter, component.getLocation().getReference());
+                if (resource == null) referenceMissing(encounter, "location: "+component.getLocation().getReference());
                 component.setLocation(getReference(resource));
             }
         }
         if (encounter.hasHospitalization()) {
-            if (encounter.getHospitalization().getDestination().getReference() !=null) {
+            if (encounter.getHospitalization().hasDestination() && encounter.getHospitalization().getDestination().hasReference()) {
                 Resource resource = searchAddResource(encounter.getHospitalization().getDestination().getReference());
-                if (resource == null) referenceMissing(encounter, encounter.getHospitalization().getDestination().getReference());
+                if (resource == null) referenceMissing(encounter, "hospitalDestination: "+encounter.getHospitalization().getDestination().getReference());
                 encounter.getHospitalization().setDestination(getReference(resource));
             }
         }
@@ -3753,7 +3755,7 @@ public class BundleCore {
             Resource resource = searchAddResource(encounter.getPartOf().getReference());
             if (resource == null) {
                 // Ideally would be an error but not currently supporting ServiceProvider
-                referenceMissingWarn(encounter, encounter.getPartOf().getReference());
+                referenceMissingWarn(encounter, "PartOf: "+encounter.getPartOf().getReference());
                 encounter.setPartOf(null);
             } else {
                 encounter.setPartOf(getReference(resource));
@@ -3763,7 +3765,7 @@ public class BundleCore {
             Resource resource = searchAddResource(encounter.getServiceProvider().getReference());
             if (resource == null) {
                 // Ideally would be an error but not currently supporting ServiceProvider
-                referenceMissingWarn(encounter, encounter.getServiceProvider().getReference());
+                referenceMissingWarn(encounter, "serviceProvider: "+encounter.getServiceProvider().getReference());
                 encounter.setServiceProvider(null);
             } else {
                 encounter.setServiceProvider(getReference(resource));

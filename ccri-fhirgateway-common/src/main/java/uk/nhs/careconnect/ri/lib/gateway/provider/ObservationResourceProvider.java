@@ -206,7 +206,7 @@ public class ObservationResourceProvider implements IResourceProvider {
 
 
     @Update
-    public MethodOutcome updateObservation(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Observation observation, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
 
         ProducerTemplate template = context.createProducerTemplate();
 

@@ -1,10 +1,9 @@
 package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -121,6 +120,94 @@ public class ReferralRequestResourceProvider implements IResourceProvider {
 
         return results;
 
+    }
+
+    @Create
+    public MethodOutcome create(HttpServletRequest httpRequest, @ResourceParam ReferralRequest referral) throws Exception {
+
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(referral);
+
+            Exchange exchangeBundle = template.send("direct:FHIRReferralRequest", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "ReferralRequest");
+                }
+            });
+
+            // This response is coming from an external FHIR Server, so uses inputstream
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof ReferralRequest) {
+            referral = (ReferralRequest) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
+    }
+
+
+    @Update
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam ReferralRequest referral, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        IBaseResource resource = null;
+        try {
+            InputStream inputStream = null;
+            String newXmlResource = ctx.newXmlParser().encodeResourceToString(referral);
+
+
+            Exchange exchangeBundle = template.send("direct:FHIRReferralRequest", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setBody(newXmlResource);
+                    exchange.getIn().setHeader("Prefer", "return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, null);
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "PUT");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "ReferralRequest/"+theId.getIdPart());
+                }
+            });
+
+            resource = ProviderResponseLibrary.processMessageBody(ctx,resource,exchangeBundle.getIn().getBody());
+
+        } catch(Exception ex) {
+            log.error("XML Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        log.trace("RETURNED Resource "+resource.getClass().getSimpleName());
+
+        if (resource instanceof ReferralRequest) {
+            referral = (ReferralRequest) resource;
+        } else {
+            ProviderResponseLibrary.createException(ctx,resource);
+        }
+
+        MethodOutcome method = new MethodOutcome();
+
+        ProviderResponseLibrary.setMethodOutcome(resource,method);
+
+        return method;
     }
 
 

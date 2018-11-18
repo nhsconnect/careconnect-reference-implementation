@@ -349,20 +349,22 @@ public class ReferralRequestDao implements ReferralRequestRepository {
         }
         for (Reference reference : referralRequest.getRecipient()) {
             ReferralRequestRecipient requestRecipient = new ReferralRequestRecipient();
-            if (reference.getReference().contains("Practitioner")) {
-                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
-                if (practitionerEntity != null) {
-                    requestRecipient.setPractitioner(practitionerEntity);
-                }
-            } else if (referralRequest.getRequester().getAgent().getReference().contains("Organization")) {
-                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(reference.getReference()));
-                if (organisationEntity != null) {
-                    requestRecipient.setOrganisation(organisationEntity);
-                }
-            } else if (referralRequest.getRequester().getAgent().getReference().contains("HealthcareService")) {
-                HealthcareServiceEntity service = serviceDao.readEntity(ctx, new IdType(reference.getReference()));
-                if (service != null) {
-                    requestRecipient.setService(service);
+            if (reference.hasReference()) {
+                if (reference.getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                    if (practitionerEntity != null) {
+                        requestRecipient.setPractitioner(practitionerEntity);
+                    }
+                } else if (reference.getReference().contains("Organization")) {
+                    OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(reference.getReference()));
+                    if (organisationEntity != null) {
+                        requestRecipient.setOrganisation(organisationEntity);
+                    }
+                } else if (reference.getReference().contains("HealthcareService")) {
+                    HealthcareServiceEntity service = serviceDao.readEntity(ctx, new IdType(reference.getReference()));
+                    if (service != null) {
+                        requestRecipient.setService(service);
+                    }
                 }
             }
 

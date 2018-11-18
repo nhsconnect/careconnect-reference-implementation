@@ -111,18 +111,30 @@ public class CcriTieSmartOnFhirServerHAPIConfig extends RestfulServer {
 				// SMART on FHIR only
 				,applicationContext.getBean(EndpointResourceProvider.class)
 
-				// A2SI
+				// NOS
+				,applicationContext.getBean(MedicationDispenseResourceProvider.class)
+
+
+				// Appointments
 				,applicationContext.getBean(HealthcareServiceResourceProvider.class)
 				,applicationContext.getBean(ScheduleResourceProvider.class)
 				,applicationContext.getBean(AppointmentResourceProvider.class)
 				,applicationContext.getBean(SlotResourceProvider.class)
-
 				,applicationContext.getBean(FlagResourceProvider.class)
-				,applicationContext.getBean(MedicationDispenseResourceProvider.class)
 
-				//EOLC
-				,applicationContext.getBean(CarePlanResourceProvider.class)
+
+				// Referrals
+				,applicationContext.getBean(ReferralRequestResourceProvider.class)
+
+				//Encounter
+
 				,applicationContext.getBean(EpisodeOfCareResourceProvider.class)
+
+				// Care Management
+				,applicationContext.getBean(CarePlanResourceProvider.class)
+				,applicationContext.getBean(QuestionnaireResponseResourceProvider.class)
+				,applicationContext.getBean(QuestionnaireResourceProvider.class)
+
 		));
 
 		// Replace built in conformance provider (CapabilityStatement)
