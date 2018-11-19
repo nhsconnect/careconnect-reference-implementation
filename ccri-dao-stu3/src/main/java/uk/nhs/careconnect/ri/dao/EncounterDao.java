@@ -106,6 +106,9 @@ public class  EncounterDao implements EncounterRepository {
     private CompositionEntityToFHIRCompositionTransformer compositionEntityToFHIRCompositionTransformer;
 
     @Autowired
+    private ReferralRequestEntityToFHIRReferralRequestTransformer referralRequestEntityToFHIRReferralRequestTransformer;
+
+    @Autowired
     private MedicationRequestEntityToFHIRMedicationRequestTransformer
             medicationRequestEntityToFHIRMedicationRequestTransformer;
 
@@ -147,8 +150,6 @@ public class  EncounterDao implements EncounterRepository {
     @Autowired
     RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskAssessmentEntityToFHIRRiskAssessmentTransformer;
 
-    // Referral
-    ReferralRequestEntityToFHIRReferralRequestTransformer referralRequestEntityToFHIRReferralRequestTransformer;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -514,10 +515,44 @@ public class  EncounterDao implements EncounterRepository {
                                 addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
                             }
 
+
+                            break;
+
+                        case "Composition:encounter" :
+                            for (CompositionEntity compositionEntity : encounterEntity.getCompositions()) {
+                                addToResults(results, compositionEntityToFHIRCompositionTransformer.transform(compositionEntity));
+                            }
                             break;
                         case "Encounter:part-of":
                             for (EncounterEntity encounterEntityChild : encounterEntity.getChildEncounters()) {
                                 addToResults(results, encounterEntityToFHIREncounterTransformer.transform(encounterEntityChild));
+                            }
+                            break;
+
+                        case "Condition:context":
+                            for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
+                                addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
+                            }
+                            break;
+
+
+                        case "DocumentReference:context" :
+                            for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
+                                addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
+                            }
+                            break;
+                        case "Immunization:encounter" :
+                            // Imms
+                            for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
+                                addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                            }
+                            break;
+                        case "MedicationRequest:context":
+                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                                if (medicationRequestEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                                }
                             }
                             break;
                         case "Observation:context":
@@ -532,33 +567,10 @@ public class  EncounterDao implements EncounterRepository {
                                 addToResults(results, procedureEntityToFHIRProcedureTransformer.transform(procedureEntity));
                             }
                             break;
-                        case "Condition:context":
-                            for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
-                                addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
-                            }
-                            break;
-                        case "MedicationRequest:context":
-                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
-                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                                if (medicationRequestEntity.getMedicationEntity() != null) {
-                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
-                                }
-                            }
-                            break;
-                        case "Immunization:encounter" :
-                            // Imms
-                            for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
-                                addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
-                            }
-                            break;
-                        case "DocumentReference:context" :
-                            for (DocumentReferenceEntity documentReferenceEntity : encounterEntity.getDocuments()) {
-                                addToResults(results, documentReferenceEntityToFHIRDocumentReferenceTransformer.transform(documentReferenceEntity));
-                            }
-                            break;
-                        case "Composition:encounter" :
-                            for (CompositionEntity compositionEntity : encounterEntity.getCompositions()) {
-                                addToResults(results, compositionEntityToFHIRCompositionTransformer.transform(compositionEntity));
+
+                        case "ReferralRequest:encounter" :
+                            for (ReferralRequestEntity referralRequestEntity : encounterEntity.getReferrals()) {
+                                addToResults(results,referralRequestEntityToFHIRReferralRequestTransformer.transform(referralRequestEntity) );
                             }
                             break;
                     }

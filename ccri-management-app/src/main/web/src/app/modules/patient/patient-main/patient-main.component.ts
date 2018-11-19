@@ -30,6 +30,7 @@ export class PatientMainComponent implements OnInit {
     btcolour = 'info';
     bicolour = 'info';
     bmcolour = 'info';
+    brcolour = 'info';
 
     cards : any[] = [];
 
@@ -151,6 +152,7 @@ export class PatientMainComponent implements OnInit {
         this.btcolour = 'info';
         this.bicolour = 'info';
         this.bmcolour = 'info';
+      this.brcolour = 'info';
       switch (btn) {
           case 'bs':
               this.router.navigate(['summary'], {relativeTo: this.route });
@@ -183,6 +185,10 @@ export class PatientMainComponent implements OnInit {
           case 'bm':
               this.router.navigate(['medication'], {relativeTo: this.route });
               this.bmcolour = 'accent';
+              break;
+          case 'br':
+              this.router.navigate(['referral'], {relativeTo: this.route });
+              this.brcolour = 'accent';
               break;
       }
     }

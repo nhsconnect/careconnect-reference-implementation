@@ -19,6 +19,7 @@ import {SmartAppsComponent} from "./hie/smart-apps/smart-apps.component";
 import {AuthGuardOauth2} from "../service/auth-guard-oauth2";
 import {HieMainComponent} from "./hie/hie-main/hie-main.component";
 import {PatientCarePlanComponent} from "./patient/patient-care-plan/patient-care-plan.component";
+import {PatientReferralRequestComponent} from "./patient/patient-referral-request/patient-referral-request.component";
 
 
 
@@ -44,6 +45,7 @@ const edRoutes: Routes = [
                { path: 'procedure', component: PatientProcedureComponent },
                { path: 'document/:docid', component: BinaryComponent },
                { path: 'careplan/:planid', component: PatientCarePlanComponent },
+               { path: 'referral', component: PatientReferralRequestComponent },
            ]}
     ]
 }

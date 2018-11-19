@@ -34,6 +34,8 @@ export class PatientEncounterDetailComponent implements OnInit {
     documents : fhir.DocumentReference[] = [];
     compositions : fhir.Composition[] = [];
 
+    referrals : fhir.ReferralRequest[] = [];
+
 
   constructor(private route: ActivatedRoute,private fhirService : FhirService
       ,private linksService : LinksService) { }
@@ -62,7 +64,9 @@ export class PatientEncounterDetailComponent implements OnInit {
 
     this.immunisations = [];
 
-      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=Observation:context&_revinclude=Encounter:part-of&_revinclude=Procedure:context&_revinclude=Condition:context&_revinclude=MedicationRequest:context&_revinclude=Immunization:encounter&_revinclude=DocumentReference:context&_revinclude=Composition:encounter&_count=50').subscribe(bundle=> {
+      this.referrals = [];
+
+      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=Observation:context&_revinclude=Encounter:part-of&_revinclude=Procedure:context&_revinclude=Condition:context&_revinclude=MedicationRequest:context&_revinclude=Immunization:encounter&_revinclude=DocumentReference:context&_revinclude=Composition:encounter&_revinclude=ReferralRequest:encounter&_count=50').subscribe(bundle=> {
 
               if (bundle.entry != undefined) {
 
@@ -100,6 +104,9 @@ export class PatientEncounterDetailComponent implements OnInit {
                       case 'Composition':
                         this.compositions.push(<fhir.Composition> entry.resource);
                         break;
+                        case 'ReferralRequest':
+                            this.referrals.push(<fhir.ReferralRequest> entry.resource);
+                            break;
                       case 'Encounter':
                                 this.encounter = <fhir.Encounter> entry.resource;
                                 break;

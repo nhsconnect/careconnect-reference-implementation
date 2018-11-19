@@ -137,6 +137,7 @@ import {OAuthModule} from "angular-oauth2-oidc";
 import { PatientCarePlanComponent } from './modules/patient/patient-care-plan/patient-care-plan.component';
 import { FlagComponent } from './component/flag/flag.component';
 import { ReferralRequestComponent } from './component/referral-request/referral-request.component';
+import { PatientReferralRequestComponent } from './modules/patient/patient-referral-request/patient-referral-request.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -226,7 +227,8 @@ export function initializeApp(appConfig: AppConfig) {
       RegisterSmartSecretComponent,
       PatientCarePlanComponent,
       FlagComponent,
-      ReferralRequestComponent
+      ReferralRequestComponent,
+      PatientReferralRequestComponent
 
   ],
   entryComponents: [

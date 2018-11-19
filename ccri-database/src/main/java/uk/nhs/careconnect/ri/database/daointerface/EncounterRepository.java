@@ -35,7 +35,18 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             , @OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name= Encounter.SP_RES_ID) StringParam id
-            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            , @IncludeParam(reverse=true, allow = {
+            "Observation:context",
+            "Encounter:part-of",
+            "Procedure:context",
+            "Condition:context",
+            "MedicationRequest:context",
+            "Immunization:encounter" ,
+            "DocumentReference:context",
+            "Composition:encounter",
+            "ReferralRequest:encounter",
+            "*"
+    }) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
             , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type
@@ -48,7 +59,18 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             ,@OptionalParam(name = Encounter.SP_EPISODEOFCARE) ReferenceParam episode
             , @OptionalParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier
             ,@OptionalParam(name= Encounter.SP_RES_ID) StringParam id
-            , @IncludeParam(reverse=true, allow = {"*"}) Set<Include> reverseIncludes
+            , @IncludeParam(reverse=true, allow = {
+            "Observation:context",
+            "Encounter:part-of",
+            "Procedure:context",
+            "Condition:context",
+            "MedicationRequest:context",
+            "Immunization:encounter" ,
+            "DocumentReference:context",
+            "Composition:encounter",
+            "ReferralRequest:encounter",
+            "*"
+    }) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.subject", "Encounter.service-provider", "Encounter.location", "*"
     }) Set<Include> includes
             , @OptionalParam(name = Encounter.SP_TYPE) TokenParam type

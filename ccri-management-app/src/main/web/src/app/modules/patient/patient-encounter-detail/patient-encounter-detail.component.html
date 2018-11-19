@@ -95,4 +95,14 @@
      </mat-card>
   </span>
 
+  <span *ngIf="referrals.length > 0">
+     <mat-card>
+        <mat-card-content>
+          <h3>Referrals</h3>
+          <app-referral-request  [referrals]="referrals"></app-referral-request>
+        </mat-card-content>
+     </mat-card>
+  </span>
+
+
 
