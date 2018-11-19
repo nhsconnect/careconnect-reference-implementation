@@ -15,8 +15,10 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ReferralRequestEntityToFHIRReferralRequestTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -66,6 +68,12 @@ public class ReferralRequestDao implements ReferralRequestRepository {
 
     @Autowired
     HealthcareServiceRepository serviceDao;
+
+    @Autowired
+    ConditionRepository conditionDao;
+
+    @Autowired
+    ObservationRepository observationDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -297,6 +305,11 @@ public class ReferralRequestDao implements ReferralRequestRepository {
             em.persist(referralRequestIdentifier);
         }
 
+
+            for (ReferralRequestReason cat :referralRequestEntity.getReasons()) {
+                em.remove(cat);
+            }
+
         for (CodeableConcept concept :referralRequest.getReasonCode()) {
             // Category must have a code 15/Jan/2018 testing with Synthea examples
             if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
@@ -304,9 +317,11 @@ public class ReferralRequestDao implements ReferralRequestRepository {
                 if (conceptEntity != null) {
                     ReferralRequestReason reason = null;
                     // Look for existing categories
+                    /*
                     for (ReferralRequestReason cat :referralRequestEntity.getReasons()) {
                         if (cat.getReason().getCode().equals(concept.getCodingFirstRep().getCode())) reason= cat;
                     }
+                    */
                     if (reason == null) reason = new ReferralRequestReason();
 
                     reason.setReason(conceptEntity);
@@ -319,6 +334,34 @@ public class ReferralRequestDao implements ReferralRequestRepository {
                     throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                 }
             }
+        }
+
+        for (ReferralRequestReasonReference cat :referralRequestEntity.getReasonReferences()) {
+            em.remove(cat);
+        }
+
+        for (Reference reference :referralRequest.getReasonReference()) {
+            // Category must have a code 15/Jan/2018 testing with Synthea examples
+            ReferralRequestReasonReference referralRequestReasonReference = new ReferralRequestReasonReference();
+            referralRequestReasonReference.setReferralRequest(referralRequestEntity);
+
+            if (reference.getReference().contains("Condition")) {
+                ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
+                if (conditionEntity != null) {
+                    referralRequestReasonReference.setCondition(conditionEntity);
+                }
+            }
+            if (reference.getReference().contains("Observation")) {
+                ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
+                if (observationEntity != null) {
+                    referralRequestReasonReference.setObservation(observationEntity);
+                }
+            }
+            em.persist(referralRequestReasonReference);
+        }
+
+        for (ReferralRequestServiceRequested cat :referralRequestEntity.getServices()) {
+            em.remove(cat);
         }
 
         for (CodeableConcept concept :referralRequest.getServiceRequested()) {
@@ -345,10 +388,11 @@ public class ReferralRequestDao implements ReferralRequestRepository {
             }
         }
         for (ReferralRequestRecipient search : referralRequestEntity.getRecipients()) {
-           // TODO clear any old entries
+            em.remove(search);
         }
         for (Reference reference : referralRequest.getRecipient()) {
             ReferralRequestRecipient requestRecipient = new ReferralRequestRecipient();
+            requestRecipient.setReferral(referralRequestEntity);
             if (reference.hasReference()) {
                 if (reference.getReference().contains("Practitioner")) {
                     PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));

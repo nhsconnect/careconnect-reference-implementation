@@ -85,15 +85,23 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
                     .setCode(reason.getReason().getCode())
                     .setDisplay(reason.getReason().getDisplay());
         }
+        for (ReferralRequestReasonReference reason : referralRequestEntity.getReasonReferences()) {
+            if (reason.getCondition() != null) {
+                referral.addReasonReference(new Reference("Condition/"+reason.getCondition().getId()).setDisplay(reason.getCondition().getCode().getDisplay()));
+            }
+            if (reason.getObservation() != null) {
+                referral.addReasonReference(new Reference("Observation/"+reason.getObservation().getId()).setDisplay(reason.getObservation().getCode().getDisplay()));
+            }
+        }
         for (ReferralRequestRecipient recipient : referralRequestEntity.getRecipients()) {
             if (recipient.getOrganisation() != null) {
-                referral.addRecipient(new Reference("Organization/" + recipient.getOrganisation().getId()));
+                referral.addRecipient(new Reference("Organization/" + recipient.getOrganisation().getId()).setDisplay(recipient.getOrganisation().getName()));
             }
             if (recipient.getPractitioner() != null) {
-                referral.addRecipient(new Reference("Practitioner/" + recipient.getPractitioner().getId()));
+                referral.addRecipient(new Reference("Practitioner/" + recipient.getPractitioner().getId()).setDisplay(recipient.getPractitioner().getNames().get(0).getDisplayName()));
             }
             if (recipient.getService() != null) {
-                referral.addRecipient(new Reference("HealthcareService/" + recipient.getService().getId()));
+                referral.addRecipient(new Reference("HealthcareService/" + recipient.getService().getId()).setDisplay(recipient.getService().getName()));
             }
         }
 

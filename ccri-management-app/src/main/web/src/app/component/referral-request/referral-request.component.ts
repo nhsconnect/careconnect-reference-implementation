@@ -27,7 +27,7 @@ export class ReferralRequestComponent implements OnInit {
 
     dataSource : ReferralRequestDataSource;
 
-    displayedColumns = ['date', 'status', 'resource'];
+    displayedColumns = ['date', 'status', 'intent', 'reason','requestor','recipient','resource'];
 
 
   constructor(private linksService : LinksService,

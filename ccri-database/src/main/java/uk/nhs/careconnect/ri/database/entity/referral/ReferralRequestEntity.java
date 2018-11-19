@@ -59,38 +59,33 @@ public class ReferralRequestEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_ORGANISATION"))
-
     private OrganisationEntity requesterOrganisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ONBEHALF_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_ONBEHALF_ORGANISATION"))
-
     private OrganisationEntity onBehalfOrganisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PRACTITIONER"))
-
     private PractitionerEntity requesterPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REQUESTOR_PATIENT_ID",foreignKey= @ForeignKey(name="FK_REFERRAL_REQUEST_PATIENT"))
-
     private PatientEntity requesterPatient;
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestIdentifier.class)
-
     private Set<ReferralRequestIdentifier> identifiers = new HashSet<>();
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestRecipient.class)
-
     private Set<ReferralRequestRecipient> recipients = new HashSet<>();
 
     @OneToMany(mappedBy="referral", targetEntity=ReferralRequestReason.class)
-
     private Set<ReferralRequestReason> reasons = new HashSet<>();
 
-    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestServiceRequested.class)
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestReasonReference.class)
+    private Set<ReferralRequestReasonReference> reasonReferences = new HashSet<>();
 
+    @OneToMany(mappedBy="referral", targetEntity=ReferralRequestServiceRequested.class)
     private Set<ReferralRequestServiceRequested> services = new HashSet<>();
 
     public void setId(Long id) {
@@ -234,5 +229,13 @@ public class ReferralRequestEntity extends BaseResource {
 
     public void setOnBehalfOrganisation(OrganisationEntity onBehalfOrganisation) {
         this.onBehalfOrganisation = onBehalfOrganisation;
+    }
+
+    public Set<ReferralRequestReasonReference> getReasonReferences() {
+        return reasonReferences;
+    }
+
+    public void setReasonReferences(Set<ReferralRequestReasonReference> reasonReferences) {
+        this.reasonReferences = reasonReferences;
     }
 }
