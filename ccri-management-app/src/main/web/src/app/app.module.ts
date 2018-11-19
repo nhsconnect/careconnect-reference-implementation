@@ -136,6 +136,7 @@ import {HieMainComponent} from "./modules/hie/hie-main/hie-main.component";
 import {OAuthModule} from "angular-oauth2-oidc";
 import { PatientCarePlanComponent } from './modules/patient/patient-care-plan/patient-care-plan.component';
 import { FlagComponent } from './component/flag/flag.component';
+import { ReferralRequestComponent } from './component/referral-request/referral-request.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -224,7 +225,8 @@ export function initializeApp(appConfig: AppConfig) {
       RegisterSmartComponent,
       RegisterSmartSecretComponent,
       PatientCarePlanComponent,
-      FlagComponent
+      FlagComponent,
+      ReferralRequestComponent
 
   ],
   entryComponents: [

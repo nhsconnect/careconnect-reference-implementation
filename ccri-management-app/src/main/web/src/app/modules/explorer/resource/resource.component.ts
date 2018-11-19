@@ -77,6 +77,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     patients : fhir.Patient[];
     practitioners : fhir.Practitioner[];
 
+    referrals : fhir.ReferralRequest[];
     risks : fhir.RiskAssessment[];
     roles : fhir.PractitionerRole[];
 
@@ -197,6 +198,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     this.consents=[];
     this.carePlans=[];
     this.documents=[];
+    this.referrals=[];
   }
 
   onExpand() {
@@ -614,6 +616,11 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               let form: fhir.QuestionnaireResponse = <fhir.QuestionnaireResponse> resource;
               this.forms.push(form);
               break;
+              case 'ReferralRequest':
+                  console.log('Referral Request');
+                  let referral: fhir.ReferralRequest = <fhir.ReferralRequest> resource;
+                  this.referrals.push(referral);
+                  break;
             case "RiskAssessment":
               let risk: fhir.RiskAssessment = <fhir.RiskAssessment> resource;
               this.risks.push(risk);

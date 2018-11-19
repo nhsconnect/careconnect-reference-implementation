@@ -247,6 +247,10 @@
               <h4>Document Reference</h4>
               <app-document-reference [documents]="documents" (form)="onResoureSelected($event)"></app-document-reference>
           </span>
+          <span *ngIf="referrals.length>0">
+              <h4>Referral Request</h4>
+              <app-referral-request [referrals]="referrals" (form)="onResoureSelected($event)"></app-referral-request>
+          </span>
   </span>
 
           </mat-card-content>
