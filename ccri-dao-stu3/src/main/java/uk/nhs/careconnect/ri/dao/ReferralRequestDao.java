@@ -244,6 +244,18 @@ public class ReferralRequestDao implements ReferralRequestRepository {
             }
         }
 
+
+        if (referralRequest.hasSpecialty()) {
+            ConceptEntity code = conceptDao.findAddCode(referralRequest.getSpecialty().getCoding().get(0));
+            if (code != null) { referralRequestEntity.setSpecialty(code); }
+            else {
+                log.info("Type: Missing System/Code = "+ referralRequest.getType().getCoding().get(0).getSystem() +" code = "+referralRequest.getType().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code Specialty = "+ referralRequest.getSpecialty().getCoding().get(0).getSystem()
+                        +" code = "+referralRequest.getSpecialty().getCoding().get(0).getCode());
+            }
+        }
+
         if (referralRequest.hasRequester()) {
             if (referralRequest.getRequester().hasAgent()) {
                 if (referralRequest.getRequester().getAgent().getReference().contains("Practitioner")) {

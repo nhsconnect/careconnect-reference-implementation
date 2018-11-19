@@ -60,6 +60,20 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
             referral.setSubject(new Reference("Patient/" + referralRequestEntity.getPatient().getId())
                     .setDisplay(referralRequestEntity.getPatient().getNames().get(0).getDisplayName()));
         }
+        if (referralRequestEntity.getType() != null) {
+            referral.getType()
+                    .addCoding()
+                    .setDisplay(referralRequestEntity.getType().getDisplay())
+                    .setSystem(referralRequestEntity.getType().getSystem())
+                    .setCode(referralRequestEntity.getType().getCode());
+        }
+        if (referralRequestEntity.getSpecialty() != null) {
+            referral.getSpecialty()
+                    .addCoding()
+                    .setDisplay(referralRequestEntity.getSpecialty().getDisplay())
+                    .setSystem(referralRequestEntity.getSpecialty().getSystem())
+                    .setCode(referralRequestEntity.getSpecialty().getCode());
+        }
         if (referralRequestEntity.getContextEncounter() != null) {
             referral.setContext(new Reference("Encounter/" + referralRequestEntity.getContextEncounter().getId()));
         }
