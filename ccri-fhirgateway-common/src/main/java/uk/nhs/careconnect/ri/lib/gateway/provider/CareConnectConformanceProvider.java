@@ -280,6 +280,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "CarePlan":
                     case "CareTeam":
                     case "MedicationDispense":
+                    case "MedicationAdministration":
                     case "RiskAssessment":
                     case "Goal":
                     case "ClinicalImpression":
@@ -468,6 +469,7 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                 case "Slot":
                 case "Appointment":
                 case "Flag":
+                case "MedicationAdministration":
 
                 for (BaseMethodBinding<?> nextMethodBinding : next.getMethodBindings()) {
                     if (resourceToMethods.containsKey(resourceName) == false) {
