@@ -22,6 +22,8 @@ import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReference
 import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationCategory;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
@@ -115,6 +117,13 @@ public class  EncounterDao implements EncounterRepository {
     @Autowired
     private MedicationEntityToFHIRMedicationTransformer
             medicationEntityToFHIRMedicationTransformer;
+
+    @Autowired
+    private MedicationAdministrationEntityToFHIRMedicationAdministrationTransformer medicationAdministrationEntityToFHIRMedicationAdministrationTransformer;
+
+    @Autowired
+    private MedicationDispenseEntityToFHIRMedicationDispenseTransformer medicationDispenseEntityToFHIRMedicationDispenseTransformer;
+
 
     @Autowired
     private RelatedPersonEntityToFHIRRelatedPersonTransformer
@@ -545,6 +554,22 @@ public class  EncounterDao implements EncounterRepository {
                             // Imms
                             for (ImmunisationEntity immunisationEntity : encounterEntity.getImmunisations()) {
                                 addToResults(results, immunisationEntityToFHIRImmunizationTransformer.transform(immunisationEntity));
+                            }
+                            break;
+                        case "MedicationDispense:context":
+                            for (MedicationDispenseEntity medicationDispenseEntity : encounterEntity.getMedicationDisenseEncounters()) {
+                                addToResults(results, medicationDispenseEntityToFHIRMedicationDispenseTransformer.transform(medicationDispenseEntity));
+                                if (medicationDispenseEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationDispenseEntity.getMedicationEntity()));
+                                }
+                            }
+                            break;
+                        case "MedicationAdministration:context":
+                            for (MedicationAdministrationEntity medicationAdministrationEntity : encounterEntity.getMedicationAdministrationEncounters()) {
+                                addToResults(results, medicationAdministrationEntityToFHIRMedicationAdministrationTransformer.transform(medicationAdministrationEntity));
+                                if (medicationAdministrationEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationAdministrationEntity.getMedicationEntity()));
+                                }
                             }
                             break;
                         case "MedicationRequest:context":

@@ -175,6 +175,8 @@ public class EncounterResourceProvider implements IResourceProvider {
             "DocumentReference:context",
             "Composition:encounter",
             "ReferralRequest:encounter",
+            "MedicationDispense:context",
+            "MedicationAdministration:context",
             "*"
             }) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter:participant" , "Encounter:patient", "Encounter:service-provider", "Encounter:location", "*"

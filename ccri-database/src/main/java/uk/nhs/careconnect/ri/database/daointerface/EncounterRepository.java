@@ -45,6 +45,8 @@ public interface EncounterRepository  extends BaseRepository<EncounterEntity,Enc
             "DocumentReference:context",
             "Composition:encounter",
             "ReferralRequest:encounter",
+            "MedicationDispense:context",
+            "MedicationAdministration:context",
             "*"
     }) Set<Include> reverseIncludes
             , @IncludeParam(allow = { "Encounter.participant" , "Encounter.service-provider", "Encounter.location", "*"

@@ -13,7 +13,7 @@
 
     <properties>
         <spring_version>4.3.12.RELEASE</spring_version>
-        <hapi-fhir-version>3.5.0</hapi-fhir-version>
+        <hapi-fhir-version>3.6.0</hapi-fhir-version>
     </properties>
 
     <dependencies>

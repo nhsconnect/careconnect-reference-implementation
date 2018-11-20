@@ -116,6 +116,8 @@ public class CcriTieServerHAPIConfig extends RestfulServer {
 				,applicationContext.getBean(QuestionnaireResponseResourceProvider.class)
 				,applicationContext.getBean(QuestionnaireResourceProvider.class)
 
+				,applicationContext.getBean(MedicationAdministrationResourceProvider.class)
+
 		));
 
 		// Replace built in conformance provider (CapabilityStatement)

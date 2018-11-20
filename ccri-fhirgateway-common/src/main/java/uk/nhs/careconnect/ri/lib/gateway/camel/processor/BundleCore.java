@@ -238,6 +238,9 @@ public class BundleCore {
                                 case "HealthcareService":
                                     resource = searchAddHealthcareService(referenceId, (HealthcareService) iResource);
                                     break;
+                                case "MedicationAdministration":
+                                    resource = searchAddMedicationAdministration(referenceId, (MedicationAdministration) iResource);
+                                    break;
                                 case "MedicationDispense":
                                     resource = searchAddMedicationDispense(referenceId, (MedicationDispense) iResource);
                                     break;
@@ -2756,6 +2759,153 @@ public class BundleCore {
 
         return eprMedicationDispense;
     }
+
+    public MedicationAdministration searchAddMedicationAdministration(String medicationAdministrationId,MedicationAdministration medicationAdministration) {
+        log.debug("MedicationAdministration searchAdd " +medicationAdministrationId);
+
+        if (medicationAdministration == null) throw new InternalErrorException("Bundle processing error");
+
+        MedicationAdministration eprMedicationAdministration = (MedicationAdministration) resourceMap.get(medicationAdministrationId);
+
+        // Organization already processed, quit with Organization
+        if (eprMedicationAdministration != null) return eprMedicationAdministration;
+
+        // Prevent re-adding the same Practitioner
+        if (medicationAdministration.getIdentifier().size() == 0) {
+            medicationAdministration.addIdentifier()
+                    .setSystem("urn:uuid")
+                    .setValue(medicationAdministration.getId());
+        }
+
+        ProducerTemplate template = context.createProducerTemplate();
+
+        InputStream inputStream = null;
+
+        for (Identifier identifier : medicationAdministration.getIdentifier()) {
+            Exchange exchange = template.send("direct:FHIRMedicationAdministration", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "identifier=" + identifier.getSystem() + "|" + identifier.getValue());
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, "MedicationAdministration");
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+            Reader reader = new InputStreamReader(inputStream);
+            IBaseResource iresource = null;
+            try {
+                iresource = ctx.newJsonParser().parseResource(reader);
+            } catch(Exception ex) {
+                log.error("JSON Parse failed " + ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+            if (iresource instanceof OperationOutcome) {
+                processOperationOutcome((OperationOutcome) iresource);
+            } else
+            if (iresource instanceof Bundle) {
+                Bundle returnedBundle = (Bundle) iresource;
+                if (returnedBundle.getEntry().size()>0) {
+                    eprMedicationAdministration = (MedicationAdministration) returnedBundle.getEntry().get(0).getResource();
+                    log.debug("Found MedicationAdministration = " + eprMedicationAdministration.getId());
+                }
+            }
+        }
+
+
+        // Location not found. Add to database
+
+
+
+        if (medicationAdministration.hasSubject()) {
+            Resource resource = searchAddResource(medicationAdministration.getSubject().getReference());
+            if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getSubject().getReference());
+            medicationAdministration.setSubject(getReference(resource));
+        }
+        if (medicationAdministration.hasContext()) {
+            Resource resource = searchAddResource(medicationAdministration.getContext().getReference());
+            if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getContext().getReference());
+            medicationAdministration.setContext(getReference(resource));
+        }
+
+        if (medicationAdministration.hasPrescription()) {
+
+                Resource resource = searchAddResource(medicationAdministration.getPrescription().getReference());
+                if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getPrescription().getReference());
+                medicationAdministration.setPrescription(getReference(resource));
+        }
+
+        if (medicationAdministration.hasPerformer()) {
+            if (medicationAdministration.getPerformerFirstRep().hasActor()) {
+                Resource resource = searchAddResource(medicationAdministration.getPerformerFirstRep().getActor().getReference());
+                if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getPerformerFirstRep().getActor().getReference());
+                medicationAdministration.getPerformerFirstRep().setActor(getReference(resource));
+            }
+            if (medicationAdministration.getPerformerFirstRep().hasOnBehalfOf()) {
+                Resource resource = searchAddResource(medicationAdministration.getPerformerFirstRep().getOnBehalfOf().getReference());
+                if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getPerformerFirstRep().getOnBehalfOf().getReference());
+                medicationAdministration.getPerformerFirstRep().setOnBehalfOf(getReference(resource));
+            }
+        }
+
+
+        if (medicationAdministration.hasMedicationReference()) {
+            Resource resource = null;
+            String reference = "";
+            try {
+                reference = medicationAdministration.getMedicationReference().getReference();
+                resource = searchAddResource(reference);
+                if (resource == null) referenceMissing(medicationAdministration, medicationAdministration.getMedicationReference().getReference());
+                medicationAdministration.setMedication(getReference(resource));
+            } catch (Exception ex) {}
+
+        }
+
+        IBaseResource iResource = null;
+
+        String xhttpMethod = "POST";
+        String xhttpPath = "MedicationAdministration";
+        // Location found do not add
+        if (eprMedicationAdministration != null) {
+            xhttpMethod="PUT";
+            // Want id value, no path or resource
+            xhttpPath = "MedicationAdministration/"+eprMedicationAdministration.getIdElement().getIdPart();
+            medicationAdministration.setId(eprMedicationAdministration.getId());
+        }
+        String httpBody = ctx.newJsonParser().encodeResourceToString(medicationAdministration);
+        String httpMethod= xhttpMethod;
+        String httpPath = xhttpPath;
+        try {
+            Exchange exchange = template.send("direct:FHIRMedicationAdministration", ExchangePattern.InOut, new Processor() {
+                public void process(Exchange exchange) throws Exception {
+                    exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
+                    exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
+                    exchange.getIn().setHeader(Exchange.HTTP_PATH, httpPath);
+                    exchange.getIn().setHeader("Prefer","return=representation");
+                    exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+json");
+                    exchange.getIn().setBody(httpBody);
+                }
+            });
+            inputStream = (InputStream) exchange.getIn().getBody();
+
+            Reader reader = new InputStreamReader(inputStream);
+            iResource = ctx.newJsonParser().parseResource(reader);
+        } catch(Exception ex) {
+            log.error("JSON Parse failed " + ex.getMessage());
+            throw new InternalErrorException(ex.getMessage());
+        }
+        if (iResource instanceof MedicationAdministration) {
+            eprMedicationAdministration = (MedicationAdministration) iResource;
+            setResourceMap(medicationAdministrationId,eprMedicationAdministration);
+
+        } else if (iResource instanceof OperationOutcome)
+        {
+            processOperationOutcome((OperationOutcome) iResource);
+        } else {
+            throw new InternalErrorException("Unknown Error");
+        }
+
+        return eprMedicationAdministration;
+    }
+
 
     public MedicationStatement searchAddMedicationStatement(String medicationStatementId,MedicationStatement medicationStatement) {
         log.debug("MedicationStatement searchAdd " +medicationStatementId);

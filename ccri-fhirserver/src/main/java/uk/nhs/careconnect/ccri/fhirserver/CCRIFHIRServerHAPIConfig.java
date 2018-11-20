@@ -123,6 +123,7 @@ public class CCRIFHIRServerHAPIConfig extends RestfulServer {
                 , applicationContext.getBean(AppointmentProvider.class)
 
                 , applicationContext.getBean(FlagProvider.class)
+                , applicationContext.getBean(MedicationAdministrationProvider.class)
 
         ));
 

@@ -11,23 +11,23 @@
     </ng-container>
 
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef width="8%"> Visit </th>
+      <th mat-header-cell *matHeaderCellDef width="5%"> Visit </th>
       <td mat-cell *matCellDef="let encounter">
         <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="selectEncounter(encounter)"><mat-icon>today</mat-icon></button>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="start">
-      <th mat-header-cell *matHeaderCellDef> Start </th>
+      <th mat-header-cell *matHeaderCellDef width="10%"> Start </th>
       <td mat-cell *matCellDef="let encounter">  <span *ngIf="encounter.period !== undefined  && encounter.period.start !== undefined"> {{encounter.period.start | date: 'dd-MMM-yyyy HH:mm'}} </span> </td>
     </ng-container>
     <ng-container matColumnDef="end">
-      <th mat-header-cell *matHeaderCellDef> End </th>
+      <th mat-header-cell *matHeaderCellDef width="10%"> End </th>
       <td mat-cell *matCellDef="let encounter">  <span *ngIf="encounter.period !== undefined && encounter.period.end !== undefined"> {{encounter.period.end | date: 'dd-MMM-yyyy HH:mm'}} </span> </td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <th mat-header-cell *matHeaderCellDef width="5%"> Status </th>
       <td mat-cell *matCellDef="let encounter">  {{encounter.status}} </td>
     </ng-container>
 
@@ -94,11 +94,20 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="location">
+      <th mat-header-cell *matHeaderCellDef width="8%">Locations</th>
+      <td mat-cell *matCellDef="let encounter">
+        <span *ngIf="encounter.location!=undefined && encounter.location.length > 0">
+          {{encounter.location[0].location.display}}
+        </span>
+      </td>
+    </ng-container>
     <ng-container matColumnDef="locationLink">
-      <th mat-header-cell *matHeaderCellDef width="10%">Locations</th>
+      <th mat-header-cell *matHeaderCellDef width="4%"></th>
       <td mat-cell *matCellDef="let encounter">
         <span *ngIf="encounter.location!=undefined && encounter.location.length > 0">
           <button mat-icon-button color="accent"  matTooltip="View Location" (click)="showLocation(encounter)"><mat-icon>language</mat-icon></button>
+
         </span>
       </td>
     </ng-container>

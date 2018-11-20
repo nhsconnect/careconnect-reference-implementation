@@ -413,7 +413,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   }
   onSearch() {
 
-
+    this.clearDown();
       console.log(this.form.valid);
       if (this.form.valid && this.elements.length > 0) {
           this.resource = undefined;

@@ -24,7 +24,7 @@
         <java.version>1.8</java.version>
 
         <java.version>1.8</java.version>
-        <hapi-fhir-version>3.5.0</hapi-fhir-version>
+        <hapi-fhir-version>3.6.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <hawtio.version>2.0.3</hawtio.version>
 

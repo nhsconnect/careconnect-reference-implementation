@@ -6,6 +6,8 @@ import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -115,6 +117,12 @@ public class EncounterEntity extends BaseResource {
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationRequestEntity.class)
     Set<MedicationRequestEntity> medicationRequestEncounters = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationDispenseEntity.class)
+    Set<MedicationDispenseEntity> medicationDisenseEncounters = new HashSet<>();
+
+    @OneToMany(mappedBy="contextEncounter", targetEntity = MedicationAdministrationEntity.class)
+    Set<MedicationAdministrationEntity> medicationAdministrationEncounters = new HashSet<>();
     // Support for reverse includes
 
     @OneToMany(mappedBy="contextEncounter", targetEntity = DiagnosticReportEntity.class)
@@ -427,5 +435,21 @@ public class EncounterEntity extends BaseResource {
 
     public void setCompositions(Set<CompositionEntity> compositions) {
         this.compositions = compositions;
+    }
+
+    public Set<MedicationDispenseEntity> getMedicationDisenseEncounters() {
+        return medicationDisenseEncounters;
+    }
+
+    public void setMedicationDisenseEncounters(Set<MedicationDispenseEntity> medicationDisenseEncounters) {
+        this.medicationDisenseEncounters = medicationDisenseEncounters;
+    }
+
+    public Set<MedicationAdministrationEntity> getMedicationAdministrationEncounters() {
+        return medicationAdministrationEncounters;
+    }
+
+    public void setMedicationAdministrationEncounters(Set<MedicationAdministrationEntity> medicationAdministrationEncounters) {
+        this.medicationAdministrationEncounters = medicationAdministrationEncounters;
     }
 }
