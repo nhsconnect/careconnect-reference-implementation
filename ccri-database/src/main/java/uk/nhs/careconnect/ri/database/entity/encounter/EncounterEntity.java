@@ -47,6 +47,13 @@ public class EncounterEntity extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CLASS_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_CLASS_CONCEPT_ID"))
     private ConceptEntity _class;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="EXTENSION_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_EXTENSION_ID"))
+    private ConceptEntity extension;
+    
+    @Column(name="EXTENSION_URL")
+    private String extensionURL;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -177,6 +184,23 @@ public class EncounterEntity extends BaseResource {
         return patient;
     }
 
+    public void setExtensionURL(String extensionURL) {
+        this.extensionURL = extensionURL;
+    }
+
+    public String getExtensionURL() {
+        return extensionURL;
+    }
+    
+    public EncounterEntity setExtension(ConceptEntity extension) {
+        this.extension = extension;
+        return this;
+    }
+
+    public ConceptEntity getExtension() {
+        return extension;
+    }
+    
     public Set<ConditionEntity> getConditionEncounters() {
         return conditionEncounters;
     }

@@ -251,6 +251,33 @@ public class  EncounterDao implements EncounterRepository {
             patientEntity = patientDao.readEntity(ctx, new IdType(encounter.getSubject().getReference()));
             encounterEntity.setPatient(patientEntity);
         }
+        
+        log.info("checking for extension");
+        if (encounter.hasExtension())
+        {
+        	log.info("checking for extension-- has extension : " + encounter.getExtension().size() );
+            for (Extension extension : encounter.getExtension()) {
+            		log.info("url is " + extension.getUrl());
+            		encounterEntity.setExtensionURL(extension.getUrl());
+            		
+            		CodeableConcept extensionValue = (CodeableConcept) extension.getValue();
+            		
+            		log.info("System/code  is : " + extensionValue.getCoding().get(0).getSystem());
+            		ConceptEntity code = conceptDao.findCode(extensionValue.getCoding().get(0));	
+            		if (code != null) 
+            			{ 
+            				log.info("the code found in the db"); 
+            				encounterEntity.setExtension(code);
+            			}
+            		else {
+
+                        String message = "Encounter Extension: Missing System/Code = "+ extensionValue.getCoding().get(0).getSystem() +" code = "+extensionValue.getCoding().get(0).getCode();
+                        log.error(message);
+                        throw new OperationOutcomeException("Encounter",message, OperationOutcome.IssueType.CODEINVALID);
+                    }
+            }
+        }
+        
         if (encounter.hasClass_()) {
             ConceptEntity code = conceptDao.findAddCode(encounter.getClass_());
             if (code != null) { encounterEntity._setClass(code); }

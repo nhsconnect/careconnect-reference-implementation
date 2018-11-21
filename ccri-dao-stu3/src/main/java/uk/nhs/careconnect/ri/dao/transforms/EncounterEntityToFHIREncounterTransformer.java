@@ -1,12 +1,13 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -34,6 +35,20 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
 
         encounter.setId(encounterEntity.getId().toString());
 
+        Extension serviceType = encounter.addExtension(); 
+        
+        if (encounterEntity.getExtensionURL() != null) 
+                serviceType.setUrl(encounterEntity.getExtensionURL() );
+        
+        if (encounterEntity.getExtension() != null) 
+        {
+        	CodeableConcept type = new CodeableConcept();
+        	type.addCoding()
+	              	.setSystem(encounterEntity.getExtension().getSystem())
+	                .setCode(encounterEntity.getExtension().getCode())
+	                .setDisplay(encounterEntity.getExtension().getDisplay());
+        	serviceType.setValue(type);	
+        }
         for(EncounterIdentifier identifier : encounterEntity.getIdentifiers())
         {
             encounter.addIdentifier()
