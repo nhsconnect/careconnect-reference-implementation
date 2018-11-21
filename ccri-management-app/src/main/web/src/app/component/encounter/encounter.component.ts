@@ -36,7 +36,7 @@ export class EncounterComponent implements OnInit {
 
   dataSource : EncounterDataSource;
 
-  displayedColumns = ['select','start','end','status', 'type','typelink','provider','providerLink','participant','participantLink', 'location','locationLink','resource'];
+  displayedColumns = ['select','start','end','status', 'type','typelink','service','provider','providerLink','participant','participantLink', 'location','locationLink','resource'];
 
   constructor(private linksService : LinksService,
     public bundleService : BundleService,

@@ -253,22 +253,22 @@ public class  EncounterDao implements EncounterRepository {
             encounterEntity.setPatient(patientEntity);
         }
         
-        log.info("checking for extension");
+        log.trace("checking for extension");
         if (encounter.hasExtension())
         {
-        	log.info("checking for extension-- has extension : " + encounter.getExtension().size() );
+        	log.trace("checking for extension-- has extension : " + encounter.getExtension().size() );
             for (Extension extension : encounter.getExtension()) {
             switch (extension.getUrl()) {	
             case CareConnectExtension.UrlServiceType :
-            		log.info("url is " + extension.getUrl());
+            		log.trace("url is " + extension.getUrl());
             		
             		CodeableConcept extensionValue = (CodeableConcept) extension.getValue();
             		
-            		log.info("System/code  is : " + extensionValue.getCoding().get(0).getSystem());
-            		ConceptEntity code = conceptDao.findCode(extensionValue.getCoding().get(0));	
+            		log.trace("System/code  is : " + extensionValue.getCoding().get(0).getSystem());
+            		ConceptEntity code = conceptDao.findAddCode(extensionValue.getCoding().get(0));
             		if (code != null) 
             			{ 
-            				log.info("the code found in the db"); 
+            				log.debug("the code found in the db");
             				encounterEntity.setServiceType(code);
             			}
             		else {

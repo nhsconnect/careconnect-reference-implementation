@@ -31,6 +31,18 @@
       <td mat-cell *matCellDef="let encounter">  {{encounter.status}} </td>
     </ng-container>
 
+    <ng-container matColumnDef="service">
+      <th mat-header-cell *matHeaderCellDef> Service </th>
+      <td mat-cell *matCellDef="let encounter">
+
+          <span *ngFor="let extension of encounter.extension">
+            <span *ngIf="extension.url === 'http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType'">
+              <i>{{extension.valueCodeableConcept.coding[0].display}}</i>
+            </span>
+            </span>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef> Encounter </th>
       <td mat-cell *matCellDef="let encounter">

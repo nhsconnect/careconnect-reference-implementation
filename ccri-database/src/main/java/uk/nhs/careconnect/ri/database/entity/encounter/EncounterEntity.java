@@ -185,7 +185,7 @@ public class EncounterEntity extends BaseResource {
         return this;
     }
 
-    public ConceptEntity getExtension() {
+    public ConceptEntity getServiceType() {
         return serviceType;
     }
     
