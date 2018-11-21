@@ -9,6 +9,7 @@ import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.encounter.*;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -37,11 +38,9 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
 
         Extension serviceType = encounter.addExtension(); 
         
-        if (encounterEntity.getExtensionURL() != null) 
-                serviceType.setUrl(encounterEntity.getExtensionURL() );
-        
         if (encounterEntity.getExtension() != null) 
         {
+        	serviceType.setUrl(CareConnectExtension.UrlServiceType);
         	CodeableConcept type = new CodeableConcept();
         	type.addCoding()
 	              	.setSystem(encounterEntity.getExtension().getSystem())

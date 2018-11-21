@@ -33,6 +33,7 @@ import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 import uk.nhs.careconnect.ri.database.entity.referral.ReferralRequestEntity;
 import uk.nhs.careconnect.ri.database.entity.riskAssessment.RiskAssessmentEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.nhs.careconnect.ri.database.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
@@ -257,8 +258,9 @@ public class  EncounterDao implements EncounterRepository {
         {
         	log.info("checking for extension-- has extension : " + encounter.getExtension().size() );
             for (Extension extension : encounter.getExtension()) {
+            switch (extension.getUrl()) {	
+            case CareConnectExtension.UrlServiceType :
             		log.info("url is " + extension.getUrl());
-            		encounterEntity.setExtensionURL(extension.getUrl());
             		
             		CodeableConcept extensionValue = (CodeableConcept) extension.getValue();
             		
@@ -267,7 +269,7 @@ public class  EncounterDao implements EncounterRepository {
             		if (code != null) 
             			{ 
             				log.info("the code found in the db"); 
-            				encounterEntity.setExtension(code);
+            				encounterEntity.setServiceType(code);
             			}
             		else {
 
@@ -275,6 +277,8 @@ public class  EncounterDao implements EncounterRepository {
                         log.error(message);
                         throw new OperationOutcomeException("Encounter",message, OperationOutcome.IssueType.CODEINVALID);
                     }
+            		break;
+            	}
             }
         }
         
