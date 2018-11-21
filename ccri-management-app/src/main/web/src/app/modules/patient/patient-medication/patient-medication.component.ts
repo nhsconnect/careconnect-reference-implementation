@@ -292,4 +292,9 @@ export class PatientMedicationComponent implements OnInit {
                 //this.progressBar = false;
             })
     }
+
+    viewEncounter(encounterReference : fhir.Reference) {
+        let ids: string[] = encounterReference.reference.split('/');
+        this.router.navigate(['encounter',ids[1]], {relativeTo: this.route.parent });
+    }
 }

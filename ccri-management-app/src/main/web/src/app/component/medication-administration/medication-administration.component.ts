@@ -26,13 +26,15 @@ export class MedicationAdministrationComponent implements OnInit {
 
     dataSource : MedicationAdministrationDataSource;
 
-    displayedColumns = ['medication', 'medicationlink','dose','quantity', 'status','effective','practitioner','organisation', 'resource'];
+    displayedColumns = ['medication', 'medicationlink','dose','route','quantity', 'status','effective','practitioner','organisation', 'visit', 'resource'];
 
     practitioners : fhir.Practitioner[];
 
     organisations : fhir.Organization[];
 
     selectedMeds : fhir.Medication[];
+
+    @Output() context = new EventEmitter<any>();
 
     constructor(private linksService : LinksService,
                 private fhirService : FhirService,
@@ -188,6 +190,10 @@ export class MedicationAdministrationComponent implements OnInit {
             }
         }
     }
-
+    viewEncounter(request : fhir.MedicationAdministration) {
+        if (request.context !== undefined) {
+            this.context.emit(request.context);
+        }
+    }
 
 }

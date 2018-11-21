@@ -18,18 +18,20 @@ export class MedicationRequestComponent implements OnInit {
 
   @Input() showDetail : boolean = false;
 
-  meds : fhir.Medication[];
+  meds : fhir.Medication[] = [];
 
 
   selectedMeds : fhir.Medication[];
 
   @Output() medicationRequest = new EventEmitter<any>();
 
+    @Output() context = new EventEmitter<any>();
+
   @Input() patientId : string;
 
   dataSource : MedicationRequestDataSource;
 
-  displayedColumns = ['medication', 'medicationlink','dose','route','routelink','form', 'status','authored',  'resource'];
+  displayedColumns = ['medication', 'medicationlink','dose','route','routelink','form','additional', 'patinstrs', 'status','authored', 'visit',  'resource'];
 
 
   constructor(private linksService : LinksService,
@@ -117,6 +119,11 @@ export class MedicationRequestComponent implements OnInit {
     }
   }
 
+  viewEncounter(request : fhir.MedicationRequest) {
+    if (request.context !== undefined) {
+      this.context.emit(request.context);
+    }
+  }
   select(resource) {
     const dialogConfig = new MatDialogConfig();
 

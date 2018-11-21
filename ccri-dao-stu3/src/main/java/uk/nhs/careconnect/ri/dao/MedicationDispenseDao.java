@@ -206,13 +206,17 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
         }
 
         if (dispense.hasPerformer()) {
-            if (dispense.getPerformerFirstRep().getActor().getReference().contains("Practitioner")) {
-                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getActor().getReference()));
-                dispenseEntity.setPerformerPractitioner(practitionerEntity);
+            if (dispense.getPerformerFirstRep().hasActor()) {
+                if (dispense.getPerformerFirstRep().getActor().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getActor().getReference()));
+                    dispenseEntity.setPerformerPractitioner(practitionerEntity);
+                }
             }
-            if (dispense.getPerformerFirstRep().getOnBehalfOf().getReference().contains("Organization")) {
-                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getOnBehalfOf().getReference()));
-                dispenseEntity.setPerformerOrganisation(organisationEntity);
+            if (dispense.getPerformerFirstRep().hasOnBehalfOf()) {
+                if (dispense.getPerformerFirstRep().getOnBehalfOf().getReference().contains("Organization")) {
+                    OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(dispense.getPerformerFirstRep().getOnBehalfOf().getReference()));
+                    dispenseEntity.setPerformerOrganisation(organisationEntity);
+                }
             }
         }
 

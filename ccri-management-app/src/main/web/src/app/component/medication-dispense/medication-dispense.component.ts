@@ -23,11 +23,13 @@ export class MedicationDispenseComponent implements OnInit {
 
     @Output() medicationDispense = new EventEmitter<any>();
 
+    @Output() context = new EventEmitter<any>();
+
     @Input() patientId : string;
 
     dataSource : MedicationDispenseDataSource;
 
-    displayedColumns = ['medication', 'medicationlink','dose','quantity', 'status','prepared', 'handedover','practitioner','organisation', 'detail', 'resource'];
+    displayedColumns = ['medication', 'medicationlink','dose','quantity', 'status','prepared', 'handedover','practitioner','organisation', 'detail', 'visit','resource'];
 
     practitioners : fhir.Practitioner[];
 
@@ -203,5 +205,9 @@ export class MedicationDispenseComponent implements OnInit {
             }
         }
     }
-
+    viewEncounter(request : fhir.MedicationDispense) {
+        if (request.context !== undefined) {
+            this.context.emit(request.context);
+        }
+    }
 }

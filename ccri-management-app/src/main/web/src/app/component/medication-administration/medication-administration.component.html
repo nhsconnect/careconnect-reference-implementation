@@ -60,19 +60,29 @@
     </ng-container>
 
     <ng-container matColumnDef="dose">
-      <th mat-header-cell *matHeaderCellDef> Dose </th>
-      <td mat-cell *matCellDef="let medicationAdministration">
+    <th mat-header-cell *matHeaderCellDef width="10%"> Dose </th>
+    <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngIf="medicationAdministration.dosage !== undefined">
             <span *ngIf="medicationAdministration.dosage.dose!==undefined">{{medicationAdministration.dosage.dose.value}} {{medicationAdministration.dosage.dose.unit}}</span>
 
-            <span *ngIf="medicationAdministration.dosage.route !==undefined">Route - {{medicationAdministration.dosage.route.coding[0].display}}</span>
+
+        </span>
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="route">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Route </th>
+      <td mat-cell *matCellDef="let medicationAdministration">
+        <span *ngIf="medicationAdministration.dosage !== undefined">
+
+            <span *ngIf="medicationAdministration.dosage.route !==undefined">{{medicationAdministration.dosage.route.coding[0].display}}</span>
 
         </span>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="form">
-      <th mat-header-cell *matHeaderCellDef> Form </th>
+      <th mat-header-cell *matHeaderCellDef width="10%"> Form </th>
       <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngFor="let dosage of medicationAdministration.dosageInstruction">
             <span *ngIf="dosage.maxDosePerPeriod != undefined" >
@@ -119,7 +129,14 @@
       </td>
     </ng-container>
 
-
+    <ng-container matColumnDef="visit">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Visit </th>
+      <td mat-cell *matCellDef="let medicationAdministration">
+        <span *ngIf="medicationAdministration.context !== undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="viewEncounter(medicationAdministration)"><mat-icon>today</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
 
     <ng-container matColumnDef="resource">
       <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>

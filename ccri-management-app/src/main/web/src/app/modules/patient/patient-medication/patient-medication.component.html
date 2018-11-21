@@ -29,7 +29,7 @@
                       </span>
                     </span>
                   </span>
-              <app-medication-request [medicationRequests]="medicationRequests" ></app-medication-request>
+              <app-medication-request [medicationRequests]="medicationRequests" (context)="viewEncounter($event)" ></app-medication-request>
           </span>
         <span *ngIf="medicationRequests.length==0">
               No results found.
@@ -89,7 +89,7 @@
                       </span>
                     </span>
                   </span>
-              <app-medication-administration [medicationAdministrations]="medicationAdministrations" ></app-medication-administration>
+              <app-medication-administration [medicationAdministrations]="medicationAdministrations" (context)="viewEncounter($event)"></app-medication-administration>
           </span>
             <span *ngIf="medicationAdministrations.length==0">
               No results found.
@@ -128,7 +128,7 @@
                     </span>
                   </span>
 
-              <app-medication-dispense [medicationDispenses]="medicationDispenses" ></app-medication-dispense>
+              <app-medication-dispense [medicationDispenses]="medicationDispenses" (context)="viewEncounter($event)" ></app-medication-dispense>
           </span>
         <span *ngIf="medicationDispenses.length==0">
               No results found.
