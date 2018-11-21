@@ -138,6 +138,7 @@ import { PatientCarePlanComponent } from './modules/patient/patient-care-plan/pa
 import { FlagComponent } from './component/flag/flag.component';
 import { ReferralRequestComponent } from './component/referral-request/referral-request.component';
 import { PatientReferralRequestComponent } from './modules/patient/patient-referral-request/patient-referral-request.component';
+import { MedicationAdministrationComponent } from './component/medication-administration/medication-administration.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -228,7 +229,8 @@ export function initializeApp(appConfig: AppConfig) {
       PatientCarePlanComponent,
       FlagComponent,
       ReferralRequestComponent,
-      PatientReferralRequestComponent
+      PatientReferralRequestComponent,
+      MedicationAdministrationComponent
 
   ],
   entryComponents: [

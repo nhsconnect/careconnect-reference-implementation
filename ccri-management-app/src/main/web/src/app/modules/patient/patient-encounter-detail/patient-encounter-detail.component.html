@@ -59,14 +59,7 @@
     </mat-card>
   </span>
 
-  <span *ngIf="presTotal>0">
-    <mat-card>
-        <mat-card-content>
-          <h3>Prescriptions</h3>
-          <app-medication-request [medicationRequests]="prescriptions"></app-medication-request>
-        </mat-card-content>
-    </mat-card>
-  </span>
+
 
   <span *ngIf="compositions.length > 0">
      <mat-card>
@@ -103,6 +96,28 @@
         </mat-card-content>
      </mat-card>
   </span>
-
-
+  <span *ngIf="prescriptions.length > 0">
+    <mat-card>
+        <mat-card-content>
+          <h3>Prescriptions</h3>
+          <app-medication-request [medicationRequests]="prescriptions"></app-medication-request>
+        </mat-card-content>
+    </mat-card>
+  </span>
+  <span *ngIf="medicationAdministrations.length > 0">
+     <mat-card>
+        <mat-card-content>
+          <h3>Medication Administration</h3>
+          <app-medication-administration  [medicationAdministrations]="medicationAdministrations"></app-medication-administration>
+        </mat-card-content>
+     </mat-card>
+  </span>
+  <span *ngIf="medicationDispenses.length > 0">
+     <mat-card>
+        <mat-card-content>
+          <h3>Medication Dispense</h3>
+          <app-medication-dispense [medicationDispenses]="medicationDispenses"></app-medication-dispense>
+        </mat-card-content>
+     </mat-card>
+  </span>
 

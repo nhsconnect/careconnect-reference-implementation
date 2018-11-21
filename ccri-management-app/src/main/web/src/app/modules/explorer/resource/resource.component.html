@@ -207,6 +207,10 @@
               <h4>Medication Dispense</h4>
               <app-medication-dispense [medicationDispenses]="medicationDispenses" (medicationDispense)="onResoureSelected($event)"></app-medication-dispense>
           </span>
+          <span *ngIf="medicationAdministrations.length>0">
+              <h4>Medication Administration</h4>
+              <app-medication-administration [medicationAdministrations]="medicationAdministrations" (medicationAdministration)="onResoureSelected($event)"></app-medication-administration>
+          </span>
           <span *ngIf="procedures.length>0">
               <h4>Procedure</h4>
               <app-procedure [procedures]="procedures" [useBundle]="true" (procedure)="onResoureSelected($event)"></app-procedure>

@@ -65,6 +65,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     immunisations : fhir.Immunization[];
     locations : fhir.Location[];
     medications : fhir.Medication[];
+    medicationAdministrations : fhir.MedicationAdministration[];
     medicationStatements : fhir.MedicationStatement[];
     medicationDispenses : fhir.MedicationDispense[];
     observations : fhir.Observation[];
@@ -178,6 +179,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     this.entries = [];
     this.medicationStatements =[];
     this.medicationDispenses =[];
+      this.medicationAdministrations =[];
     this.prescriptions =[];
     this.medications=[];
     this.conditions=[];
@@ -576,6 +578,10 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               let medication: fhir.Medication = <fhir.Medication> resource;
               this.medications.push(medication);
               break;
+              case "MedicationAdministration" :
+                  let medicationAdministration: fhir.MedicationAdministration = <fhir.MedicationAdministration> resource;
+                  this.medicationAdministrations.push(medicationAdministration);
+                  break;
             case "MedicationRequest" :
               let medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> resource;
               this.prescriptions.push(medicationRequest);

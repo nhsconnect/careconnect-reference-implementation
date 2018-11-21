@@ -477,12 +477,8 @@ public class  EncounterDao implements EncounterRepository {
                             for (ConditionEntity conditionEntity : encounterEntity.getConditionEncounters()) {
                                 addToResults(results, conditionEntityToFHIRConditionTransformer.transform(conditionEntity));
                             }
-                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
-                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
-                                if (medicationRequestEntity.getMedicationEntity() != null) {
-                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
-                                }
-                            }
+
+
                             for (CarePlanEntity carePlanEntity : encounterEntity.getCarePlans()) {
                                 addToResults(results, carePlanIntoleranceEntityToFHIRCarePlanTransformer.transform(carePlanEntity));
                             }
@@ -504,6 +500,26 @@ public class  EncounterDao implements EncounterRepository {
                             for (ListEntity listEntity : encounterEntity.getLists()) {
                                 addToResults(results, listEntityToFHIRListResourceTransformer.transform(listEntity));
 
+                            }
+                            // Meds
+                            for (MedicationRequestEntity medicationRequestEntity : encounterEntity.getMedicationRequestEncounters()) {
+                                addToResults(results, medicationRequestEntityToFHIRMedicationRequestTransformer.transform(medicationRequestEntity));
+                                if (medicationRequestEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationRequestEntity.getMedicationEntity()));
+                                }
+                            }
+                            for (MedicationDispenseEntity medicationDispenseEntity : encounterEntity.getMedicationDisenseEncounters()) {
+                                addToResults(results, medicationDispenseEntityToFHIRMedicationDispenseTransformer.transform(medicationDispenseEntity));
+                                if (medicationDispenseEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationDispenseEntity.getMedicationEntity()));
+                                }
+                            }
+
+                            for (MedicationAdministrationEntity medicationAdministrationEntity : encounterEntity.getMedicationAdministrationEncounters()) {
+                                addToResults(results, medicationAdministrationEntityToFHIRMedicationAdministrationTransformer.transform(medicationAdministrationEntity));
+                                if (medicationAdministrationEntity.getMedicationEntity() != null) {
+                                    addToResults(results, medicationEntityToFHIRMedicationTransformer.transform(medicationAdministrationEntity.getMedicationEntity()));
+                                }
                             }
 
                             // QuestionnaireResponse

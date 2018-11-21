@@ -26,6 +26,10 @@ export class PatientMedicationComponent implements OnInit {
 
     medicationDispenses : fhir.MedicationDispense[] = [];
 
+    medicationAdministrations : fhir.MedicationAdministration[] = [];
+
+    medicationAdministration : fhir.MedicationAdministration = undefined;
+
     medicationDispense : fhir.MedicationDispense = undefined;
 
     patient : fhir.Patient = undefined;
@@ -35,6 +39,8 @@ export class PatientMedicationComponent implements OnInit {
     resourceStatement : fhir.Bundle;
 
     resourceDispense : fhir.Bundle;
+
+    resourceAdministration : fhir.Bundle;
 
   acutecolor = 'info';
   gpcolor = 'info';
@@ -57,6 +63,14 @@ export class PatientMedicationComponent implements OnInit {
             bundle => {
                 this.resourceIssue = bundle;
                 this.getResourcesIssue();
+
+            }
+        );
+
+        this.fhirSrv.get('/MedicationAdministration?patient='+patientid).subscribe(
+            bundle => {
+                this.resourceAdministration = bundle;
+                this.getResourcesAdministration();
 
             }
         );
@@ -182,6 +196,25 @@ export class PatientMedicationComponent implements OnInit {
             }
         }
     }
+
+    getResourcesAdministration() {
+        let bundle = this.resourceAdministration;
+        this.medicationAdministrations=[];
+        if (bundle.entry !== undefined) {
+            for (let entry of bundle.entry) {
+
+                switch (entry.resource.resourceType) {
+
+                    case 'MedicationAdministration':
+                        let medicationAdministration: fhir.MedicationAdministration = <fhir.MedicationAdministration> entry.resource;
+                        this.medicationAdministrations.push(medicationAdministration);
+                        break;
+                }
+
+            }
+        }
+    }
+
 
     getResourcesDispense() {
         let bundle = this.resourceDispense;

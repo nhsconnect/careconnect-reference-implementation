@@ -19,6 +19,9 @@ export class PatientEncounterDetailComponent implements OnInit {
     prescriptions : fhir.MedicationRequest[];
     presTotal : number;
 
+    medicationAdministrations : fhir.MedicationAdministration[];
+    medicationDispenses : fhir.MedicationDispense[];
+
     procedures : fhir.Procedure[];
     procTotal : number;
 
@@ -65,8 +68,10 @@ export class PatientEncounterDetailComponent implements OnInit {
     this.immunisations = [];
 
       this.referrals = [];
+      this.medicationAdministrations = [];
+      this.medicationDispenses = [];
 
-      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=Observation:context&_revinclude=Encounter:part-of&_revinclude=Procedure:context&_revinclude=Condition:context&_revinclude=MedicationRequest:context&_revinclude=Immunization:encounter&_revinclude=DocumentReference:context&_revinclude=Composition:encounter&_revinclude=ReferralRequest:encounter&_count=50').subscribe(bundle=> {
+      this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=*&_count=50').subscribe(bundle=> {
 
               if (bundle.entry != undefined) {
 
@@ -84,6 +89,14 @@ export class PatientEncounterDetailComponent implements OnInit {
                         case 'MedicationRequest':
                                 this.prescriptions.push(<fhir.MedicationRequest> entry.resource);
                                 this.presTotal++;
+                            break;
+                        case 'MedicationDispense':
+                            this.medicationDispenses.push(<fhir.MedicationDispense> entry.resource);
+                            this.presTotal++;
+                            break;
+                        case 'MedicationAdministration':
+                            this.medicationAdministrations.push(<fhir.MedicationAdministration> entry.resource);
+                            this.presTotal++;
                             break;
                         case 'Condition':
                                 this.conditions.push(<fhir.Condition> entry.resource);
