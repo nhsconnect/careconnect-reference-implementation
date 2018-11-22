@@ -42,7 +42,7 @@ public class MedicationRequestDosage extends BaseResource {
 
 
 	@Column(name="otherText")
-    String otherText;
+    String doasgeText;
 
 	// TODO TIMING
 
@@ -232,12 +232,12 @@ public class MedicationRequestDosage extends BaseResource {
         return this;
 	}
 
-	public String getOtherText() {
-		return otherText;
+	public String getDoasgeText() {
+		return doasgeText;
 	}
 
-	public void setOtherText(String otherText) {
-		this.otherText = otherText;
+	public void setDoasgeText(String doasgeText) {
+		this.doasgeText = doasgeText;
 	}
 
 	public ConceptEntity getDoseLowUnitOfMeasure() {

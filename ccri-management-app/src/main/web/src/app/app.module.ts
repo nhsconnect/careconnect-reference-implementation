@@ -40,7 +40,7 @@ import {
     MatToolbarModule, MatTooltipModule,
 
 
-} from "@angular/material";
+} from '@angular/material';
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {MainComponent} from "./modules/explorer/main/main.component";
 import { ConformanceComponent } from './modules/explorer/conformance/conformance.component';

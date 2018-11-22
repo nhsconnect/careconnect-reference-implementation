@@ -1,20 +1,20 @@
 export class DocumentRef {
 
-  private _speciality : string;
+  private _speciality: string;
 
-  private _type : string;
+  private _type: string;
 
-  private _patients : fhir.Patient[];
+  private _patients: fhir.Patient[];
 
   private _file : File;
 
   private _docDate : Date;
 
-  private _organisations : fhir.Organization[];
+  private _organisations: fhir.Organization[];
 
-  private _practitioners : fhir.Practitioner[];
+  private _practitioners: fhir.Practitioner[];
 
-  private _service : string;
+  private _service: string;
 
 
   get speciality(): string {

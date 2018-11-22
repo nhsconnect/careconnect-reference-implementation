@@ -14,13 +14,10 @@ import uk.nhs.careconnect.ri.dao.transforms.MedicationRequestEntityToFHIRMedicat
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestDosage;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 import javax.persistence.EntityManager;
@@ -296,7 +293,32 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             em.persist(prescriptionIdentifier);
         }
 
+
+        for (MedicationRequestNote note : prescriptionEntity.getNotes()) {
+            em.remove(note);
+        }
+        for (Annotation annotation : prescription.getNote()) {
+            MedicationRequestNote note = new MedicationRequestNote();
+            note.setMedicationRequest(prescriptionEntity);
+            if (annotation.hasAuthorReference()) {
+                if (annotation.getAuthorReference().getReference().contains("Patient")) {
+                    PatientEntity patientEntity1= patientDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePatient(patientEntity1);
+                }
+                if (annotation.getAuthorReference().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePractitioner(practitionerEntity);
+                }
+
+            }
+            if (annotation.hasText()) {
+                note.setNoteText(annotation.getText());
+            }
+            em.persist(note);
+        }
+
         // Don't attempt to rebuild dosages
+
         for ( MedicationRequestDosage dosageEntity : prescriptionEntity.getDosages()) {
             em.remove(dosageEntity);
         }
@@ -361,7 +383,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
                 }
             }
             if (dosage.hasText()) {
-                dosageEntity.setOtherText(dosage.getText());
+                dosageEntity.setDoasgeText(dosage.getText());
             }
             if (dosage.hasPatientInstruction()) {
                 dosageEntity.setPatientInstruction(dosage.getPatientInstruction());

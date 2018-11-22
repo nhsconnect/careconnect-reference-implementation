@@ -5,7 +5,7 @@
         <!-- Left pane -->
         <div fxFlex="100" layout-margin="3%">
           <div>
-          <span *ngIf="patient != undefined">
+          <span *ngIf="patient !== undefined">
             <div class="container" layout="row" layout-align="start center" flex>
               <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
               <span flex ></span>
@@ -92,7 +92,7 @@
           </td-expansion-panel> -->
           <span *ngIf="flags !== undefined">
             <span *ngFor="let flag of flags">
-                <span *ngIf="flag.code != undefined && flag.code.coding != undefined">
+                <span *ngIf="flag.code !== undefined && flag.code.coding !== undefined">
                   <td-message #messageDemo color="info" [label]="flag.code.coding[0].display" icon="warning" >
                     <button td-message-actions mat-icon-button (click)="messageDemo.close()"><mat-icon>cancel</mat-icon></button>
                   </td-message>

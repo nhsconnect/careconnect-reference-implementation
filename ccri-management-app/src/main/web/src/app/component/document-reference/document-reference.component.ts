@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
 import {Router} from "@angular/router";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {IAlertConfig, TdDialogService} from "@covalent/core";
 import {DocumentReferenceDataSource} from "../../data-source/document-reference-data-source";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {LinksService} from "../../service/links.service";
-import {BundleService} from "../../service/bundle.service";
+import {LinksService} from  '../../service/links.service';
+import {BundleService} from '../../service/bundle.service';
 import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 import {EprService} from "../../service/epr.service";
@@ -22,13 +22,13 @@ export class DocumentReferenceComponent implements OnInit {
 
   @Input() documentsTotal :number;
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   @Output() documentReference = new EventEmitter<any>();
 
-  practitioners : fhir.Practitioner[];
+  practitioners: fhir.Practitioner[];
 
-  organisations : fhir.Organization[];
+  organisations: fhir.Organization[];
 
   dataSource : DocumentReferenceDataSource;
 
@@ -37,35 +37,35 @@ export class DocumentReferenceComponent implements OnInit {
   constructor(private router: Router,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef,
-              public fhirService : FhirService,
+              public fhirService: FhirService,
               private patientEprService : EprService,
-              private linksService : LinksService,
+              private linksService: LinksService,
               public dialog: MatDialog,
-              public bundleService : BundleService) { }
+              public bundleService: BundleService) { }
 
   ngOnInit() {
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new DocumentReferenceDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new DocumentReferenceDataSource(this.fhirService, undefined, this.documents);
     }
   }
 
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
 
-  selectDocument(document : fhir.DocumentReference) {
+  selectDocument(document: fhir.DocumentReference) {
 
     this.documentReference.emit(document);
 
@@ -77,7 +77,7 @@ export class DocumentReferenceComponent implements OnInit {
 
     this.bundleService.getResource(document.custodian.reference).subscribe( (organisation) => {
 
-      if (organisation != undefined && organisation.resourceType === "Organization") {
+      if (organisation !== undefined && organisation.resourceType === "Organization") {
 
         this.organisations.push(<fhir.Organization> organisation);
 
@@ -90,20 +90,20 @@ export class DocumentReferenceComponent implements OnInit {
           id: 1,
           organisations : this.organisations
         };
-        let resourceDialog : MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
 
       }
     });
 
   }
 
-  showAuthors(document : fhir.DocumentReference) {
+  showAuthors(document: fhir.DocumentReference) {
 
     this.practitioners = [];
 
     for (let practitionerReference of document.author) {
       this.bundleService.getResource(practitionerReference.reference).subscribe((practitioner) => {
-          if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
             this.practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -115,14 +115,14 @@ export class DocumentReferenceComponent implements OnInit {
               id: 1,
               practitioners : this.practitioners
             };
-            let resourceDialog : MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
+            const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
           }
         }
       );
     }
   }
 
-  getMime(mimeType : string) {
+  getMime(mimeType: string) {
 
     switch (mimeType) {
         case 'application/fhir+xml':
@@ -146,6 +146,6 @@ export class DocumentReferenceComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 }

@@ -5,10 +5,10 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 export class PractitionerRoleDataSource extends DataSource<any> {
 
-  constructor(public fhirService : FhirService,
-              public bundleService : BundleService,
-              public practitioner : fhir.Practitioner,
-              public useBundle : boolean = false
+  constructor(public fhirService: FhirService,
+              public bundleService: BundleService,
+              public practitioner: fhir.Practitioner,
+              public useBundle: boolean = false
   ) {
     super();
     this.practitioner = practitioner;
@@ -28,7 +28,7 @@ export class PractitionerRoleDataSource extends DataSource<any> {
 
     if (!this.useBundle) {
       this.fhirService.get('/PractitionerRole?practitioner='+this.practitioner.id).subscribe(bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             console.log('entry = ' + entry.resource.resourceType);
             this.dataStore.roles.push(<fhir.PractitionerRole> entry.resource);
@@ -39,7 +39,7 @@ export class PractitionerRoleDataSource extends DataSource<any> {
       });
     } else {
       this.bundleService.getRolesForPractitioner(this.practitioner.id).subscribe(roles => {
-        if (roles != undefined ) {
+        if (roles !== undefined ) {
           for (let role of roles) {
             console.log('role = ' + role);
             this.dataStore.roles.push(<fhir.PractitionerRole> role);

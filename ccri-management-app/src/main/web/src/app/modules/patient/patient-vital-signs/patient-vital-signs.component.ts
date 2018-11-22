@@ -10,11 +10,11 @@ import {EprService} from "../../../service/epr.service";
 })
 export class PatientVitalSignsComponent implements OnInit {
 
-    observations : fhir.Observation[] = [];
+    observations: fhir.Observation[] = [];
 
-    resource : fhir.Bundle;
+    resource: fhir.Bundle;
 
-  constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+  constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
   ngOnInit() {
       let patientid = this.route.snapshot.paramMap.get('patientid');
@@ -48,7 +48,7 @@ export class PatientVitalSignsComponent implements OnInit {
   clearDown() {
       this.observations = [];
   }
-    onMore(linkUrl : string) {
+    onMore(linkUrl: string) {
 
         this.clearDown();
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {

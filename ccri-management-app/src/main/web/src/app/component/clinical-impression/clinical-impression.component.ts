@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ClinicalImpressionDataSource} from "../../data-source/clinical-impression-data-source";
-import {LinksService} from "../../service/links.service";
-import {BundleService} from "../../service/bundle.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {BundleService} from '../../service/bundle.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 
 @Component({
@@ -13,11 +13,11 @@ import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dia
 })
 export class ClinicalImpressionComponent implements OnInit {
 
-    @Input() clinicalImpressions : fhir.ClinicalImpression[];
+    @Input() clinicalImpressions: fhir.ClinicalImpression[];
 
     @Output() clinicalImpression = new EventEmitter<any>();
 
-    @Input() patientId : string;
+    @Input() patientId: string;
 
     @Input() useBundle :boolean = false;
 
@@ -25,13 +25,13 @@ export class ClinicalImpressionComponent implements OnInit {
 
     displayedColumns = ['id', 'resource'];
 
-    constructor(private linksService : LinksService,
-                public bundleService : BundleService,
+    constructor(private linksService: LinksService,
+                public bundleService: BundleService,
                 public dialog: MatDialog,
-                public fhirService : FhirService) { }
+                public fhirService: FhirService) { }
 
     ngOnInit() {
-        if (this.patientId != undefined) {
+        if (this.patientId !== undefined) {
             this.dataSource = new ClinicalImpressionDataSource(this.fhirService, this.patientId, []);
         } else {
             this.dataSource = new ClinicalImpressionDataSource(this.fhirService, undefined, this.clinicalImpressions);
@@ -47,7 +47,7 @@ export class ClinicalImpressionComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 
 }

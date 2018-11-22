@@ -36,7 +36,7 @@
                     <a mat-list-item>
                       <mat-icon>warning</mat-icon>
                       <h4 mat-line>
-                         <span *ngIf="item.code != undefined && item.code.coding.length > 0">
+                         <span *ngIf="item.code !== undefined && item.code.coding.length > 0">
                             {{item.code.coding[0].display}}
                          </span>
 

@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
+import {LinksService} from  '../../service/links.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ConditionDataSource} from "../../data-source/condition-data-source";
 import {ProcedureDataSource} from "../../data-source/procedure-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 import {EncounterDialogComponent} from "../../dialog/encounter-dialog/encounter-dialog.component";
-import {BundleService} from "../../service/bundle.service";
+import {BundleService} from '../../service/bundle.service';
 
 @Component({
   selector: 'app-procedure',
@@ -16,13 +16,13 @@ import {BundleService} from "../../service/bundle.service";
 })
 export class ProcedureComponent implements OnInit {
 
-  @Input() procedures : fhir.Procedure[];
+  @Input() procedures: fhir.Procedure[];
 
   @Output() procedure = new EventEmitter<fhir.Procedure>();
 
   @Output() encounterRef = new EventEmitter<fhir.Reference>();
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   @Input() useBundle :boolean = false;
 
@@ -30,33 +30,33 @@ export class ProcedureComponent implements OnInit {
 
   displayedColumns = ['performed', 'code','codelink','status', 'bodysite', 'complication','contextLink', 'resource'];
 
-  constructor(private linksService : LinksService,
-              public bundleService : BundleService,
+  constructor(private linksService: LinksService,
+              public bundleService: BundleService,
               public dialog: MatDialog,
-              public fhirService : FhirService) { }
+              public fhirService: FhirService) { }
 
   ngOnInit() {
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new ProcedureDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new ProcedureDataSource(this.fhirService, undefined, this.procedures);
     }
   }
 
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
 
-  showEncounter(procedure : fhir.Procedure) {
+  showEncounter(procedure: fhir.Procedure) {
 
     this.encounterRef.emit(procedure.context);
     /*
@@ -64,7 +64,7 @@ export class ProcedureComponent implements OnInit {
 
 
     this.bundleService.getResource(procedure.context.reference).subscribe((encounter) => {
-        if (encounter != undefined && encounter.resourceType === "Encounter") {
+        if (encounter !== undefined && encounter.resourceType === "Encounter") {
           contexts.push(<fhir.Encounter> encounter);
 
           const dialogConfig = new MatDialogConfig();
@@ -93,6 +93,6 @@ export class ProcedureComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 }

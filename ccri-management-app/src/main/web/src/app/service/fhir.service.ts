@@ -18,13 +18,13 @@ export enum Formats {
 export class FhirService {
 
 
-  //private baseUrl : string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
-    private baseUrl : string = undefined;
+  //private baseUrl: string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
+    private baseUrl: string = undefined;
 
-  private GPCbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
-   // private GPCbaseUrl : string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
+  private GPCbaseUrl: string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
+   // private GPCbaseUrl: string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
 
-    private NRLSbaseUrl : string = 'https://data.developer.nhs.uk/nrls-ri';
+    private NRLSbaseUrl: string = 'https://data.developer.nhs.uk/nrls-ri';
 
     private registerUri: string;
 
@@ -32,7 +32,7 @@ export class FhirService {
 
     // public smart: SMARTClient;
 
-  public conformance : fhir.CapabilityStatement;
+  public conformance: fhir.CapabilityStatement;
 
   conformanceChange : EventEmitter<any> = new EventEmitter();
 
@@ -40,7 +40,7 @@ export class FhirService {
 
     formatChange : EventEmitter<any> = new EventEmitter();
 
-   private rootUrl : string = undefined;
+   private rootUrl: string = undefined;
 
 
     constructor( private http: HttpClient, private oauth2 : Oauth2Service) {
@@ -67,7 +67,7 @@ export class FhirService {
 
   }
 
-  public oauth2Required() : boolean {
+  public oauth2Required(): boolean {
 
 
 
@@ -75,7 +75,7 @@ export class FhirService {
         for (let rest of this.conformance.rest) {
           if (rest.security !== undefined && rest.security.service !== undefined) {
             for (let service of rest.security.service) {
-              if (service.coding != undefined && service.coding.length > 0) {
+              if (service.coding !== undefined && service.coding.length > 0) {
                 if (service.coding[0].system == 'SMART-on-FHIR') {
 
                   return true;
@@ -89,11 +89,11 @@ export class FhirService {
   }
 
 
-    storeBaseUrl(baseUrl : string) {
+    storeBaseUrl(baseUrl: string) {
         localStorage.setItem('baseUrl',baseUrl);
     }
 
-    getStoredBaseUrl() : string {
+    getStoredBaseUrl(): string {
         return localStorage.getItem('baseUrl');
     }
 
@@ -156,7 +156,7 @@ this.baseUrl = rootUrl;
 this.rootUrlChange.emit(rootUrl);
 }
 
-setGPCNRLSUrl(baseUrl : string) {
+setGPCNRLSUrl(baseUrl: string) {
 if (baseUrl.includes('4203')) {
 this.GPCbaseUrl = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
 } else {
@@ -193,7 +193,7 @@ public getFHIRNRLSServerBase() {
 return this.NRLSbaseUrl;
 }
 
-public setFHIRServerBase(server : string) {
+public setFHIRServerBase(server: string) {
     this.baseUrl = server;
     this.storeBaseUrl(server);
 
@@ -201,7 +201,7 @@ public setFHIRServerBase(server : string) {
 
 
 
-getHeaders(contentType : boolean = true ): HttpHeaders {
+getHeaders(contentType: boolean = true ): HttpHeaders {
 
 let headers = new HttpHeaders(
 );
@@ -213,7 +213,7 @@ return headers;
 }
 
 
-getEPRHeaders(contentType : boolean = true ): HttpHeaders {
+getEPRHeaders(contentType: boolean = true ): HttpHeaders {
 
 let headers = this.getHeaders(contentType);
 
@@ -238,11 +238,11 @@ this.conformanceChange.emit(undefined);
 });
 }
 
-public postAny(url : string, body : string, httpHeaders : HttpHeaders) {
+public postAny(url: string, body: string, httpHeaders : HttpHeaders) {
 return this.http.post<any>(url, body, { headers : httpHeaders});
 }
 
-public post(resource : string , body : any) : Observable<any> {
+public post(resource: string , body : any) : Observable<any> {
 
 let headers :HttpHeaders = this.getEPRHeaders(false);
 headers.append('Content-Type','application/fhir+json');
@@ -250,7 +250,7 @@ headers.append('Prefer','return=representation');
 return this.http.post<any>(this.getFHIRServerBase()+ resource, body, { headers : headers});
 }
 
-public put(resource : string, body : any) : Observable<any> {
+public put(resource: string, body : any) : Observable<any> {
 
 let headers :HttpHeaders = this.getEPRHeaders(false);
 headers.append('Content-Type','application/fhir+json');
@@ -260,9 +260,9 @@ const url = this.getFHIRServerBase() + resource;
 return this.http.put<fhir.Endpoint>(url,body,{ 'headers' :headers});
 }
 
-public get(search : string) : Observable<fhir.Bundle> {
+public get(search: string) : Observable<fhir.Bundle> {
 
-let url : string = this.getFHIRServerBase() + search;
+let url: string = this.getFHIRServerBase() + search;
 let headers = new HttpHeaders(
 );
 
@@ -275,7 +275,7 @@ return this.http.get<any>(url, {'headers': headers});
 }
 }
 
-public getNRLSResource(search : string) : Observable<any> {
+public getNRLSResource(search: string) : Observable<any> {
 
 let url = this.getFHIRNRLSServerBase() + search;
 let headers = new HttpHeaders(
@@ -295,9 +295,9 @@ return this.http.get<any>(url, {'headers': this.getHeaders(true)});
 }
 }
 
-public getNRLS(search : string) : Observable<fhir.Bundle> {
+public getNRLS(search: string) : Observable<fhir.Bundle> {
 
-let url : string = this.getFHIRNRLSServerBase() + search;
+let url: string = this.getFHIRNRLSServerBase() + search;
 let headers = new HttpHeaders(
 );
 
@@ -312,9 +312,9 @@ return this.http.get<any>(url, {'headers': headers});
 
 }
 
-public postGPC(nhsNumber : string) : Observable<fhir.Bundle> {
+public postGPC(nhsNumber: string) : Observable<fhir.Bundle> {
 
-let url : string = this.getFHIRGPCServerBase() +'/Patient/$gpc.getstructuredrecord' ;
+let url: string = this.getFHIRGPCServerBase() +'/Patient/$gpc.getstructuredrecord' ;
 let headers = new HttpHeaders(
 );
 headers = headers.append( 'Content-Type',  'application/fhir+json' );
@@ -324,7 +324,7 @@ let body = '{ "resourceType": "Parameters", "parameter": [ { "name": "patientNHS
 return this.http.post<any>(url, body,{'headers': headers});
 }
 
-public getResource(search : string) : Observable<any> {
+public getResource(search: string) : Observable<any> {
 
 let url = this.getFHIRServerBase() + search;
 let headers = new HttpHeaders(
@@ -341,7 +341,7 @@ return this.http.get<any>(url, {'headers': this.getHeaders(true)});
 
 
 
-public getResults(url : string) : Observable<fhir.Bundle> {
+public getResults(url: string) : Observable<fhir.Bundle> {
 console.log('getResults');
 let headers = new HttpHeaders();
 

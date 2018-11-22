@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 declare var $: any;
 
@@ -25,9 +25,9 @@ export class PractitionerRoleDialogComponent implements OnInit {
     this.useBundle = data.useBundle;
   }
 
-  practitioner : fhir.Practitioner;
+  practitioner: fhir.Practitioner;
 
-  useBundle : boolean ;
+  useBundle: boolean ;
 
 
   ngOnInit() {

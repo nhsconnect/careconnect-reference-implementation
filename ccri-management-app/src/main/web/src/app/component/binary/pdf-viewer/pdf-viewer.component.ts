@@ -10,7 +10,7 @@ import {IAlertConfig, TdDialogService} from "@covalent/core";
 })
 export class PdfViewerComponent implements OnInit {
 
-  docId : string;
+  docId: string;
 
 
   @Input() document : any;
@@ -21,10 +21,10 @@ export class PdfViewerComponent implements OnInit {
   totalPages: number;
   isLoaded: boolean = false;
 
-  @Input() binaryId : string;
+  @Input() binaryId: string;
 
   constructor(private route: ActivatedRoute,
-              private fhirService : FhirService,
+              private fhirService: FhirService,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef) { }
 
@@ -35,7 +35,7 @@ export class PdfViewerComponent implements OnInit {
   }
 
 
-  getDocument(id : string): void {
+  getDocument(id: string): void {
 
     this.docId = id;
 
@@ -65,7 +65,7 @@ export class PdfViewerComponent implements OnInit {
     this.isLoaded = true;
   }
 
-  showWarnDlg(message : string) {
+  showWarnDlg(message: string) {
     let alertConfig : IAlertConfig = { message : message};
     alertConfig.disableClose =  false; // defaults to false
     alertConfig.viewContainerRef = this._viewContainerRef;

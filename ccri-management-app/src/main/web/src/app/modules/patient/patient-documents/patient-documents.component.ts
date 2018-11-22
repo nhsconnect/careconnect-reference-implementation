@@ -2,7 +2,7 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FhirService} from "../../../service/fhir.service";
 import {EprService} from "../../../service/epr.service";
-import {MatDialog} from "@angular/material";
+import {MatDialog} from '@angular/material';
 import {IAlertConfig, TdDialogService} from "@covalent/core";
 
 @Component({
@@ -12,12 +12,12 @@ import {IAlertConfig, TdDialogService} from "@covalent/core";
 })
 export class PatientDocumentsComponent implements OnInit {
 
-    documents : fhir.DocumentReference[] = [];
+    documents: fhir.DocumentReference[] = [];
 
-    resource : fhir.Bundle;
+    resource: fhir.Bundle;
 
     constructor(private router : Router,
-                private fhirSrv : FhirService,
+                private fhirSrv: FhirService,
                 private route: ActivatedRoute,
                 private eprService : EprService,
                 public dialog: MatDialog,
@@ -59,7 +59,7 @@ export class PatientDocumentsComponent implements OnInit {
 
     }
 
-    onMore(linkUrl : string) {
+    onMore(linkUrl: string) {
 
         this.clearDown();
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -73,9 +73,9 @@ export class PatientDocumentsComponent implements OnInit {
             })
     }
 
-    selectResource(document : fhir.DocumentReference) {
+    selectResource(document: fhir.DocumentReference) {
 
-      if (document.content != undefined && document.content.length> 0) {
+      if (document.content !== undefined && document.content.length> 0) {
 
         this.eprService.setDocumentReference(document);
 

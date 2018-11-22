@@ -98,6 +98,9 @@ public class MedicationAdministrationEntity extends BaseResource {
     @Column(name = "note")
     String note;
 
+    @OneToMany(mappedBy="administration", targetEntity = MedicationAdministrationNote.class)
+    Set<MedicationAdministrationNote> notes = new HashSet<>();
+
     @OneToMany(mappedBy="administration", targetEntity = MedicationAdministrationDosage.class)
     Set<MedicationAdministrationDosage> dosages = new HashSet<>();
 
@@ -279,5 +282,13 @@ public class MedicationAdministrationEntity extends BaseResource {
 
     public void setDosages(Set<MedicationAdministrationDosage> dosages) {
         this.dosages = dosages;
+    }
+
+    public Set<MedicationAdministrationNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Set<MedicationAdministrationNote> notes) {
+        this.notes = notes;
     }
 }

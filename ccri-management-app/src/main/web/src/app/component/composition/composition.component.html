@@ -31,7 +31,7 @@
     <ng-container matColumnDef="typelink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let document">
-      <span *ngIf="document.type.coding[0].code != undefined" >
+      <span *ngIf="document.type.coding[0].code !== undefined" >
         <span *ngIf="isSNOMED(document.type.coding[0].system)">
           <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(document.type.coding[0].system)}} {{document.type.coding[0].code}}" (click)="getSNOMEDLink(document.type.coding[0])">
               <mat-icon>book</mat-icon>
@@ -82,7 +82,7 @@
     <ng-container matColumnDef="mime">
       <th mat-header-cell *matHeaderCellDef> mime </th>
       <td mat-cell *matCellDef="let document">
-        <span *ngIf="document.content != undefined" class="badge badge-info">{{getMime(document.content[0].attachment.contentType)}}</span>
+        <span *ngIf="document.content !== undefined" class="badge badge-info">{{getMime(document.content[0].attachment.contentType)}}</span>
       </td>
     </ng-container>
 

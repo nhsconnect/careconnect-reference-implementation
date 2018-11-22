@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>
    <span *ngIf="resource !=undefined">
-     <span *ngIf="resource.resourceType != undefined">
+     <span *ngIf="resource.resourceType !== undefined">
       Resource Detail [ {{resource.resourceType}} ]
      </span>
      <span *ngIf="resource.resourceType == undefined">

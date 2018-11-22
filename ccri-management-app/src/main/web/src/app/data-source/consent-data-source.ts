@@ -4,9 +4,9 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 
 export class ConsentDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
-              public patientId : string,
-              public consents : fhir.Consent[]
+  constructor(public fhirService: FhirService,
+              public patientId: string,
+              public consents: fhir.Consent[]
   ) {
     super();
   }
@@ -23,9 +23,9 @@ export class ConsentDataSource extends DataSource<any> {
 
     this.dataStore = { consents: [] };
 
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.fhirService.get('/Consent?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             this.dataStore.consents.push(<fhir.Consent> entry.resource);
 

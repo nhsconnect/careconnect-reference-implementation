@@ -14,19 +14,19 @@ export class PatientCarePlanComponent implements OnInit {
   patientid;
 
 
-  careplan : fhir.CarePlan = undefined;
+  careplan: fhir.CarePlan = undefined;
 
-  forms : fhir.QuestionnaireResponse[] = [];
+  forms: fhir.QuestionnaireResponse[] = [];
 
 
-  flags : fhir.Flag[] = [];
+  flags: fhir.Flag[] = [];
 
-  conditions : fhir.Condition[] = [];
+  conditions: fhir.Condition[] = [];
 
-  observations : fhir.Observation[] = [];
+  observations: fhir.Observation[] = [];
 
   constructor(private route: ActivatedRoute,
-    private fhirService : FhirService) { }
+    private fhirService: FhirService) { }
 
 
   ngOnInit() {
@@ -38,7 +38,7 @@ export class PatientCarePlanComponent implements OnInit {
 
       this.forms = [];
       this.fhirService.get('/Flag?patient='+this.patientid).subscribe( bundle => {
-        if (bundle.entry != undefined) {
+        if (bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             switch (entry.resource.resourceType) {
               case 'Flag' :
@@ -50,7 +50,7 @@ export class PatientCarePlanComponent implements OnInit {
       });
 
     this.fhirService.get('/Observation?patient='+this.patientid+'&code=761869008').subscribe( bundle => {
-      if (bundle.entry != undefined) {
+      if (bundle.entry !== undefined) {
         for (let entry of bundle.entry) {
           switch (entry.resource.resourceType) {
             case 'Observation' :
@@ -64,7 +64,7 @@ export class PatientCarePlanComponent implements OnInit {
 
     this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=CarePlan:condition&_include=CarePlan:supporting-information&_count=50').subscribe(bundle=> {
 
-          if (bundle.entry != undefined) {
+          if (bundle.entry !== undefined) {
               for (let entry of bundle.entry) {
                   switch(entry.resource.resourceType) {
                       case 'CarePlan' :

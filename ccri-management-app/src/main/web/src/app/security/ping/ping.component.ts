@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../../service/auth.service';
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {Router} from "@angular/router";
 
 
@@ -17,7 +17,7 @@ export class PingComponent implements OnInit {
 
   constructor(private authService: AuthService,
               private router: Router,
-              private  fhirService : FhirService
+              private  fhirService: FhirService
     ) {
   }
 

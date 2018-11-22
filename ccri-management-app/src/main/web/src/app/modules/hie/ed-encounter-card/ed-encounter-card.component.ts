@@ -11,31 +11,31 @@ import {Router} from "@angular/router";
 export class EdEncounterCardComponent implements OnInit {
 
   @Input()
-  encounter : fhir.Encounter;
+  encounter: fhir.Encounter;
 
-  heart : fhir.Observation = undefined;
-  temp : fhir.Observation = undefined;
-  resp : fhir.Observation = undefined;
-  bp : fhir.Observation = undefined;
-    news2 : fhir.Observation = undefined;
-    o2 : fhir.Observation = undefined;
-    alert2 : fhir.Observation = undefined;
-    air : fhir.Observation = undefined;
+  heart: fhir.Observation = undefined;
+  temp: fhir.Observation = undefined;
+  resp: fhir.Observation = undefined;
+  bp: fhir.Observation = undefined;
+    news2: fhir.Observation = undefined;
+    o2: fhir.Observation = undefined;
+    alert2: fhir.Observation = undefined;
+    air: fhir.Observation = undefined;
 
-  patient : fhir.Patient = undefined;
-  encounters : fhir.Encounter[] = [];
-  observations : fhir.Observation[] = [];
-  flags : fhir.Flag[] = [];
+  patient: fhir.Patient = undefined;
+  encounters: fhir.Encounter[] = [];
+  observations: fhir.Observation[] = [];
+  flags: fhir.Flag[] = [];
 
 
-  plannedLocStatus : boolean = true;
+  plannedLocStatus: boolean = true;
 
-    ambulanceLoc : fhir.Location = undefined;
+    ambulanceLoc: fhir.Location = undefined;
     plannedLoc :fhir.Location = undefined;
 
 
 
-    constructor(private fhirService : FhirService,
+    constructor(private fhirService: FhirService,
               private router : Router) { }
 
   ngOnInit() {
@@ -48,7 +48,7 @@ export class EdEncounterCardComponent implements OnInit {
       for (let entry of bundle.entry) {
           switch (entry.resource.resourceType) {
               case "Encounter":
-                  let sub : fhir.Encounter = <fhir.Encounter> entry.resource;
+                  let sub: fhir.Encounter = <fhir.Encounter> entry.resource;
                   if (sub.id !== this.encounter.id) {
                       //his.coords = sub.53.80634, -1.52304
                       this.encounters.push(sub);
@@ -76,7 +76,7 @@ export class EdEncounterCardComponent implements OnInit {
                 }
             }
 
-            let locations : fhir.Location[] = [];
+            let locations: fhir.Location[] = [];
 
             for (let enc of this.encounters) {
                 this.fhirService.get('/Encounter?_id='+enc.id+'&_include=Encounter:location&_revinclude=Observation:context').subscribe(
@@ -86,7 +86,7 @@ export class EdEncounterCardComponent implements OnInit {
 
                                 case 'Observation':
 
-                                    let obs : fhir.Observation = <fhir.Observation> entry.resource;
+                                    let obs: fhir.Observation = <fhir.Observation> entry.resource;
                                     this.observations.push(obs);
                                     break;
                                 case 'Location':
@@ -139,7 +139,7 @@ export class EdEncounterCardComponent implements OnInit {
   }
 
 
-    getPatientData(nhsNumber : string) {
+    getPatientData(nhsNumber: string) {
 
       // Mock up using CCRI for now (EOLC not supported in NRLS until next phase
 
@@ -215,7 +215,7 @@ export class EdEncounterCardComponent implements OnInit {
             return "";
 
         let name = "";
-        if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
+        if (patient.name[0].family !== undefined) name += patient.name[0].family.toUpperCase();
         return name;
 
     }
@@ -226,14 +226,14 @@ export class EdEncounterCardComponent implements OnInit {
       return "";
     // Move to address
     let name = "";
-    if (patient.name[0].given != undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
+    if (patient.name[0].given !== undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
 
-    if (patient.name[0].prefix != undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
+    if (patient.name[0].prefix !== undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
     return name;
 
   }
 
-  getNHSIdentifier(patient : fhir.Patient) : String {
+  getNHSIdentifier(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.identifier == undefined || patient.identifier.length == 0)
       return "";
@@ -247,13 +247,13 @@ export class EdEncounterCardComponent implements OnInit {
 
   }
 
-  getValue(obs : fhir.Observation) {
+  getValue(obs: fhir.Observation) {
       let value = "";
 
-      if (obs.valueQuantity != undefined) {
+      if (obs.valueQuantity !== undefined) {
         value = obs.valueQuantity.value.toString()
       }
-    if (obs.valueCodeableConcept != undefined) {
+    if (obs.valueCodeableConcept !== undefined) {
       value = obs.valueCodeableConcept.coding[0].display;
     }
     if (obs.component!=undefined && obs.component.length > 1) {
@@ -279,8 +279,8 @@ export class EdEncounterCardComponent implements OnInit {
       return value;
   }
 
-  getColour(obs : fhir.Observation) {
-      let colour : string = undefined;
+  getColour(obs: fhir.Observation) {
+      let colour: string = undefined;
       let value : number = undefined;
 
       if (obs.code.coding !== undefined) {
@@ -402,7 +402,7 @@ export class EdEncounterCardComponent implements OnInit {
 
       return colour;
   }
-  getSelected(obs : fhir.Observation) :boolean {
+  getSelected(obs: fhir.Observation) :boolean {
       let value = this.getColour(obs);
 
       if (value !== undefined ) {
@@ -413,7 +413,7 @@ export class EdEncounterCardComponent implements OnInit {
 
 
 
-    viewDetails(patient : fhir.Patient) {
+    viewDetails(patient: fhir.Patient) {
         this.router.navigateByUrl('/ed/patient/'+patient.id);
     }
 }

@@ -1,12 +1,12 @@
 
 import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {PatientDataSource} from "../../data-source/patient-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
-import {BundleService} from "../../service/bundle.service";
+import {BundleService} from '../../service/bundle.service';
 import {Observable} from "rxjs";
 
 
@@ -18,27 +18,27 @@ import {Observable} from "rxjs";
 })
 export class PatientComponent implements OnInit {
 
-  @Input() patients : fhir.Patient[];
+  @Input() patients: fhir.Patient[];
 
   @Input() patientsObservable : Observable<fhir.Patient[]>;
 
-  @Input() useObservable : boolean = false;
+  @Input() useObservable: boolean = false;
 
-  @Input() showResourceLink : boolean = true;
+  @Input() showResourceLink: boolean = true;
 
   @Output() patient = new EventEmitter<any>();
 
   dataSource : PatientDataSource;
 
-  practitioners : fhir.Practitioner[];
+  practitioners: fhir.Practitioner[];
 
-  organisations : fhir.Organization[];
+  organisations: fhir.Organization[];
 
   displayedColumns = ['patient', 'dob','gender','identifier', 'contact', 'gp','prac','resource'];
 
   constructor( private dialog : MatDialog,
-               public fhirService : FhirService,
-                public bundleService : BundleService) {
+               public fhirService: FhirService,
+                public bundleService: BundleService) {
 
   }
 
@@ -49,43 +49,43 @@ export class PatientComponent implements OnInit {
     if (this.useObservable) {
       this.dataSource = new PatientDataSource(this.fhirService,  undefined, this.patientsObservable, this.useObservable);
     } else {
-      if (this.patients != undefined) {
+      if (this.patients !== undefined) {
         this.dataSource = new PatientDataSource(this.fhirService, this.patients, undefined, this.useObservable);
       }
     }
   }
 
-  getFirstAddress(patient : fhir.Patient) : String {
+  getFirstAddress(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.address == undefined || patient.address.length == 0)
       return "";
     return patient.address[0].line.join(", ")+", "+patient.address[0].city+", "+patient.address[0].postalCode;
 
   }
-  getLastName(patient : fhir.Patient) : String {
+  getLastName(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.name == undefined || patient.name.length == 0)
       return "";
 
     let name = "";
-    if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
+    if (patient.name[0].family !== undefined) name += patient.name[0].family.toUpperCase();
    return name;
 
   }
-  getFirstName(patient : fhir.Patient) : String {
+  getFirstName(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.name == undefined || patient.name.length == 0)
       return "";
     // Move to address
     let name = "";
-    if (patient.name[0].given != undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
+    if (patient.name[0].given !== undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
 
-    if (patient.name[0].prefix != undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
+    if (patient.name[0].prefix !== undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
     return name;
 
   }
 
-  getFirstTelecom(patient : fhir.Patient) : String {
+  getFirstTelecom(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.telecom == undefined || patient.telecom.length == 0)
       return "";
@@ -94,7 +94,7 @@ export class PatientComponent implements OnInit {
 
   }
 
-  getIdentifier(identifier : fhir.Identifier) : String {
+  getIdentifier(identifier: fhir.Identifier) : String {
     let name : String = identifier.system
     if (identifier.system.indexOf('nhs-number') != -1) {
 
@@ -107,7 +107,7 @@ export class PatientComponent implements OnInit {
     return name;
   }
 
-  getNHSIdentifier(patient : fhir.Patient) : String {
+  getNHSIdentifier(patient: fhir.Patient) : String {
     if (patient == undefined) return "";
     if (patient.identifier == undefined || patient.identifier.length == 0)
       return "";
@@ -121,12 +121,12 @@ export class PatientComponent implements OnInit {
 
   }
 
-  showOrganisation(patient : fhir.Patient) {
+  showOrganisation(patient: fhir.Patient) {
     this.organisations = [];
 
     this.bundleService.getResource(patient.managingOrganization.reference).subscribe( (organisation) => {
 
-      if (organisation != undefined && organisation.resourceType === "Organization") {
+      if (organisation !== undefined && organisation.resourceType === "Organization") {
 
         this.organisations.push(<fhir.Organization> organisation);
 
@@ -139,7 +139,7 @@ export class PatientComponent implements OnInit {
           id: 1,
           organisations : this.organisations
         };
-        let resourceDialog : MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
 
       }
     });
@@ -147,12 +147,12 @@ export class PatientComponent implements OnInit {
 
 
 
-  showPractitioner(patient : fhir.Patient) {
+  showPractitioner(patient: fhir.Patient) {
     this.practitioners = [];
 
     for (let practitionerReference of patient.generalPractitioner) {
       this.bundleService.getResource(practitionerReference.reference).subscribe((practitioner) => {
-          if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
             this.practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -164,14 +164,14 @@ export class PatientComponent implements OnInit {
               id: 1,
               practitioners : this.practitioners
             };
-            let resourceDialog : MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
+            const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
           }
         }
       );
     }
   }
 
-  selectPatient(patient : fhir.Patient) {
+  selectPatient(patient: fhir.Patient) {
     this.patient.emit(patient);
   }
   select(resource) {
@@ -183,7 +183,7 @@ export class PatientComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
 }

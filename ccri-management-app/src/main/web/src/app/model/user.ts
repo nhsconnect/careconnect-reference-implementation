@@ -1,10 +1,10 @@
 export class User {
 
-  admin : boolean;
+  admin: boolean;
 
-  userName : string;
+  userName: string;
 
-  email : string;
+  email: string;
 
-  cat_access_token : string;
+  cat_access_token: string;
 }

@@ -10,13 +10,13 @@ import {EprService} from "../../../service/epr.service";
 })
 export class PatientEncountersComponent implements OnInit {
 
-    encounters : fhir.Encounter[] = [];
+    encounters: fhir.Encounter[] = [];
 
-    encounter : fhir.Encounter = undefined;
+    encounter: fhir.Encounter = undefined;
 
-    resource : fhir.Bundle;
+    resource: fhir.Bundle;
 
-    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+    constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
         let patientid = this.route.snapshot.paramMap.get('patientid');
@@ -49,7 +49,7 @@ export class PatientEncountersComponent implements OnInit {
     clearDown() {
         this.encounters=[];
     }
-    onMore(linkUrl : string) {
+    onMore(linkUrl: string) {
 
         this.clearDown();
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -62,7 +62,7 @@ export class PatientEncountersComponent implements OnInit {
                 //this.progressBar = false;
             })
     }
-    onResourceSelected(encounter : fhir.Encounter) {
+    onResourceSelected(encounter: fhir.Encounter) {
         this.encounter = encounter;
         this.router.navigate([this.encounter.id], {relativeTo: this.route });
     }

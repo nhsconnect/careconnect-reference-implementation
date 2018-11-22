@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 
 import {PractitionerDataSource} from "../../data-source/practitioner-data-source";
-import {FhirService} from "../../service/fhir.service";
-import {BundleService} from "../../service/bundle.service";
+import {FhirService} from '../../service/fhir.service';
+import {BundleService} from '../../service/bundle.service';
 
 import {PractitionerRoleDialogComponent} from "../../dialog/practitioner-role-dialog/practitioner-role-dialog.component";
 import {Observable} from "rxjs";
@@ -16,23 +16,23 @@ import {Observable} from "rxjs";
 })
 export class PractitionerComponent implements OnInit {
 
-  @Input() practitioners : fhir.Practitioner[];
+  @Input() practitioners: fhir.Practitioner[];
 
   @Input() practitionersObservable :Observable<fhir.Practitioner[]>;
 
-  @Input() useObservable : boolean = false;
+  @Input() useObservable: boolean = false;
 
-  @Input() useBundle : boolean = false;
+  @Input() useBundle: boolean = false;
 
-  @Input() showResourceLink : boolean = true;
+  @Input() showResourceLink: boolean = true;
 
-  roles : fhir.PractitionerRole[] = [];
+  roles: fhir.PractitionerRole[] = [];
 
   @Output() practitioner = new EventEmitter<any>();
 
   constructor(public dialog: MatDialog,
-              public fhirService : FhirService,
-              public bundleService : BundleService ) { }
+              public fhirService: FhirService,
+              public bundleService: BundleService ) { }
 
   dataSource : PractitionerDataSource;
 
@@ -54,17 +54,17 @@ export class PractitionerComponent implements OnInit {
 
 
 
-  getLastName(practitioner : fhir.Practitioner) : String {
+  getLastName(practitioner: fhir.Practitioner) : String {
     if (practitioner == undefined) return "";
     if (practitioner.name == undefined || practitioner.name.length == 0)
       return "";
 
     let name = "";
-    if (practitioner.name[0].family != undefined) name += practitioner.name[0].family.toUpperCase();
+    if (practitioner.name[0].family !== undefined) name += practitioner.name[0].family.toUpperCase();
     return name;
 
   }
-  getIdentifier(identifier : fhir.Identifier) : String {
+  getIdentifier(identifier: fhir.Identifier) : String {
     let name : String = identifier.system
     if (identifier.system == 'https://fhir.nhs.uk/Id/sds-user-id') {
       name = 'SDS User Id';
@@ -73,24 +73,24 @@ export class PractitionerComponent implements OnInit {
     }
     return name;
   }
-  getFirstName(practitioner : fhir.Practitioner) : String {
+  getFirstName(practitioner: fhir.Practitioner) : String {
     if (practitioner == undefined) return "";
     if (practitioner.name == undefined || practitioner.name.length == 0)
       return "";
     // Move to address
     let name = "";
-    if (practitioner.name[0].given != undefined && practitioner.name[0].given.length>0) name += ", "+ practitioner.name[0].given[0];
+    if (practitioner.name[0].given !== undefined && practitioner.name[0].given.length>0) name += ", "+ practitioner.name[0].given[0];
 
-    if (practitioner.name[0].prefix != undefined && practitioner.name[0].prefix.length>0) name += " (" + practitioner.name[0].prefix[0] +")" ;
+    if (practitioner.name[0].prefix !== undefined && practitioner.name[0].prefix.length>0) name += " (" + practitioner.name[0].prefix[0] +")" ;
     return name;
 
   }
 
-  selectPractitioner(practitioner : fhir.Practitioner) {
+  selectPractitioner(practitioner: fhir.Practitioner) {
     this.practitioner.emit(practitioner);
   }
 
-  showRoles(practitioner : fhir.Practitioner) {
+  showRoles(practitioner: fhir.Practitioner) {
 
    // console.log('Calling roles dialog for Practitioner '+ practitioner.id + ' useBundle = '+this.useBundle);
 
@@ -115,7 +115,7 @@ export class PractitionerComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
 }

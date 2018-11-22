@@ -3,7 +3,7 @@
     <mat-divider></mat-divider>
     <mat-card-content>
         <span *ngIf="rest !== undefined">
-            <span *ngIf="rest.profile != undefined && rest.profile.reference !=undefined">
+            <span *ngIf="rest.profile !== undefined && rest.profile.reference !=undefined">
                 <span *ngIf="!rest.profile.reference.includes('hl7.org/fhir/Profile')">
                  <h3>FHIR Profile</h3>
                     <td-message label="{{rest.profile.reference}}" color="blue" icon="info">

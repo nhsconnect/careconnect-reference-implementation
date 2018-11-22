@@ -18,6 +18,7 @@ import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseNote;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -351,6 +352,28 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
             em.persist(dispenseIdentifier);
         }
 
+        for (MedicationDispenseNote note : dispenseEntity.getNotes()) {
+            em.remove(note);
+        }
+        for (Annotation annotation : dispense.getNote()) {
+            MedicationDispenseNote note = new MedicationDispenseNote();
+            note.setMedicationDispense(dispenseEntity);
+            if (annotation.hasAuthorReference()) {
+                if (annotation.getAuthorReference().getReference().contains("Patient")) {
+                    PatientEntity patientEntity1= patientDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePatient(patientEntity1);
+                }
+                if (annotation.getAuthorReference().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePractitioner(practitionerEntity);
+                }
+
+            }
+            if (annotation.hasText()) {
+                note.setNoteText(annotation.getText());
+            }
+            em.persist(note);
+        }
         // Don't attempt to rebuild dosages
         for ( MedicationDispenseDosage dosageEntity : dispenseEntity.getDosageInstructions()) {
             em.remove(dosageEntity);
@@ -416,7 +439,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
                 }
             }
             if (dosage.hasText()) {
-                dosageEntity.setOtherText(dosage.getText());
+                dosageEntity.setDosageText(dosage.getText());
             }
             if (dosage.hasPatientInstruction()) {
                 dosageEntity.setPatientInstruction(dosage.getPatientInstruction());
@@ -626,7 +649,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
     public MedicationDispenseEntity readEntity(FhirContext ctx, IdType theId) {
 
         if (daoutils.isNumeric(theId.getIdPart())) {
-            MedicationDispenseEntity medicationDispense = (MedicationDispenseEntity) em.find(MedicationDispenseEntity.class, Long.parseLong(theId.getIdPart()));
+            MedicationDispenseEntity medicationDispense = em.find(MedicationDispenseEntity.class, Long.parseLong(theId.getIdPart()));
             return medicationDispense;
         }
         return null;

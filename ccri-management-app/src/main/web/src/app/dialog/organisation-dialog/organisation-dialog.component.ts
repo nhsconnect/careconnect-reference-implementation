@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Observable} from "rxjs";
 
 
@@ -27,13 +27,13 @@ export class OrganisationDialogComponent implements OnInit {
   }
 
   @Input()
-  organisations : fhir.Organization[];
+  organisations: fhir.Organization[];
 
   @Input()
-  organisationId : string;
+  organisationId: string;
 
   @Input()
-  useObservable : boolean = false;
+  useObservable: boolean = false;
 
   organisationsObservable : Observable<fhir.Organization>;
 

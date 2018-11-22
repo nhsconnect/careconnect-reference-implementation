@@ -6,7 +6,7 @@ import {environment} from "../environments/environment";
 @Injectable()
 export class AppConfig {
 
-    constructor(private http: HttpClient, private fhirService : FhirService) {}
+    constructor(private http: HttpClient, private fhirService: FhirService) {}
 
     load() {
         // console.log('hello App' + document.baseURI);
@@ -16,19 +16,19 @@ export class AppConfig {
                   console.log(result);
 
                   const access_token = localStorage.getItem('access_token_' + environment.oauth2.client_id);
-                  let rootUrl : string = result.fhirServer;
+                  let rootUrl: string = result.fhirServer;
                   /*
                   if (access_token === "" || access_token === null) {
                     //
                   } else {
                     if (result.fhirServer.includes('8183/ccri-fhir')) {
-                      let newbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
+                      let newbaseUrl: string = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
                       console.log('swapping to smartonfhir instance: '+newbaseUrl);
                       rootUrl = newbaseUrl;
                     }
                     else {
                       if (result.fhirServer.includes('ccri-fhir')) {
-                        let newbaseUrl : string = this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir');
+                        let newbaseUrl: string = this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir');
                         console.log('swapping to smartonfhir instance: '+ newbaseUrl);
                         rootUrl = newbaseUrl;
                       }

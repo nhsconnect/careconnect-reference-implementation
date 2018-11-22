@@ -4,11 +4,11 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 
 export class PatientDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
+  constructor(public fhirService: FhirService,
 
-              public patients : fhir.Patient[],
+              public patients: fhir.Patient[],
               public patientObservable : Observable<fhir.Patient[]>,
-              public useObservable : boolean = false
+              public useObservable: boolean = false
   ) {
     super();
 

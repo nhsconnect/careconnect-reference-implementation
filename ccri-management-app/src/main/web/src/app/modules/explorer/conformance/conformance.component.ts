@@ -15,7 +15,7 @@ export class ConformanceComponent implements OnInit {
 
   public format : Formats;
 
-  constructor(private fhirSrv : FhirService) {
+  constructor(private fhirSrv: FhirService) {
 
 
   }

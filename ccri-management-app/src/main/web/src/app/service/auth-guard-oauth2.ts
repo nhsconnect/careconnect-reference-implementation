@@ -8,7 +8,7 @@ import {Oauth2Service} from "./oauth2.service";
 export class AuthGuardOauth2  implements CanActivate {
 
 
-  constructor(public authService: AuthService,public router: Router, private fhirService : FhirService, private oauth2 : Oauth2Service) {
+  constructor(public authService: AuthService,public router: Router, private fhirService: FhirService, private oauth2 : Oauth2Service) {
 
   }
   canActivate() {

@@ -4,9 +4,9 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 
 export class RiskAssessmentDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
-              public patientId : string,
-              public risks : fhir.RiskAssessment[]
+  constructor(public fhirService: FhirService,
+              public patientId: string,
+              public risks: fhir.RiskAssessment[]
   ) {
     super();
   }
@@ -23,9 +23,9 @@ export class RiskAssessmentDataSource extends DataSource<any> {
 
     this.dataStore = { risks: [] };
 
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.fhirService.get('/RiskAssessment?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             this.dataStore.risks.push(<fhir.RiskAssessment> entry.resource);
 

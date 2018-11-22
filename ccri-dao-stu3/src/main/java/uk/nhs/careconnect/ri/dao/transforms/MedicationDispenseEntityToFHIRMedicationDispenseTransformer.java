@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationDispense.MedicationDispenseNote;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestNote;
 
 
 @Component
@@ -186,8 +188,8 @@ public class MedicationDispenseEntityToFHIRMedicationDispenseTransformer impleme
             if (dosageEntity.getPatientInstruction() != null) {
                 dosage.setPatientInstruction(dosageEntity.getPatientInstruction());
             }
-            if (dosageEntity.getOtherText() != null) {
-                dosage.setText(dosageEntity.getOtherText());
+            if (dosageEntity.getDosageText() != null) {
+                dosage.setText(dosageEntity.getDosageText());
             }
             if (dosageEntity.getDoseRangeLow() != null || dosageEntity.getDoseRangeHigh() != null) {
                 Range range = new Range();
@@ -225,6 +227,22 @@ public class MedicationDispenseEntityToFHIRMedicationDispenseTransformer impleme
                 }
             }
 
+        }
+
+        for (MedicationDispenseNote note : medicationDispenseEntity.getNotes()) {
+            Annotation annotation = medicationDispense.addNote();
+            if (note.getNoteDate() != null) {
+                annotation.setTime(note.getNoteDate());
+            }
+            if (note.getNoteText() != null) {
+                annotation.setText(note.getNoteText());
+            }
+            if (note.getNotePatient()!=null) {
+                annotation.setAuthor(new Reference("Patient/"+note.getNotePatient().getId()));
+            }
+            if (note.getNotePractitioner()!=null) {
+                annotation.setAuthor(new Reference("Practitioner/"+note.getNotePractitioner().getId()));
+            }
         }
 
         medicationDispense.setId(medicationDispenseEntity.getId().toString());

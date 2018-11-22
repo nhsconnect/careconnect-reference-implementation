@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {LinksService} from "../../../service/links.service";
 import {EprService} from "../../../service/epr.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {BundleService} from "../../../service/bundle.service";
 import {ResourceDialogComponent} from "../../../dialog/resource-dialog/resource-dialog.component";
 
@@ -13,7 +13,7 @@ import {ResourceDialogComponent} from "../../../dialog/resource-dialog/resource-
 })
 export class ViewDocumentSectionComponent implements OnInit {
 
-  @Input() section : fhir.CompositionSection;
+  @Input() section: fhir.CompositionSection;
 
 
   // Reference for modal size https://stackoverflow.com/questions/46977398/ng-bootstrap-modal-size
@@ -21,36 +21,36 @@ export class ViewDocumentSectionComponent implements OnInit {
 
   entries : any[];
 
-  medicationStatements : fhir.MedicationStatement[];
-  medicationDispenses : fhir.MedicationDispense[];
-  prescriptions : fhir.MedicationRequest[];
-  medications : fhir.Medication[];
-  conditions : fhir.Condition[];
-  procedures : fhir.Procedure[];
-  observations : fhir.Observation[];
-  allergies : fhir.AllergyIntolerance[];
-  encounters : fhir.Encounter[];
-  patients : fhir.Patient[];
-  practitioners : fhir.Practitioner[];
-  organisations : fhir.Organization[];
-  locations : fhir.Location[];
-  roles : fhir.PractitionerRole[];
-  services : fhir.HealthcareService[];
-  immunisations : fhir.Immunization[];
-  forms : fhir.QuestionnaireResponse[];
-  risks : fhir.RiskAssessment[];
-  goals : fhir.Goal[];
-  impressions : fhir.ClinicalImpression[];
-  carePlans : fhir.CarePlan[];
-  consents : fhir.Consent[];
+  medicationStatements: fhir.MedicationStatement[];
+  medicationDispenses: fhir.MedicationDispense[];
+  prescriptions: fhir.MedicationRequest[];
+  medications: fhir.Medication[];
+  conditions: fhir.Condition[];
+  procedures: fhir.Procedure[];
+  observations: fhir.Observation[];
+  allergies: fhir.AllergyIntolerance[];
+  encounters: fhir.Encounter[];
+  patients: fhir.Patient[];
+  practitioners: fhir.Practitioner[];
+  organisations: fhir.Organization[];
+  locations: fhir.Location[];
+  roles: fhir.PractitionerRole[];
+  services: fhir.HealthcareService[];
+  immunisations: fhir.Immunization[];
+  forms: fhir.QuestionnaireResponse[];
+  risks: fhir.RiskAssessment[];
+  goals: fhir.Goal[];
+  impressions: fhir.ClinicalImpression[];
+  carePlans: fhir.CarePlan[];
+  consents: fhir.Consent[];
 
-  showStructured : boolean = false;
+  showStructured: boolean = false;
 
   constructor(
               public dialog: MatDialog,
-              private linksService : LinksService,
+              private linksService: LinksService,
               public patientEPRService : EprService,
-              public bundleService : BundleService 
+              public bundleService: BundleService 
   ) { }
 
   ngOnInit() {
@@ -84,10 +84,10 @@ export class ViewDocumentSectionComponent implements OnInit {
 
   }
 
-  getPopover(section : fhir.CompositionSection)  {
+  getPopover(section: fhir.CompositionSection)  {
 
 
-    if (section.entry != undefined) {
+    if (section.entry !== undefined) {
       for (let entry  of section.entry) {
         this.getReferencedItem(entry.reference);
 
@@ -99,11 +99,11 @@ export class ViewDocumentSectionComponent implements OnInit {
     this.showStructured = !this.showStructured;
   }
 
-  getReferencedItem(reference : string)  {
+  getReferencedItem(reference: string)  {
     //console.log("In getReferenced and medications count = "+this.medications.length);
     let resource = this.bundleService.getResource(reference).subscribe(
       (resource) => {
-        if (resource != undefined) {
+        if (resource !== undefined) {
 
           switch (resource.resourceType) {
             case "AllergyIntolerance" :
@@ -150,8 +150,8 @@ export class ViewDocumentSectionComponent implements OnInit {
                 break;
             case "List" :
               let list: fhir.List = <fhir.List> resource;
-              if (list.entry != undefined) {
-                if (list.code != undefined && list.code.coding.length > 0) {
+              if (list.entry !== undefined) {
+                if (list.code !== undefined && list.code.coding.length > 0) {
                   this.entries.push({
                     "resource": "List"
                     , "code": list.code.coding[0].code
@@ -166,7 +166,7 @@ export class ViewDocumentSectionComponent implements OnInit {
 
                 for (let entry of list.entry) {
 
-                  if (entry.item != undefined && entry.item.reference != undefined) {
+                  if (entry.item !== undefined && entry.item.reference !== undefined) {
                     // console.log(entry.item.reference);
                     this.getReferencedItem(entry.item.reference);
                   }
@@ -189,7 +189,7 @@ export class ViewDocumentSectionComponent implements OnInit {
             case "MedicationRequest" :
               let medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> resource;
               this.prescriptions.push(medicationRequest);
-              if (medicationRequest.medicationReference != undefined) {
+              if (medicationRequest.medicationReference !== undefined) {
                 this.getReferencedItem(medicationRequest.medicationReference.reference);
               }
 
@@ -197,14 +197,14 @@ export class ViewDocumentSectionComponent implements OnInit {
               case "MedicationDispense" :
                   let medicationDispense: fhir.MedicationDispense = <fhir.MedicationDispense> resource;
                   this.medicationDispenses.push(medicationDispense);
-                  if (medicationDispense.medicationReference != undefined) {
+                  if (medicationDispense.medicationReference !== undefined) {
                       this.getReferencedItem(medicationDispense.medicationReference.reference);
                   }
                   break;
             case "MedicationStatement" :
               let medicationStatement: fhir.MedicationStatement = <fhir.MedicationStatement> resource;
               this.medicationStatements.push(medicationStatement);
-              if (medicationStatement.medicationReference != undefined) {
+              if (medicationStatement.medicationReference !== undefined) {
                 this.getReferencedItem(medicationStatement.medicationReference.reference);
               }
               break;
@@ -255,8 +255,8 @@ export class ViewDocumentSectionComponent implements OnInit {
         if (medicationDispense.medicationReference !== undefined) {
             let resource = this.bundleService.getResource(medicationDispense.medicationReference.reference).subscribe(
                 (resource) => {
-                    if (resource != undefined && (resource.resourceType === 'Medication')) {
-                      let medication : fhir.Medication = <fhir.Medication> resource;
+                    if (resource !== undefined && (resource.resourceType === 'Medication')) {
+                      let medication: fhir.Medication = <fhir.Medication> resource;
                       medicationDispense.medicationReference.display = medication.code.coding[0].display;
                 }
               });
@@ -266,8 +266,8 @@ export class ViewDocumentSectionComponent implements OnInit {
           if (medicationStatement.medicationReference !== undefined) {
               let resource = this.bundleService.getResource(medicationStatement.medicationReference.reference).subscribe(
                   (resource) => {
-                      if (resource != undefined && (resource.resourceType === 'Medication')) {
-                          let medication : fhir.Medication = <fhir.Medication> resource;
+                      if (resource !== undefined && (resource.resourceType === 'Medication')) {
+                          let medication: fhir.Medication = <fhir.Medication> resource;
                           medicationStatement.medicationReference.display = medication.code.coding[0].display;
                       }
                   });
@@ -278,17 +278,17 @@ export class ViewDocumentSectionComponent implements OnInit {
 
 
 
-    getCodeSystem(system : string) : string {
+    getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
 
@@ -306,7 +306,7 @@ export class ViewDocumentSectionComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
 }

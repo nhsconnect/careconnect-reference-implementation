@@ -59,23 +59,18 @@
     </ng-container>
 
 
-    <ng-container matColumnDef="additional">
-      <th mat-header-cell *matHeaderCellDef width="10%"> Additional Instr. </th>
+    <ng-container matColumnDef="instructions">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Instructions </th>
       <td mat-cell *matCellDef="let medicationRequest">
         <span *ngFor="let dosage of medicationRequest.dosageInstruction">
-            <span *ngIf="dosage.additionalInstruction !== undefined">
-              <span *ngFor="let add of dosage.additionalInstruction">
-                {{add.coding[0].display}}</span>
+          <span *ngIf="medicationRequest.note !== null">
+            <p *ngFor="let annotation of medicationRequest.note">{{annotation.text}}</p>
             </span>
-        </span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="patinstrs">
-      <th mat-header-cell *matHeaderCellDef width="10%"> Patient Instr. </th>
-      <td mat-cell *matCellDef="let medicationRequest">
-        <span *ngFor="let dosage of medicationRequest.dosageInstruction">
-            {{dosage.patientInstruction}}
+            <span *ngIf="dosage.patientInstruction !== undefined">
+                <span *ngFor="let dosage of medicationRequest.dosageInstruction">
+                  <p><i>Patient - </i>{{dosage.patientInstruction}}</p>
+              </span>
+            </span>
         </span>
       </td>
     </ng-container>
@@ -85,9 +80,22 @@
       <th mat-header-cell *matHeaderCellDef width="10%"> Dose </th>
       <td mat-cell *matCellDef="let medicationRequest">
         <span *ngFor="let dosage of medicationRequest.dosageInstruction">
-            <span *ngIf="dosage.doseQuantity!=undefined">{{dosage.doseQuantity.value}} {{dosage.doseQuantity.unit}}</span>
-
+            <p *ngIf="dosage.text !== undefined">{{dosage.text}}</p>
+            <p *ngIf="dosage.additionalInstruction !== undefined">
+              <i>Additional - </i>
+              <span *ngFor="let add of dosage.additionalInstruction">
+                {{add.coding[0].display}}</span>
+            </p>
             <span *ngIf="dosage.asNeededBoolean"> as required</span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantity">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Quantity </th>
+      <td mat-cell *matCellDef="let medicationRequest">
+        <span *ngFor="let dosage of medicationRequest.dosageInstruction">
+            <span *ngIf="dosage.doseQuantity!=undefined">{{dosage.doseQuantity.value}} {{dosage.doseQuantity.unit}}</span>
         </span>
       </td>
     </ng-container>
@@ -96,7 +104,7 @@
       <th mat-header-cell *matHeaderCellDef  width="10%"> Form </th>
       <td mat-cell *matCellDef="let medicationRequest">
         <span *ngFor="let dosage of medicationRequest.dosage">
-            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+            <span *ngIf="dosage.maxDosePerPeriod !== undefined" >
               <span  > {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
             </span>
 

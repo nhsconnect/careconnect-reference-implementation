@@ -13,7 +13,7 @@ import {
 
 
 import {HttpErrorResponse} from '@angular/common/http';
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {NEVER} from "rxjs/internal/observable/never";
 import {EprService} from "../../service/epr.service";
 
@@ -65,7 +65,7 @@ export class PatientSearchComponent implements OnInit {
       map(bundle  => {
         var pat$: fhir.Patient[] = [];
         var i;
-        if (bundle != undefined && bundle.hasOwnProperty("entry")) {
+        if (bundle !== undefined && bundle.hasOwnProperty("entry")) {
           for (i = 0; i < bundle.entry.length && i < 10; i++) {
             pat$[i] = <fhir.Patient>bundle.entry[i].resource;
           }
@@ -92,7 +92,7 @@ export class PatientSearchComponent implements OnInit {
     };
   }
 
-  selectPatient(patient : fhir.Patient) {
+  selectPatient(patient: fhir.Patient) {
 
     this.patientChange.set(patient);
     this.patients$ = undefined;
@@ -101,7 +101,7 @@ export class PatientSearchComponent implements OnInit {
 
 
 
-  logError(title : string) {
+  logError(title: string) {
       return (message :any) => {
         if(message instanceof HttpErrorResponse) {
           if (message.status == 401) {

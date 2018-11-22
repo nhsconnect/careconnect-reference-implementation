@@ -7,7 +7,7 @@ import {EprService} from "../../../service/epr.service";
 declare class MarkerPosition {
   location : any[];
   icon;
-  title : string;
+  title: string;
 }
 
 
@@ -35,9 +35,9 @@ export class CapacityComponent implements OnInit {
   scaledSize: [32,32]
 };
 
-  encounters : fhir.Encounter[] = [];
+  encounters: fhir.Encounter[] = [];
 
-  constructor(private fhirService : FhirService, private eprService : EprService) { }
+  constructor(private fhirService: FhirService, private eprService : EprService) { }
 
   ngOnInit() {
     this.getEncounters();
@@ -79,12 +79,12 @@ export class CapacityComponent implements OnInit {
   }
 
 
-  getEncounterDetail(encounter : fhir.Encounter) {
+  getEncounterDetail(encounter: fhir.Encounter) {
 
     this.fhirService.get('/Encounter?_id='+encounter.id+'&_revinclude=*').subscribe( bundle => {
         this.encounters = [];
         for (let entry of bundle.entry) {
-          let sub : fhir.Encounter = <fhir.Encounter> entry.resource;
+          let sub: fhir.Encounter = <fhir.Encounter> entry.resource;
           if (sub.id !== encounter.id) {
             this.coords = '53.759701, -1.445495';
             this.encounters.push(sub);

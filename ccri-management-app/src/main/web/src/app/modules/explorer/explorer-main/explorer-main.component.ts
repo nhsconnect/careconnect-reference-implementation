@@ -3,7 +3,7 @@ import {FhirService, Formats} from "../../../service/fhir.service";
 import {IAlertConfig, TdDialogService, TdMediaService} from "@covalent/core";
 import {Router} from "@angular/router";
 import {MessageService} from "../../../service/message.service";
-import {MatIconRegistry} from "@angular/material";
+import {MatIconRegistry} from '@angular/material';
 import {DomSanitizer} from "@angular/platform-browser";
 import {EprService} from "../../../service/epr.service";
 import {AuthService} from "../../../service/auth.service";
@@ -81,7 +81,7 @@ export class ExplorerMainComponent implements OnInit {
     ];
     navmenu: Object[] = [];
 
-    title : string ='Care Connect Reference Implementation';
+    title: string ='Care Connect Reference Implementation';
 
   constructor(public media: TdMediaService,
               public fhirSrv: FhirService,
@@ -178,7 +178,7 @@ export class ExplorerMainComponent implements OnInit {
 
   }
 
-  format(format : string) {
+  format(format: string) {
 
       switch(format) {
           case 'jsonf' :
@@ -202,7 +202,7 @@ export class ExplorerMainComponent implements OnInit {
 
       console.log(menuItem);
 
-      // let server : string = menuItem.route;
+      // let server: string = menuItem.route;
       this.fhirSrv.setFHIRServerBase(menuItem.route);
       if (menuItem.route.includes('smartonfhir') && !this.oauth2.isAuthenticated() ) {
         // force login

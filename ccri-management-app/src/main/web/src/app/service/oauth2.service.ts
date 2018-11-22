@@ -6,7 +6,7 @@ import {HttpHeaders} from "@angular/common/http";
 @Injectable()
 export class Oauth2Service {
 
-  public scope : string;
+  public scope: string;
 
   constructor(
   ) {
@@ -25,16 +25,16 @@ export class Oauth2Service {
     localStorage.removeItem('baseUrl');
   }
 
-  setToken(access_token : string) {
+  setToken(access_token: string) {
     localStorage.setItem('access_token_' + environment.oauth2.client_id, access_token);
   }
 
-  setScope(scope : string) {
+  setScope(scope: string) {
     this.scope = scope;
     localStorage.setItem('scope_' + environment.oauth2.client_id, scope);
   }
 
-  public isAuthenticating() : boolean {
+  public isAuthenticating(): boolean {
     // ccri-token indicates logging on not the jwt.
      const token = localStorage.getItem('ccri-token');
 
@@ -53,7 +53,7 @@ export class Oauth2Service {
     return !helper.isTokenExpired(token);
   }
 
-  public getUser() : string {
+  public getUser(): string {
     const token = this.getToken();
     const helper = new JwtHelperService();
     console.log('Token '+token);

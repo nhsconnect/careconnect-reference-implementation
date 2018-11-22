@@ -21,8 +21,10 @@ import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationNote;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestNote;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -207,13 +209,17 @@ public class MedicationAdministrationDao implements MedicationAdministrationRepo
         }
 
         if (administration.hasPerformer()) {
-            if (administration.getPerformerFirstRep().getActor().getReference().contains("Practitioner")) {
-                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(administration.getPerformerFirstRep().getActor().getReference()));
-                administrationEntity.setPerformerPractitioner(practitionerEntity);
+            if (administration.getPerformerFirstRep().hasActor()) {
+                if (administration.getPerformerFirstRep().getActor().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(administration.getPerformerFirstRep().getActor().getReference()));
+                    administrationEntity.setPerformerPractitioner(practitionerEntity);
+                }
             }
-            if (administration.getPerformerFirstRep().getOnBehalfOf().getReference().contains("Organization")) {
-                OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(administration.getPerformerFirstRep().getOnBehalfOf().getReference()));
-                administrationEntity.setPerformerOrganisation(organisationEntity);
+            if (administration.getPerformerFirstRep().hasOnBehalfOf()) {
+                if (administration.getPerformerFirstRep().getOnBehalfOf().getReference().contains("Organization")) {
+                    OrganisationEntity organisationEntity = organisationDao.readEntity(ctx, new IdType(administration.getPerformerFirstRep().getOnBehalfOf().getReference()));
+                    administrationEntity.setPerformerOrganisation(organisationEntity);
+                }
             }
         }
 
@@ -280,6 +286,29 @@ public class MedicationAdministrationDao implements MedicationAdministrationRepo
             em.persist(administrationIdentifier);
         }
 
+        for (MedicationAdministrationNote note : administrationEntity.getNotes()) {
+            em.remove(note);
+        }
+        for (Annotation annotation : administration.getNote()) {
+            MedicationAdministrationNote note = new MedicationAdministrationNote();
+            note.setMedicationAdministration(administrationEntity);
+            if (annotation.hasAuthorReference()) {
+                if (annotation.getAuthorReference().getReference().contains("Patient")) {
+                    PatientEntity patientEntity1= patientDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePatient(patientEntity1);
+                }
+                if (annotation.getAuthorReference().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePractitioner(practitionerEntity);
+                }
+
+            }
+            if (annotation.hasText()) {
+                note.setNoteText(annotation.getText());
+            }
+            em.persist(note);
+        }
+
         // Don't attempt to rebuild dosages
         for ( MedicationAdministrationDosage dosageEntity : administrationEntity.getDosages()) {
             em.remove(dosageEntity);
@@ -297,6 +326,10 @@ public class MedicationAdministrationDao implements MedicationAdministrationRepo
             if (administration.getDosage().hasRoute()) {
                 ConceptEntity code = conceptDao.findAddCode(administration.getDosage().getRoute().getCodingFirstRep());
                 if (code != null) dosageEntity.setRouteCode(code);
+            }
+
+            if (administration.getDosage().hasText()) {
+                dosageEntity.setDosageText(administration.getDosage().getText());
             }
 
             if (administration.getDosage().hasDose() ) {

@@ -5,10 +5,10 @@
 
       <mat-card-content>
 
-
+        <h3>Medication Issues</h3>
         <div fxLayout="row"
              fxFlexFill >
-          <h3>Medication Issues</h3>
+
           <span flex></span>
           <mat-chip-list><mat-chip [color]="acutecolor" selected=true >Acute</mat-chip></mat-chip-list>
         </div>
@@ -35,19 +35,8 @@
               No results found.
           </span>
 
-      </mat-card-content>
-    </mat-card>
-
-
-
-    <mat-card>
-
-      <mat-card-content>
-
-
         <div fxLayout="row"
              fxFlexFill >
-          <h3>Medication Issues</h3>
           <span flex></span>
           <mat-chip-list><mat-chip [color]="gpcolor" selected=true>GP</mat-chip></mat-chip-list>
         </div>
@@ -63,49 +52,12 @@
 
     <mat-card>
 
-        <mat-card-content>
-
-
-            <div fxLayout="row"
-                 fxFlexFill >
-                <h3>Medication Administration</h3>
-                <span flex></span>
-                <mat-chip-list><mat-chip [color]="acutecolor" selected=true >Acute</mat-chip></mat-chip-list>
-            </div>
-            <span *ngIf="medicationAdministrations.length>0">
-             <span flex-auto fxLayoutAlign="space-between center">
-                  <span>
-                    <span>Results: </span>
-                    <b *ngIf="resourceAdministration.entry !== undefined"> {{resourceAdministration.entry.length}} / {{resourceAdministration.total}}</b>
-                  </span>
-                  <span>
-                      <span *ngFor="let link of resourceAdministration.link.slice().reverse()">
-                        <span *ngIf="link.relation ==='previous'">
-                            <button mat-icon-button color="accent" (click)="onMoreIssue(link.url)"><mat-icon>skip_previous</mat-icon></button>
-                        </span>
-                        <span *ngIf="link.relation ==='next'">
-                            <button mat-icon-button color="accent" (click)="onMoreIssue(link.url)"><mat-icon>skip_next</mat-icon></button>
-                        </span>
-                      </span>
-                    </span>
-                  </span>
-              <app-medication-administration [medicationAdministrations]="medicationAdministrations" (context)="viewEncounter($event)"></app-medication-administration>
-          </span>
-            <span *ngIf="medicationAdministrations.length==0">
-              No results found.
-          </span>
-
-        </mat-card-content>
-    </mat-card>
-
-    <mat-card>
-
       <mat-card-content>
 
-
+        <h3>Medication Dispensed</h3>
         <div fxLayout="row"
              fxFlexFill >
-          <h3>Medication Dispensed</h3>
+
           <span flex></span>
           <mat-chip-list><mat-chip [color]="acutecolor" selected=true>Acute</mat-chip></mat-chip-list>
         </div>
@@ -136,6 +88,45 @@
 
       </mat-card-content>
     </mat-card>
+
+
+    <mat-card>
+
+        <mat-card-content>
+
+          <h3>Medication Administration</h3>
+            <div fxLayout="row"
+                 fxFlexFill >
+
+                <span flex></span>
+                <mat-chip-list><mat-chip [color]="acutecolor" selected=true >Acute</mat-chip></mat-chip-list>
+            </div>
+            <span *ngIf="medicationAdministrations.length>0">
+             <span flex-auto fxLayoutAlign="space-between center">
+                  <span>
+                    <span>Results: </span>
+                    <b *ngIf="resourceAdministration.entry !== undefined"> {{resourceAdministration.entry.length}} / {{resourceAdministration.total}}</b>
+                  </span>
+                  <span>
+                      <span *ngFor="let link of resourceAdministration.link.slice().reverse()">
+                        <span *ngIf="link.relation ==='previous'">
+                            <button mat-icon-button color="accent" (click)="onMoreIssue(link.url)"><mat-icon>skip_previous</mat-icon></button>
+                        </span>
+                        <span *ngIf="link.relation ==='next'">
+                            <button mat-icon-button color="accent" (click)="onMoreIssue(link.url)"><mat-icon>skip_next</mat-icon></button>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+              <app-medication-administration [medicationAdministrations]="medicationAdministrations" (context)="viewEncounter($event)"></app-medication-administration>
+          </span>
+            <span *ngIf="medicationAdministrations.length==0">
+              No results found.
+          </span>
+
+        </mat-card-content>
+    </mat-card>
+
 
 
 

@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {BundleService} from "../../service/bundle.service";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {BundleService} from '../../service/bundle.service';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 import {ReferralRequestDataSource} from "../../data-source/referral-request-data-source";
 
@@ -13,15 +13,15 @@ import {ReferralRequestDataSource} from "../../data-source/referral-request-data
 })
 export class ReferralRequestComponent implements OnInit {
 
-    @Input() referrals : fhir.ReferralRequest[];
+    @Input() referrals: fhir.ReferralRequest[];
 
-    @Input() showDetail : boolean = false;
+    @Input() showDetail: boolean = false;
 
-    @Input() patientId : string;
+    @Input() patientId: string;
 
     @Output() referral = new EventEmitter<any>();
 
-    selectedReferral : fhir.ReferralRequest;
+    selectedReferral: fhir.ReferralRequest;
 
     @Input() useBundle :boolean = false;
 
@@ -30,11 +30,11 @@ export class ReferralRequestComponent implements OnInit {
     displayedColumns = ['date', 'status', 'intent', 'type','specialty','service','reason','requestor','recipient','resource'];
 
 
-  constructor(private linksService : LinksService,
+  constructor(private linksService: LinksService,
               // private modalService: NgbModal,
               public dialog: MatDialog,
-              public bundleService : BundleService,
-              public fhirService : FhirService) {
+              public bundleService: BundleService,
+              public fhirService: FhirService) {
 
 
   }
@@ -42,7 +42,7 @@ export class ReferralRequestComponent implements OnInit {
   ngOnInit() {
 
       console.log('Patient id = '+this.patientId);
-      if (this.patientId != undefined) {
+      if (this.patientId !== undefined) {
           this.dataSource = new ReferralRequestDataSource(this.fhirService, this.patientId, []);
       } else {
           this.dataSource = new ReferralRequestDataSource(this.fhirService, undefined, this.referrals);
@@ -59,7 +59,7 @@ export class ReferralRequestComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 
 }

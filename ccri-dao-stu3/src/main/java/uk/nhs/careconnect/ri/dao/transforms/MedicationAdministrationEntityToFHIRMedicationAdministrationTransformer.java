@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationNote;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestNote;
 
 
 @Component
@@ -137,8 +139,8 @@ public class MedicationAdministrationEntityToFHIRMedicationAdministrationTransfo
                         .setCode(dosageEntity.getRouteCode().getCode());
             }
 
-            if (dosageEntity.getOtherText() != null) {
-                dosage.setText(dosageEntity.getOtherText());
+            if (dosageEntity.getDosageText() != null) {
+                dosage.setText(dosageEntity.getDosageText());
             }
 
             if (dosageEntity.getDoseQuantity() != null) {
@@ -153,6 +155,22 @@ public class MedicationAdministrationEntityToFHIRMedicationAdministrationTransfo
             }
 
 
+        }
+
+        for (MedicationAdministrationNote note : medicationAdministrationEntity.getNotes()) {
+            Annotation annotation = medicationAdministration.addNote();
+            if (note.getNoteDate() != null) {
+                annotation.setTime(note.getNoteDate());
+            }
+            if (note.getNoteText() != null) {
+                annotation.setText(note.getNoteText());
+            }
+            if (note.getNotePatient()!=null) {
+                annotation.setAuthor(new Reference("Patient/"+note.getNotePatient().getId()));
+            }
+            if (note.getNotePractitioner()!=null) {
+                annotation.setAuthor(new Reference("Practitioner/"+note.getNotePractitioner().getId()));
+            }
         }
 
         medicationAdministration.setId(medicationAdministrationEntity.getId().toString());

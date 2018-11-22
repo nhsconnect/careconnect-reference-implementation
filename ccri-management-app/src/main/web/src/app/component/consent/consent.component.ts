@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ConsentDataSource} from "../../data-source/consent-data-source";
-import {LinksService} from "../../service/links.service";
-import {BundleService} from "../../service/bundle.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {BundleService} from '../../service/bundle.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 
 @Component({
@@ -13,11 +13,11 @@ import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dia
 })
 export class ConsentComponent implements OnInit {
 
-    @Input() consents : fhir.Consent[];
+    @Input() consents: fhir.Consent[];
 
     @Output() consent = new EventEmitter<any>();
 
-    @Input() patientId : string;
+    @Input() patientId: string;
 
     @Input() useBundle :boolean = false;
 
@@ -25,13 +25,13 @@ export class ConsentComponent implements OnInit {
 
     displayedColumns = ['id', 'resource'];
 
-    constructor(private linksService : LinksService,
-                public bundleService : BundleService,
+    constructor(private linksService: LinksService,
+                public bundleService: BundleService,
                 public dialog: MatDialog,
-                public fhirService : FhirService) { }
+                public fhirService: FhirService) { }
 
     ngOnInit() {
-        if (this.patientId != undefined) {
+        if (this.patientId !== undefined) {
             this.dataSource = new ConsentDataSource(this.fhirService, this.patientId, []);
         } else {
             this.dataSource = new ConsentDataSource(this.fhirService, undefined, this.consents);
@@ -47,6 +47,6 @@ export class ConsentComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 }

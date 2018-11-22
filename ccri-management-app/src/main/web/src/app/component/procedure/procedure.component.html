@@ -32,7 +32,7 @@
     <ng-container matColumnDef="codelink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let procedure">
-      <span *ngIf="procedure.code.coding[0].code != undefined" >
+      <span *ngIf="procedure.code.coding[0].code !== undefined" >
         <span *ngIf="isSNOMED(procedure.code.coding[0].system)">
           <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(procedure.code.coding[0].system)}} {{procedure.code.coding[0].code}}" (click)="getSNOMEDLink(procedure.code.coding[0])">
               <mat-icon>book</mat-icon>
@@ -48,12 +48,12 @@
     <ng-container matColumnDef="bodysite">
       <th mat-header-cell *matHeaderCellDef> Body Site </th>
       <td mat-cell *matCellDef="let procedure">
-     <span *ngIf="procedure.bodySite != undefined">
+     <span *ngIf="procedure.bodySite !== undefined">
 
         <div *ngFor="let code of procedure.bodySite">
           {{code.coding[0].display}}
          <!-- <span *ngIf="isSNOMED(code.coding[0].system)">
-            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code !== undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
           </span> -->
         </div>
       </span>
@@ -63,12 +63,12 @@
     <ng-container matColumnDef="complication">
       <th mat-header-cell *matHeaderCellDef> Complication </th>
       <td mat-cell *matCellDef="let procedure">
-         <span *ngIf="procedure.complication != undefined">
+         <span *ngIf="procedure.complication !== undefined">
 
                 <div *ngFor="let code of procedure.complication">
                   {{code.coding[0].display}}
                 <!--  <span *ngIf="isSNOMED(code.coding[0].system)">
-                   &nbsp; <a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+                   &nbsp; <a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code !== undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
                   </span> -->
                 </div>
               </span>
@@ -83,7 +83,7 @@
     <ng-container matColumnDef="contextLink">
       <th mat-header-cell *matHeaderCellDef width="5%">Visit</th>
       <td mat-cell *matCellDef="let procedure">
-        <span *ngIf="procedure.context != undefined">
+        <span *ngIf="procedure.context !== undefined">
           <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="showEncounter(procedure)"><mat-icon>today</mat-icon></button>
         </span>
       </td>
@@ -114,12 +114,12 @@
 
     <td >
 
-      <span *ngIf="procedure.bodySite != undefined">
+      <span *ngIf="procedure.bodySite !== undefined">
         &nbsp;<span class="badge badge-light" >body site</span>
         <span *ngFor="let code of procedure.bodySite">
           {{code.coding[0].display}}
           <span *ngIf="isSNOMED(code.coding[0].system)">
-            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code != undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
+            &nbsp;<a (click)="getSNOMEDLink(code.coding[0])"> <span *ngIf="code.coding[0].code !== undefined" class="fa fa-book" matTooltip="{{getCodeSystem(code.coding[0].system)}} {{code.coding[0].code}}"></span> </a>
           </span>
         </span>
       </span>

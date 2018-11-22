@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
+import {LinksService} from  '../../service/links.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {MedicationDataSource} from "../../data-source/medication-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 
 @Component({
   selector: 'app-medication',
@@ -12,10 +12,10 @@ import {FhirService} from "../../service/fhir.service";
 })
 export class MedicationComponent implements OnInit {
 
-  @Input() medications : fhir.Medication[];
-  constructor(private linksService : LinksService,
+  @Input() medications: fhir.Medication[];
+  constructor(private linksService: LinksService,
               public dialog: MatDialog,
-              public fhirService : FhirService) { }
+              public fhirService: FhirService) { }
 
   @Output() medication = new EventEmitter<any>();
 
@@ -26,18 +26,18 @@ export class MedicationComponent implements OnInit {
   ngOnInit() {
     this.dataSource = new MedicationDataSource(this.fhirService,  this.medications);
   }
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
 
-  getDMDLink(code : fhir.Coding) {
-    window.open(this.linksService.getDMDLink(code), "_blank");
+  getDMDLink(code: fhir.Coding) {
+    window.open(this.linksService.getDMDLink(code), '_blank');
   }
-  getSNOMEDLink(code : fhir.Coding) {
-    window.open(this.linksService.getSNOMEDLink(code), "_blank");
+  getSNOMEDLink(code: fhir.Coding) {
+    window.open(this.linksService.getSNOMEDLink(code), '_blank');
 
   }
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
   select(resource) {
@@ -49,6 +49,6 @@ export class MedicationComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 }

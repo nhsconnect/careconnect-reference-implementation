@@ -46,7 +46,7 @@
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef> Encounter </th>
       <td mat-cell *matCellDef="let encounter">
-        <span *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+        <span *ngIf="encounter.type !== undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
           <b>{{encounter.type[0].coding[0].display}}</b>
         </span>
       </td>
@@ -55,8 +55,8 @@
     <ng-container matColumnDef="typelink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let encounter">
-        <span *ngIf="encounter.type != undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
-          <span *ngIf="encounter.type[0].coding[0].code != undefined" >
+        <span *ngIf="encounter.type !== undefined && encounter.type.length>0 && encounter.type[0].coding.length >0">
+          <span *ngIf="encounter.type[0].coding[0].code !== undefined" >
             <span *ngIf="isSNOMED(encounter.type[0].coding[0].system)">
               <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(encounter.type[0].coding[0].system)}} {{encounter.type[0].coding[0].code}}" (click)="getSNOMEDLink(encounter.type[0].coding[0])">
                   <mat-icon>book</mat-icon>
@@ -74,7 +74,7 @@
       <th mat-header-cell *matHeaderCellDef width="10%"> Participant </th>
       <td mat-cell *matCellDef="let encounter">
          <span *ngFor="let participant of encounter.participant">
-          <span *ngIf="participant.individual != undefined"><i>{{participant.individual.display}}</i></span>
+          <span *ngIf="participant.individual !== undefined"><i>{{participant.individual.display}}</i></span>
       </span>
       </td>
     </ng-container>

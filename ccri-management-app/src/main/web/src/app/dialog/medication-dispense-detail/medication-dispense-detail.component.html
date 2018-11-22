@@ -38,7 +38,7 @@
     </tr>
     <tr>
       <td>Category</td>
-      <td><b><span *ngIf="medicationDispense.category != undefined">
+      <td><b><span *ngIf="medicationDispense.category !== undefined">
         {{medicationDispense.category.coding[0].display}}
       </span></b></td>
     </tr>
@@ -53,14 +53,14 @@
 
     <tr>
       <td>Supply type</td>
-      <td><b><span *ngIf="medicationDispense.type != undefined">
+      <td><b><span *ngIf="medicationDispense.type !== undefined">
         {{medicationDispense.type.coding[0].display}}
       </span></b></td>
     </tr>
     <tr>
       <td>Form</td>
       <td><b>  <span *ngFor="let dosage of medicationDispense.dosageInstruction">
-            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+            <span *ngIf="dosage.maxDosePerPeriod !== undefined" >
               <span> {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
             </span>
 
@@ -120,7 +120,7 @@
     <tr>
       <td>Reason for non supply</td>
       <td>
-          <b><span *ngIf="medicationDispense.notDoneReasonCodeableConcept != undefined">
+          <b><span *ngIf="medicationDispense.notDoneReasonCodeableConcept !== undefined">
         {{medicationDispense.notDoneReasonCodeableConcept.coding[0].display}}
       </span></b>
       </td>
@@ -128,10 +128,12 @@
     <tr>
       <td>Total amount of medication supplied</td>
       <td>
-          <span *ngFor="let extension of medicationDispense.quantity.extension">
-              <span *ngIf="extension.url === 'https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationQuantityText-1'">
-                  {{extension.valueString}} <br>
-              </span>
+        <span *ngIf="medicationDispense.quantity !== undefined">
+            <span *ngFor="let extension of medicationDispense.quantity.extension">
+                <span *ngIf="extension.url === 'https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationQuantityText-1'">
+                    {{extension.valueString}} <br>
+                </span>
+            </span>
           </span>
           <span *ngIf="medicationDispense.daysSupply!=undefined">{{medicationDispense.daysSupply.value}} {{medicationDispense.daysSupply.unit}}</span>
       </td>
@@ -174,8 +176,8 @@
     </tr>
     <tr>
       <td>Pharmacist</td>
-      <td><span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
-          <span *ngIf="medicationDispense.performer[0].actor != undefined">
+      <td><span *ngIf="medicationDispense.performer !== undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].actor !== undefined">
             <b>{{medicationDispense.performer[0].actor.display}}</b>
             <button mat-icon-button color="accent"  matTooltip="View Pharmacist" (click)="showPractitioner(medicationDispense)"><mat-icon>person</mat-icon></button>
           </span>
@@ -183,8 +185,8 @@
     </tr>
     <tr>
       <td>Pharmacy</td>
-      <td>  <span *ngIf="medicationDispense.performer != undefined && medicationDispense.performer.length > 0">
-          <span *ngIf="medicationDispense.performer[0].onBehalfOf != undefined">
+      <td>  <span *ngIf="medicationDispense.performer !== undefined && medicationDispense.performer.length > 0">
+          <span *ngIf="medicationDispense.performer[0].onBehalfOf !== undefined">
             <b>{{medicationDispense.performer[0].onBehalfOf.display}}</b>
             <button mat-icon-button color="accent"  matTooltip="View Pharmacy" (click)="showOrganisation(medicationDispense)"><mat-icon>account_balance</mat-icon></button>
           </span>

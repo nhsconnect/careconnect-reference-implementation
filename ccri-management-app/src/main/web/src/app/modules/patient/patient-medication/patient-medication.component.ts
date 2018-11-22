@@ -10,42 +10,42 @@ import {EprService} from "../../../service/epr.service";
 })
 export class PatientMedicationComponent implements OnInit {
 
-    medicationRequests : fhir.MedicationRequest[] = [];
+    medicationRequests: fhir.MedicationRequest[] = [];
 
-    gpMedicationRequest : fhir.MedicationRequest[] = [];
+    gpMedicationRequest: fhir.MedicationRequest[] = [];
 
-    gpMedication : fhir.Medication[] = [];
+    gpMedication: fhir.Medication[] = [];
 
-    medicationRequest : fhir.MedicationRequest = undefined;
+    medicationRequest: fhir.MedicationRequest = undefined;
 
-    medicationStatements : fhir.MedicationStatement[] = [];
+    medicationStatements: fhir.MedicationStatement[] = [];
 
-    gpMedicationStatement : fhir.MedicationStatement[] = [];
+    gpMedicationStatement: fhir.MedicationStatement[] = [];
 
-    medicationStatement : fhir.MedicationStatement = undefined;
+    medicationStatement: fhir.MedicationStatement = undefined;
 
-    medicationDispenses : fhir.MedicationDispense[] = [];
+    medicationDispenses: fhir.MedicationDispense[] = [];
 
-    medicationAdministrations : fhir.MedicationAdministration[] = [];
+    medicationAdministrations: fhir.MedicationAdministration[] = [];
 
-    medicationAdministration : fhir.MedicationAdministration = undefined;
+    medicationAdministration: fhir.MedicationAdministration = undefined;
 
-    medicationDispense : fhir.MedicationDispense = undefined;
+    medicationDispense: fhir.MedicationDispense = undefined;
 
-    patient : fhir.Patient = undefined;
+    patient: fhir.Patient = undefined;
 
-    resourceIssue : fhir.Bundle;
+    resourceIssue: fhir.Bundle;
 
-    resourceStatement : fhir.Bundle;
+    resourceStatement: fhir.Bundle;
 
-    resourceDispense : fhir.Bundle;
+    resourceDispense: fhir.Bundle;
 
-    resourceAdministration : fhir.Bundle;
+    resourceAdministration: fhir.Bundle;
 
   acutecolor = 'info';
   gpcolor = 'info';
 
-    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+    constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
         let patientid = this.route.snapshot.paramMap.get('patientid');
@@ -115,7 +115,7 @@ export class PatientMedicationComponent implements OnInit {
 
     }
 
-  getGPData(nhsNumber : string) {
+  getGPData(nhsNumber: string) {
 
     this.gpMedicationStatement = [];
     this.gpMedicationRequest  = [];
@@ -253,7 +253,7 @@ export class PatientMedicationComponent implements OnInit {
     }
 
 
-    onMoreIssue(linkUrl : string) {
+    onMoreIssue(linkUrl: string) {
 
         this.medicationRequests = [];
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -266,7 +266,7 @@ export class PatientMedicationComponent implements OnInit {
                 //this.progressBar = false;
             })
     }
-    onMoreDispense(linkUrl : string) {
+    onMoreDispense(linkUrl: string) {
 
         this.medicationDispenses=[];
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -279,7 +279,7 @@ export class PatientMedicationComponent implements OnInit {
                 //this.progressBar = false;
             })
     }
-    onMoreStatement(linkUrl : string) {
+    onMoreStatement(linkUrl: string) {
 
         this.medicationStatements=[];
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -293,7 +293,7 @@ export class PatientMedicationComponent implements OnInit {
             })
     }
 
-    viewEncounter(encounterReference : fhir.Reference) {
+    viewEncounter(encounterReference: fhir.Reference) {
         let ids: string[] = encounterReference.reference.split('/');
         this.router.navigate(['encounter',ids[1]], {relativeTo: this.route.parent });
     }

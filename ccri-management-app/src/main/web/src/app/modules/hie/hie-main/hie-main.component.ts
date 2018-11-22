@@ -23,7 +23,7 @@ export class HieMainComponent implements OnInit {
 
     navmenu: Object[] = [];
 
-    title : string ='Garforth Sector - Yorkshire Ambulance Service';
+    title: string ='Garforth Sector - Yorkshire Ambulance Service';
 
 
 

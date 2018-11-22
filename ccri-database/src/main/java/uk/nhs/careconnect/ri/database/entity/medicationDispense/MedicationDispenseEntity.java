@@ -111,8 +111,9 @@ public class MedicationDispenseEntity extends BaseResource {
     @JoinColumn(name = "RECEIVER_ORGANISATION",foreignKey= @ForeignKey(name="FK_DISPENSE_RECEIVER_ORGANISATION"))
     OrganisationEntity receiverOrganisaton;
 
-    @Column(name = "note")
-    String note;
+
+    @OneToMany(mappedBy="dispense", targetEntity = MedicationDispenseNote.class)
+    Set<MedicationDispenseNote> notes = new HashSet<>();
 
     @OneToMany(mappedBy="dispense", targetEntity = MedicationDispenseDosage.class)
     Set<MedicationDispenseDosage> dosageInstructions = new HashSet<>();
@@ -320,12 +321,20 @@ public class MedicationDispenseEntity extends BaseResource {
         this.receiverOrganisaton = receiverOrganisaton;
     }
 
-    public String getNote() {
-        return note;
+    public ConceptEntity getMedicationCode() {
+        return medicationCode;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setMedicationCode(ConceptEntity medicationCode) {
+        this.medicationCode = medicationCode;
+    }
+
+    public Set<MedicationDispenseNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Set<MedicationDispenseNote> notes) {
+        this.notes = notes;
     }
 
     public Boolean getSubstituted() {

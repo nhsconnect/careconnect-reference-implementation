@@ -1,9 +1,9 @@
 import {Component, Inject, Input, OnInit, ViewContainerRef} from '@angular/core';
 import integer = fhir.integer;
 import {EprService} from "../../service/epr.service";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {IAlertConfig, TdDialogService} from "@covalent/core";
 
 declare var $: any;

@@ -27,7 +27,7 @@
   <mat-card-title>Conformance Information</mat-card-title>
   <mat-divider></mat-divider>
   <mat-card-content>
-      <span *ngIf="conformance != undefined">
+      <span *ngIf="conformance !== undefined">
           <mat-list>
 
               <mat-list-item>
@@ -77,7 +77,7 @@
                           </span>
                       <span *ngIf="rest.security.extension !== undefined">
                           <span *ngFor="let extension of rest.security.extension">
-                          <span *ngIf="extension.extension != undefined" >
+                          <span *ngIf="extension.extension !== undefined" >
 
                               <mat-list-item *ngFor="let secext of extension.extension">
                                   <span flex-auto fxLayoutAlign="space-between center">

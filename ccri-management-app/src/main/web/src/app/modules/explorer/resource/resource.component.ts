@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {FhirService, Formats} from "../../../service/fhir.service";
-import {MatSelect} from "@angular/material";
+import {MatSelect} from '@angular/material';
 import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
 
 
@@ -9,7 +9,7 @@ import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from
 export interface QueryOptions {
     name: string;
     type: string;
-    documentation : string;
+    documentation: string;
 }
 
 /*
@@ -31,7 +31,7 @@ documentation:
 export class ResourceComponent implements OnInit,AfterViewInit {
 
 
-    public resource : fhir.Bundle = undefined;
+    public resource: fhir.Bundle = undefined;
 
     public resourceString : any = undefined;
 
@@ -41,55 +41,55 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
     private _routerSub ;
 
-    public base : string;
+    public base: string;
 
     public format : Formats;
 
-    progressBar : boolean = false;
+    progressBar: boolean = false;
 
-    searchVisible : boolean = false;
+    searchVisible: boolean = false;
 
-    expanded : boolean = false;
+    expanded: boolean = false;
 
     entries : any[];
 
-    allergies : fhir.AllergyIntolerance[];
-    carePlans : fhir.CarePlan[];
-    consents : fhir.Consent[];
-    impressions : fhir.ClinicalImpression[];
-    conditions : fhir.Condition[];
-    documents : fhir.DocumentReference[];
-    encounters : fhir.Encounter[];
-    goals : fhir.Goal[];
-    services : fhir.HealthcareService[];
-    immunisations : fhir.Immunization[];
-    locations : fhir.Location[];
-    medications : fhir.Medication[];
-    medicationAdministrations : fhir.MedicationAdministration[];
-    medicationStatements : fhir.MedicationStatement[];
-    medicationDispenses : fhir.MedicationDispense[];
-    observations : fhir.Observation[];
-    organisations : fhir.Organization[];
+    allergies: fhir.AllergyIntolerance[];
+    carePlans: fhir.CarePlan[];
+    consents: fhir.Consent[];
+    impressions: fhir.ClinicalImpression[];
+    conditions: fhir.Condition[];
+    documents: fhir.DocumentReference[];
+    encounters: fhir.Encounter[];
+    goals: fhir.Goal[];
+    services: fhir.HealthcareService[];
+    immunisations: fhir.Immunization[];
+    locations: fhir.Location[];
+    medications: fhir.Medication[];
+    medicationAdministrations: fhir.MedicationAdministration[];
+    medicationStatements: fhir.MedicationStatement[];
+    medicationDispenses: fhir.MedicationDispense[];
+    observations: fhir.Observation[];
+    organisations: fhir.Organization[];
 
-    prescriptions : fhir.MedicationRequest[];
-    forms : fhir.QuestionnaireResponse[];
+    prescriptions: fhir.MedicationRequest[];
+    forms: fhir.QuestionnaireResponse[];
 
-    procedures : fhir.Procedure[];
-    patients : fhir.Patient[];
-    practitioners : fhir.Practitioner[];
+    procedures: fhir.Procedure[];
+    patients: fhir.Patient[];
+    practitioners: fhir.Practitioner[];
 
-    referrals : fhir.ReferralRequest[];
-    risks : fhir.RiskAssessment[];
-    roles : fhir.PractitionerRole[];
-
-
+    referrals: fhir.ReferralRequest[];
+    risks: fhir.RiskAssessment[];
+    roles: fhir.PractitionerRole[];
 
 
 
 
 
 
-  public currentResource : string = "";
+
+
+  public currentResource: string = "";
 
   @ViewChild('field') field : MatSelect;
 
@@ -106,7 +106,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     ];
 
 
-    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute) { }
+    constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute) { }
 
   ngOnInit() {
      // console.log('Resource Init called'+ this.router.url);
@@ -161,7 +161,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                   console.log(' + NavChange '+event.url);
                   let resource = event.url.replace('/resource/','');
                   this.elements=[];
-                  if (this.form != undefined) {
+                  if (this.form !== undefined) {
                       this.form.form.valueChanges.subscribe((val) => {
                           this.buildQuery();
                       })
@@ -325,7 +325,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     
   }
 
-  onMore(linkUrl : string) {
+  onMore(linkUrl: string) {
       this.progressBar = true;
       this.clearDown();
       this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
@@ -358,7 +358,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     ngAfterViewInit() {
       console.log('after init');
 
-        if (this.form != undefined) {
+        if (this.form !== undefined) {
             this.form.form.valueChanges.subscribe((val) => {
                 this.buildQuery();
             })
@@ -375,7 +375,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
           let name = this.elements[i].name;
           let content: string[] = name.split('-');
           let param = content[3];
-          if (content.length > 4 && (content[4] != undefined)) param = param + '-' + content[4];
+          if (content.length > 4 && (content[4] !== undefined)) param = param + '-' + content[4];
 
           if (!first) query = query + '&' + param
           else query = query + param;
@@ -427,7 +427,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   onClear() {
       this.elements = [];
-      if (this.form != undefined) {
+      if (this.form !== undefined) {
         this.form.refresh();
       }
   }
@@ -463,7 +463,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
       }
   }
 
-  buildOptions(resource : string) {
+  buildOptions(resource: string) {
       this.searchVisible = false;
       if (this.fhirSrv.conformance !== undefined ) {
           if (this.currentResource !== resource) {
@@ -503,7 +503,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   getResources()  {
 
 
-    if (this.resource.entry != undefined) {
+    if (this.resource.entry !== undefined) {
       for (let entry  of this.resource.entry) {
 
         let resource = entry.resource;
@@ -557,8 +557,8 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               break;
             case "List" :
               let list: fhir.List = <fhir.List> resource;
-              if (list.entry != undefined) {
-                if (list.code != undefined && list.code.coding.length > 0) {
+              if (list.entry !== undefined) {
+                if (list.code !== undefined && list.code.coding.length > 0) {
                   this.entries.push({
                     "resource": "List"
                     , "code": list.code.coding[0].code

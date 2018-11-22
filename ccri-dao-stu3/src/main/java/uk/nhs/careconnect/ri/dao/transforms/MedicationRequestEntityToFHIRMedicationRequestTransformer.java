@@ -9,6 +9,7 @@ import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestIdentifier;
+import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestNote;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
@@ -211,8 +212,8 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
             if (dosageEntity.getPatientInstruction() != null) {
                 dosage.setPatientInstruction(dosageEntity.getPatientInstruction());
             }
-            if (dosageEntity.getOtherText() != null) {
-                dosage.setText(dosageEntity.getOtherText());
+            if (dosageEntity.getDoasgeText() != null) {
+                dosage.setText(dosageEntity.getDoasgeText());
             }
             if (dosageEntity.getDoseRangeLow() != null || dosageEntity.getDoseRangeHigh() != null) {
                 Range range = new Range();
@@ -250,6 +251,22 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
                 }
             }
 
+        }
+
+        for (MedicationRequestNote note : medicationRequestEntity.getNotes()) {
+            Annotation annotation = medicationRequest.addNote();
+            if (note.getNoteDate() != null) {
+                annotation.setTime(note.getNoteDate());
+            }
+            if (note.getNoteText() != null) {
+                annotation.setText(note.getNoteText());
+            }
+            if (note.getNotePatient()!=null) {
+                annotation.setAuthor(new Reference("Patient/"+note.getNotePatient().getId()));
+            }
+            if (note.getNotePractitioner()!=null) {
+                annotation.setAuthor(new Reference("Practitioner/"+note.getNotePractitioner().getId()));
+            }
         }
 
         medicationRequest.setId(medicationRequestEntity.getId().toString());
