@@ -63,9 +63,9 @@
     <th mat-header-cell *matHeaderCellDef width="10%"> Dose </th>
     <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngIf="medicationAdministration.dosage !== undefined">
-            <span *ngIf="medicationAdministration.dosage.dose!==undefined">{{medicationAdministration.dosage.dose.value}} {{medicationAdministration.dosage.dose.unit}}</span>
+            <p *ngIf="medicationAdministration.dosage.dose!==undefined">{{medicationAdministration.dosage.dose.value}} {{medicationAdministration.dosage.dose.unit}}</p>
 
-
+            <p *ngIf="medicationAdministration.dosage.text !== undefined">{{medicationAdministration.dosage.text}}</p>
         </span>
     </td>
   </ng-container>

@@ -20,7 +20,7 @@
     "@angular/flex-layout": "^7.0.0-beta.19",
     "@angular/forms": "^7.1.0",
     "@angular/http": "^7.1.0",
-    '@angular/material': "^7.1.0",
+    "@angular/material": "^7.1.0",
     "@angular/material-moment-adapter": "^7.1.0",
     "@angular/platform-browser": "^7.1.0",
     "@angular/platform-browser-dynamic": "^7.1.0",
