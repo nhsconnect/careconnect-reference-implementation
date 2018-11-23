@@ -24,7 +24,7 @@
         <hapi-fhir-version>3.6.0</hapi-fhir-version>
         <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
         <camel-version>2.21.2</camel-version>
-        <hawtio.version>2.3.0</hawtio.version>
+        <hawtio.version>2.0.3</hawtio.version>
         <spring_security_version>1.0.8.RELEASE</spring_security_version>
     </properties>
 
