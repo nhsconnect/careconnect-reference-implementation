@@ -32,7 +32,7 @@ export class MedicationRequestComponent implements OnInit {
   dataSource: MedicationRequestDataSource;
 
   displayedColumns = [
-    'medication', 'medicationlink', 'dose', 'quantity', 'route', 'routelink', 'form', 'instructions',
+    'medication', 'medicationlink', 'dose', 'quantity', 'route', 'routelink', 'instructions',
     'status', 'authored', 'visit',  'resource'];
 
 

@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <hawtio.version>2.0.3</hawtio.version>
+        <hawtio.version>2.3.0</hawtio.version>
         <camel-version>2.21.2</camel-version>
     </properties>
 
