@@ -7,7 +7,7 @@
                 <span *ngIf="!rest.profile.reference.includes('hl7.org/fhir/Profile')">
                  <h3>FHIR Profile</h3>
                     <td-message label="{{rest.profile.reference}}" color="blue" icon="info">
-                        <a td-message-actions mat-button href="{{rest.profile.reference}}" target="_blank">VIEW PROFILE</a>
+                        <a td-message-actions mat-raised-button href="{{rest.profile.reference}}" target="_blank">VIEW PROFILE</a>
                     </td-message>
                 </span>
             </span>
@@ -104,7 +104,7 @@
                                 </mat-card-content>
                             <mat-card-actions>
                                 <td-message *ngIf="query!==undefined" [label]="query" color="blue" icon="search"></td-message>
-                                <a mat-button [disabled]="!(dynform.valid && (elements.length >0))" color="accent" class="text-upper" (click)="onSearch()">
+                                <a mat-raised-button [disabled]="!(dynform.valid && (elements.length >0))" color="accent" class="text-upper" (click)="onSearch()">
                                   <span>Search</span></a>
                                 <a mat-button [disabled]="(elements.length === 0)" color="accent" class="text-upper" (click)="onClear()">
                                   <span>Clear</span></a>

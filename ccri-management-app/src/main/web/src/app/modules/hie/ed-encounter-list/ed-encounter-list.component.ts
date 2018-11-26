@@ -15,7 +15,7 @@ export class EdEncounterListComponent implements OnInit {
 
   ngOnInit() {
     this.getEncounters();
-    this.eprService.setTitle('Caseload - Garforth Sector');
+    this.eprService.setTitle('Emergency Control Centre View - Garforth Sector');
     this.fhirService.getConformanceChange().subscribe(capabilityStatement =>
     {
       this.getEncounters();

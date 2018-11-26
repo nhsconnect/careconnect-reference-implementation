@@ -31,6 +31,7 @@ export class PatientMainComponent implements OnInit {
     bicolour = 'info';
     bmcolour = 'info';
     brcolour = 'info';
+    aacolour = 'info';
 
     cards : any[] = [];
 
@@ -152,8 +153,13 @@ export class PatientMainComponent implements OnInit {
         this.btcolour = 'info';
         this.bicolour = 'info';
         this.bmcolour = 'info';
+      this.aacolour = 'info';
       this.brcolour = 'info';
       switch (btn) {
+          case 'aa':
+              this.router.navigate(['atmist'], {relativeTo: this.route });
+              this.aacolour = 'accent';
+              break;
           case 'bs':
               this.router.navigate(['summary'], {relativeTo: this.route });
               this.bscolour = 'accent';

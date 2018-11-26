@@ -139,6 +139,8 @@ import { FlagComponent } from './component/flag/flag.component';
 import { ReferralRequestComponent } from './component/referral-request/referral-request.component';
 import { PatientReferralRequestComponent } from './modules/patient/patient-referral-request/patient-referral-request.component';
 import { MedicationAdministrationComponent } from './component/medication-administration/medication-administration.component';
+import {CovalentBarEchartsModule, CovalentBaseEchartsModule, CovalentTooltipEchartsModule} from "@covalent/echarts";
+import { AmbulanceATMISTComponent } from './modules/patient/ambulance-atmist/ambulance-atmist.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -230,7 +232,8 @@ export function initializeApp(appConfig: AppConfig) {
       FlagComponent,
       ReferralRequestComponent,
       PatientReferralRequestComponent,
-      MedicationAdministrationComponent
+      MedicationAdministrationComponent,
+      AmbulanceATMISTComponent
 
   ],
   entryComponents: [
@@ -304,6 +307,9 @@ export function initializeApp(appConfig: AppConfig) {
       CovalentChipsModule,
     CovalentNotificationsModule,
     CovalentMenuModule,
+      CovalentBaseEchartsModule,
+      CovalentBarEchartsModule,
+      CovalentTooltipEchartsModule,
 
     NgxChartsModule,
 

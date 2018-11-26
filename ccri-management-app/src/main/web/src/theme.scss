@@ -7,6 +7,7 @@
 @import '~@covalent/core/theming/all-theme';
 
 @import '~@covalent/highlight/highlight-theme';
+@import '~@covalent/markdown/markdown-theme';
 
 @include covalent-highlight-theme();
 
@@ -35,6 +36,7 @@ $theme: mat-light-theme($primary, $accent, $warn);
 // that you are using.
 @include angular-material-theme($theme);
 @include covalent-theme($theme);
+@include covalent-markdown-theme($theme);
 
 /* ------------------------------------------------------------------------------- */
 $foreground: map-get($theme, foreground);

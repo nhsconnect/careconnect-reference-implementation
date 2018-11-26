@@ -20,6 +20,7 @@ import {AuthGuardOauth2} from "../service/auth-guard-oauth2";
 import {HieMainComponent} from "./hie/hie-main/hie-main.component";
 import {PatientCarePlanComponent} from "./patient/patient-care-plan/patient-care-plan.component";
 import {PatientReferralRequestComponent} from "./patient/patient-referral-request/patient-referral-request.component";
+import {AmbulanceATMISTComponent} from "./patient/ambulance-atmist/ambulance-atmist.component";
 
 
 
@@ -35,6 +36,7 @@ const edRoutes: Routes = [
            children : [
                { path: '', component: PatientSummaryComponent },
                { path: 'summary', component: PatientSummaryComponent },
+               { path: 'atmist', component: AmbulanceATMISTComponent },
                { path: 'immunisation', component: PatientImmunisationComponent },
                { path: 'medication', component: PatientMedicationComponent },
                { path: 'timeline', component: PatientTimeSeriesComponent },
