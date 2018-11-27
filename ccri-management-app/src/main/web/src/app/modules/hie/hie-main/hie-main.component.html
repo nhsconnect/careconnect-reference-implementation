@@ -1,6 +1,27 @@
 <mat-menu #personMenu>
   <button *ngIf="!authService.isLoggedOn()" mat-menu-item routerLink="/login">Sign In</button>
   <button *ngIf="authService.isLoggedOn()" mat-menu-item routerLink="/logout">Sign Out</button>
+    <button mat-menu-item (click)="role('tier1')">
+    <span *ngIf="rbac === 'tier1';then othert1 else othert1e">
+      <mat-icon>check</mat-icon>
+    </span>
+        <ng-template #othert1><mat-icon>check</mat-icon></ng-template>
+        <ng-template #othert1e><mat-icon></mat-icon></ng-template>
+        <span>Admin Role</span></button>
+    <button mat-menu-item (click)="role('tier2')">
+    <span *ngIf="rbac === 'tier2';then othert2 else othert2e">
+      <mat-icon>check</mat-icon>
+    </span>
+        <ng-template #othert2><mat-icon>check</mat-icon></ng-template>
+        <ng-template #othert2e><mat-icon></mat-icon></ng-template>
+        <span>Paramedic Role</span></button>
+    <button mat-menu-item (click)="role('tier3')">
+    <span *ngIf="rbac === 'tier3';then othert3 else othert3e">
+      <mat-icon>check</mat-icon>
+    </span>
+    <ng-template #othert3><mat-icon>check</mat-icon></ng-template>
+    <ng-template #othert3e><mat-icon></mat-icon></ng-template>
+    <span>Consultant Role</span></button>
 </mat-menu>
 
 <td-layout [class]="'theme-light'">

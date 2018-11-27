@@ -23,7 +23,7 @@
   <mat-card-content>
       <h3>(M)echanism of injury</h3>
     <td-dynamic-forms [elements]="mechanism">
-      <ng-template let-element ngFor [ngForOf]="textElements">
+      <ng-template let-element ngFor [ngForOf]="mechanism">
         <ng-template let-control="control" [tdDynamicFormsError]="element.name">
       <span *ngIf="control.touched || !control.pristine">
         <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
@@ -38,7 +38,7 @@
   <mat-card-content>
     <h3>(I)njuries</h3>
     <td-dynamic-forms [elements]="injuries">
-      <ng-template let-element ngFor [ngForOf]="textElements">
+      <ng-template let-element ngFor [ngForOf]="injuries">
         <ng-template let-control="control" [tdDynamicFormsError]="element.name">
       <span *ngIf="control.touched || !control.pristine">
         <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
@@ -53,7 +53,7 @@
   <mat-card-content>
     <h3>Vital (S)igns</h3>
     <td-dynamic-forms [elements]="news2">
-      <ng-template let-element ngFor [ngForOf]="textElements">
+      <ng-template let-element ngFor [ngForOf]="news2">
         <ng-template let-control="control" [tdDynamicFormsError]="element.name">
       <span *ngIf="control.touched || !control.pristine">
         <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
@@ -68,7 +68,7 @@
   <mat-card-content>
     <h3>(T)reatment</h3>
     <td-dynamic-forms [elements]="treatments">
-      <ng-template let-element ngFor [ngForOf]="textElements">
+      <ng-template let-element ngFor [ngForOf]="treatments">
         <ng-template let-control="control" [tdDynamicFormsError]="element.name">
       <span *ngIf="control.touched || !control.pristine">
         <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
@@ -80,8 +80,10 @@
   </mat-card-content>
 </mat-card>
 <mat-card>
+  <mat-card-content>
+  </mat-card-content>
   <mat-card-actions>
-    <button mat-raised-button color="accent">Update</button>
+    <button mat-raised-button color="assert">Update</button>
     <button mat-raised-button color="accent">Complete and Handover</button>
   </mat-card-actions>
 </mat-card>

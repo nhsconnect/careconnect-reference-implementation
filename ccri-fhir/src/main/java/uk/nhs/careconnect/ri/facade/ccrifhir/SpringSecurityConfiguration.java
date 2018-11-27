@@ -36,6 +36,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/error").permitAll()
+                .antMatchers("/hawtio/**").hasRole("ACTUATOR")
                 .antMatchers("/jolokia/**").hasRole("ACTUATOR")
                 .and().httpBasic();
     }

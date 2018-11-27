@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {EprService} from '../../../service/epr.service';
 
 @Component({
   selector: 'app-ambulance-atmist',
@@ -13,33 +14,33 @@ export class AmbulanceATMISTComponent implements OnInit {
     public mechanism = [
 
         {
-            "name": "complaint",
-            "type": "select",
-            "multiple": true,
-            "selections": [
-                "RTA",
-                "Burn",
-                "Fall",
-                "Cardiac"
+            'name': 'complaint',
+            'type': 'select',
+            'multiple': true,
+            'selections': [
+                'RTA',
+                'Burn',
+                'Fall',
+                'Cardiac'
             ],
             // "default": "Fall",
-            "required": true
+            'required': true
         },
         {
-            "name": "notes",
-            "hint": "this is a textarea hint",
-            "type": "textarea",
-            "required": false
+            'name': "notes",
+            'hint': "this is a textarea hint",
+            'type': "textarea",
+            'required': false
         }
     ];
 
   public injuries = [
 
         {
-            "name": "injuries",
-            "hint": "this is a textarea hint",
-            "type": "textarea",
-            "required": false
+            'name': "injuries",
+            'hint': "this is a textarea hint",
+            'type': "textarea",
+            'required': false
         }
     ];
 
@@ -50,21 +51,21 @@ export class AmbulanceATMISTComponent implements OnInit {
 
 
        {
-            "name": "Procedure",
-            "type": "select",
-            "multiple": true,
-            "selections": [
+            'name': "Procedure",
+            'type': "select",
+            'multiple': true,
+            'selections': [
                 "CPR",
                 "Chest seal",
                 "Pressure Dressing"
             ],
-            "required": true
+            'required': true
         },
         {
-            "name": "Medication",
-            "type": "select",
-            "multiple": false,
-            "selections": [
+            'name': "Medication",
+            'type': "select",
+            'multiple': false,
+            'selections': [
                 "Adrenaline",
                 "Amiodarone",
                 "Aspirin",
@@ -90,41 +91,41 @@ export class AmbulanceATMISTComponent implements OnInit {
 
             ],
 
-            "required": true,
-            "flex": 20
+            'required': true,
+            'flex': 20
         },
         {
-            "name": "Route",
-            "type": "select",
-            "multiple": false,
-            "selections": [
+            'name': "Route",
+            'type': "select",
+            'multiple': false,
+            'selections': [
                 "Subcutaneous route",
                 "Oral",
                 "Rectal"
 
             ],
 
-            "required": true,
-            "flex": 20
+            'required': true,
+            'flex': 20
         },
         {
-            "name": "Dose",
-            "type": "select",
-            "multiple": false,
-            "selections": [
+            'name': "Dose",
+            'type': "select",
+            'multiple': false,
+            'selections': [
                 "1 pen",
                 "asd"
 
             ],
 
-            "required": true,
-            "flex": 20
+            'required': true,
+            'flex': 20
         },
         {
-            "name": "notes",
-            "hint": "this is a textarea hint",
-            "type": "textarea",
-            "required": false
+            'name': "notes",
+            'hint': "this is a textarea hint",
+            'type': "textarea",
+            'required': false
         }
 
     ];
@@ -135,92 +136,95 @@ export class AmbulanceATMISTComponent implements OnInit {
     public news2 = [
 
         {
-            "name": "pulse",
-            "label": "Pulse",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 10
+            'name': 'pulse',
+            'label': 'Pulse',
+            'type': 'number',
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 10
         },
         {
-            "name": "systolic",
-            "label": "Systolic",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 5
+            'name': 'systolic',
+            'label': 'Systolic',
+            'type': 'number',
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 5
         },
         {
-            "name": "diasystolic",
-            "label": "Diasystolic",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 5
+            'name': 'diasystolic',
+            'label': 'Diasystolic',
+            'type': 'number',
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 5
         },
         {
-            "name": "repiratory",
-            "label": "Respiratory Rate",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 10
+            'name': 'repiratory',
+            'label': 'Respiratory Rate',
+            'type': 'number',
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 10
         },
       {
-            "name": "air",
-            "type": "select",
-            "multiple": false,
-            "selections": [
+            'name': "air",
+            'type': "select",
+            'multiple': false,
+            'selections': [
                 "Breathing room air",
                 "Patient on oxygen"
             ],
           //  "default": "Mentally alert",
-            "required": true,
-            "flex": 20
+            'required': true,
+            'flex': 20
         },
         {
-            "name": "saturation",
-            "label": "Oxygen",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 10
+            'name': "saturation",
+            'label': "Oxygen",
+            'type': "number",
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 10
         },
         {
-            "name": "temp",
-            "label": "Body Temperature",
-            "type": "number",
-            "required": true,
-            "min": 18,
-            "max": 300,
-            "flex": 10
+            'name': "temp",
+            'label': "Body Temperature",
+            'type': "number",
+            'required': true,
+            'min': 18,
+            'max': 300,
+            'flex': 10
         },
 
         {
-            "name": "ACVPU",
-            "type": "select",
-            "multiple": false,
-            "selections": [
-                "Mentally alert",
-                "Responds to voice",
-                "Responds to pain",
-                "Unresponsive",
-                "Acute confusion"
+            'name': 'ACVPU',
+            'type': 'select',
+            'multiple': false,
+            'selections': [
+                'Mentally alert',
+                'Responds to voice',
+                'Responds to pain',
+                'Unresponsive',
+                'Acute confusion'
             ],
           //  "default": "Mentally alert",
-            "required": true,
-    "flex": 20
+            'required': true,
+    'flex': 20
         }
     ];
 
-  constructor() { }
+    title = 'ATMIST';
+
+  constructor(private eprService: EprService) { }
 
   ngOnInit() {
+     // this.eprService.setTitle(this.title);
   }
 
 }
