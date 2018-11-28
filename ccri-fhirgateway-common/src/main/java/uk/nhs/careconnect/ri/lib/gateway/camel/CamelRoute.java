@@ -35,6 +35,9 @@ public class CamelRoute extends RouteBuilder {
 	@Value("${fhir.restserver.tieBase}")
 	private String tieBase;
 
+	@Value("${fhir.restserver.tkwBase}")
+	private String tkwBase;
+	
 	@Value("${ccri.server.base}")
     private String hapiBase;
 
@@ -59,7 +62,7 @@ public class CamelRoute extends RouteBuilder {
 		from("direct:FHIRValidate")
 				.routeId("FHIR Validation")
 				.process(camelProcessor) // Add in correlation Id if not present
-				.to("direct:TIEServer");
+				.to("direct:TKWServer");
 
 
 		// Complex processing
@@ -127,6 +130,15 @@ public class CamelRoute extends RouteBuilder {
 				.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
 				.convertBodyTo(InputStream.class);
 
+		from("direct:TKWServer")
+			.routeId("TKW FHIR Server")
+			.process(camelProcessor)
+			.to("log:uk.nhs.careconnect.FHIRGateway.start?level=INFO&showHeaders=true&showExchangeId=true")
+			.to(tkwBase)
+			.process(camelPostProcessor)
+			.to("log:uk.nhs.careconnect.FHIRGateway.complete?level=INFO&showHeaders=true&showExchangeId=true")
+			.convertBodyTo(InputStream.class);
+			
 		// EPR Server
 
 		// Simple processing - low level resource operations

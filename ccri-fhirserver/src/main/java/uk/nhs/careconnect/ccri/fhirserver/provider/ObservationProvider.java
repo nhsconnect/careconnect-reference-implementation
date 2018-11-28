@@ -56,7 +56,7 @@ public class ObservationProvider implements ICCResourceProvider {
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
-
+        	
         method.setOperationOutcome(opOutcome);
         try {
             Observation newObservation = observationDao.save(ctx,observation,theId,theConditional);
@@ -77,7 +77,7 @@ public class ObservationProvider implements ICCResourceProvider {
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
-
+        log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(observation));
         method.setOperationOutcome(opOutcome);
         try {
             Observation newObservation = observationDao.save(ctx, observation, null, null);

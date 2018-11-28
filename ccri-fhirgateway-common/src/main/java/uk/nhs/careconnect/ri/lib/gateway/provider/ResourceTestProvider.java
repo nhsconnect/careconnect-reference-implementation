@@ -13,6 +13,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
@@ -22,6 +23,9 @@ import java.io.Reader;
 @Component
 public class ResourceTestProvider {
 
+	@Value("${ccri.validate_flag}")
+	private Boolean validate_flag;
+	
     @Autowired
     CamelContext context;
 
@@ -33,19 +37,25 @@ public class ResourceTestProvider {
     public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-
+    	
+    	if(!validate_flag)
+    	{
+    		MethodOutcome retVal = new MethodOutcome();
+    		retVal.setOperationOutcome(null);
+    		return retVal;
+    	}
         ProducerTemplate template = context.createProducerTemplate();
 
         InputStream inputStream = null;
-
-        Exchange exchange = template.send("direct:FHIRValidate", ExchangePattern.InOut, new Processor() {
+                Exchange exchange = template.send("direct:FHIRValidate", ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(ctx.newXmlParser().encodeResourceToString(resourceToValidate));
+                exchange.getIn().removeHeaders("*");
                 exchange.getIn().setHeader(Exchange.CONTENT_TYPE, "application/fhir+xml");
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
-                exchange.getIn().setHeader(Exchange.HTTP_PATH, resourceToValidate.getClass().getSimpleName()+"/$validate");
-                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "");
-            }
+              //  exchange.getIn().setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/fhir+xml");
+                exchange.getIn().setHeader(Exchange.HTTP_PATH, "$validate");
+             }
         });
         IBaseResource resource = null;
             if(exchange.getIn().
@@ -70,6 +80,7 @@ public class ResourceTestProvider {
 
         {
             resource = ctx.newXmlParser().parseResource((String) exchange.getIn().getBody());
+            
         }
 
         MethodOutcome retVal = new MethodOutcome();
@@ -79,6 +90,7 @@ public class ResourceTestProvider {
         {
             OperationOutcome operationOutcome = (OperationOutcome) resource;
             log.info("Issue Count = " + operationOutcome.getIssue().size());
+            log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
             retVal.setOperationOutcome(operationOutcome);
         } else
 

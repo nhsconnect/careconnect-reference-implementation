@@ -4,16 +4,19 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
@@ -28,6 +31,9 @@ import java.util.Set;
 @Component
 public class ObservationResourceProvider implements IResourceProvider {
 
+	
+	
+	
     @Autowired
     CamelContext context;
 
@@ -43,14 +49,14 @@ public class ObservationResourceProvider implements IResourceProvider {
     public Class<Observation> getResourceType() {
         return Observation.class;
     }
-/*
+//Anand uncommented
     @Validate
     public MethodOutcome testResource(@ResourceParam Observation resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResourceresource,theMode,theProfile);
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-*/
+
     public Bundle observationEverythingOperation(
             @IdParam IdType patientId
             ,CompleteBundle completeBundle
@@ -165,11 +171,23 @@ public class ObservationResourceProvider implements IResourceProvider {
 
 
         ProducerTemplate template = context.createProducerTemplate();
-
+        
+        MethodOutcome method_val = testResource(observation, ValidationModeEnum.CREATE , null);
+        OperationOutcome operationoutcome =  (OperationOutcome)method_val.getOperationOutcome();
+   
+        if ( operationoutcome!= null ) {
+        	ProviderResponseLibrary.createException(ctx,(Resource) operationoutcome);
+        	MethodOutcome method_exception = new MethodOutcome();
+            ProviderResponseLibrary.setMethodOutcome(operationoutcome,method_exception);
+            return method_exception;        	
+        	}
+        else
+        {
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
             String newXmlResource = ctx.newXmlParser().encodeResourceToString(observation);
+            System.out.println(newXmlResource);
 
             Exchange exchangeBundle = template.send("direct:FHIRObservation", ExchangePattern.InOut, new Processor() {
                 public void process(Exchange exchange) throws Exception {
@@ -198,10 +216,11 @@ public class ObservationResourceProvider implements IResourceProvider {
         }
 
         MethodOutcome method = new MethodOutcome();
-
+        
         ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
+        }
     }
 
 

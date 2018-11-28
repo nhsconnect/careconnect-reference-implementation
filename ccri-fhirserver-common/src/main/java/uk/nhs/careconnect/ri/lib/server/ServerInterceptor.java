@@ -257,8 +257,9 @@ public class ServerInterceptor extends InterceptorAdapter {
                 log.info("_format = "+acceptType);
             }
         }
-
+        if(resource!=null) {
         log.trace("Response resource instance of "+resource.getClass().getSimpleName());
+        
         if (theRequestDetails != null && theRequestDetails.getResourceName() != null) log.trace("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
 
         // Special Procecssing for Binary when a FHIR document is returned
@@ -345,6 +346,7 @@ public class ServerInterceptor extends InterceptorAdapter {
             }
 
         }
+        } // check for resource null end
        return true;
 
     }
