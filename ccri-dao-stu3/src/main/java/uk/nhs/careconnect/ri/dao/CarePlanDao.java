@@ -476,7 +476,7 @@ public class CarePlanDao implements CarePlanRepository {
 
 
         if (includes!=null) {
-            log.debug("Reverse includes");
+            log.debug("Includes");
             for (CarePlanEntity carePlanEntity : qryResults) {
                 if (includes !=null) {
                     for (Include include : includes) {
@@ -502,6 +502,13 @@ public class CarePlanDao implements CarePlanRepository {
                                 for (CarePlanGoal carePlanGoal : carePlanEntity.getGoals()) {
                                     if (carePlanGoal.getGoal() != null) {
                                         resultsAddIfNotPresent(goalEntityToFHIRGoalTransformer.transform(carePlanGoal.getGoal()));
+                                    }
+                                }
+                                break;
+                            case "CarePlan:care-team":
+                                for (CarePlanTeam carePlanTeam : carePlanEntity.getTeams()) {
+                                    if (carePlanTeam.getTeam() != null) {
+                                        resultsAddIfNotPresent(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
                                     }
                                 }
                                 break;

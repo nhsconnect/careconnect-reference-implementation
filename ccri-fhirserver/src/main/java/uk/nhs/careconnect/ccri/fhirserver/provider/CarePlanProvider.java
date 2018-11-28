@@ -105,6 +105,7 @@ public class CarePlanProvider implements ICCResourceProvider {
             ,"CarePlan:condition"
             ,"CarePlan:supporting-information"
             ,"CarePlan:goal"
+            ,"CarePlan:care-team"
             , "*"}) Set<Include> includes
     ) {
         return carePlanDao.search(ctx,patient, date, categories,identifier,resid, includes);

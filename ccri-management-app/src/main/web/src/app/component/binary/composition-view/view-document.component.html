@@ -9,11 +9,11 @@
             <app-composition-detail [composition] = "composition" [encounter]="encounter"></app-composition-detail>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-raised-button  color="accent"  placement="top" (click)="openResource(composition)"><mat-icon>code</mat-icon>
+            <button mat-button  color="accent"  placement="top" (click)="openResource(composition)"><mat-icon>code</mat-icon>
             Composition</button>
-            <button mat-raised-button  color="accent" placement="top" (click)="openResource(patient)"><mat-icon>code</mat-icon>
+            <button mat-button  color="accent" placement="top" (click)="openResource(patient)"><mat-icon>code</mat-icon>
             Patient</button>
-            <span *ngIf="encounter !== undefined"><button mat-raised-button  placement="top"  color="accent" (click)="openResource(encounter)"><mat-icon>code</mat-icon>
+            <span *ngIf="encounter !== undefined"><button mat-button  placement="top"  color="accent" (click)="openResource(encounter)"><mat-icon>code</mat-icon>
             Encounter</button></span>
         </mat-card-actions>
       </mat-card>

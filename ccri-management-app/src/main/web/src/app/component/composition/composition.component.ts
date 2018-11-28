@@ -1,15 +1,15 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 import {FhirService} from '../../service/fhir.service';
-import {IAlertConfig, TdDialogService} from "@covalent/core";
-import {CompositionDataSource} from "../../data-source/composition-data-source";
+import {IAlertConfig, TdDialogService} from '@covalent/core';
+import {CompositionDataSource} from '../../data-source/composition-data-source';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {LinksService} from  '../../service/links.service';
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
+import {LinksService} from '../../service/links.service';
 import {BundleService} from '../../service/bundle.service';
-import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
-import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
-import {EprService} from "../../service/epr.service";
+import {OrganisationDialogComponent} from '../../dialog/organisation-dialog/organisation-dialog.component';
+import {PractitionerDialogComponent} from '../../dialog/practitioner-dialog/practitioner-dialog.component';
+import {EprService} from '../../service/epr.service';
 
 @Component({
   selector: 'app-composition',
@@ -18,9 +18,9 @@ import {EprService} from "../../service/epr.service";
 })
 export class CompositionComponent implements OnInit {
 
-  @Input() compositions :fhir.Composition[];
+  @Input() compositions: fhir.Composition[];
 
-  @Input() compositionsTotal :number;
+  @Input() compositionsTotal: number;
 
   @Input() patientId: string;
 
@@ -30,15 +30,16 @@ export class CompositionComponent implements OnInit {
 
   organisations: fhir.Organization[];
 
-  dataSource : CompositionDataSource;
+  dataSource: CompositionDataSource;
 
-  displayedColumns = ['open', 'created','type','typelink', 'author','authorLink', 'custodian', 'custodianLink', 'mime', 'status', 'resource'];
+  displayedColumns = ['open', 'created', 'type', 'typelink', 'author', 'authorLink', 'custodian',
+    'custodianLink', 'mime', 'status', 'resource'];
 
   constructor(private router: Router,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef,
               public fhirService: FhirService,
-              private patientEprService : EprService,
+              private patientEprService: EprService,
               private linksService: LinksService,
               public dialog: MatDialog,
               public bundleService: BundleService) { }
@@ -77,7 +78,7 @@ export class CompositionComponent implements OnInit {
 
     this.bundleService.getResource(document.custodian.reference).subscribe( (organisation) => {
 
-      if (organisation !== undefined && organisation.resourceType === "Organization") {
+      if (organisation !== undefined && organisation.resourceType === 'Organization') {
 
         this.organisations.push(<fhir.Organization> organisation);
 
@@ -101,9 +102,9 @@ export class CompositionComponent implements OnInit {
 
     this.practitioners = [];
 
-    for (let practitionerReference of document.author) {
+    for (const practitionerReference of document.author) {
       this.bundleService.getResource(practitionerReference.reference).subscribe((practitioner) => {
-          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === 'Practitioner') {
             this.practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();

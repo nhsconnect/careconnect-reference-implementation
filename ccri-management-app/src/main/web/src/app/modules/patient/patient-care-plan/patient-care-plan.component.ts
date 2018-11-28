@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {FhirService} from "../../../service/fhir.service";
-import {ActivatedRoute} from "@angular/router";
+import {FhirService} from '../../../service/fhir.service';
+import {ActivatedRoute} from '@angular/router';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {ResourceDialogComponent} from '../../../dialog/resource-dialog/resource-dialog.component';
 
 @Component({
   selector: 'app-patient-care-plan',
@@ -26,7 +28,8 @@ export class PatientCarePlanComponent implements OnInit {
   observations: fhir.Observation[] = [];
 
   constructor(private route: ActivatedRoute,
-    private fhirService: FhirService) { }
+              private fhirService: FhirService,
+              public dialog: MatDialog) { }
 
 
   ngOnInit() {
@@ -37,9 +40,9 @@ export class PatientCarePlanComponent implements OnInit {
 
 
       this.forms = [];
-      this.fhirService.get('/Flag?patient='+this.patientid).subscribe( bundle => {
+      this.fhirService.get('/Flag?patient=' + this.patientid).subscribe( bundle => {
         if (bundle.entry !== undefined) {
-          for (let entry of bundle.entry) {
+          for (const entry of bundle.entry) {
             switch (entry.resource.resourceType) {
               case 'Flag' :
                 this.flags.push(<fhir.Flag> entry.resource);
@@ -49,9 +52,9 @@ export class PatientCarePlanComponent implements OnInit {
         }
       });
 
-    this.fhirService.get('/Observation?patient='+this.patientid+'&code=761869008').subscribe( bundle => {
+    this.fhirService.get('/Observation?patient=' + this.patientid + '&code=761869008').subscribe( bundle => {
       if (bundle.entry !== undefined) {
-        for (let entry of bundle.entry) {
+        for (const entry of bundle.entry) {
           switch (entry.resource.resourceType) {
             case 'Observation' :
               this.observations.push(<fhir.Observation> entry.resource);
@@ -62,11 +65,12 @@ export class PatientCarePlanComponent implements OnInit {
     });
 
 
-    this.fhirService.get('/CarePlan?_id='+this.planid+'&_include=CarePlan:condition&_include=CarePlan:supporting-information&_count=50').subscribe(bundle=> {
+    this.fhirService.get('/CarePlan?_id=' + this.planid +
+      '&_include=CarePlan:care-team&_include=CarePlan:supporting-information&_count=50').subscribe(bundle => {
 
           if (bundle.entry !== undefined) {
-              for (let entry of bundle.entry) {
-                  switch(entry.resource.resourceType) {
+              for (const entry of bundle.entry) {
+                  switch (entry.resource.resourceType) {
                       case 'CarePlan' :
                         this.careplan = <fhir.CarePlan> entry.resource;
                         break;
@@ -82,5 +86,15 @@ export class PatientCarePlanComponent implements OnInit {
           }
       });
   }
+  select(resource) {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      id: 1,
+      resource: resource
+    };
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+  }
 }

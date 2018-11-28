@@ -7,14 +7,14 @@
     <ng-template #noid>
        <h3>End Of Life Care</h3>
     </ng-template>
-    <h4>Addresses (Advanced Treatment Preference Problem)</h4>
+   <!-- <h4>Addresses (Advanced Treatment Preference Problem)</h4>
           <span *ngIf="conditions.length>0; else noresults">
              <app-condition [conditions]="conditions"> </app-condition>
           </span>
           <ng-template #noresults>
              No results found.
           </ng-template>
-
+-->
     <h4>Activity (Advanced Treatment Preferences)</h4>
     <span *ngFor="let activity of careplan.activity">
       <span *ngIf="activity.detail !==undefined">
@@ -26,6 +26,10 @@
       </span>
     </span>
      </mat-card-content>
+  <mat-card-actions>
+      <button mat-icon-button color="accent" placement="top" matTooltip="View FHIR resource" (click)="select(careplan)"><mat-icon>code</mat-icon>
+        Care Plan</button>
+  </mat-card-actions>
 </mat-card>
 <mat-card>
   <mat-card-content>
@@ -48,6 +52,10 @@
               </p>
           </span>
               </mat-card-content>
+            <mat-card-actions>
+               <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
+                 Questionnaire</button>
+            </mat-card-actions>
             </mat-card>
           </span>
       </span>
