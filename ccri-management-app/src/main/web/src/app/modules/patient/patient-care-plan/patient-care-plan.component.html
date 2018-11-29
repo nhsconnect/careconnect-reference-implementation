@@ -18,11 +18,15 @@
     <h4>Activity (Advanced Treatment Preferences)</h4>
     <span *ngFor="let activity of careplan.activity">
       <span *ngIf="activity.detail !==undefined">
+        <mat-card>
+          <mat-card-content>
         <span *ngIf="activity.detail.code !== undefined && activity.detail.code.coding !== undefined">
         {{activity.detail.code.coding[0].display}}
         </span>
         <p>{{activity.detail.status}}</p>
         <p>{{activity.detail.description}}</p>
+            </mat-card-content>
+          </mat-card>
       </span>
     </span>
      </mat-card-content>
@@ -31,6 +35,16 @@
         Care Plan</button>
   </mat-card-actions>
 </mat-card>
+  <mat-card>
+    <mat-card-content>
+      <span *ngIf="careTeam !== undefined && careTeam.length>0">
+         <h4>Care Team / Contacts</h4>
+        <span *ngFor="let team of careTeam">
+          <app-care-team [careTeams]="careTeam"></app-care-team>
+        </span>
+      </span>
+    </mat-card-content>
+  </mat-card>
 <mat-card>
   <mat-card-content>
       <h4>Questionnaire Responses</h4>

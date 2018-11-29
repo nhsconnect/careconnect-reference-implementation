@@ -141,6 +141,7 @@ import { PatientReferralRequestComponent } from './modules/patient/patient-refer
 import { MedicationAdministrationComponent } from './component/medication-administration/medication-administration.component';
 import {CovalentBarEchartsModule, CovalentBaseEchartsModule, CovalentTooltipEchartsModule} from "@covalent/echarts";
 import { AmbulanceATMISTComponent } from './modules/patient/ambulance-atmist/ambulance-atmist.component';
+import { CareTeamComponent } from './component/care-team/care-team.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -233,7 +234,8 @@ export function initializeApp(appConfig: AppConfig) {
       ReferralRequestComponent,
       PatientReferralRequestComponent,
       MedicationAdministrationComponent,
-      AmbulanceATMISTComponent
+      AmbulanceATMISTComponent,
+      CareTeamComponent
 
   ],
   entryComponents: [

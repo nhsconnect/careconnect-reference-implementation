@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from  '../../service/links.service';
+import {LinksService} from '../../service/links.service';
 import {BundleService} from '../../service/bundle.service';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {FhirService} from '../../service/fhir.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {FlagDataSource} from "../../data-source/flag-data-source";
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
+import {FlagDataSource} from '../../data-source/flag-data-source';
 
 @Component({
   selector: 'app-flag',
@@ -19,11 +19,11 @@ export class FlagComponent implements OnInit {
 
   @Input() patientId: string;
 
-  @Input() useBundle :boolean = false;
+  @Input() useBundle = false;
 
-  dataSource : FlagDataSource;
+  dataSource: FlagDataSource;
 
-  displayedColumns = ['alert', 'resource'];
+  displayedColumns = ['alert', 'status', 'resource'];
 
   constructor(private linksService: LinksService,
               public bundleService: BundleService,

@@ -18,6 +18,8 @@ export class PatientCarePlanComponent implements OnInit {
 
   careplan: fhir.CarePlan = undefined;
 
+  careTeam: fhir.CareTeam[] = [];
+
   forms: fhir.QuestionnaireResponse[] = [];
 
 
@@ -40,6 +42,7 @@ export class PatientCarePlanComponent implements OnInit {
 
 
       this.forms = [];
+      this.careTeam = [];
       this.fhirService.get('/Flag?patient=' + this.patientid).subscribe( bundle => {
         if (bundle.entry !== undefined) {
           for (const entry of bundle.entry) {
@@ -81,6 +84,9 @@ export class PatientCarePlanComponent implements OnInit {
                       case 'Condition' :
                           this.conditions.push(<fhir.Condition> entry.resource);
                           break;
+                    case 'CareTeam' :
+                      this.careTeam.push(<fhir.CareTeam> entry.resource);
+                      break;
                   }
               }
           }
