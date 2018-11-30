@@ -18,6 +18,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.carePlan.*;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
+import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamMember;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
@@ -132,6 +133,9 @@ public class CarePlanDao implements CarePlanRepository {
 
     @Autowired
     private GoalEntityToFHIRGoalTransformer goalEntityToFHIRGoalTransformer;
+
+    @Autowired
+    private RelatedPersonEntityToFHIRRelatedPersonTransformer personEntityToFHIRRelatedPersonTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanDao.class);
 
@@ -509,6 +513,7 @@ public class CarePlanDao implements CarePlanRepository {
                                 for (CarePlanTeam carePlanTeam : carePlanEntity.getTeams()) {
                                     if (carePlanTeam.getTeam() != null) {
                                         resultsAddIfNotPresent(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
+                                        addCareTeamMembers(carePlanTeam.getTeam());
                                     }
                                 }
                                 break;
@@ -524,6 +529,7 @@ public class CarePlanDao implements CarePlanRepository {
                                 }
                                 for (CarePlanTeam carePlanTeam : carePlanEntity.getTeams()) {
                                     resultsAddIfNotPresent(careTeamEntityToFHIRCareTeamTransformer.transform(carePlanTeam.getTeam()));
+                                    addCareTeamMembers(carePlanTeam.getTeam());
                                 }
                                 for (CarePlanAuthor carePlanAuthor : carePlanEntity.getAuthors()) {
                                     if (carePlanAuthor.getPractitioner() != null)
@@ -540,6 +546,26 @@ public class CarePlanDao implements CarePlanRepository {
         }
 
         return results;
+    }
+
+    private void addCareTeamMembers(CareTeamEntity careTeam) {
+        for (CareTeamMember careTeamMember : careTeam.getMembers()) {
+            if (careTeamMember.getMemberOrganisation() != null) {
+                resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(careTeamMember.getMemberOrganisation()));
+            }
+            if (careTeamMember.getOnBehalfOrganisation() != null) {
+                resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(careTeamMember.getOnBehalfOrganisation()));
+            }
+            if (careTeamMember.getMemberPatient() != null) {
+                resultsAddIfNotPresent(patientEntityToFHIRPatientTransformer.transform(careTeamMember.getMemberPatient()));
+            }
+            if (careTeamMember.getMemberPerson() != null) {
+                resultsAddIfNotPresent(personEntityToFHIRRelatedPersonTransformer.transform(careTeamMember.getMemberPerson()));
+            }
+            if (careTeamMember.getMemberPractitioner() != null) {
+                resultsAddIfNotPresent(practitionerEntityToFHIRPractitionerTransformer.transform(careTeamMember.getMemberPractitioner()));
+            }
+        }
     }
 
     private void resultsAddIfNotPresent(Resource resource) {

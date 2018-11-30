@@ -223,8 +223,8 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
-<!--
-          <dependency>
+
+        <dependency>
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-insight-log</artifactId>
             <version>1.5.11</version>
@@ -236,7 +236,6 @@
             </exclusions>
         </dependency>
 
-        -->
 
         <!-- Logging -->
         <dependency>

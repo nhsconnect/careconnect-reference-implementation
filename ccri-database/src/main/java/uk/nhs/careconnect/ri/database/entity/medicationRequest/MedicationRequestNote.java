@@ -20,6 +20,7 @@ public class MedicationRequestNote {
 	public MedicationRequestNote(MedicationRequestEntity prescription) {
 		this.prescription = prescription;
 	}
+	private static final int MAX_DESC_LENGTH = 1024;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,7 @@ public class MedicationRequestNote {
 	@JoinColumn (name = "PRESCRIPTION_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_PRESCRIPTION_NOTE"))
 	private MedicationRequestEntity prescription;
 
-	@Column(name= "noteText")
+	@Column(name= "noteText", length = MAX_DESC_LENGTH)
 	private String noteText;
 
 	@ManyToOne(fetch = FetchType.LAZY)

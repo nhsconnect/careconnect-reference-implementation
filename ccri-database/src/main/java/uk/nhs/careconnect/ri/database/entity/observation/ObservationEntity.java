@@ -21,7 +21,7 @@ import java.util.Set;
 })
 public class ObservationEntity extends BaseResource {
 
-    private static final int MAX_DESC_LENGTH = 1024;
+    private static final int MAX_DESC_LENGTH = 4096;
 
     public enum ObservationType  { component, valueQuantity }
 

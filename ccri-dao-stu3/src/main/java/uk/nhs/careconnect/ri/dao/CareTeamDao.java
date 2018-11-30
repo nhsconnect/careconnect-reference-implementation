@@ -15,12 +15,11 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.CareTeamEntityToFHIRCareTeamTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
-import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamIdentifier;
-import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamMember;
-import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamReason;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanCategory;
+import uk.nhs.careconnect.ri.database.entity.careTeam.*;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationNote;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
@@ -159,6 +158,9 @@ public class CareTeamDao implements CareTeamRepository {
                 teamEntity.setManagingOrganisation(organisationEntity);
             }
         }
+        if (team.hasName()) {
+            teamEntity.setName(team.getName());
+        }
 
         em.persist(teamEntity);
 
@@ -180,7 +182,24 @@ public class CareTeamDao implements CareTeamRepository {
             teamIdentifier.setCareTeam(teamEntity);
             em.persist(teamIdentifier);
         }
+        log.debug("CareTeam.saveCategory");
+        for (CodeableConcept conceptCategory : team.getCategory()) {
+            ConceptEntity concept = conceptDao.findAddCode(conceptCategory.getCodingFirstRep());
 
+            CareTeamCategory careTeamCategory = null;
+            for (CareTeamCategory categorySearch : teamEntity.getCategories()) {
+                if (concept.getCode().equals(categorySearch.getCategory().getCode())) {
+                    careTeamCategory = categorySearch;
+                    break;
+                }
+            }
+            if (careTeamCategory == null) {
+                careTeamCategory = new CareTeamCategory();
+                careTeamCategory.setCategory(concept);
+                careTeamCategory.setTeam(teamEntity);
+                em.persist(careTeamCategory);
+            }
+        }
 
         for (CareTeamReason reason :teamEntity.getReasons()) {
             em.remove(reason);
@@ -223,7 +242,28 @@ public class CareTeamDao implements CareTeamRepository {
             }
             em.persist(member);
         }
+        for (CareTeamNote note : teamEntity.getNotes()) {
+            em.remove(note);
+        }
+        for (Annotation annotation : team.getNote()) {
+            CareTeamNote note = new CareTeamNote();
+            note.setCareTeam(teamEntity);
+            if (annotation.hasAuthorReference()) {
+                if (annotation.getAuthorReference().getReference().contains("Patient")) {
+                    PatientEntity patientEntity1= patientDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePatient(patientEntity1);
+                }
+                if (annotation.getAuthorReference().getReference().contains("Practitioner")) {
+                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(annotation.getAuthorReference().getReference()));
+                    note.setNotePractitioner(practitionerEntity);
+                }
 
+            }
+            if (annotation.hasText()) {
+                note.setNoteText(annotation.getText());
+            }
+            em.persist(note);
+        }
 
 
         return teamEntityToFHIRCareTeamTransformer.transform(teamEntity);

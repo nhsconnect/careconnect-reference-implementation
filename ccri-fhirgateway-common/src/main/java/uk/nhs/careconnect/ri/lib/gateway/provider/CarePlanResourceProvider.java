@@ -191,7 +191,7 @@ public class CarePlanResourceProvider implements IResourceProvider {
             ,"CarePlan:supporting-information"
             ,"CarePlan:goal"
             ,"CarePlan:care-team"
-            , "*"}) Set<Include> includes
+            , "*"} ) Set<Include> includes
     ) throws Exception {
 
         List<Resource> results = new ArrayList<>();

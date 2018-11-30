@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FhirService} from '../../../service/fhir.service';
 import {ActivatedRoute} from '@angular/router';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef, MatTableDataSource} from '@angular/material';
 import {ResourceDialogComponent} from '../../../dialog/resource-dialog/resource-dialog.component';
 
 @Component({
@@ -21,6 +21,10 @@ export class PatientCarePlanComponent implements OnInit {
   careTeam: fhir.CareTeam[] = [];
 
   forms: fhir.QuestionnaireResponse[] = [];
+
+  activity: MatTableDataSource<any> = undefined;
+
+  displayedColumns: string[] = ['activity', 'description', 'status'];
 
 
   flags: fhir.Flag[] = [];
@@ -76,6 +80,8 @@ export class PatientCarePlanComponent implements OnInit {
                   switch (entry.resource.resourceType) {
                       case 'CarePlan' :
                         this.careplan = <fhir.CarePlan> entry.resource;
+                        console.log(this.careplan.activity);
+                        this.activity = new MatTableDataSource<any> (this.careplan.activity);
                         break;
                       case 'QuestionnaireResponse' :
                         this.forms.push(<fhir.QuestionnaireResponse> entry.resource);

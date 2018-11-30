@@ -24,7 +24,7 @@ export class CareTeamComponent implements OnInit {
 
   dataSource: CareTeamDataSource;
 
-  displayedColumns = [ 'status',  'authorLink', 'resource'];
+  displayedColumns = [ 'name', 'notes', 'members', 'authorLink', 'status', 'resource'];
 
   constructor(private linksService: LinksService,
               public bundleService: BundleService,
@@ -51,30 +51,27 @@ export class CareTeamComponent implements OnInit {
     const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
-  showPractitioner(careteam: fhir.CareTeam) {
+  showPractitioner(reference: fhir.Reference) {
     const practitioners = [];
-
-    for (const participant of careteam.participant) {
-      if (participant.member !== undefined) {
-        this.bundleService.getResource(participant.member.reference).subscribe((practitioner) => {
+    if (reference !== undefined) {
+        this.bundleService.getResource(reference.reference).subscribe((practitioner) => {
             if (practitioner !== undefined && practitioner.resourceType === 'Practitioner') {
-              practitioners.push(<fhir.Practitioner>practitioner);
+                practitioners.push(<fhir.Practitioner>practitioner);
 
-              const dialogConfig = new MatDialogConfig();
+                const dialogConfig = new MatDialogConfig();
 
-              dialogConfig.disableClose = true;
-              dialogConfig.autoFocus = true;
-              // dialogConfig.width="800px";
-              dialogConfig.data = {
-                id: 1,
-                practitioners: practitioners,
-                useBundle: this.useBundle
-              };
-              const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
+                dialogConfig.disableClose = true;
+                dialogConfig.autoFocus = true;
+                // dialogConfig.width="800px";
+                dialogConfig.data = {
+                    id: 1,
+                    practitioners: practitioners,
+                    useBundle: this.useBundle
+                };
+                const resourceDialog: MatDialogRef<PractitionerDialogComponent> =
+                    this.dialog.open(PractitionerDialogComponent, dialogConfig);
             }
-          }
-        );
-      }
+        });
     }
   }
 

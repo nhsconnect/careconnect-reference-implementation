@@ -21,6 +21,7 @@ public class MedicationDispenseNote {
 	public MedicationDispenseNote(MedicationDispenseEntity dispense) {
 		this.dispense = dispense;
 	}
+	private static final int MAX_DESC_LENGTH = 1024;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +32,7 @@ public class MedicationDispenseNote {
 	@JoinColumn (name = "DISPENSE_ID",foreignKey= @ForeignKey(name="FK_DISPENSE_DISPENSE_NOTE"))
 	private MedicationDispenseEntity dispense;
 
-	@Column(name= "noteText")
+	@Column(name= "noteText", length = MAX_DESC_LENGTH)
 	private String noteText;
 
 	@ManyToOne(fetch = FetchType.LAZY)
