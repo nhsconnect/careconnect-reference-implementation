@@ -918,7 +918,7 @@ public class BundleCore {
             }
         }
 
-        if (allergyIntolerance.getAsserter().getReference() != null) {
+        if (allergyIntolerance.getAsserter().getReference() != null && checkNotInternalReference(allergyIntolerance.getAsserter())) {
 
             Resource resource = searchAddResource(allergyIntolerance.getAsserter().getReference());
 
@@ -927,7 +927,7 @@ public class BundleCore {
             allergyIntolerance.setAsserter(getReference(resource));
 
         }
-        if (allergyIntolerance.getPatient() != null) {
+        if (allergyIntolerance.getPatient() != null && checkNotInternalReference(allergyIntolerance.getPatient())) {
             Resource resource = searchAddResource(allergyIntolerance.getPatient().getReference());
 
             if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getPatient().getReference());

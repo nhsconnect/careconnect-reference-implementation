@@ -3,6 +3,9 @@
   <mat-card-content>
     <span *ngIf="careplan.category !== undefined && careplan.category.length > 0; else noid">
       <h3>{{careplan.category[0].coding[0].display}}</h3>
+        <span *ngIf="careplan.period !== undefined">
+        {{ careplan.period.start | date: 'dd-MMM-yyyy'}}
+        </span>
     </span>
     <ng-template #noid>
        <h3>End Of Life Care</h3>
@@ -75,6 +78,7 @@
             <mat-card-content>
                <span *ngIf="form.questionnaire !== undefined">
               <h4>{{form.questionnaire.display}}</h4>
+                   {{ form.authored | date: 'dd-MMM-yyyy'}}
             </span>
                 <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
               </mat-card-content>
