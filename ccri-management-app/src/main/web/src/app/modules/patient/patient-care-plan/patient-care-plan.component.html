@@ -58,6 +58,14 @@
     </mat-card-content>
   </mat-card>
 <mat-card>
+    <span *ngIf="prognosis.length >0">
+        <mat-card>
+            <mat-card-content>
+                <h4>Prognosis</h4>
+                <app-clinical-impression [clinicalImpressions]="prognosis"></app-clinical-impression>
+            </mat-card-content>
+        </mat-card>
+    </span>
   <mat-card-content>
       <h4>Questionnaire Responses</h4>
       <span *ngFor="let form of forms">

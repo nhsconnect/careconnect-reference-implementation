@@ -22,6 +22,8 @@ export class PatientCarePlanComponent implements OnInit {
 
   forms: fhir.QuestionnaireResponse[] = [];
 
+    prognosis: fhir.ClinicalImpression[] = [];
+
   activity: MatTableDataSource<any> = undefined;
 
   displayedColumns: string[] = ['activity', 'description', 'status'];
@@ -47,6 +49,7 @@ export class PatientCarePlanComponent implements OnInit {
 
       this.forms = [];
       this.careTeam = [];
+      this.prognosis = [];
       this.fhirService.get('/Flag?patient=' + this.patientid).subscribe( bundle => {
         if (bundle.entry !== undefined) {
           for (const entry of bundle.entry) {
@@ -86,6 +89,9 @@ export class PatientCarePlanComponent implements OnInit {
                       case 'QuestionnaireResponse' :
                         this.forms.push(<fhir.QuestionnaireResponse> entry.resource);
                         break;
+                      case 'ClinicalImpression' :
+                          this.prognosis.push(<fhir.ClinicalImpression> entry.resource);
+                          break;
 
                       case 'Condition' :
                           this.conditions.push(<fhir.Condition> entry.resource);

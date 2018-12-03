@@ -23,7 +23,7 @@ export class ClinicalImpressionComponent implements OnInit {
 
     dataSource : ClinicalImpressionDataSource;
 
-    displayedColumns = ['id', 'resource'];
+    displayedColumns = ['date', 'prognosis', 'resource'];
 
     constructor(private linksService: LinksService,
                 public bundleService: BundleService,
