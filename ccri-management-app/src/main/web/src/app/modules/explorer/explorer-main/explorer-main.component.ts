@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
-import {FhirService, Formats} from "../../../service/fhir.service";
-import {IAlertConfig, TdDialogService, TdMediaService} from "@covalent/core";
-import {Router} from "@angular/router";
-import {MessageService} from "../../../service/message.service";
+import {FhirService, Formats} from '../../../service/fhir.service';
+import {IAlertConfig, TdDialogService, TdMediaService} from '@covalent/core';
+import {Router} from '@angular/router';
+import {MessageService} from '../../../service/message.service';
 import {MatIconRegistry} from '@angular/material';
-import {DomSanitizer} from "@angular/platform-browser";
-import {EprService} from "../../../service/epr.service";
-import {AuthService} from "../../../service/auth.service";
-import {Oauth2Service} from "../../../service/oauth2.service";
+import {DomSanitizer} from '@angular/platform-browser';
+import {EprService} from '../../../service/epr.service';
+import {AuthService} from '../../../service/auth.service';
+import {Oauth2Service} from '../../../service/oauth2.service';
 
 @Component({
   selector: 'app-explorer-main',
@@ -16,32 +16,35 @@ import {Oauth2Service} from "../../../service/oauth2.service";
 })
 export class ExplorerMainComponent implements OnInit {
 
-    public outputFormat : Formats = Formats.JsonFormatted;
+    public outputFormat: Formats = Formats.JsonFormatted;
 
 
   routes: Object[] = [
   ];
 
-  routesExt : Object[] = [
+  oauth2routes: Object[] = [
   ];
 
-    serverMenu : any[] = [
+  routesExt: Object[] = [
+  ];
+
+    serverMenu: any[] = [
         {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/ccri-fhir/STU3',
             title: 'Care Connect RI'
-        },
+        } ,
         {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/ccri-smartonfhir/STU3',
             title: 'Care Connect RI (Secure)'
         }
-        ,{
+        , {
             icon: 'swap_horiz',
             route: '/ccri/camel/fhir/ods',
             title: 'FHIR ODS API'
         }
-        ,{
+        , {
             icon: 'swap_horiz',
             route: 'https://data.developer.nhs.uk/nrls-ri',
             title: 'National Record Locator Service'
@@ -53,12 +56,12 @@ export class ExplorerMainComponent implements OnInit {
             title: 'GP Connect'
         } */
 
-        ,{
+        , {
             icon: 'swap_horiz',
             route: 'https://fhir.hl7.org.uk/STU3',
             title: 'HL7 UK FHIR Reference'
         }
-        ,{
+        , {
             icon: 'swap_horiz',
             route: 'https://fhir.nhs.uk/STU3',
             title: 'NHS Digital FHIR Reference'
@@ -81,59 +84,58 @@ export class ExplorerMainComponent implements OnInit {
     ];
     navmenu: Object[] = [];
 
-    title: string ='Care Connect Reference Implementation';
+    title = 'Care Connect Reference Implementation';
 
   constructor(public media: TdMediaService,
               public fhirSrv: FhirService,
-              private router : Router,
-              private messageService : MessageService,
+              private router: Router,
+              private messageService: MessageService,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
-              private eprService : EprService,
-              public authService : AuthService,
-              private oauth2 : Oauth2Service) { }
+              private eprService: EprService,
+              public authService: AuthService,
+              private oauth2: Oauth2Service) { }
 
   ngOnInit() {
 
       // Work around for local systems
     this.routes = this.eprService.routes;
     this.routesExt = this.eprService.routesExt;
+    this.oauth2routes = this.eprService.oauth2routes;
 
       if (document.baseURI.includes('4203')) {
-          for(let menu of this.serverMenu) {
+          for (const menu of this.serverMenu) {
               if (menu.route.includes('/ccri/camel')) {
-                  menu.route = 'http://127.0.0.1:8187'+menu.route;
+                  menu.route = 'http://127.0.0.1:8187' + menu.route;
               }
           }
       }
       this.matIconRegistry.addSvgIcon(
-          "github",
-          this.domSanitizer.bypassSecurityTrustResourceUrl("assets/github.svg"));
+          'github',
+          this.domSanitizer.bypassSecurityTrustResourceUrl('assets/github.svg'));
 
-    this.fhirSrv.getRootUrlChange().subscribe(url =>
-    {
-        this.serverMenu[0]={
+    this.fhirSrv.getRootUrlChange().subscribe(url => {
+        this.serverMenu[0] = {
             icon: 'swap_horiz',
             route: url,
             title: 'Care Connect RI'
         };
         this.fhirSrv.getConformance();
-    })
+    });
 
-    this.fhirSrv.getConformanceChange().subscribe(capabilityStatement =>
-    {
+    this.fhirSrv.getConformanceChange().subscribe(capabilityStatement => {
         this.navmenu = [];
         if (capabilityStatement !== undefined) {
-            for (let node of capabilityStatement.rest) {
-                //console.log('mode ' + node.mode);
-                for (let resource of node.resource) {
+            for (const node of capabilityStatement.rest) {
+                // console.log('mode ' + node.mode);
+                for (const resource of node.resource) {
                     // console.log(resource.type);
                     let count = 0;
                     if (resource.extension !== undefined) {
 
-                        for (let extension of resource.extension) {
+                        for (const extension of resource.extension) {
                             if (extension.url.endsWith('resourceCount')) {
                                 count = extension.valueDecimal;
 
@@ -146,7 +148,7 @@ export class ExplorerMainComponent implements OnInit {
                         title: resource.type,
                         count: count
 
-                    })
+                    });
                 }
             }
         }
@@ -155,14 +157,14 @@ export class ExplorerMainComponent implements OnInit {
     this.messageService.getMessageEvent().subscribe(
         error => {
             if (this.router.url.includes('exp')) {
-                let alertConfig: IAlertConfig = {
+                const alertConfig: IAlertConfig = {
                     message: error
                 };
                 alertConfig.disableClose = false; // defaults to false
                 alertConfig.viewContainerRef = this._viewContainerRef;
-                alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+                alertConfig.title = 'Alert'; // OPTIONAL, hides if not provided
 
-                alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+                alertConfig.width = '400px'; // OPTIONAL, defaults to 400px
                 this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
 
                 });
@@ -180,7 +182,7 @@ export class ExplorerMainComponent implements OnInit {
 
   format(format: string) {
 
-      switch(format) {
+      switch (format) {
           case 'jsonf' :
               this.outputFormat = Formats.JsonFormatted;
 
@@ -198,7 +200,7 @@ export class ExplorerMainComponent implements OnInit {
       this.fhirSrv.setOutputFormat(this.outputFormat);
   }
 
-  swapServer(menuItem : any ) {
+  swapServer(menuItem: any ) {
 
       console.log(menuItem);
 
@@ -206,7 +208,7 @@ export class ExplorerMainComponent implements OnInit {
       this.fhirSrv.setFHIRServerBase(menuItem.route);
       if (menuItem.route.includes('smartonfhir') && !this.oauth2.isAuthenticated() ) {
         // force login
-          console.log('Login required detected')
+          console.log('Login required detected');
           this.router.navigateByUrl('/login');
 
       } else {
