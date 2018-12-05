@@ -1,6 +1,6 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 declare var $: any;
 
@@ -23,7 +23,7 @@ export class MedicationDialogComponent implements OnInit {
   }
 
   @Input()
-  medications : fhir.Medication[];
+  medications: fhir.Medication[];
 
 
   ngOnInit() {

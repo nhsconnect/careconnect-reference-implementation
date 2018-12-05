@@ -38,14 +38,14 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
 
         Extension serviceType = encounter.addExtension(); 
         
-        if (encounterEntity.getExtension() != null) 
+        if (encounterEntity.getServiceType() != null)
         {
         	serviceType.setUrl(CareConnectExtension.UrlServiceType);
         	CodeableConcept type = new CodeableConcept();
         	type.addCoding()
-	              	.setSystem(encounterEntity.getExtension().getSystem())
-	                .setCode(encounterEntity.getExtension().getCode())
-	                .setDisplay(encounterEntity.getExtension().getDisplay());
+	              	.setSystem(encounterEntity.getServiceType().getSystem())
+	                .setCode(encounterEntity.getServiceType().getCode())
+	                .setDisplay(encounterEntity.getServiceType().getDisplay());
         	serviceType.setValue(type);	
         }
         for(EncounterIdentifier identifier : encounterEntity.getIdentifiers())

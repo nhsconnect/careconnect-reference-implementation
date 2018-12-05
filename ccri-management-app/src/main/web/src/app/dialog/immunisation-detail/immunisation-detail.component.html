@@ -44,7 +44,7 @@
    <tr>
          <td>Manufacturer</td>
          <td>
-             <span *ngIf="immunisation.manufacturer != undefined">
+             <span *ngIf="immunisation.manufacturer !== undefined">
                  {{immunisation.manufacturer.display}}
                 <button mat-icon-button color="accent"  matTooltip="View Manufacturer" (click)="showOrganisation(immunisation)"><mat-icon>account_balance</mat-icon></button>
              </span>
@@ -64,26 +64,26 @@
      </tr>
    <tr>
      <td>Site</td>
-     <td><b> <span *ngIf="immunisation.site != undefined" >
+     <td><b> <span *ngIf="immunisation.site !== undefined" >
           {{immunisation.site.coding[0].display}}
         </span></b></td>
    </tr>
    <tr>
      <td>Route</td>
-     <td><b> <span *ngIf="immunisation.route != undefined" >
+     <td><b> <span *ngIf="immunisation.route !== undefined" >
            {{immunisation.route.coding[0].display}}
          </span></b></td>
    </tr>
    <tr>
      <td>Indication</td>
-     <td><b> <span *ngIf="immunisation.explanation != undefined && immunisation.explanation.reason.length > 0" >
+     <td><b> <span *ngIf="immunisation.explanation !== undefined && immunisation.explanation.reason.length > 0" >
           {{immunisation.explanation.reason[0].coding[0].display}}
         </span></b></td>
    </tr>
      <tr>
          <td>Role</td>
          <td>
-             <span *ngIf="immunisation.practitioner != undefined && immunisation.practitioner[0].role != undefined">
+             <span *ngIf="immunisation.practitioner !== undefined && immunisation.practitioner[0].role !== undefined">
           {{ immunisation.practitioner[0].role.coding[0].display }}
         </span>
          </td>
@@ -91,7 +91,7 @@
      <tr>
          <td>Administered By</td>
          <td>
-             <span *ngIf="immunisation.practitioner != undefined">
+             <span *ngIf="immunisation.practitioner !== undefined">
                  <span *ngFor="let practitioner of immunisation.practitioner">
                      <span *ngIf="practitioner.actor !== undefined">{{practitioner.actor.display}}</span>
                  </span>
@@ -115,7 +115,7 @@
 
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+  <button mat-raised-button [mat-dialog-close]="true" cdkFocusInitial>OK</button>
 </mat-dialog-actions>
 
 

@@ -11,7 +11,7 @@ export class ObservationDataSource extends DataSource<any> {
   };
 
 
-  constructor(public fhirService : FhirService, public patientId : string, public observations: fhir.Observation[]
+  constructor(public fhirService: FhirService, public patientId: string, public observations: fhir.Observation[]
   ) {
     super();
 
@@ -25,9 +25,9 @@ export class ObservationDataSource extends DataSource<any> {
 
     this.dataStore = { observations: [] };
 
-     if (this.patientId != undefined) {
+     if (this.patientId !== undefined) {
       this.fhirService.get('/Observation?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             this.dataStore.observations.push(<fhir.Observation> entry.resource);
 
@@ -35,7 +35,7 @@ export class ObservationDataSource extends DataSource<any> {
         }
         _obs.next(Object.assign({}, this.dataStore).observations);
       }));
-    } else if (this.observations != [] && this.observations != undefined) {
+    } else if (this.observations != [] && this.observations !== undefined) {
        console.log('Observation not null');
        for (let observation of this.observations) {
          this.dataStore.observations.push( observation);

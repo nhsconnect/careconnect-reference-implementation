@@ -16,32 +16,32 @@ export class PatientEncounterDetailComponent implements OnInit {
     observations: fhir.Observation[];
     obsTotal : number;
 
-    prescriptions : fhir.MedicationRequest[];
+    prescriptions: fhir.MedicationRequest[];
     presTotal : number;
 
-    medicationAdministrations : fhir.MedicationAdministration[];
-    medicationDispenses : fhir.MedicationDispense[];
+    medicationAdministrations: fhir.MedicationAdministration[];
+    medicationDispenses: fhir.MedicationDispense[];
 
-    procedures : fhir.Procedure[];
+    procedures: fhir.Procedure[];
     procTotal : number;
 
-    encounter : fhir.Encounter;
+    encounter: fhir.Encounter;
 
-    conditions : fhir.Condition[];
+    conditions: fhir.Condition[];
     conditionTotal : number;
 
-    allergies : fhir.AllergyIntolerance[];
+    allergies: fhir.AllergyIntolerance[];
 
-    immunisations : fhir.Immunization[];
+    immunisations: fhir.Immunization[];
 
-    documents : fhir.DocumentReference[] = [];
-    compositions : fhir.Composition[] = [];
+    documents: fhir.DocumentReference[] = [];
+    compositions: fhir.Composition[] = [];
 
-    referrals : fhir.ReferralRequest[] = [];
+    referrals: fhir.ReferralRequest[] = [];
 
 
-  constructor(private route: ActivatedRoute,private fhirService : FhirService
-      ,private linksService : LinksService) { }
+  constructor(private route: ActivatedRoute,private fhirService: FhirService
+      ,private linksService: LinksService) { }
 
   ngOnInit() {
 
@@ -73,7 +73,7 @@ export class PatientEncounterDetailComponent implements OnInit {
 
       this.fhirService.get('/Encounter?_id='+this.encounterid+'&_revinclude=*&_count=50').subscribe(bundle=> {
 
-              if (bundle.entry != undefined) {
+              if (bundle.entry !== undefined) {
 
                   for (let entry of bundle.entry) {
 
@@ -130,18 +130,18 @@ export class PatientEncounterDetailComponent implements OnInit {
       );
   }
 
-    getCodeSystem(system : string) : string {
+    getCodeSystem(system: string): string {
         return this.linksService.getCodeSystem(system);
     }
 
-    isSNOMED(system: string) : boolean {
+    isSNOMED(system: string): boolean {
         return this.linksService.isSNOMED(system);
     }
 
 
-    getSNOMEDLink(code : fhir.Coding) {
+    getSNOMEDLink(code: fhir.Coding) {
         if (this.linksService.isSNOMED(code.system)) {
-            window.open(this.linksService.getSNOMEDLink(code), "_blank");
+            window.open(this.linksService.getSNOMEDLink(code), '_blank');
         }
     }
 

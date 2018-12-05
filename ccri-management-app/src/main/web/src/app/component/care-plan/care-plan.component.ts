@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CarePlanDataSource} from "../../data-source/care-plan-data-source";
-import {LinksService} from "../../service/links.service";
-import {BundleService} from "../../service/bundle.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {BundleService} from '../../service/bundle.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
 
@@ -14,11 +14,11 @@ import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/prac
 })
 export class CarePlanComponent implements OnInit {
 
-    @Input() carePlans : fhir.CarePlan[];
+    @Input() carePlans: fhir.CarePlan[];
 
     @Output() carePlan = new EventEmitter<any>();
 
-    @Input() patientId : string;
+    @Input() patientId: string;
 
     @Input() useBundle :boolean = false;
 
@@ -26,13 +26,13 @@ export class CarePlanComponent implements OnInit {
 
     displayedColumns = ['select','start','end','category','status','intent', 'authorLink', 'resource'];
 
-    constructor(private linksService : LinksService,
-                public bundleService : BundleService,
+    constructor(private linksService: LinksService,
+                public bundleService: BundleService,
                 public dialog: MatDialog,
-                public fhirService : FhirService) { }
+                public fhirService: FhirService) { }
 
     ngOnInit() {
-        if (this.patientId != undefined) {
+        if (this.patientId !== undefined) {
             this.dataSource = new CarePlanDataSource(this.fhirService, this.patientId, []);
         } else {
             this.dataSource = new CarePlanDataSource(this.fhirService, undefined, this.carePlans);
@@ -48,7 +48,7 @@ export class CarePlanComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 
   showPractitioner(careplan :fhir.CarePlan) {
@@ -56,7 +56,7 @@ export class CarePlanComponent implements OnInit {
 
     for (let reference of careplan.author) {
       this.bundleService.getResource(reference.reference).subscribe((practitioner) => {
-          if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
             practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -76,7 +76,7 @@ export class CarePlanComponent implements OnInit {
     }
   }
 
-    view(carePlan : fhir.CarePlan) {
+    view(carePlan: fhir.CarePlan) {
         this.carePlan.emit(carePlan);
     }
 }

@@ -14,7 +14,7 @@ import {AuthService} from "./auth.service";
 
     constructor(private messageService : MessageService,
                 private oauth2 : Oauth2Service,
-                public fhirService : FhirService,
+                public fhirService: FhirService,
                 public authService : AuthService
     )  {
     }

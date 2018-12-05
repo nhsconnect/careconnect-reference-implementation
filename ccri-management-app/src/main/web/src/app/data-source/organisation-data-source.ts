@@ -3,11 +3,11 @@ import {FhirService} from "../service/fhir.service";
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class OrganisationDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
+  constructor(public fhirService: FhirService,
 
-              public organisations : fhir.Organization[],
+              public organisations: fhir.Organization[],
               public organisationsObservable : Observable<fhir.Organization[]>,
-              public useObservable : boolean = false
+              public useObservable: boolean = false
   ) {
     super();
   }
@@ -27,7 +27,7 @@ export class OrganisationDataSource extends DataSource<any> {
 
     this.dataStore = { organisations: [] };
 
-    if (this.organisations != undefined && this.organisations != []) {
+    if (this.organisations !== undefined && this.organisations != []) {
       for (let organisation of this.organisations) {
         this.dataStore.organisations.push(<fhir.Organization> organisation);
       }

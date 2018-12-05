@@ -19,7 +19,7 @@ export class AuthService {
   }
 
 
-  private semaphore : boolean = false;
+  private semaphore: boolean = false;
 
   private _User :User = undefined;
 
@@ -35,7 +35,7 @@ export class AuthService {
 
     oauthTokenChange : EventEmitter<Oauth2token> = new EventEmitter();
 
-   public auth : boolean = false;
+   public auth: boolean = false;
 
 
 
@@ -44,7 +44,7 @@ export class AuthService {
              private oauth2 : Oauth2Service,
              private oauth2service : OAuthService,
              private _cookieService:CookieService,
-             private fhirService : FhirService,
+             private fhirService: FhirService,
              private http : HttpClient
 
 
@@ -58,12 +58,12 @@ export class AuthService {
   }
 
   setLocalUser(User : User) {
-    if (User != undefined) console.log('User set ' + User.email + ' ' + User.userName );
+    if (User !== undefined) console.log('User set ' + User.email + ' ' + User.userName );
     this._User = User;
     this.UserEvent.emit(this._User);
   }
 
-  isLoggedOn() : boolean {
+  isLoggedOn(): boolean {
     return this.oauth2.isAuthenticated();
   }
 
@@ -182,13 +182,13 @@ export class AuthService {
 
   setBaseUrlOAuth2() {
     if (this.fhirService.getBaseUrl().includes('8183/ccri-fhir')) {
-      let newbaseUrl : string = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
+      let newbaseUrl: string = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
       console.log('swapping to smartonfhir instance: '+newbaseUrl);
       this.fhirService.setRootUrl(newbaseUrl);
     }
     else {
       if (this.fhirService.getBaseUrl().includes('ccri-fhir')) {
-        let newbaseUrl : string = this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir');
+        let newbaseUrl: string = this.fhirService.getBaseUrl().replace('ccri-fhir','ccri-smartonfhir');
         console.log('swapping to smartonfhir instance: '+ newbaseUrl);
         this.fhirService.setRootUrl(newbaseUrl);
       }
@@ -265,7 +265,7 @@ export class AuthService {
 
 
 
-  performAuthorise(clientId : string, clientSecret :string){
+  performAuthorise(clientId: string, clientSecret :string){
 
 
 
@@ -321,7 +321,7 @@ export class AuthService {
     return this.http.get(url, {'headers' : headers }  );
   }
 
-  launchSMART(appId : string, contextId : string, patientId : string) :Observable<any> {
+  launchSMART(appId: string, contextId: string, patientId: string) :Observable<any> {
 
     // Calls OAuth2 Server to register launch context for SMART App.
 

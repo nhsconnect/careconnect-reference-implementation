@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
+import {LinksService} from  '../../service/links.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ObservationDataSource} from "../../data-source/observation-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {ObservationChartDialogComponent} from "../../dialog/observation-chart-dialog/observation-chart-dialog.component";
 
 
@@ -14,28 +14,28 @@ import {ObservationChartDialogComponent} from "../../dialog/observation-chart-di
 })
 export class ObservationComponent implements OnInit {
 
-  @Input() observations : fhir.Observation[];
+  @Input() observations: fhir.Observation[];
 
-  @Input() showDetail : boolean = false;
+  @Input() showDetail: boolean = false;
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   @Output() observation = new EventEmitter<any>();
 
-  selectedObs : fhir.Observation;
+  selectedObs: fhir.Observation;
 
   dataSource : ObservationDataSource;
 
   displayedColumns = ['date', 'code','codelink','category', 'status','value', 'chart', 'resource'];
 
-  constructor(private linksService : LinksService,
+  constructor(private linksService: LinksService,
              // private modalService: NgbModal,
               public dialog: MatDialog,
-              public fhirService : FhirService) { }
+              public fhirService: FhirService) { }
 
   ngOnInit() {
     console.log('Patient id = '+this.patientId);
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new ObservationDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new ObservationDataSource(this.fhirService, undefined, this.observations);
@@ -46,11 +46,11 @@ export class ObservationComponent implements OnInit {
 
 
 
-  getValue(observation : fhir.Observation) : string {
+  getValue(observation: fhir.Observation): string {
     //console.log("getValue called" + observation.valueQuantity.value);
     if (observation == undefined) return "";
 
-    if (observation.valueQuantity != undefined ) {
+    if (observation.valueQuantity !== undefined ) {
       //console.log(observation.valueQuantity.value);
       let unit: string = "";
       if (observation.valueQuantity.unit !== undefined) {
@@ -59,7 +59,7 @@ export class ObservationComponent implements OnInit {
       return observation.valueQuantity.value.toPrecision(4) + " " + unit;
     }
 
-      if (observation.valueCodeableConcept != undefined ) {
+      if (observation.valueCodeableConcept !== undefined ) {
 
           let unit: string = "";
           return observation.valueCodeableConcept.coding[0].display;
@@ -96,17 +96,17 @@ export class ObservationComponent implements OnInit {
 
   }
 
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
      return this.linksService.getCodeSystem(system);
   }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
   /*
 
-  onClick(content , observation : fhir.Observation) {
+  onClick(content , observation: fhir.Observation) {
     console.log("Clicked - "+ observation.id);
     this.selectedObs = observation;
     //this.router.navigate(['./medicalrecord/'+this.getPatientId(this.observation.subject.reference)+'/observation/'+this.observation.code.coding[0].code ] );
@@ -114,9 +114,9 @@ export class ObservationComponent implements OnInit {
   }
   */
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
 
@@ -129,12 +129,12 @@ export class ObservationComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
-    selectChart(observation : fhir.Observation) {
+    selectChart(observation: fhir.Observation) {
 
-        if (observation != undefined) {
+        if (observation !== undefined) {
             const dialogConfig = new MatDialogConfig();
 
 

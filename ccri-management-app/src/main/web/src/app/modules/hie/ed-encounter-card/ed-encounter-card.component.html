@@ -5,7 +5,7 @@
         <!-- Left pane -->
         <div fxFlex="100" layout-margin="3%">
           <div>
-          <span *ngIf="patient != undefined">
+          <span *ngIf="patient !== undefined">
             <div class="container" layout="row" layout-align="start center" flex>
               <span> &nbsp;  <b>{{ getLastName(patient)}}</b>{{getFirstName(patient)}}</span>
               <span flex ></span>
@@ -92,7 +92,7 @@
           </td-expansion-panel> -->
           <span *ngIf="flags !== undefined">
             <span *ngFor="let flag of flags">
-                <span *ngIf="flag.code != undefined && flag.code.coding != undefined">
+                <span *ngIf="flag.code !== undefined && flag.code.coding !== undefined">
                   <td-message #messageDemo color="info" [label]="flag.code.coding[0].display" icon="warning" >
                     <button td-message-actions mat-icon-button (click)="messageDemo.close()"><mat-icon>cancel</mat-icon></button>
                   </td-message>
@@ -102,20 +102,7 @@
             <button mat-button color="accent" fxFlexAlign="end" (click)="viewDetails(patient)">Patient Record</button>
           </div>
         </div>
-       <!-- righy map pane -->
-          <!--
-        <div fxFlex="25" layout-margin="3%" >
-          <span *ngIf="coords!==undefined">
-            <ngui-map class="map" zoom="13"
-                      [center]="coords"
-                      (mapReady$)="onMapReady($event)"
-                      (mapClick)="onMapClick($event)"
-                      (idle)="onIdle($event)">
-              <marker *ngFor="let pos of positions" [position]="pos"></marker>
-            </ngui-map>
-          </span>
-        </div>
-        -->
+
       </div>
   </mat-card-content>
  <!-- <mat-card-actions>

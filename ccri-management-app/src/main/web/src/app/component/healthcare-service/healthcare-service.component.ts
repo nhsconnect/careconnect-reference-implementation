@@ -7,7 +7,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class HealthcareServiceComponent implements OnInit {
 
-  @Input() services : fhir.HealthcareService[];
+  @Input() services: fhir.HealthcareService[];
 
   @Output() healthcareService = new EventEmitter<any>();
 

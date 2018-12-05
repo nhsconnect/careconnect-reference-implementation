@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FhirService} from "../../../service/fhir.service";
 import {EprService} from "../../../service/epr.service";
-import {MatChip} from "@angular/material";
+import {MatChip} from '@angular/material';
 import {AuthService} from "../../../service/auth.service";
 import {Oauth2Service} from "../../../service/oauth2.service";
 
@@ -13,7 +13,7 @@ import {Oauth2Service} from "../../../service/oauth2.service";
 })
 export class PatientMainComponent implements OnInit {
 
-    patient : fhir.Patient = undefined;
+    patient: fhir.Patient = undefined;
 
     sidenavopen = false;
 
@@ -31,6 +31,7 @@ export class PatientMainComponent implements OnInit {
     bicolour = 'info';
     bmcolour = 'info';
     brcolour = 'info';
+    aacolour = 'info';
 
     cards : any[] = [];
 
@@ -40,7 +41,7 @@ export class PatientMainComponent implements OnInit {
 
 
   constructor(private router : Router,
-              private fhirSrv : FhirService,
+              private fhirSrv: FhirService,
               private route: ActivatedRoute,
               private eprService : EprService,
               private authService : AuthService,
@@ -152,8 +153,13 @@ export class PatientMainComponent implements OnInit {
         this.btcolour = 'info';
         this.bicolour = 'info';
         this.bmcolour = 'info';
+      this.aacolour = 'info';
       this.brcolour = 'info';
       switch (btn) {
+          case 'aa':
+              this.router.navigate(['atmist'], {relativeTo: this.route });
+              this.aacolour = 'accent';
+              break;
           case 'bs':
               this.router.navigate(['summary'], {relativeTo: this.route });
               this.bscolour = 'accent';
@@ -199,14 +205,14 @@ export class PatientMainComponent implements OnInit {
             return "";
         // Move to address
         let name = "";
-        if (patient.name[0].given != undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
+        if (patient.name[0].given !== undefined && patient.name[0].given.length>0) name += ", "+ patient.name[0].given[0];
 
-        if (patient.name[0].prefix != undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
+        if (patient.name[0].prefix !== undefined && patient.name[0].prefix.length>0) name += " (" + patient.name[0].prefix[0] +")" ;
         return name;
 
     }
 
-    getNHSIdentifier(patient : fhir.Patient) : String {
+    getNHSIdentifier(patient: fhir.Patient) : String {
         if (patient == undefined) return "";
         if (patient.identifier == undefined || patient.identifier.length == 0)
             return "";
@@ -226,14 +232,14 @@ export class PatientMainComponent implements OnInit {
             return "";
 
         let name = "";
-        if (patient.name[0].family != undefined) name += patient.name[0].family.toUpperCase();
+        if (patient.name[0].family !== undefined) name += patient.name[0].family.toUpperCase();
         return name;
 
     }
 
   smartApp(card) {
 
-    let launch : string = undefined;
+    let launch: string = undefined;
 
     console.log('App Lauch '+card.url);
 
@@ -247,7 +253,7 @@ export class PatientMainComponent implements OnInit {
           console.log(err);
         },
         () => {
-          window.open(card.url + '?iss=' + this.fhirSrv.getBaseUrl() + '&launch=' + launch, "_blank");
+          window.open(card.url + '?iss=' + this.fhirSrv.getBaseUrl() + '&launch=' + launch, '_blank');
         }
       );
     } else {
@@ -267,7 +273,7 @@ export class PatientMainComponent implements OnInit {
                   console.log(err);
                 },
                 () => {
-                  window.open(endpoint.address + '?iss=' + this.fhirSrv.getBaseUrl() + '&launch=' + launch, "_blank");
+                  window.open(endpoint.address + '?iss=' + this.fhirSrv.getBaseUrl() + '&launch=' + launch, '_blank');
                 }
               );
             }

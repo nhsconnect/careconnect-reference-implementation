@@ -357,13 +357,13 @@ public class BundleCore {
             }
         }
 
-        if (list.hasEncounter()) {
+        if (list.hasEncounter() && checkNotInternalReference(list.getEncounter())) {
             Resource resource = searchAddResource(list.getEncounter().getReference());
 
             if (resource == null) referenceMissing(list, list.getEncounter().getReference());
             list.setEncounter(getReference(resource));
         }
-        if (list.hasSubject()) {
+        if (list.hasSubject() && checkNotInternalReference(list.getSubject())) {
             Resource resource = searchAddResource(list.getSubject().getReference());
 
             if (resource == null) referenceMissing(list, list.getSubject().getReference());
@@ -371,7 +371,7 @@ public class BundleCore {
         }
 
         for (ListResource.ListEntryComponent listEntry : list.getEntry()) {
-            if (listEntry.hasItem()) {
+            if (listEntry.hasItem() && checkNotInternalReference(listEntry.getItem())) {
                 Resource resource = searchAddResource(listEntry.getItem().getReference());
                 if (resource == null) referenceMissing(list, listEntry.getItem().getReference());
                 if (resource != null) listEntry.setItem(getReference(resource));
@@ -385,6 +385,7 @@ public class BundleCore {
         // Location found do not add
         if (eprListResource != null) {
             xhttpMethod="PUT";
+            setResourceMap(listId,eprListResource);
             // Want id value, no path or resource
             xhttpPath = "List/"+eprListResource.getIdElement().getIdPart();
             list.setId(eprListResource.getId());
@@ -824,6 +825,7 @@ public class BundleCore {
         // Location found do not add
         if (eprLocation != null) {
             xhttpMethod="PUT";
+            setResourceMap(locationId,eprLocation);
             // Want id value, no path or resource
             xhttpPath = "Location/"+eprLocation.getIdElement().getIdPart();
             location.setId(eprLocation.getId());
@@ -938,6 +940,7 @@ public class BundleCore {
         // Location found do not add
         if (eprAllergyIntolerance != null) {
             xhttpMethod="PUT";
+            setResourceMap(allergyIntoleranceId,eprAllergyIntolerance);
             // Want id value, no path or resource
             xhttpPath = "AllergyIntolerance/"+eprAllergyIntolerance.getIdElement().getIdPart();
             allergyIntolerance.setId(eprAllergyIntolerance.getId());
@@ -1077,6 +1080,7 @@ public class BundleCore {
         // Location found do not add
         if (eprCarePlan != null) {
             xhttpMethod="PUT";
+            setResourceMap(carePlanId,eprCarePlan);
             // Want id value, no path or resource
             xhttpPath = "CarePlan/"+eprCarePlan.getIdElement().getIdPart();
             carePlan.setId(eprCarePlan.getId());
@@ -1193,6 +1197,7 @@ public class BundleCore {
         // Location found do not add
         if (eprCareTeam != null) {
             xhttpMethod="PUT";
+            setResourceMap(careTeamId,eprCareTeam);
             // Want id value, no path or resource
             xhttpPath = "CareTeam/"+eprCareTeam.getIdElement().getIdPart();
             careTeam.setId(eprCareTeam.getId());
@@ -1325,6 +1330,7 @@ public class BundleCore {
         // Location found do not add
         if (eprQuestionnaireResponse != null) {
             xhttpMethod="PUT";
+            setResourceMap(formId,eprQuestionnaireResponse);
             // Want id value, no path or resource
             xhttpPath = "QuestionnaireResponse/"+eprQuestionnaireResponse.getIdElement().getIdPart();
             form.setId(eprQuestionnaireResponse.getId());
@@ -1474,6 +1480,7 @@ public class BundleCore {
         // Location found do not add
         if (eprObservation != null) {
             xhttpMethod="PUT";
+            setResourceMap(observationId,eprObservation);
             // Want id value, no path or resource
             xhttpPath = "Observation/"+eprObservation.getIdElement().getIdPart();
             observation.setId(eprObservation.getId());
@@ -1605,6 +1612,7 @@ public class BundleCore {
         // Location found do not add
         if (eprDiagnosticReport != null) {
             xhttpMethod="PUT";
+            setResourceMap(diagnosticReportId,eprDiagnosticReport);
             // Want id value, no path or resource
             xhttpPath = "DiagnosticReport/"+eprDiagnosticReport.getIdElement().getIdPart();
             diagnosticReport.setId(eprDiagnosticReport.getId());
@@ -1726,6 +1734,7 @@ public class BundleCore {
         // Location found do not add
         if (eprImmunization != null) {
             xhttpMethod="PUT";
+            setResourceMap(immunisationId,eprImmunization);
             // Want id value, no path or resource
             xhttpPath = "Immunization/"+eprImmunization.getIdElement().getIdPart();
             immunisation.setId(eprImmunization.getId());
@@ -1859,6 +1868,7 @@ public class BundleCore {
         // Location found do not add
         if (eprMedicationRequest != null) {
             xhttpMethod="PUT";
+            setResourceMap(medicationRequestId,eprMedicationRequest);
             // Want id value, no path or resource
             xhttpPath = "MedicationRequest/"+eprMedicationRequest.getIdElement().getIdPart();
             medicationRequest.setId(eprMedicationRequest.getId());
@@ -1899,12 +1909,12 @@ public class BundleCore {
         return eprMedicationRequest;
     }
 
-    public Medication searchAddMedication(String MedicationId,Medication Medication) {
-        log.debug("Medication searchAdd " +MedicationId);
+    public Medication searchAddMedication(String medicationId,Medication Medication) {
+        log.debug("Medication searchAdd " +medicationId);
 
         if (Medication == null) throw new InternalErrorException("Bundle processing error");
 
-        Medication eprMedication = (Medication) resourceMap.get(MedicationId);
+        Medication eprMedication = (Medication) resourceMap.get(medicationId);
 
         // Organization already processed, quit with Organization
         if (eprMedication != null) return eprMedication;
@@ -1957,6 +1967,7 @@ public class BundleCore {
         // Location found do not add
         if (eprMedication != null) {
             xhttpMethod="PUT";
+            setResourceMap(medicationId, eprMedication);
             // Want id value, no path or resource
             xhttpPath = "Medication/"+eprMedication.getIdElement().getIdPart();
             Medication.setId(eprMedication.getId());
@@ -1985,7 +1996,7 @@ public class BundleCore {
         }
         if (iResource instanceof Medication) {
             eprMedication = (Medication) iResource;
-            setResourceMap(MedicationId,eprMedication);
+            setResourceMap(medicationId,eprMedication);
 
         } else if (iResource instanceof OperationOutcome)
         {
@@ -2078,6 +2089,7 @@ public class BundleCore {
         // Location found do not add
         if (eprRiskAssessment != null) {
             xhttpMethod="PUT";
+            setResourceMap(riskAssessmentId,eprRiskAssessment);
             // Want id value, no path or resource
             xhttpPath = "RiskAssessment/"+eprRiskAssessment.getIdElement().getIdPart();
             riskAssessment.setId(eprRiskAssessment.getId());
@@ -2198,6 +2210,7 @@ public class BundleCore {
         // Location found do not add
         if (eprClinicalImpression != null) {
             xhttpMethod="PUT";
+            setResourceMap(impressionId,eprClinicalImpression);
             // Want id value, no path or resource
             xhttpPath = "ClinicalImpression/"+eprClinicalImpression.getIdElement().getIdPart();
             impression.setId(eprClinicalImpression.getId());
@@ -2337,6 +2350,7 @@ public class BundleCore {
         // Location found do not add
         if (eprConsent != null) {
             xhttpMethod="PUT";
+            setResourceMap(consentId,eprConsent);
             // Want id value, no path or resource
             xhttpPath = "Consent/"+eprConsent.getIdElement().getIdPart();
             consent.setId(eprConsent.getId());
@@ -2451,6 +2465,7 @@ public class BundleCore {
         // Location found do not add
         if (eprFlag != null) {
             xhttpMethod="PUT";
+            setResourceMap(flagId,eprFlag);
             // Want id value, no path or resource
             xhttpPath = "Flag/"+eprFlag.getIdElement().getIdPart();
             flag.setId(eprFlag.getId());
@@ -2561,6 +2576,7 @@ public class BundleCore {
         // Location found do not add
         if (eprGoal != null) {
             xhttpMethod="PUT";
+            setResourceMap(goalId,eprGoal);
             // Want id value, no path or resource
             xhttpPath = "Goal/"+eprGoal.getIdElement().getIdPart();
             goal.setId(eprGoal.getId());
@@ -2720,6 +2736,7 @@ public class BundleCore {
         // Location found do not add
         if (eprMedicationDispense != null) {
             xhttpMethod="PUT";
+            setResourceMap(medicationDispenseId,eprMedicationDispense);
             // Want id value, no path or resource
             xhttpPath = "MedicationDispense/"+eprMedicationDispense.getIdElement().getIdPart();
             medicationDispense.setId(eprMedicationDispense.getId());
@@ -2866,6 +2883,7 @@ public class BundleCore {
         // Location found do not add
         if (eprMedicationAdministration != null) {
             xhttpMethod="PUT";
+            setResourceMap(medicationAdministrationId,eprMedicationAdministration);
             // Want id value, no path or resource
             xhttpPath = "MedicationAdministration/"+eprMedicationAdministration.getIdElement().getIdPart();
             medicationAdministration.setId(eprMedicationAdministration.getId());
@@ -3033,6 +3051,8 @@ public class BundleCore {
         // Location found do not add
         if (eprMedicationStatement != null) {
             xhttpMethod="PUT";
+
+            setResourceMap(medicationStatementId,eprMedicationStatement);
             // Want id value, no path or resource
             xhttpPath = "MedicationStatement/"+eprMedicationStatement.getIdElement().getIdPart();
             medicationStatement.setId(eprMedicationStatement.getId());
@@ -3082,7 +3102,7 @@ public class BundleCore {
 
         Condition eprCondition = (Condition) resourceMap.get(conditionId);
 
-        // Organization already processed, quit with Organization
+        // Condition already processed, quit with Organization
         if (eprCondition != null) return eprCondition;
 
         // Prevent re-adding the same Practitioner
@@ -3126,19 +3146,18 @@ public class BundleCore {
         }
 
 
-        if (condition.getAsserter().getReference() != null) {
-
+        if (checkNotInternalReference(condition.getAsserter())) {
             Resource resource = searchAddResource(condition.getAsserter().getReference());
             if (resource == null) referenceMissing(condition, condition.getAsserter().getReference());
             log.debug("Found Resource = " + resource.getId());
             condition.setAsserter(getReference(resource));
         }
-        if (condition.getSubject() != null) {
+        if (checkNotInternalReference(condition.getSubject())) {
             Resource resource = searchAddResource(condition.getSubject().getReference());
             if (resource == null) referenceMissing(condition, condition.getSubject().getReference());
             condition.setSubject(getReference(resource));
         }
-        if (condition.getContext().getReference() != null) {
+        if (checkNotInternalReference(condition.getContext())) {
             Resource resource = searchAddResource(condition.getContext().getReference());
             if (resource == null) referenceMissing(condition, condition.getContext().getReference());
             condition.setContext(getReference(resource));
@@ -3150,7 +3169,9 @@ public class BundleCore {
         String xhttpPath = "Condition";
         // Location found do not add
         if (eprCondition != null) {
+
             xhttpMethod="PUT";
+            setResourceMap(conditionId,eprCondition);
             // Want id value, no path or resource
             xhttpPath = "Condition/"+eprCondition.getIdElement().getIdPart();
             condition.setId(eprCondition.getId());
@@ -3296,6 +3317,7 @@ public class BundleCore {
         // Location found do not add
         if (eprComposition != null) {
             xhttpMethod="PUT";
+            setResourceMap(compositionId,eprComposition);
             // Want id value, no path or resource
             xhttpPath = "Composition/"+eprComposition.getIdElement().getIdPart();
             composition.setId(eprComposition.getId());
@@ -3468,6 +3490,7 @@ public class BundleCore {
         // Location found do not add
         if (eprDocumentReference != null) {
             xhttpMethod="PUT";
+            setResourceMap(documentReferenceId,eprDocumentReference);
             // Want id value, no path or resource
             xhttpPath = "DocumentReference/"+eprDocumentReference.getIdElement().getIdPart();
             documentReference.setId(eprDocumentReference.getId());
@@ -3598,6 +3621,7 @@ public class BundleCore {
         // Location found do not add
         if (eprProcedure != null) {
             xhttpMethod="PUT";
+            setResourceMap(procedureId,eprProcedure);
             // Want id value, no path or resource
             xhttpPath = "Procedure/"+eprProcedure.getIdElement().getIdPart();
             procedure.setId(eprProcedure.getId());
@@ -3749,6 +3773,7 @@ public class BundleCore {
         // Location found do not add
         if (eprReferralRequest != null) {
             xhttpMethod="PUT";
+            setResourceMap(referralRequestId,eprReferralRequest);
             // Want id value, no path or resource
             xhttpPath = "ReferralRequest/"+eprReferralRequest.getIdElement().getIdPart();
             referralRequest.setId(eprReferralRequest.getId());
@@ -3948,6 +3973,7 @@ public class BundleCore {
         // Location found do not add
         if (eprEncounter != null) {
             xhttpMethod="PUT";
+            setResourceMap(encounterId,eprEncounter);
             // Want id value, no path or resource
             xhttpPath = "Encounter/"+eprEncounter.getIdElement().getIdPart();
             encounter.setId(eprEncounter.getId());
@@ -4087,6 +4113,7 @@ public class BundleCore {
         // Location found do not add
         if (eprEpisodeOfCare != null) {
             xhttpMethod="PUT";
+            setResourceMap(episodeOfCareId,eprEpisodeOfCare);
             // Want id value, no path or resource
             xhttpPath = "EpisodeOfCare/"+eprEpisodeOfCare.getIdElement().getIdPart();
             episodeOfCare.setId(eprEpisodeOfCare.getId());
@@ -4436,12 +4463,35 @@ public class BundleCore {
             resourceMap.put(referenceId,resource);
 
         }
+        String id = resource.getResourceType().toString() + '/' +resource.getIdElement().getIdPart();
+
         log.debug("setResourceMap = " +resource.getId());
         if (resourceMap.get(resource.getId()) != null) {
             resourceMap.replace(resource.getId(),resource);
         } else {
             resourceMap.put(resource.getId(),resource);
         }
+        if (!id.equals(resource.getId())) {
+            if (resourceMap.get(id) != null) {
+                //resourceMap.replace(id,resource);
+            } else {
+                log.debug("setResourceMapElement = " + id);
+                resourceMap.put(id,resource);
+            }
+        }
     }
+    private boolean checkNotInternalReference(Reference reference) {
 
+        if (reference.getReference() != null) {
+            log.debug("Checking reference "+reference.getReference());
+
+            if (!reference.getReference().matches("\\w+/\\d+")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }

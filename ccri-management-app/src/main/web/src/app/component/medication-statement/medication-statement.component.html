@@ -73,7 +73,7 @@
       <th mat-header-cell *matHeaderCellDef> Form </th>
       <td mat-cell *matCellDef="let medicationStatement">
         <span *ngFor="let dosage of medicationStatement.dosage">
-            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+            <span *ngIf="dosage.maxDosePerPeriod !== undefined" >
               <span  > {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
             </span>
 

@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -14,7 +15,6 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +81,13 @@ public class PatientResourceProvider implements IResourceProvider {
     @Override
     public Class<Patient> getResourceType() {
         return Patient.class;
+    }
+    
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Patient resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
     /*
@@ -379,6 +386,18 @@ public class PatientResourceProvider implements IResourceProvider {
 
         ProducerTemplate template = context.createProducerTemplate();
 
+        
+        MethodOutcome method_val = testResource(patient, ValidationModeEnum.CREATE , null);
+        OperationOutcome operationoutcome =  (OperationOutcome)method_val.getOperationOutcome();
+   
+        if ( operationoutcome!= null ) {
+        	ProviderResponseLibrary.createException(ctx,(Resource) operationoutcome);
+        	MethodOutcome method_exception = new MethodOutcome();
+            ProviderResponseLibrary.setMethodOutcome(operationoutcome,method_exception);
+            return method_exception;        	
+        	}
+        else
+        {	
         IBaseResource resource = null;
         try {
             InputStream inputStream = null;
@@ -417,6 +436,7 @@ public class PatientResourceProvider implements IResourceProvider {
         ProviderResponseLibrary.setMethodOutcome(resource,method);
 
         return method;
+    }
     }
 
 }

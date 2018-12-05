@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {FhirService} from "../../../service/fhir.service";
 import {EprService} from "../../../service/epr.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {AuthService} from "../../../service/auth.service";
 import {RegisterSmartComponent} from "../../../dialog/register-smart/register-smart.component";
 import {TdMediaService} from "@covalent/core";
@@ -23,7 +23,7 @@ export class SmartAppsComponent implements OnInit {
 
   cards = undefined;
 
-  title : string ='SMART on FHIR';
+  title: string ='SMART on FHIR';
 
   ngOnInit() {
     this.eprService.setTitle(this.title);
@@ -145,7 +145,7 @@ export class SmartAppsComponent implements OnInit {
           dialogConfig.data = {
             endpoint: endpoint
           };
-          let resourceDialog : MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
+          const resourceDialog: MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
 
           resourceDialog.afterClosed().subscribe( result => {
               this.getClients();
@@ -165,7 +165,7 @@ export class SmartAppsComponent implements OnInit {
         dialogConfig.data = {
 
         };
-        let resourceDialog : MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<RegisterSmartComponent> = this.dialog.open( RegisterSmartComponent, dialogConfig);
 
     }
 
@@ -173,7 +173,7 @@ export class SmartAppsComponent implements OnInit {
         this.authService.setCookie();
         let url:string = localStorage.getItem("registerUri");
         url = url.replace('register','');
-        window.open(url, "_blank");
+        window.open(url, '_blank');
     }
 
 }

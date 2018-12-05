@@ -9,13 +9,13 @@ import {EprService} from "../../../service/epr.service";
 })
 export class EdEncounterListComponent implements OnInit {
 
-  constructor(private fhirService : FhirService, private eprService : EprService) { }
+  constructor(private fhirService: FhirService, private eprService : EprService) { }
 
-  encounters : fhir.Encounter[] = [];
+  encounters: fhir.Encounter[] = [];
 
   ngOnInit() {
     this.getEncounters();
-    this.eprService.setTitle('Caseload - Garforth Sector');
+    this.eprService.setTitle('Emergency Control Centre View - Garforth Sector');
     this.fhirService.getConformanceChange().subscribe(capabilityStatement =>
     {
       this.getEncounters();

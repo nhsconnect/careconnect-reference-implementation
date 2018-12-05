@@ -3,9 +3,9 @@ import {FhirService} from "../service/fhir.service";
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class MedicationDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
+  constructor(public fhirService: FhirService,
 
-              public medications : fhir.Medication[]
+              public medications: fhir.Medication[]
   ) {
     super();
   }

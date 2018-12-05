@@ -72,11 +72,11 @@ export class EprService {
 
   resource : any = undefined;
 
-  section : string;
+  section: string;
 
-  userName : string;
+  userName: string;
 
-  userEmail : string;
+  userEmail: string;
 
   gpConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
 
@@ -86,17 +86,17 @@ export class EprService {
 
   flagEmitter : EventEmitter<fhir.Flag> = new EventEmitter();
 
-  patientAllergies : fhir.AllergyIntolerance[] = [];
+  patientAllergies: fhir.AllergyIntolerance[] = [];
 
-  patientFlags : fhir.Flag[] = [];
+  patientFlags: fhir.Flag[] = [];
 
   constructor(
-    private fhirService : FhirService
+    private fhirService: FhirService
   ) { }
 
-  documentReference : fhir.DocumentReference;
+  documentReference: fhir.DocumentReference;
 
-  private title : string;
+  private title: string;
 
   private titleChangeEvent : EventEmitter<string> = new EventEmitter<string>();
 
@@ -119,7 +119,7 @@ export class EprService {
     return this.titleChangeEvent;
   }
 
-  setTitle(title : string) {
+  setTitle(title: string) {
     this.patientFlags = [];
     this.getFlagChangeEmitter().emit(undefined);
     this.title = title;
@@ -138,7 +138,7 @@ export class EprService {
      return this.flagEmitter;
   }
 
-  addFlag(flag : fhir.Flag) {
+  addFlag(flag: fhir.Flag) {
     this.patientFlags.push(flag);
     this.flagEmitter.emit(flag);
   }
@@ -163,7 +163,7 @@ export class EprService {
     return this.sectionChangeEvent;
   }
 
-  setSection(section : string) {
+  setSection(section: string) {
     this.section = section;
     this.sectionChangeEvent.emit(section);
   }
@@ -173,7 +173,7 @@ export class EprService {
     this.resourceChangeEvent.emit(resource);
   }
 
-  setDocumentReference(document : fhir.DocumentReference) {
+  setDocumentReference(document: fhir.DocumentReference) {
     this.documentReference = document;
   }
 

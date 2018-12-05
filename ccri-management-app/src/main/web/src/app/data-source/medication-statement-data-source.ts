@@ -4,9 +4,9 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 
 export class MedicationStatementDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
-              public patientId : string,
-              public medicationStatements : fhir.MedicationStatement[]
+  constructor(public fhirService: FhirService,
+              public patientId: string,
+              public medicationStatements: fhir.MedicationStatement[]
   ) {
     super();
   }
@@ -22,9 +22,9 @@ export class MedicationStatementDataSource extends DataSource<any> {
 
     this.dataStore = { medicationStatements: [] };
 
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.fhirService.get('/MedicationStatement?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             this.dataStore.medicationStatements.push(<fhir.MedicationStatement> entry.resource);
 

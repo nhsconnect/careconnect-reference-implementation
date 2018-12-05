@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FhirService} from "../../../service/fhir.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ResourceDialogComponent} from "../../../dialog/resource-dialog/resource-dialog.component";
 import {IAlertConfig, TdDialogService} from "@covalent/core";
 import {BundleService} from "../../../service/bundle.service";
@@ -13,21 +13,21 @@ import {BundleService} from "../../../service/bundle.service";
 })
 export class ViewDocumentComponent implements OnInit {
 
-  @Input() document : fhir.Bundle;
-  @Input() systemType : string;
-  @Input() binaryId : string;
+  @Input() document: fhir.Bundle;
+  @Input() systemType: string;
+  @Input() binaryId: string;
 
-  composition : fhir.Composition = undefined;
-  patient : fhir.Patient = undefined;
-  encounter : fhir.Encounter = undefined;
-  sections : fhir.CompositionSection[] = [];
+  composition: fhir.Composition = undefined;
+  patient: fhir.Patient = undefined;
+  encounter: fhir.Encounter = undefined;
+  sections: fhir.CompositionSection[] = [];
   resource : any = undefined;
-  docId : string;
+  docId: string;
 
   constructor(private route: ActivatedRoute,
-            private fhirService : FhirService,
+            private fhirService: FhirService,
             public dialog: MatDialog,
-            public bundleService : BundleService,
+            public bundleService: BundleService,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef) { }
 
@@ -49,14 +49,14 @@ export class ViewDocumentComponent implements OnInit {
 
 
 
-  getDocument(id : string): void {
+  getDocument(id: string): void {
 
     this.docId = this.binaryId;
 
   //  let modalWaitRef = this.modalService.open( this.modalWait,{ windowClass: 'dark-modal' });
 
     this.fhirService.getBinary(id).subscribe( document => {
-      let binary : fhir.Binary = document;
+      let binary: fhir.Binary = document;
       //console.log(atob(binary.content));
       this.document = JSON.parse(atob(binary.content));
       this.bundleService.setBundle(this.document);
@@ -85,7 +85,7 @@ export class ViewDocumentComponent implements OnInit {
         this.patient = <fhir.Patient> entry.resource;
       }
     }
-    if (this.composition != undefined && this.composition.encounter != undefined) {
+    if (this.composition !== undefined && this.composition.encounter !== undefined) {
       console.log('Encounter '+this.composition.encounter.reference);
       for (let entry of this.document.entry) {
         if (entry.resource.resourceType === "Encounter") {
@@ -109,14 +109,14 @@ export class ViewDocumentComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     //resourceDialog.componentInstance.resource = this.resource;
 
   }
 
 
 
-  downloadPDFActual(documentid : string) {
+  downloadPDFActual(documentid: string) {
     let thefile = {};
     this.fhirService.getCompositionDocumentPDF(documentid)
       .subscribe(data => {
@@ -150,7 +150,7 @@ export class ViewDocumentComponent implements OnInit {
 
   }
 
-  downloadHTMLActual(docuemntid : string) {
+  downloadHTMLActual(docuemntid: string) {
     console.log("Download HTML");
 
     let thefile = {};
@@ -175,7 +175,7 @@ export class ViewDocumentComponent implements OnInit {
 
   }
 
-  showWarnDlg(message : string) {
+  showWarnDlg(message: string) {
     let alertConfig : IAlertConfig = { message : message};
     alertConfig.disableClose =  false; // defaults to false
     alertConfig.viewContainerRef = this._viewContainerRef;

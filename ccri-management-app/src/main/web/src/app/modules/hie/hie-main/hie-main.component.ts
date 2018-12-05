@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {Router} from "@angular/router";
-import {EprService} from "../../../service/epr.service";
-import {MessageService} from "../../../service/message.service";
-import {IAlertConfig, TdDialogService} from "@covalent/core";
-import {AuthService} from "../../../service/auth.service";
+import {Router} from '@angular/router';
+import {EprService} from '../../../service/epr.service';
+import {MessageService} from '../../../service/message.service';
+import {IAlertConfig, TdDialogService} from '@covalent/core';
+import {AuthService} from '../../../service/auth.service';
 
 
 
@@ -18,21 +18,21 @@ export class HieMainComponent implements OnInit {
     routes: Object[] = [
     ];
 
-    routesExt : Object[] = [
+    routesExt: Object[] = [
     ];
 
     navmenu: Object[] = [];
 
-    title : string ='Garforth Sector - Yorkshire Ambulance Service';
+    title  = 'Garforth Sector - Yorkshire Ambulance Service';
 
+    rbac = 'tier1';
 
-
-    constructor( private router : Router,
-                 public eprService : EprService,
+    constructor( private router: Router,
+                 public eprService: EprService,
                  private _dialogService: TdDialogService,
                  private _viewContainerRef: ViewContainerRef,
-                 private messageService : MessageService,
-                 public authService : AuthService
+                 private messageService: MessageService,
+                 public authService: AuthService
       ) { }
 
   ngOnInit() {
@@ -47,14 +47,14 @@ export class HieMainComponent implements OnInit {
     this.messageService.getMessageEvent().subscribe(
       error => {
         if (this.router.url.includes('exp')) {
-          let alertConfig: IAlertConfig = {
+          const alertConfig: IAlertConfig = {
             message: error
           };
           alertConfig.disableClose = false; // defaults to false
           alertConfig.viewContainerRef = this._viewContainerRef;
-          alertConfig.title = 'Alert'; //OPTIONAL, hides if not provided
+          alertConfig.title = 'Alert'; // OPTIONAL, hides if not provided
 
-          alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+          alertConfig.width = '400px'; // OPTIONAL, defaults to 400px
           this._dialogService.openConfirm(alertConfig).afterClosed().subscribe((accept: boolean) => {
 
           });
@@ -66,6 +66,9 @@ export class HieMainComponent implements OnInit {
 
     );
 
+  }
+  role(role: string) {
+        this.rbac = role;
   }
 
     onClick(route) {

@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatChip} from "@angular/material";
+import {MatChip} from '@angular/material';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FhirService} from "../../../service/fhir.service";
 import {EprService} from "../../../service/epr.service";
@@ -11,24 +11,24 @@ import {EprService} from "../../../service/epr.service";
 })
 export class PatientSummaryComponent implements OnInit {
 
-    documents : fhir.DocumentReference[] =[];
-    nrlsdocuments : fhir.DocumentReference[]=[];
-    encounters : fhir.Encounter[]=[];
-    careplans : fhir.CarePlan[]=[];
-    patient : fhir.Patient = undefined;
+    documents: fhir.DocumentReference[] =[];
+    nrlsdocuments: fhir.DocumentReference[]=[];
+    encounters: fhir.Encounter[]=[];
+    careplans: fhir.CarePlan[]=[];
+    patient: fhir.Patient = undefined;
 
-    gpallergies : fhir.AllergyIntolerance[] = [];
-    gpMedicationStatement : fhir.MedicationStatement[]= [];
-    gpMedicationRequest : fhir.MedicationRequest[] = [];
-    gpMedication : fhir.Medication[] = [];
-    gpPatient : fhir.Patient[] = [];
-    gpOrganisation : fhir.Organization[] = [];
-    gpPractitioner : fhir.Practitioner[] =[];
+    gpallergies: fhir.AllergyIntolerance[] = [];
+    gpMedicationStatement: fhir.MedicationStatement[]= [];
+    gpMedicationRequest: fhir.MedicationRequest[] = [];
+    gpMedication: fhir.Medication[] = [];
+    gpPatient: fhir.Patient[] = [];
+    gpOrganisation: fhir.Organization[] = [];
+    gpPractitioner: fhir.Practitioner[] =[];
 
-    lhcreEncounters : fhir.Encounter[];
-    lhcreAllergies : fhir.AllergyIntolerance[] = [];
-    lhcreMedicationStatement : fhir.MedicationStatement[]= [];
-    lhcreConditions : fhir.Condition[] =[];
+    lhcreEncounters: fhir.Encounter[];
+    lhcreAllergies: fhir.AllergyIntolerance[] = [];
+    lhcreMedicationStatement: fhir.MedicationStatement[]= [];
+    lhcreConditions: fhir.Condition[] =[];
 
     yascolor = 'info';
     acutecolor = 'info';
@@ -38,7 +38,7 @@ export class PatientSummaryComponent implements OnInit {
 
     @ViewChild('gpchip') gpchip : MatChip;
 
-  constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+  constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
   ngOnInit() {
 
@@ -100,7 +100,7 @@ export class PatientSummaryComponent implements OnInit {
     });
   }
 
-    getGPData(nhsNumber : string) {
+    getGPData(nhsNumber: string) {
         this.gpallergies = [];
         this.gpMedicationStatement = [];
         this.gpMedicationRequest  = [];
@@ -177,7 +177,7 @@ export class PatientSummaryComponent implements OnInit {
 
     }
 
-    getNRLSData(nhsNumber : string) {
+    getNRLSData(nhsNumber: string) {
         this.eprService.nrlsConnectStatusEmitter.emit('info');
 
         this.fhirSrv.getNRLS('/DocumentReference?subject=https%3A%2F%2Fdemographics.spineservices.nhs.uk%2FSTU3%2FPatient%2F'+nhsNumber).subscribe( bundle => {
@@ -212,7 +212,7 @@ export class PatientSummaryComponent implements OnInit {
         this.lhcreConditions =[];
     }
 
-    selectEncounter(encounter : fhir.Reference) {
+    selectEncounter(encounter: fhir.Reference) {
 
         let str = encounter.reference.split('/');
         console.log(this.route.root);
@@ -220,7 +220,7 @@ export class PatientSummaryComponent implements OnInit {
 
     }
 
-    selectCarePlan(carePlan : fhir.Reference) {
+    selectCarePlan(carePlan: fhir.Reference) {
 
         this.router.navigate(['..','careplan',carePlan.id] , { relativeTo : this.route});
 

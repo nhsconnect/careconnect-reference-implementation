@@ -20,7 +20,7 @@
     <ng-container matColumnDef="code">
       <th mat-header-cell *matHeaderCellDef> Type </th>
       <td mat-cell *matCellDef="let risk">
-        <span *ngIf="risk.code != undefined && risk.code.coding.length > 0">
+        <span *ngIf="risk.code !== undefined && risk.code.coding.length > 0">
           <b>{{risk.code.coding[0].display}}</b>
         </span>
       </td>
@@ -29,8 +29,8 @@
     <ng-container matColumnDef="codelink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let risk">
-        <span *ngIf="risk.code != undefined && risk.code.coding.length > 0">
-          <span *ngIf="risk.code.coding[0].code != undefined" >
+        <span *ngIf="risk.code !== undefined && risk.code.coding.length > 0">
+          <span *ngIf="risk.code.coding[0].code !== undefined" >
             <span *ngIf="isSNOMED(risk.code.coding[0].system)">
               <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(risk.code.coding[0].system)}} {{risk.code.coding[0].code}}" (click)="getSNOMEDLink(risk.code.coding[0])">
                   <mat-icon>book</mat-icon>
@@ -48,12 +48,12 @@
       <th mat-header-cell *matHeaderCellDef> Prediction </th>
       <td mat-cell *matCellDef="let risk">
          <span *ngFor="let prediction of risk.prediction">
-            <span *ngIf="prediction.outcome != undefined">
+            <span *ngIf="prediction.outcome !== undefined">
 
               &nbsp;
               <i>Outcome</i><b> {{prediction.outcome.coding[0].display}}</b>
             </span>
-             <span *ngIf="prediction.qualitativeRisk != undefined">
+             <span *ngIf="prediction.qualitativeRisk !== undefined">
 
               &nbsp;<i>Risk</i>
                <b> {{prediction.qualitativeRisk.coding[0].display }}</b>

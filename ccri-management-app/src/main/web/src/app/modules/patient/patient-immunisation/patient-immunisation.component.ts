@@ -10,13 +10,13 @@ import {EprService} from "../../../service/epr.service";
 })
 export class PatientImmunisationComponent implements OnInit {
 
-    immunisations : fhir.Immunization[] = [];
+    immunisations: fhir.Immunization[] = [];
 
-    immunisation : fhir.Immunization = undefined;
+    immunisation: fhir.Immunization = undefined;
 
-    resource : fhir.Bundle;
+    resource: fhir.Bundle;
 
-    constructor(private router : Router, private fhirSrv : FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
+    constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute, private eprService : EprService) { }
 
     ngOnInit() {
         let patientid = this.route.snapshot.paramMap.get('patientid');
@@ -52,7 +52,7 @@ export class PatientImmunisationComponent implements OnInit {
 
     }
 
-    onMore(linkUrl : string) {
+    onMore(linkUrl: string) {
 
         this.clearDown();
         this.fhirSrv.getResults(linkUrl).subscribe(bundle => {

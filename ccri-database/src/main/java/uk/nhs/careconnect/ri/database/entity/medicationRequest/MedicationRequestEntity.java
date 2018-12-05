@@ -30,7 +30,6 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable =false, foreignKey= @ForeignKey(name="FK_PATIENT_PRESCRIPTION"))
-
     private PatientEntity patient;
 
 
@@ -40,17 +39,14 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name ="MEDICATION_ID", nullable = true,foreignKey= @ForeignKey(name="FK_PRESCRIPTION_MEDICATION"))
-
     private MedicationEntity medicationEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_ENCOUNTER"))
-
     private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="EPISODE_ID",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_EPISODE"))
-
     private EpisodeOfCareEntity contextEpisodeOfCare;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,7 +54,6 @@ public class MedicationRequestEntity extends BaseResource {
     private Date writtenDate;
 
     @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestIdentifier.class)
-
     Set<MedicationRequestIdentifier> identifiers = new HashSet<>();
 
     @Enumerated(EnumType.ORDINAL)
@@ -84,63 +79,48 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECORDER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_RECORDER_PRACTITIONER"))
-
     PractitionerEntity recorderPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONCEPT"))
-
     ConceptEntity reasonCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_OBSERVATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_OBSERVATION"))
-
     ObservationEntity reasonObservation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REASON_CONDITION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REASON_CONDITION"))
-
     ConditionEntity reasonCondition;
 
     @Column(name = "substitutionAllowed")
     Boolean substitutionAllowed;
 
+    @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestNote.class)
+    Set<MedicationRequestNote> notes = new HashSet<>();
+
     @OneToMany(mappedBy="prescription", targetEntity = MedicationRequestDosage.class)
-
     Set<MedicationRequestDosage> dosages = new HashSet<>();
-
-    public ConceptEntity getSupplyTypeCode() {
-        return supplyTypeCode;
-    }
-
-    public void setSupplyTypeCode(ConceptEntity supplyTypeCode) {
-        this.supplyTypeCode = supplyTypeCode;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLY_TYPE_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_SUPPLY_TYPE_CONCEPT"))
-
     ConceptEntity supplyTypeCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PRACTITIONER"))
-
     PractitionerEntity requesterPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ORGANISATION"))
-
     OrganisationEntity requesterOrganisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_PATIENT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_PATIENT"))
-
     PatientEntity requesterPatient;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUESTER_ONBEHALF_ORGANISATION",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_REQUESTER_ONBEHALF_ORGANISATION"))
-
     OrganisationEntity requesterOnBehalfOfOrganisation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -160,7 +140,6 @@ public class MedicationRequestEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DURATION_UNITS_CONCEPT",foreignKey= @ForeignKey(name="FK_PRESCRIPTION_DURATION_UNITS_CONCEPT"))
-
     ConceptEntity durationUnitsCode;
 
     public Date getDispenseRequestStart() {
@@ -181,6 +160,13 @@ public class MedicationRequestEntity extends BaseResource {
         return this;
     }
 
+    public ConceptEntity getSupplyTypeCode() {
+        return supplyTypeCode;
+    }
+
+    public void setSupplyTypeCode(ConceptEntity supplyTypeCode) {
+        this.supplyTypeCode = supplyTypeCode;
+    }
     public Integer getNumberOfRepeatsAllowed() {
         return numberOfRepeatsAllowed;
     }
@@ -403,5 +389,23 @@ public class MedicationRequestEntity extends BaseResource {
         this.medicationEntity = medicationEntity;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public ConceptEntity getMedicationCode() {
+        return medicationCode;
+    }
+
+    public void setMedicationCode(ConceptEntity medicationCode) {
+        this.medicationCode = medicationCode;
+    }
+
+    public Set<MedicationRequestNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Set<MedicationRequestNote> notes) {
+        this.notes = notes;
+    }
 }

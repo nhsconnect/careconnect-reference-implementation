@@ -1,13 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LinksService} from "../../service/links.service";
+import {LinksService} from  '../../service/links.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ProcedureDataSource} from "../../data-source/procedure-data-source";
 import {ImmunizationDataSource} from "../../data-source/immunization-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
-import {BundleService} from "../../service/bundle.service";
+import {BundleService} from '../../service/bundle.service';
 import {ImmunisationDetailComponent} from "../../dialog/immunisation-detail/immunisation-detail.component";
 
 @Component({
@@ -17,41 +17,41 @@ import {ImmunisationDetailComponent} from "../../dialog/immunisation-detail/immu
 })
 export class ImmunisationComponent implements OnInit {
 
-  @Input() immunisations : fhir.Immunization[];
+  @Input() immunisations: fhir.Immunization[];
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   dataSource : ImmunizationDataSource;
 
-  practitioners : fhir.Practitioner[];
+  practitioners: fhir.Practitioner[];
 
-  organisations : fhir.Organization[];
+  organisations: fhir.Organization[];
 
   displayedColumns = ['procedure', 'code','codelink','indication','indicationlink','dose','status','date', 'detail', 'resource'];
 
-  constructor(private linksService : LinksService,
+  constructor(private linksService: LinksService,
               public dialog: MatDialog,
-              public fhirService : FhirService,
-              public bundleService : BundleService) { }
+              public fhirService: FhirService,
+              public bundleService: BundleService) { }
 
   ngOnInit() {
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new ImmunizationDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new ImmunizationDataSource(this.fhirService, undefined, this.immunisations);
     }
   }
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
   select(resource) {
@@ -63,15 +63,15 @@ export class ImmunisationComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
-    showOrganisation(immunisastion : fhir.Immunization) {
+    showOrganisation(immunisastion: fhir.Immunization) {
         this.organisations = [];
 
         this.bundleService.getResource(immunisastion.manufacturer.reference).subscribe( (organisation) => {
 
-            if (organisation != undefined && organisation.resourceType === "Organization") {
+            if (organisation !== undefined && organisation.resourceType === "Organization") {
 
                 this.organisations.push(<fhir.Organization> organisation);
 
@@ -84,14 +84,14 @@ export class ImmunisationComponent implements OnInit {
                     id: 1,
                     organisations : this.organisations
                 };
-                let resourceDialog : MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
+                const resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
 
             }
         });
     }
 
 
-    more(immunisation : fhir.Immunization) {
+    more(immunisation: fhir.Immunization) {
 
         const dialogConfig = new MatDialogConfig();
 
@@ -107,12 +107,12 @@ export class ImmunisationComponent implements OnInit {
     }
 
 
-    showPractitioner(immunisation : fhir.Immunization) {
+    showPractitioner(immunisation: fhir.Immunization) {
         this.practitioners = [];
 
         for (let practitionerReference of immunisation.practitioner) {
             this.bundleService.getResource(practitionerReference.actor.reference).subscribe((practitioner) => {
-                    if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+                    if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
                         this.practitioners.push(<fhir.Practitioner> practitioner);
 
                         const dialogConfig = new MatDialogConfig();
@@ -124,7 +124,7 @@ export class ImmunisationComponent implements OnInit {
                             id: 1,
                             practitioners : this.practitioners
                         };
-                        let resourceDialog : MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
+                        const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open( PractitionerDialogComponent, dialogConfig);
                     }
                 }
             );

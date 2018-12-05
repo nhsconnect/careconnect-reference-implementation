@@ -104,7 +104,7 @@
 
       <mat-grid-list cols="3" rowHeight="8em">
         <mat-grid-tile> <div  class="d-flex w-100 justify-content-left">
-          <div *ngIf="practitioner.address != undefined && practitioner.address.length>0">
+          <div *ngIf="practitioner.address !== undefined && practitioner.address.length>0">
             <i>{{practitioner.address[0].use}}</i>
             <div *ngFor="let line of practitioner.address[0].line">
               <div>{{line}}</div>

@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PractitionerRoleDataSource} from "../../data-source/practitioner-role-data-source";
-import {FhirService} from "../../service/fhir.service";
-import {BundleService} from "../../service/bundle.service";
+import {FhirService} from '../../service/fhir.service';
+import {BundleService} from '../../service/bundle.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
 
 @Component({
@@ -13,16 +13,16 @@ import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/orga
 })
 export class PractitionerRoleComponent implements OnInit {
 
-  @Input() practitioner : fhir.Practitioner;
+  @Input() practitioner: fhir.Practitioner;
 
-  @Input() useBundle : boolean = false ;
+  @Input() useBundle: boolean = false ;
 
-  @Input() roles : fhir.PractitionerRole[];
+  @Input() roles: fhir.PractitionerRole[];
 
   @Output() practitionerRole = new EventEmitter<any>();
   constructor(
-    public fhirService : FhirService,
-    public bundleService : BundleService,
+    public fhirService: FhirService,
+    public bundleService: BundleService,
     public dialog: MatDialog
   ) { }
 
@@ -44,16 +44,16 @@ export class PractitionerRoleComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
 
-  showOrganisation(role : fhir.PractitionerRole) {
+  showOrganisation(role: fhir.PractitionerRole) {
     let organisations = [];
 
     this.bundleService.getResource(role.organization.reference).subscribe( (organisation) => {
 
-      if (organisation != undefined && organisation.resourceType === "Organization") {
+      if (organisation !== undefined && organisation.resourceType === "Organization") {
 
         organisations.push(<fhir.Organization> organisation);
 
@@ -66,7 +66,7 @@ export class PractitionerRoleComponent implements OnInit {
           id: 1,
           organisations : organisations
         };
-        let resourceDialog : MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open( OrganisationDialogComponent, dialogConfig);
 
       }
     });

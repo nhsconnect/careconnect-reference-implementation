@@ -70,6 +70,7 @@ public class CamelMonitorRoute extends RouteBuilder {
 				.get("/http").to("direct:hello");
 
 		from("direct:hello")
+				.routeId("helloTest")
 				.transform().constant("{ \"fhirServer\" : \""+serverBase+"\" }");
 
 		rest("/fhir")

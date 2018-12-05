@@ -1,7 +1,7 @@
 export class error {
-  error : boolean = true;
+  error: boolean = true;
 
-  warning : boolean = true;
+  warning: boolean = true;
 
-  information : boolean = false;
+  information: boolean = false;
 }

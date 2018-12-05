@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
+import {LinksService} from  '../../service/links.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ConditionDataSource} from "../../data-source/condition-data-source";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
-import {BundleService} from "../../service/bundle.service";
+import {BundleService} from '../../service/bundle.service';
 import {EncounterDialogComponent} from "../../dialog/encounter-dialog/encounter-dialog.component";
 
 @Component({
@@ -15,13 +15,13 @@ import {EncounterDialogComponent} from "../../dialog/encounter-dialog/encounter-
 })
 export class ConditionComponent implements OnInit {
 
-  @Input() conditions : fhir.Condition[];
+  @Input() conditions: fhir.Condition[];
 
   @Output() condition = new EventEmitter<fhir.Condition>();
 
   @Output() encounter = new EventEmitter<fhir.Reference>();
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   @Input() useBundle :boolean = false;
 
@@ -29,13 +29,13 @@ export class ConditionComponent implements OnInit {
 
   displayedColumns = ['asserted','onset', 'code','codelink','category','categorylink', 'clinicalstatus','verificationstatus','asserterLink','contextLink', 'resource'];
 
-  constructor(private linksService : LinksService,
-              public bundleService : BundleService,
+  constructor(private linksService: LinksService,
+              public bundleService: BundleService,
               public dialog: MatDialog,
-              public fhirService : FhirService) { }
+              public fhirService: FhirService) { }
 
   ngOnInit() {
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new ConditionDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new ConditionDataSource(this.fhirService, undefined, this.conditions);
@@ -51,19 +51,19 @@ export class ConditionComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     return this.linksService.getCodeSystem(system);
   }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
 
-  getSNOMEDLink(code : fhir.Coding) {
+  getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
-      window.open(this.linksService.getSNOMEDLink(code), "_blank");
+      window.open(this.linksService.getSNOMEDLink(code), '_blank');
     }
   }
 
@@ -72,7 +72,7 @@ export class ConditionComponent implements OnInit {
 
 
       this.bundleService.getResource(condition.asserter.reference).subscribe((practitioner) => {
-          if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
             practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -92,7 +92,7 @@ export class ConditionComponent implements OnInit {
 
   }
 
-  showEncounter(condition : fhir.Condition) {
+  showEncounter(condition: fhir.Condition) {
 
     this.encounter.emit(condition.context);
 

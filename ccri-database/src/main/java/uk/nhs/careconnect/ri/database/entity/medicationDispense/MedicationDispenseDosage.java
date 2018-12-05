@@ -39,10 +39,8 @@ public class MedicationDispenseDosage extends BaseResource {
 	@Column(name="patientInstruction")
 	String patientInstruction;
 
-
-
 	@Column(name="otherText")
-    String otherText;
+    String dosageText;
 
 	// TODO TIMING
 
@@ -232,12 +230,20 @@ public class MedicationDispenseDosage extends BaseResource {
         return this;
 	}
 
-	public String getOtherText() {
-		return otherText;
+	public MedicationDispenseEntity getDispense() {
+		return dispense;
 	}
 
-	public void setOtherText(String otherText) {
-		this.otherText = otherText;
+	public void setDispense(MedicationDispenseEntity dispense) {
+		this.dispense = dispense;
+	}
+
+	public String getDosageText() {
+		return dosageText;
+	}
+
+	public void setDosageText(String dosageText) {
+		this.dosageText = dosageText;
 	}
 
 	public ConceptEntity getDoseLowUnitOfMeasure() {

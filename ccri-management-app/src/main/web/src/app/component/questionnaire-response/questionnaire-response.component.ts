@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {QuestionnaireResponseDataSource} from "../../data-source/form-data-source";
-import {LinksService} from "../../service/links.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
-import {BundleService} from "../../service/bundle.service";
+import {BundleService} from '../../service/bundle.service';
 
 @Component({
   selector: 'app-questionnaire-response',
@@ -14,15 +14,15 @@ import {BundleService} from "../../service/bundle.service";
 })
 export class QuestionnaireResponseComponent implements OnInit {
 
-    @Input() forms : fhir.QuestionnaireResponse[];
+    @Input() forms: fhir.QuestionnaireResponse[];
 
-    @Input() showDetail : boolean = false;
+    @Input() showDetail: boolean = false;
 
-    @Input() patientId : string;
+    @Input() patientId: string;
 
     @Output() form = new EventEmitter<any>();
 
-    selectedForm : fhir.QuestionnaireResponse;
+    selectedForm: fhir.QuestionnaireResponse;
 
     @Input() useBundle :boolean = false;
 
@@ -30,15 +30,15 @@ export class QuestionnaireResponseComponent implements OnInit {
 
     displayedColumns = ['date', 'status', 'authorLink','resource'];
 
-    constructor(private linksService : LinksService,
+    constructor(private linksService: LinksService,
                 // private modalService: NgbModal,
                 public dialog: MatDialog,
-                public bundleService : BundleService,
-                public fhirService : FhirService) { }
+                public bundleService: BundleService,
+                public fhirService: FhirService) { }
 
     ngOnInit() {
         console.log('Patient id = '+this.patientId);
-        if (this.patientId != undefined) {
+        if (this.patientId !== undefined) {
             this.dataSource = new QuestionnaireResponseDataSource(this.fhirService, this.patientId, []);
         } else {
             this.dataSource = new QuestionnaireResponseDataSource(this.fhirService, undefined, this.forms);
@@ -53,7 +53,7 @@ export class QuestionnaireResponseComponent implements OnInit {
 
 
         this.bundleService.getResource(form.author.reference).subscribe((practitioner) => {
-                if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+                if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
                     practitioners.push(<fhir.Practitioner> practitioner);
 
                     const dialogConfig = new MatDialogConfig();
@@ -74,18 +74,18 @@ export class QuestionnaireResponseComponent implements OnInit {
     }
 
 
-    getCodeSystem(system : string) : string {
+    getCodeSystem(system: string): string {
         return this.linksService.getCodeSystem(system);
     }
 
-    isSNOMED(system: string) : boolean {
+    isSNOMED(system: string): boolean {
         return this.linksService.isSNOMED(system);
     }
 
 
-    getSNOMEDLink(code : fhir.Coding) {
+    getSNOMEDLink(code: fhir.Coding) {
         if (this.linksService.isSNOMED(code.system)) {
-            window.open(this.linksService.getSNOMEDLink(code), "_blank");
+            window.open(this.linksService.getSNOMEDLink(code), '_blank');
         }
     }
 
@@ -98,6 +98,6 @@ export class QuestionnaireResponseComponent implements OnInit {
             id: 1,
             resource: resource
         };
-        let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 }

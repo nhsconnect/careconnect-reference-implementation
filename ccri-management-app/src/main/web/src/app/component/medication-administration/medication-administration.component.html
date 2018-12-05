@@ -11,7 +11,7 @@
     </ng-container>
 
     <ng-container matColumnDef="effective">
-      <th mat-header-cell *matHeaderCellDef> Effective </th>
+      <th mat-header-cell *matHeaderCellDef  width="10%"> Effective </th>
       <td mat-cell *matCellDef="let medicationAdministration">  {{medicationAdministration.effectiveDateTime | date: 'dd-MMM-yyyy HH:mm'}} </td>
     </ng-container>
 
@@ -19,7 +19,7 @@
 
 
     <ng-container matColumnDef="medication">
-      <th mat-header-cell *matHeaderCellDef> Medication </th>
+      <th mat-header-cell *matHeaderCellDef  width="20%"> Medication </th>
       <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngIf="medicationAdministration.medicationCodeableConcept !=undefined" >
           <b *ngIf="medicationAdministration.medicationCodeableConcept !=undefined">{{medicationAdministration.medicationCodeableConcept.coding[0].display}}</b>
@@ -60,22 +60,43 @@
     </ng-container>
 
     <ng-container matColumnDef="dose">
-      <th mat-header-cell *matHeaderCellDef> Dose </th>
+    <th mat-header-cell *matHeaderCellDef width="5%"> Dose </th>
+    <td mat-cell *matCellDef="let medicationAdministration">
+        <span *ngIf="medicationAdministration.dosage !== undefined">
+            <p *ngIf="medicationAdministration.dosage.dose!==undefined">{{medicationAdministration.dosage.dose.value}} {{medicationAdministration.dosage.dose.unit}}</p>
+
+            <p *ngIf="medicationAdministration.dosage.text !== undefined">{{medicationAdministration.dosage.text}}</p>
+        </span>
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="route">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Route </th>
       <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngIf="medicationAdministration.dosage !== undefined">
-            <span *ngIf="medicationAdministration.dosage.dose!==undefined">{{medicationAdministration.dosage.dose.value}} {{medicationAdministration.dosage.dose.unit}}</span>
 
-            <span *ngIf="medicationAdministration.dosage.route !==undefined">Route - {{medicationAdministration.dosage.route.coding[0].display}}</span>
+            <span *ngIf="medicationAdministration.dosage.route !==undefined">{{medicationAdministration.dosage.route.coding[0].display}}</span>
 
         </span>
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="routelink">
+      <th mat-header-cell *matHeaderCellDef width="5%"> </th>
+      <td mat-cell *matCellDef="let medicationAdministration">
+            <span *ngIf="medicationAdministration.dosage.route!=undefined && medicationAdministration.dosage.route.coding.length>0" >
+               <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(medicationAdministration.dosage.route.coding[0].system)}} {{medicationAdministration.dosage.route.coding[0].code}}" (click)="getSNOMEDLink(medicationAdministration.dosage.route.coding[0])">
+                  <mat-icon>book</mat-icon>
+              </button>
+            </span>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="form">
-      <th mat-header-cell *matHeaderCellDef> Form </th>
+      <th mat-header-cell *matHeaderCellDef width="5%"> Form </th>
       <td mat-cell *matCellDef="let medicationAdministration">
         <span *ngFor="let dosage of medicationAdministration.dosageInstruction">
-            <span *ngIf="dosage.maxDosePerPeriod != undefined" >
+            <span *ngIf="dosage.maxDosePerPeriod !== undefined" >
               <span  > {{dosage.maxDosePerPeriod.numerator.value}} {{dosage.maxDosePerPeriod.numerator.unit}} </span>
             </span>
         </span>
@@ -83,16 +104,25 @@
     </ng-container>
 
     <ng-container matColumnDef="quantity">
-      <th mat-header-cell *matHeaderCellDef width="10%"> Quantity </th>
+      <th mat-header-cell *matHeaderCellDef width="5%"> Quantity </th>
       <td mat-cell *matCellDef="let medicationAdministration">
-        <span *ngIf="medicationAdministration.daysSupply != undefined && medicationAdministration.daysSupply.value">{{medicationAdministration.daysSupply.value}} {{medicationAdministration.daysSupply.unit}}</span>
-        <span *ngIf="medicationAdministration.quantity != undefined && medicationAdministration.quantity.value != undefined">{{medicationAdministration.quantity.value}} {{medicationAdministration.quantity.unit}}</span>
+        <span *ngIf="medicationAdministration.daysSupply !== undefined && medicationAdministration.daysSupply.value">{{medicationAdministration.daysSupply.value}} {{medicationAdministration.daysSupply.unit}}</span>
+        <span *ngIf="medicationAdministration.quantity !== undefined && medicationAdministration.quantity.value !== undefined">{{medicationAdministration.quantity.value}} {{medicationAdministration.quantity.unit}}</span>
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="instructions">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Instructions </th>
+      <td mat-cell *matCellDef="let medicationAdministration">
+           <span *ngIf="medicationAdministration.note !== null">
+            <p *ngFor="let annotation of medicationAdministration.note">{{annotation.text}}</p>
+            </span>
+
+      </td>
+    </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef width="10%"> Status </th>
+      <th mat-header-cell *matHeaderCellDef width="5%"> Status </th>
       <td mat-cell *matCellDef="let medicationAdministration"> <b>{{medicationAdministration.status}}</b> </td>
     </ng-container>
 
@@ -100,8 +130,8 @@
     <ng-container matColumnDef="practitioner">
       <th mat-header-cell *matHeaderCellDef width="5%"> Performer </th>
       <td mat-cell *matCellDef="let medicationAdministration">
-        <span *ngIf="medicationAdministration.performer != undefined && medicationAdministration.performer.length > 0">
-          <span *ngIf="medicationAdministration.performer[0].actor != undefined">
+        <span *ngIf="medicationAdministration.performer !== undefined && medicationAdministration.performer.length > 0">
+          <span *ngIf="medicationAdministration.performer[0].actor !== undefined">
             <button mat-icon-button color="accent"  matTooltip="View Pharmacist" (click)="showPractitioner(medicationAdministration)"><mat-icon>person</mat-icon></button>
           </span>
         </span>
@@ -111,15 +141,22 @@
     <ng-container matColumnDef="organisation">
       <th mat-header-cell *matHeaderCellDef width="5%"> Org </th>
       <td mat-cell *matCellDef="let medicationAdministration">
-        <span *ngIf="medicationAdministration.performer != undefined && medicationAdministration.performer.length > 0">
-          <span *ngIf="medicationAdministration.performer[0].onBehalfOf != undefined">
+        <span *ngIf="medicationAdministration.performer !== undefined && medicationAdministration.performer.length > 0">
+          <span *ngIf="medicationAdministration.performer[0].onBehalfOf !== undefined">
             <button mat-icon-button color="accent"  matTooltip="View Pharmacy" (click)="showOrganisation(medicationAdministration)"><mat-icon>account_balance</mat-icon></button>
           </span>
         </span>
       </td>
     </ng-container>
 
-
+    <ng-container matColumnDef="visit">
+      <th mat-header-cell *matHeaderCellDef width="5%"> Visit </th>
+      <td mat-cell *matCellDef="let medicationAdministration">
+        <span *ngIf="medicationAdministration.context !== undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="viewEncounter(medicationAdministration)"><mat-icon>today</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
 
     <ng-container matColumnDef="resource">
       <th mat-header-cell *matHeaderCellDef width="5%"> FHIR </th>

@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from "../../service/links.service";
-import {BundleService} from "../../service/bundle.service";
-import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {LinksService} from  '../../service/links.service';
+import {BundleService} from '../../service/bundle.service';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
 import {FlagDataSource} from "../../data-source/flag-data-source";
 
@@ -13,11 +13,11 @@ import {FlagDataSource} from "../../data-source/flag-data-source";
 })
 export class FlagComponent implements OnInit {
 
-  @Input() flags : fhir.Flag[];
+  @Input() flags: fhir.Flag[];
 
   @Output() flag = new EventEmitter<any>();
 
-  @Input() patientId : string;
+  @Input() patientId: string;
 
   @Input() useBundle :boolean = false;
 
@@ -25,13 +25,13 @@ export class FlagComponent implements OnInit {
 
   displayedColumns = ['alert', 'resource'];
 
-  constructor(private linksService : LinksService,
-              public bundleService : BundleService,
+  constructor(private linksService: LinksService,
+              public bundleService: BundleService,
               public dialog: MatDialog,
-              public fhirService : FhirService) { }
+              public fhirService: FhirService) { }
 
   ngOnInit() {
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
       this.dataSource = new FlagDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new FlagDataSource(this.fhirService, undefined, this.flags);
@@ -47,7 +47,7 @@ export class FlagComponent implements OnInit {
       id: 1,
       resource: resource
     };
-    let resourceDialog : MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
+    const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
 
 

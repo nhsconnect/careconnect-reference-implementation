@@ -1,7 +1,7 @@
 import {Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {TdDigitsPipe} from "@covalent/core";
-import {MAT_DIALOG_DATA, MatDialog, MatSelect} from "@angular/material";
-import {FhirService} from "../../service/fhir.service";
+import {MAT_DIALOG_DATA, MatDialog, MatSelect} from '@angular/material';
+import {FhirService} from '../../service/fhir.service';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 
 @Component({
@@ -49,14 +49,14 @@ export class ObservationChartDialogComponent implements OnInit {
     ];
 
 @Input()
-observation : fhir.Observation;
+observation: fhir.Observation;
 
     @ViewChild('chart') chart : NgxChartsModule;
 
 
   constructor(public dialog: MatDialog,
               @Inject(MAT_DIALOG_DATA) data,
-              public fhirService : FhirService) {
+              public fhirService: FhirService) {
 
     this.observation = data.resource;
 
@@ -66,11 +66,11 @@ observation : fhir.Observation;
 
       console.log(this.observation);
 
-      let obs : string[] = this.observation.subject.reference.split('/');
+      let obs: string[] = this.observation.subject.reference.split('/');
       this.fhirService.get('/Observation?patient='+obs[1]+'&code='+this.observation.code.coding[0].code+"&_count=200").subscribe(
           bundle => {
                     console.log(bundle);
-                  let observations : fhir.Bundle = <fhir.Bundle> bundle;
+                  let observations: fhir.Bundle = <fhir.Bundle> bundle;
                   this.title = this.observation.code.coding[0].display;
                   this.yAxisLabel='Value';
                   let multi : any[] = [];

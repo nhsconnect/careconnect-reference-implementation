@@ -16,10 +16,10 @@ export class ImgViewerComponent implements OnInit {
 
   @Input() document : any;
 
-  @Input() binaryId : string;
+  @Input() binaryId: string;
 
   constructor(private route: ActivatedRoute,
-          private fhirService : FhirService,
+          private fhirService: FhirService,
               private _dialogService: TdDialogService,
               private _viewContainerRef: ViewContainerRef
               ) { }
@@ -30,7 +30,7 @@ export class ImgViewerComponent implements OnInit {
     this.getDocument(this.binaryId);
   }
 
-  getDocument(id : string): void {
+  getDocument(id: string): void {
 
    // let modalWaitRef = this.modalService.open( this.modalWait,{ windowClass: 'dark-modal' });
 
@@ -49,7 +49,7 @@ export class ImgViewerComponent implements OnInit {
 
   }
 
-  showWarnDlg(message : string) {
+  showWarnDlg(message: string) {
     let alertConfig : IAlertConfig = { message : message};
     alertConfig.disableClose =  false; // defaults to false
     alertConfig.viewContainerRef = this._viewContainerRef;

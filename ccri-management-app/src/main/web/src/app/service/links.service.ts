@@ -5,14 +5,14 @@ export class LinksService {
 
   constructor() { }
 
-  isSNOMED(system: string) : boolean {
+  isSNOMED(system: string): boolean {
     if (system == undefined) return false;
     if (system == "http://snomed.info/sct")
       return true;
 
   }
 
-  getCodeSystem(system : string) : string {
+  getCodeSystem(system: string): string {
     switch(system) {
       case "http://snomed.info/sct": return "SNOMED";
       case "http://loinc.org": return "LOINC";
@@ -26,11 +26,11 @@ export class LinksService {
     }
   }
 
-  getDMDLink(code : fhir.Coding) {
+  getDMDLink(code: fhir.Coding) {
     return 'http://dmd.medicines.org.uk/DesktopDefault.aspx?VMP='+code.code+'&toc=nofloat';
   }
 
-  getSNOMEDLink(code : fhir.Coding) : string {
+  getSNOMEDLink(code: fhir.Coding): string {
 
     if (this.isSNOMED(code.system)) {
 //&server=https://termbrowser.nhs.uk/sct-browser-api/snomed&langRefset=999000681000001101,999001251000000103

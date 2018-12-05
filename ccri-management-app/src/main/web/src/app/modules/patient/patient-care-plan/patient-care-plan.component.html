@@ -41,7 +41,7 @@
           <span *ngFor="let item of form.item">
               <p>
                   <i>{{item.text}}</i> &nbsp;
-                  <b *ngIf="item.answer != undefined && item.answer.length>0">
+                  <b *ngIf="item.answer !== undefined && item.answer.length>0">
                       {{item.answer[0].valueString}}
                       <span *ngIf="item.answer[0].valueReference !== undefined">{{item.answer[0].valueReference.display}}</span>
                   </b>

@@ -11,7 +11,7 @@ export class QuestionnaireResponseDataSource extends DataSource<any> {
   };
 
 
-  constructor(public fhirService : FhirService, public patientId : string, public forms: fhir.QuestionnaireResponse[]
+  constructor(public fhirService: FhirService, public patientId: string, public forms: fhir.QuestionnaireResponse[]
   ) {
     super();
 
@@ -25,9 +25,9 @@ export class QuestionnaireResponseDataSource extends DataSource<any> {
 
     this.dataStore = { forms: [] };
 
-     if (this.patientId != undefined) {
+     if (this.patientId !== undefined) {
       this.fhirService.get('/QuestionnaireResponse?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             this.dataStore.forms.push(<fhir.QuestionnaireResponse> entry.resource);
 
@@ -35,7 +35,7 @@ export class QuestionnaireResponseDataSource extends DataSource<any> {
         }
         _obs.next(Object.assign({}, this.dataStore).forms);
       }));
-    } else if (this.forms != [] && this.forms != undefined) {
+    } else if (this.forms != [] && this.forms !== undefined) {
        console.log('QuestionnaireResponse not null');
        for (let form of this.forms) {
          this.dataStore.forms.push( form);

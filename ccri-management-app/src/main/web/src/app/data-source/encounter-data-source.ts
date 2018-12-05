@@ -3,9 +3,9 @@ import {FhirService} from "../service/fhir.service";
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class EncounterDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
-              public patientId : string,
-              public encounters : fhir.Encounter[]
+  constructor(public fhirService: FhirService,
+              public patientId: string,
+              public encounters: fhir.Encounter[]
   ) {
     super();
   }
@@ -22,10 +22,10 @@ export class EncounterDataSource extends DataSource<any> {
 
     this.dataStore = { encounters: [] };
 
-    if (this.patientId != undefined) {
+    if (this.patientId !== undefined) {
    //   console.log('encounters DataSource connect '+this.patientId);
       this.fhirService.get('/Encounter?patient='+this.patientId).subscribe((bundle => {
-        if (bundle != undefined && bundle.entry != undefined) {
+        if (bundle !== undefined && bundle.entry !== undefined) {
           for (let entry of bundle.entry) {
             console.log(entry.resource._resourceType);
             this.dataStore.encounters.push(<fhir.Encounter> entry.resource);

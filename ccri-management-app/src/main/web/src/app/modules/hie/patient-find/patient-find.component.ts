@@ -54,7 +54,7 @@ export class PatientFindComponent implements OnInit {
         this.activeDeactiveStep1Msg = 'Deactive event emitted.';
     }
 
-    selectPatient(patient : fhir.Patient) {
+    selectPatient(patient: fhir.Patient) {
         //  console.log('Patient change - '+patient.id);
         if (patient !== undefined) {
             //this.patientChange.set(patient);

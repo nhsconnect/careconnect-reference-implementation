@@ -4,11 +4,11 @@ import {BehaviorSubject, Observable} from "rxjs";
 
 
 export class PractitionerDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
+  constructor(public fhirService: FhirService,
 
-              public practitioners : fhir.Practitioner[],
+              public practitioners: fhir.Practitioner[],
               public practitionersObservable : Observable<fhir.Practitioner[]>,
-              public useObservable : boolean = false
+              public useObservable: boolean = false
   ) {
     super();
   }
@@ -29,7 +29,7 @@ export class PractitionerDataSource extends DataSource<any> {
 
     this.dataStore = { practitioners: [] };
 
-    if (this.practitioners != undefined && this.practitioners != []) {
+    if (this.practitioners !== undefined && this.practitioners != []) {
       for (let practitioner of this.practitioners) {
         this.dataStore.practitioners.push(<fhir.Practitioner> practitioner);
       }

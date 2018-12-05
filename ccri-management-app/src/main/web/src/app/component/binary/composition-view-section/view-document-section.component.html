@@ -9,7 +9,7 @@
 
         <div [innerHTML]="section.text.div"></div>
 
-        <span *ngIf="section.entry != undefined && showStructured">
+        <span *ngIf="section.entry !== undefined && showStructured">
 
               <span *ngIf="allergies.length>0">
                   <mat-card>
@@ -221,13 +221,13 @@
 
   </mat-card-content>
     <mat-card-actions>
-        <button mat-button placement="top" (click)="select(section)"  color="accent"><mat-icon>code</mat-icon>
+        <button mat-raised-button placement="top" (click)="select(section)"  color="accent"><mat-icon>code</mat-icon>
             Section</button>
-        <button mat-button *ngIf="section.entry != undefined" placement="top" (click)="open()" color="accent">
+        <button mat-raised-button *ngIf="section.entry !== undefined" placement="top" (click)="open()" color="accent">
             <mat-icon *ngIf="!showStructured">arrow_drop_down</mat-icon>
             <mat-icon *ngIf="showStructured">arrow_drop_up</mat-icon>
             Structured Content</button>
-        <button mat-button *ngIf="section.entry == undefined" disabled="true"  placement="top" color="accent">
+        <button mat-raised-button *ngIf="section.entry == undefined" disabled="true"  placement="top" color="accent">
             No Structured Content</button>
     </mat-card-actions>
 

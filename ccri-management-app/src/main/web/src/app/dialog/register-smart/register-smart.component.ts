@@ -1,7 +1,7 @@
 import {Component, Inject, Input, OnInit, ViewContainerRef} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 
 import {RegisterSmartSecretComponent} from "../register-smart-secret/register-smart-secret.component";
 import {AuthService} from "../../service/auth.service";

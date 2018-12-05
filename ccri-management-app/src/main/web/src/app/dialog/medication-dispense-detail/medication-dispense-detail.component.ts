@@ -1,11 +1,11 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {OrganisationDialogComponent} from "../organisation-dialog/organisation-dialog.component";
 import {PractitionerDialogComponent} from "../practitioner-dialog/practitioner-dialog.component";
 import {MedicationDialogComponent} from "../medication-dialog/medication-dialog.component";
-import {LinksService} from "../../service/links.service";
-import {FhirService} from "../../service/fhir.service";
-import {BundleService} from "../../service/bundle.service";
+import {LinksService} from  '../../service/links.service';
+import {FhirService} from '../../service/fhir.service';
+import {BundleService} from '../../service/bundle.service';
 
 @Component({
   selector: 'app-medication-dispense-detail',
@@ -14,57 +14,57 @@ import {BundleService} from "../../service/bundle.service";
 })
 export class MedicationDispenseDetailComponent implements OnInit {
 
-    practitioners : fhir.Practitioner[];
+    practitioners: fhir.Practitioner[];
 
-    organisations : fhir.Organization[];
+    organisations: fhir.Organization[];
 
-    meds : fhir.Medication[] = [];
+    meds: fhir.Medication[] = [];
 
-    selectedMeds : fhir.Medication[];
+    selectedMeds: fhir.Medication[];
 
     constructor(
-                 private bundleService : BundleService,
-                 private linksService : LinksService,
-                 private fhirService : FhirService,
+                 private bundleService: BundleService,
+                 private linksService: LinksService,
+                 private fhirService: FhirService,
                  public dialog: MatDialog,
                  @Inject(MAT_DIALOG_DATA) data) {
         this.medicationDispense = data.medicationDispense;
     }
 
     @Input()
-    medicationDispense : fhir.MedicationDispense;
+    medicationDispense: fhir.MedicationDispense;
 
   ngOnInit() {
   }
 
-    getCodeSystem(system : string) : string {
+    getCodeSystem(system: string): string {
         return this.linksService.getCodeSystem(system);
     }
 
-    getDMDLink(code : fhir.Coding) {
-        window.open(this.linksService.getDMDLink(code), "_blank");
+    getDMDLink(code: fhir.Coding) {
+        window.open(this.linksService.getDMDLink(code), '_blank');
     }
-    getSNOMEDLink(code : fhir.Coding) {
-        window.open(this.linksService.getSNOMEDLink(code), "_blank");
+    getSNOMEDLink(code: fhir.Coding) {
+        window.open(this.linksService.getSNOMEDLink(code), '_blank');
 
     }
-    isSNOMED(system: string) : boolean {
+    isSNOMED(system: string): boolean {
         return this.linksService.isSNOMED(system);
     }
 
-    onClick(medicationDispense : fhir.MedicationDispense) {
+    onClick(medicationDispense: fhir.MedicationDispense) {
 
 
         console.log("Clicked - " + medicationDispense.id);
         this.selectedMeds = [];
 
-        if (this.bundleService.getBundle() != undefined) {
+        if (this.bundleService.getBundle() !== undefined) {
 
             if (medicationDispense.medicationReference != null) {
                 console.log("medicationReference - " + medicationDispense.medicationReference.reference);
                 this.bundleService.getResource(medicationDispense.medicationReference.reference).subscribe(
                     (medtemp) => {
-                        if (medtemp != undefined && medtemp.resourceType === "Medication") {
+                        if (medtemp !== undefined && medtemp.resourceType === "Medication") {
                             console.log('meds list ' + medtemp.id);
                             this.selectedMeds.push(<fhir.Medication> medtemp);
 
@@ -87,7 +87,7 @@ export class MedicationDispenseDetailComponent implements OnInit {
             let refArray: string[] = reference.split('/');
             if (refArray.length>1) {
                 this.fhirService.get('/Medication'+refArray[refArray.length - 1]).subscribe(data => {
-                        if (data != undefined) {
+                        if (data !== undefined) {
                             this.meds.push(<fhir.Medication>data);
                             this.selectedMeds.push(<fhir.Medication>data);
                         }
@@ -104,21 +104,21 @@ export class MedicationDispenseDetailComponent implements OnInit {
                             id: 1,
                             medications: this.selectedMeds
                         };
-                        let resourceDialog : MatDialogRef<MedicationDialogComponent> = this.dialog.open( MedicationDialogComponent, dialogConfig);
+                        const resourceDialog: MatDialogRef<MedicationDialogComponent> = this.dialog.open( MedicationDialogComponent, dialogConfig);
                     }
                 );
             }
         }
     }
 
-    showOrganisation(medicationDispense : fhir.MedicationDispense) {
+    showOrganisation(medicationDispense: fhir.MedicationDispense) {
         this.organisations = [];
         for (let performer of medicationDispense.performer) {
-            if (performer.onBehalfOf != undefined) {
+            if (performer.onBehalfOf !== undefined) {
                 let organisationReference = performer.onBehalfOf;
                 this.bundleService.getResource(organisationReference.reference).subscribe((organisation) => {
 
-                    if (organisation != undefined && organisation.resourceType === "Organization") {
+                    if (organisation !== undefined && organisation.resourceType === "Organization") {
 
                         this.organisations.push(<fhir.Organization> organisation);
 
@@ -142,14 +142,14 @@ export class MedicationDispenseDetailComponent implements OnInit {
 
 
 
-    showPractitioner(medicationDispense : fhir.MedicationDispense) {
+    showPractitioner(medicationDispense: fhir.MedicationDispense) {
         this.practitioners = [];
 
         for (let performer of medicationDispense.performer) {
-            if (performer.actor != undefined) {
+            if (performer.actor !== undefined) {
                 let practitionerReference = performer.actor;
                 this.bundleService.getResource(practitionerReference.reference).subscribe((practitioner) => {
-                        if (practitioner != undefined && practitioner.resourceType === "Practitioner") {
+                        if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
                             this.practitioners.push(<fhir.Practitioner> practitioner);
 
                             const dialogConfig = new MatDialogConfig();

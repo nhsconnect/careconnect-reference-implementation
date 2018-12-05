@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FhirService} from "../../service/fhir.service";
+import {FhirService} from '../../service/fhir.service';
 
 import {CookieService} from "ngx-cookie";
 import {AuthService} from "../../service/auth.service";
@@ -17,9 +17,9 @@ export class LoginComponent implements OnInit {
     password: ''
   };
 
-  errorMessage : string;
+  errorMessage: string;
 
-  logonRedirect : string = undefined;
+  logonRedirect: string = undefined;
 
   subscription: any;
 

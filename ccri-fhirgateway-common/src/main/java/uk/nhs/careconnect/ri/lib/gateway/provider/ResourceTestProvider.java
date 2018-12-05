@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.camel.*;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.instance.model.Conformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class ResourceTestProvider {
         }
 
         MethodOutcome retVal = new MethodOutcome();
-
+          
             if(resource instanceof OperationOutcome)
 
         {

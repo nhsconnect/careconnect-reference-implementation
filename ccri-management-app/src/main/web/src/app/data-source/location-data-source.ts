@@ -3,8 +3,8 @@ import {FhirService} from "../service/fhir.service";
 import {BehaviorSubject, Observable} from "rxjs";
 
 export class LocationDataSource extends DataSource<any> {
-  constructor(public fhirService : FhirService,
-              public locations : fhir.Location[]
+  constructor(public fhirService: FhirService,
+              public locations: fhir.Location[]
   ) {
     super();
   }
@@ -20,7 +20,7 @@ export class LocationDataSource extends DataSource<any> {
 
     this.dataStore = { locations: [] };
 
-    if (this.locations != [] && this.locations != undefined) {
+    if (this.locations != [] && this.locations !== undefined) {
       for (let location of this.locations) {
         this.dataStore.locations.push(<fhir.Location> location);
       }

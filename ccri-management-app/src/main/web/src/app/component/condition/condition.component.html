@@ -31,7 +31,7 @@
     <ng-container matColumnDef="codelink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let condition">
-      <span *ngIf="condition.code.coding[0].code != undefined" >
+      <span *ngIf="condition.code.coding[0].code !== undefined" >
         <span *ngIf="isSNOMED(condition.code.coding[0].system)">
           <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(condition.code.coding[0].system)}} {{condition.code.coding[0].code}}" (click)="getSNOMEDLink(condition.code.coding[0])">
               <mat-icon>book</mat-icon>
@@ -46,7 +46,7 @@
 
     <ng-container matColumnDef="category">
       <th mat-header-cell *matHeaderCellDef> Category </th>
-      <td mat-cell *matCellDef="let condition">  <span *ngIf="condition.category != undefined">
+      <td mat-cell *matCellDef="let condition">  <span *ngIf="condition.category !== undefined">
         <i *ngFor="let category of condition.category"> {{category.coding[0].display}}</i>
       </span> </td>
     </ng-container>
@@ -54,7 +54,7 @@
     <ng-container matColumnDef="categorylink">
       <th mat-header-cell *matHeaderCellDef width="5%"> </th>
       <td mat-cell *matCellDef="let condition">
-         <span *ngIf="condition.category != undefined && condition.category[0].coding != undefined">
+         <span *ngIf="condition.category !== undefined && condition.category[0].coding !== undefined">
 
           <span *ngIf="isSNOMED(condition.category[0].coding[0].system)">
             <button mat-icon-button color="accent" matTooltip="{{getCodeSystem(condition.category[0].coding[0].system)}} {{condition.category[0].coding[0].code}}" (click)="getSNOMEDLink(condition.category[0].coding[0])">
@@ -91,7 +91,7 @@
     <ng-container matColumnDef="contextLink">
       <th mat-header-cell *matHeaderCellDef width="5%">Visit</th>
       <td mat-cell *matCellDef="let procedure">
-        <span *ngIf="procedure.context != undefined">
+        <span *ngIf="procedure.context !== undefined">
           <button mat-icon-button color="accent"  matTooltip="View Encounter" (click)="showEncounter(procedure)"><mat-icon>today</mat-icon></button>
         </span>
       </td>

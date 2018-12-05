@@ -8,11 +8,11 @@ import {FhirService} from "../../../service/fhir.service";
 })
 export class MainComponent implements OnInit {
 
-  constructor(private FHIRSrv : FhirService) { }
+  constructor(private FHIRSrv: FhirService) { }
 
-  public conformance : fhir.CapabilityStatement;
+  public conformance: fhir.CapabilityStatement;
 
-  public serverBase : string;
+  public serverBase: string;
 
   ngOnInit() {
    // console.log('main on init');

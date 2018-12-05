@@ -2,6 +2,9 @@ package uk.nhs.careconnect.ri.lib.gateway.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -37,14 +40,14 @@ public class ConditionResourceProvider implements IResourceProvider {
     ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(ConditionResourceProvider.class);
-/*
+
     @Validate
     public MethodOutcome testResource(@ResourceParam Condition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-*/
+
     @Override
     public Class<Condition> getResourceType() {
         return Condition.class;
@@ -150,7 +153,21 @@ public class ConditionResourceProvider implements IResourceProvider {
         return results;
 
     }
+    
+    /*
+    @Create
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) throws Exception {
 
+        ProducerTemplate template = context.createProducerTemplate();
+
+        
+        MethodOutcome method_val = testResource(condition, ValidationModeEnum.CREATE , null);
+        OperationOutcome operationoutcome =  (OperationOutcome)method_val.getOperationOutcome();
+        
+       return method_val;
+   
+    }
+	*/
 
 
 }
