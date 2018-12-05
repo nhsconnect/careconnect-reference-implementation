@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {QuestionnaireResponseDataSource} from "../../data-source/form-data-source";
-import {LinksService} from  '../../service/links.service';
+import {QuestionnaireResponseDataSource} from '../../data-source/form-data-source';
+import {LinksService} from '../../service/links.service';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {FhirService} from '../../service/fhir.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
+import {PractitionerDialogComponent} from '../../dialog/practitioner-dialog/practitioner-dialog.component';
 import {BundleService} from '../../service/bundle.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class QuestionnaireResponseComponent implements OnInit {
 
     @Input() forms: fhir.QuestionnaireResponse[];
 
-    @Input() showDetail: boolean = false;
+    @Input() showDetail = false;
 
     @Input() patientId: string;
 
@@ -24,36 +24,34 @@ export class QuestionnaireResponseComponent implements OnInit {
 
     selectedForm: fhir.QuestionnaireResponse;
 
-    @Input() useBundle :boolean = false;
+    @Input() useBundle = false;
 
-    dataSource : QuestionnaireResponseDataSource;
+    dataSource: QuestionnaireResponseDataSource;
 
-    displayedColumns = ['date', 'status', 'authorLink','resource'];
+    displayedColumns = ['date', 'status', 'authorLink', 'resource'];
 
     constructor(private linksService: LinksService,
-                // private modalService: NgbModal,
                 public dialog: MatDialog,
                 public bundleService: BundleService,
                 public fhirService: FhirService) { }
 
     ngOnInit() {
-        console.log('Patient id = '+this.patientId);
+        console.log('Patient id = ' + this.patientId);
         if (this.patientId !== undefined) {
             this.dataSource = new QuestionnaireResponseDataSource(this.fhirService, this.patientId, []);
         } else {
             this.dataSource = new QuestionnaireResponseDataSource(this.fhirService, undefined, this.forms);
         }
         console.log('calling connect');
-        //this.dataSource.connect(this.patientId);
     }
 
 
-    showPractitioner(form :fhir.QuestionnaireResponse) {
-        let practitioners = [];
+    showPractitioner(form: fhir.QuestionnaireResponse) {
+        const practitioners = [];
 
 
         this.bundleService.getResource(form.author.reference).subscribe((practitioner) => {
-                if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
+                if (practitioner !== undefined && practitioner.resourceType === 'Practitioner') {
                     practitioners.push(<fhir.Practitioner> practitioner);
 
                     const dialogConfig = new MatDialogConfig();
@@ -66,7 +64,8 @@ export class QuestionnaireResponseComponent implements OnInit {
                         practitioners: practitioners,
                         useBundle : this.useBundle
                     };
-                    let resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
+                    const resourceDialog: MatDialogRef<PractitionerDialogComponent> =
+                        this.dialog.open(PractitionerDialogComponent, dialogConfig);
                 }
             }
         );

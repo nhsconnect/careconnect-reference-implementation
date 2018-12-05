@@ -1,6 +1,10 @@
 package uk.nhs.careconnect.ri.facade.ccrifhir;
 
+import io.hawt.log.log4j.Log4jLogQuery;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 
 
 @Configuration
@@ -16,7 +20,7 @@ public class LoggingConfig {
         Log4jLogQuery log4jLogQuery = new Log4jLogQuery();
         return log4jLogQuery;
     }
-
 */
+
 
 }

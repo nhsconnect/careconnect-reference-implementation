@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from  '../../service/links.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
+import {LinksService} from '../../service/links.service';
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 
 import {FhirService} from '../../service/fhir.service';
-import {EncounterDataSource} from "../../data-source/encounter-data-source";
-import {LocationDialogComponent} from "../../dialog/location-dialog/location-dialog.component";
-import {OrganisationDialogComponent} from "../../dialog/organisation-dialog/organisation-dialog.component";
-import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
+import {EncounterDataSource} from '../../data-source/encounter-data-source';
+import {LocationDialogComponent} from '../../dialog/location-dialog/location-dialog.component';
+import {OrganisationDialogComponent} from '../../dialog/organisation-dialog/organisation-dialog.component';
+import {PractitionerDialogComponent} from '../../dialog/practitioner-dialog/practitioner-dialog.component';
 import {BundleService} from '../../service/bundle.service';
 
 
@@ -22,7 +22,7 @@ export class EncounterComponent implements OnInit {
 
   locations: fhir.Location[];
 
-  @Input() showDetail: boolean = false;
+  @Input() showDetail = false;
 
   @Input() patient: fhir.Patient;
 
@@ -32,11 +32,12 @@ export class EncounterComponent implements OnInit {
 
   @Input() patientId: string;
 
-  @Input() useBundle :boolean = false;
+  @Input() useBundle = false;
 
-  dataSource : EncounterDataSource;
+  dataSource: EncounterDataSource;
 
-  displayedColumns = ['select','start','end','status', 'type','typelink','service','provider','providerLink','participant','participantLink', 'location','locationLink','resource'];
+  displayedColumns = ['select', 'start', 'end', 'status', 'type', 'typelink', 'service', 'provider', 'providerLink',
+    'participant', 'participantLink', 'location', 'locationLink', 'resource'];
 
   constructor(private linksService: LinksService,
     public bundleService: BundleService,
@@ -71,13 +72,13 @@ export class EncounterComponent implements OnInit {
     this.locations = [];
 
     if (this.bundleService.getBundle() !== undefined) {
-        for (let reference of encounter.location) {
+        for (const reference of encounter.location) {
           console.log(reference.location.reference);
           this.bundleService.getResource(reference.location.reference).subscribe(
             (resource) => {
 
-              if (resource !== undefined && resource.resourceType === "Location") {
-                console.log("Location " + reference.location.reference);
+              if (resource !== undefined && resource.resourceType === 'Location') {
+                console.log('Location ' + reference.location.reference);
                 this.locations.push(<fhir.Location> resource);
               }
 
@@ -88,25 +89,25 @@ export class EncounterComponent implements OnInit {
                 id: 1,
                 locations: this.locations
               };
-              let resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
+              const resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
             }
           );
         }
     } else {
       let count = encounter.location.length;
-      for (let reference of encounter.location) {
+      for (const reference of encounter.location) {
         console.log(reference);
 
-        let refArray: string[] = reference.location.reference.split('/');
+        const refArray: string[] = reference.location.reference.split('/');
 
-        if (refArray.length>1) {
-          this.fhirService.getResource('/'+reference.location.reference).subscribe(data => {
+        if (refArray.length > 1) {
+          this.fhirService.getResource('/' + reference.location.reference).subscribe(data => {
               if (data !== undefined) {
                 this.locations.push(<fhir.Location>data);
 
               }
               count--;
-              if (count == 0) {
+              if (count === 0) {
                 const dialogConfig = new MatDialogConfig();
                 dialogConfig.disableClose = true;
                 dialogConfig.autoFocus = true;
@@ -114,7 +115,7 @@ export class EncounterComponent implements OnInit {
                   id: 1,
                   locations: this.locations
                 };
-                let resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
+                const resourceDialog: MatDialogRef<LocationDialogComponent> = this.dialog.open(LocationDialogComponent, dialogConfig);
               }
             },
             error1 => {
@@ -130,11 +131,11 @@ export class EncounterComponent implements OnInit {
   }
 
   showOrganisation(encounter: fhir.Encounter) {
-    let organisations = [];
+    const organisations = [];
 
     this.bundleService.getResource(encounter.serviceProvider.reference).subscribe((organisation) => {
 
-      if (organisation !== undefined && organisation.resourceType === "Organization") {
+      if (organisation !== undefined && organisation.resourceType === 'Organization') {
 
         organisations.push(<fhir.Organization> organisation);
 
@@ -147,18 +148,18 @@ export class EncounterComponent implements OnInit {
           id: 1,
           organisations: organisations
         };
-        let resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open(OrganisationDialogComponent, dialogConfig);
+        const resourceDialog: MatDialogRef<OrganisationDialogComponent> = this.dialog.open(OrganisationDialogComponent, dialogConfig);
 
       }
     });
   }
 
-  showPractitioner(encounter :fhir.Encounter) {
-    let practitioners = [];
+  showPractitioner(encounter: fhir.Encounter) {
+    const practitioners = [];
 
-    for (let practitionerReference of encounter.participant) {
+    for (const practitionerReference of encounter.participant) {
       this.bundleService.getResource(practitionerReference.individual.reference).subscribe((practitioner) => {
-          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === 'Practitioner') {
             practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -171,7 +172,7 @@ export class EncounterComponent implements OnInit {
               practitioners: practitioners,
               useBundle : this.useBundle
             };
-            let resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
+            const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
           }
         }
       );

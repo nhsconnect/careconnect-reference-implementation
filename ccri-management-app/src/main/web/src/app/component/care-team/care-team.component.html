@@ -1,0 +1,67 @@
+<div>
+  <table fxFill="100" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let careTeam"> {{careTeam.id}} </td>
+    </ng-container>
+
+
+
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Status </th>
+      <td mat-cell *matCellDef="let careTeam"> {{careTeam.status}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let careTeam"> {{careTeam.name}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="authorLink">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let careTeam">
+        <span *ngIf="careTeam.author !=undefined">
+          <button mat-icon-button color="accent"  matTooltip="View Authors" (click)="showPractitioner(careTeam)"><mat-icon>person</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="members">
+      <th mat-header-cell *matHeaderCellDef> Members </th>
+      <td mat-cell *matCellDef="let careTeam">
+        <span *ngFor="let participant of careTeam.participant">
+         <p>{{participant.member.display}}
+            <span *ngIf="participant.member.reference.includes('Practitioner')">
+              <button mat-icon-button color="accent"  matTooltip="View Member" (click)="showPractitioner(participant.member)"><mat-icon>person</mat-icon></button>
+            </span>
+         </p>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="notes">
+      <th mat-header-cell *matHeaderCellDef width="10%"> Notes </th>
+      <td mat-cell *matCellDef="let careTeam">
+        <span *ngIf="careTeam.note !== null">
+            <p *ngFor="let annotation of careTeam.note">{{annotation.text}}</p>
+            </span>
+
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="resource">
+      <th mat-header-cell *matHeaderCellDef width="5%">FHIR</th>
+      <td mat-cell *matCellDef="let careTeam">  <button mat-icon-button color="accent"  matTooltip="View FHIR resource" (click)="select(careTeam)"><mat-icon>code</mat-icon></button>  </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>

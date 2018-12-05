@@ -17,6 +17,7 @@ public class CarePlanActivityDetail {
 		this.carePlanActivity = carePlanActivity;
 	}
 
+	private static final int MAX_DESC_LENGTH = 4096;
 
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +41,7 @@ public class CarePlanActivityDetail {
 	@Column(name="status")
 	CarePlan.CarePlanActivityStatus status;
 
-	@Column(name="DESCRIPTION")
+	@Column(name="DESCRIPTION1", length = MAX_DESC_LENGTH)
 	String description;
 
 	public Long getCarePlanActivityDetailId() {

@@ -918,7 +918,7 @@ public class BundleCore {
             }
         }
 
-        if (allergyIntolerance.getAsserter().getReference() != null) {
+        if (allergyIntolerance.getAsserter().getReference() != null && checkNotInternalReference(allergyIntolerance.getAsserter())) {
 
             Resource resource = searchAddResource(allergyIntolerance.getAsserter().getReference());
 
@@ -927,7 +927,7 @@ public class BundleCore {
             allergyIntolerance.setAsserter(getReference(resource));
 
         }
-        if (allergyIntolerance.getPatient() != null) {
+        if (allergyIntolerance.getPatient() != null && checkNotInternalReference(allergyIntolerance.getPatient())) {
             Resource resource = searchAddResource(allergyIntolerance.getPatient().getReference());
 
             if (resource == null) referenceMissing(allergyIntolerance, allergyIntolerance.getPatient().getReference());
@@ -1176,6 +1176,24 @@ public class BundleCore {
 
             if (resource == null) referenceMissing(careTeam, careTeam.getContext().getReference());
             careTeam.setContext(getReference(resource));
+        }
+        if (careTeam.getParticipant() != null) {
+            for (CareTeam.CareTeamParticipantComponent participant : careTeam.getParticipant()) {
+                if (participant.hasMember()) {
+                    Resource resource = searchAddResource(participant.getMember().getReference());
+                    if (resource == null) referenceMissing(careTeam, participant.getMember().getReference());
+                    participant.setMember(getReference(resource));
+                }
+            }
+        }
+        if (careTeam.hasManagingOrganization()) {
+            List<Reference> orgs = new ArrayList<>();
+            for (Reference reference : careTeam.getManagingOrganization()) {
+                Resource resource = searchAddResource(reference.getReference());
+                if (resource == null) referenceMissing(careTeam, reference.getReference());
+                orgs.add(getReference(resource));
+            }
+            careTeam.setManagingOrganization(orgs);
         }
         if (careTeam.getSubject() != null) {
             Resource resource = searchAddResource(careTeam.getSubject().getReference());

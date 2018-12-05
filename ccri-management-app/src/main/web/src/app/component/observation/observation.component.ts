@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {LinksService} from  '../../service/links.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
+import {LinksService} from '../../service/links.service';
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
-import {ObservationDataSource} from "../../data-source/observation-data-source";
+import {ObservationDataSource} from '../../data-source/observation-data-source';
 import {FhirService} from '../../service/fhir.service';
-import {ObservationChartDialogComponent} from "../../dialog/observation-chart-dialog/observation-chart-dialog.component";
+import {ObservationChartDialogComponent} from '../../dialog/observation-chart-dialog/observation-chart-dialog.component';
 
 
 @Component({
@@ -16,7 +16,7 @@ export class ObservationComponent implements OnInit {
 
   @Input() observations: fhir.Observation[];
 
-  @Input() showDetail: boolean = false;
+  @Input() showDetail = false;
 
   @Input() patientId: string;
 
@@ -24,9 +24,9 @@ export class ObservationComponent implements OnInit {
 
   selectedObs: fhir.Observation;
 
-  dataSource : ObservationDataSource;
+  dataSource: ObservationDataSource;
 
-  displayedColumns = ['date', 'code','codelink','category', 'status','value', 'chart', 'resource'];
+  displayedColumns = ['date', 'code', 'codelink', 'category', 'status', 'value', 'chart', 'resource'];
 
   constructor(private linksService: LinksService,
              // private modalService: NgbModal,
@@ -34,51 +34,56 @@ export class ObservationComponent implements OnInit {
               public fhirService: FhirService) { }
 
   ngOnInit() {
-    console.log('Patient id = '+this.patientId);
+    console.log('Patient id = ' + this.patientId);
     if (this.patientId !== undefined) {
       this.dataSource = new ObservationDataSource(this.fhirService, this.patientId, []);
     } else {
       this.dataSource = new ObservationDataSource(this.fhirService, undefined, this.observations);
     }
     console.log('calling connect');
-    //this.dataSource.connect(this.patientId);
+    // this.dataSource.connect(this.patientId);
   }
 
 
 
   getValue(observation: fhir.Observation): string {
-    //console.log("getValue called" + observation.valueQuantity.value);
-    if (observation == undefined) return "";
+    // console.log("getValue called" + observation.valueQuantity.value);
+    if (observation === undefined) {
+        return '';
+    }
 
     if (observation.valueQuantity !== undefined ) {
-      //console.log(observation.valueQuantity.value);
-      let unit: string = "";
+      // console.log(observation.valueQuantity.value);
+      let unit = '';
       if (observation.valueQuantity.unit !== undefined) {
         unit = observation.valueQuantity.unit;
       }
-      return observation.valueQuantity.value.toPrecision(4) + " " + unit;
+      return observation.valueQuantity.value.toPrecision(4) + ' ' + unit;
     }
 
       if (observation.valueCodeableConcept !== undefined ) {
-
-          let unit: string = "";
           return observation.valueCodeableConcept.coding[0].display;
       }
 
-    if (observation.component == undefined || observation.component.length < 2)
-      return "";
+    if (observation.component === undefined || observation.component.length < 2) {
+        return '';
+    }
     // Only coded for blood pressures at present
-    if (observation.component[0].valueQuantity === undefined )
-      return "";
-    if (observation.component[1].valueQuantity === undefined )
-      return "";
-    let unit0: string = "";
-    let unit1: string = "";
+    if (observation.component[0].valueQuantity === undefined ) {
+        return '';
+    }
+    if (observation.component[1].valueQuantity === undefined ) {
+        return '';
+    }
+    let unit0 = '';
+    let unit1 = '';
 
-    if (observation.component[0].code !== undefined && observation.component[0].code.coding !== undefined && observation.component[0].code.coding.length > 0) {
+    if (observation.component[0].code !== undefined && observation.component[0].code.coding !== undefined
+        && observation.component[0].code.coding.length > 0) {
       unit0 = observation.component[0].code.coding[0].display;
     }
-    if (observation.component[1].code !== undefined && observation.component[1].code.coding !== undefined && observation.component[1].code.coding.length > 0) {
+    if (observation.component[1].code !== undefined && observation.component[1].code.coding !== undefined
+        && observation.component[1].code.coding.length > 0) {
       unit1 = observation.component[1].code.coding[0].display;
     }
     if (observation.component[0].valueQuantity.unit !== undefined) {
@@ -88,10 +93,10 @@ export class ObservationComponent implements OnInit {
       unit1 = observation.component[1].valueQuantity.unit;
     }
 
-    if (unit0 === unit1 || unit1==="") {
-      return observation.component[0].valueQuantity.value + "/" + observation.component[1].valueQuantity.value + " " + unit0;
+    if (unit0 === unit1 || unit1 === '') {
+      return observation.component[0].valueQuantity.value + '/' + observation.component[1].valueQuantity.value + ' ' + unit0;
     } else {
-      return observation.component[0].valueQuantity.value + "/" + observation.component[1].valueQuantity.value + " " + unit0 + "/" + unit1;
+      return observation.component[0].valueQuantity.value + '/' + observation.component[1].valueQuantity.value + ' ' + unit0 + '/' + unit1;
     }
 
   }
@@ -103,16 +108,6 @@ export class ObservationComponent implements OnInit {
   isSNOMED(system: string): boolean {
     return this.linksService.isSNOMED(system);
   }
-
-  /*
-
-  onClick(content , observation: fhir.Observation) {
-    console.log("Clicked - "+ observation.id);
-    this.selectedObs = observation;
-    //this.router.navigate(['./medicalrecord/'+this.getPatientId(this.observation.subject.reference)+'/observation/'+this.observation.code.coding[0].code ] );
-    this.modalService.open(content, { windowClass: 'dark-modal' });
-  }
-  */
 
   getSNOMEDLink(code: fhir.Coding) {
     if (this.linksService.isSNOMED(code.system)) {
@@ -131,6 +126,9 @@ export class ObservationComponent implements OnInit {
     };
     const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
   }
+
+
+
 
     selectChart(observation: fhir.Observation) {
 

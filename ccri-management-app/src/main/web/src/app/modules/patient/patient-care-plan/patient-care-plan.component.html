@@ -3,31 +3,72 @@
   <mat-card-content>
     <span *ngIf="careplan.category !== undefined && careplan.category.length > 0; else noid">
       <h3>{{careplan.category[0].coding[0].display}}</h3>
+        <span *ngIf="careplan.period !== undefined">
+        {{ careplan.period.start | date: 'dd-MMM-yyyy'}}
+        </span>
     </span>
     <ng-template #noid>
        <h3>End Of Life Care</h3>
     </ng-template>
-    <h4>Addresses (Advanced Treatment Preference Problem)</h4>
+   <!-- <h4>Addresses (Advanced Treatment Preference Problem)</h4>
           <span *ngIf="conditions.length>0; else noresults">
              <app-condition [conditions]="conditions"> </app-condition>
           </span>
           <ng-template #noresults>
              No results found.
           </ng-template>
-
+-->
     <h4>Activity (Advanced Treatment Preferences)</h4>
-    <span *ngFor="let activity of careplan.activity">
-      <span *ngIf="activity.detail !==undefined">
-        <span *ngIf="activity.detail.code !== undefined && activity.detail.code.coding !== undefined">
-        {{activity.detail.code.coding[0].display}}
-        </span>
-        <p>{{activity.detail.status}}</p>
-        <p>{{activity.detail.description}}</p>
+      <span *ngIf="activity !== undefined">
+          <table mat-table [dataSource]="activity">
+              <ng-container matColumnDef="activity">
+                  <th mat-header-cell *matHeaderCellDef width="25%"> Activity </th>
+                  <td mat-cell *matCellDef="let activity"> <span *ngIf="activity.detail !==undefined">
+                                <span *ngIf="activity.detail.code !== undefined && activity.detail.code.coding !== undefined">
+                                {{activity.detail.code.coding[0].display}}
+                                </span>
+                                </span> </td>
+              </ng-container>
+               <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef width="5%"> Status </th>
+                  <td mat-cell *matCellDef="let activity">  <span *ngIf="activity.detail !==undefined">
+                    {{activity.detail.status}}
+                    </span> </td>
+              </ng-container>
+                <ng-container matColumnDef="description">
+                  <th mat-header-cell *matHeaderCellDef> Description </th>
+                  <td mat-cell *matCellDef="let activity">   <span *ngIf="activity.detail !==undefined">
+                    {{activity.detail.description}}
+                    </span> </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
       </span>
-    </span>
      </mat-card-content>
+  <mat-card-actions>
+      <button mat-icon-button color="accent" placement="top" matTooltip="View FHIR resource" (click)="select(careplan)"><mat-icon>code</mat-icon>
+        Care Plan</button>
+  </mat-card-actions>
 </mat-card>
+  <mat-card>
+    <mat-card-content>
+        <h4>Care Team / Contacts</h4>
+      <span *ngIf="careTeam !== undefined && careTeam.length>0">
+          <app-care-team [careTeams]="careTeam"></app-care-team>
+      </span>
+    </mat-card-content>
+  </mat-card>
 <mat-card>
+    <span *ngIf="prognosis.length >0">
+        <mat-card>
+            <mat-card-content>
+                <h4>Prognosis</h4>
+                <app-clinical-impression [clinicalImpressions]="prognosis"></app-clinical-impression>
+            </mat-card-content>
+        </mat-card>
+    </span>
   <mat-card-content>
       <h4>Questionnaire Responses</h4>
       <span *ngFor="let form of forms">
@@ -37,17 +78,14 @@
             <mat-card-content>
                <span *ngIf="form.questionnaire !== undefined">
               <h4>{{form.questionnaire.display}}</h4>
+                   {{ form.authored | date: 'dd-MMM-yyyy'}}
             </span>
-          <span *ngFor="let item of form.item">
-              <p>
-                  <i>{{item.text}}</i> &nbsp;
-                  <b *ngIf="item.answer !== undefined && item.answer.length>0">
-                      {{item.answer[0].valueString}}
-                      <span *ngIf="item.answer[0].valueReference !== undefined">{{item.answer[0].valueReference.display}}</span>
-                  </b>
-              </p>
-          </span>
+                <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
               </mat-card-content>
+            <mat-card-actions>
+               <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
+                 Questionnaire</button>
+            </mat-card-actions>
             </mat-card>
           </span>
       </span>

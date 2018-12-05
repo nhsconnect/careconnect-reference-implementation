@@ -3,11 +3,13 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanCategory;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamIdentifier;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamMember;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamReason;
 import uk.nhs.careconnect.ri.database.entity.careTeam.*;
+import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationNote;
 
 @Component
 public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<CareTeamEntity, CareTeam> {
@@ -43,8 +45,17 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
         if (careTeamEntity.getStatus() != null) {
             careTeam.setStatus(careTeamEntity.getStatus());
         }
+        for (CareTeamCategory categoryEntity : careTeamEntity.getCategories()) {
+            CodeableConcept concept = careTeam.addCategory();
+            concept.addCoding()
+                    .setSystem(categoryEntity.getCategory().getSystem())
+                    .setCode(categoryEntity.getCategory().getCode())
+                    .setDisplay(categoryEntity.getCategory().getDisplay());
+        }
 
-
+        if (careTeamEntity.getName() != null) {
+            careTeam.setName(careTeamEntity.getName());
+        }
         
 
         if (careTeamEntity.getContextEncounter()!=null) {
@@ -67,7 +78,7 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
         }
 
         if (careTeamEntity.getManagingOrganisation() != null) {
-            careTeam.addManagingOrganization(new Reference("Organization/"+careTeamEntity.getManagingOrganisation().getId()));
+            careTeam.addManagingOrganization(new Reference("Organization/"+careTeamEntity.getManagingOrganisation().getId()).setDisplay(careTeamEntity.getManagingOrganisation().getName()));
         }
 
         for (CareTeamIdentifier identifier : careTeamEntity.getIdentifiers()) {
@@ -86,24 +97,40 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
                         .setCode(careTeamMember.getRole().getCode());
             }
             if (careTeamMember.getMemberOrganisation() != null) {
-                participant.setMember(new Reference("Organization/"+careTeamMember.getMemberOrganisation().getId()));
+                participant.setMember(new Reference("Organization/"+careTeamMember.getMemberOrganisation().getId()).setDisplay(careTeamMember.getMemberOrganisation().getName()));
             }
             if (careTeamMember.getMemberPractitioner() != null) {
-                participant.setMember(new Reference("Practitioner/"+careTeamMember.getMemberPractitioner().getId()));
+                participant.setMember(new Reference("Practitioner/"+careTeamMember.getMemberPractitioner().getId()).setDisplay(careTeamMember.getMemberPractitioner().getNames().get(0).getDisplayName()));
             }
             if (careTeamMember.getMemberPerson() != null) {
-                participant.setMember(new Reference("RelatedPerson/"+careTeamMember.getMemberPerson().getId()));
+                participant.setMember(new Reference("RelatedPerson/"+careTeamMember.getMemberPerson().getId()).setDisplay(careTeamMember.getMemberPerson().getNames().get(0).getDisplayName()));
             }
             if (careTeamMember.getMemberPatient() != null) {
-                participant.setMember(new Reference("Patient/"+careTeamMember.getMemberPatient().getId()));
+                participant.setMember(new Reference("Patient/"+careTeamMember.getMemberPatient().getId()).setDisplay(careTeamMember.getMemberPatient().getNames().get(0).getDisplayName()));
             }
             if (careTeamMember.getOnBehalfOrganisation() != null) {
-                participant.setOnBehalfOf(new Reference("Organization/"+careTeamMember.getOnBehalfOrganisation().getId()));
+                participant.setOnBehalfOf(new Reference("Organization/"+careTeamMember.getOnBehalfOrganisation().getId()).setDisplay(careTeamMember.getOnBehalfOrganisation().getName()));
             }
 
         }
         for (CareTeamReason reason : careTeamEntity.getReasons()) {
             careTeam.addReasonReference(new Reference("Condition/" + reason.getCondition().getId()));
+        }
+
+        for (CareTeamNote note : careTeamEntity.getNotes()) {
+            Annotation annotation = careTeam.addNote();
+            if (note.getNoteDate() != null) {
+                annotation.setTime(note.getNoteDate());
+            }
+            if (note.getNoteText() != null) {
+                annotation.setText(note.getNoteText());
+            }
+            if (note.getNotePatient()!=null) {
+                annotation.setAuthor(new Reference("Patient/"+note.getNotePatient().getId()));
+            }
+            if (note.getNotePractitioner()!=null) {
+                annotation.setAuthor(new Reference("Practitioner/"+note.getNotePractitioner().getId()));
+            }
         }
 
 

@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CarePlanDataSource} from "../../data-source/care-plan-data-source";
-import {LinksService} from  '../../service/links.service';
+import {CarePlanDataSource} from '../../data-source/care-plan-data-source';
+import {LinksService} from '../../service/links.service';
 import {BundleService} from '../../service/bundle.service';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {FhirService} from '../../service/fhir.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
-import {PractitionerDialogComponent} from "../../dialog/practitioner-dialog/practitioner-dialog.component";
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
+import {PractitionerDialogComponent} from '../../dialog/practitioner-dialog/practitioner-dialog.component';
 
 @Component({
   selector: 'app-care-plan',
@@ -20,11 +20,11 @@ export class CarePlanComponent implements OnInit {
 
     @Input() patientId: string;
 
-    @Input() useBundle :boolean = false;
+    @Input() useBundle = false;
 
-    dataSource : CarePlanDataSource;
+    dataSource: CarePlanDataSource;
 
-    displayedColumns = ['select','start','end','category','status','intent', 'authorLink', 'resource'];
+    displayedColumns = ['select', 'start', 'end', 'category', 'status', 'intent', 'authorLink', 'resource'];
 
     constructor(private linksService: LinksService,
                 public bundleService: BundleService,
@@ -51,12 +51,12 @@ export class CarePlanComponent implements OnInit {
         const resourceDialog: MatDialogRef<ResourceDialogComponent> = this.dialog.open( ResourceDialogComponent, dialogConfig);
     }
 
-  showPractitioner(careplan :fhir.CarePlan) {
-    let practitioners = [];
+  showPractitioner(careplan: fhir.CarePlan) {
+    const practitioners = [];
 
-    for (let reference of careplan.author) {
+    for (const reference of careplan.author) {
       this.bundleService.getResource(reference.reference).subscribe((practitioner) => {
-          if (practitioner !== undefined && practitioner.resourceType === "Practitioner") {
+          if (practitioner !== undefined && practitioner.resourceType === 'Practitioner') {
             practitioners.push(<fhir.Practitioner> practitioner);
 
             const dialogConfig = new MatDialogConfig();
@@ -69,7 +69,7 @@ export class CarePlanComponent implements OnInit {
               practitioners: practitioners,
               useBundle : this.useBundle
             };
-            let resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
+            const resourceDialog: MatDialogRef<PractitionerDialogComponent> = this.dialog.open(PractitionerDialogComponent, dialogConfig);
           }
         }
       );

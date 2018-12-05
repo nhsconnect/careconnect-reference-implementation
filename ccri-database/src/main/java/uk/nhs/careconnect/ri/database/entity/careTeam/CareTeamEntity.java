@@ -12,10 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "CareTeam",
-        indexes = {
-
-        })
+@Table(name = "CareTeam"
+        )
 public class CareTeamEntity extends BaseResource {
 
     private static final int MAX_DESC_LENGTH = 4096;
@@ -33,6 +31,9 @@ public class CareTeamEntity extends BaseResource {
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
     private CareTeam.CareTeamStatus status;
+
+    @OneToMany(mappedBy="team", targetEntity=CareTeamCategory.class)
+    private Set<CareTeamCategory> categories = new HashSet<>();
 
     @Column(name="NAME")
     private String name;
@@ -67,8 +68,8 @@ public class CareTeamEntity extends BaseResource {
     @JoinColumn(name="MANAGING_ORGANISATION",foreignKey= @ForeignKey(name="FK_CARE_TEAM_MANAGING_ORGANISATION"))
     private OrganisationEntity managingOrganisation;
 
-    @Column(name="NOTE",length = MAX_DESC_LENGTH,nullable = true)
-    private String note;
+    @OneToMany(mappedBy="team", targetEntity=CareTeamNote.class)
+    private Set<CareTeamNote> notes = new HashSet<>();
 
 
     public Long getId() {
@@ -179,11 +180,19 @@ public class CareTeamEntity extends BaseResource {
         this.managingOrganisation = managingOrganisation;
     }
 
-    public String getNote() {
-        return note;
+    public Set<CareTeamNote> getNotes() {
+        return notes;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setNotes(Set<CareTeamNote> notes) {
+        this.notes = notes;
+    }
+
+    public Set<CareTeamCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<CareTeamCategory> categories) {
+        this.categories = categories;
     }
 }

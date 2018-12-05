@@ -221,7 +221,7 @@
 
   </mat-card-content>
     <mat-card-actions>
-        <button mat-raised-button placement="top" (click)="select(section)"  color="accent"><mat-icon>code</mat-icon>
+        <button mat-button placement="top" (click)="select(section)"  color="accent"><mat-icon>code</mat-icon>
             Section</button>
         <button mat-raised-button *ngIf="section.entry !== undefined" placement="top" (click)="open()" color="accent">
             <mat-icon *ngIf="!showStructured">arrow_drop_down</mat-icon>

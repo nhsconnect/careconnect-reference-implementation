@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
 
-import {FhirService} from "./fhir.service";
+import {FhirService} from './fhir.service';
 
 
 @Injectable()
@@ -12,31 +12,33 @@ export class EprService {
       route: '/',
       title: 'FHIR Explorer',
     }
-    ,{
+    , {
       icon: 'search',
       route: '/ed',
       title: 'Patient Find' +
         '',
     }
-    ,{
+    , {
       icon: 'hotel',
       route: '/ed/caseload',
       title: 'Caseload',
     }
-    ,{
+    , {
       icon: 'dashboard',
       route: '/ed/capacity',
       title: 'Emergency Planning',
     }
-    ,{
+  ];
+
+  public oauth2routes: Object[] = [
+     {
       icon: 'apps',
       route: '/ed/smart',
       title: 'SMART on FHIR Apps',
     }
-
   ];
 
-  public routesExt : Object[] = [{
+  public routesExt: Object[] = [{
     icon: 'lock',
     route: 'https://data.developer.nhs.uk/ccri-auth/',
     title: 'OAuth2 (SMART on FHIR) Server',
@@ -70,7 +72,7 @@ export class EprService {
 
   patient: fhir.Patient = undefined;
 
-  resource : any = undefined;
+  resource: any = undefined;
 
   section: string;
 
@@ -78,13 +80,13 @@ export class EprService {
 
   userEmail: string;
 
-  gpConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+  gpConnectStatusEmitter: EventEmitter<string> = new EventEmitter();
 
-  nrlsConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+  nrlsConnectStatusEmitter: EventEmitter<string> = new EventEmitter();
 
-  acuteConnectStatusEmitter : EventEmitter<string> = new EventEmitter();
+  acuteConnectStatusEmitter: EventEmitter<string> = new EventEmitter();
 
-  flagEmitter : EventEmitter<fhir.Flag> = new EventEmitter();
+  flagEmitter: EventEmitter<fhir.Flag> = new EventEmitter();
 
   patientAllergies: fhir.AllergyIntolerance[] = [];
 
@@ -98,13 +100,13 @@ export class EprService {
 
   private title: string;
 
-  private titleChangeEvent : EventEmitter<string> = new EventEmitter<string>();
+  private titleChangeEvent: EventEmitter<string> = new EventEmitter<string>();
 
-  private patientChangeEvent : EventEmitter<fhir.Patient> = new EventEmitter();
+  private patientChangeEvent: EventEmitter<fhir.Patient> = new EventEmitter();
 
-  private resourceChangeEvent : EventEmitter<any> = new EventEmitter();
+  private resourceChangeEvent: EventEmitter<any> = new EventEmitter();
 
-  private sectionChangeEvent : EventEmitter<string> = new EventEmitter();
+  private sectionChangeEvent: EventEmitter<string> = new EventEmitter();
 
   set(patient: fhir.Patient) {
 

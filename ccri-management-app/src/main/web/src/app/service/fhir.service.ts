@@ -1,8 +1,8 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {environment} from "../../environments/environment.prod";
-import {Oauth2Service} from "./oauth2.service";
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+import {Oauth2Service} from './oauth2.service';
 
 
 export enum Formats {
@@ -18,32 +18,32 @@ export enum Formats {
 export class FhirService {
 
 
-  //private baseUrl: string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
+  // private baseUrl: string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
     private baseUrl: string = undefined;
 
-  private GPCbaseUrl: string = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
+  private GPCbaseUrl = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
    // private GPCbaseUrl: string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
 
-    private NRLSbaseUrl: string = 'https://data.developer.nhs.uk/nrls-ri';
+    private NRLSbaseUrl = 'https://data.developer.nhs.uk/nrls-ri';
 
     private registerUri: string;
 
-  private format : Formats = Formats.JsonFormatted;
+  private format: Formats = Formats.JsonFormatted;
 
     // public smart: SMARTClient;
 
   public conformance: fhir.CapabilityStatement;
 
-  conformanceChange : EventEmitter<any> = new EventEmitter();
+  conformanceChange: EventEmitter<any> = new EventEmitter();
 
-  rootUrlChange : EventEmitter<any> = new EventEmitter();
+  rootUrlChange: EventEmitter<any> = new EventEmitter();
 
-    formatChange : EventEmitter<any> = new EventEmitter();
+    formatChange: EventEmitter<any> = new EventEmitter();
 
    private rootUrl: string = undefined;
 
 
-    constructor( private http: HttpClient, private oauth2 : Oauth2Service) {
+    constructor( private http: HttpClient, private oauth2: Oauth2Service) {
 
 
     /*
@@ -72,11 +72,11 @@ export class FhirService {
 
 
       if (this.conformance !== undefined) {
-        for (let rest of this.conformance.rest) {
+        for (const rest of this.conformance.rest) {
           if (rest.security !== undefined && rest.security.service !== undefined) {
-            for (let service of rest.security.service) {
+            for (const service of rest.security.service) {
               if (service.coding !== undefined && service.coding.length > 0) {
-                if (service.coding[0].system == 'SMART-on-FHIR') {
+                if (service.coding[0].system === 'SMART-on-FHIR') {
 
                   return true;
                 }
@@ -90,14 +90,14 @@ export class FhirService {
 
 
     storeBaseUrl(baseUrl: string) {
-        localStorage.setItem('baseUrl',baseUrl);
+        localStorage.setItem('baseUrl', baseUrl);
     }
 
     getStoredBaseUrl(): string {
         return localStorage.getItem('baseUrl');
     }
 
-  public getBaseUrl() :string {
+  public getBaseUrl(): string {
 
 
         if (this.getStoredBaseUrl() !== undefined && this.getStoredBaseUrl() !== null) {
@@ -128,8 +128,7 @@ export class FhirService {
             retStr = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
             console.log('swapping to smartonfhir instance: ' + retStr);
             this.baseUrl = retStr;
-          }
-          else {
+          } else {
             if (retStr.includes('ccri-fhir')) {
               retStr = retStr.replace('ccri-fhir', 'ccri-smartonfhir');
               console.log('swapping to smartonfhir instance: ' + retStr);
@@ -149,7 +148,7 @@ export class FhirService {
       return retStr;
 }
 
-public setRootUrl(rootUrl :string) {
+public setRootUrl(rootUrl: string) {
     this.storeBaseUrl(rootUrl);
 this.rootUrl = rootUrl;
 this.baseUrl = rootUrl;
@@ -215,54 +214,53 @@ return headers;
 
 getEPRHeaders(contentType: boolean = true ): HttpHeaders {
 
-let headers = this.getHeaders(contentType);
+const headers = this.getHeaders(contentType);
 
 return headers;
 }
 
-public setOutputFormat(outputFormat : Formats) {
+public setOutputFormat(outputFormat: Formats) {
 this.format = outputFormat;
 this.formatChange.emit(outputFormat);
 }
 
 public getConformance() {
 //  console.log('called CapabilityStatement');
-this.http.get<any>(this.getBaseUrl()+'/metadata',{ 'headers' : this.getHeaders(true)}).subscribe(capabilityStatement =>
-{
+this.http.get<any>(this.getBaseUrl() + '/metadata', { 'headers' : this.getHeaders(true)}).subscribe(capabilityStatement => {
 this.conformance = capabilityStatement;
 
 this.conformanceChange.emit(capabilityStatement);
-},()=>{
-this.conformance = undefined;
-this.conformanceChange.emit(undefined);
+}, () => {
+  this.conformance = undefined;
+  this.conformanceChange.emit(undefined);
 });
 }
 
-public postAny(url: string, body: string, httpHeaders : HttpHeaders) {
+public postAny(url: string, body: string, httpHeaders: HttpHeaders) {
 return this.http.post<any>(url, body, { headers : httpHeaders});
 }
 
-public post(resource: string , body : any) : Observable<any> {
+public post(resource: string , body: any): Observable<any> {
 
-let headers :HttpHeaders = this.getEPRHeaders(false);
-headers.append('Content-Type','application/fhir+json');
-headers.append('Prefer','return=representation');
-return this.http.post<any>(this.getFHIRServerBase()+ resource, body, { headers : headers});
+const headers: HttpHeaders = this.getEPRHeaders(false);
+headers.append('Content-Type', 'application/fhir+json');
+headers.append('Prefer', 'return=representation');
+return this.http.post<any>(this.getFHIRServerBase() + resource, body, { headers : headers});
 }
 
-public put(resource: string, body : any) : Observable<any> {
+public put(resource: string, body: any): Observable<any> {
 
-let headers :HttpHeaders = this.getEPRHeaders(false);
-headers.append('Content-Type','application/fhir+json');
-headers.append('Prefer','return=representation');
+const headers: HttpHeaders = this.getEPRHeaders(false);
+headers.append('Content-Type', 'application/fhir+json');
+headers.append('Prefer', 'return=representation');
 const url = this.getFHIRServerBase() + resource;
 
-return this.http.put<fhir.Endpoint>(url,body,{ 'headers' :headers});
+return this.http.put<fhir.Endpoint>(url, body, { 'headers': headers});
 }
 
-public get(search: string) : Observable<fhir.Bundle> {
+public get(search: string): Observable<fhir.Bundle> {
 
-let url: string = this.getFHIRServerBase() + search;
+const url: string = this.getFHIRServerBase() + search;
 let headers = new HttpHeaders(
 );
 
@@ -275,15 +273,15 @@ return this.http.get<any>(url, {'headers': headers});
 }
 }
 
-public getNRLSResource(search: string) : Observable<any> {
+public getNRLSResource(search: string): Observable<any> {
 
-let url = this.getFHIRNRLSServerBase() + search;
+const url = this.getFHIRNRLSServerBase() + search;
 let headers = new HttpHeaders(
 );
 
-headers = headers.append('Authorization','Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
-headers = headers.append('fromASID','200000000117');
-headers = headers.append('toASID','999999999999');
+headers = headers.append('Authorization', 'Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
+headers = headers.append('fromASID', '200000000117');
+headers = headers.append('toASID', '999999999999');
 
 if (this.format === 'xml') {
 headers = headers.append( 'Content-Type',  'application/fhir+xml' );
@@ -295,38 +293,39 @@ return this.http.get<any>(url, {'headers': this.getHeaders(true)});
 }
 }
 
-public getNRLS(search: string) : Observable<fhir.Bundle> {
+public getNRLS(search: string): Observable<fhir.Bundle> {
 
-let url: string = this.getFHIRNRLSServerBase() + search;
+const url: string = this.getFHIRNRLSServerBase() + search;
 let headers = new HttpHeaders(
 );
 
 
 //   headers = headers.append( 'Content-Type',  'application/fhir+json' );
 headers = headers.append('Accept', 'application/fhir+json');
-headers = headers.append('Authorization','Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
-headers = headers.append('fromASID','200000000117');
-headers = headers.append('toASID','999999999999');
+headers = headers.append('Authorization', 'Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2RlbW9uc3RyYXRvci5jb20iLCJzdWIiOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL3Nkcy1yb2xlLXByb2ZpbGUtaWR8ZmFrZVJvbGVJZCIsImF1ZCI6Imh0dHBzOi8vbnJscy5jb20vZmhpci9kb2N1bWVudHJlZmVyZW5jZSIsImV4cCI6MTUzOTM1Mjk3OCwiaWF0IjoxNTM5MzUyNjc4LCJyZWFzb25fZm9yX3JlcXVlc3QiOiJkaXJlY3RjYXJlIiwic2NvcGUiOiJwYXRpZW50L0RvY3VtZW50UmVmZXJlbmNlLnJlYWQiLCJyZXF1ZXN0aW5nX3N5c3RlbSI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvYWNjcmVkaXRlZC1zeXN0ZW18MjAwMDAwMDAwMTE3IiwicmVxdWVzdGluZ19vcmdhbml6YXRpb24iOiJodHRwczovL2ZoaXIubmhzLnVrL0lkL29kcy1vcmdhbml6YXRpb24tY29kZXxBTVMwMSIsInJlcXVlc3RpbmdfdXNlciI6Imh0dHBzOi8vZmhpci5uaHMudWsvSWQvc2RzLXJvbGUtcHJvZmlsZS1pZHxmYWtlUm9sZUlkIn0=.');
+headers = headers.append('fromASID', '200000000117');
+headers = headers.append('toASID', '999999999999');
 
 return this.http.get<any>(url, {'headers': headers});
 
 }
 
-public postGPC(nhsNumber: string) : Observable<fhir.Bundle> {
+public postGPC(nhsNumber: string): Observable<fhir.Bundle> {
 
-let url: string = this.getFHIRGPCServerBase() +'/Patient/$gpc.getstructuredrecord' ;
+const url: string = this.getFHIRGPCServerBase() + '/Patient/$gpc.getstructuredrecord' ;
 let headers = new HttpHeaders(
 );
 headers = headers.append( 'Content-Type',  'application/fhir+json' );
 headers = headers.append('Accept', 'application/fhir+json');
-let body = '{ "resourceType": "Parameters", "parameter": [ { "name": "patientNHSNumber", "valueIdentifier": { "system": "https://fhir.nhs.uk/Id/nhs-number", "value": "'+nhsNumber+'" } }, { "name": "includeAllergies","part": [{"name": "includeResolvedAllergies","valueBoolean": true}]},{"name": "includeMedication","part": [{"name": "includePrescriptionIssues","valueBoolean": true}]}]}';
+const body = '{ "resourceType": "Parameters", "parameter": [ { "name": "patientNHSNumber", "valueIdentifier": { "system": "https://fhir.nhs.uk/Id/nhs-number", "value": "'
+  + nhsNumber + '" } }, { "name": "includeAllergies","part": [{"name": "includeResolvedAllergies","valueBoolean": true}]},{"name": "includeMedication","part": [{"name": "includePrescriptionIssues","valueBoolean": true}]}]}';
 
-return this.http.post<any>(url, body,{'headers': headers});
+return this.http.post<any>(url, body, {'headers': headers});
 }
 
-public getResource(search: string) : Observable<any> {
+public getResource(search: string): Observable<any> {
 
-let url = this.getFHIRServerBase() + search;
+const url = this.getFHIRServerBase() + search;
 let headers = new HttpHeaders(
 );
 
@@ -341,7 +340,7 @@ return this.http.get<any>(url, {'headers': this.getHeaders(true)});
 
 
 
-public getResults(url: string) : Observable<fhir.Bundle> {
+public getResults(url: string): Observable<fhir.Bundle> {
 console.log('getResults');
 let headers = new HttpHeaders();
 
@@ -356,22 +355,22 @@ return this.http.get<any>(url, {'headers': this.getHeaders(true)});
 
 getBinary(id: string): Observable<fhir.Binary> {
 
-const url = this.getBaseUrl() + '/Binary/'+id;
+const url = this.getBaseUrl() + '/Binary/' + id;
 
-return this.http.get<fhir.Binary>(url,{ 'headers' : this.getEPRHeaders(true)});
+return this.http.get<fhir.Binary>(url, { 'headers' : this.getEPRHeaders(true)});
 
 }
-getBinaryRaw(id: string,): Observable<any> {
+getBinaryRaw(id: string): Observable<any> {
 
-const url = this.getBaseUrl() + '/Binary/'+id;
+const url = this.getBaseUrl() + '/Binary/' + id;
 
-return this.http.get(url,{ 'headers' : this.getEPRHeaders(false) , responseType : 'blob' });
+return this.http.get(url, { 'headers' : this.getEPRHeaders(false) , responseType : 'blob' });
 
 }
 
 getCompositionDocumentHTML(id: string): Observable<any> {
 
-const url =this.getBaseUrl() + '/Binary/'+id;
+const url = this.getBaseUrl() + '/Binary/' + id;
 
 let headers = this.getEPRHeaders(false);
 headers = headers.append('Content-Type', 'text/html' );
@@ -381,7 +380,7 @@ return this.http
 }
 
 searchPatients(term: string): Observable<fhir.Bundle> {
-let url =  this.getBaseUrl();
+const url =  this.getBaseUrl();
 if (!isNaN(parseInt(term))) {
 return this.http.get<fhir.Bundle>(url + `/Patient?identifier=${term}`, { 'headers' : this.getEPRHeaders() });
 } else {
@@ -394,7 +393,7 @@ return this.http.get<fhir.Bundle>(url + `/Patient?name=${term}`, {'headers': thi
 
 getCompositionDocumentPDF(id: string): Observable<any> {
 
-const url = this.getBaseUrl() + '/Binary/'+id;
+const url = this.getBaseUrl() + '/Binary/' + id;
 
 let headers = this.getEPRHeaders(false);
 headers = headers.append(
