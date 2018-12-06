@@ -8,4 +8,8 @@
 <span *ngIf="docType=='fhir'">
   <app-view-document [binaryId]="binaryId"></app-view-document>
 </span>
+<span *ngIf="docType=='html'">
+  <app-html-viewer [binaryId]="binaryId"></app-html-viewer>
+</span>
+
 
