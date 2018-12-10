@@ -1,4 +1,14 @@
 
+
+docker build . -t ccri-management
+
+docker tag ccri-management thorlogic/ccri-management
+
+
+docker push thorlogic/ccri-management
+
+
+
 Command for retrieving certs from ODS
 
 openssl s_client -showcerts -connect server.edu:443 </dev/null 2>/dev/null|openssl x509 -outform PEM >mycertfile.pem
