@@ -10,14 +10,63 @@
     <ng-template #noid>
        <h3>End Of Life Care</h3>
     </ng-template>
-   <!-- <h4>Addresses (Advanced Treatment Preference Problem)</h4>
-          <span *ngIf="conditions.length>0; else noresults">
-             <app-condition [conditions]="conditions"> </app-condition>
+  </mat-card-content>
+</mat-card>
+
+
+    <!-- Flags -->
+
+    <mat-card>
+  <mat-card-content>
+        <h4>Alerts</h4>
+          <span *ngIf="flags.length>0; else noflags">
+
+
+              <app-flag [flags]="flags" ></app-flag>
           </span>
-          <ng-template #noresults>
-             No results found.
+          <ng-template #noflags>
+                                 No results found.
           </ng-template>
--->
+     </mat-card-content>
+</mat-card>
+
+
+
+    <!-- Contacts -->
+
+   <mat-card>
+    <mat-card-content>
+        <h4>Care Team / Contacts</h4>
+      <span *ngIf="careTeam !== undefined && careTeam.length>0">
+          <app-care-team [careTeams]="careTeam"></app-care-team>
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+    <!-- CTP  -->
+
+  <span *ngFor="let form of forms">
+
+    <span *ngIf="form.item !== undefined && form.questionnaire.reference === 'Questionnaire/1'">
+      <mat-card>
+        <mat-card-content>
+           <span *ngIf="form.questionnaire !== undefined">
+              <h4>{{form.questionnaire.display}}</h4>
+               {{ form.authored | date: 'dd-MMM-yyyy'}}
+            </span>
+            <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
+        </mat-card-content>
+        <mat-card-actions>
+           <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
+             Questionnaire</button>
+        </mat-card-actions>
+        </mat-card>
+      </span>
+  </span>
+
+
+    <mat-card>
+        <mat-card-content>
     <h4>Activity (Advanced Treatment Preferences)</h4>
       <span *ngIf="activity !== undefined">
           <table mat-table [dataSource]="activity">
@@ -52,14 +101,32 @@
         Care Plan</button>
   </mat-card-actions>
 </mat-card>
-  <mat-card>
-    <mat-card-content>
-        <h4>Care Team / Contacts</h4>
-      <span *ngIf="careTeam !== undefined && careTeam.length>0">
-          <app-care-team [careTeams]="careTeam"></app-care-team>
+
+
+
+    <!-- Preferences -->
+
+  <span *ngFor="let form of forms">
+
+    <span *ngIf="form.item !== undefined && form.questionnaire.reference === 'Questionnaire/2'">
+      <mat-card>
+        <mat-card-content>
+           <span *ngIf="form.questionnaire !== undefined">
+              <h4>{{form.questionnaire.display}}</h4>
+                   {{ form.authored | date: 'dd-MMM-yyyy'}}
+            </span>
+            <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
+        </mat-card-content>
+        <mat-card-actions>
+           <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
+             Questionnaire</button>
+        </mat-card-actions>
+        </mat-card>
       </span>
-    </mat-card-content>
-  </mat-card>
+  </span>
+
+    <!-- Prognosis -->
+
 <mat-card>
     <span *ngIf="prognosis.length >0">
         <mat-card>
@@ -69,41 +136,30 @@
             </mat-card-content>
         </mat-card>
     </span>
-  <mat-card-content>
-      <h4>Questionnaire Responses</h4>
-      <span *ngFor="let form of forms">
+</mat-card>
 
-        <span *ngIf="form.item !== undefined">
-          <mat-card>
-            <mat-card-content>
-               <span *ngIf="form.questionnaire !== undefined">
+    <!-- Lasting Power of Attorney -->
+
+  <span *ngFor="let form of forms">
+
+    <span *ngIf="form.item !== undefined && form.questionnaire.reference === 'Questionnaire/3'">
+      <mat-card>
+        <mat-card-content>
+           <span *ngIf="form.questionnaire !== undefined">
               <h4>{{form.questionnaire.display}}</h4>
-                   {{ form.authored | date: 'dd-MMM-yyyy'}}
+               {{ form.authored | date: 'dd-MMM-yyyy'}}
             </span>
-                <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
-              </mat-card-content>
-            <mat-card-actions>
-               <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
-                 Questionnaire</button>
-            </mat-card-actions>
-            </mat-card>
-          </span>
+            <app-questionnaire-response-item [form]="form"></app-questionnaire-response-item>
+        </mat-card-content>
+        <mat-card-actions>
+           <button mat-icon-button color="accent" placement="top"  matTooltip="View FHIR resource" (click)="select(form)"><mat-icon>code</mat-icon>
+             Questionnaire</button>
+        </mat-card-actions>
+        </mat-card>
       </span>
-     </mat-card-content>
-</mat-card>
-<mat-card>
-  <mat-card-content>
-        <h4>Alerts</h4>
-          <span *ngIf="flags.length>0; else noflags">
+  </span>
 
 
-              <app-flag [flags]="flags" ></app-flag>
-          </span>
-          <ng-template #noflags>
-                                 No results found.
-          </ng-template>
-     </mat-card-content>
-</mat-card>
 <mat-card>
   <mat-card-content>
         <h4>Functional Status</h4>
