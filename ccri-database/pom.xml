@@ -226,7 +226,7 @@
                        <configuration>
                            <!--   <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine> -->
                        </configuration>
-                   </plugin
+                   </plugin>
 
                </plugins>
            </build>
