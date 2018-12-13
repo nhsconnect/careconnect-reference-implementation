@@ -216,6 +216,14 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <!--   <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine> -->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
