@@ -1,7 +1,7 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {FhirService} from "./service/fhir.service";
-import {environment} from "../environments/environment";
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {FhirService} from './service/fhir.service';
+import {environment} from '../environments/environment';
 
 @Injectable()
 export class AppConfig {
@@ -11,12 +11,15 @@ export class AppConfig {
     load() {
         // console.log('hello App' + document.baseURI);
         // only run if not localhost
+        console.log('baseURI = ' + document.baseURI);
+
         if (!document.baseURI.includes('localhost')) {
             this.http.get<any>(document.baseURI + 'camel/config/http').subscribe(result => {
+                  console.log('app config fhirServer retrieved.');
                   console.log(result);
 
                   const access_token = localStorage.getItem('access_token_' + environment.oauth2.client_id);
-                  let rootUrl: string = result.fhirServer;
+                  const rootUrl: string = result.fhirServer;
                   /*
                   if (access_token === "" || access_token === null) {
                     //
@@ -41,7 +44,7 @@ export class AppConfig {
                 () => {
                     console.log('No server deteted');
                     // this.fhirServer.setRootUrl('http://127.0.0.1:8183/ccri-fhir/STU3');
-                })
+                });
         }
     }
 

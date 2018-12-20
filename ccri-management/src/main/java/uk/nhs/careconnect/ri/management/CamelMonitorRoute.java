@@ -64,6 +64,7 @@ public class CamelMonitorRoute extends RouteBuilder {
 		} catch(Exception ex) {
 			log.error(ex.getMessage());
 		}
+		log.info("Starting Camel Route MAIN FHIR Server = " + serverBase);
 
 
 		rest("/config")
