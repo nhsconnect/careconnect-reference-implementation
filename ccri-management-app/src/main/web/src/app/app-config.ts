@@ -14,13 +14,12 @@ export class AppConfig {
         console.log('baseURI = ' + document.baseURI);
 
         if (!document.baseURI.includes('localhost')) {
+            console.log('calling config endpoint: ' + document.baseURI + 'camel/config/http');
             this.http.get<any>(document.baseURI + 'camel/config/http').subscribe(result => {
                   console.log('app config fhirServer retrieved.');
                   console.log(result);
-
-                  const access_token = localStorage.getItem('access_token_' + environment.oauth2.client_id);
-                  const rootUrl: string = result.fhirServer;
                   /*
+                  const access_token = localStorage.getItem('access_token_' + environment.oauth2.client_id);
                   if (access_token === "" || access_token === null) {
                     //
                   } else {
@@ -38,11 +37,13 @@ export class AppConfig {
                     }
                   }
                   */
+                  const rootUrl: string = result.fhirServer;
                   this.fhirService.setRootUrl(rootUrl);
                   this.fhirService.setGPCNRLSUrl(document.baseURI);
               },
-                () => {
-                    console.log('No server deteted');
+                error => {
+                    console.log(error);
+                    console.log('No server detected');
                     // this.fhirServer.setRootUrl('http://127.0.0.1:8183/ccri-fhir/STU3');
                 });
         }
