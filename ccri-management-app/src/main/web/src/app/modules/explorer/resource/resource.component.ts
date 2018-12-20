@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
-import {FhirService, Formats} from "../../../service/fhir.service";
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {FhirService, Formats} from '../../../service/fhir.service';
 import {MatSelect} from '@angular/material';
-import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from "@covalent/dynamic-forms";
+import {ITdDynamicElementConfig, TdDynamicElement, TdDynamicFormsComponent} from '@covalent/dynamic-forms';
 
 
 
@@ -28,30 +28,30 @@ documentation:
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.css']
 })
-export class ResourceComponent implements OnInit,AfterViewInit {
+export class ResourceComponent implements OnInit, AfterViewInit {
 
 
     public resource: fhir.Bundle = undefined;
 
-    public resourceString : any = undefined;
+    public resourceString: any = undefined;
 
     public query = undefined;
 
-    public rest : any;
+    public rest: any;
 
     private _routerSub ;
 
     public base: string;
 
-    public format : Formats;
+    public format: Formats;
 
-    progressBar: boolean = false;
+    progressBar = false;
 
-    searchVisible: boolean = false;
+    searchVisible = false;
 
-    expanded: boolean = false;
+    expanded = false;
 
-    entries : any[];
+    entries: any[];
 
     allergies: fhir.AllergyIntolerance[];
     carePlans: fhir.CarePlan[];
@@ -82,20 +82,13 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     risks: fhir.RiskAssessment[];
     roles: fhir.PractitionerRole[];
 
+  public currentResource = '';
 
+  @ViewChild('field') field: MatSelect;
 
+  @ViewChild('dynform') form: TdDynamicFormsComponent;
 
-
-
-
-
-  public currentResource: string = "";
-
-  @ViewChild('field') field : MatSelect;
-
-  @ViewChild('dynform') form : TdDynamicFormsComponent;
-
-  public elements :ITdDynamicElementConfig[] = [
+  public elements: ITdDynamicElementConfig[] = [
 
   ];
 
@@ -106,7 +99,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     ];
 
 
-    constructor(private router : Router, private fhirSrv: FhirService,  private route: ActivatedRoute) { }
+    constructor(private router: Router, private fhirSrv: FhirService,  private route: ActivatedRoute) { }
 
   ngOnInit() {
      // console.log('Resource Init called'+ this.router.url);
@@ -114,7 +107,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
     this.clearDown();
 
 
-      let resource  = this.route.snapshot.paramMap.get('resourceType');
+      const resource = this.route.snapshot.paramMap.get('resourceType');
 
       if (this.fhirSrv.conformance !== undefined ) {
           this.buildOptions(resource);
@@ -127,20 +120,20 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                       this.buildOptions(resource);
                   }
               }
-          )
+          );
       }
 
       this.route.url.subscribe( url => {
-          //console.log('activated route url ='+url);
-          //console.log('activated route segment ='+url[0]);
+          // console.log('activated route url ='+url);
+          // console.log('activated route segment ='+url[0]);
           if (url[0].path === 'resource') {
-              let resource = this.route.snapshot.paramMap.get('resourceType');
+              const resourceType = this.route.snapshot.paramMap.get('resourceType');
               this.resource = undefined;
               this.resourceString = undefined;
               this.query = undefined;
               this.clearDown();
               this.onClear();
-              this.buildOptions(resource);
+              this.buildOptions(resourceType);
           }
       });
 
@@ -177,30 +170,30 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
   clearDown() {
     this.entries = [];
-    this.medicationStatements =[];
-    this.medicationDispenses =[];
-      this.medicationAdministrations =[];
-    this.prescriptions =[];
-    this.medications=[];
-    this.conditions=[];
-    this.procedures=[];
-    this.observations=[];
-    this.encounters=[];
-    this.allergies=[];
-    this.patients=[];
-    this.practitioners=[];
-    this.organisations=[];
-    this.roles=[];
-    this.services=[];
-    this.immunisations=[];
-    this.forms=[];
-    this.risks=[];
-    this.goals=[];
-    this.impressions=[];
-    this.consents=[];
-    this.carePlans=[];
-    this.documents=[];
-    this.referrals=[];
+    this.medicationStatements = [];
+    this.medicationDispenses = [];
+      this.medicationAdministrations = [];
+    this.prescriptions = [];
+    this.medications = [];
+    this.conditions = [];
+    this.procedures = [];
+    this.observations = [];
+    this.encounters = [];
+    this.allergies = [];
+    this.patients = [];
+    this.practitioners = [];
+    this.organisations = [];
+    this.roles = [];
+    this.services = [];
+    this.immunisations = [];
+    this.forms = [];
+    this.risks = [];
+    this.goals = [];
+    this.impressions = [];
+    this.consents = [];
+    this.carePlans = [];
+    this.documents = [];
+    this.referrals = [];
   }
 
   onExpand() {
@@ -212,45 +205,45 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   }
 
   onAdd(param) {
-    let seq :string = (this.elements.length + 1).toString(10);
+    const seq: string = (this.elements.length + 1).toString(10);
    if (param !== undefined) {
      switch (param.type) {
        case 'date' :
-         let nodeDSQ :ITdDynamicElementConfig = {
-           "label": 'Qual',
-           "name" : param.type+'-'+seq + '-1-'+ param.name,
-           "type": TdDynamicElement.Select,
-           "required": false,
-           "selections": [
+         const nodeDSQ: ITdDynamicElementConfig = {
+           'label': 'Qual',
+           'name' : param.type + '-' + seq + '-1-' + param.name,
+           'type': TdDynamicElement.Select,
+           'required': false,
+           'selections': [
              {
-               "label": "=",
-               "value": "eq"
+               'label': '=',
+               'value': 'eq'
              },
              {
-               "label": ">",
-               "value": "gt"
+               'label': '>',
+               'value': 'gt'
              },
              {
-               "label": ">=",
-               "value": "ge"
+               'label': '>=',
+               'value': 'ge'
              },
              {
-               "label": "<",
-               "value": "lt"
+               'label': '<',
+               'value': 'lt'
              },
              {
-               "label": "<",
-               "value": "le"
+               'label': '<',
+               'value': 'le'
              }
            ],
-           "flex" : 10
+           'flex' : 10
          };
-         let nodeDS :ITdDynamicElementConfig = {
-           "label": param.name + ' - '+param.documentation,
-           "name" : param.type+'-'+seq + '-2-'+param.name ,
-           "type": TdDynamicElement.Datepicker,
-           "required": true,
-           "flex" : 90
+         const nodeDS: ITdDynamicElementConfig = {
+           'label': param.name + ' - ' + param.documentation,
+           'name' : param.type + '-' + seq + '-2-' + param.name ,
+           'type': TdDynamicElement.Datepicker,
+           'required': true,
+           'flex' : 90
          };
 
          this.elements.push(nodeDSQ);
@@ -259,77 +252,76 @@ export class ResourceComponent implements OnInit,AfterViewInit {
          break;
        case 'token' :
          // add matches
-         let nodeT1 :ITdDynamicElementConfig = {
-           "label": 'System - '+param.name + ' - '+param.documentation,
-           "name" : param.type+'-'+seq + '-1-'+param.name,
-           "type": TdDynamicElement.Input,
-           "flex" : 50
+         const nodeT1: ITdDynamicElementConfig = {
+           'label': 'System - ' + param.name + ' - ' + param.documentation,
+           'name' : param.type + '-' + seq + '-1-' + param.name,
+           'type': TdDynamicElement.Input,
+           'flex' : 50
          };
-         let nodeT2 :ITdDynamicElementConfig = {
-           "label": 'Code - '+param.name + ' - '+param.documentation,
-           "name" : param.type+'-'+seq + '-2-'+param.name,
-           "type": TdDynamicElement.Input,
-             "required": true,
-           "flex" : 50
+         const nodeT2: ITdDynamicElementConfig = {
+           'label': 'Code - ' + param.name + ' - ' + param.documentation,
+           'name' : param.type + '-' + seq + '-2-' + param.name,
+           'type': TdDynamicElement.Input,
+             'required': true,
+           'flex' : 50
          };
          this.elements.push(nodeT1);
          this.elements.push(nodeT2);
          break;
        case 'string' :
          // add matches
-         let nodeOpt: ITdDynamicElementConfig = {
-           "label": "match",
-           "name": param.type+'-'+seq + '-1-'+param.name,
-           "type": TdDynamicElement.Select,
-           "selections": [
+         const nodeOpt: ITdDynamicElementConfig = {
+           'label': 'match',
+           'name': param.type + '-' + seq + '-1-' + param.name,
+           'type': TdDynamicElement.Select,
+           'selections': [
            {
-             "label": "Matches",
-             "value": ""
+             'label': 'Matches',
+             'value': ''
            },
            {
-             "label": "Exactly",
-             "value": "exact"
+             'label': 'Exactly',
+             'value': 'exact'
            }
          ],
-           "required": false,
-           "flex" : 20
+           'required': false,
+           'flex': 20
          };
 
-         let nodeS :ITdDynamicElementConfig = {
-           "label": param.name + ' - '+param.documentation,
-           "name" : param.type+'-'+seq + '-2-'+param.name,
-           "type": TdDynamicElement.Input,
-           "required": true,
-           "flex" : 80
+         const nodeS: ITdDynamicElementConfig = {
+           'label': param.name + ' - ' + param.documentation,
+           'name' : param.type + '-' + seq + '-2-' + param.name,
+           'type': TdDynamicElement.Input,
+           'required': true,
+           'flex' : 80
          };
           this.elements.push(nodeOpt);
          this.elements.push(nodeS);
          break;
        case 'reference' :
-         let nodeR :ITdDynamicElementConfig = {
-           "label": param.name + ' - '+param.documentation,
-           "name" : param.type+'-'+seq + '-1-'+param.name,
-           "type": TdDynamicElement.Input,
-           "required": true,
+         const nodeR: ITdDynamicElementConfig = {
+           'label': param.name + ' - ' + param.documentation,
+           'name' : param.type + '-' + seq + '-1-' + param.name,
+           'type': TdDynamicElement.Input,
+           'required': true,
          };
          this.elements.push(nodeR);
          break;
 
        default:
-         console.log('MISSING - '+param.type);
+         console.log('MISSING - ' + param.type);
      }
      console.log('call refresh');
      this.form.refresh();
      this.buildQuery();
    }
-    
   }
 
   onMore(linkUrl: string) {
       this.progressBar = true;
       this.clearDown();
       this.fhirSrv.getResults(linkUrl).subscribe(bundle => {
-          switch(this.format) {
+          switch ( this.format ) {
             case 'jsonf':
               this.resource = bundle;
               break;
@@ -342,7 +334,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               this.getResources();
               break;
             case 'xml':
-              let reader = new FileReader();
+              const reader = new FileReader();
               reader.addEventListener('loadend', (e) => {
                 this.resourceString = reader.result;
               });
@@ -352,7 +344,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
           },
           () => {
               this.progressBar = false;
-          })
+          });
   }
 
     ngAfterViewInit() {
@@ -361,47 +353,55 @@ export class ResourceComponent implements OnInit,AfterViewInit {
         if (this.form !== undefined) {
             this.form.form.valueChanges.subscribe((val) => {
                 this.buildQuery();
-            })
+            });
         }
     }
 
   buildQuery() {
-      var i: number;
-      let first: boolean = true;
-      let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '?'
+      let i: number;
+      let first = true;
+      let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '?';
 
       for (i = 0; i < this.elements.length; i++) {
 
-          let name = this.elements[i].name;
-          let content: string[] = name.split('-');
+          const name = this.elements[i].name;
+          const content: string[] = name.split('-');
           let param = content[3];
-          if (content.length > 4 && (content[4] !== undefined)) param = param + '-' + content[4];
+          if (content.length > 4 && (content[4] !== undefined)) { param = param + '-' + content[4]; }
 
-          if (!first) query = query + '&' + param
-          else query = query + param;
+          if (!first) {
+              query = query + '&' + param;
+          } else { query = query + param; }
           //  console.log(content[0]);
           switch (content[0]) {
               case 'date':
                   query = query + '=';
-                  if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') query = query + this.form.value[this.elements[i].name];
-                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name].format("YYYY-MM-DD");
+                  if (this.form.value[this.elements[i].name] !== undefined && this.form.value[this.elements[i].name] !== '') {
+                      query = query + this.form.value[this.elements[i].name]; }
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) {
+                      query = query + this.form.value[this.elements[i + 1].name].format('YYYY-MM-DD'); }
                   i++;
                   break;
               case 'token':
                   query = query + '=';
-                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name] + "%7C";
-                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                  if (this.form.value[this.elements[i].name] !== undefined) {
+                      query = query + this.form.value[this.elements[i].name] + '%7C'; }
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) {
+                      query = query + this.form.value[this.elements[i + 1].name]; }
                   i++;
                   break;
               case 'string':
-                  if (this.form.value[this.elements[i].name] !== undefined) query = query + ":" + this.form.value[this.elements[i].name];
+                  if (this.form.value[this.elements[i].name] !== undefined) {
+                      query = query + ':' + this.form.value[this.elements[i].name]; }
                   query = query + '=';
-                  if (this.form.value[this.elements[i + 1].name] !== undefined) query = query + this.form.value[this.elements[i + 1].name];
+                  if (this.form.value[this.elements[i + 1].name] !== undefined) {
+                      query = query + this.form.value[this.elements[i + 1].name]; }
                   i++;
                   break;
               case 'reference':
                   query = query + '=';
-                  if (this.form.value[this.elements[i].name] !== undefined) query = query + this.form.value[this.elements[i].name]
+                  if (this.form.value[this.elements[i].name] !== undefined) {
+                      query = query + this.form.value[this.elements[i].name]; }
                   break;
 
           }
@@ -433,10 +433,10 @@ export class ResourceComponent implements OnInit,AfterViewInit {
   }
 
   getResults() {
-      if (this.query !== undefined && (this.query != '')) {
-          console.log(this.format + ' Query = '+this.query);
+      if (this.query !== undefined && (this.query !== '')) {
+          console.log(this.format + ' Query = ' + this.query);
           this.fhirSrv.getResults(this.query).subscribe(bundle => {
-                  switch(this.format) {
+                  switch (this.format) {
                       case 'jsonf':
                           this.resource = bundle;
                           break;
@@ -449,7 +449,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
                         this.getResources();
                         break;
                       case 'xml':
-                          let reader = new FileReader();
+                          const reader = new FileReader();
                           reader.addEventListener('loadend', (e) => {
                               this.resourceString = reader.result;
                           });
@@ -459,7 +459,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
               },
               () => {
                   this.progressBar = false;
-              })
+              });
       }
   }
 
@@ -468,19 +468,19 @@ export class ResourceComponent implements OnInit,AfterViewInit {
       if (this.fhirSrv.conformance !== undefined ) {
           if (this.currentResource !== resource) {
               this.currentResource = resource;
-              this.base = this.fhirSrv.getFHIRServerBase()+'/'+this.currentResource;
+              this.base = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource;
               this.options = [];
               if (this.fhirSrv.conformance.rest !== undefined) {
-                  for(let node of this.fhirSrv.conformance.rest) {
+                  for (const node of this.fhirSrv.conformance.rest) {
 
-                      for (let resourceSrc of node.resource) {
+                      for (const resourceSrc of node.resource) {
                           if (resourceSrc.type === resource) {
                              // console.log(resourceSrc.type);
                               this.rest = resourceSrc;
                               if (resourceSrc.searchParam !== undefined) {
                                   this.searchVisible = true;
-                                  for (let param of resourceSrc.searchParam) {
-                                      let menuOpt: QueryOptions = {
+                                  for (const param of resourceSrc.searchParam) {
+                                      const menuOpt: QueryOptions = {
                                           name: param.name,
                                           documentation: param.documentation,
                                           type: param.type
@@ -495,7 +495,7 @@ export class ResourceComponent implements OnInit,AfterViewInit {
           }
       } else {
           console.log('In Resource - Forcing naviagation to root');
-          //this.router.navigateByUrl('/');
+          // this.router.navigateByUrl('/');
       }
 
   }
@@ -504,131 +504,131 @@ export class ResourceComponent implements OnInit,AfterViewInit {
 
 
     if (this.resource.entry !== undefined) {
-      for (let entry  of this.resource.entry) {
+      for (const entry  of this.resource.entry) {
 
-        let resource = entry.resource;
+        const resource = entry.resource;
 
           switch (resource.resourceType) {
-            case "AllergyIntolerance" :
-              let allergyIntolerance: fhir.AllergyIntolerance = <fhir.AllergyIntolerance> resource;
+            case 'AllergyIntolerance' :
+              const allergyIntolerance: fhir.AllergyIntolerance = <fhir.AllergyIntolerance> resource;
               this.allergies.push(allergyIntolerance);
               break;
-            case "CarePlan" :
-              let carePlan: fhir.CarePlan = <fhir.CarePlan> resource;
+            case 'CarePlan' :
+              const carePlan: fhir.CarePlan = <fhir.CarePlan> resource;
               this.carePlans.push(carePlan);
               break;
-            case "Consent" :
-              let consent: fhir.Consent = <fhir.Consent> resource;
+            case 'Consent' :
+                const consent: fhir.Consent = <fhir.Consent> resource;
               this.consents.push(consent);
               break;
-            case "ClinicalImpression" :
-              let clinicalImpression: fhir.ClinicalImpression = <fhir.ClinicalImpression> resource;
+            case 'ClinicalImpression' :
+                const clinicalImpression: fhir.ClinicalImpression = <fhir.ClinicalImpression> resource;
               this.impressions.push(clinicalImpression);
               break;
-            case "Condition" :
-              let condition: fhir.Condition = <fhir.Condition> resource;
+            case 'Condition' :
+                const condition: fhir.Condition = <fhir.Condition> resource;
               this.conditions.push(condition);
               break;
-              case "DocumentReference" :
-                  let document: fhir.DocumentReference = <fhir.DocumentReference> resource;
+              case 'DocumentReference' :
+                  const document: fhir.DocumentReference = <fhir.DocumentReference> resource;
                   this.documents.push(document);
                   break;
-            case "Encounter" :
-              let encounter: fhir.Encounter = <fhir.Encounter> resource;
+            case 'Encounter' :
+                const encounter: fhir.Encounter = <fhir.Encounter> resource;
               this.encounters.push(encounter);
               break;
-            case "Goal":
-              let goal: fhir.Goal = <fhir.Goal> resource;
+            case 'Goal':
+                const goal: fhir.Goal = <fhir.Goal> resource;
 
               this.goals.push(goal);
               break;
-            case "HealthcareService":
-              let service: fhir.HealthcareService = <fhir.HealthcareService> resource;
+            case 'HealthcareService':
+                const service: fhir.HealthcareService = <fhir.HealthcareService> resource;
               this.services.push(service);
               break;
-            case "Immunization" :
-              let immunisation: fhir.Immunization = <fhir.Immunization> resource;
+            case 'Immunization' :
+                const immunisation: fhir.Immunization = <fhir.Immunization> resource;
               this.immunisations.push(immunisation);
               break;
-            case "Location":
-              let location: fhir.Location = <fhir.Location> resource;
+            case 'Location':
+                const location: fhir.Location = <fhir.Location> resource;
 
               this.locations.push(location);
               break;
-            case "List" :
-              let list: fhir.List = <fhir.List> resource;
+            case 'List' :
+                const list: fhir.List = <fhir.List> resource;
               if (list.entry !== undefined) {
                 if (list.code !== undefined && list.code.coding.length > 0) {
                   this.entries.push({
-                    "resource": "List"
-                    , "code": list.code.coding[0].code
-                    , "display": "Entries " + list.entry.length
+                    'resource': 'List'
+                    , 'code': list.code.coding[0].code
+                    , 'display': 'Entries ' + list.entry.length
                   });
                 } else {
                   this.entries.push({
-                    "resource": "List"
-                    , "display": "Entries " + list.entry.length
+                    'resource': 'List'
+                    , 'display': 'Entries ' + list.entry.length
                   });
                 }
 
 
               }
               break;
-            case "Medication" :
-              let medication: fhir.Medication = <fhir.Medication> resource;
+            case 'Medication' :
+                const medication: fhir.Medication = <fhir.Medication> resource;
               this.medications.push(medication);
               break;
-              case "MedicationAdministration" :
-                  let medicationAdministration: fhir.MedicationAdministration = <fhir.MedicationAdministration> resource;
+              case 'MedicationAdministration' :
+                  const medicationAdministration: fhir.MedicationAdministration = <fhir.MedicationAdministration> resource;
                   this.medicationAdministrations.push(medicationAdministration);
                   break;
-            case "MedicationRequest" :
-              let medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> resource;
+            case 'MedicationRequest' :
+                const medicationRequest: fhir.MedicationRequest = <fhir.MedicationRequest> resource;
               this.prescriptions.push(medicationRequest);
               break;
-            case "MedicationDispense" :
-              let medicationDispense: fhir.MedicationDispense = <fhir.MedicationDispense> resource;
+            case 'MedicationDispense' :
+                const medicationDispense: fhir.MedicationDispense = <fhir.MedicationDispense> resource;
               this.medicationDispenses.push(medicationDispense);
               break;
-            case "MedicationStatement" :
-              let medicationStatement: fhir.MedicationStatement = <fhir.MedicationStatement> resource;
+            case 'MedicationStatement' :
+                const medicationStatement: fhir.MedicationStatement = <fhir.MedicationStatement> resource;
               this.medicationStatements.push(medicationStatement);
               break;
-            case "Observation" :
-              let observation: fhir.Observation = <fhir.Observation> resource;
+            case 'Observation' :
+                const observation: fhir.Observation = <fhir.Observation> resource;
               this.observations.push(observation);
               break;
-            case "Procedure" :
-              let procedure: fhir.Procedure = <fhir.Procedure> resource;
-              this.procedures.push(procedure)
+            case 'Procedure' :
+                const procedure: fhir.Procedure = <fhir.Procedure> resource;
+              this.procedures.push(procedure);
               break;
-            case "Patient" :
-              let patient: fhir.Patient = <fhir.Patient> resource;
+            case 'Patient' :
+                const patient: fhir.Patient = <fhir.Patient> resource;
               this.patients.push(patient);
               break;
-            case "Practitioner":
-              let practitioner: fhir.Practitioner = <fhir.Practitioner> resource;
+            case 'Practitioner':
+                const practitioner: fhir.Practitioner = <fhir.Practitioner> resource;
               this.practitioners.push(practitioner);
               break;
-            case "PractitionerRole":
-              let practitionerRole: fhir.PractitionerRole = <fhir.PractitionerRole> resource;
+            case 'PractitionerRole':
+                const practitionerRole: fhir.PractitionerRole = <fhir.PractitionerRole> resource;
               this.roles.push(practitionerRole);
               break;
-            case "Organization":
-              let organization: fhir.Organization = <fhir.Organization> resource;
+            case 'Organization':
+                const organization: fhir.Organization = <fhir.Organization> resource;
               this.organisations.push(organization);
               break;
-            case "QuestionnaireResponse" :
-              let form: fhir.QuestionnaireResponse = <fhir.QuestionnaireResponse> resource;
+            case 'QuestionnaireResponse' :
+                const form: fhir.QuestionnaireResponse = <fhir.QuestionnaireResponse> resource;
               this.forms.push(form);
               break;
               case 'ReferralRequest':
                   console.log('Referral Request');
-                  let referral: fhir.ReferralRequest = <fhir.ReferralRequest> resource;
+                  const referral: fhir.ReferralRequest = <fhir.ReferralRequest> resource;
                   this.referrals.push(referral);
                   break;
-            case "RiskAssessment":
-              let risk: fhir.RiskAssessment = <fhir.RiskAssessment> resource;
+            case 'RiskAssessment':
+              const risk: fhir.RiskAssessment = <fhir.RiskAssessment> resource;
               this.risks.push(risk);
               break;
 
