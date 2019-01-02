@@ -19,10 +19,11 @@ export class FhirService {
 
 
   // private baseUrl: string = 'https://data.developer-test.nhs.uk/ccri-fhir/STU3';
-    private baseUrl: string = undefined;
+  private baseUrl : string = 'http://127.0.0.1:8183/ccri-fhir/STU3';
+ //   private baseUrl: string = undefined;
 
-  private GPCbaseUrl = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
-   // private GPCbaseUrl: string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
+ // private GPCbaseUrl = 'https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc';
+    private GPCbaseUrl: string = 'http://127.0.0.1:8187/ccri/camel/fhir/gpc';
 
     private NRLSbaseUrl = 'https://data.developer.nhs.uk/nrls-ri';
 
@@ -98,7 +99,7 @@ export class FhirService {
     }
 
   public getBaseUrl(): string {
-
+ 
 
         if (this.getStoredBaseUrl() !== undefined && this.getStoredBaseUrl() !== null) {
             this.baseUrl = this.getStoredBaseUrl();

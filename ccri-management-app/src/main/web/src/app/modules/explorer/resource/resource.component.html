@@ -20,6 +20,35 @@
                                Read the current state of the resource<br><br>
                                 <td-message label="GET {{base}}/{{'{'}}id{{'}'}}" icon="info"></td-message>
                         </div>
+                        <mat-card>
+                            <mat-card-title>FHIR Search Form</mat-card-title>
+                            <mat-card-content>
+                                Use the table above to add search fields (above) to this form.
+                                <td-dynamic-forms #dynform1	 [elements]="elements_id">
+                                  <ng-template let-element ngFor [ngForOf]="elements_id">
+                                    <ng-template let-control="control" [tdDynamicFormsError]="element.name">
+                                        <span *ngIf="control.touched || !control.pristine">
+                                          <span *ngIf="control.hasError('required')">Required</span>
+                                          <span *ngIf="control.hasError('min')">Min value: {{element.min}}</span>
+                                          <span *ngIf="control.hasError('max')">Max value: {{element.max}}</span>
+                                          <span *ngIf="control.hasError('minlength')">Min length value: {{element.minLength}}</span>
+                                          <span *ngIf="control.hasError('maxlength')">Max length value: {{element.minLength}}</span>
+                                        </span>
+                                    </ng-template>
+                                  </ng-template>
+                                </td-dynamic-forms>
+                                </mat-card-content>
+                            <mat-card-actions>
+                                <td-message *ngIf="query!==undefined" [label]="query" color="blue" icon="search"></td-message>
+                                <a mat-raised-button [disabled]="!(dynform1.valid && (elements_id.length >0))" color="accent" class="text-upper" (click)="onSearch_id()">
+                                  <span>Search</span></a>
+                                <a mat-button [disabled]="(elements.length === 0)" color="accent" class="text-upper" (click)="onClear()">
+                                  <span>Clear</span></a>
+                                <span *ngIf="progressBar">
+                                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                </span>
+                            </mat-card-actions>
+                        </mat-card>
                     </td-expansion-panel>
                 </span>
                 <span *ngIf="interaction.code === 'create'">

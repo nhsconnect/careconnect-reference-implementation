@@ -38,6 +38,7 @@ public class ResourceTestProvider {
     public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
+        log.info("Checking testresource");
     	
     	if(!validate_flag)
     	{
@@ -59,9 +60,7 @@ public class ResourceTestProvider {
              }
         });
         IBaseResource resource = null;
-            if(exchange.getIn().
-
-        getBody() instanceof InputStream)
+            if(exchange.getIn(). getBody() instanceof InputStream)
 
         {
             inputStream = (InputStream) exchange.getIn().getBody();

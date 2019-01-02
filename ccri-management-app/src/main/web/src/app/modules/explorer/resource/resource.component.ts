@@ -87,11 +87,19 @@ export class ResourceComponent implements OnInit, AfterViewInit {
   @ViewChild('field') field: MatSelect;
 
   @ViewChild('dynform') form: TdDynamicFormsComponent;
+  @ViewChild('dynform1') form1 : TdDynamicFormsComponent;
+  public elements :ITdDynamicElementConfig[] = [
+ ];
 
-  public elements: ITdDynamicElementConfig[] = [
+	public elements_id :ITdDynamicElementConfig[] = [
+  {
+      label: '',
+      name: 'patientid',
+      type: TdDynamicElement.Input,
+      required: true
+    }
 
-  ];
-
+    ];
    public selectedValue: string;
 
    public options: QueryOptions[] = [
@@ -424,7 +432,21 @@ export class ResourceComponent implements OnInit, AfterViewInit {
           this.getResults();
       }
   }
+    onSearch_id() {
 
+        if (this.form1.valid && this.elements_id.length > 0) {
+            this.resource = undefined;
+           // console.log(this.elements_id[1].value);
+            this.progressBar = true;
+            
+            let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '/' + + this.form1.value[this.elements_id[0].name];
+            this.query = query;
+            console.log(query);
+            //this.query = id_query;
+            console.log(this.getResults());
+            this.getResults();
+        }
+    }
   onClear() {
       this.elements = [];
       if (this.form !== undefined) {
