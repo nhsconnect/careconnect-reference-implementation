@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LocationDataSource} from "../../data-source/location-data-source";
+import {LocationDataSource} from '../../data-source/location-data-source';
 import {FhirService} from '../../service/fhir.service';
-import {ResourceDialogComponent} from "../../dialog/resource-dialog/resource-dialog.component";
+import {ResourceDialogComponent} from '../../dialog/resource-dialog/resource-dialog.component';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {LinksService} from  '../../service/links.service';
 
@@ -15,7 +15,7 @@ export class LocationComponent implements OnInit {
 
   @Input() locations: fhir.Location[];
 
-  dataSource : LocationDataSource;
+  dataSource: LocationDataSource;
 
   displayedColumns = ['location', 'type', 'resource'];
 
