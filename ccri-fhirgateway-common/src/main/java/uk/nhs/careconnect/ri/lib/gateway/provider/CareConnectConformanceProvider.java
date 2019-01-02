@@ -274,6 +274,9 @@ public class CareConnectConformanceProvider implements IServerConformanceProvide
                     case "Flag":
                         resource.getProfile().setReference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Flag-1");
                         break;
+                    case "DocumentReference":
+                        resource.getProfile().setReference("https://fhir.hl7.org.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
+                        break;
                     case "QuestionnaireResponse":
                     case "List":
                     case "RelatedPerson":

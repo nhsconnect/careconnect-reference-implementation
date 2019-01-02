@@ -91,9 +91,11 @@ public class PractitionerResourceProvider implements IResourceProvider {
     @Search
     public List<Practitioner> searchPractitioner(HttpServletRequest httpRequest,
 
-                                                 @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
-                                                 @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode
-            , @OptionalParam(name = PractitionerRole.SP_RES_ID) StringParam resid
+                  @OptionalParam(name = Practitioner.SP_IDENTIFIER) TokenParam identifier,
+                  @OptionalParam(name = Practitioner.SP_ADDRESS_POSTALCODE) StringParam postCode,
+                  @OptionalParam(name = PractitionerRole.SP_RES_ID) StringParam resid,
+                  @OptionalParam(name = Practitioner.SP_NAME) StringParam name
+
                                        ) throws Exception {
 
         List<Practitioner> results = new ArrayList<Practitioner>();

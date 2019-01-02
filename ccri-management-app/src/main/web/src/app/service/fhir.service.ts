@@ -122,7 +122,8 @@ export class FhirService {
                 this.baseUrl = retStr;
             }
         }
-        if (this.oauth2.isAuthenticated() || this.oauth2.isAuthenticating()) {
+        if (retStr !== undefined) {
+         if (this.oauth2.isAuthenticated() || this.oauth2.isAuthenticating()) {
 
           if (retStr.includes('8183/ccri-fhir')) {
             retStr = 'https://data.developer-test.nhs.uk/ccri-smartonfhir/STU3';
@@ -137,12 +138,13 @@ export class FhirService {
           }
         } else {
 
-            if (retStr.includes('ccri-smartonfhir')) {
-              retStr = retStr.replace('ccri-smartonfhir', 'ccri-fhir');
-              console.log('swapping to unsec fhir instance: ' + retStr);
-              this.baseUrl = retStr;
+             if (retStr.includes('ccri-smartonfhir')) {
+                 retStr = retStr.replace('ccri-smartonfhir', 'ccri-fhir');
+                 console.log('swapping to unsec fhir instance: ' + retStr);
+                 this.baseUrl = retStr;
 
-          }
+             }
+         }
         }
         this.storeBaseUrl(retStr);
       return retStr;

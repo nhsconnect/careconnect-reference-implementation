@@ -1,8 +1,8 @@
 import {Component, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {FhirService} from "../../../service/fhir.service";
-import {ActivatedRoute} from "@angular/router";
+import {FhirService} from '../../../service/fhir.service';
+import {ActivatedRoute} from '@angular/router';
 
-import {IAlertConfig, TdDialogService} from "@covalent/core";
+import {IAlertConfig, TdDialogService} from '@covalent/core';
 
 @Component({
   selector: 'app-img-viewer',
@@ -11,10 +11,10 @@ import {IAlertConfig, TdDialogService} from "@covalent/core";
 })
 export class ImgViewerComponent implements OnInit {
 
-  imgSrc :string= 'https://data.developer.nhs.uk/ccri/img/nhs_digital_logo.png';
+  imgSrc = 'https://data.developer.nhs.uk/ccri/img/nhs_digital_logo.png';
 
 
-  @Input() document : any;
+  @Input() document: any;
 
   @Input() binaryId: string;
 
@@ -25,8 +25,8 @@ export class ImgViewerComponent implements OnInit {
               ) { }
 
   ngOnInit() {
-    //let id = this.route.snapshot.paramMap.get('binaryId');
-      console.log('ImageView bin = '+this.binaryId);
+    // let id = this.route.snapshot.paramMap.get('binaryId');
+      console.log('ImageView bin = ' + this.binaryId);
     this.getDocument(this.binaryId);
   }
 
@@ -36,13 +36,12 @@ export class ImgViewerComponent implements OnInit {
 
     this.fhirService.getBinaryRaw(id).subscribe(
       (res) => {
-        var fileURL = URL.createObjectURL(res);
+        const fileURL = URL.createObjectURL(res);
         console.log(fileURL);
-        this.imgSrc =fileURL;
-        //modalWaitRef.close();
+        this.imgSrc = fileURL;
       },
       (err) => {
-        this.showWarnDlg("Unable to load document");
+        this.showWarnDlg('Unable to load document');
       }
 
     );
@@ -50,12 +49,12 @@ export class ImgViewerComponent implements OnInit {
   }
 
   showWarnDlg(message: string) {
-    let alertConfig : IAlertConfig = { message : message};
+    const alertConfig: IAlertConfig = { message : message};
     alertConfig.disableClose =  false; // defaults to false
     alertConfig.viewContainerRef = this._viewContainerRef;
-    alertConfig.title = 'Warning'; //OPTIONAL, hides if not provided
-    alertConfig.closeButton = 'Ok'; //OPTIONAL, defaults to 'CLOSE'
-    alertConfig.width = '400px'; //OPTIONAL, defaults to 400px
+    alertConfig.title = 'Warning'; // OPTIONAL, hides if not provided
+    alertConfig.closeButton = 'Ok'; // OPTIONAL, defaults to 'CLOSE'
+    alertConfig.width = '400px'; // OPTIONAL, defaults to 400px
     this._dialogService.openAlert(alertConfig);
   }
 }

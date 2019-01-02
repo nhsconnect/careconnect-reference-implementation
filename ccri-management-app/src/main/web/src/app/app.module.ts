@@ -148,6 +148,7 @@ import {
 import { AmbulanceATMISTComponent } from './modules/patient/ambulance-atmist/ambulance-atmist.component';
 import { CareTeamComponent } from './component/care-team/care-team.component';
 import { QuestionnaireResponseItemComponent } from './component/questionnaire-response-item/questionnaire-response-item.component';
+import { HtmlViewerComponent } from './component/binary/html-viewer/html-viewer.component';
 
 
 export function initializeApp(appConfig: AppConfig) {
@@ -242,7 +243,8 @@ export function initializeApp(appConfig: AppConfig) {
       MedicationAdministrationComponent,
       AmbulanceATMISTComponent,
       CareTeamComponent,
-      QuestionnaireResponseItemComponent
+      QuestionnaireResponseItemComponent,
+      HtmlViewerComponent
 
   ],
   entryComponents: [
