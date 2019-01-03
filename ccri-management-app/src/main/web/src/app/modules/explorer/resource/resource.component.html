@@ -161,6 +161,7 @@
                     <b *ngIf="resource.entry !== undefined"> {{resource.entry.length}} / {{resource.total}}</b>
                   </span>
                   <span>
+                   <span *ngIf="resource.link !== undefined">
                       <span *ngFor="let link of resource.link.slice().reverse()">
                         <span *ngIf="link.relation ==='previous'">
                             <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_previous</mat-icon></button>
@@ -169,7 +170,8 @@
                             <button mat-icon-button color="accent" (click)="onMore(link.url)"><mat-icon>skip_next</mat-icon></button>
                         </span>
                       </span>
-                    </span>
+                      </span>
+                     </span>
                   </span>
           </mat-card-subtitle>
           <mat-divider></mat-divider>
