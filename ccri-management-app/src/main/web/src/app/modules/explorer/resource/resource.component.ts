@@ -457,7 +457,21 @@ export class ResourceComponent implements OnInit, AfterViewInit {
   getResults() {
       if (this.query !== undefined && (this.query !== '')) {
           console.log(this.format + ' Query = ' + this.query);
-          this.fhirSrv.getResults(this.query).subscribe(bundle => {
+          this.fhirSrv.getResults(this.query).subscribe(response => {
+                  let bundle: fhir.Bundle;
+                  if (response.resourceType === 'Bundle') {
+                      bundle = response;
+                  } else {
+                      bundle = {
+                          type : 'collection',
+                          resourceType : 'Bundle'
+                      };
+                      bundle.entry = [];
+                      bundle.entry.push({
+                          fullUrl: 'urn:uuid:' + response.id,
+                          resource: response
+                      });
+                  }
                   switch (this.format) {
                       case 'jsonf':
                           this.resource = bundle;
