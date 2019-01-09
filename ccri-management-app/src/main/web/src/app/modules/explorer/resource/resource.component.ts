@@ -36,6 +36,9 @@ export class ResourceComponent implements OnInit, AfterViewInit {
     public resourceString: any = undefined;
 
     public query = undefined;
+    
+    public id_query = undefined;
+    
 
     public rest: any;
 
@@ -439,12 +442,12 @@ export class ResourceComponent implements OnInit, AfterViewInit {
            // console.log(this.elements_id[1].value);
             this.progressBar = true;
             
-            let query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '/' + + this.form1.value[this.elements_id[0].name];
-            this.query = query;
-            console.log(query);
-            //this.query = id_query;
-            console.log(this.getResults());
+            let id_query = this.fhirSrv.getFHIRServerBase() + '/' + this.currentResource + '/' + + this.form1.value[this.elements_id[0].name];
+            this.id_query = id_query;
+            console.log(id_query);
+            this.query = id_query;
             this.getResults();
+            console.log(id_query);
         }
     }
   onClear() {
@@ -457,21 +460,7 @@ export class ResourceComponent implements OnInit, AfterViewInit {
   getResults() {
       if (this.query !== undefined && (this.query !== '')) {
           console.log(this.format + ' Query = ' + this.query);
-          this.fhirSrv.getResults(this.query).subscribe(response => {
-                  let bundle: fhir.Bundle;
-                  if (response.resourceType === 'Bundle') {
-                      bundle = response;
-                  } else {
-                      bundle = {
-                          type : 'collection',
-                          resourceType : 'Bundle'
-                      };
-                      bundle.entry = [];
-                      bundle.entry.push({
-                          fullUrl: 'urn:uuid:' + response.id,
-                          resource: response
-                      });
-                  }
+            this.fhirSrv.getResults(this.query).subscribe(bundle => {
                   switch (this.format) {
                       case 'jsonf':
                           this.resource = bundle;
@@ -498,6 +487,8 @@ export class ResourceComponent implements OnInit, AfterViewInit {
               });
       }
   }
+  
+
 
   buildOptions(resource: string) {
       this.searchVisible = false;
