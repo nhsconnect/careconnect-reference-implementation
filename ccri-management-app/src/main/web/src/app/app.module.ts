@@ -140,10 +140,10 @@ import { ReferralRequestComponent } from './component/referral-request/referral-
 import { PatientReferralRequestComponent } from './modules/patient/patient-referral-request/patient-referral-request.component';
 import { MedicationAdministrationComponent } from './component/medication-administration/medication-administration.component';
 import {
-    CovalentBarEchartsModule,
-    CovalentBaseEchartsModule,
-    CovalentLineEchartsModule,
-    CovalentTooltipEchartsModule
+  CovalentBarEchartsModule,
+  CovalentBaseEchartsModule,
+  CovalentLineEchartsModule,
+  CovalentTooltipEchartsModule
 } from '@covalent/echarts';
 import { AmbulanceATMISTComponent } from './modules/patient/ambulance-atmist/ambulance-atmist.component';
 import { CareTeamComponent } from './component/care-team/care-team.component';
@@ -350,6 +350,7 @@ export function initializeApp(appConfig: AppConfig) {
       AuthService,
       CookieService,
       Oauth2Service,
+
 
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
