@@ -12,7 +12,12 @@ import {NgxChartsModule} from '@swimlane/ngx-charts';
 export class ObservationChartDialogComponent implements OnInit {
 
 
+/*
 
+Example eChart code https://stackblitz.com/edit/angular-jn3bdd
+from https://github.com/Teradata/covalent-echarts/issues/50
+
+ */
 
     // options
     showXAxis = true;

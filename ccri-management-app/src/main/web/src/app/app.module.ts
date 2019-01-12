@@ -139,12 +139,11 @@ import { FlagComponent } from './component/flag/flag.component';
 import { ReferralRequestComponent } from './component/referral-request/referral-request.component';
 import { PatientReferralRequestComponent } from './modules/patient/patient-referral-request/patient-referral-request.component';
 import { MedicationAdministrationComponent } from './component/medication-administration/medication-administration.component';
-import {
-  CovalentBarEchartsModule,
-  CovalentBaseEchartsModule,
-  CovalentLineEchartsModule,
-  CovalentTooltipEchartsModule
-} from '@covalent/echarts';
+//  https://github.com/Teradata/covalent-echarts/issues/50
+import { CovalentBaseEchartsModule } from '@covalent/echarts/base';
+import { CovalentBarEchartsModule } from '@covalent/echarts/bar';
+import { CovalentLineEchartsModule } from '@covalent/echarts/line';
+import { CovalentTooltipEchartsModule } from '@covalent/echarts/tooltip';
 import { AmbulanceATMISTComponent } from './modules/patient/ambulance-atmist/ambulance-atmist.component';
 import { CareTeamComponent } from './component/care-team/care-team.component';
 import { QuestionnaireResponseItemComponent } from './component/questionnaire-response-item/questionnaire-response-item.component';
