@@ -327,7 +327,7 @@
     </dependencies>
 
     <build>
-        <finalName>ccri-fhir</finalName>
+        <finalName>ccri-fhirserver</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

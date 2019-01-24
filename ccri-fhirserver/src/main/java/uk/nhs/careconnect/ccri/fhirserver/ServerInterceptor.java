@@ -247,109 +247,10 @@ public class ServerInterceptor extends InterceptorAdapter {
             response.addHeader("X-Correlation-ID", val);
            // theServletResponse.setHeader("X-Request-ID","");
         }
-        log.debug("oR Content-Type = "+theRequestDetails.getHeader("Accept"));
-        String acceptType = theRequestDetails.getHeader("Accept");
-
-        String[] value = theRequestDetails.getParameters().get("_format");
-        if (value != null) {
-            for (String nextParam : value) {
-                acceptType = nextParam;
-                log.info("_format = "+acceptType);
-            }
-        }
-
-        if(resource!=null) {
-        log.trace("Response resource instance of "+resource.getClass().getSimpleName());
-        
-
-        if (resource.getClass()!=null) log.trace("Response resource instance of "+resource.getClass().getSimpleName());
-        if (theRequestDetails != null && theRequestDetails.getResourceName() != null) log.trace("Request resource "+theRequestDetails.getResourceName().equals("Binary"));
-
-        // Special Procecssing for Binary when a FHIR document is returned
-        if (resource instanceof Binary && theRequestDetails.getResourceName().equals("Binary")) {
-            Binary binary = (Binary) resource;
-            Bundle bundle = null;
-            log.trace("Content Type of returned Binary"+binary.getContentType().contains("fhir"));
-            // Check for FHIR Document
-            if (binary.getContentType().contains("fhir")) {
-                // Assume this is a FHIR Document
-                ByteArrayInputStream b = new ByteArrayInputStream(binary.getContent());
-
-                Reader reader = new InputStreamReader(b);
-                IBaseResource resourceBundle = null;
-                // Response should be json
-                if (binary.getContentType().contains("json")) {
-                    resourceBundle = ctx.newJsonParser().parseResource(reader);
-                } else {
-                    resourceBundle = ctx.newXmlParser().parseResource(reader);
-                }
-                log.debug("Parsed resource type = " + resourceBundle.getClass().getSimpleName());
-                if (resourceBundle instanceof Bundle) {
-                    // XML is default for FHIR documents
-                    if (acceptType == null || (acceptType.contains("fhir") && acceptType.contains("xml"))) {
-                        try {
-
-                            // Response was json, convert to xml
-                            binary.setContentType("application/fhir+xml");
-                            binary.setContent(ctx.newXmlParser().encodeResourceToString(resourceBundle).getBytes());
-                            response.setStatus(200);
-                            response.setContentType("application/fhir+xml");
-
-                            if (acceptType == null) {
-                                // if not asked for format return xml as default
-                                response.getOutputStream().write(ctx.newXmlParser().encodeResourceToString(resourceBundle).getBytes());
-                            } else {
-                                // else return as a Bundle
-                                response.getOutputStream().write(ctx.newXmlParser().encodeResourceToString(binary).getBytes());
-                            }
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        return false;
-                    } else if ( acceptType.equals("text/html")) {
-                        try {
-                            // requested document as html
-                            response.setStatus(200);
-                            response.setContentType("text/html");
-
-                            performTransform(response.getOutputStream(), resourceBundle, "XML/DocumentToHTML.xslt");
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        return false;
-                    } else if (acceptType.equals("application/pdf")) {
-                        try {
-                            // requested document as pdf
-                            response.setStatus(200);
-                            response.setContentType("application/pdf");
-
-                            // TODO Remove file and convert to plain streams
-
-                            File fileHtml = File.createTempFile("pdf", ".tmp");
-                            FileOutputStream fos = new FileOutputStream(fileHtml);
-                            performTransform(fos, resourceBundle, "XML/DocumentToHTML.xslt");
 
 
-                            String processedHtml = org.apache.commons.io.IOUtils.toString(new InputStreamReader(new FileInputStream(fileHtml), "UTF-8"));
 
-                            ITextRenderer renderer = new ITextRenderer();
-                            renderer.setDocumentFromString(processedHtml);
-                            renderer.layout();
-                            renderer.createPDF(response.getOutputStream(), false);
-                            renderer.finishPDF();
-                            fos.flush();
 
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            }
-
-        }
-        } // check for resource null end
        return true;
 
     }
