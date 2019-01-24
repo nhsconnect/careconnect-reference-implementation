@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,9 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.GoalRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -32,7 +33,13 @@ public class GoalProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
 
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
@@ -47,7 +54,7 @@ public class GoalProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Goal goal, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -72,7 +79,7 @@ public class GoalProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Goal goal) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -102,7 +109,7 @@ public class GoalProvider implements ICCResourceProvider {
 
     @Read()
     public Goal get(@IdParam IdType goalId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         Goal goal = goalDao.read(ctx,goalId);
 
         if ( goal == null) {
@@ -114,5 +121,11 @@ public class GoalProvider implements ICCResourceProvider {
         return goal;
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Goal resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

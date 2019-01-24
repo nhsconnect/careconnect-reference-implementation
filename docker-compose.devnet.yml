@@ -142,7 +142,7 @@ services:
       - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
       - fhir.resource.serverName=Care Connect TIE FHIR Server
-      - fhir.resource.serverVersion=3.7.0-SNAPSHOT
+      - fhir.resource.serverVersion=3.7.1-SNAPSHOT
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
     volumes:

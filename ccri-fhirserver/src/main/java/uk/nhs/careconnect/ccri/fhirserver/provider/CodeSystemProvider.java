@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ccri.fhirserver.provider;
 
-import ca.uhn.fhir.rest.annotation.Create;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.CodeSystem;
@@ -19,9 +17,14 @@ import java.util.List;
 @Component
 public class CodeSystemProvider implements IResourceProvider {
 
-
-    @Autowired
+	@Autowired
     private CodeSystemRepository codeSystemDao;
+	
+	@Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+
+	@Autowired
+    private ResourceTestProvider resourceTestProvider;
 
     @Override
     public Class<CodeSystem> getResourceType() {
@@ -44,6 +47,7 @@ public class CodeSystemProvider implements IResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam CodeSystem codeSystem) {
 
+    	resourcePermissionProvider.checkPermission("create");
 
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
@@ -57,6 +61,12 @@ public class CodeSystemProvider implements IResourceProvider {
     }
 
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam CodeSystem resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
     
 
 }

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,24 +18,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.PatientRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
+//import uk.nhs.careconnect.ri.lib.gateway.provider.ResourceTestProvider;
+
 @Component
 public class PatientProvider implements ICCResourceProvider {
-
-
+	
     @Autowired
     private PractitionerProvider practitionerResourceProvider;
 
     @Autowired
     private OrganizationProvider organizationResourceProvider;
+    
+    @Autowired
+    private CareConnectServerConformanceProvider cc;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
 
     @Autowired
     private PatientRepository patientDao;
@@ -57,8 +68,10 @@ public class PatientProvider implements ICCResourceProvider {
 
     @Read
     public Patient getPatientById(@IdParam IdType internalId) {
+    	
+    	resourcePermissionProvider.checkPermission("read");
+    	
         Patient patient = patientDao.read(ctx,internalId);
-
         if (patient == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No patient details found for patient ID: " + internalId.getIdPart()),
@@ -68,11 +81,26 @@ public class PatientProvider implements ICCResourceProvider {
         return patient;
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Patient resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Patient patient, @IdParam IdType theId,@ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
         log.debug("Update Patient Provider called");
-
+        
+        resourcePermissionProvider.checkPermission("update");
+        /*
+        if(CRUD_update.equals("false"))
+		{
+			throw OperationOutcomeFactory.buildOperationOutcomeException(
+			new InvalidRequestException("Invalid Request"),
+			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+		}
+        */
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -96,8 +124,16 @@ public class PatientProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam Patient patient) {
 
-        log.debug("Update Patient Provider called");
-
+        log.info("Update Patient Provider called");
+        resourcePermissionProvider.checkPermission("create");
+        /*
+        if(CRUD_create.equals("false"))
+		{
+			throw OperationOutcomeFactory.buildOperationOutcomeException(
+			new InvalidRequestException("Invalid Request"),
+			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+		}
+		*/
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();

@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,9 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireResponseRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,6 +39,12 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
 
     private static final Logger log = LoggerFactory.getLogger(QuestionnaireResponseProvider.class);
 
@@ -49,7 +56,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updateQuestionnaireResponse(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -73,7 +80,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createQuestionnaireResponse(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -95,7 +102,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
     @Read()
     public QuestionnaireResponse getQuestionnaireResponse(@IdParam IdType formId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         QuestionnaireResponse form = formDao.read(ctx,formId);
 
         if ( form == null) {
@@ -116,5 +123,11 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         return formDao.searchQuestionnaireResponse(ctx, identifier,id,questionnaire,patient);
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam QuestionnaireResponse resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

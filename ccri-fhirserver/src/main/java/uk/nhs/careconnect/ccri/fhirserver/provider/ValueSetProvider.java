@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -10,8 +11,8 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -23,17 +24,22 @@ public class ValueSetProvider implements IResourceProvider {
     @Autowired
     private ValueSetRepository valueSetDao;
 
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     @Override
     public Class<ValueSet> getResourceType() {
         return ValueSet.class;
     }
 
 
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
 
     @Update()
     public MethodOutcome updateValueSet(HttpServletRequest theRequest,@ResourceParam ValueSet valueSet) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -62,7 +68,7 @@ public class ValueSetProvider implements IResourceProvider {
     @Create
     public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam ValueSet valueSet) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -77,6 +83,7 @@ public class ValueSetProvider implements IResourceProvider {
     @Read
     public ValueSet getValueSet
             (@IdParam IdType internalId) {
+    	resourcePermissionProvider.checkPermission("read");
         ValueSet valueSet = valueSetDao.read(internalId);
 
         if ( valueSet == null) {
@@ -88,5 +95,11 @@ public class ValueSetProvider implements IResourceProvider {
         return valueSet;
     }
     
+    @Validate
+    public MethodOutcome testResource(@ResourceParam ValueSet resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

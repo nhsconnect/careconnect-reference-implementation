@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
@@ -17,9 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ScheduleRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,6 +39,12 @@ public class ScheduleProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
 
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
@@ -49,7 +56,7 @@ public class ScheduleProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updateSchedule(HttpServletRequest theRequest, @ResourceParam Schedule schedule, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -72,7 +79,7 @@ public class ScheduleProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createSchedule(HttpServletRequest theRequest, @ResourceParam Schedule schedule) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -109,7 +116,7 @@ public class ScheduleProvider implements ICCResourceProvider {
 
     @Read()
     public Schedule getSchedule(@IdParam IdType scheduleId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         Schedule schedule = scheduleDao.read(ctx,scheduleId);
 
         if ( schedule == null) {
@@ -121,5 +128,11 @@ public class ScheduleProvider implements ICCResourceProvider {
         return schedule;
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Schedule resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

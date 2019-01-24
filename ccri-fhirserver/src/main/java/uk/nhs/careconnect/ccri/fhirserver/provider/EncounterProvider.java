@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -21,9 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.EncounterRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -39,7 +40,13 @@ public class EncounterProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
 
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     private static final Logger log = LoggerFactory.getLogger(EncounterProvider.class);
     @Override
     public Class<? extends IBaseResource> getResourceType() {
@@ -50,7 +57,7 @@ public class EncounterProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Encounter encounter, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -72,7 +79,7 @@ public class EncounterProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Encounter encounter) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -121,7 +128,7 @@ public class EncounterProvider implements ICCResourceProvider {
 
     @Read()
     public Encounter get(@IdParam IdType encounterId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         Encounter encounter = encounterDao.read(ctx,encounterId);
 
         if ( encounter == null) {
@@ -137,5 +144,13 @@ public class EncounterProvider implements ICCResourceProvider {
     @Override
     public Long count() {
         return encounterDao.count();
+    }
+    
+    
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Encounter resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 }

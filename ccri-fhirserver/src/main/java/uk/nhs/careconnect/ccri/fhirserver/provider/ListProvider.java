@@ -4,12 +4,14 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Immunization;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -17,9 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ListRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,7 +40,13 @@ public class ListProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
 
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     private static final Logger log = LoggerFactory.getLogger(ListProvider.class);
 
     @Override
@@ -49,7 +57,7 @@ public class ListProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updateList(HttpServletRequest theRequest, @ResourceParam ListResource list, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -74,7 +82,7 @@ public class ListProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createList(HttpServletRequest theRequest, @ResourceParam ListResource list) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -96,7 +104,7 @@ public class ListProvider implements ICCResourceProvider {
 
     @Read()
     public ListResource getList(@IdParam IdType listId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         ListResource form = listDao.read(ctx,listId);
 
         if ( form == null) {
@@ -116,5 +124,11 @@ public class ListProvider implements ICCResourceProvider {
         return listDao.searchListResource(ctx, identifier,id,patient);
     }
 
-
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Immunization resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
+    
 }

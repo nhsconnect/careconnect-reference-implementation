@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -18,22 +19,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.AllergyIntoleranceRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
 public class AllergyIntoleranceProvider implements ICCResourceProvider {
-
-    @Autowired
+	
+	@Autowired
     private AllergyIntoleranceRepository allergyDao;
 
     @Autowired
     FhirContext ctx;
 
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
@@ -45,10 +52,13 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
         public Long count() {
         return allergyDao.count();
     }
+        
+        
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam AllergyIntolerance allergy, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
+    	
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -73,7 +83,8 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam AllergyIntolerance allergy) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
+    	
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -107,7 +118,9 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
 
     @Read()
     public AllergyIntolerance get(@IdParam IdType allergyId) {
-
+    	
+    	resourcePermissionProvider.checkPermission("read");
+    	
         AllergyIntolerance allergy = allergyDao.read(ctx,allergyId);
 
         if ( allergy == null) {
@@ -117,6 +130,13 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
         }
 
         return allergy;
+    }
+    
+    @Validate
+    public MethodOutcome testResource(@ResourceParam AllergyIntolerance resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
 
