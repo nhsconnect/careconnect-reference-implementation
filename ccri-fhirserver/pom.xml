@@ -105,6 +105,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Spring OAuth2 Dependencies -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>${spring_security_version}</version>
+        </dependency>
+
         <!-- JPA and Database -->
 
         <dependency>

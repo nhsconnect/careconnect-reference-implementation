@@ -16,6 +16,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
+import uk.nhs.careconnect.ccri.fhirserver.oauth2.OAuth2Interceptor;
 import uk.nhs.careconnect.ccri.fhirserver.provider.*;
 
 import javax.servlet.ServletException;
@@ -55,6 +56,9 @@ public class FHIRServerHAPIConfig extends RestfulServer {
 
     @Value("${ccri.server.base}")
     private String serverBase;
+
+    @Value("${ccri.oauth2}")
+    private boolean oauth2;
 
     // @Value("#{'${some.server.url}'.split(',')}")
 
@@ -231,6 +235,9 @@ public class FHIRServerHAPIConfig extends RestfulServer {
         registerInterceptor(interceptor);
 
         ServerInterceptor gatewayInterceptor = new ServerInterceptor(log);
+        if (oauth2) {
+            registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter
+        }
         registerInterceptor(gatewayInterceptor);
 
         FifoMemoryPagingProvider pp = new FifoMemoryPagingProvider(10);
