@@ -6,11 +6,14 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
 import org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.ResourceInteractionComponent;
 import org.hl7.fhir.dstu3.model.DecimalType;
 import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -67,6 +70,12 @@ private CareConnectServerConformanceProvider ccscp;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectServerConformanceProvider.class);
 
     public String validate_flag2 = null ;
+
+    private String oauth2authorize;
+
+    private String oauth2token;
+
+    private String oauth2register;
     
     
     public CareConnectServerConformanceProvider() {
@@ -94,16 +103,62 @@ private CareConnectServerConformanceProvider ccscp;
     	 	String CRUD_create = ctx.getEnvironment().getProperty("ccri.CRUD_create");
     	 	String CRUD_read = ctx.getEnvironment().getProperty("ccri.CRUD_read");
     	 
+    	 	
+    	 	oauth2authorize = ctx.getEnvironment().getProperty("ccri.oauth2.authorize");
+    	 	oauth2token = ctx.getEnvironment().getProperty("ccri.oauth2.token");
+    	 	oauth2register = ctx.getEnvironment().getProperty("ccri.oauth2.register");
+    	    
         if (myCapabilityStatement != null && myCache) {
             return myCapabilityStatement;
         }
         
         CapabilityStatement myCapabilityStatement = super.getServerConformance(theRequest);
+   //     myCapabilityStatement.setImplementationGuide((List<UriType>) new UriType(System.getProperty("ccri.guide")));
+        
+        
+        //CapabilityStatement retVal = new CapabilityStatement();
+        //retVal.
+        myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
+        
+   //     myCapabilityStatement 
+        
+        
+
+
+        
+        
         log.info("autowired value = " + CRUD_read12);
         log.info("CRUD_read = " + CRUD_read + ", CRUD_update = " + CRUD_update + "CRUD_create = " + CRUD_create + ", CRUD_delete = " + CRUD_delete);
         if (restfulServer != null) {
+        	
             log.info("restful Server not null");
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : myCapabilityStatement.getRest()) {
+            	CapabilityStatement.CapabilityStatementRestComponent rest = myCapabilityStatement.addRest();
+                
+                rest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
+
+                
+              if (oauth2token != null && oauth2register !=null && oauth2authorize != null) {
+                    rest.getSecurity()
+                            .addService().addCoding()
+                            .setSystem("http://hl7.org/fhir/restful-security-service")
+                            .setDisplay("SMART-on-FHIR")
+                            .setSystem("SMART-on-FHIR");
+                    Extension securityExtension = rest.getSecurity().addExtension()
+                            .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+
+                    securityExtension.addExtension()
+                            .setUrl("authorize")
+                            .setValue(new UriType(oauth2authorize));
+
+                    securityExtension.addExtension()
+                            .setUrl("register")
+                            .setValue(new UriType(oauth2register));
+
+                    securityExtension.addExtension()
+                            .setUrl("token")
+                            .setValue(new UriType(oauth2token));
+                }
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());
                     
@@ -156,8 +211,7 @@ private CareConnectServerConformanceProvider ccscp;
         }
 
         //myCapabilityStatement.children().get(1).getc
-        
-
+     
         return myCapabilityStatement;
     }
 
