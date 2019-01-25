@@ -21,43 +21,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-//import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.ApplicationContext;
+	@Configuration
+	public class CareConnectServerConformanceProvider extends ServerCapabilityStatementProvider {
 
-@Configuration
-public class CareConnectServerConformanceProvider extends ServerCapabilityStatementProvider {
+	@Autowired
+	private CareConnectServerConformanceProvider ccscp;
 	
-	
-	
-@Value("${ccri.CRUD_read}")
-private String CRUD_read12;
-
-@Autowired
-private CareConnectServerConformanceProvider ccscp;
-/*	
-	
-    @Value("${ccri.CRUD_update}")
-    private String CRUD_update;
-    
-    @Value("${ccri.CRUD_delete}")
-    private String CRUD_delete;
-    
-    @Value("${ccri.CRUD_create}")
-    private String CRUD_create;
-    
-    @Value("${ccri.role}")
-    private String ccri_role;
-    
-    @Autowired
-    FhirContext ctx;
-	*/
-	
-  
-	//private ApplicationContext applicationContext;
-	//CareConnectServerConformanceProvider(ApplicationContext context) {
-  //      this.applicationContext = context;
- //   }
 	
     
     private boolean myCache = true;
@@ -113,27 +82,11 @@ private CareConnectServerConformanceProvider ccscp;
         }
         
         CapabilityStatement myCapabilityStatement = super.getServerConformance(theRequest);
-   //     myCapabilityStatement.setImplementationGuide((List<UriType>) new UriType(System.getProperty("ccri.guide")));
-        
-        
-        //CapabilityStatement retVal = new CapabilityStatement();
-        //retVal.
         myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
         myCapabilityStatement.setPublisher("NHS Digital");
-   //     myCapabilityStatement 
-        
-        
 
-
-        
-       
-        
-        log.info("autowired value = " + CRUD_read12);
-        
-     //   CapabilityStatement.CapabilityStatementRestComponent rest = myCapabilityStatement.addRest();
-        log.info("CRUD_read = " + CRUD_read + ", CRUD_update = " + CRUD_update + "CRUD_create = " + CRUD_create + ", CRUD_delete = " + CRUD_delete);
         if (restfulServer != null) {
-              log.info("restful Server not null");
+            log.info("restful Server not null");
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : myCapabilityStatement.getRest()) {
               	nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
                 if (oauth2token != null && oauth2register !=null && oauth2authorize != null) 
@@ -210,8 +163,6 @@ private CareConnectServerConformanceProvider ccscp;
             }
         }
 
-        //myCapabilityStatement.children().get(1).getc
-     
         return myCapabilityStatement;
     }
 
