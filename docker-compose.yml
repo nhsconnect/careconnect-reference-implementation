@@ -16,7 +16,6 @@ services:
   ccriserver:
     container_name: ccriserver
     image: thorlogic/ccri-fhirserver${IMAGE_TAG}
-    build: ccri-fhirserver
     depends_on:
       - ccrisql
     links:
@@ -55,7 +54,6 @@ services:
   ccridataload:
     container_name: ccridataload
     image: thorlogic/ccri-dataload${IMAGE_TAG}
-    build: ccri-dataload
     depends_on:
     - ccriserver
     environment:
