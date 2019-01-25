@@ -126,25 +126,24 @@ private CareConnectServerConformanceProvider ccscp;
 
 
         
+       
         
         log.info("autowired value = " + CRUD_read12);
+        
+     //   CapabilityStatement.CapabilityStatementRestComponent rest = myCapabilityStatement.addRest();
         log.info("CRUD_read = " + CRUD_read + ", CRUD_update = " + CRUD_update + "CRUD_create = " + CRUD_create + ", CRUD_delete = " + CRUD_delete);
         if (restfulServer != null) {
-        	
-            log.info("restful Server not null");
+              log.info("restful Server not null");
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : myCapabilityStatement.getRest()) {
-            	CapabilityStatement.CapabilityStatementRestComponent rest = myCapabilityStatement.addRest();
-                
-                rest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
-
-                
-              if (oauth2token != null && oauth2register !=null && oauth2authorize != null) {
-                    rest.getSecurity()
+              	nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
+                if (oauth2token != null && oauth2register !=null && oauth2authorize != null) 
+                {
+                	nextRest.getSecurity()
                             .addService().addCoding()
                             .setSystem("http://hl7.org/fhir/restful-security-service")
                             .setDisplay("SMART-on-FHIR")
                             .setSystem("SMART-on-FHIR");
-                    Extension securityExtension = rest.getSecurity().addExtension()
+                    Extension securityExtension = nextRest.getSecurity().addExtension()
                             .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 
                     securityExtension.addExtension()
@@ -159,6 +158,7 @@ private CareConnectServerConformanceProvider ccscp;
                             .setUrl("token")
                             .setValue(new UriType(oauth2token));
                 }
+
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());
                     
