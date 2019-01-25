@@ -119,7 +119,7 @@ private CareConnectServerConformanceProvider ccscp;
         //CapabilityStatement retVal = new CapabilityStatement();
         //retVal.
         myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
-        
+        myCapabilityStatement.setPublisher("NHS Digital");
    //     myCapabilityStatement 
         
         
