@@ -82,34 +82,40 @@ import java.util.List;
         }
         
         CapabilityStatement myCapabilityStatement = super.getServerConformance(theRequest);
-        myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
-        myCapabilityStatement.setPublisher("NHS Digital");
+        // KGM only add if not already present
+        if (myCapabilityStatement.getImplementationGuide().size() == 0) {
+            myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
+            myCapabilityStatement.setPublisher("NHS Digital");
+        }
 
         if (restfulServer != null) {
             log.info("restful Server not null");
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : myCapabilityStatement.getRest()) {
               	nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
-                if (oauth2token != null && oauth2register !=null && oauth2authorize != null) 
-                {
-                	nextRest.getSecurity()
-                            .addService().addCoding()
-                            .setSystem("http://hl7.org/fhir/restful-security-service")
-                            .setDisplay("SMART-on-FHIR")
-                            .setSystem("SMART-on-FHIR");
-                    Extension securityExtension = nextRest.getSecurity().addExtension()
-                            .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 
-                    securityExtension.addExtension()
-                            .setUrl("authorize")
-                            .setValue(new UriType(oauth2authorize));
+              	// KGM only add if not already present
+              	if (nextRest.getSecurity().getService().size() == 0) {
+                    if (oauth2token != null && oauth2register != null && oauth2authorize != null) {
+                        nextRest.getSecurity()
+                                .addService().addCoding()
+                                .setSystem("http://hl7.org/fhir/restful-security-service")
+                                .setDisplay("SMART-on-FHIR")
+                                .setSystem("SMART-on-FHIR");
+                        Extension securityExtension = nextRest.getSecurity().addExtension()
+                                .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 
-                    securityExtension.addExtension()
-                            .setUrl("register")
-                            .setValue(new UriType(oauth2register));
+                        securityExtension.addExtension()
+                                .setUrl("authorize")
+                                .setValue(new UriType(oauth2authorize));
 
-                    securityExtension.addExtension()
-                            .setUrl("token")
-                            .setValue(new UriType(oauth2token));
+                        securityExtension.addExtension()
+                                .setUrl("register")
+                                .setValue(new UriType(oauth2register));
+
+                        securityExtension.addExtension()
+                                .setUrl("token")
+                                .setValue(new UriType(oauth2token));
+                    }
                 }
 
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {

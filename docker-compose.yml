@@ -38,6 +38,7 @@ services:
       - ccri.server.base=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
       - ccri.CRUD_create=true
+      - ccri.oauth2=false
     ports:
       - 8186:8186
     extra_hosts:
