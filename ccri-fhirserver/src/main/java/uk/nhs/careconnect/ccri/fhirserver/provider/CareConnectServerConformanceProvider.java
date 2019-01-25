@@ -45,6 +45,8 @@ import java.util.List;
     private String oauth2token;
 
     private String oauth2register;
+
+    private String oauth2;
     
     
     public CareConnectServerConformanceProvider() {
@@ -67,15 +69,16 @@ import java.util.List;
     	WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(theRequest.getServletContext());
     	log.info("restful2 Server not null = " + ctx.getEnvironment().getProperty("ccri.validate_flag"));
     	
-    	 	String CRUD_update =  ctx.getEnvironment().getProperty("ccri.CRUD_update");
-    	 	String CRUD_delete = ctx.getEnvironment().getProperty("ccri.CRUD_delete");
-    	 	String CRUD_create = ctx.getEnvironment().getProperty("ccri.CRUD_create");
-    	 	String CRUD_read = ctx.getEnvironment().getProperty("ccri.CRUD_read");
-    	 
-    	 	
-    	 	oauth2authorize = ctx.getEnvironment().getProperty("ccri.oauth2.authorize");
-    	 	oauth2token = ctx.getEnvironment().getProperty("ccri.oauth2.token");
-    	 	oauth2register = ctx.getEnvironment().getProperty("ccri.oauth2.register");
+        String CRUD_update =  ctx.getEnvironment().getProperty("ccri.CRUD_update");
+        String CRUD_delete = ctx.getEnvironment().getProperty("ccri.CRUD_delete");
+        String CRUD_create = ctx.getEnvironment().getProperty("ccri.CRUD_create");
+        String CRUD_read = ctx.getEnvironment().getProperty("ccri.CRUD_read");
+
+
+        oauth2authorize = ctx.getEnvironment().getProperty("ccri.oauth2.authorize");
+        oauth2token = ctx.getEnvironment().getProperty("ccri.oauth2.token");
+        oauth2register = ctx.getEnvironment().getProperty("ccri.oauth2.register");
+        oauth2 = ctx.getEnvironment().getProperty("ccri.oauth2");
     	    
         if (myCapabilityStatement != null && myCache) {
             return myCapabilityStatement;
@@ -94,7 +97,7 @@ import java.util.List;
               	nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
 
               	// KGM only add if not already present
-              	if (nextRest.getSecurity().getService().size() == 0) {
+              	if (nextRest.getSecurity().getService().size() == 0 && oauth2.equals("true")) {
                     if (oauth2token != null && oauth2register != null && oauth2authorize != null) {
                         nextRest.getSecurity()
                                 .addService().addCoding()
