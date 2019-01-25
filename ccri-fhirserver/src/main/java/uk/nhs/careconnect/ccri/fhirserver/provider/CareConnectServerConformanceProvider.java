@@ -143,7 +143,7 @@ private CareConnectServerConformanceProvider ccscp;
                             .setSystem("http://hl7.org/fhir/restful-security-service")
                             .setDisplay("SMART-on-FHIR")
                             .setSystem("SMART-on-FHIR");
-                    Extension securityExtension = rest.getSecurity().addExtension()
+                    Extension securityExtension = nextRest.getSecurity().addExtension()
                             .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 
                     securityExtension.addExtension()
