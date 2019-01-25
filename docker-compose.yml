@@ -12,8 +12,6 @@ services:
      - 5434:5432
     networks:
      - ccri_net
-    volumes:
-     - /docker-data/ccri-mysql:/var/lib/mysql
 
   ccriserver:
     container_name: ccriserver
@@ -151,6 +149,22 @@ services:
     - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
     networks:
     - ccri_net
+
+  hieportal:
+    container_name: hieportal
+    image: thorlogic/ccri-hieportal${IMAGE_TAG}
+    environment:
+      - fhir.resource.serverBase=http://localhost:8186/ccri-fhir/STU3
+      - fhir.messaging.serverBase=http://localhost:8182/ccri-messaging/STU3
+    depends_on:
+      - ccriserver
+    ports:
+      - 8081:8187
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
+    networks:
+      - ccri_net
 
 volumes:
   tomcat-log-volume:
