@@ -118,6 +118,7 @@ services:
     - fhir.restserver.eprBase=http4://ccriserver:8186/ccri-fhir/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
     - fhir.restserver.tkwBase=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
+    - org.slf4j.simpleLogger.defaultLogLevel=info
     ports:
     - 8182:8182
     volumes:
