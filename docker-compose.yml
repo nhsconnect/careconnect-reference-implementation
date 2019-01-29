@@ -1,6 +1,8 @@
 version: '2.1'
 services:
 
+# Care Connect Query API
+
   ccrisql:
     container_name: ccrisql
     image: thorlogic/ccri-sql${IMAGE_TAG}
@@ -47,10 +49,9 @@ services:
     volumes:
       - tomcat-log-volume:/usr/local/tomcat/logs
     networks:
-      ccri_net:
-        ipv4_address: 172.168.250.10
+      - ccri_net
 
-
+# Data Load imports a set of sample data into the reference implementation (optional)
 
   ccridataload:
     container_name: ccridataload
@@ -64,9 +65,9 @@ services:
     - POSTGRES_USERNAME=${MYSQL_DB_USER}
     - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
     networks:
-      ccri_net:
-        ipv4_address: 172.168.250.13
+    - ccri_net
 
+# Care Connect (Unstructured) Document API implementation
 
   ccrimongo:
       container_name: ccrimongo
@@ -97,10 +98,9 @@ services:
      volumes:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
-       ccri_net:
-         ipv4_address: 172.168.250.11
+       - ccri_net
 
-
+# Care Connect Get Record API and Transfer of Care Endpoint
 
   ccrimessaging:
     container_name: ccrimessaging
@@ -124,16 +124,18 @@ services:
     volumes:
     - tie-log-volume:/usr/local/tomcat/logs
     networks:
-      ccri_net:
-        ipv4_address: 172.168.250.12
+      - ccri_net
 
-  ccrilogon:
+# App to allow keycloak login to the apps
+  logon:
     container_name: ccrilogon
     image: thorlogic/ccri-logon${IMAGE_TAG}
     ports:
       - 4200:4200
 
-  ccridocumentviewer:
+# Renders (Transfer Of Care) FHIR Documents and provides a FHIR document import
+
+  documentviewer:
     container_name: ccridocumentviewer
     image: thorlogic/ccri-documentviewer${IMAGE_TAG}
     environment:
@@ -150,16 +152,18 @@ services:
     networks:
     - ccri_net
 
-  hieportal:
-    container_name: hieportal
-    image: thorlogic/ccri-hieportal${IMAGE_TAG}
+# provides technical demonstration of the Care Connect API
+
+  fhirexplorer:
+    container_name: fhirexplorer
+    image: thorlogic/ccri-fhirexplorer${IMAGE_TAG}
     environment:
       - fhir.resource.serverBase=http://localhost:8186/ccri-fhir/STU3
       - fhir.messaging.serverBase=http://localhost:8182/ccri-messaging/STU3
     depends_on:
       - ccriserver
     ports:
-      - 8081:8187
+      - 8081:8188
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
       - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
@@ -175,9 +179,5 @@ volumes:
 networks:
   ccri_net:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet: 172.168.250.0/24
 
 
