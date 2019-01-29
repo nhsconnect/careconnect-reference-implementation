@@ -141,20 +141,11 @@ public class PatientProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
         Patient newPatient = null;
         try {
-            newPatient = patientDao.update(ctx, patient, null,null);
+            newPatient = patientDao.update(ctx, patient, null, null);
             method.setId(newPatient.getIdElement());
             method.setResource(newPatient);
-        } catch (Exception ex) {
-
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+        } catch(Exception ex) {
+            ProviderResponseLibrary.handleException(method,ex);
         }
 
         log.debug("called create Patient method");

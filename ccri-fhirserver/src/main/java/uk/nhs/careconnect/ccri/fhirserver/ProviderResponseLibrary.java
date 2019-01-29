@@ -23,8 +23,9 @@ public class ProviderResponseLibrary {
                 log.error(outcomeException.getOutcome().getIssueFirstRep().getDiagnostics());
                 System.out.println("test");
             }
-            method.setOperationOutcome(outcomeException.getOutcome());
-            method.setCreated(false);
+
+            OperationOutcomeFactory.convertToException(outcomeException.getOutcome());
+
         } else {
             log.error(ex.getMessage());
             if (ex.getStackTrace().length >0) {
@@ -37,11 +38,9 @@ public class ProviderResponseLibrary {
             if (ex.getCause() != null) {
                 log.error(ex.getCause().toString());
             }
-            method.setCreated(false);
-            method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            OperationOutcomeFactory.convertToException(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
         }
-
-        return method;
+        return null;
     }
 
     public static void createException(FhirContext ctx, IBaseResource resource) throws Exception {

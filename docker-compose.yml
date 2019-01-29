@@ -29,8 +29,8 @@ services:
       - datasource.driver=org.postgresql.Driver
       - datasource.path=5432/careconnect
       - datasource.vendor=postgresql
-      - datasource.showSql=true
-      - datasource.showDdl=true
+      - datasource.showSql=false
+      - datasource.showDdl=false
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
       - ccri.implementation.description=Care Connect Reference Implementation
