@@ -71,7 +71,7 @@ services:
 
   ccrimongo:
       container_name: ccrimongo
-      image: mongo:3.6.3
+      image: mongo:4.0.3
       ports:
         - 27107:27107
       networks:
