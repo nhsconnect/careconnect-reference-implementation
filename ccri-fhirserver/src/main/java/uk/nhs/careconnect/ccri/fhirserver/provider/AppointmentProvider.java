@@ -103,11 +103,11 @@ public class AppointmentProvider implements ICCResourceProvider {
     @Search
     public List<Appointment> searchAppointment(HttpServletRequest theRequest,
                                                            @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam appointmentType,
-                                                           @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
+                                                       //    @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam appointmentType,
+                                                       //    @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
                                                            @OptionalParam(name = Appointment.SP_RES_ID) StringParam id
     ) {
-        return appointmentDao.searchAppointment(ctx, identifier,appointmentType,status,id);
+        return appointmentDao.searchAppointment(ctx, identifier, id);
     }
 
     @Read()

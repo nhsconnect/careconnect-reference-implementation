@@ -106,11 +106,11 @@ public class ScheduleProvider implements ICCResourceProvider {
     @Search
     public List<Schedule> searchSchedule(HttpServletRequest theRequest,
                                                            @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name = Schedule.SP_ACTOR) StringParam name,
-                                                           @OptionalParam(name= Schedule.SP_TYPE) TokenOrListParam codes,
+                                                          // @OptionalParam(name = Schedule.SP_ACTOR) StringParam name,
+                                                          // @OptionalParam(name= Schedule.SP_TYPE) TokenOrListParam codes,
                                                            @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
     ) {
-        return scheduleDao.searchSchedule(ctx, identifier,name,codes,id);
+        return scheduleDao.searchSchedule(ctx, identifier,id);
     }
 
 

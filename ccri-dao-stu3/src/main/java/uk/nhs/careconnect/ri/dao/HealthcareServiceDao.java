@@ -119,7 +119,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null,null,null);
+                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null);
                     for (HealthcareServiceEntity con : results) {
                         serviceEntity = con;
                         break;
@@ -271,8 +271,8 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<Resource> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation,Set<Include> reverseIncludes) {
-        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation,reverseIncludes);
+    public List<Resource> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name,  StringParam id, Set<Include> reverseIncludes) {
+        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, id, reverseIncludes);
         List<Resource> results = new ArrayList<>();
 
         for (HealthcareServiceEntity healthcareServiceEntity : qryResults) {
@@ -295,7 +295,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation, Set<Include> reverseIncludes) {
+    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name,  StringParam id, Set<Include> reverseIncludes) {
         List<HealthcareServiceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

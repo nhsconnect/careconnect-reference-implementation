@@ -1,16 +1,16 @@
 package uk.nhs.careconnect.ccri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
 import org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider;
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.ResourceInteractionComponent;
-import org.hl7.fhir.dstu3.model.DecimalType;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.UriType;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -20,6 +20,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 	@Configuration
@@ -31,7 +32,7 @@ import java.util.List;
 	
     
     private boolean myCache = true;
-    private volatile CapabilityStatement myCapabilityStatement;
+    private volatile CapabilityStatement capabilityStatement;
 
     private RestulfulServerConfiguration serverConfiguration;
 
@@ -81,20 +82,37 @@ import java.util.List;
         oauth2register = ctx.getEnvironment().getProperty("ccri.oauth2.register");
         oauth2 = ctx.getEnvironment().getProperty("ccri.oauth2");
     	    
-        if (myCapabilityStatement != null && myCache) {
-            return myCapabilityStatement;
+        if (capabilityStatement != null && myCache) {
+            return capabilityStatement;
         }
-        
-        CapabilityStatement myCapabilityStatement = super.getServerConformance(theRequest);
+
+        CapabilityStatement capabilityStatement = super.getServerConformance(theRequest);
+
+        capabilityStatement.setPublisher("NHS Digital");
+        capabilityStatement.setDateElement(conformanceDate());
+        capabilityStatement.setFhirVersion(FhirVersionEnum.DSTU3.getFhirVersionString());
+        capabilityStatement.setAcceptUnknown(CapabilityStatement.UnknownContentCode.EXTENSIONS); // TODO: make this configurable - this is a fairly big
+        // effort since the parser
+        // needs to be modified to actually allow it
+
+        capabilityStatement.getImplementation().setDescription(serverConfiguration.getImplementationDescription());
+        capabilityStatement.setKind(CapabilityStatement.CapabilityStatementKind.INSTANCE);
+
+
+        capabilityStatement.getSoftware().setName(System.getProperty("ccri.software.name"));
+        capabilityStatement.getSoftware().setVersion(System.getProperty("ccri.software.version"));
+        capabilityStatement.getImplementation().setDescription(System.getProperty("ccri.server"));
+        capabilityStatement.getImplementation().setUrl(System.getProperty("ccri.server.base"));
+
         // KGM only add if not already present
-        if (myCapabilityStatement.getImplementationGuide().size() == 0) {
-            myCapabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
-            myCapabilityStatement.setPublisher("NHS Digital");
+        if (capabilityStatement.getImplementationGuide().size() == 0) {
+            capabilityStatement.getImplementationGuide().add(new UriType(System.getProperty("ccri.guide")));
+            capabilityStatement.setPublisher("NHS Digital");
         }
 
         if (restfulServer != null) {
             log.info("restful Server not null");
-            for (CapabilityStatement.CapabilityStatementRestComponent nextRest : myCapabilityStatement.getRest()) {
+            for (CapabilityStatement.CapabilityStatementRestComponent nextRest : capabilityStatement.getRest()) {
               	nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
 
               	// KGM only add if not already present
@@ -122,7 +140,19 @@ import java.util.List;
                     }
                 }
 
+
+
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
+
+                    if (restResourceComponent.getType().equals("OperationDefinition")) {
+                        nextRest.getResource().remove(restResourceComponent);
+                        break;
+                    }
+                    if (restResourceComponent.getType().equals("StructureDefinition")) {
+                        nextRest.getResource().remove(restResourceComponent);
+                        break;
+                    }
+
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());
                     setProfile(restResourceComponent);
 
@@ -174,7 +204,7 @@ import java.util.List;
             }
         }
 
-        return myCapabilityStatement;
+        return capabilityStatement;
     }
 
     private void setProfile(CapabilityStatement.CapabilityStatementRestResourceComponent resource) {
@@ -233,4 +263,16 @@ import java.util.List;
         }
 
     }
+
+        private DateTimeType conformanceDate() {
+            IPrimitiveType<Date> buildDate = serverConfiguration.getConformanceDate();
+            if (buildDate != null) {
+                try {
+                    return new DateTimeType(buildDate.getValue());
+                } catch (DataFormatException e) {
+                    // fall through
+                }
+            }
+            return DateTimeType.now();
+        }
 }

@@ -24,15 +24,15 @@ public interface ScheduleRepository extends BaseRepository<ScheduleEntity,Schedu
 
     List<Schedule> searchSchedule(FhirContext ctx,
                                               @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
-                                              @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
-                                              @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
+                                            //  @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
+                                            //  @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
                                               @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
     );
 
     List<ScheduleEntity> searchScheduleEntity(FhirContext ctx,
                                               @OptionalParam(name = Schedule.SP_IDENTIFIER) TokenParam identifier,
-                                              @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
-                                              @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
+                                            //  @OptionalParam(name = Schedule.SP_ACTOR) StringParam actor,
+                                            //  @OptionalParam(name = Schedule.SP_TYPE) TokenOrListParam codes,
                                               @OptionalParam(name = Schedule.SP_RES_ID) StringParam id
     );
 }

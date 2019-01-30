@@ -112,7 +112,7 @@ public class AppointmentDao implements AppointmentRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<AppointmentEntity> results = searchAppointmentEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"), null, null, null);
+                    List<AppointmentEntity> results = searchAppointmentEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"), null);
                     for (AppointmentEntity con : results) {
                         appointmentEntity = con;
                         break;
@@ -270,8 +270,8 @@ public class AppointmentDao implements AppointmentRepository {
 
 
     @Override
-    public List<Appointment> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam appointmentType, StringParam status, StringParam id) { // , ReferenceParam organisation
-        List<AppointmentEntity> qryResults = searchAppointmentEntity(ctx,identifier,appointmentType,status, id); //,organisation
+    public List<Appointment> searchAppointment(FhirContext ctx, TokenParam identifier, StringParam id) { // , ReferenceParam organisation
+        List<AppointmentEntity> qryResults = searchAppointmentEntity(ctx,identifier, id); //,organisation
         List<Appointment> results = new ArrayList<>();
 
         for (AppointmentEntity appointmentEntity : qryResults) {
@@ -283,7 +283,7 @@ public class AppointmentDao implements AppointmentRepository {
     }
 
     @Override
-    public List<AppointmentEntity> searchAppointmentEntity(FhirContext ctx, TokenParam identifier, StringParam appointmentType, StringParam status, StringParam id) { // , ReferenceParam organisation
+    public List<AppointmentEntity> searchAppointmentEntity(FhirContext ctx, TokenParam identifier, StringParam id) { // , ReferenceParam organisation
         List<AppointmentEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

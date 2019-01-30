@@ -107,12 +107,12 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
     public List<Resource> searchHealthcareService(HttpServletRequest theRequest,
                                                   @OptionalParam(name = HealthcareService.SP_IDENTIFIER) TokenParam identifier,
                                                   @OptionalParam(name = HealthcareService.SP_NAME) StringParam name,
-                                                  @OptionalParam(name= HealthcareService.SP_TYPE) TokenOrListParam codes,
+                                                //  @OptionalParam(name= HealthcareService.SP_TYPE) TokenOrListParam codes,
                                                   @OptionalParam(name = HealthcareService.SP_RES_ID) StringParam id,
-                                                  @OptionalParam(name = HealthcareService.SP_ORGANIZATION) ReferenceParam organisation,
+                                                //  @OptionalParam(name = HealthcareService.SP_ORGANIZATION) ReferenceParam organisation,
                                                   @IncludeParam(reverse=true, allow = {"Slot", "*"}) Set<Include> reverseIncludes
     ) {
-        return serviceDao.searchHealthcareService(ctx, identifier,name,codes,id,organisation,reverseIncludes);
+        return serviceDao.searchHealthcareService(ctx, identifier,name,id,reverseIncludes);
     }
 
     @Read()
