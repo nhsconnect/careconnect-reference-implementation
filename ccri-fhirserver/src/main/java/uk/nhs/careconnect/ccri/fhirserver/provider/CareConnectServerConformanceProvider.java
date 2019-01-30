@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -123,7 +124,8 @@ import java.util.List;
 
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());
-                    
+                    setProfile(restResourceComponent);
+
                     List<ResourceInteractionComponent> l = restResourceComponent.getInteraction();
                     for(int i=0;i<l.size();i++)
                     	if(CRUD_read.equals("false"))
@@ -152,7 +154,7 @@ import java.util.List;
                     
                     
                    for (IResourceProvider provider : restfulServer.getResourceProviders()) {
-                	   	
+
                         log.info("Provider Resource - " + provider.getResourceType().getSimpleName());
                         if (restResourceComponent.getType().equals(provider.getResourceType().getSimpleName())
                                 || (restResourceComponent.getType().contains("List") && provider.getResourceType().getSimpleName().contains("List")))
@@ -175,4 +177,60 @@ import java.util.List;
         return myCapabilityStatement;
     }
 
+    private void setProfile(CapabilityStatement.CapabilityStatementRestResourceComponent resource) {
+        switch(resource.getType()) {
+            case "Patient":
+                resource.getProfile().setReference(CareConnectProfile.Patient_1);
+                break;
+            case "Practitioner":
+                resource.getProfile().setReference(CareConnectProfile.Practitioner_1);
+                break;
+            case "PractitionerRole":
+                resource.getProfile().setReference(CareConnectProfile.PractitionerRole_1);
+                break;
+            case "Organization":
+                resource.getProfile().setReference(CareConnectProfile.Organization_1);
+                break;
+            case "Location":
+                resource.getProfile().setReference(CareConnectProfile.Location_1);
+                break;
+            case "Observation":
+                // Observation is not currently profiled on STU3 Care Connect
+                resource.getProfile().setReference(CareConnectProfile.Observation_1);
+                break;
+            case "Encounter":
+                resource.getProfile().setReference(CareConnectProfile.Encounter_1);
+                break;
+            case "Condition":
+                resource.getProfile().setReference(CareConnectProfile.Condition_1);
+                break;
+            case "Procedure":
+                resource.getProfile().setReference(CareConnectProfile.Procedure_1);
+                break;
+            case "Immunization":
+                resource.getProfile().setReference(CareConnectProfile.Immunization_1);
+                break;
+            case "MedicationRequest":
+                resource.getProfile().setReference(CareConnectProfile.MedicationRequest_1);
+                break;
+            case "MedicationStatement":
+                resource.getProfile().setReference(CareConnectProfile.MedicationStatement_1);
+                break;
+            case "AllergyIntolerance":
+                resource.getProfile().setReference(CareConnectProfile.AllergyIntolerance_1);
+                break;
+            case "Medication":
+                resource.getProfile().setReference(CareConnectProfile.Medication_1);
+                break;
+            case "Flag":
+                resource.getProfile().setReference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Flag-1");
+                break;
+            case "DocumentReference":
+                resource.getProfile().setReference("https://fhir.hl7.org.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
+                break;
+
+
+        }
+
+    }
 }
