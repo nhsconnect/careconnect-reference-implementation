@@ -110,8 +110,8 @@ services:
     environment:
     - ccri.server.base=http://data.developer.nhs.uk/ccri-messaging/STU3
     - ccri.edms.server.base=http://localhost:8181/ccri-document/STU3
-    - ccri.software.version=3.7
-    - ccri.software.name=CCRI Messaging
+    - ccri.software.version=3.7.1
+    - ccri.software.name=CCRI-Messaging
     - ccri.server=CCRI Messaging FHIR Server
     - ccri.validate_flag=false
     - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
