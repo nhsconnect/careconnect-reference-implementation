@@ -71,7 +71,7 @@ services:
 
   ccrimongo:
       container_name: ccrimongo
-      image: mongo:4.0.3
+      image: mongo:4.0.5
       ports:
         - 27107:27107
       networks:
@@ -91,7 +91,7 @@ services:
        - ccri.server=CCRI Document FHIR Server
        - ccri.validate_flag=false
        - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-       - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
+       - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosqlc
        - spring.data.mongodb.database=careconnect-nosql
      ports:
        - 8181:8181
