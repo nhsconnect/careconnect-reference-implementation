@@ -4,7 +4,7 @@ import org.hl7.fhir.dstu3.model.Questionnaire;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;

@@ -4,7 +4,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import java.util.List;
 

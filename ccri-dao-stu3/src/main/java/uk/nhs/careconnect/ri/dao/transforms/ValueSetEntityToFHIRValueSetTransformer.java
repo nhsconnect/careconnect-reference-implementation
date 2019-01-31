@@ -6,10 +6,10 @@ import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetInclude;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetIncludeConcept;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetIncludeFilter;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeConcept;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeFilter;
 
 
 @Component

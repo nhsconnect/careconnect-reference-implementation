@@ -48,9 +48,7 @@ public class MedicationStatementEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_CATEGORY_CONCEPT"))
-
     ConceptEntity categoryCode;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_CODE"))

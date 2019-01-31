@@ -1,4 +1,6 @@
-package uk.nhs.careconnect.ri.database.entity.Terminology;
+package uk.nhs.careconnect.ri.database.entity.valueSet;
+
+import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;

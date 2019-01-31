@@ -12,7 +12,10 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.*;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeConcept;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
