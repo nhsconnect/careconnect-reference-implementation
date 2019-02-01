@@ -127,7 +127,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<AllergyIntoleranceEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/allergy"),null);
+                    List<AllergyIntoleranceEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/allergy"),null, null);
                     for (AllergyIntoleranceEntity con : results) {
                         allergyEntity = con;
                         break;
@@ -253,9 +253,10 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
         return allergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer.transform(allergyEntity);
     }
 
+
     @Override
-    public List<AllergyIntolerance> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier , StringParam resid) {
-        List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus,identifier,resid);
+    public List<AllergyIntolerance> search(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier , StringParam resid, TokenParam verificationStatus) {
+        List<AllergyIntoleranceEntity> qryResults = searchEntity(ctx,patient, date, clinicalStatus,identifier,resid, verificationStatus);
         List<AllergyIntolerance> results = new ArrayList<>();
 
         for (AllergyIntoleranceEntity allergyIntoleranceEntity : qryResults)
@@ -269,7 +270,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     }
 
     @Override
-    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,StringParam resid) {
+    public List<AllergyIntoleranceEntity> searchEntity(FhirContext ctx, ReferenceParam patient, DateRangeParam date, TokenParam clinicalStatus, TokenParam identifier ,StringParam resid, TokenParam verificationStatus) {
 
 
         List<AllergyIntoleranceEntity> qryResults = null;
@@ -328,6 +329,31 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             }
 
             Predicate p = builder.equal(root.get("clinicalStatus"), status);
+            predList.add(p);
+
+        }
+
+        if (verificationStatus != null) {
+
+            Integer status = null;
+            switch (verificationStatus.getValue().toLowerCase()) {
+                case "unconfirmed":
+                    status = 0;
+                    break;
+                case "confirmed":
+                    status = 1;
+                    break;
+                case "refuted":
+                    status = 2;
+                    break;
+                case "entered-in-error":
+                    status = 3;
+                    break;
+                default: status = -1;
+
+            }
+
+            Predicate p = builder.equal(root.get("verificationStatus"), status);
             predList.add(p);
 
         }

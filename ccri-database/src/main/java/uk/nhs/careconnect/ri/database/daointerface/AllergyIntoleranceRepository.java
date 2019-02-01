@@ -15,7 +15,7 @@ import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceEntity;
 
 import java.util.List;
 
-public interface AllergyIntoleranceRepository extends BaseRepository<AllergyIntoleranceEntity,AllergyIntolerance> {
+public interface               AllergyIntoleranceRepository extends BaseRepository<AllergyIntoleranceEntity,AllergyIntolerance> {
     void save(FhirContext ctx,AllergyIntoleranceEntity allergy) throws OperationOutcomeException;
 
     AllergyIntolerance read(FhirContext ctx, IdType theId);
@@ -28,6 +28,7 @@ public interface AllergyIntoleranceRepository extends BaseRepository<AllergyInto
                               @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 
+    // Added verification status https://airelogic-apilabs.atlassian.net/browse/ALP4-815
 
     List<AllergyIntolerance> search(
             FhirContext ctx,
@@ -35,7 +36,8 @@ public interface AllergyIntoleranceRepository extends BaseRepository<AllergyInto
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
+            , @OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
+            , @OptionalParam(name = AllergyIntolerance.SP_VERIFICATION_STATUS) TokenParam verificationStatus
 
     );
 
@@ -44,6 +46,7 @@ public interface AllergyIntoleranceRepository extends BaseRepository<AllergyInto
             , @OptionalParam(name = AllergyIntolerance.SP_DATE) DateRangeParam date
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
+            , @OptionalParam(name= AllergyIntolerance.SP_RES_ID) StringParam id
+            , @OptionalParam(name = AllergyIntolerance.SP_VERIFICATION_STATUS) TokenParam verificationStatus
     );
 }

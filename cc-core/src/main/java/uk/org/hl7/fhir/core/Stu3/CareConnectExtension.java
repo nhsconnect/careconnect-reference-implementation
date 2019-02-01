@@ -13,6 +13,7 @@ public class CareConnectExtension {
 
     public static final String UrlImmunizationDateRecorded = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-DateRecorded-1";
     public static final String UrlImmunizationParentPresent = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-ParentPresent-1";
+    public static final String UrlImmunizationProcedureCode = "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-VaccinationProcedure-1";
 
     public static final String UrlAssociatedEncounter = "http://hl7.org/fhir/StructureDefinition/encounter-associatedEncounter";
     public static final String UrlServiceType = "http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType";

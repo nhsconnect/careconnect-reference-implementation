@@ -62,9 +62,9 @@ public class ImmunizationProvider implements ICCResourceProvider {
         OperationOutcome opOutcome = new OperationOutcome();
         method.setOperationOutcome(opOutcome);
         try {
-        Immunization newImmunisation = immunisationDao.create(ctx,immunisation, theId, theConditional);
-        method.setId(newImmunisation.getIdElement());
-        method.setResource(newImmunisation);
+            Immunization newImmunisation = immunisationDao.create(ctx,immunisation, theId, theConditional);
+            method.setId(newImmunisation.getIdElement());
+            method.setResource(newImmunisation);
         } catch (Exception ex) {
 
             ProviderResponseLibrary.handleException(method,ex);
@@ -102,8 +102,10 @@ public class ImmunizationProvider implements ICCResourceProvider {
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Immunization.SP_RES_ID) StringParam resid
+            , @OptionalParam(name= "vaccination-procedure") TokenParam procedureCode
+            , @OptionalParam(name= Immunization.SP_NOTGIVEN) TokenParam notGiven
     ){
-        return immunisationDao.search(ctx,patient,date, status, identifier,resid);
+        return immunisationDao.search(ctx,patient,date, status, identifier,resid, procedureCode, notGiven);
     }
 
     @Read()

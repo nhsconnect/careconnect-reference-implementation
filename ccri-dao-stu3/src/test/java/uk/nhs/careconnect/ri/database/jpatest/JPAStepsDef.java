@@ -601,7 +601,7 @@ public class JPAStepsDef {
 
     @When("^I search AllergyIntolerance on Patient ID = (\\d+)$")
     public void i_search_AllergyIntolerance_on_Patient_ID(int patient) throws Throwable {
-        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null, null);
     }
     @Then("^I should get a Bundle of AllergyIntolerance (\\d+) resource$")
     public void i_should_get_a_Bundle_of_AllergyIntolerance_resource(int count) throws Throwable {
@@ -645,7 +645,7 @@ public class JPAStepsDef {
 
     @When("^I search Immunisation on Patient ID = (\\d+)$")
     public void i_search_Immunisation_on_Patient_ID(int patient) throws Throwable {
-        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null, null, null);
     }
 
     @Then("^I should get a Bundle of Immunisation (\\d+) resource$")

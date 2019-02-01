@@ -20,6 +20,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +76,8 @@ import java.util.List;
         String CRUD_delete = ctx.getEnvironment().getProperty("ccri.CRUD_delete");
         String CRUD_create = ctx.getEnvironment().getProperty("ccri.CRUD_create");
         String CRUD_read = ctx.getEnvironment().getProperty("ccri.CRUD_read");
+
+        String CCRI_role = ctx.getEnvironment().getProperty("ccri.role");
 
 
         oauth2authorize = ctx.getEnvironment().getProperty("ccri.oauth2.authorize");
@@ -140,7 +143,10 @@ import java.util.List;
                     }
                 }
 
-
+                if (CCRI_role.equals("EPRCareConnectAPI")) {
+                    // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+                    nextRest.setOperation(new ArrayList<>());
+                }
 
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
 
@@ -151,6 +157,10 @@ import java.util.List;
                     if (restResourceComponent.getType().equals("StructureDefinition")) {
                         nextRest.getResource().remove(restResourceComponent);
                         break;
+                    }
+                    if (CCRI_role.equals("EPRCareConnectAPI")) {
+                        // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+                        restResourceComponent.setSearchInclude(new ArrayList<>());
                     }
 
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());

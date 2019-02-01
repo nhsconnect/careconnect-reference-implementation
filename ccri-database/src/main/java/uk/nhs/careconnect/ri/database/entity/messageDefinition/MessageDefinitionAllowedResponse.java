@@ -28,7 +28,7 @@ public class MessageDefinitionAllowedResponse extends BaseResource {
 	private MessageDefinitionEntity messageDefinition;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "RESPONSE_MESSAGE_DEFINITION_ID",foreignKey= @ForeignKey(name="FK_MESSAGE_DEFINITION_MESSAGE_DEFINITION_ALLOWED_RESPONSE_MESSAGE"))
+	@JoinColumn (name = "RESPONSE_MESSAGE_DEFINITION_ID",foreignKey= @ForeignKey(name="FK_MESSAGE_DEF_MESSAGE_DEF_ALLOWED_RESPONSE_MSG"))
 	private MessageDefinitionEntity responseMessageDefinition;
 
 	@Column(name= "SITUATION")

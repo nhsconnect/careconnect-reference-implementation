@@ -112,8 +112,9 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
             , @OptionalParam(name = AllergyIntolerance.SP_CLINICAL_STATUS) TokenParam clinicalStatus
             , @OptionalParam(name = AllergyIntolerance.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = AllergyIntolerance.SP_RES_ID) StringParam resid
+            , @OptionalParam(name = AllergyIntolerance.SP_VERIFICATION_STATUS) TokenParam verificationStatus
     ) {
-        return allergyDao.search(ctx,patient, date, clinicalStatus,identifier,resid);
+        return allergyDao.search(ctx,patient, date, clinicalStatus,identifier,resid, verificationStatus);
     }
 
     @Read()
