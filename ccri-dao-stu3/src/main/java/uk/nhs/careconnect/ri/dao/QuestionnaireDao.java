@@ -306,6 +306,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (itemComponent.hasText()) {
             item.setItemText(itemComponent.getText());
         }
+        if (itemComponent.hasOptions()) {
+            item.setValueSetOptions(itemComponent.getOptions().getReference());
+        }
         for (Extension extension : itemComponent.getExtension()) {
 
             if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")) {

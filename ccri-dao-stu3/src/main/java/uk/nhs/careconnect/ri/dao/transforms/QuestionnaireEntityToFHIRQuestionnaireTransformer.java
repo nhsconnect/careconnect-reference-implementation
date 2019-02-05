@@ -146,6 +146,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
                     .setValue(new Reference(item.getAllowedProfile()));
         }
 
+        if (item.getValueSetOptions() != null) {
+            itemComponent.setOptions(new Reference(item.getValueSetOptions()));
+        }
+
         if (item.getChildItems() != null) {
             for (QuestionnaireItem childItem : item.getChildItems()) {
                 Questionnaire.QuestionnaireItemComponent childItemComponent = itemComponent.addItem();

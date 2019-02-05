@@ -66,9 +66,9 @@ public class QuestionnaireItem extends BaseResource {
 	@JoinColumn (name = "QUESTIONNAIRE_ITEM_PARENT_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_QUESTIONNAIRE_ITEM_ID"))
 	private QuestionnaireItem questionnaireParentItem;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "OPTIONS_VALUESET_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_OPTIONS_VALUESET_ID"))
-	private ValueSetEntity valueSetOptions;
+
+	@Column (name = "OPTIONS_VALUESET_STR")
+	private String valueSetOptions;
 
 	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemOptions.class)
 	private Set<QuestionnaireItemOptions> options = new HashSet<>();
@@ -185,11 +185,11 @@ public class QuestionnaireItem extends BaseResource {
 		this.questionnaireParentItem = questionnaireParentItem;
 	}
 
-	public ValueSetEntity getValueSetOptions() {
+	public String getValueSetOptions() {
 		return valueSetOptions;
 	}
 
-	public void setValueSetOptions(ValueSetEntity valueSetOptions) {
+	public void setValueSetOptions(String valueSetOptions) {
 		this.valueSetOptions = valueSetOptions;
 	}
 
