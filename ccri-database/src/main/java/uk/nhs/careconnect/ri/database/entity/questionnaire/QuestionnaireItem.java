@@ -52,9 +52,6 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="ITEM_TYPE")
 	private Questionnaire.QuestionnaireItemType itemType;
 
-	// Use the extension to lock down References
-	@Column(name="ITEM_RESOURCE_TYPE")
-	private ResourceType itemReferenceType;
 
 	@Column(name="required")
 	private Boolean required;
@@ -78,6 +75,28 @@ public class QuestionnaireItem extends BaseResource {
 
 	@OneToMany(mappedBy="questionnaireParentItem", targetEntity=QuestionnaireItem.class)
 	private Set<QuestionnaireItem> childItems = new HashSet<>();
+
+	@Column(name="ALLOWED_PROFILE",nullable = true)
+	private String allowedProfile;
+
+	@Column(name="ALLOWED_RESOURCE",nullable = true)
+	private String allowedResource;
+
+	public String getAllowedProfile() {
+		return allowedProfile;
+	}
+
+	public void setAllowedProfile(String allowedProfile) {
+		this.allowedProfile = allowedProfile;
+	}
+
+	public String getAllowedResource() {
+		return allowedResource;
+	}
+
+	public void setAllowedResource(String allowedResource) {
+		this.allowedResource = allowedResource;
+	}
 
 	public Long getItemId() { return itemId; }
 	public void setItemId(Long itemId) { this.itemId = itemId; }
@@ -132,14 +151,6 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setItemType(Questionnaire.QuestionnaireItemType itemType) {
 		this.itemType = itemType;
-	}
-
-	public ResourceType getItemReferenceType() {
-		return itemReferenceType;
-	}
-
-	public void setItemReferenceType(ResourceType itemReferenceType) {
-		this.itemReferenceType = itemReferenceType;
 	}
 
 	public Boolean getRequired() {

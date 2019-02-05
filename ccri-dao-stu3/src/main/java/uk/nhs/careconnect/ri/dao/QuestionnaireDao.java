@@ -19,6 +19,7 @@ import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireRepository;
 import uk.nhs.careconnect.ri.dao.transforms.QuestionnaireEntityToFHIRQuestionnaireTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
@@ -180,8 +181,10 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
         QuestionnaireEntity questionnaireEntity = null;
         log.debug("Called Questionnaire Create Condition Url: "+theConditional);
-        if (questionnaire.hasId()) {
-            questionnaireEntity =  (QuestionnaireEntity) em.find(QuestionnaireEntity.class,Long.parseLong(questionnaire.getId()));
+
+        if (theId != null && daoutils.isNumeric(theId.getIdPart())) {
+            log.debug("theId.getIdPart()="+theId.getIdPart());
+            questionnaireEntity = em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
         /*
@@ -216,7 +219,10 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             questionnaireEntity.setStatus(questionnaire.getStatus());
         }
         if (questionnaire.hasSubjectType()) {
-            questionnaireEntity.setSubjectType(questionnaire.getResourceType());
+            for (CodeType code : questionnaire.getSubjectType()) {
+                log.info(code.getValue());
+                questionnaireEntity.setSubjectType(code.getValue());
+            }
         }
         if (questionnaire.hasTitle()) {
             questionnaireEntity.setTitle(questionnaire.getTitle());
@@ -249,7 +255,13 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
             em.persist(questionnaireIdentifier);
         }
+
+        for (QuestionnaireItem item: questionnaireEntity.getItems()) {
+            removeItem(item);
+        }
         if (questionnaire.hasItem()) {
+
+
             for (Questionnaire.QuestionnaireItemComponent itemComponent : questionnaire.getItem()) {
                 QuestionnaireItem item = new QuestionnaireItem();
                 item.setForm(questionnaireEntity);
@@ -263,6 +275,13 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         questionnaire.setId(questionnaireEntity.getId().toString());
 
         return questionnaire;
+    }
+
+    private void removeItem(QuestionnaireItem item) {
+        for (QuestionnaireItem itemChild: item.getChildItems()) {
+            removeItem(itemChild);
+        }
+        em.remove(item);
     }
 
     private void buildItem(Questionnaire.QuestionnaireItemComponent itemComponent, QuestionnaireItem item ) {
@@ -288,8 +307,23 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             item.setItemText(itemComponent.getText());
         }
         for (Extension extension : itemComponent.getExtension()) {
-            if (extension.getUrl().contains("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")) {
-                // TODO
+
+            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")) {
+                // TO_DONE KGM 5/2/2019
+                log.info(extension.getUrl());
+                if (extension.getValue() instanceof Reference) {
+                    item.setAllowedProfile(((Reference) extension.getValue()).getReference());
+                }
+
+            }
+
+            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")) {
+                // TO_DONE KGM 5/2/2019
+                log.info(extension.getUrl());
+                if (extension.getValue() instanceof CodeType) {
+                    item.setAllowedResource(((CodeType) extension.getValue()).getValue());
+                }
+
             }
         }
 

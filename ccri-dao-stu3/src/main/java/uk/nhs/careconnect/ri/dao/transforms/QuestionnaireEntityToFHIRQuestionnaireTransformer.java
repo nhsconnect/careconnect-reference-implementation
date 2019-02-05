@@ -88,10 +88,7 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
         }
 
         if (questionnaireEntity.getSubjectType() != null) {
-
-            CodeType type = new CodeType();
-            type.setValue(questionnaireEntity.getSubjectType().toString());
-            questionnaire.getSubjectType().add(type);
+            questionnaire.addSubjectType(questionnaireEntity.getSubjectType());
         }
 
         for (QuestionnaireItem item : questionnaireEntity.getItems()) {
@@ -126,11 +123,7 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             itemComponent.setType(item.getItemType());
         }
 
-        if (item.getItemReferenceType() != null && item.getItemType().equals(Questionnaire.QuestionnaireItemType.REFERENCE)) {
-            Extension referenceType = itemComponent.addExtension();
-            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource");
-            referenceType.setValue(new Coding().setCode(item.getItemReferenceType().getPath()).setSystem("http://hl7.org/fhir/resource-types"));
-        }
+
 
         if (item.getRequired() != null) {
             itemComponent.setRequired(item.getRequired());
@@ -140,6 +133,17 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
         }
         if (item.getRepeats() != null) {
             itemComponent.setRepeats(item.getRepeats());
+        }
+
+        if (item.getAllowedResource() != null && item.getItemType().equals(Questionnaire.QuestionnaireItemType.REFERENCE)) {
+            Extension referenceType = itemComponent.addExtension();
+            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource");
+            referenceType.setValue(new CodeType().setValue(item.getAllowedResource()));
+        }
+        if (item.getAllowedProfile() != null) {
+            itemComponent.addExtension()
+                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                    .setValue(new Reference(item.getAllowedProfile()));
         }
 
         if (item.getChildItems() != null) {

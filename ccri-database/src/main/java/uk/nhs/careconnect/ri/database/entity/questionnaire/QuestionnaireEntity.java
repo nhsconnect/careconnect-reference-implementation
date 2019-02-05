@@ -59,8 +59,8 @@ public class QuestionnaireEntity extends BaseResource {
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_CODE_CONCEPT_ID"))
     private ConceptEntity questionnaireCode;
 
-    @Column(name = "SUBJECT_TYPE")
-    private ResourceType subjectType;
+    @Column(name = "SUBJECT_RESOURCE_TYPE")
+    private String subjectType;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
     private Set<QuestionnaireItem> items = new HashSet<>();
@@ -137,11 +137,11 @@ public class QuestionnaireEntity extends BaseResource {
         this.questionnaireCode = questionnaireCode;
     }
 
-    public ResourceType getSubjectType() {
+    public String getSubjectType() {
         return subjectType;
     }
 
-    public void setSubjectType(ResourceType subjectType) {
+    public void setSubjectType(String subjectType) {
         this.subjectType = subjectType;
     }
 
