@@ -65,11 +65,6 @@ import java.util.List;
         super.setRestfulServer(theRestfulServer);
     }
     
-    @LoadValueSet
-    public void loadValueSet(HttpServletRequest theRequest) {
-    	System.out.println("calling valuesets");
-   	
-    }
     @Override
     @Metadata
      public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
