@@ -22,7 +22,7 @@ public class QuestionnaireItem extends BaseResource {
 		this.questionnaire = questionnaire;
 	}
 
-	private static final int MAX_DESC_LENGTH = 512;
+	private static final int MAX_DESC_LENGTH = 4096;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +81,9 @@ public class QuestionnaireItem extends BaseResource {
 
 	@Column(name="ALLOWED_RESOURCE",nullable = true)
 	private String allowedResource;
+
+	@Column(name = "DEFINITION", length = MAX_DESC_LENGTH)
+	private String definition;
 
 	public String getAllowedProfile() {
 		return allowedProfile;
@@ -220,5 +223,13 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setChildItems(Set<QuestionnaireItem> childItems) {
 		this.childItems = childItems;
+	}
+
+	public String getDefinition() {
+		return definition;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
 	}
 }

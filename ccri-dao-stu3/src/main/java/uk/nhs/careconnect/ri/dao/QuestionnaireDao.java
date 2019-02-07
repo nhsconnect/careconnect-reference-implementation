@@ -215,6 +215,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             questionnaireEntity.setName(questionnaire.getName());
         }
 
+        if (questionnaire.hasPurpose()) {
+            questionnaireEntity.setPurpose(questionnaire.getPurpose());
+        }
         if (questionnaire.hasStatus()) {
             questionnaireEntity.setStatus(questionnaire.getStatus());
         }
@@ -309,6 +312,11 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (itemComponent.hasOptions()) {
             item.setValueSetOptions(itemComponent.getOptions().getReference());
         }
+
+        if (itemComponent.hasDefinition()) {
+            item.setDefinition(itemComponent.getDefinition());
+        }
+
         for (Extension extension : itemComponent.getExtension()) {
 
             if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")) {

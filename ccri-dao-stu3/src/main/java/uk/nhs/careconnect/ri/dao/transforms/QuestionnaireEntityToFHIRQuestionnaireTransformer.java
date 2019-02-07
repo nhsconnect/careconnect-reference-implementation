@@ -55,6 +55,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             questionnaire.setName(questionnaireEntity.getName());
         }
 
+        if (questionnaireEntity.getPurpose() != null) {
+            questionnaire.setPurpose(questionnaireEntity.getPurpose());
+        }
+
         if (questionnaireEntity.getStatus() != null){
             questionnaire.setStatus(questionnaireEntity.getStatus());
         }
@@ -148,6 +152,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
 
         if (item.getValueSetOptions() != null) {
             itemComponent.setOptions(new Reference(item.getValueSetOptions()));
+        }
+
+        if (item.getDefinition() != null) {
+            itemComponent.setDefinition(item.getDefinition());
         }
 
         if (item.getChildItems() != null) {
