@@ -150,7 +150,7 @@ public class JPAStepsDef {
 
     List<RiskAssessment> riskAssessmentList;
 
-    List<QuestionnaireResponse> questionnaireResponseList;
+    List<Resource> questionnaireResponseList;
 
     Transaction tx;
 
@@ -781,7 +781,7 @@ PROCEDURE
 
     @When("^I search QuestionnaireResponse on Patient ID = (\\d+)$")
     public void i_search_QuestionnaireResponse_on_Patient_ID(int patient) throws Throwable {
-        questionnaireResponseList = questionnaireResponseRepository.searchQuestionnaireResponse(ctx, null,null,null, new ReferenceParam("Patient/"+patient));
+        questionnaireResponseList =  questionnaireResponseRepository.searchQuestionnaireResponse(ctx, null,null,null, new ReferenceParam("Patient/"+patient), null);
     }
 
     @Then("^I should get a Bundle of QuestionnaireResponse (\\d+) resource$")

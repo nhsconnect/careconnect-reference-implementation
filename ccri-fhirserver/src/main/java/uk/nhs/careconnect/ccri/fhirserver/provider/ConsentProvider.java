@@ -29,7 +29,7 @@ import java.util.List;
 @Component
 public class ConsentProvider implements ICCResourceProvider {
 
-	    @Autowired
+    @Autowired
     private ConsentRepository consentDao;
 
     @Autowired

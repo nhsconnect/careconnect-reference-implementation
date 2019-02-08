@@ -223,7 +223,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         }
         if (questionnaire.hasSubjectType()) {
             for (CodeType code : questionnaire.getSubjectType()) {
-                log.info(code.getValue());
+          //      log.info(code.getValue());
                 questionnaireEntity.setSubjectType(code.getValue());
             }
         }
@@ -321,7 +321,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
             if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")) {
                 // TO_DONE KGM 5/2/2019
-                log.info(extension.getUrl());
+              //  log.info(extension.getUrl());
                 if (extension.getValue() instanceof Reference) {
                     item.setAllowedProfile(((Reference) extension.getValue()).getReference());
                 }
@@ -330,7 +330,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
             if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")) {
                 // TO_DONE KGM 5/2/2019
-                log.info(extension.getUrl());
+             //   log.info(extension.getUrl());
                 if (extension.getValue() instanceof CodeType) {
                     item.setAllowedResource(((CodeType) extension.getValue()).getValue());
                 }

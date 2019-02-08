@@ -37,6 +37,12 @@ public class QuestionnaireResponseEntity extends BaseResource {
     @JoinColumn (name = "QUESTIONNAIRE_ID",foreignKey= @ForeignKey(name="FK_FORM_QUESTIONNAIRE_ID"))
     private QuestionnaireEntity questionnaire;
 
+    @Column (name = "QUESTIONNAIRE_IDENTIFIER_SYSTEM")
+    private String questionnaireIdSystem;
+
+    @Column (name = "QUESTIONNAIRE_IDENTIFIER_VALUE")
+    private String questionnaireIdValue;
+
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
     private QuestionnaireResponse.QuestionnaireResponseStatus status;
@@ -198,5 +204,21 @@ public class QuestionnaireResponseEntity extends BaseResource {
 
     public void setItems(Set<QuestionnaireResponseItem> items) {
         this.items = items;
+    }
+
+    public String getQuestionnaireIdSystem() {
+        return questionnaireIdSystem;
+    }
+
+    public void setQuestionnaireIdSystem(String questionnaireIdSystem) {
+        this.questionnaireIdSystem = questionnaireIdSystem;
+    }
+
+    public String getQuestionnaireIdValue() {
+        return questionnaireIdValue;
+    }
+
+    public void setQuestionnaireIdValue(String questionnaireIdValue) {
+        this.questionnaireIdValue = questionnaireIdValue;
     }
 }

@@ -81,6 +81,13 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
         if (formEntity.getQuestionnaire() != null) {
             form.setQuestionnaire(new Reference("Questionnaire/"+formEntity.getQuestionnaire().getId()).setDisplay(formEntity.getQuestionnaire().getName()));
         }
+        if (formEntity.getQuestionnaireIdValue() != null) {
+            Reference id = new Reference();
+                    id.getIdentifier()
+                    .setSystem(formEntity.getQuestionnaireIdSystem())
+                    .setValue((formEntity.getQuestionnaireIdValue()));
+            form.setQuestionnaire(id);
+        }
         if (formEntity.getSourcePatient() != null) {
             form.setSource(new Reference("Patient/"+formEntity.getSourcePatient().getId()).setDisplay(formEntity.getSourcePatient().getNames().get(0).getDisplayName()));
         }
@@ -138,6 +145,18 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
                 answer.setValue(new Reference("Practitioner/"+answerEntity.getReferencePractitioner().getId()).setDisplay(answerEntity.getReferencePractitioner().getNames().get(0).getDisplayName())
                 );
             }
+            else if (answerEntity.getReferenceFlag() != null) {
+                answer.setValue(new Reference("Flag/"+answerEntity.getReferenceFlag().getId())
+                );
+            }
+            else if (answerEntity.getReferenceCarePlan() != null) {
+                answer.setValue(new Reference("CarePlan/"+answerEntity.getReferenceCarePlan().getId()));
+
+            }
+            else if (answerEntity.getReferenceClinicalImpression() != null) {
+                answer.setValue(new Reference("ClinicalImpression/"+answerEntity.getReferenceClinicalImpression().getId()));
+            }
+
         }
 
 

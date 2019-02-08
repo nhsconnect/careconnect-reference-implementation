@@ -1,8 +1,10 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -14,13 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.dao.transforms.*;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.dao.transforms.QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
+import uk.nhs.careconnect.ri.database.entity.carePlan.*;
+import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
+import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -39,6 +43,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @Transactional
@@ -73,18 +78,81 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     ConceptRepository conceptDao;
 
     @Autowired
+    @Lazy
     ConditionRepository conditionDao;
 
     @Autowired
+    @Lazy
     ObservationRepository observationDao;
+
+    @Autowired
+    @Lazy
+    FlagRepository flagDao;
+
+    @Autowired
+    @Lazy
+    ClinicalImpressionRepository clinicalImpressionDao;
+
+    @Autowired
+    @Lazy
+    ConsentRepository consentDao;
+
 
     @Autowired
     private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer formEntityToFHIRQuestionnaireResponseTransformer;
 
+    @Autowired
+    private PatientEntityToFHIRPatientTransformer patientEntityToFHIRPatientTransformer;
 
+    @Autowired
+    private ListEntityToFHIRListResourceTransformer listEntityToFHIRListResourceTransformer;
+
+    @Autowired
+    private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer questionnaireResponseEntityToFHIRQuestionnaireResponseTransformer;
+
+    @Autowired
+    private PractitionerEntityToFHIRPractitionerTransformer practitionerEntityToFHIRPractitionerTransformer;
+
+    @Autowired
+    private OrganisationEntityToFHIROrganizationTransformer organisationEntityToFHIROrganizationTransformer;
+
+    @Autowired
+    private ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
+
+    @Autowired
+    private RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskAssessmentEntityToFHIRRiskAssessmentTransformer;
+
+    @Autowired
+    private CareTeamEntityToFHIRCareTeamTransformer careTeamEntityToFHIRCareTeamTransformer;
+
+    @Autowired
+    private ClinicalImpressionEntityToFHIRClinicalImpressionTransformer clinicalImpressionEntityToFHIRClinicalImpressionTransformer;
+
+    @Autowired
+    private ConsentEntityToFHIRConsentTransformer consentEntityToFHIRConsentTransformer;
+
+    @Autowired
+    private GoalEntityToFHIRGoalTransformer goalEntityToFHIRGoalTransformer;
+
+    @Autowired
+    private RelatedPersonEntityToFHIRRelatedPersonTransformer personEntityToFHIRRelatedPersonTransformer;
+
+    @Autowired
+    private FlagEntityToFHIRFlagTransformer flagEntityToFHIRFlagTransformer;
+
+    @Autowired
+    private CarePlanEntityToFHIRCarePlanTransformer carePlanEntityToFHIRCarePlanTransformer;
+
+    @Autowired
+    private ObservationEntityToFHIRObservationTransformer observationEntityToFHIRObservationTransformer;
+
+    @Autowired
+    private ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    List<Resource> results = null;
 
     private static final Logger log = LoggerFactory.getLogger(QuestionnaireResponseDao.class);
 
@@ -109,10 +177,26 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         }
     }
 
+    private void resultsAddIfNotPresent(Resource resource) {
+        boolean found = false;
+        for (Resource resource1 : results) {
+            if (resource1.getId().equals(resource.getId()) && resource.getClass().getSimpleName().equals(resource1.getClass().getSimpleName())) found=true;
+        }
+        if (!found) results.add(resource);
+    }
+
     @Override
-    public List<QuestionnaireResponse> searchQuestionnaireResponse(FhirContext ctx, TokenParam identifier, StringParam id,ReferenceParam questionnaire, ReferenceParam patient) {
-        List<QuestionnaireResponseEntity> qryResults = searchQuestionnaireResponseEntity(ctx, identifier, id, questionnaire, patient);
-        List<QuestionnaireResponse> results = new ArrayList<>();
+    public List<Resource> searchQuestionnaireResponse(
+            FhirContext ctx,
+            TokenParam identifier,
+            StringParam id,
+            ReferenceParam questionnaire,
+            ReferenceParam patient,
+            Set<Include> includes
+    ) {
+        List<QuestionnaireResponseEntity> qryResults = searchQuestionnaireResponseEntity(ctx, identifier, id, questionnaire, patient, includes);
+
+        results = new ArrayList<>();
 
         for (QuestionnaireResponseEntity form : qryResults)
         {
@@ -120,12 +204,72 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             QuestionnaireResponse questionnaireResponse = formEntityToFHIRQuestionnaireResponseTransformer.transform(form);
             results.add(questionnaireResponse);
         }
+        if (includes!=null) {
+            log.debug("Includes");
+            for (QuestionnaireResponseEntity questionnaireResponse : qryResults) {
+                if (includes !=null) {
+                    for (Include include : includes) {
+                        switch(include.getValue()) {
+                            case "*":
+                                PatientEntity patientEntity2 = questionnaireResponse.getPatient();
+                                if (patientEntity2 !=null) resultsAddIfNotPresent(patientEntityToFHIRPatientTransformer.transform(patientEntity2));
 
+                                if (questionnaireResponse.getAuthorPractitioner() != null) {
+                                   resultsAddIfNotPresent(practitionerEntityToFHIRPractitionerTransformer.transform(questionnaireResponse.getAuthorPractitioner()));
+                                }
+                                for (QuestionnaireResponseItem item : questionnaireResponse.getItems()) {
+                                    getReferencedResources(item);
+                                }
+                                break;
+                        }
+                    }
+                }
+
+            }
+        }
         return results;
     }
 
+    private void getReferencedResources(QuestionnaireResponseItem item) {
+        for (QuestionnaireResponseItemAnswer answer : item.getAnswers()) {
+            if (answer.getReferenceClinicalImpression() != null) {
+                resultsAddIfNotPresent(clinicalImpressionEntityToFHIRClinicalImpressionTransformer.transform(answer.getReferenceClinicalImpression()));
+            }
+            if (answer.getReferenceFlag() != null) {
+                resultsAddIfNotPresent(flagEntityToFHIRFlagTransformer.transform(answer.getReferenceFlag()));
+            }
+            if (answer.getReferenceCarePlan() != null) {
+                resultsAddIfNotPresent(carePlanEntityToFHIRCarePlanTransformer.transform(answer.getReferenceCarePlan()));
+            }
+            if (answer.getReferenceCondition() != null) {
+                resultsAddIfNotPresent(conditionEntityToFHIRConditionTransformer.transform(answer.getReferenceCondition()));
+            }
+            if (answer.getReferenceConsent() != null) {
+                resultsAddIfNotPresent(consentEntityToFHIRConsentTransformer.transform(answer.getReferenceConsent()));
+            }
+            if (answer.getReferenceObservation() != null) {
+                resultsAddIfNotPresent(observationEntityToFHIRObservationTransformer.transform(answer.getReferenceObservation()));
+            }
+            if (answer.getReferenceProcedure() != null) {
+                resultsAddIfNotPresent(procedureEntityToFHIRProcedureTransformer.transform(answer.getReferenceProcedure()));
+            }
+            if (answer.getReferenceOrganisation() != null) {
+                resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(answer.getReferenceOrganisation()));
+            }
+         }
+        for (QuestionnaireResponseItem subItem : item.getItems()) {
+            getReferencedResources(subItem);
+        }
+    }
+
     @Override
-    public List<QuestionnaireResponseEntity> searchQuestionnaireResponseEntity(FhirContext ctx, TokenParam identifier, StringParam resid, ReferenceParam questionnaire, ReferenceParam patient) {
+    public List<QuestionnaireResponseEntity> searchQuestionnaireResponseEntity(
+            FhirContext ctx,
+            TokenParam identifier,
+            StringParam resid,
+            ReferenceParam questionnaire,
+            ReferenceParam patient,
+            Set<Include> includes) {
 
             List<QuestionnaireResponseEntity> qryResults = null;
 
@@ -138,8 +282,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             List<Predicate> predList = new LinkedList<Predicate>();
             List<Questionnaire> results = new ArrayList<Questionnaire>();
 
-            if (identifier !=null)
+            if (identifier != null)
             {
+
+                //if (identifier.getModifier().getValue().equals(":identifier"))
                 Join<QuestionnaireEntity, QuestionnaireIdentifier> join = root.join("identifiers", JoinType.LEFT);
 
                 Predicate p = builder.equal(join.get("value"),identifier.getValue());
@@ -167,16 +313,33 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             }
 
             if (questionnaire != null) {
-                if (daoutils.isNumeric(questionnaire.getIdPart())) {
-                    Join<QuestionnaireResponseEntity, QuestionnaireEntity> join = root.join("questionnaire", JoinType.LEFT);
 
-                    Predicate p = builder.equal(join.get("id"), questionnaire.getIdPart());
+
+                if (questionnaire.getValue() != null) { log.info("value - " + questionnaire.getValue()); }
+                if (questionnaire.getQueryParameterQualifier() != null) { log.info("QueryParam - " + questionnaire.getQueryParameterQualifier()); }
+                //if (questionnaire.getChain() != null) { log.info("chain - " + questionnaire.getChain()); }
+
+                if (questionnaire.getValue().contains("|")) {
+
+                    String[] ident = questionnaire.getValue().split("\\|");
+                    log.info("System = "+ident[0]);
+                    log.info("Value = "+ident[1]);
+                    Predicate p = builder.equal(root.get("questionnaireIdSystem"), ident[0]);
+                    predList.add(p);
+                    p = builder.equal(root.get("questionnaireIdValue"), ident[1]);
                     predList.add(p);
                 } else {
-                    Join<QuestionnaireResponseEntity, PatientEntity> join = root.join("questionnaire", JoinType.LEFT);
+                    if (daoutils.isNumeric(questionnaire.getIdPart())) {
+                        Join<QuestionnaireResponseEntity, QuestionnaireEntity> join = root.join("questionnaire", JoinType.LEFT);
 
-                    Predicate p = builder.equal(join.get("id"), -1);
-                    predList.add(p);
+                        Predicate p = builder.equal(join.get("id"), questionnaire.getIdPart());
+                        predList.add(p);
+                    } else {
+                        Join<QuestionnaireResponseEntity, PatientEntity> join = root.join("questionnaire", JoinType.LEFT);
+
+                        Predicate p = builder.equal(join.get("id"), -1);
+                        predList.add(p);
+                    }
                 }
             }
 
@@ -240,7 +403,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<QuestionnaireResponseEntity> results = searchQuestionnaireResponseEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/risk"),null,null,null);
+                    List<QuestionnaireResponseEntity> results = searchQuestionnaireResponseEntity(ctx, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/risk"),null,null,null, null);
                     for (QuestionnaireResponseEntity con : results) {
                         formEntity = con;
                         break;
@@ -308,8 +471,14 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         }
 
         if (form.hasQuestionnaire()) {
-            QuestionnaireEntity questionnaireEntity = questionnaireDao.readEntity(ctx, new IdType(form.getQuestionnaire().getReference()));
-            formEntity.setQuestionnaire(questionnaireEntity);
+            if (form.getQuestionnaire().hasReference()) {
+                QuestionnaireEntity questionnaireEntity = questionnaireDao.readEntity(ctx, new IdType(form.getQuestionnaire().getReference()));
+                formEntity.setQuestionnaire(questionnaireEntity);
+            }
+            if (form.getQuestionnaire().hasIdentifier()) {
+                formEntity.setQuestionnaireIdSystem(form.getQuestionnaire().getIdentifier().getSystem());
+                formEntity.setQuestionnaireIdValue(form.getQuestionnaire().getIdentifier().getValue());
+            }
         }
         if (form.hasSource()) {
             if (form.getSource().getReference().contains("Patient")) {
@@ -452,15 +621,37 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                         }
                         if (answer.hasValueReference()) {
                             Reference reference = answer.getValueReference();
-                            if (reference.getReference().contains("Condition")) {
-                                ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
-                                answerEntity.setReferenceCondition(conditionEntity);
-                            } else if (reference.getReference().contains("Observation")) {
-                                ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
-                                answerEntity.setReferenceObservation(observationEntity);
-                            } else if (reference.getReference().contains("Practitioner")) {
-                                PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
-                                answerEntity.setReferencePractitioner(practitionerEntity);
+                            // log.info("QuestionnaireResponse answer reference = "+reference.getReference());
+                            URI uri = new URI(reference.getReference());
+                            String[] segments = uri.getPath().split("/");
+                            String resourceType = "";
+                            if (segments.length > 1) resourceType = segments[segments.length-2];
+                            // log.info("QuestionnaireResponse answer resourceType = "+resourceType);
+                            switch (resourceType) {
+                                case "Condition":
+                                    ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferenceCondition(conditionEntity);
+                                    break;
+                                case "Observation":
+                                    ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferenceObservation(observationEntity);
+                                    break;
+                                case "Practitioner":
+                                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferencePractitioner(practitionerEntity);
+                                    break;
+                                case "Flag":
+                                    FlagEntity flagEntity = flagDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferenceFlag(flagEntity);
+                                    break;
+                                case "CarePlan":
+                                    CarePlanEntity carePlanEntity = carePlanDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferenceCarePlan(carePlanEntity);
+                                    break;
+                                case "ClinicalImpression":
+                                    ClinicalImpressionEntity clinicalImpressionEntity = clinicalImpressionDao.readEntity(ctx, new IdType(reference.getReference()));
+                                    answerEntity.setReferenceClinicalImpression(clinicalImpressionEntity);
+                                    break;
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
@@ -13,6 +14,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireResponseReposito
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class QuestionnaireResponseProvider implements ICCResourceProvider {
@@ -114,13 +117,14 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         return form;
     }
     @Search
-    public List<QuestionnaireResponse> searchQuestionnaire(HttpServletRequest theRequest,
-                                                           @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
-                                                           @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) StringParam id,
-                                                           @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
-                                                           @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient
+    public List<Resource> searchQuestionnaire(HttpServletRequest theRequest,
+                                              @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
+                                              @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) StringParam id,
+                                              @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
+                                              @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient,
+                                              @IncludeParam(allow= {"*"}) Set<Include> includes
     ) {
-        return formDao.searchQuestionnaireResponse(ctx, identifier,id,questionnaire,patient);
+        return formDao.searchQuestionnaireResponse(ctx, identifier,id,questionnaire,patient, includes);
     }
 
     @Validate
