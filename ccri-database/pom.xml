@@ -81,7 +81,7 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate_validator_version}</version>
         </dependency>
-        <dependency>
+    <!--    <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-search-orm</artifactId>
             <version>${hibernate_search_version}</version>
@@ -91,8 +91,7 @@
             <artifactId>hibernate-search-elasticsearch</artifactId>
             <version>${hibernate_search_version}</version>
         </dependency>
-
-
+-->
 
 
         <dependency>
@@ -142,7 +141,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>4.2.0</version>
+            <version>5.2.3</version>
         </dependency>
 
         <!-- TESTING -->

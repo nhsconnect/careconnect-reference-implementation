@@ -35,11 +35,8 @@
         <hawtio.version>2.5.0</hawtio.version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
 
-        <hibernate_version>5.3.1.Final</hibernate_version>
-        <hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
-        <!-- Update lucene version when you update hibernate-search version -->
-        <hibernate_search_version>5.10.3.Final</hibernate_search_version>
-
+        <hibernate_version>5.3.7.Final</hibernate_version>
+        <hibernate_validator_version>6.0.14.Final</hibernate_validator_version>
         <!-- Disable Dependency Location Checking for Site Report -->
         <dependency.locations.enabled>false</dependency.locations.enabled>
 
