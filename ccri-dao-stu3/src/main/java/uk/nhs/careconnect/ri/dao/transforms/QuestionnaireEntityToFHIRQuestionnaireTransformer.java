@@ -8,6 +8,7 @@ import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
 
 
 @Component
@@ -162,6 +163,20 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             for (QuestionnaireItem childItem : item.getChildItems()) {
                 Questionnaire.QuestionnaireItemComponent childItemComponent = itemComponent.addItem();
                 getItemComponent(childItem, childItemComponent);
+            }
+        }
+
+        for (QuestionnaireItemOptions option : item.getOptions()) {
+            if (option.getValueCode() != null) {
+                itemComponent.addOption( new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode(option.getValueCode().getCode())
+                                .setSystem(option.getValueCode().getSystem())
+                                .setDisplay(option.getValueCode().getDisplay())));
+            }
+            if (option.getValueString() != null) {
+                itemComponent.addOption( new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new StringType().setValue(option.getValueString())));
             }
         }
         return itemComponent;

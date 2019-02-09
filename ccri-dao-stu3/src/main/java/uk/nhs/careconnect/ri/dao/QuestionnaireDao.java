@@ -23,6 +23,8 @@ import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
@@ -284,6 +286,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         for (QuestionnaireItem itemChild: item.getChildItems()) {
             removeItem(itemChild);
         }
+        for (QuestionnaireItemOptions options : item.getOptions()) {
+            em.remove(options);
+        }
         em.remove(item);
     }
 
@@ -313,6 +318,8 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             item.setValueSetOptions(itemComponent.getOptions().getReference());
         }
 
+
+
         if (itemComponent.hasDefinition()) {
             item.setDefinition(itemComponent.getDefinition());
         }
@@ -340,7 +347,28 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
         em.persist(item);
 
-        for (Questionnaire.QuestionnaireItemComponent subItem : itemComponent.getItem()) {
+        if (itemComponent.hasOption()) {
+            for (Questionnaire.QuestionnaireItemOptionComponent option : itemComponent.getOption()) {
+                QuestionnaireItemOptions optionEntity = new QuestionnaireItemOptions();
+                optionEntity.setQuestionnaireItem(item);
+                if (option.hasValueCoding()) {
+                    ConceptEntity concept = conceptDao.findAddCode(option.getValueCoding());
+                    if (concept != null) optionEntity.setValueCode(concept);
+                }
+                if (option.hasValueStringType()) {
+                    optionEntity.setValueString(option.getValueStringType().toString());
+                }
+                if (option.hasValueDateType()) {
+                    optionEntity.setValueDateTime(option.getValueDateType().getValueAsString());
+                }
+                if (option.hasValueIntegerType()) {
+                    optionEntity.setValueInteger(option.getValueIntegerType().getValueAsString());
+                }
+                em.persist(optionEntity);
+            }
+        }
+
+                for (Questionnaire.QuestionnaireItemComponent subItem : itemComponent.getItem()) {
             QuestionnaireItem subItemEntity = new QuestionnaireItem();
             subItemEntity.setQuestionnaireParentItem(item);
             buildItem(subItem, subItemEntity);
