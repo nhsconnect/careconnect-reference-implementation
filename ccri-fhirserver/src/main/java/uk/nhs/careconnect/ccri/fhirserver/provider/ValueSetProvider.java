@@ -25,9 +25,11 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.dstu3.model.ConceptMap;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 
@@ -49,9 +51,12 @@ public class ValueSetProvider implements IResourceProvider {
 
     @Autowired
     private ValueSetRepository valueSetDao;
-
+    
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
+    
+    @Value("${ccri.valueSetHost}")
+	private String valueSetHost;
     
     @Override
     public Class<ValueSet> getResourceType() {
@@ -130,18 +135,14 @@ public class ValueSetProvider implements IResourceProvider {
 
     @Operation(name = "$getvaluecodes", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getValueCodes(
-         /*   @OperationParam(name="patientNHSnumber") TokenParam
-                    nhsNumber,
-            @OperationParam(name="recordType") TokenParam
-                    recordType,
-            @OperationParam(name="recordSection") TokenOrListParam
-                    recordSection*/
+            @OperationParam(name="valueSetId") TokenParam
+            			valueSetId
     ) throws Exception {
 
-    	System.out.println("getting value sets");
+    	System.out.println("getting value sets" + valueSetHost);
     	
     	final HttpClient client1 = getHttpClient();
-         HttpGet request = new HttpGet("http://localhost:8186/ccri-fhir/STU3/ValueSet/");
+        HttpGet request = new HttpGet(valueSetHost);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
         request.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
         HttpResponse response;
@@ -155,7 +156,7 @@ public class ValueSetProvider implements IResourceProvider {
 			 IBaseResource resource = ctx.newJsonParser().parseResource(reader);
 			 System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
 			 
-			   System.out.println("resource = " + resource);
+			 System.out.println("resource = " + resource);
 			 if(resource instanceof Bundle)
 	         {
 	            Bundle bundle = (Bundle) resource;
@@ -164,7 +165,11 @@ public class ValueSetProvider implements IResourceProvider {
 	            //retVal.setOperationOutcome(operationOutcome);
 	            
 	            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-	                if (entry.hasResource() && entry.getResource() instanceof ValueSet) {
+	            	System.out.println("  valueset id = " + valueSetId.getValue().toString() );
+	                if (entry.hasResource() && entry.getResource() instanceof ConceptMap //ValueSet
+	                		&& (valueSetId.getValue().toString().contains("ALL")  || valueSetId.getValue().toString().contains(entry.getResource().getId().toString()) 
+	                				))
+	                		 {
 	                	ValueSet vs = (ValueSet) entry.getResource();
 	                	
 	                	System.out.println("URL IS " + vs.getUrl());
