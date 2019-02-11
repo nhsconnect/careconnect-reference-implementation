@@ -156,6 +156,12 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             else if (answerEntity.getReferenceClinicalImpression() != null) {
                 answer.setValue(new Reference("ClinicalImpression/"+answerEntity.getReferenceClinicalImpression().getId()));
             }
+            else if (answerEntity.getReferenceListResource() != null) {
+                answer.setValue(new Reference("List/"+answerEntity.getReferenceListResource().getId()));
+            }
+            else if (answerEntity.getReferenceConsent() != null) {
+                answer.setValue(new Reference("Consent/"+answerEntity.getReferenceConsent().getId()));
+            }
 
         }
 

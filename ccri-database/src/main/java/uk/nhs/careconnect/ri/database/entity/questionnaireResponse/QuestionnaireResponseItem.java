@@ -55,6 +55,7 @@ public class QuestionnaireResponseItem extends BaseResource {
 	private QuestionnaireResponseItemAnswer parentAnswer;
 
 	@OneToMany(mappedBy="parentItem", targetEntity=QuestionnaireResponseItem.class)
+	@OrderBy(value = "linkId ASC")
 	private Set<QuestionnaireResponseItem> items = new HashSet<>();
 
 	public Long getItemId() { return itemId; }

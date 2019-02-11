@@ -84,6 +84,7 @@ public class QuestionnaireResponseEntity extends BaseResource {
     private PractitionerEntity authorPractitioner;
 
     @OneToMany(mappedBy="form", targetEntity=QuestionnaireResponseItem.class)
+    @OrderBy(value = "linkId ASC")
     private Set<QuestionnaireResponseItem> items = new HashSet<>();
 
     public Long getId() {

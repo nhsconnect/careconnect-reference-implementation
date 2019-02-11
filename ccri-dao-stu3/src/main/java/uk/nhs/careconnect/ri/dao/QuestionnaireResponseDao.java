@@ -22,9 +22,11 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.carePlan.*;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.database.entity.consent.ConsentEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
+import uk.nhs.careconnect.ri.database.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -96,6 +98,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     @Autowired
     @Lazy
     ConsentRepository consentDao;
+
+    @Autowired
+    @Lazy
+    ListRepository listDao;
 
 
     @Autowired
@@ -255,6 +261,12 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             }
             if (answer.getReferenceOrganisation() != null) {
                 resultsAddIfNotPresent(organisationEntityToFHIROrganizationTransformer.transform(answer.getReferenceOrganisation()));
+            }
+            if (answer.getReferenceListResource() != null) {
+                resultsAddIfNotPresent(listEntityToFHIRListResourceTransformer.transform(answer.getReferenceListResource()));
+            }
+            if (answer.getReferenceConsent() != null) {
+                resultsAddIfNotPresent(consentEntityToFHIRConsentTransformer.transform(answer.getReferenceConsent()));
             }
          }
         for (QuestionnaireResponseItem subItem : item.getItems()) {
@@ -623,40 +635,53 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                             Reference reference = answer.getValueReference();
                             // log.info("QuestionnaireResponse answer reference = "+reference.getReference());
                             URI uri = new URI(reference.getReference());
-                            String[] segments = uri.getPath().split("/");
-                            String resourceType = "";
-                            if (segments.length > 1) resourceType = segments[segments.length-2];
-                            // log.info("QuestionnaireResponse answer resourceType = "+resourceType);
-                            switch (resourceType) {
-                                case "Condition":
-                                    ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferenceCondition(conditionEntity);
-                                    break;
-                                case "Observation":
-                                    ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferenceObservation(observationEntity);
-                                    break;
-                                case "Practitioner":
-                                    PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferencePractitioner(practitionerEntity);
-                                    break;
-                                case "Flag":
-                                    FlagEntity flagEntity = flagDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferenceFlag(flagEntity);
-                                    break;
-                                case "CarePlan":
-                                    CarePlanEntity carePlanEntity = carePlanDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferenceCarePlan(carePlanEntity);
-                                    break;
-                                case "ClinicalImpression":
-                                    ClinicalImpressionEntity clinicalImpressionEntity = clinicalImpressionDao.readEntity(ctx, new IdType(reference.getReference()));
-                                    answerEntity.setReferenceClinicalImpression(clinicalImpressionEntity);
-                                    break;
+                            if (uri.getPath() != null) {
+                                String[] segments = uri.getPath().split("/");
+                                String resourceType = "";
+                                if (segments.length > 1) resourceType = segments[segments.length - 2];
+                                // log.info("QuestionnaireResponse answer resourceType = "+resourceType);
+                                switch (resourceType) {
+                                    case "Condition":
+                                        ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceCondition(conditionEntity);
+                                        break;
+                                    case "Observation":
+                                        ObservationEntity observationEntity = observationDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceObservation(observationEntity);
+                                        break;
+                                    case "Practitioner":
+                                        PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferencePractitioner(practitionerEntity);
+                                        break;
+                                    case "Flag":
+                                        FlagEntity flagEntity = flagDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceFlag(flagEntity);
+                                        break;
+                                    case "CarePlan":
+                                        CarePlanEntity carePlanEntity = carePlanDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceCarePlan(carePlanEntity);
+                                        break;
+                                    case "ClinicalImpression":
+                                        ClinicalImpressionEntity clinicalImpressionEntity = clinicalImpressionDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceClinicalImpression(clinicalImpressionEntity);
+                                        break;
+                                    case "List":
+                                        ListEntity
+                                                listEntity = listDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceListResource(listEntity);
+                                        break;
+                                    case "Consent":
+                                        ConsentEntity consentEntity = consentDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceConsent(consentEntity);
+                                        break;
+                                    default:
+                                        log.error("Not supported: " + resourceType);
+                                }
                             }
                         }
                     }
                 } catch (Exception ex) {
-                    log.error(ex.getMessage());
+                    log.error(item.getLinkId() + ex.getMessage());
                     throw new InternalErrorException(ex);
                 }
                 em.persist(answerEntity);
