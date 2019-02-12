@@ -162,6 +162,9 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             else if (answerEntity.getReferenceConsent() != null) {
                 answer.setValue(new Reference("Consent/"+answerEntity.getReferenceConsent().getId()));
             }
+            else if (answerEntity.getReferencePerson() != null) {
+                answer.setValue(new Reference("RelatedPerson/"+answerEntity.getReferencePerson().getId()));
+            }
 
         }
 

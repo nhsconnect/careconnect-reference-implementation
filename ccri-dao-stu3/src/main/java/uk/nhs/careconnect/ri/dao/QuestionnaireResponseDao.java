@@ -36,6 +36,7 @@ import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.Questionnaire
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseItem;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseItemAnswer;
+import uk.nhs.careconnect.ri.database.entity.relatedPerson.RelatedPersonEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -98,6 +99,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     @Autowired
     @Lazy
     ConsentRepository consentDao;
+
+    @Autowired
+    @Lazy
+    RelatedPersonRepository personDao;
 
     @Autowired
     @Lazy
@@ -267,6 +272,9 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             }
             if (answer.getReferenceConsent() != null) {
                 resultsAddIfNotPresent(consentEntityToFHIRConsentTransformer.transform(answer.getReferenceConsent()));
+            }
+            if (answer.getReferencePerson() != null) {
+                resultsAddIfNotPresent(personEntityToFHIRRelatedPersonTransformer.transform(answer.getReferencePerson()));
             }
          }
         for (QuestionnaireResponseItem subItem : item.getItems()) {
@@ -673,6 +681,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                                     case "Consent":
                                         ConsentEntity consentEntity = consentDao.readEntity(ctx, new IdType(reference.getReference()));
                                         answerEntity.setReferenceConsent(consentEntity);
+                                        break;
+                                    case "RelatedPerson":
+                                        RelatedPersonEntity relatedPersonEntity = personDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferencePerson(relatedPersonEntity);
                                         break;
                                     default:
                                         log.error("Not supported: " + resourceType);
