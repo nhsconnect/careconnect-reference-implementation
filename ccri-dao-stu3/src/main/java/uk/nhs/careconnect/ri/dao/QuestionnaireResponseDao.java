@@ -635,6 +635,12 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                         if (answer.hasValueIntegerType()) {
                             answerEntity.setValueInteger(answer.getValueIntegerType().getValue());
                         }
+                        if (answer.hasValueDateTimeType()) {
+                            answerEntity.setValueDate(answer.getValueDateTimeType().getValue());
+                        }
+                        if (answer.hasValueDateType()) {
+                            answerEntity.setValueDate(answer.getValueDateType().getValue());
+                        }
                         if (answer.hasValueCoding()) {
                             ConceptEntity concept = conceptDao.findAddCode(answer.getValueCoding());
                             if (concept != null) answerEntity.setValueCoding(concept);
