@@ -203,6 +203,7 @@ public class ConsentDao implements ConsentRepository {
             consentEntity.setPolicyRule(consent.getPolicyRule());
         }
 
+
         em.persist(consentEntity);
 
 
@@ -361,7 +362,7 @@ public class ConsentDao implements ConsentRepository {
             ConsentPurpose consentPurpose = new ConsentPurpose();
             consentPurpose.setConsent(consentEntity);
             ConceptEntity concept = conceptDao.findAddCode(coding);
-            if (concept != null) consentPurpose.setPurpose(concept);
+            if (concept != null) consentPurpose.setPurposeCode(concept);
 
             em.persist(consentPurpose);
         }

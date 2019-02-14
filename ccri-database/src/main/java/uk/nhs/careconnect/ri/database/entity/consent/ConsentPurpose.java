@@ -5,9 +5,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ConsentPurpose", uniqueConstraints= @UniqueConstraint(name="PK_CONSENT_PURPOSE", columnNames={"CONSENT_PURPOSE_ID"})
-        ,indexes = { @Index(name="IDX_CONSENT_PURPOSE", columnList = "category")}
-)
+@Table(name="ConsentPurpose1")
 public class ConsentPurpose {
 
     @Id
@@ -20,8 +18,8 @@ public class ConsentPurpose {
     private ConsentEntity consent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_CONSENT_PURPOSE_PURPOSE_CONCEPT_ID"))
-    private ConceptEntity category;
+    @JoinColumn(name="PURPOSE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONSENT_PURPOSE_PURPOSE_CONCEPT_ID"))
+    private ConceptEntity purposeCode;
 
     public void setId(Long id) {
         Id = id;
@@ -31,17 +29,19 @@ public class ConsentPurpose {
         return Id;
     }
 
-    public ConceptEntity getPurpose() {
-        return category;
+    public ConceptEntity getPurposeCode() {
+        return purposeCode;
+    }
+
+    public void setPurposeCode(ConceptEntity purposeCode) {
+        this.purposeCode = purposeCode;
     }
 
     public ConsentEntity getConsent() {
         return consent;
     }
 
-    public void setPurpose(ConceptEntity category) {
-        this.category = category;
-    }
+
     public void setConsent(ConsentEntity consent) {
         this.consent = consent;
     }
