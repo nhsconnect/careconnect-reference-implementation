@@ -17,8 +17,8 @@ import java.util.List;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ValueSetEntity extends BaseResource {
-	
-	
+
+	private static final int MAX_DESC_LENGTH = 4096;
 
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class ValueSetEntity extends BaseResource {
 	@Column(name = "version")
 	private String version;
 		
-		@Column(name = "title")
+		@Column(name = "title",length = MAX_DESC_LENGTH)
 		private String title;
 
 		
@@ -71,16 +71,16 @@ public class ValueSetEntity extends BaseResource {
 
 
 		
-		@Column(name = "description", length = 4096)
+		@Column(name = "description",length = MAX_DESC_LENGTH)
 		private String description;
 
 	@Column(name = "immutable")
 	private Boolean immutable;
 
-	@Column(name = "purpose")
+	@Column(name = "purpose",length = MAX_DESC_LENGTH)
 	private String purpose;
 
-	@Column(name = "copyright")
+	@Column(name = "copyright",length = MAX_DESC_LENGTH)
 	private String copyright;
 
 	@Column(name = "extensible")

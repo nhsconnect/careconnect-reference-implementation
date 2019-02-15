@@ -225,7 +225,7 @@ public class JPAStepsDef {
 
     @Given("^I add a ValueSet with an Id of ([^\"]*)$")
     public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {
-        resource = (Resource) valueSetRepository.read(new IdType().setValue("ValueSet/"+valueSetId));
+        resource = (Resource) valueSetRepository.read(ctx, new IdType().setValue("ValueSet/"+valueSetId));
     }
 
     @Then("^the result should be a FHIR ValueSet$")

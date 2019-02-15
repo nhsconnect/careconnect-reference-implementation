@@ -75,7 +75,7 @@ public class ValueSetProvider implements IResourceProvider {
 
 
         try {
-            ValueSet newValueSet = valueSetDao.create(valueSet);
+            ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
             method.setId(newValueSet.getIdElement());
             method.setResource(newValueSet);
         } catch (Exception ex) {
@@ -90,7 +90,7 @@ public class ValueSetProvider implements IResourceProvider {
     public List<ValueSet> search(HttpServletRequest theRequest,
                                                  @OptionalParam(name =ValueSet.SP_NAME) StringParam name
     ) {
-        return valueSetDao.searchValueset(name);
+        return valueSetDao.searchValueset(ctx, name);
     }
 
 
@@ -108,7 +108,7 @@ public class ValueSetProvider implements IResourceProvider {
 
 
         try {
-            ValueSet newValueSet = valueSetDao.create(valueSet);
+            ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
             method.setId(newValueSet.getIdElement());
             method.setResource(newValueSet);
         } catch (Exception ex) {
@@ -122,7 +122,7 @@ public class ValueSetProvider implements IResourceProvider {
     public ValueSet get
             (@IdParam IdType internalId) {
     	resourcePermissionProvider.checkPermission("read");
-        ValueSet valueSet = valueSetDao.read(internalId);
+        ValueSet valueSet = valueSetDao.read(ctx, internalId);
 
         if ( valueSet == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -172,9 +172,9 @@ public class ValueSetProvider implements IResourceProvider {
 	            //retVal.setOperationOutcome(operationOutcome);
 	            
 	            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-	            	System.out.println("  valueset id = " + valueSetId.getValue().toString() );
+	            	System.out.println("  valueset id = " + valueSetId.getValue() );
 	                if (entry.hasResource() && entry.getResource() instanceof ConceptMap //ValueSet
-	                		&& (valueSetId.getValue().toString().contains("ALL")  || valueSetId.getValue().toString().contains(entry.getResource().getId().toString()) 
+	                		&& (valueSetId.getValue().contains("ALL")  || valueSetId.getValue().contains(entry.getResource().getId())
 	                				))
 	                		 {
 	                	ValueSet vs = (ValueSet) entry.getResource();
@@ -202,7 +202,7 @@ public class ValueSetProvider implements IResourceProvider {
 	       			 	{
 	    	            ValueSet newVS = (ValueSet) resource;
 	    	            newVS.setName(newVS.getName()+ "..");
-	    	            ValueSet newValueSet = valueSetDao.create(newVS);
+	    	            ValueSet newValueSet = valueSetDao.create(ctx, newVS);
 	    	            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newValueSet));
 	    	            System.out.println("newValueSet.getIdElement()" + newValueSet.getIdElement());
 	    	           // ValueSetComposeComponent vscc = newVS.code .getCompose();
