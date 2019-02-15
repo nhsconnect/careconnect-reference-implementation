@@ -192,17 +192,24 @@ public class ValueSetDao implements ValueSetRepository {
                 for (ValueSet.ConceptSetFilterComponent filter : component.getFilter()) {
                     ValueSetIncludeFilter filterEntity = null;
                     for (ValueSetIncludeFilter filterSearch : includeValueSetEntity.getFilters()) {
-                        if (filterSearch.getValue().getCode().equals(filter.getValue())) {
+                        if (filterSearch.getValueCode().equals(filter.getValue())) {
                             filterEntity = filterSearch;
                         }
                     }
                     if (filterEntity == null) {
-                        ValueSet.ConceptReferenceComponent concept = new ValueSet.ConceptReferenceComponent ();
-                        concept.setCode(filter.getValue().substring(0,99)); // NOTE TRUNCATION
+                        //ValueSet.ConceptReferenceComponent concept = new ValueSet.ConceptReferenceComponent ();
+
 
                         filterEntity = new ValueSetIncludeFilter();
-                        filterEntity.setValue(codeSystemRepository.findAddCode(codeSystemEntity,concept));
-                        filterEntity.setOperator(filter.getOp());
+                        if (filter.hasValue()) {
+                            filterEntity.setValueCode(filter.getValue());
+                        }
+                        if (filter.hasOp()) {
+                            filterEntity.setOperator(filter.getOp());
+                        }
+                        if (filter.hasProperty()) {
+                            filterEntity.setPropertyCode(filter.getProperty());
+                        }
                         filterEntity.setInclude(includeValueSetEntity);
 
                         em.persist(filterEntity);

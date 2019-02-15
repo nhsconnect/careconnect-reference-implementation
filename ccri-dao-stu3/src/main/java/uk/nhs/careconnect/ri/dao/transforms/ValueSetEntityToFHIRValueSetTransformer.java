@@ -98,7 +98,9 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
             for (ValueSetIncludeFilter filterEntity : includeEntity.getFilters()) {
                 include.addFilter()
                         .setOp(filterEntity.getOperator())
-                        .setValue(filterEntity.getValue().getCode());
+                        .setValue(filterEntity.getValueCode())
+                        .setProperty(filterEntity.getPropertyCode());
+
             }
         }
 

@@ -8,9 +8,7 @@ import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapTelecom;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name="ValueSet", uniqueConstraints= @UniqueConstraint(name="PK_VALUESET_MAP", columnNames={"VALUESET_ID"}))
@@ -65,7 +63,7 @@ public class ValueSetEntity extends BaseResource {
 	private String publisher;
 
 	@OneToMany(mappedBy="valueSet", targetEntity= ValueSetTelecom.class)
-	private List<ValueSetTelecom> contacts;
+	private Set<ValueSetTelecom> contacts = new HashSet<>();
 
 	// Ignore usage context and jurisdiction for now
 
@@ -203,13 +201,6 @@ public class ValueSetEntity extends BaseResource {
 		this.publisher = publisher;
 	}
 
-	public List<ValueSetTelecom> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<ValueSetTelecom> contacts) {
-		this.contacts = contacts;
-	}
 
 	public Boolean getImmutable() {
 		return immutable;
@@ -257,5 +248,13 @@ public class ValueSetEntity extends BaseResource {
 
 	public void setMyCodeSystemUrl(String myCodeSystemUrl) {
 		this.myCodeSystemUrl = myCodeSystemUrl;
+	}
+
+	public Set<ValueSetTelecom> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(Set<ValueSetTelecom> contacts) {
+		this.contacts = contacts;
 	}
 }

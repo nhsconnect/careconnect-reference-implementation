@@ -24,13 +24,14 @@ public class ValueSetIncludeFilter {
 	@Column(name= "VALUESET_INCLUDE_FILTER_ID")
 	private Integer contentId;
 
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="PROPERTY_ID")
-	private ConceptEntity property;
+	private ConceptEntity xproperty;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="VALUE_ID")
-	private ConceptEntity value;
+	private ConceptEntity xvalue;
 
 	@Enumerated(EnumType.ORDINAL)
 	ValueSet.FilterOperator operator;
@@ -39,6 +40,11 @@ public class ValueSetIncludeFilter {
 	@JoinColumn(name="VALUESET_INCLUDE_ID")
 	private ValueSetInclude include;
 
+	@Column(name="PROPERTY_CODE")
+	private String propertyCode;
+
+	@Column(name="VALUE_CODE", length = MAX_DESC_LENGTH)
+	private String valueCode;
 
     public ValueSetInclude getInclude() {
 		return include;
@@ -56,13 +62,7 @@ public class ValueSetIncludeFilter {
 		this.include = include;
 	}
 
-	public ConceptEntity getProperty() {
-		return property;
-	}
 
-	public ConceptEntity getValue() {
-		return value;
-	}
 
 	public ValueSet.FilterOperator getOperator() {
 		return operator;
@@ -72,11 +72,43 @@ public class ValueSetIncludeFilter {
 		this.operator = operator;
 	}
 
-	public void setProperty(ConceptEntity property) {
-		this.property = property;
+	public Integer getContentId() {
+		return contentId;
 	}
 
-	public void setValue(ConceptEntity value) {
-		this.value = value;
+	public void setContentId(Integer contentId) {
+		this.contentId = contentId;
+	}
+
+	public ConceptEntity getXproperty() {
+		return xproperty;
+	}
+
+	public void setXproperty(ConceptEntity xproperty) {
+		this.xproperty = xproperty;
+	}
+
+	public ConceptEntity getXvalue() {
+		return xvalue;
+	}
+
+	public void setXvalue(ConceptEntity xvalue) {
+		this.xvalue = xvalue;
+	}
+
+	public String getPropertyCode() {
+		return propertyCode;
+	}
+
+	public void setPropertyCode(String propertyCode) {
+		this.propertyCode = propertyCode;
+	}
+
+	public String getValueCode() {
+		return valueCode;
+	}
+
+	public void setValueCode(String valueCode) {
+		this.valueCode = valueCode;
 	}
 }
