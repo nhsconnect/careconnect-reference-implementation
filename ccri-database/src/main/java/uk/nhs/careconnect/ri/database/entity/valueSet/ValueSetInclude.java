@@ -64,7 +64,7 @@ public class ValueSetInclude {
 
     public List<ValueSetIncludeConcept> getConcepts() {
 	    if (concepts == null) {
-	        concepts = new ArrayList<ValueSetIncludeConcept>() ;
+	        concepts = new ArrayList<>() ;
 
         }
         return concepts;
@@ -76,7 +76,7 @@ public class ValueSetInclude {
 
 	public List<ValueSetIncludeFilter> getFilters() {
 		if (filters == null) {
-			filters = new ArrayList<ValueSetIncludeFilter>() ;
+			filters = new ArrayList<>() ;
 
 		}
 		return filters;

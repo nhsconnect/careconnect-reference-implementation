@@ -146,6 +146,24 @@ public class ValueSetProvider implements IResourceProvider {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
+    @Operation(name = "$expand", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
+    public ValueSet expand(
+            @IdParam IdType internalId
+
+    ) throws Exception {
+        resourcePermissionProvider.checkPermission("read");
+        ValueSet valueSet = valueSetDao.readAndExpand(ctx, internalId);
+
+        if ( valueSet == null) {
+            throw OperationOutcomeFactory.buildOperationOutcomeException(
+                    new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+        }
+
+        return valueSet;
+
+    }
+
     @Operation(name = "$getvaluecodes", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getValueCodes(
             @OperationParam(name="valueSetId") TokenParam valueSetId,

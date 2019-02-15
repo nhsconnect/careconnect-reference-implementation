@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
@@ -303,8 +304,34 @@ public class ValueSetDao implements ValueSetRepository {
         return valueSetEntity;
     }
 
+    @Override
+    public ValueSet readAndExpand(FhirContext ctx, IdType theId)  throws OperationOutcomeException {
+        log.trace("Retrieving ValueSet = " + theId.getValue());
 
-    public ValueSet read(FhirContext ctx,IdType theId) {
+        ValueSetEntity valueSetEntity = findValueSetEntity(theId);
+
+        if (valueSetEntity == null) return null;
+
+        ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
+
+
+        for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+            if (include.getConcepts().size() == 0 && include.getFilters().size() == 0) {
+                CodeSystemEntity codeSystem = codeSystemRepository.findBySystem(include.getSystem());
+                for (ConceptEntity concept : codeSystem.getConcepts()) {
+                   valueSet.getExpansion().addContains()
+                       .setCode(concept.getCode())
+                       .setDisplay(concept.getDisplay())
+                       .setSystem(concept.getSystem());
+                }
+            }
+        }
+
+        return valueSet;
+
+    }
+
+    public ValueSet read(FhirContext ctx, IdType theId) {
 
         log.trace("Retrieving ValueSet = " + theId.getValue());
 
