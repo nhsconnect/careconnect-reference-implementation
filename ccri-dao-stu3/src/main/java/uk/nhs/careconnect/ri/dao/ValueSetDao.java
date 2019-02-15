@@ -2,6 +2,8 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import org.hl7.fhir.dstu3.model.ContactDetail;
+import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
@@ -12,10 +14,7 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.database.entity.Terminology.*;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeConcept;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeFilter;
+import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -91,23 +90,74 @@ public class ValueSetDao implements ValueSetRepository {
         {
             valueSetEntity.setUrl(valueSet.getUrl());
         }
+        if (valueSet.hasVersion()) {
+            valueSetEntity.setVersion(valueSet.getVersion());
+        }
         if (valueSet.hasName())
         {
             valueSetEntity.setName(valueSet.getName());
+        }
+        if (valueSet.hasTitle()) {
+            valueSetEntity.setTitle(valueSet.getTitle());
         }
         if (valueSet.hasStatus())
         {
             valueSetEntity.setStatus(valueSet.getStatus());
         }
+        if (valueSet.hasExperimental()) {
+            valueSetEntity.setExperimental(valueSet.getExperimental());
+        }
+        if (valueSet.hasDate()) {
+            valueSetEntity.setChangeDateTime(valueSet.getDate());
+        }
+        if (valueSet.hasPublisher()) {
+            valueSetEntity.setPublisher(valueSet.getPublisher());
+        }
+
         if (valueSet.hasDescription())
         {
             valueSetEntity.setDescription(valueSet.getDescription());
         }
 
+        if (valueSet.hasImmutable()) {
+            valueSetEntity.setImmutable(valueSet.getImmutable());
+        }
+        if (valueSet.hasPurpose()) {
+            valueSetEntity.setPurpose(valueSet.getPurpose());
+        }
+        if (valueSet.hasCopyright()) {
+            valueSetEntity.setCopyright(valueSet.getCopyright());
+        }
+        if (valueSet.hasExtensible()) {
+            valueSetEntity.setExtensible(valueSet.getExtensible());
+        }
+
+
         log.trace("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
 
         //Created the ValueSet so add the sub concepts
+
+        for (ValueSetTelecom telcom : valueSetEntity.getContacts()) {
+            em.remove(telcom);
+        }
+
+        for (ContactDetail contact : valueSet.getContact()) {
+            for (ContactPoint contactPoint : contact.getTelecom()) {
+                ValueSetTelecom telecom = new ValueSetTelecom();
+                telecom.setValueSet(valueSetEntity);
+                if (contactPoint.hasSystem()) {
+                    telecom.setSystem(contactPoint.getSystem());
+                }
+                if (contactPoint.hasValue()) {
+                    telecom.setValue(contactPoint.getValue());
+                }
+                if (contactPoint.hasUse()) {
+                    telecom.setTelecomUse(contactPoint.getUse());
+                }
+                em.persist(telecom);
+            }
+        }
 
         log.trace("ValueSet = "+valueSet.getUrl());
         if (valueSet.hasCompose()) {
@@ -143,7 +193,7 @@ public class ValueSetDao implements ValueSetRepository {
                     }
                     if (filterEntity == null) {
                         ValueSet.ConceptReferenceComponent concept = new ValueSet.ConceptReferenceComponent ();
-                        concept.setCode(filter.getValue());
+                        concept.setCode(filter.getValue().substring(0,99)); // NOTE TRUNCATION
 
                         filterEntity = new ValueSetIncludeFilter();
                         filterEntity.setValue(codeSystemRepository.findAddCode(codeSystemEntity,concept));
@@ -189,7 +239,7 @@ public class ValueSetDao implements ValueSetRepository {
         log.debug("Called PERSIST id="+valueSetEntity.getId().toString());
         valueSet.setId(valueSetEntity.getId().toString());
 
-        return valueSet;
+        return valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
     }
 
 
@@ -200,7 +250,7 @@ public class ValueSetDao implements ValueSetRepository {
         ValueSetEntity valueSetEntity = null;
         // Only look up if the id is numeric else need to do a search
         if (daoutils.isNumeric(theId.getValue())) {
-            valueSetEntity =(ValueSetEntity) em.find(ValueSetEntity.class, theId.getValue());
+            valueSetEntity = em.find(ValueSetEntity.class, theId.getIdElement());
         }
 
         // if null try a search on strId

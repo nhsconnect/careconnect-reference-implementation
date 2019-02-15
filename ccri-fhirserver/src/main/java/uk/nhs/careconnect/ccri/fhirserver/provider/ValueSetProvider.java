@@ -20,12 +20,7 @@ import org.apache.http.client.methods.HttpGet;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-
-import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.dstu3.model.ConceptMap;
+import org.hl7.fhir.dstu3.model.*;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +64,7 @@ public class ValueSetProvider implements IResourceProvider {
     private ResourceTestProvider resourceTestProvider;
 
     @Update()
-    public MethodOutcome updateValueSet(HttpServletRequest theRequest,@ResourceParam ValueSet valueSet) {
+    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam ValueSet valueSet) {
 
     	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
@@ -78,16 +74,20 @@ public class ValueSetProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
 
 
-        ValueSet newValueSet = valueSetDao.create(valueSet);
-        method.setId(newValueSet.getIdElement());
-        method.setResource(newValueSet);
+        try {
+            ValueSet newValueSet = valueSetDao.create(valueSet);
+            method.setId(newValueSet.getIdElement());
+            method.setResource(newValueSet);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method,ex);
+        }
 
 
         return method;
     }
 
     @Search
-    public List<ValueSet> searchOrganisation(HttpServletRequest theRequest,
+    public List<ValueSet> search(HttpServletRequest theRequest,
                                                  @OptionalParam(name =ValueSet.SP_NAME) StringParam name
     ) {
         return valueSetDao.searchValueset(name);
@@ -97,7 +97,7 @@ public class ValueSetProvider implements IResourceProvider {
 
 
     @Create
-    public MethodOutcome createPatient(HttpServletRequest theRequest, @ResourceParam ValueSet valueSet) {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam ValueSet valueSet) {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -106,13 +106,20 @@ public class ValueSetProvider implements IResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-        valueSet = valueSetDao.create(valueSet);
+
+        try {
+            ValueSet newValueSet = valueSetDao.create(valueSet);
+            method.setId(newValueSet.getIdElement());
+            method.setResource(newValueSet);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method,ex);
+        }
 
         return method;
     }
 
     @Read
-    public ValueSet getValueSet
+    public ValueSet get
             (@IdParam IdType internalId) {
     	resourcePermissionProvider.checkPermission("read");
         ValueSet valueSet = valueSetDao.read(internalId);
