@@ -1,5 +1,9 @@
 package uk.nhs.careconnect.ri.dao;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.StringParam;
+import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
@@ -10,12 +14,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.consent.ConsentEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,14 +46,10 @@ public class CodeSystemDao implements CodeSystemRepository {
     @Autowired
     private TransactionTemplate transactionTemplate;
 
-    /*
     @Autowired
-    private ConceptRepository conceptRepository;
-*/
+            private CodeSystemEntityToFHIRCodeSystemTransformer codeSystemEntityToFHIRCodeSystemTransformer;
 
-    Integer flushCount = 1000;
-    Integer flushNumber = 0;
-    Integer level = 0;
+
 
     private static final Logger log = LoggerFactory.getLogger(CodeSystemDao.class);
 
@@ -68,24 +70,30 @@ public class CodeSystemDao implements CodeSystemRepository {
     }
 
 
-    public void save(CodeSystemEntity object) {
-        em.persist(object);
-        /*
-        TransactionTemplate tt = new TransactionTemplate(myTransactionMgr);
-        tt.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        tt.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                em.persist(object);
-                em.flush();
-                log.info("Saved CodeSystemEntity.Id = "+object.getId());
-            }
+    @Override
+    public CodeSystem read(FhirContext ctx, IdType theId) {
+        if (daoutils.isNumeric(theId.getIdPart())) {
+            CodeSystemEntity codeSystemEntity = em.find(CodeSystemEntity.class, Long.parseLong(theId.getIdPart()));
+            return codeSystemEntityToFHIRCodeSystemTransformer.transform(codeSystemEntity);
+        }
+        return null;
+    }
 
-        });*/
+    @Override
+    public CodeSystem create(FhirContext ctx, CodeSystem codeSystem) {
+        return null;
     }
 
 
+    @Override
+    public List<CodeSystem> search(FhirContext ctx, StringParam name) {
+        return null;
+    }
 
+    @Override
+    public void save(FhirContext ctx, CodeSystemEntity codeSystemEntity) {
+        em.persist(codeSystemEntity);
+    }
 
 
 
@@ -123,7 +131,7 @@ public class CodeSystemDao implements CodeSystemRepository {
             codeSystemEntity = new CodeSystemEntity();
             codeSystemEntity.setCodeSystemUri(system);
 
-            save(codeSystemEntity);
+            save(null, codeSystemEntity);
 
         }
         return codeSystemEntity;

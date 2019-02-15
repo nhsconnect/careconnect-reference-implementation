@@ -1,14 +1,19 @@
 package uk.nhs.careconnect.ccri.fhirserver.provider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +36,8 @@ public class CodeSystemProvider implements IResourceProvider {
         return CodeSystem.class;
     }
 
+    @Autowired
+    FhirContext ctx;
 
 
 
@@ -41,7 +48,20 @@ public class CodeSystemProvider implements IResourceProvider {
         return null;
     }
 
+    @Read
+    public CodeSystem get
+            (@IdParam IdType internalId) {
+        resourcePermissionProvider.checkPermission("read");
+        CodeSystem codeSystem = codeSystemDao.read(ctx, internalId);
 
+        if ( codeSystem == null) {
+            throw OperationOutcomeFactory.buildOperationOutcomeException(
+                    new ResourceNotFoundException("No CodeSystem/" + internalId.getIdPart()),
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+        }
+
+        return codeSystem;
+    }
 
 
     @Create

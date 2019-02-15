@@ -1,23 +1,36 @@
 package uk.nhs.careconnect.ri.database.daointerface;
 
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.StringParam;
+import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
 
+import java.util.List;
+
 public interface CodeSystemRepository {
 
-    public CodeSystemEntity findBySystem(String system);
+    CodeSystemEntity findBySystem(String system);
 
-    public SystemEntity findSystem(String system) throws OperationOutcomeException;
+    SystemEntity findSystem(String system) throws OperationOutcomeException;
 
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptReferenceComponent concept);
+    ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptReferenceComponent concept);
 
+    CodeSystem read(FhirContext ctx, IdType theId) ;
 
+    CodeSystem create(FhirContext ctx,CodeSystem codeSystem);
 
-    public void save(CodeSystemEntity codeSystemEntity);
+    void save(FhirContext ctx, CodeSystemEntity codeSystemEntity);
+
+    List<CodeSystem> search (FhirContext ctx,
+                                   @OptionalParam(name = CodeSystem.SP_NAME) StringParam name
+    );
 
     public void setProcessDeferred(boolean theProcessDeferred);
 
