@@ -65,6 +65,9 @@ public class QuestionnaireEntity extends BaseResource {
     @Column(name = "PURPOSE", length = MAX_DESC_LENGTH)
     private String purpose;
 
+    @Column(name = "DESCRIPTION", length = MAX_DESC_LENGTH)
+    private String description;
+
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
     @OrderBy(value = "linkId ASC")
     private Set<QuestionnaireItem> items = new HashSet<>();
@@ -183,5 +186,13 @@ public class QuestionnaireEntity extends BaseResource {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

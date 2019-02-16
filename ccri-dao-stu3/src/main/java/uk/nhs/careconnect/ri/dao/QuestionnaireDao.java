@@ -235,6 +235,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (questionnaire.hasVersion()) {
             questionnaireEntity.setVersion(questionnaire.getVersion());
         }
+        if (questionnaire.hasDescription()) {
+            questionnaireEntity.setDescription(questionnaire.getDescription());
+        }
 
         em.persist(questionnaireEntity);
 
