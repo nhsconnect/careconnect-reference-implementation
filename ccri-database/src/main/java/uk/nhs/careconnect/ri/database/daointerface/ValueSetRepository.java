@@ -25,7 +25,8 @@ public interface ValueSetRepository {
     ValueSet readAndExpand(FhirContext ctx,IdType theId)  throws OperationOutcomeException;
 
     List<ValueSet> searchValueset (FhirContext ctx,
-            @OptionalParam(name = ValueSet.SP_NAME) StringParam name
+            @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
     );
 
 }

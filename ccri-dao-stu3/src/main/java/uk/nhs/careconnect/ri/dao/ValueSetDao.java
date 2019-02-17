@@ -343,7 +343,8 @@ public class ValueSetDao implements ValueSetRepository {
 
     }
     public List<ValueSet> searchValueset (FhirContext ctx,
-            @OptionalParam(name = ValueSet.SP_NAME) StringParam name
+            @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
     )
     {
         List<ValueSetEntity> qryResults = null;
@@ -368,7 +369,17 @@ public class ValueSetDao implements ValueSetRepository {
 
             predList.add(p);
         }
+        if (publisher !=null)
+        {
 
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("publisher").as(String.class)),
+                            builder.upper(builder.literal( publisher.getValue() + "%"))
+                    );
+
+            predList.add(p);
+        }
        
 
         Predicate[] predArray = new Predicate[predList.size()];
