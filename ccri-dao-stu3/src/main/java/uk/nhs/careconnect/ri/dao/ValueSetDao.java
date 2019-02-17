@@ -284,7 +284,7 @@ public class ValueSetDao implements ValueSetRepository {
             CriteriaQuery<ValueSetEntity> criteria = builder.createQuery(ValueSetEntity.class);
             Root<ValueSetEntity> root = criteria.from(ValueSetEntity.class);
             List<Predicate> predList = new LinkedList<Predicate>();
-            Predicate p = builder.equal(root.<String>get("strId"),theId.getValue());
+            Predicate p = builder.equal(root.get("strId"),theId.getValue());
             predList.add(p);
             Predicate[] predArray = new Predicate[predList.size()];
             predList.toArray(predArray);
@@ -292,7 +292,7 @@ public class ValueSetDao implements ValueSetRepository {
             {
                 criteria.select(root).where(predArray);
 
-                List<ValueSetEntity> qryResults = em.createQuery(criteria).setMaxResults(daoutils.MAXROWS).getResultList();
+                List<ValueSetEntity> qryResults = em.createQuery(criteria).setMaxResults(30).getResultList();
 
                 for (ValueSetEntity cme : qryResults)
                 {
@@ -363,7 +363,7 @@ public class ValueSetDao implements ValueSetRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
+                            builder.upper(builder.literal("%" + name.getValue() + "%"))
                     );
 
             predList.add(p);
@@ -382,7 +382,7 @@ public class ValueSetDao implements ValueSetRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
 
         for (ValueSetEntity valuesetEntity : qryResults)
         {
