@@ -65,21 +65,6 @@ public class ValueSetDao implements ValueSetRepository {
             valueSetEntity = new ValueSetEntity();
         }
 
-        /*
-        Not supported in STU3
-
-        if (valueSet. hasCodeSystem())
-        {
-            CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(valueSet.getCodeSystem().getSystem());
-
-            //// add me
-
-            for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
-                codeSystemRepository.findAddCode(codeSystemEntity,concept);
-            }
-            valueSetEntity.setCodeSystem(codeSystemEntity);
-        }
-        */
 
         if (valueSet.hasId())
         {

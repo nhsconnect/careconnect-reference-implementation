@@ -16,10 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
-import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.Terminology.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,6 +45,7 @@ public class CodeSystemDao implements CodeSystemRepository {
             private CodeSystemEntityToFHIRCodeSystemTransformer codeSystemEntityToFHIRCodeSystemTransformer;
 
 
+    CodeSystem codeSystem;
 
     private static final Logger log = LoggerFactory.getLogger(CodeSystemDao.class);
 
@@ -79,7 +77,112 @@ public class CodeSystemDao implements CodeSystemRepository {
 
     @Override
     public CodeSystem create(FhirContext ctx, CodeSystem codeSystem) {
-        return null;
+
+        this.codeSystem = codeSystem;
+
+        CodeSystemEntity codeSystemEntity = null;
+
+        if (codeSystem.hasId()) {
+            codeSystemEntity = findBySystem(codeSystem.getUrl());
+        }
+
+        if (codeSystemEntity == null)
+        {
+            codeSystemEntity = new CodeSystemEntity();
+        }
+
+
+
+        if (codeSystem.hasUrl())
+        {
+            codeSystemEntity.setCodeSystemUri(codeSystem.getUrl());
+        }
+        if (codeSystem.hasVersion()) {
+            codeSystemEntity.setVersion(codeSystem.getVersion());
+        }
+        if (codeSystem.hasName())
+        {
+            codeSystemEntity.setName(codeSystem.getName());
+        }
+        if (codeSystem.hasTitle()) {
+            codeSystemEntity.setTitle(codeSystem.getTitle());
+        }
+        if (codeSystem.hasStatus())
+        {
+            codeSystemEntity.setStatus(codeSystem.getStatus());
+        }
+        if (codeSystem.hasExperimental()) {
+            codeSystemEntity.setExperimental(codeSystem.getExperimental());
+        }
+        if (codeSystem.hasDate()) {
+            codeSystemEntity.setChangeDateTime(codeSystem.getDate());
+        }
+        if (codeSystem.hasPublisher()) {
+            codeSystemEntity.setPublisher(codeSystem.getPublisher());
+        }
+
+        if (codeSystem.hasDescription())
+        {
+            codeSystemEntity.setDescription(codeSystem.getDescription());
+        }
+
+
+        if (codeSystem.hasPurpose()) {
+            codeSystemEntity.setPurpose(codeSystem.getPurpose());
+        }
+        if (codeSystem.hasCopyright()) {
+            codeSystemEntity.setCopyright(codeSystem.getCopyright());
+        }
+
+
+
+        log.trace("Call em.persist CodeSystemEntity");
+        em.persist(codeSystemEntity);
+
+        //Created the CodeSystem so add the sub concepts
+
+        for (CodeSystemTelecom
+                telcom : codeSystemEntity.getContacts()) {
+            em.remove(telcom);
+        }
+
+        for (ContactDetail contact : codeSystem.getContact()) {
+            for (ContactPoint contactPoint : contact.getTelecom()) {
+                CodeSystemTelecom telecom = new CodeSystemTelecom();
+                telecom.setCodeSystem(codeSystemEntity);
+                if (contactPoint.hasSystem()) {
+                    telecom.setSystem(contactPoint.getSystem());
+                }
+                if (contactPoint.hasValue()) {
+                    telecom.setValue(contactPoint.getValue());
+                }
+                if (contactPoint.hasUse()) {
+                    telecom.setTelecomUse(contactPoint.getUse());
+                }
+                em.persist(telecom);
+            }
+        }
+
+
+        for (CodeSystem.ConceptDefinitionComponent concept : codeSystem.getConcept()) {
+            findAddCode(codeSystemEntity, concept);
+        }
+
+        log.debug("Called PERSIST id="+codeSystemEntity.getId().toString());
+        codeSystem.setId(codeSystemEntity.getId().toString());
+
+        CodeSystem newCodeSystem = null;
+        if (codeSystemEntity != null) {
+            newCodeSystem = codeSystemEntityToFHIRCodeSystemTransformer.transform(codeSystemEntity);
+            String resource = ctx.newJsonParser().encodeResourceToString(newCodeSystem);
+            if (resource.length() < 10000) {
+                codeSystemEntity.setResource(resource);
+                em.persist(codeSystemEntity);
+            }
+
+        }
+        return newCodeSystem;
+        
     }
 
 
@@ -153,13 +256,13 @@ public class CodeSystemDao implements CodeSystemRepository {
                 results.add((CodeSystem) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
             } else {
 
-                CodeSystem valueSet = codeSystemEntityToFHIRCodeSystemTransformer.transform(valuesetEntity);
-                String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
+                CodeSystem codeSystem = codeSystemEntityToFHIRCodeSystemTransformer.transform(valuesetEntity);
+                String resource = ctx.newJsonParser().encodeResourceToString(codeSystem);
                 if (resource.length() < 10000) {
                     valuesetEntity.setResource(resource);
                     em.persist(valuesetEntity);
                 }
-                results.add(valueSet);
+                results.add(codeSystem);
             }
         }
         return results;
@@ -255,7 +358,32 @@ public class CodeSystemDao implements CodeSystemRepository {
     }
 
 
+    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, CodeSystem.ConceptDefinitionComponent concept) {
+        // This inspects codes already present and if not found it adds the code... CRUDE at present
 
+        ConceptEntity conceptEntity = null;
+        for (ConceptEntity codeSystemConcept : codeSystemEntity.getConcepts()) {
+            if (codeSystemConcept.getCode().equals(concept.getCode())) {
+
+                conceptEntity =codeSystemConcept;
+            }
+
+        }
+        if (conceptEntity == null) {
+            log.debug("Add new code = " + concept.getCode());
+            conceptEntity = new ConceptEntity()
+                    .setCode(concept.getCode())
+                    .setCodeSystem(codeSystemEntity)
+                    .setDisplay(concept.getDisplay());
+
+
+            em.persist(conceptEntity);
+            // Need to ensure the local version has a copy of the data
+            codeSystemEntity.getConcepts().add(conceptEntity);
+        }
+
+        return conceptEntity;
+    }
 
     @Override
     @Transactional
