@@ -33,6 +33,9 @@ public class ClinicalImpressionPrognosis extends BaseResource {
     @JoinColumn(name="PROGNOSIS_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_PROGNOSIS_CODE_ID"))
     private ConceptEntity prognosisCode;
 
+    @Column(name="PROGNOSIS_CODE_TEXT", length = 4096)
+    private String prognosisCodeText;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PROGNOSIS_RISK_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_PROGNOSIS_RISK_ID"))
     private RiskAssessmentEntity prognosisRisk;
@@ -84,4 +87,15 @@ public class ClinicalImpressionPrognosis extends BaseResource {
 	public Long getId() {
 		return null;
 	}
+
+    public String getPrognosisCodeText() {
+        if (prognosisCodeText != null)
+            return prognosisCodeText;
+        if (this.prognosisCode != null) return this.prognosisCode.getDisplay();
+        return null;
+    }
+
+    public void setPrognosisCodeText(String prognosisCodeText) {
+        this.prognosisCodeText = prognosisCodeText;
+    }
 }

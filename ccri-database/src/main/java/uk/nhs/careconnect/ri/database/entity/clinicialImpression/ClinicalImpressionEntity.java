@@ -42,6 +42,9 @@ public class ClinicalImpressionEntity extends BaseResource {
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_CODE_CONCEPT_ID"))
     private ConceptEntity impressionCode;
 
+    @Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
+    private String codeText;
+
     @Column(name="DESCRIPTION")
     private String description;
 
@@ -237,5 +240,16 @@ public class ClinicalImpressionEntity extends BaseResource {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getCodeText() {
+        if (codeText != null)
+            return codeText;
+        if (this.impressionCode != null) return this.impressionCode.getDisplay();
+        return null;
+    }
+
+    public void setCodeText(String codeText) {
+        this.codeText = codeText;
     }
 }

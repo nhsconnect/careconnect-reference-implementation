@@ -300,6 +300,7 @@ public class CarePlanDao implements CarePlanRepository {
             if (carePlanCategory == null) {
                 carePlanCategory = new CarePlanCategory();
                 carePlanCategory.setCategory(concept);
+                if (conceptCategory.hasText()) carePlanCategory.setCategoryText(conceptCategory.getText());
                 carePlanCategory.setCarePlan(carePlanEntity);
                 em.persist(carePlanCategory);
             }
@@ -370,13 +371,19 @@ public class CarePlanDao implements CarePlanRepository {
                     detail.setDescription(component.getDetail().getDescription());
                 }
                 if (component.getDetail().hasCode()) {
-                    log.debug("CarePlan Detail "+component.getDetail().getCode().getCodingFirstRep().getCode());
-                    ConceptEntity concept = conceptDao.findAddCode(component.getDetail().getCode().getCodingFirstRep());
-                    if (concept != null) {
-                        detail.setCode(concept);
+                    if (component.getDetail().getCode().hasCoding()) {
+                        log.debug("CarePlan Detail " + component.getDetail().getCode().getCodingFirstRep().getCode());
+                        ConceptEntity concept = conceptDao.findAddCode(component.getDetail().getCode().getCodingFirstRep());
+                        if (concept != null) {
+                            detail.setCode(concept);
 
+                        }
+                    }
+                    if (component.getDetail().getCode().hasText()) {
+                        detail.setCodeText(component.getDetail().getCode().getText());
                     }
                 }
+
                 em.persist(detail);
             }
         }

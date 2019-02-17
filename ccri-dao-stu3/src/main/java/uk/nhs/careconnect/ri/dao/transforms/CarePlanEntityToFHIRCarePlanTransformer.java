@@ -49,10 +49,15 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
         
         for (CarePlanCategory categoryEntity : carePlanEntity.getCategories()) {
             CodeableConcept concept = carePlan.addCategory();
-            concept.addCoding()
-                    .setSystem(categoryEntity.getCategory().getSystem())
-                    .setCode(categoryEntity.getCategory().getCode())
-                    .setDisplay(categoryEntity.getCategory().getDisplay());
+            if (categoryEntity.getCategory() != null) {
+                concept.addCoding()
+                        .setSystem(categoryEntity.getCategory().getSystem())
+                        .setCode(categoryEntity.getCategory().getCode())
+                        .setDisplay(categoryEntity.getCategory().getDisplay());
+            }
+            if (categoryEntity.getCategoryText() != null) {
+                concept.setText(categoryEntity.getCategoryText());
+            }
         }
 
         if (carePlanEntity.getContextEncounter()!=null) {
@@ -91,6 +96,9 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                             .setDisplay(carePlanActivityDetail.getCode().getDisplay())
                             .setSystem(carePlanActivityDetail.getCode().getSystem());
                 }
+                if (carePlanActivityDetail.getCodeText() != null) {
+                    activityDetailComponent.getCode().setText(carePlanActivityDetail.getCodeText());
+                }
                 if (carePlanActivityDetail.getStatus() != null) {
                     activityDetailComponent.setStatus(carePlanActivityDetail.getStatus());
                 }
@@ -102,6 +110,9 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
                             .setCode(carePlanActivityDetail.getCategory().getCode())
                             .setDisplay(carePlanActivityDetail.getCategory().getDisplay())
                             .setSystem(carePlanActivityDetail.getCategory().getSystem());
+                }
+                if (carePlanActivityDetail.getCategoryText() != null) {
+                    activityDetailComponent.getCategory().setText(carePlanActivityDetail.getCategoryText());
                 }
 
             }

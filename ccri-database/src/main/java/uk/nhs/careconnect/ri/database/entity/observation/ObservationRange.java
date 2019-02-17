@@ -27,8 +27,10 @@ public class ObservationRange extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TYPE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_RANGE_TYPE_CONCEPT_ID"))
-
     private ConceptEntity type;
+
+    @Column(name="TYPE_TEXT", length = 1024)
+    private String typeText;
 
     @Column(name="lowAgeRange")
     private BigDecimal lowAgeRange;
@@ -91,5 +93,16 @@ public class ObservationRange extends BaseResource {
     public ObservationRange setType(ConceptEntity type) {
         this.type = type;
         return this;
+    }
+
+    public String getTypeText() {
+        if (typeText != null)
+            return typeText;
+        if (this.type != null) return this.type.getDisplay();
+        return null;
+    }
+
+    public void setTypeText(String typeText) {
+        this.typeText = typeText;
     }
 }

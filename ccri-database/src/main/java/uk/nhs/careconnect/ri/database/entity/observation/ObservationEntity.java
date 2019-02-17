@@ -38,6 +38,10 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = false,foreignKey= @ForeignKey(name="FK_OBSERVATION_CODE_CONCEPT_ID"))
     private ConceptEntity code;
 
+    @Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
+    private String codeText;
+
+
     // The parent should not be null but child observations don't have a status.
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
@@ -63,9 +67,12 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="valueUnitOfMeasure_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_valueUnitOfMeasure_CONCEPT_ID"))
     private ConceptEntity valueUnitOfMeasure;
 
+    @Column(name="VALUE_UNIT_OF_MEASURE_TEXT", length = MAX_DESC_LENGTH)
+    private String valueUnitOfMeasureText;
+
+
     @Enumerated(EnumType.ORDINAL)
     private ObservationType observationType;
-
 
 
     @Column(name="COMMENT",length = MAX_DESC_LENGTH,nullable = true)
@@ -94,9 +101,15 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="BODY_SITE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_BODY_SITE_CONCEPT_ID"))
     private ConceptEntity bodySite;
 
+    @Column(name="BODY_SITE_TEXT", length = MAX_DESC_LENGTH)
+    private String bodySiteText;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="METHOD_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_METHOD_CONCEPT_ID"))
     private ConceptEntity method;
+
+    @Column(name="METHOD_TEXT", length = MAX_DESC_LENGTH)
+    private String methodText;
 
     @Column(name="valueString")
     private BigDecimal valueString;
@@ -105,6 +118,9 @@ public class ObservationEntity extends BaseResource {
     @JoinColumn(name="valueConcept",foreignKey= @ForeignKey(name="FK_OBSERVATION_VALUE_CONCEPT_ID"))
     private ConceptEntity valueConcept;
 
+    @Column(name="VALUE_CONCEPT_TEXT", length = MAX_DESC_LENGTH)
+    private String valueConceptText;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_ENCOUNTER_ID"))
     private EncounterEntity contextEncounter;
@@ -112,6 +128,9 @@ public class ObservationEntity extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="INTERPRETATION_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_OBSERVATION_INTERPRETATION_CONCEPT_ID"))
     private ConceptEntity interpretation;
+
+    @Column(name="INTERPRETATION_TEXT", length = MAX_DESC_LENGTH)
+    private String interpretationText;
 
     public String getComments() {
         return comments;
@@ -321,5 +340,78 @@ public class ObservationEntity extends BaseResource {
 
     public void setRelatedResources(Set<ObservationRelated> relatedResources) {
         this.relatedResources = relatedResources;
+    }
+
+    public String getCodeText() {
+        if (codeText != null)
+            return codeText;
+        if (this.code != null) return this.code.getDisplay();
+        return null;
+    }
+
+    public void setCodeText(String codeText) {
+        this.codeText = codeText;
+    }
+
+    public static int getMaxDescLength() {
+        return MAX_DESC_LENGTH;
+    }
+
+    public String getValueUnitOfMeasureText() {
+        if (valueUnitOfMeasureText != null)
+            return valueUnitOfMeasureText;
+        if (this.valueUnitOfMeasure != null) return this.valueUnitOfMeasure.getDisplay();
+        return null;
+    }
+
+    public void setValueUnitOfMeasureText(String valueUnitOfMeasureText) {
+        this.valueUnitOfMeasureText = valueUnitOfMeasureText;
+    }
+
+    public String getBodySiteText() {
+        if (bodySiteText != null)
+            return bodySiteText;
+        if (this.bodySite != null) return this.bodySite.getDisplay();
+        return null;
+
+    }
+
+    public void setBodySiteText(String bodySiteText) {
+       this.bodySiteText = bodySiteText;
+
+    }
+
+    public String getMethodText() {
+
+        if (methodText != null)
+            return methodText;
+        if (this.method != null) return this.method.getDisplay();
+        return null;
+    }
+
+    public void setMethodText(String methodText) {
+        this.methodText = methodText;
+    }
+
+    public String getValueConceptText() {
+        if (valueConceptText != null)
+            return valueConceptText;
+        if (this.valueConcept != null) return this.valueConcept.getDisplay();
+        return null;
+    }
+
+    public void setValueConceptText(String valueConceptText) {
+        this.valueConceptText = valueConceptText;
+    }
+
+    public String getInterpretationText() {
+        if (interpretationText != null)
+            return interpretationText;
+        if (this.interpretation != null) return this.interpretation.getDisplay();
+        return null;
+    }
+
+    public void setInterpretationText(String interpretationText) {
+        this.interpretationText = interpretationText;
     }
 }

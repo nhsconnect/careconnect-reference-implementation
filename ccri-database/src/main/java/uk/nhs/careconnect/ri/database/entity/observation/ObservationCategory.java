@@ -23,6 +23,9 @@ public class ObservationCategory {
     @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_OBSERVATION_CATEGORY_CATEGORY_CONCEPT_ID"))
     private ConceptEntity category;
 
+    @Column(name="CATEGORY_TEXT")
+    private String categoryText;
+
     public void setId(Long id) {
         Id = id;
     }
@@ -44,5 +47,16 @@ public class ObservationCategory {
     }
     public void setObservation(ObservationEntity observation) {
         this.observation = observation;
+    }
+
+    public String getCategoryText() {
+        if (categoryText != null)
+            return categoryText;
+        if (this.category != null) return this.category.getDisplay();
+        return null;
+    }
+
+    public void setCategoryText(String categoryText) {
+        this.categoryText = categoryText;
     }
 }

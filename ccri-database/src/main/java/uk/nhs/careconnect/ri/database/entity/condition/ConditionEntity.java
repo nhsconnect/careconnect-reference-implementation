@@ -17,6 +17,7 @@ import java.util.*;
                 @Index(name = "IDX_CONDITION_DATE", columnList="assertedDateTime"),
         })
 public class ConditionEntity extends BaseResource {
+    private static final int MAX_DESC_LENGTH = 4096;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="CONDITION_ID")
@@ -24,28 +25,29 @@ public class ConditionEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "PATIENT_ID",nullable = false, foreignKey= @ForeignKey(name="FK_PATIENT_CONDITION"))
-
     private PatientEntity patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_CONDITION_ENCOUNTER"))
-
     private EncounterEntity contextEncounter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "EPISODE_ID",foreignKey= @ForeignKey(name="FK_CONDITION_EPISODE"))
-
     private EpisodeOfCareEntity contextEpisode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "CODE_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_CODE"))
-
     private ConceptEntity code;
+
+    @Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
+    private String codeText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "SEVERITY_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_CONDITION_SEVERITY_CODE"))
-
     private ConceptEntity severity;
+
+    @Column(name="SEVERITY_TEXT", length = MAX_DESC_LENGTH)
+    private String severityText;
 
     @Enumerated(EnumType.ORDINAL)
     @JoinColumn(name="CLINICAL_STATUS_CONCEPT_ID")
@@ -195,5 +197,27 @@ public class ConditionEntity extends BaseResource {
 
     public void setNotes(Set<ConditionNote> notes) {
         this.notes = notes;
+    }
+
+    public String getCodeText() {
+        if (codeText != null)
+            return codeText;
+        if (this.code != null) return this.code.getDisplay();
+        return null;
+    }
+
+    public void setCodeText(String codeText) {
+        this.codeText = codeText;
+    }
+
+    public String getSeverityText() {
+        if (severityText != null)
+            return severityText;
+        if (this.severity != null) return this.severity.getDisplay();
+        return null;
+    }
+
+    public void setSeverityText(String severityText) {
+        this.severityText = severityText;
     }
 }

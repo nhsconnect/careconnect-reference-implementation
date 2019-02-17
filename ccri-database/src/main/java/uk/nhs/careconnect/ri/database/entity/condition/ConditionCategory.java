@@ -23,6 +23,10 @@ public class ConditionCategory {
     @JoinColumn(name="CATEGORY_CONCEPT_ID")
     private ConceptEntity category;
 
+    @Column(name="CATEGORY_TEXT")
+    private String categoryText;
+
+
     public void setId(Long id) {
         Id = id;
     }
@@ -47,5 +51,16 @@ public class ConditionCategory {
 
     public ConditionEntity getCondition() {
         return condition;
+    }
+
+    public String getCategoryText() {
+        if (categoryText != null)
+            return categoryText;
+        if (this.category != null) return this.category.getDisplay();
+        return null;
+    }
+
+    public void setCategoryText(String categoryText) {
+        this.categoryText = categoryText;
     }
 }

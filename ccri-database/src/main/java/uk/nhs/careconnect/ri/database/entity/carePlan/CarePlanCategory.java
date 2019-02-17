@@ -23,6 +23,9 @@ public class CarePlanCategory {
     @JoinColumn(name="category",foreignKey= @ForeignKey(name="FK_CAREPLAN_CATEGORY_CATEGORY_CONCEPT_ID"))
     private ConceptEntity category;
 
+    @Column(name="CATEGORY_TEXT", length = 4096)
+    private String categoryText;
+
     public void setId(Long id) {
         Id = id;
     }
@@ -44,5 +47,16 @@ public class CarePlanCategory {
     }
     public void setCarePlan(CarePlanEntity carePlan) {
         this.carePlan = carePlan;
+    }
+
+    public String getCategoryText() {
+        if (categoryText != null)
+            return categoryText;
+        if (this.category != null) return this.category.getDisplay();
+        return null;
+    }
+
+    public void setCategoryText(String categoryText) {
+        this.categoryText = categoryText;
     }
 }

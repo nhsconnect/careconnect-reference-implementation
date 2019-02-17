@@ -14,6 +14,8 @@ import javax.persistence.*;
 		)
 public class ClinicalImpressionFinding extends BaseResource {
 
+    private static final int MAX_DESC_LENGTH = 4096;
+
 	public ClinicalImpressionFinding() {
 	}
     public ClinicalImpressionFinding(ClinicalImpressionEntity impression) {
@@ -34,9 +36,13 @@ public class ClinicalImpressionFinding extends BaseResource {
 	@JoinColumn(name="ITEM_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_ITEM_CONCEPT_ID"))
 	private ConceptEntity itemCode;
 
+    @Column(name="ITEM_CODE_TEXT", length = MAX_DESC_LENGTH)
+    private String itemCodeText;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="ITEM_CONDITION_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_ITEM_CONDITION_ID"))
 	private ConditionEntity itemCondition;
+
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="ITEM_OBSERVATIAON_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_ITEM_OBSERVATION_ID"))
@@ -108,4 +114,15 @@ public class ClinicalImpressionFinding extends BaseResource {
 	public Long getId() {
 		return null;
 	}
+
+    public String getItemCodeText() {
+        if (itemCodeText != null)
+            return itemCodeText;
+        if (this.itemCode != null) return this.itemCode.getDisplay();
+        return null;
+    }
+
+    public void setItemCodeText(String itemCodeText) {
+        this.itemCodeText = itemCodeText;
+    }
 }

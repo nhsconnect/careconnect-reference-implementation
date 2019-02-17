@@ -40,7 +40,7 @@ public class ConditionDao implements ConditionRepository {
     EntityManager em;
 
     @Autowired
-            @Lazy
+    @Lazy
     ConceptRepository conceptDao;
 
     @Autowired
@@ -157,22 +157,34 @@ public class ConditionDao implements ConditionRepository {
             conditionEntity.setVerificationStatus(condition.getVerificationStatus());
         }
         if (condition.hasSeverity()) {
-            ConceptEntity code = conceptDao.findAddCode(condition.getSeverity().getCoding().get(0));
-            if (code != null) { conditionEntity.setSeverity(code); }
-            else {
-                log.info("Severity Code: Missing System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+            if (condition.getSeverity().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(condition.getSeverity().getCoding().get(0));
+                if (code != null) {
+                    conditionEntity.setSeverity(code);
+                } else {
+                    log.info("Severity Code: Missing System/Code = " + condition.getSeverity().getCoding().get(0).getSystem() + " code = " + condition.getSeverity().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing Severity System/Code = "+ condition.getSeverity().getCoding().get(0).getSystem() +" code = "+condition.getSeverity().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing Severity System/Code = " + condition.getSeverity().getCoding().get(0).getSystem() + " code = " + condition.getSeverity().getCoding().get(0).getCode());
+                }
+            }
+            if (condition.getSeverity().hasText()) {
+                conditionEntity.setSeverityText(condition.getSeverity().getText());
             }
         }
         if (condition.hasCode()) {
-            ConceptEntity code = conceptDao.findAddCode(condition.getCode().getCoding().get(0));
-            if (code != null) { conditionEntity.setCode(code); }
-            else {
-                log.info("Code: Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem() +" code = "+condition.getCode().getCoding().get(0).getCode());
+            if (condition.getCode().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(condition.getCode().getCoding().get(0));
+                if (code != null) {
+                    conditionEntity.setCode(code);
+                } else {
+                    log.info("Code: Missing System/Code = " + condition.getCode().getCoding().get(0).getSystem() + " code = " + condition.getCode().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ condition.getCode().getCoding().get(0).getSystem()
-                        +" code = "+condition.getCode().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = " + condition.getCode().getCoding().get(0).getSystem()
+                            + " code = " + condition.getCode().getCoding().get(0).getCode());
+                }
+            }
+            if (condition.getCode().hasText()) {
+                conditionEntity.setCodeText(condition.getCode().getText());
             }
         }
         if (condition.hasAssertedDate()) {
@@ -229,17 +241,21 @@ public class ConditionDao implements ConditionRepository {
                 }
             }
             if (conditionCategory == null)  conditionCategory = new ConditionCategory();
+            conditionCategory.setCondition(conditionEntity);
+            if (concept.hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
+                if (code != null) {
+                    conditionCategory.setCategory(code);
+                } else {
+                    log.info("Category Code: Missing System/Code = " + concept.getCoding().get(0).getSystem() + " code = " + concept.getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing Category System/Code = " + concept.getCoding().get(0).getSystem() + " code = " + concept.getCoding().get(0).getCode());
+                }
+            }
+            if (concept.hasText()) {
+                conditionCategory.setCategoryText(concept.getText());
+            }
 
-            ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
-            if (code != null) {
-                conditionCategory.setCategory(code);
-                conditionCategory.setCondition(conditionEntity);
-                em.persist(conditionCategory);
-            }
-            else {
-                log.info("Category Code: Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-                throw new IllegalArgumentException("Missing Category System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
-            }
+            em.persist(conditionCategory);
         }
         for (ConditionNote note : conditionEntity.getNotes()) {
             em.remove(note);
