@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.CodeSystem;
@@ -43,9 +44,12 @@ public class CodeSystemProvider implements IResourceProvider {
 
     @Search
     public List<CodeSystem> search(HttpServletRequest theRequest,
-                                                 @OptionalParam(name =CodeSystem.SP_NAME) StringParam name
-    ) {
-        return null;
+                 @OptionalParam(name =CodeSystem.SP_NAME) StringParam name,
+                 @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
+                 @OptionalParam(name = CodeSystem.SP_URL) UriParam url)
+
+    {
+        return codeSystemDao.search(ctx, name, publisher,url);
     }
 
     @Read

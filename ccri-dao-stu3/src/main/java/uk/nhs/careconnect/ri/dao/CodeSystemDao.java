@@ -1,11 +1,11 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
-import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
 import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
-import uk.nhs.careconnect.ri.database.entity.consent.ConsentEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -60,7 +58,7 @@ public class CodeSystemDao implements CodeSystemRepository {
 
     private List<ConceptParentChildLink> myConceptLinksToSaveLater = new ArrayList<ConceptParentChildLink>();
 
-    // What we need to do is process concepts coming from ValueSets in a transactional mode (@Transactional)
+    // What we need to do is process concepts coming from CodeSystems in a transactional mode (@Transactional)
     // For CodeSystem inserts we need to get the codes into the database as without storing them in massive memory objects
     // Other resources should run as transactional
 
@@ -86,8 +84,85 @@ public class CodeSystemDao implements CodeSystemRepository {
 
 
     @Override
-    public List<CodeSystem> search(FhirContext ctx, StringParam name) {
-        return null;
+    public List<CodeSystem> search(FhirContext ctx,
+                                   @OptionalParam(name = CodeSystem.SP_NAME) StringParam name,
+                                   @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
+                                   @OptionalParam(name = CodeSystem.SP_URL) UriParam url
+    ) {
+        List<CodeSystemEntity> qryResults = null;
+
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+        CriteriaQuery<CodeSystemEntity> criteria = builder.createQuery(CodeSystemEntity.class);
+        Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
+
+        List<Predicate> predList = new LinkedList<>();
+        List<CodeSystem> results = new ArrayList<>();
+
+        if (name != null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("name").as(String.class)),
+                            builder.upper(builder.literal("%" + name.getValue() + "%"))
+                    );
+
+            predList.add(p);
+        }
+        if (publisher != null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("publisher").as(String.class)),
+                            builder.upper(builder.literal( publisher.getValue() + "%"))
+                    );
+
+            predList.add(p);
+        }
+        if (url != null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("codeSystemUri").as(String.class)),
+                            builder.upper(builder.literal( url.getValue()))
+                    );
+
+            predList.add(p);
+        }
+
+
+        Predicate[] predArray = new Predicate[predList.size()];
+        predList.toArray(predArray);
+        if (predList.size()>0)
+        {
+            criteria.select(root).where(predArray);
+        }
+        else
+        {
+            criteria.select(root);
+        }
+
+        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
+
+        for (CodeSystemEntity valuesetEntity : qryResults)
+        {
+            if (valuesetEntity.getResource() != null) {
+                results.add((CodeSystem) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
+            } else {
+
+                CodeSystem valueSet = codeSystemEntityToFHIRCodeSystemTransformer.transform(valuesetEntity);
+                String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
+                if (resource.length() < 10000) {
+                    valuesetEntity.setResource(resource);
+                    em.persist(valuesetEntity);
+                }
+                results.add(valueSet);
+            }
+        }
+        return results;
     }
 
     @Override
@@ -223,11 +298,11 @@ public class CodeSystemDao implements CodeSystemRepository {
 
     /*
     @Transactional
-    private void processChildConcepts(ValueSet.ConceptReferenceComponent concept, ConceptEntity parentConcept) {
+    private void processChildConcepts(CodeSystem.ConceptReferenceComponent concept, ConceptEntity parentConcept) {
         String lastConcept="";
         // TODO STU3
         /*
-        for (ValueSet.ConceptReferenceComponent conceptChild : concept.getConcept()) {
+        for (CodeSystem.ConceptReferenceComponent conceptChild : concept.getConcept()) {
             ConceptParentChildLink childLink = null;
 
             if (conceptChild.getCode() != null && !conceptChild.getCode().equals(lastConcept)) {
