@@ -36,10 +36,10 @@ public class NamingSystemUniqueId {
 	@Column(name = "_VALUE")
 	private String _value;
 
-	@Column(name = "PREFERRED")
-	private String preferred;
+	@Column(name = "PREFERRED_B")
+	private Boolean preferred;
 
-	@Column(name = "COMMENT")
+	@Column(name = "COMMENT", length=4096)
 	private String comment;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -82,11 +82,11 @@ public class NamingSystemUniqueId {
 		this._value = _value;
 	}
 
-	public String getPreferred() {
+	public Boolean getPreferred() {
 		return preferred;
 	}
 
-	public void setPreferred(String preferred) {
+	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
 

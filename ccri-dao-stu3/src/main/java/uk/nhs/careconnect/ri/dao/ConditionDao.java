@@ -93,7 +93,7 @@ public class ConditionDao implements ConditionRepository {
     @Override
     public ConditionEntity readEntity(FhirContext ctx,IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
-            ConditionEntity condition = (ConditionEntity) em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
+            ConditionEntity condition = em.find(ConditionEntity.class, Long.parseLong(theId.getIdPart()));
 
             return condition;
         } else {

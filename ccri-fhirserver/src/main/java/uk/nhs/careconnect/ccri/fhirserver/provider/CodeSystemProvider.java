@@ -106,10 +106,10 @@ public class CodeSystemProvider implements IResourceProvider {
     }
 
 
-    @Operation(name = "$getcodesystem", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
+    @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getCodeSystems(
-            @OperationParam(name="codeSystemId") TokenParam codeSystemId,
-            @OperationParam(name="codeSystemQuery") ReferenceParam codeSystemQuery
+            @OperationParam(name="id") TokenParam codeSystemId,
+            @OperationParam(name="query") ReferenceParam codeSystemQuery
 
     ) throws Exception {
 

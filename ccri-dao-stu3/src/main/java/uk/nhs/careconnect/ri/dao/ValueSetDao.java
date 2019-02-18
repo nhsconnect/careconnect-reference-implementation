@@ -327,7 +327,7 @@ public class ValueSetDao implements ValueSetRepository {
                 : valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
 
     }
-    public List<ValueSet> searchValueset (FhirContext ctx,
+    public List<ValueSet> search (FhirContext ctx,
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
     )
