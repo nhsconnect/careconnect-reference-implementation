@@ -14,15 +14,13 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transactional;
 
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ConceptMap;
 import org.hl7.fhir.dstu3.model.ConceptMap.ConceptMapGroupComponent;
 import org.hl7.fhir.dstu3.model.ConceptMap.SourceElementComponent;
 import org.hl7.fhir.dstu3.model.ConceptMap.TargetElementComponent;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Patient;
+
 import org.hl7.fhir.dstu3.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +30,12 @@ import org.springframework.stereotype.Repository;
 
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEpisode;
-import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
+
 import uk.nhs.careconnect.ri.dao.transforms.ConceptMapEntityToFHIRConceptMapTransformer;
 //import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 //import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;

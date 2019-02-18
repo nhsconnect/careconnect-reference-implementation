@@ -16,10 +16,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptDesignation;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptDesignation;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
