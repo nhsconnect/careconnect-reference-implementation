@@ -115,7 +115,7 @@ public class ValueSetDao implements ValueSetRepository {
 
                 CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
                 log.trace("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
-
+                System.out.println("Updateing code systems");
                 ValueSetInclude includeValueSetEntity = null;
 
                 // Search for existing entries
@@ -197,6 +197,7 @@ public class ValueSetDao implements ValueSetRepository {
 
     private ValueSetEntity findValueSetEntity(IdType theId) {
 
+    	System.out.println(" the valueset id is " + theId.getValue());
         ValueSetEntity valueSetEntity = null;
         // Only look up if the id is numeric else need to do a search
         if (daoutils.isNumeric(theId.getValue())) {
