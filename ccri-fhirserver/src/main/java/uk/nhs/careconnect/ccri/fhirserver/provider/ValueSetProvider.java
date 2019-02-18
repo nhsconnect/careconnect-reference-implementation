@@ -25,7 +25,6 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.dstu3.model.ConceptMap;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,24 +148,16 @@ public class ValueSetProvider implements IResourceProvider {
         Reader reader;
         
         try {
-			//request.setEntity(new StringEntity(ctx.newJsonParser().encodeResourceToString(resourceToValidate)));
 			response = client1.execute(request);
 			reader = new InputStreamReader(response.getEntity().getContent());
 			
 			 IBaseResource resource = ctx.newJsonParser().parseResource(reader);
-			 System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
-			 
-			 System.out.println("resource = " + resource);
 			 if(resource instanceof Bundle)
 	         {
-	            Bundle bundle = (Bundle) resource;
-	            System.out.println("Entry Count = " + bundle.getEntry().size());
-	            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
-	            //retVal.setOperationOutcome(operationOutcome);
-	            
+	            Bundle bundle = (Bundle) resource;	            
 	            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 	            	System.out.println("  valueset id = " + valueSetId.getValue().toString() );
-	                if (entry.hasResource() && entry.getResource() instanceof ConceptMap //ValueSet
+	                if (entry.hasResource() && entry.getResource() instanceof ValueSet
 	                		&& (valueSetId.getValue().toString().contains("ALL")  || valueSetId.getValue().toString().contains(entry.getResource().getId().toString()) 
 	                				))
 	                		 {
@@ -179,54 +170,41 @@ public class ValueSetProvider implements IResourceProvider {
 	                	HttpGet request1 = new HttpGet(vs.getUrl());
 	                	request1.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
 	        	        request1.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
-	        	        try {
+	        	        try 
+	        	        {
 	        	        	
 	        	        	HttpResponse response1 = client2.execute(request1);
 	        	       
-	                	System.out.println(response1.getStatusLine());
-	                	if(response1.getStatusLine().toString().contains("200")) {
-	                	//if (response.get .Content.Headers.ContentType.MediaType == "application/json")
-	        			reader = new InputStreamReader(response1.getEntity().getContent());
-	        			
-	        	        
-	        			resource = ctx.newJsonParser().parseResource(reader);
-	       			 	System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
-	       			 	if(resource instanceof ValueSet )
-	       			 	{
-	    	            ValueSet newVS = (ValueSet) resource;
-	    	            newVS.setName(newVS.getName()+ "..");
-	    	            ValueSet newValueSet = valueSetDao.create(newVS);
-	    	            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newValueSet));
-	    	            System.out.println("newValueSet.getIdElement()" + newValueSet.getIdElement());
-	    	           // ValueSetComposeComponent vscc = newVS.code .getCompose();
-	    	           System.out.println("code concept" + newVS.getId());
-	    	            
-	       			 	}
-	                	}
+		                	System.out.println(response1.getStatusLine());
+		                	if(response1.getStatusLine().toString().contains("200")) 
+		                	{
+		                		reader = new InputStreamReader(response1.getEntity().getContent());
+			        			resource = ctx.newJsonParser().parseResource(reader);
+			        			if(resource instanceof ValueSet )
+		       			 			{
+		       			 				ValueSet newVS = (ValueSet) resource;
+		       			 				valueSetDao.create(newVS);			       			 				
+		       			 			}
+		                	}
 	        	        } 
 	        	        catch(UnknownHostException e) {System.out.println("Host not known");}
-	       			 	
 	                }
 	            }
-	            
-	            
 	         }
 	         else
 	         {
 	            throw new InternalErrorException("Server Error", (OperationOutcome) resource);
-	         }
-
-		
-    	} catch (Exception e) {
+	         }		
+    	} catch (Exception e) 
+        {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
- 
         
-        MethodOutcome retVal = new MethodOutcome();
-        return retVal;
+	        MethodOutcome retVal = new MethodOutcome();
+	        return retVal;
         
-    }
+    	}
     
     
     private HttpClient getHttpClient(){

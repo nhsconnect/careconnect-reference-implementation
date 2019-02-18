@@ -84,19 +84,7 @@ ditto for target product
 	@OneToMany(mappedBy="conceptMap", targetEntity= ConceptMapGroup.class)
 	private List<ConceptMapGroup> groups;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="UNMAPPED_MODE_CONCEPT_ID")
-	private ConceptEntity unmappedMode;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="UNMAPPED_CODE_CONCEPT_ID")
-	private ConceptEntity unmappedCode;
-
-	@Column(name = "UNMAPPED_DISPLAY")
-	private String unmappedDisplay;
-
-	@Column(name = "UNMAPPED_URL")
-	private String unmappedUrl;
 
 
 	public Long getId() {
@@ -240,38 +228,6 @@ ditto for target product
 
 	public void setTagetValueset(ValueSetEntity tagetValueset) {
 		this.tagetValueset = tagetValueset;
-	}
-
-	public ConceptEntity getUnmappedMode() {
-		return unmappedMode;
-	}
-
-	public void setUnmappedMode(ConceptEntity unmappedMode) {
-		this.unmappedMode = unmappedMode;
-	}
-
-	public ConceptEntity getUnmappedCode() {
-		return unmappedCode;
-	}
-
-	public void setUnmappedCode(ConceptEntity unmappedCode) {
-		this.unmappedCode = unmappedCode;
-	}
-
-	public String getUnmappedDisplay() {
-		return unmappedDisplay;
-	}
-
-	public void setUnmappedDisplay(String unmappedDisplay) {
-		this.unmappedDisplay = unmappedDisplay;
-	}
-
-	public String getUnmappedUrl() {
-		return unmappedUrl;
-	}
-
-	public void setUnmappedUrl(String unmappedUrl) {
-		this.unmappedUrl = unmappedUrl;
 	}
 
 	public List<ConceptMapGroup> getGroups() {

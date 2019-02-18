@@ -1,6 +1,9 @@
 package uk.nhs.careconnect.ri.database.entity.conceptMap;
 
 import javax.persistence.*;
+
+import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+
 import java.util.List;
 
 
@@ -40,6 +43,20 @@ public class ConceptMapGroup  {
 
 	@Column(name = "TARGET_VERSION")
 	private String targetVersion;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="UNMAPPED_MODE_CONCEPT_ID")
+	private ConceptEntity unmappedMode;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="UNMAPPED_CODE_CONCEPT_ID")
+	private ConceptEntity unmappedCode;
+
+	@Column(name = "UNMAPPED_DISPLAY")
+	private String unmappedDisplay;
+
+	@Column(name = "UNMAPPED_URL")
+	private String unmappedUrl;
 
 	public Long getGroupId() {
 		return groupId;
@@ -95,5 +112,37 @@ public class ConceptMapGroup  {
 
 	public void setTargetVersion(String targetVersion) {
 		this.targetVersion = targetVersion;
+	}
+	
+	public ConceptEntity getUnmappedMode() {
+		return unmappedMode;
+	}
+
+	public void setUnmappedMode(ConceptEntity unmappedMode) {
+		this.unmappedMode = unmappedMode;
+	}
+
+	public ConceptEntity getUnmappedCode() {
+		return unmappedCode;
+	}
+
+	public void setUnmappedCode(ConceptEntity unmappedCode) {
+		this.unmappedCode = unmappedCode;
+	}
+
+	public String getUnmappedDisplay() {
+		return unmappedDisplay;
+	}
+
+	public void setUnmappedDisplay(String unmappedDisplay) {
+		this.unmappedDisplay = unmappedDisplay;
+	}
+
+	public String getUnmappedUrl() {
+		return unmappedUrl;
+	}
+
+	public void setUnmappedUrl(String unmappedUrl) {
+		this.unmappedUrl = unmappedUrl;
 	}
 }
