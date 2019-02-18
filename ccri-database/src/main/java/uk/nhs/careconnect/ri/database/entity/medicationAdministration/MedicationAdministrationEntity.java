@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.medicationAdministration;
 
 import org.hl7.fhir.dstu3.model.MedicationAdministration;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;

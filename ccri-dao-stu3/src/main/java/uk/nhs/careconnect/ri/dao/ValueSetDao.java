@@ -1,21 +1,19 @@
 package uk.nhs.careconnect.ri.dao;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.*;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeConcept;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeFilter;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
+import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,7 +41,7 @@ public class ValueSetDao implements ValueSetRepository {
     @Autowired
     CodeSystemRepository codeSystemRepository;
 
-    public void save(ValueSetEntity valueset)
+    public void save(FhirContext ctx, ValueSetEntity valueset)
     {
         em.persist(valueset);
     }
@@ -53,7 +51,7 @@ public class ValueSetDao implements ValueSetRepository {
 
     @Transactional
     @Override
-    public ValueSet create(ValueSet valueSet) {
+    public ValueSet create(FhirContext ctx,  ValueSet valueSet) {
         this.valueSet = valueSet;
 
         ValueSetEntity valueSetEntity = null;
@@ -67,21 +65,6 @@ public class ValueSetDao implements ValueSetRepository {
             valueSetEntity = new ValueSetEntity();
         }
 
-        /*
-        Not supported in STU3
-
-        if (valueSet. hasCodeSystem())
-        {
-            CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(valueSet.getCodeSystem().getSystem());
-
-            //// add me
-
-            for (ValueSet.ConceptDefinitionComponent concept : valueSet.getCodeSystem().getConcept()) {
-                codeSystemRepository.findAddCode(codeSystemEntity,concept);
-            }
-            valueSetEntity.setCodeSystem(codeSystemEntity);
-        }
-        */
 
         if (valueSet.hasId())
         {
@@ -91,23 +74,84 @@ public class ValueSetDao implements ValueSetRepository {
         {
             valueSetEntity.setUrl(valueSet.getUrl());
         }
+        if (valueSet.hasVersion()) {
+            valueSetEntity.setVersion(valueSet.getVersion());
+        }
         if (valueSet.hasName())
         {
             valueSetEntity.setName(valueSet.getName());
+        }
+        if (valueSet.hasTitle()) {
+            valueSetEntity.setTitle(valueSet.getTitle());
         }
         if (valueSet.hasStatus())
         {
             valueSetEntity.setStatus(valueSet.getStatus());
         }
+        if (valueSet.hasExperimental()) {
+            valueSetEntity.setExperimental(valueSet.getExperimental());
+        }
+        if (valueSet.hasDate()) {
+            valueSetEntity.setChangeDateTime(valueSet.getDate());
+        }
+        if (valueSet.hasPublisher()) {
+            valueSetEntity.setPublisher(valueSet.getPublisher());
+        }
+
         if (valueSet.hasDescription())
         {
             valueSetEntity.setDescription(valueSet.getDescription());
         }
 
+        if (valueSet.hasImmutable()) {
+            valueSetEntity.setImmutable(valueSet.getImmutable());
+        }
+        if (valueSet.hasPurpose()) {
+            valueSetEntity.setPurpose(valueSet.getPurpose());
+        }
+        if (valueSet.hasCopyright()) {
+            valueSetEntity.setCopyright(valueSet.getCopyright());
+        }
+        if (valueSet.hasExtensible()) {
+            valueSetEntity.setExtensible(valueSet.getExtensible());
+        }
+
+
         log.trace("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
 
         //Created the ValueSet so add the sub concepts
+
+        for (ValueSetTelecom telcom : valueSetEntity.getContacts()) {
+            em.remove(telcom);
+        }
+
+        for (ContactDetail contact : valueSet.getContact()) {
+            for (ContactPoint contactPoint : contact.getTelecom()) {
+                ValueSetTelecom telecom = new ValueSetTelecom();
+                telecom.setValueSet(valueSetEntity);
+                if (contactPoint.hasSystem()) {
+                    telecom.setSystem(contactPoint.getSystem());
+                }
+                if (contactPoint.hasValue()) {
+                    telecom.setValue(contactPoint.getValue());
+                }
+                if (contactPoint.hasUse()) {
+                    telecom.setTelecomUse(contactPoint.getUse());
+                }
+                em.persist(telecom);
+            }
+        }
+
+        for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+            for (ValueSetIncludeConcept concept : include.getConcepts()) {
+                em.remove(concept);
+            }
+            for (ValueSetIncludeFilter filter : include.getFilters()) {
+                em.remove(filter);
+            }
+            em.remove(include);
+        }
 
         log.trace("ValueSet = "+valueSet.getUrl());
         if (valueSet.hasCompose()) {
@@ -119,11 +163,7 @@ public class ValueSetDao implements ValueSetRepository {
                 ValueSetInclude includeValueSetEntity = null;
 
                 // Search for existing entries
-                for (ValueSetInclude include : valueSetEntity.getIncludes()) {
-                    if (include.getSystem().equals(component.getSystem())) {
-                        includeValueSetEntity = include;
-                    }
-                }
+
                 if (includeValueSetEntity == null) {
                     includeValueSetEntity = new ValueSetInclude();
                     includeValueSetEntity.setCodeSystem(codeSystemEntity);
@@ -134,20 +174,28 @@ public class ValueSetDao implements ValueSetRepository {
                 }
                 log.trace("ValueSet include Id ="+includeValueSetEntity.getId());
 
+
                 for (ValueSet.ConceptSetFilterComponent filter : component.getFilter()) {
                     ValueSetIncludeFilter filterEntity = null;
                     for (ValueSetIncludeFilter filterSearch : includeValueSetEntity.getFilters()) {
-                        if (filterSearch.getValue().getCode().equals(filter.getValue())) {
+                        if (filterSearch.getValueCode().equals(filter.getValue())) {
                             filterEntity = filterSearch;
                         }
                     }
                     if (filterEntity == null) {
-                        ValueSet.ConceptReferenceComponent concept = new ValueSet.ConceptReferenceComponent ();
-                        concept.setCode(filter.getValue());
+                        //ValueSet.ConceptReferenceComponent concept = new ValueSet.ConceptReferenceComponent ();
+
 
                         filterEntity = new ValueSetIncludeFilter();
-                        filterEntity.setValue(codeSystemRepository.findAddCode(codeSystemEntity,concept));
-                        filterEntity.setOperator(filter.getOp());
+                        if (filter.hasValue()) {
+                            filterEntity.setValueCode(filter.getValue());
+                        }
+                        if (filter.hasOp()) {
+                            filterEntity.setOperator(filter.getOp());
+                        }
+                        if (filter.hasProperty()) {
+                            filterEntity.setPropertyCode(filter.getProperty());
+                        }
                         filterEntity.setInclude(includeValueSetEntity);
 
                         em.persist(filterEntity);
@@ -189,7 +237,17 @@ public class ValueSetDao implements ValueSetRepository {
         log.debug("Called PERSIST id="+valueSetEntity.getId().toString());
         valueSet.setId(valueSetEntity.getId().toString());
 
-        return valueSet;
+        ValueSet newValueSet = null;
+        if (valueSetEntity != null) {
+            newValueSet = valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
+            String resource = ctx.newJsonParser().encodeResourceToString(newValueSet);
+            if (resource.length() < 10000) {
+                valueSetEntity.setResource(resource);
+                em.persist(valueSetEntity);
+            }
+
+        }
+        return newValueSet;
     }
 
 
@@ -201,7 +259,7 @@ public class ValueSetDao implements ValueSetRepository {
         ValueSetEntity valueSetEntity = null;
         // Only look up if the id is numeric else need to do a search
         if (daoutils.isNumeric(theId.getValue())) {
-            valueSetEntity =(ValueSetEntity) em.find(ValueSetEntity.class, theId.getValue());
+            valueSetEntity = em.find(ValueSetEntity.class, theId.getIdElement());
         }
 
         // if null try a search on strId
@@ -212,7 +270,7 @@ public class ValueSetDao implements ValueSetRepository {
             CriteriaQuery<ValueSetEntity> criteria = builder.createQuery(ValueSetEntity.class);
             Root<ValueSetEntity> root = criteria.from(ValueSetEntity.class);
             List<Predicate> predList = new LinkedList<Predicate>();
-            Predicate p = builder.equal(root.<String>get("strId"),theId.getValue());
+            Predicate p = builder.equal(root.get("strId"),theId.getValue());
             predList.add(p);
             Predicate[] predArray = new Predicate[predList.size()];
             predList.toArray(predArray);
@@ -220,7 +278,7 @@ public class ValueSetDao implements ValueSetRepository {
             {
                 criteria.select(root).where(predArray);
 
-                List<ValueSetEntity> qryResults = em.createQuery(criteria).getResultList();
+                List<ValueSetEntity> qryResults = em.createQuery(criteria).setMaxResults(30).getResultList();
 
                 for (ValueSetEntity cme : qryResults)
                 {
@@ -232,8 +290,34 @@ public class ValueSetDao implements ValueSetRepository {
         return valueSetEntity;
     }
 
+    @Override
+    public ValueSet readAndExpand(FhirContext ctx, IdType theId)  throws OperationOutcomeException {
+        log.trace("Retrieving ValueSet = " + theId.getValue());
 
-    public ValueSet read(IdType theId) {
+        ValueSetEntity valueSetEntity = findValueSetEntity(theId);
+
+        if (valueSetEntity == null) return null;
+
+        ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
+
+
+        for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+            if (include.getConcepts().size() == 0 && include.getFilters().size() == 0) {
+                CodeSystemEntity codeSystem = codeSystemRepository.findBySystem(include.getSystem());
+                for (ConceptEntity concept : codeSystem.getConcepts()) {
+                   valueSet.getExpansion().addContains()
+                       .setCode(concept.getCode())
+                       .setDisplay(concept.getDisplay())
+                       .setSystem(concept.getSystem());
+                }
+            }
+        }
+
+        return valueSet;
+
+    }
+
+    public ValueSet read(FhirContext ctx, IdType theId) {
 
         log.trace("Retrieving ValueSet = " + theId.getValue());
 
@@ -244,8 +328,9 @@ public class ValueSetDao implements ValueSetRepository {
                 : valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
 
     }
-    public List<ValueSet> searchValueset (
-            @OptionalParam(name = ValueSet.SP_NAME) StringParam name
+    public List<ValueSet> search (FhirContext ctx,
+            @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
     )
     {
         List<ValueSetEntity> qryResults = null;
@@ -265,12 +350,22 @@ public class ValueSetDao implements ValueSetRepository {
             Predicate p =
                     builder.like(
                             builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal(name.getValue()+"%"))
+                            builder.upper(builder.literal("%" + name.getValue() + "%"))
                     );
 
             predList.add(p);
         }
+        if (publisher !=null)
+        {
 
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("publisher").as(String.class)),
+                            builder.upper(builder.literal( publisher.getValue() + "%"))
+                    );
+
+            predList.add(p);
+        }
        
 
         Predicate[] predArray = new Predicate[predList.size()];
@@ -284,14 +379,23 @@ public class ValueSetDao implements ValueSetRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).getResultList();
+        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
 
         for (ValueSetEntity valuesetEntity : qryResults)
         {
-            ValueSet valueset = valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
-            results.add(valueset);
-        }
+            if (valuesetEntity.getResource() != null) {
+                results.add((ValueSet) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
+            } else {
 
+                ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
+                String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
+                if (resource.length() < 10000) {
+                    valuesetEntity.setResource(resource);
+                    em.persist(valuesetEntity);
+                }
+                results.add(valueSet);
+            }
+        }
         return results;
     }
 

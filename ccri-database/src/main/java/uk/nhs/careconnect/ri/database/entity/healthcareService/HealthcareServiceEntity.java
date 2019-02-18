@@ -1,12 +1,10 @@
 package uk.nhs.careconnect.ri.database.entity.healthcareService;
 
-import org.hl7.fhir.dstu3.model.Schedule;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
-import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 
 
 import javax.persistence.*;

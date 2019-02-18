@@ -72,6 +72,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             questionnaire.setTitle(questionnaireEntity.getTitle());
         }
 
+        if (questionnaireEntity.getDescription() != null) {
+            questionnaire.setDescription(questionnaireEntity.getDescription());
+        }
+
         if (questionnaireEntity.getDateTime() != null) {
             questionnaire.setDate(questionnaireEntity.getDateTime());
         }

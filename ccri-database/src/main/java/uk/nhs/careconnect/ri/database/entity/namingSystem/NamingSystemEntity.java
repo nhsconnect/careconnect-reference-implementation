@@ -3,12 +3,11 @@ package uk.nhs.careconnect.ri.database.entity.namingSystem;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.NamingSystem;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIdentifier;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "NamingSystem")
@@ -62,10 +61,16 @@ ditto for target product
 
 	// jurisdiction ... hard code to UK
 
+	@Column(name = "USAGE")
+	private String usage;
 
 	@OneToMany(mappedBy="namingSystem", targetEntity= NamingSystemUniqueId.class)
 	private List<NamingSystemUniqueId> namingSystemUniqueIds;
 
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name = "REPLACED_BY_NAMING_SYSTEM_ID",foreignKey= @ForeignKey(name="FK_NAMING_SYSTEM_REPLACED_BY"))
+	private NamingSystemEntity replacedBy;
 
 
 	public Long getId() {
@@ -109,7 +114,6 @@ ditto for target product
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
-
 	
 	public String getDescription() {
 		return description;
@@ -119,29 +123,12 @@ ditto for target product
 		this.description = description;
 	}
 
-
-	public List<NamingSystemUniqueId> getNamingSystemUniqueIds() {
-		return namingSystemUniqueIds;
-	}
-
-	public void setNamingSystemUniqueIds(List<NamingSystemUniqueId> namingSystemUniqueIds) {
-		this.namingSystemUniqueIds = namingSystemUniqueIds;
-	}
-
 	public NamingSystem.NamingSystemType getKind() {
 		return kind;
 	}
 
 	public void setKind(NamingSystem.NamingSystemType kind) {
 		this.kind = kind;
-	}
-
-	public List<NamingSystemTelecom> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<NamingSystemTelecom> contacts) {
-		this.contacts = contacts;
 	}
 
 	public String getResponsible() {
@@ -160,4 +147,41 @@ ditto for target product
 		this._type = _type;
 	}
 
+	public String getUsage() {
+		return usage;
+	}
+
+	public void setUsage(String usage) {
+		this.usage = usage;
+	}
+
+	public NamingSystemEntity getReplacedBy() {
+		return replacedBy;
+	}
+
+	public void setReplacedBy(NamingSystemEntity replacedBy) {
+		this.replacedBy = replacedBy;
+	}
+
+	public List<NamingSystemTelecom> getContacts() {
+		if (contacts == null) {
+			contacts = new ArrayList<>();
+		}
+		return contacts;
+	}
+
+	public void setContacts(List<NamingSystemTelecom> contacts) {
+		this.contacts = contacts;
+	}
+
+	public List<NamingSystemUniqueId> getNamingSystemUniqueIds() {
+		if (namingSystemUniqueIds  == null) {
+			namingSystemUniqueIds  = new ArrayList<>();
+		}
+		return namingSystemUniqueIds;
+	}
+
+	public void setNamingSystemUniqueIds(List<NamingSystemUniqueId> namingSystemUniqueIds) {
+		this.namingSystemUniqueIds = namingSystemUniqueIds;
+	}
 }

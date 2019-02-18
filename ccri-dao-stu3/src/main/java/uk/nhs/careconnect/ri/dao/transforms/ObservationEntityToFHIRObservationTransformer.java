@@ -51,20 +51,29 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                         .setSystem(observationEntity.getCode().getSystem())
                         .setDisplay(observationEntity.getCode().getDisplay());
             }
+            if (observationEntity.getCodeText() != null) {
+                observation.getCode().setText(observationEntity.getCodeText());
+            }
 
             // Category
 
             for (ObservationCategory category : observationEntity.getCategories()) {
+                CodeableConcept concept = new CodeableConcept();
                 if (category.getCategory() != null) {
-                    CodeableConcept concept = new CodeableConcept();
+
                     concept.addCoding()
                             .setCode(category.getCategory().getCode())
                             .setSystem(category.getCategory().getSystem())
                             .setDisplay(category.getCategory().getDisplay());
 
-                    observation.getCategory().add(concept);
+
                 }
+                if (category.getCategoryText() != null) {
+                    concept.setText(category.getCategoryText());
+                }
+                observation.getCategory().add(concept);
             }
+
 
             // Body Site
 
@@ -74,6 +83,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                         .setSystem(observationEntity.getBodySite().getSystem())
                         .setDisplay(observationEntity.getBodySite().getDisplay());
             }
+            if (observationEntity.getBodySite() != null) {
+                observation.getBodySite().setText(observationEntity.getBodySiteText());
+            }
             // Method
 
             if (observationEntity.getMethod() != null) {
@@ -81,6 +93,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                         .setCode(observationEntity.getMethod().getCode())
                         .setSystem(observationEntity.getMethod().getSystem())
                         .setDisplay(observationEntity.getMethod().getDisplay());
+            }
+            if (observationEntity.getMethodText() != null) {
+                observation.getMethod().setText(observationEntity.getMethodText());
             }
 
             // Interpretation
@@ -90,6 +105,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                         .setCode(observationEntity.getInterpretation().getCode())
                         .setSystem(observationEntity.getInterpretation().getSystem())
                         .setDisplay(observationEntity.getInterpretation().getDisplay());
+            }
+            if (observationEntity.getInterpretationText() != null) {
+                observation.getInterpretation().setText(observationEntity.getInterpretationText());
             }
 
             if (observationEntity.getComments() != null) {
@@ -144,6 +162,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
                     range.setType(code);
                 }
+                if (rangeEntity.getTypeText() != null) {
+                    range.getType().setText(rangeEntity.getTypeText());
+                }
                 if (rangeEntity.getHighAgeRange() != null || rangeEntity.getLowAgeRange() != null) {
                     Range ageRange = range.getAge();
                     if (rangeEntity.getLowAgeRange() != null) {
@@ -173,14 +194,23 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
                 observation.setValue(quantity);
             }
 
-            if (observationEntity.getValueConcept() != null) {
+
+            if ((observationEntity.getValueConcept() != null)
+                    || (observationEntity.getValueConceptText() != null)) {
                 CodeableConcept concept  = new CodeableConcept();
+                if (observationEntity.getValueConcept() != null) {
                 concept.addCoding()
                         .setSystem(observationEntity.getValueConcept().getSystem())
                         .setDisplay(observationEntity.getValueConcept().getDisplay())
                         .setCode(observationEntity.getValueConcept().getCode());
+                }
+                if (observationEntity.getValueConceptText() != null) {
+                    concept.setText(observationEntity.getValueConceptText());
+                }
+
                 observation.setValue(concept);
             }
+
 
             // Components e.g. Blood Pressure
             // Plus ValueQuantity

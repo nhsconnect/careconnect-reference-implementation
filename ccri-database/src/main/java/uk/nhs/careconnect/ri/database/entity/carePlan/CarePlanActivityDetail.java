@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.carePlan;
 
 import org.hl7.fhir.dstu3.model.CarePlan;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 
@@ -33,9 +33,16 @@ public class CarePlanActivityDetail {
 	@JoinColumn(name="CATEGORY_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CATEGORY_CONCEPT_ID"))
 	private ConceptEntity category;
 
+	@Column(name="CATEGORY_TEXT", length = MAX_DESC_LENGTH)
+	private String categoryText;
+
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_CAREPLAN_ACTIVITY_DETAIL_CODE_CONCEPT_ID"))
 	private ConceptEntity code;
+
+	@Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
+	private String codeText;
 
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name="status")
@@ -90,5 +97,27 @@ public class CarePlanActivityDetail {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getCodeText() {
+		if (codeText != null)
+			return codeText;
+		if (this.code != null) return this.code.getDisplay();
+		return null;
+	}
+
+	public void setCodeText(String codeText) {
+		this.codeText = codeText;
+	}
+
+	public String getCategoryText() {
+		if (categoryText != null)
+			return categoryText;
+		if (this.category != null) return this.category.getDisplay();
+		return null;
+	}
+
+	public void setCategoryText(String categoryText) {
+		this.categoryText = categoryText;
 	}
 }

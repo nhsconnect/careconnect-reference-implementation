@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.episode;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 
 import javax.persistence.*;

@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.condition;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 
@@ -22,6 +22,10 @@ public class ConditionCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CATEGORY_CONCEPT_ID")
     private ConceptEntity category;
+
+    @Column(name="CATEGORY_TEXT")
+    private String categoryText;
+
 
     public void setId(Long id) {
         Id = id;
@@ -47,5 +51,16 @@ public class ConditionCategory {
 
     public ConditionEntity getCondition() {
         return condition;
+    }
+
+    public String getCategoryText() {
+        if (categoryText != null)
+            return categoryText;
+        if (this.category != null) return this.category.getDisplay();
+        return null;
+    }
+
+    public void setCategoryText(String categoryText) {
+        this.categoryText = categoryText;
     }
 }

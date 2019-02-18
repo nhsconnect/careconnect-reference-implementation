@@ -126,11 +126,11 @@ public class ConsentEntityToFHIRConsentTransformer implements Transformer<Consen
             }
         }
         for (ConsentPurpose consentPurpose : consentEntity.getPurposes()) {
-            if (consentPurpose.getPurpose() != null) {
+            if (consentPurpose.getPurposeCode() != null) {
                 consent.addPurpose()
-                        .setCode(consentPurpose.getPurpose().getCode())
-                        .setDisplay(consentPurpose.getPurpose().getDisplay())
-                        .setSystem(consentPurpose.getPurpose().getSystem());
+                        .setCode(consentPurpose.getPurposeCode().getCode())
+                        .setDisplay(consentPurpose.getPurposeCode().getDisplay())
+                        .setSystem(consentPurpose.getPurposeCode().getSystem());
             }
         }
 

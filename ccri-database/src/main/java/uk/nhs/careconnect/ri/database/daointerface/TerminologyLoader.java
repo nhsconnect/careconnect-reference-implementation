@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.daointerface;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 
 import java.util.List;
 

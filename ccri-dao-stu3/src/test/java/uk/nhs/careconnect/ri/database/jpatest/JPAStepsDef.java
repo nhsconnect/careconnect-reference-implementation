@@ -18,9 +18,9 @@ import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.InputStream;
@@ -225,7 +225,7 @@ public class JPAStepsDef {
 
     @Given("^I add a ValueSet with an Id of ([^\"]*)$")
     public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {
-        resource = (Resource) valueSetRepository.read(new IdType().setValue("ValueSet/"+valueSetId));
+        resource = (Resource) valueSetRepository.read(ctx, new IdType().setValue("ValueSet/"+valueSetId));
     }
 
     @Then("^the result should be a FHIR ValueSet$")

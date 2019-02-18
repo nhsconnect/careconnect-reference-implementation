@@ -1,9 +1,11 @@
 package uk.nhs.careconnect.ri.database.daointerface;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import java.util.List;
@@ -13,15 +15,18 @@ public interface ValueSetRepository {
 
 
 
-    void save(ValueSetEntity valueset);
+    void save(FhirContext ctx, ValueSetEntity valueset);
 
 
-    ValueSet create(ValueSet valueSet);
+    ValueSet create(FhirContext ctx,ValueSet valueSet);
 
-    ValueSet read(IdType theId) ;
+    ValueSet read(FhirContext ctx,IdType theId) ;
 
-    List<ValueSet> searchValueset (
-            @OptionalParam(name = ValueSet.SP_NAME) StringParam name
+    ValueSet readAndExpand(FhirContext ctx,IdType theId)  throws OperationOutcomeException;
+
+    List<ValueSet> search (FhirContext ctx,
+            @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
     );
 
 }

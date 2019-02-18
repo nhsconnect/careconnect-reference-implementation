@@ -108,8 +108,11 @@ public class ListEntityToFHIRListResourceTransformer implements Transformer<List
         }
 
          if (itemEntity.getReferenceCondition() != null) {
-                item.setItem(new Reference("Condition/"+itemEntity.getReferenceCondition().getId())
-                );
+               Reference ref = new Reference("Condition/"+itemEntity.getReferenceCondition().getId());
+               if (itemEntity.getReferenceCondition().getCode() != null) {
+                   ref.setDisplay(itemEntity.getReferenceCondition().getCode().getDisplay());
+               }
+                item.setItem(ref);
             }
         else if (itemEntity.getReferenceObservation() != null) {
             item.setItem(new Reference("Observation/"+itemEntity.getReferenceObservation().getId())

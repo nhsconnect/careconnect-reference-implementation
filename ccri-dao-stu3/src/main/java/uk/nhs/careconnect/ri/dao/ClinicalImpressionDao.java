@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ClinicalImpressionEntityToFHIRClinicalImpressionTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
@@ -135,9 +135,14 @@ public class ClinicalImpressionDao implements ClinicalImpressionRepository {
         }
 
         if (impression.hasCode()) {
-            ConceptEntity concept = conceptDao.findAddCode(impression.getCode().getCodingFirstRep());
-            if (concept!=null) {
-                impressionEntity.setRiskCode(concept);
+            if (impression.getCode().hasCoding()) {
+                ConceptEntity concept = conceptDao.findAddCode(impression.getCode().getCodingFirstRep());
+                if (concept != null) {
+                    impressionEntity.setRiskCode(concept);
+                }
+            }
+            if (impression.getCode().hasText()) {
+                impressionEntity.setCodeText(impression.getCode().getText());
             }
         }
 
@@ -258,14 +263,18 @@ public class ClinicalImpressionDao implements ClinicalImpressionRepository {
                 }
             }
             if (finding.hasItemCodeableConcept()) {
-                try {
-                    ConceptEntity conceptEntity = conceptDao.findAddCode(finding.getItemCodeableConcept().getCodingFirstRep());
-                    if (conceptEntity!=null) {
-                        findingEntity.setItemCode(conceptEntity);
+                if (finding.getItemCodeableConcept().hasCoding()) {
+                    try {
+                        ConceptEntity conceptEntity = conceptDao.findAddCode(finding.getItemCodeableConcept().getCodingFirstRep());
+                        if (conceptEntity != null) {
+                            findingEntity.setItemCode(conceptEntity);
 
+                        }
+                    } catch (Exception ex) {
                     }
-                } catch (Exception ex) {
-
+                }
+                if (finding.getItemCodeableConcept().hasText()) {
+                    findingEntity.setItemCodeText(finding.getItemCodeableConcept().getText());
                 }
             }
             if (finding.hasBasis()) {
@@ -280,12 +289,17 @@ public class ClinicalImpressionDao implements ClinicalImpressionRepository {
         for (CodeableConcept concept : impression.getPrognosisCodeableConcept()) {
             ClinicalImpressionPrognosis prognosisEntity = new ClinicalImpressionPrognosis();
             prognosisEntity.setClinicalImpression(impressionEntity);
-            ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCodingFirstRep());
-            if (conceptEntity!=null) {
-                prognosisEntity.setPrognosisCode(conceptEntity);
-                em.persist(prognosisEntity);
-            }
+            if (concept.hasCoding()) {
+                ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCodingFirstRep());
+                if (conceptEntity != null) {
+                    prognosisEntity.setPrognosisCode(conceptEntity);
 
+                }
+            }
+            if (concept.hasText()) {
+                prognosisEntity.setPrognosisCodeText(concept.getText());
+            }
+            em.persist(prognosisEntity);
         }
         for (Reference reference : impression.getPrognosisReference()) {
             ClinicalImpressionPrognosis prognosisEntity = new ClinicalImpressionPrognosis();

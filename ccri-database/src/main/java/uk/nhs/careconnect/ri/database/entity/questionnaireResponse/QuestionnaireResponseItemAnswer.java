@@ -1,9 +1,10 @@
 package uk.nhs.careconnect.ri.database.entity.questionnaireResponse;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseReferenceItem;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,10 @@ public class QuestionnaireResponseItemAnswer extends BaseReferenceItem {
 
 	@Column(name="valueString")
 	String valueString;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="valueDate")
+	Date valueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="value_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_FORM_ITEM_ANSWER_CONCEPT_ID"))
@@ -111,4 +116,12 @@ public class QuestionnaireResponseItemAnswer extends BaseReferenceItem {
     public void setValueCoding(ConceptEntity valueCoding) {
         this.valueCoding = valueCoding;
     }
+
+	public Date getValueDate() {
+		return valueDate;
+	}
+
+	public void setValueDate(Date valueDate) {
+		this.valueDate = valueDate;
+	}
 }

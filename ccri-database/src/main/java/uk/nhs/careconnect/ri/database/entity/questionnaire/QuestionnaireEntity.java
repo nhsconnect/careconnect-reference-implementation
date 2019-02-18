@@ -2,9 +2,8 @@ package uk.nhs.careconnect.ri.database.entity.questionnaire;
 
 
 import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -64,6 +63,9 @@ public class QuestionnaireEntity extends BaseResource {
 
     @Column(name = "PURPOSE", length = MAX_DESC_LENGTH)
     private String purpose;
+
+    @Column(name = "DESCRIPTION", length = MAX_DESC_LENGTH)
+    private String description;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
     @OrderBy(value = "linkId ASC")
@@ -183,5 +185,13 @@ public class QuestionnaireEntity extends BaseResource {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

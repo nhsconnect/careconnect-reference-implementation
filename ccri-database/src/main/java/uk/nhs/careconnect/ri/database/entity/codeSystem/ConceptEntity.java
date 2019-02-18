@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.database.entity.Terminology;
+package uk.nhs.careconnect.ri.database.entity.codeSystem;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.EqualsBuilder;

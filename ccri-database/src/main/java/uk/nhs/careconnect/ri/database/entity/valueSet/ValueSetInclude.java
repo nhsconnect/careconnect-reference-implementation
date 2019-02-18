@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.valueSet;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class ValueSetInclude {
 
     public List<ValueSetIncludeConcept> getConcepts() {
 	    if (concepts == null) {
-	        concepts = new ArrayList<ValueSetIncludeConcept>() ;
+	        concepts = new ArrayList<>() ;
 
         }
         return concepts;
@@ -76,7 +76,7 @@ public class ValueSetInclude {
 
 	public List<ValueSetIncludeFilter> getFilters() {
 		if (filters == null) {
-			filters = new ArrayList<ValueSetIncludeFilter>() ;
+			filters = new ArrayList<>() ;
 
 		}
 		return filters;

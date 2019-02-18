@@ -1,8 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.observation;
 
 import org.hl7.fhir.dstu3.model.Observation;
-import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.*;

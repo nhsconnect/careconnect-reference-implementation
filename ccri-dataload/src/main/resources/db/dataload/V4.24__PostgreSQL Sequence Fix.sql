@@ -1,4 +1,4 @@
--- Terminology
+-- codeSystem
 
 LOCK TABLE concept IN EXCLUSIVE MODE;
 SELECT setval('concept_concept_id_seq', COALESCE((SELECT MAX(concept_id)+1 FROM concept), 1), false)

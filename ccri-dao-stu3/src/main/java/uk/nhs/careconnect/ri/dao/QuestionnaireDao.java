@@ -17,9 +17,8 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireRepository;
 import uk.nhs.careconnect.ri.dao.transforms.QuestionnaireEntityToFHIRQuestionnaireTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
@@ -68,9 +67,19 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
         for (QuestionnaireEntity form : qryResults)
         {
-            // log.trace("HAPI Custom = "+doc.getId());
-            Questionnaire questionnaireResponse = questionnaireEntityToFHIRQuestionnaireTransformer.transform(form);
-            results.add(questionnaireResponse);
+
+            if (form.getResource() != null) {
+                results.add((Questionnaire) ctx.newJsonParser().parseResource(form.getResource()));
+            } else {
+
+                Questionnaire questionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(form);
+                String resource = ctx.newJsonParser().encodeResourceToString(questionnaire);
+                if (resource.length() < 10000) {
+                    form.setResource(resource);
+                    em.persist(form);
+                }
+                results.add(questionnaire);
+            }
         }
 
         return results;
@@ -235,6 +244,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (questionnaire.hasVersion()) {
             questionnaireEntity.setVersion(questionnaire.getVersion());
         }
+        if (questionnaire.hasDescription()) {
+            questionnaireEntity.setDescription(questionnaire.getDescription());
+        }
 
         em.persist(questionnaireEntity);
 
@@ -279,7 +291,21 @@ public class QuestionnaireDao implements QuestionnaireRepository {
        // log.info("Called PERSIST id="+questionnaireEntity.getId().toString());
         questionnaire.setId(questionnaireEntity.getId().toString());
 
-        return questionnaire;
+        log.debug("Called PERSIST id="+questionnaireEntity.getId().toString());
+        questionnaire.setId(questionnaireEntity.getId().toString());
+
+        Questionnaire newQuestionnaire = null;
+        if (questionnaireEntity != null) {
+            newQuestionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            String resource = ctx.newJsonParser().encodeResourceToString(newQuestionnaire);
+            if (resource.length() < 10000) {
+                questionnaireEntity.setResource(resource);
+                em.persist(questionnaireEntity);
+            }
+
+        }
+
+        return newQuestionnaire;
     }
 
     private void removeItem(QuestionnaireItem item) {

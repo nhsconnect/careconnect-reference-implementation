@@ -1,12 +1,9 @@
 package uk.nhs.careconnect.ri.database.entity.appointment;
 
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.appointment.*;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import org.hl7.fhir.dstu3.model.Appointment.*;
-import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.database.entity.referral.ReferralRequestReason;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.*;

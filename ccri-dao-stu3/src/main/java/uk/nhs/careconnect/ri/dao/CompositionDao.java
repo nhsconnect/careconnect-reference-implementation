@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.CompositionEntityToFHIRCompositionTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionIdentifier;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionSection;

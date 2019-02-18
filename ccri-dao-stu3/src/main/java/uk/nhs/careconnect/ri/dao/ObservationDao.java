@@ -14,15 +14,13 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ObservationEntityToFHIRObservationTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterParticipant;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
-import uk.nhs.careconnect.ri.database.entity.observation.*;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
 import javax.persistence.EntityManager;
@@ -162,13 +160,19 @@ public class ObservationDao implements ObservationRepository {
         observationEntity.setStatus(observation.getStatus());
 
         if (observation.hasCode()) {
-          ConceptEntity code = conceptDao.findAddCode(observation.getCode().getCoding().get(0));
-          if (code != null) { observationEntity.setCode(code); }
-          else {
-              log.info("Code: Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
+            if (observation.getCode().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(observation.getCode().getCoding().get(0));
+                if (code != null) {
+                    observationEntity.setCode(code);
+                } else {
+                    log.info("Code: Missing System/Code = " + observation.getCode().getCoding().get(0).getSystem() + " code = " + observation.getCode().getCoding().get(0).getCode());
 
-              throw new IllegalArgumentException("Missing System/Code = "+ observation.getCode().getCoding().get(0).getSystem() +" code = "+observation.getCode().getCoding().get(0).getCode());
-          }
+                    throw new IllegalArgumentException("Missing System/Code = " + observation.getCode().getCoding().get(0).getSystem() + " code = " + observation.getCode().getCoding().get(0).getCode());
+                }
+            }
+            if (observation.getCode().hasText()) {
+                observationEntity.setCodeText(observation.getCode().getText());
+            }
 
         }
         if (observation.hasEffectiveDateTimeType()) {
@@ -213,11 +217,17 @@ public class ObservationDao implements ObservationRepository {
         try {
             if (observation.hasValueCodeableConcept()) {
 
-                ConceptEntity concept = conceptDao.findAddCode(observation.getValueCodeableConcept().getCoding().get(0));
-                if (concept != null) { observationEntity.setValueConcept(concept);}
-                else {
-                    log.info("Value: Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
-                    throw new IllegalArgumentException("Missing System/Code = "+ observation.getValueCodeableConcept().getCoding().get(0).getSystem() +" code = "+observation.getValueCodeableConcept().getCoding().get(0).getCode());
+                if (observation.getValueCodeableConcept().hasCoding()) {
+                    ConceptEntity concept = conceptDao.findAddCode(observation.getValueCodeableConcept().getCoding().get(0));
+                    if (concept != null) {
+                        observationEntity.setValueConcept(concept);
+                    } else {
+                        log.info("Value: Missing System/Code = " + observation.getValueCodeableConcept().getCoding().get(0).getSystem() + " code = " + observation.getValueCodeableConcept().getCoding().get(0).getCode());
+                        throw new IllegalArgumentException("Missing System/Code = " + observation.getValueCodeableConcept().getCoding().get(0).getSystem() + " code = " + observation.getValueCodeableConcept().getCoding().get(0).getCode());
+                    }
+                }
+                if (observation.getValueCodeableConcept().hasText()) {
+                    observationEntity.setValueConceptText(observation.getValueCodeableConcept().getText());
                 }
             } else {
                 // to cope with child concept being removed
@@ -229,11 +239,17 @@ public class ObservationDao implements ObservationRepository {
         // Body Site
 
         if (observation.hasBodySite()) {
-            ConceptEntity code = conceptDao.findAddCode(observation.getBodySite().getCoding().get(0));
-            if (code != null) { observationEntity.setBodySite(code); }
-            else {
-                log.info("Body: Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
-                throw new IllegalArgumentException("Missing System/Code = "+ observation.getBodySite().getCoding().get(0).getSystem() +" code = "+observation.getBodySite().getCoding().get(0).getCode());
+            if (observation.getBodySite().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(observation.getBodySite().getCoding().get(0));
+                if (code != null) {
+                    observationEntity.setBodySite(code);
+                } else {
+                    log.info("Body: Missing System/Code = " + observation.getBodySite().getCoding().get(0).getSystem() + " code = " + observation.getBodySite().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = " + observation.getBodySite().getCoding().get(0).getSystem() + " code = " + observation.getBodySite().getCoding().get(0).getCode());
+                }
+            }
+            if (observation.getBodySite().hasText()) {
+                observationEntity.setBodySiteText(observation.getBodySite().getText());
             }
 
         } else {
@@ -243,12 +259,18 @@ public class ObservationDao implements ObservationRepository {
         // Method
 
         if (observation.hasMethod()) {
-            ConceptEntity code = conceptDao.findAddCode(observation.getMethod().getCoding().get(0));
-            if (code != null) { observationEntity.setMethod(code); }
-            else {
-                log.info("Method: Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
+            if (observation.getMethod().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(observation.getMethod().getCoding().get(0));
+                if (code != null) {
+                    observationEntity.setMethod(code);
+                } else {
+                    log.info("Method: Missing System/Code = " + observation.getMethod().getCoding().get(0).getSystem() + " code = " + observation.getMethod().getCoding().get(0).getCode());
 
-                throw new IllegalArgumentException("Missing System/Code = "+ observation.getMethod().getCoding().get(0).getSystem() +" code = "+observation.getMethod().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = " + observation.getMethod().getCoding().get(0).getSystem() + " code = " + observation.getMethod().getCoding().get(0).getCode());
+                }
+            }
+            if (observation.getMethod().hasText()) {
+                observationEntity.setMethodText(observation.getMethod().getText());
             }
 
         }
@@ -256,13 +278,18 @@ public class ObservationDao implements ObservationRepository {
         // Interpretation
 
         if (observation.hasInterpretation()) {
-            ConceptEntity code = conceptDao.findAddCode(observation.getInterpretation().getCoding().get(0));
-            if (code != null) { observationEntity.setInterpretation(code); }
-            else {
-                log.error("Interpretation: Missing System/Code = "+ observation.getInterpretation().getCoding().get(0).getSystem() +" code = "+observation.getInterpretation().getCoding().get(0).getCode());
-                throw new IllegalArgumentException("Missing System/Code = "+ observation.getInterpretation().getCoding().get(0).getSystem() +" code = "+observation.getInterpretation().getCoding().get(0).getCode());
+            if (observation.getInterpretation().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(observation.getInterpretation().getCoding().get(0));
+                if (code != null) {
+                    observationEntity.setInterpretation(code);
+                } else {
+                    log.error("Interpretation: Missing System/Code = " + observation.getInterpretation().getCoding().get(0).getSystem() + " code = " + observation.getInterpretation().getCoding().get(0).getCode());
+                    throw new IllegalArgumentException("Missing System/Code = " + observation.getInterpretation().getCoding().get(0).getSystem() + " code = " + observation.getInterpretation().getCoding().get(0).getCode());
+                }
             }
-
+            if (observation.getInterpretation().hasText()) {
+                observationEntity.setInterpretationText(observation.getInterpretation().getText());
+            }
         }
 
         if (observation.hasComment()) {
@@ -391,26 +418,32 @@ public class ObservationDao implements ObservationRepository {
 
         for (CodeableConcept concept :observation.getCategory()) {
             // Category must have a code 15/Jan/2018 testing with Synthea examples
-            if (concept.getCoding().size() > 0 && concept.getCoding().get(0).getCode() !=null) {
+
+            ObservationCategory category = null;
+            // Look for existing categories
+            for (ObservationCategory cat :observationEntity.getCategories()) {
+                category= cat;
+            }
+            if (category == null) category = new ObservationCategory();
+
+            category.setObservation(observationEntity);
+
+            if (concept.hasCoding()) {
                 ConceptEntity conceptEntity = conceptDao.findAddCode(concept.getCoding().get(0));
                 if (conceptEntity != null) {
-                    ObservationCategory category = null;
-                    // Look for existing categories
-                    for (ObservationCategory cat :observationEntity.getCategories()) {
-                        category= cat;
-                    }
-                    if (category == null) category = new ObservationCategory();
-
-                    category.setCategory(conceptEntity);
-                    category.setObservation(observationEntity);
-                    em.persist(category);
-                    observationEntity.getCategories().add(category);
+                  category.setCategory(conceptEntity);
                 }
                 else {
                     log.info("Missing Category. System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                     throw new IllegalArgumentException("Missing System/Code = "+ concept.getCoding().get(0).getSystem() +" code = "+concept.getCoding().get(0).getCode());
                 }
             }
+            if (concept.hasText()) {
+                category.setCategoryText(concept.getText());
+            }
+            em.persist(category);
+            observationEntity.getCategories().add(category);
+
         }
 
         // Remove previous entries
