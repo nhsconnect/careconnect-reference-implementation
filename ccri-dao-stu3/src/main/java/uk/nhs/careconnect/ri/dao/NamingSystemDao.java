@@ -9,10 +9,13 @@ import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.ri.dao.transforms.NamingSystemEntityToFHIRNamingSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.NamingSystemRepository;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemTelecom;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemUniqueId;
@@ -30,6 +33,13 @@ public class NamingSystemDao implements NamingSystemRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    @Lazy
+    ConceptRepository conceptDao;
 
     @Autowired
     private NamingSystemEntityToFHIRNamingSystemTransformer namingSystemEntityToFHIRValuesetTransformer;
@@ -110,6 +120,18 @@ public class NamingSystemDao implements NamingSystemRepository {
             namingSystemEntity.setPublisher(namingSystem.getPublisher());
         }
 
+        if (namingSystem.hasType()) {
+            ConceptEntity code = conceptDao.findAddCode(namingSystem.getType().getCoding().get(0));
+            if (code != null) {
+                namingSystemEntity.set_type(code);
+            } else {
+                log.info("Code: Missing System/Code = " +namingSystem.getType().getCoding().get(0).getSystem() + " code = " + namingSystem.getType().getCoding().get(0).getCode());
+
+                throw new IllegalArgumentException("Missing System/Code = " +namingSystem.getType().getCoding().get(0).getSystem() + " code = " + namingSystem.getType().getCoding().get(0).getCode());
+            }
+            namingSystemEntity.setChangedDate(namingSystem.getDate());
+        }
+
         if (namingSystem.hasDescription())
         {
             namingSystemEntity.setDescription(namingSystem.getDescription());
@@ -134,6 +156,7 @@ public class NamingSystemDao implements NamingSystemRepository {
         for (NamingSystemTelecom telcom : namingSystemEntity.getContacts()) {
             em.remove(telcom);
         }
+        namingSystemEntity.setContacts(new ArrayList<>());
 
         for (ContactDetail contact : namingSystem.getContact()) {
             for (ContactPoint contactPoint : contact.getTelecom()) {
@@ -154,10 +177,9 @@ public class NamingSystemDao implements NamingSystemRepository {
         }
 
         for (NamingSystemUniqueId uniqueId : namingSystemEntity.getNamingSystemUniqueIds()) {
-
             em.remove(uniqueId);
         }
-
+        namingSystemEntity.setNamingSystemUniqueIds(new ArrayList<>());
         log.trace("NamingSystem = "+namingSystem.getUrl());
         if (namingSystem.hasUniqueId()) {
             for (NamingSystem.NamingSystemUniqueIdComponent component :namingSystem.getUniqueId()) {

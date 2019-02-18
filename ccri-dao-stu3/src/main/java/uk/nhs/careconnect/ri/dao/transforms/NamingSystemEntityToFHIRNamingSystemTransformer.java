@@ -51,6 +51,13 @@ public class NamingSystemEntityToFHIRNamingSystemTransformer implements Transfor
         if (namingSystemEntity.getUsage() != null) {
             namingSystem.setUsage(namingSystemEntity.getUsage());
         }
+        if (namingSystemEntity.get_type() != null) {
+            namingSystem.getType()
+                    .addCoding()
+                        .setDisplay(namingSystemEntity.get_type().getDisplay())
+                        .setSystem(namingSystemEntity.get_type().getSystem())
+                        .setCode(namingSystemEntity.get_type().getCode());
+        }
 
 
         if (namingSystemEntity.getReplacedBy() != null) {
