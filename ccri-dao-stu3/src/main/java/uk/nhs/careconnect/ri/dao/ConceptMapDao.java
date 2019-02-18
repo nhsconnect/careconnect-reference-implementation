@@ -71,7 +71,7 @@ ConceptRepository conceptDao;
 	    @Override
 	    public ConceptMap create(ConceptMap conceptMap) {
 	    	
-	    	System.out.println("call came to save Concept MAP : " + conceptMap.getUrlElement().getValue() );
+	    //	System.out.println("call came to save Concept MAP : " + conceptMap.getUrlElement().getValue() );
 	        this.conceptMap = conceptMap;
 	        ConceptMapEntity conceptMapEntity = null;
 	        ConceptMapGroup conceptMapGroupEntity =  new ConceptMapGroup();	        
