@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.endpoint;
 
 import org.hl7.fhir.dstu3.model.Endpoint;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;

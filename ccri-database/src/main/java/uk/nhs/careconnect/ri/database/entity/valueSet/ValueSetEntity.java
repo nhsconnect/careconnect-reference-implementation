@@ -4,8 +4,7 @@ package uk.nhs.careconnect.ri.database.entity.valueSet;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hl7.fhir.dstu3.model.Enumerations.PublicationStatus;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapTelecom;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 
 import javax.persistence.*;
 import java.util.*;

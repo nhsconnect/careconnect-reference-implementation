@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.MedicationRequestEntityToFHIRMedicationRequestTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.*;

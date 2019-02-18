@@ -14,8 +14,8 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.*;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.AddressEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 
 import uk.nhs.careconnect.ri.database.entity.relatedPerson.*;

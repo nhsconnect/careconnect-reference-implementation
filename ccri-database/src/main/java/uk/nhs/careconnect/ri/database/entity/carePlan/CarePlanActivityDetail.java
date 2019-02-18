@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.carePlan;
 
 import org.hl7.fhir.dstu3.model.CarePlan;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 

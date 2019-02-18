@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,10 +16,9 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.EpisodeOfCareEntityToFHIREpisodeOfCareTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
 
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareIdentifier;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 

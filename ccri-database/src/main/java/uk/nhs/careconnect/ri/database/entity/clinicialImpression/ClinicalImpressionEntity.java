@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.clinicialImpression;
 
 import org.hl7.fhir.dstu3.model.ClinicalImpression;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;

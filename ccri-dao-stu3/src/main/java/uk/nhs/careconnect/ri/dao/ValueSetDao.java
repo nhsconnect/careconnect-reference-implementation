@@ -12,7 +12,7 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.*;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
 import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
 import javax.persistence.EntityManager;

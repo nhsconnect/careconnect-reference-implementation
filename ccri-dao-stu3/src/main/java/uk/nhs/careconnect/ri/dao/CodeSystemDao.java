@@ -16,7 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
-import uk.nhs.careconnect.ri.database.entity.Terminology.*;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

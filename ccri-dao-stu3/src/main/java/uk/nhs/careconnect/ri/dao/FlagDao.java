@@ -16,12 +16,11 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
 import uk.nhs.careconnect.ri.dao.transforms.FlagEntityToFHIRFlagTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 
 import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.flag.FlagIdentifier;
-import uk.nhs.careconnect.ri.database.entity.observation.ObservationPerformer;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;

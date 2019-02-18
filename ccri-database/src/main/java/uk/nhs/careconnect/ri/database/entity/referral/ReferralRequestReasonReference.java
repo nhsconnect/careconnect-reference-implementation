@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.database.entity.referral;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 

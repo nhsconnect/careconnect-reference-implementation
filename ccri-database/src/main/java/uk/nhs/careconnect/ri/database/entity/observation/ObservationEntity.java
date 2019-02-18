@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.observation;
 
 import org.hl7.fhir.dstu3.model.Observation;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;

@@ -14,17 +14,15 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
 import uk.nhs.careconnect.ri.dao.transforms.MedicationAdministrationEntityToFHIRMedicationAdministrationTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
-import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.medicationAdministration.MedicationAdministrationNote;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestNote;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;

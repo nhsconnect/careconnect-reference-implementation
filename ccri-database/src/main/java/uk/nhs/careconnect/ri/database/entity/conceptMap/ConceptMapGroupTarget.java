@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.conceptMap;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import org.hl7.fhir.dstu3.model.Enumerations.ConceptMapEquivalence;
 
 import javax.persistence.*;

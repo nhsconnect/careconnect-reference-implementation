@@ -16,7 +16,7 @@ import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.EndpointRepository;
 import uk.nhs.careconnect.ri.database.daointerface.OrganisationRepository;
 import uk.nhs.careconnect.ri.dao.transforms.EndpointEntityToFHIREndpointTransform;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointIdentifier;
 

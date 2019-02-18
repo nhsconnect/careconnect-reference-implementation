@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ri.database.entity.Terminology;
+package uk.nhs.careconnect.ri.database.entity.codeSystem;
 
 import uk.nhs.careconnect.ri.database.entity.BaseContactPoint;
 import javax.persistence.*;

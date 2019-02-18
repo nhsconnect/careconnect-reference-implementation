@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.AllergyIntoleranceEntityToFHIRAllergyIntoleranceTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceIdentifier;
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceManifestation;
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceReaction;

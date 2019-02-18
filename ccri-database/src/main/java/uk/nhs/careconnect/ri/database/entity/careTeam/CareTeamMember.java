@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.careTeam;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;

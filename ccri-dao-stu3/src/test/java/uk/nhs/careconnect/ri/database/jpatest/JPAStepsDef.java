@@ -18,9 +18,9 @@ import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.InputStream;

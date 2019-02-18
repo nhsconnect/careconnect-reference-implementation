@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.MedicationStatementEntityToFHIRMedicationStatementTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
@@ -23,7 +23,6 @@ import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationStatement.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

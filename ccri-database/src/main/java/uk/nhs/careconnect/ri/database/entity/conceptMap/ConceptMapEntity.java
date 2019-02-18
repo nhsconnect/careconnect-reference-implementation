@@ -1,9 +1,8 @@
 package uk.nhs.careconnect.ri.database.entity.conceptMap;
 
-import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.*;

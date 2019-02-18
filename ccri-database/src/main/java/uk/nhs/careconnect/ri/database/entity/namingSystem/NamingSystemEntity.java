@@ -3,8 +3,7 @@ package uk.nhs.careconnect.ri.database.entity.namingSystem;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.NamingSystem;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.Date;

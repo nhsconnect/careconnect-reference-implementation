@@ -4,15 +4,14 @@ package uk.nhs.careconnect.ri.database.daointerface;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.UriAndListParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
 
 import java.util.List;
 

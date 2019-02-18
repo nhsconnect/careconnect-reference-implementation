@@ -6,9 +6,9 @@ import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemTelecom;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemTelecom;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 
 

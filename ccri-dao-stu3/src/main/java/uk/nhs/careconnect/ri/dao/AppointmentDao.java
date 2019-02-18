@@ -12,13 +12,11 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.AppointmentEntityToFHIRAppointmentTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentReason;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentSlot;
-import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
-import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 
 import javax.persistence.EntityManager;
