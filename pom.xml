@@ -158,7 +158,6 @@
     <modules>
 
         <module>cc-core</module>
-        <module>ccri-dataload</module>
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver</module>
