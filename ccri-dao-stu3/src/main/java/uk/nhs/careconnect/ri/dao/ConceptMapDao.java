@@ -168,11 +168,13 @@ ConceptRepository conceptDao;
 	    
 	    private ConceptMapEntity findConceptMapEntity(IdType theId) {
 
+	    	System.out.println("the id is " + theId.getIdPart());
+	    	
 	    	ConceptMapEntity conceptMapEntity = null;
 	        // Only look up if the id is numeric else need to do a search
-	        if (daoutils.isNumeric(theId.getValue())) {
-	            conceptMapEntity =(ConceptMapEntity) em.find(ConceptMapEntity.class, theId.getValue());
-	        }
+	/*        if (daoutils.isNumeric(theId.getIdPart())) {
+	            conceptMapEntity =(ConceptMapEntity) em.find(ConceptMapEntity.class, theId.getIdPart());
+	        } */
 	        ConceptMapEntity.class.getName();
 	        // if null try a search on strId
 	        
@@ -183,7 +185,7 @@ ConceptRepository conceptDao;
 	            CriteriaQuery<ConceptMapEntity> criteria = builder.createQuery(ConceptMapEntity.class);
 	            Root<ConceptMapEntity> root = criteria.from(ConceptMapEntity.class);
 	            List<Predicate> predList = new LinkedList<Predicate>();
-	            Predicate p = builder.equal(root.<String>get("strId"),theId.getValue());
+	            Predicate p = builder.equal(root.<String>get("id"),theId.getIdPart());
 	            predList.add(p);
 	            Predicate[] predArray = new Predicate[predList.size()];
 	            predList.toArray(predArray);

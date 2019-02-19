@@ -103,7 +103,7 @@ public class ConceptMapProvider implements IResourceProvider {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
     
-    @Operation(name = "$getconceptmaps", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
+    @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getConceptMaps(
             @OperationParam(name="conceptMapId") TokenParam
             			conceptMapId
