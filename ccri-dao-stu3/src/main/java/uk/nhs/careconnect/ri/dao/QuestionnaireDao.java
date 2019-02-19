@@ -29,6 +29,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -156,9 +157,17 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (daoutils.isNumeric(theId.getIdPart())) {
             QuestionnaireEntity questionnaireEntity = (QuestionnaireEntity) em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
 
-            return questionnaireEntity == null
-                    ? null
-                    : questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            if (questionnaireEntity == null) return null;
+
+            Questionnaire questionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            if (questionnaireEntity.getResource() == null) {
+                String resource = ctx.newJsonParser().encodeResourceToString(questionnaire);
+                if (resource.length() < 10000) {
+                    questionnaireEntity.setResource(resource);
+                    em.persist(questionnaireEntity);
+                }
+            }
+            return questionnaire;
 
         } else {
             return null;
@@ -203,6 +212,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         Conditional Removed
 
          */
+        questionnaireEntity.setResource(null);
 
         if (questionnaireEntity == null) {
             questionnaireEntity = new QuestionnaireEntity();
@@ -276,14 +286,16 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         for (QuestionnaireItem item: questionnaireEntity.getItems()) {
             removeItem(item);
         }
+        questionnaireEntity.setItems(new HashSet<>());
+
         if (questionnaire.hasItem()) {
 
 
             for (Questionnaire.QuestionnaireItemComponent itemComponent : questionnaire.getItem()) {
                 QuestionnaireItem item = new QuestionnaireItem();
                 item.setForm(questionnaireEntity);
-                buildItem(itemComponent,item);
 
+                questionnaireEntity.getItems().add(buildItem(itemComponent,item));
             }
         }
 
@@ -298,10 +310,10 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (questionnaireEntity != null) {
             newQuestionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
             String resource = ctx.newJsonParser().encodeResourceToString(newQuestionnaire);
-            if (resource.length() < 10000) {
+           /* if (resource.length() < 10000) {
                 questionnaireEntity.setResource(resource);
                 em.persist(questionnaireEntity);
-            }
+            }*/
 
         }
 
@@ -318,7 +330,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         em.remove(item);
     }
 
-    private void buildItem(Questionnaire.QuestionnaireItemComponent itemComponent, QuestionnaireItem item ) {
+    private QuestionnaireItem buildItem(Questionnaire.QuestionnaireItemComponent itemComponent, QuestionnaireItem item ) {
         if (itemComponent.hasType()) {
             item.setItemType(itemComponent.getType());
         }
@@ -395,13 +407,11 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         }
 
                 for (Questionnaire.QuestionnaireItemComponent subItem : itemComponent.getItem()) {
-            QuestionnaireItem subItemEntity = new QuestionnaireItem();
-            subItemEntity.setQuestionnaireParentItem(item);
-            buildItem(subItem, subItemEntity);
+                    QuestionnaireItem subItemEntity = new QuestionnaireItem();
+                    subItemEntity.setQuestionnaireParentItem(item);
+                    item.getChildItems().add(buildItem(subItem, subItemEntity));
         }
-
+        return item;
     }
-
-
 
 }

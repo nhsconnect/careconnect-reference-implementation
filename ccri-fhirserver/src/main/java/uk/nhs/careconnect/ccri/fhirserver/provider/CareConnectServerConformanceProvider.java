@@ -20,7 +20,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +52,8 @@ import java.util.List;
     private String oauth2register;
 
     private String oauth2;
+
+    private Instant lastRefresh;
     
     
     public CareConnectServerConformanceProvider() {
@@ -68,7 +72,17 @@ import java.util.List;
     @Override
     @Metadata
      public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
-    	
+
+
+        if (capabilityStatement != null) {
+                if (lastRefresh != null) {
+                    java.time.Duration duration = java.time.Duration.between(Instant.now(), lastRefresh);
+                    // May need to revisit
+                    if ((duration.getSeconds() * 86400) < 5) return capabilityStatement;
+                }
+        }
+        lastRefresh = Instant.now();
+
     	WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(theRequest.getServletContext());
     	log.info("restful2 Server not null = " + ctx.getEnvironment().getProperty("ccri.validate_flag"));
     	
@@ -89,7 +103,7 @@ import java.util.List;
             return capabilityStatement;
         }
 
-        CapabilityStatement capabilityStatement = super.getServerConformance(theRequest);
+        capabilityStatement = super.getServerConformance(theRequest);
 
         capabilityStatement.setPublisher("NHS Digital");
         capabilityStatement.setDateElement(conformanceDate());

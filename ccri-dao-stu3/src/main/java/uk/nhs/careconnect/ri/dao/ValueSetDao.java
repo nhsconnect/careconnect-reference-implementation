@@ -323,9 +323,18 @@ public class ValueSetDao implements ValueSetRepository {
 
         ValueSetEntity valueSetEntity = findValueSetEntity(theId);
 
-        return valueSetEntity == null
-                ? null
-                : valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
+        if (valueSetEntity == null) return null;
+
+        ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valueSetEntity);
+
+        if (valueSetEntity.getResource() == null) {
+            String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
+            if (resource.length() < 10000) {
+                valueSetEntity.setResource(resource);
+                em.persist(valueSetEntity);
+            }
+        }
+        return valueSet;
 
     }
     public List<ValueSet> search (FhirContext ctx,
