@@ -164,6 +164,8 @@ public class ValueSetDao implements ValueSetRepository {
         }
 
         for (ValueSetInclude include : valueSetEntity.getIncludes()) {
+
+            // TODO this can create huge deletes, need to replace with more efficient code.
             for (ValueSetIncludeConcept concept : include.getConcepts()) {
                 em.remove(concept);
             }
