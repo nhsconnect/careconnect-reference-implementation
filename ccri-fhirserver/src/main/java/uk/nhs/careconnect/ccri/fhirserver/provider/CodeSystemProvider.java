@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,6 +81,30 @@ public class CodeSystemProvider implements IResourceProvider {
         return codeSystem;
     }
 
+    @Update()
+    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam CodeSystem codeSystem) {
+
+        resourcePermissionProvider.checkPermission("update");
+
+        MethodOutcome method = new MethodOutcome();
+        method.setCreated(true);
+        OperationOutcome opOutcome = new OperationOutcome();
+
+        method.setOperationOutcome(opOutcome);
+
+
+        try {
+            CodeSystem newCodeSystem = codeSystemDao.create(ctx, codeSystem);
+            method.setId(newCodeSystem.getIdElement());
+            method.setResource(newCodeSystem);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method,ex);
+        }
+
+
+        return method;
+    }
+
 
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam CodeSystem codeSystem) {
@@ -92,7 +117,14 @@ public class CodeSystemProvider implements IResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-      //  codeSystem = codeSystemDao.create(codeSystem);
+
+        try {
+            CodeSystem newCodeSystem = codeSystemDao.create(ctx, codeSystem);
+            method.setId(newCodeSystem.getIdElement());
+            method.setResource(newCodeSystem);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method,ex);
+        }
 
         return method;
     }
