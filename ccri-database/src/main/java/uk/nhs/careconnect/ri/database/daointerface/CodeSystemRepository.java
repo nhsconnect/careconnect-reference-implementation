@@ -21,8 +21,6 @@ public interface CodeSystemRepository {
 
     SystemEntity findSystem(String system) throws OperationOutcomeException;
 
-    ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptReferenceComponent concept);
-
     CodeSystem read(FhirContext ctx, IdType theId) ;
 
     CodeSystem create(FhirContext ctx,CodeSystem codeSystem);

@@ -9,6 +9,7 @@ import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
 
 import javax.persistence.EntityManager;
@@ -34,6 +36,11 @@ public class CodeSystemDao implements CodeSystemRepository {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    @Lazy
+    ConceptRepository conceptDao;
+
 
     @Autowired
     private PlatformTransactionManager myTransactionMgr;
@@ -165,7 +172,7 @@ public class CodeSystemDao implements CodeSystemRepository {
 
 
         for (CodeSystem.ConceptDefinitionComponent concept : codeSystem.getConcept()) {
-            findAddCode(codeSystemEntity, concept);
+            conceptDao.findAddCode(new Coding().setSystem(codeSystemEntity.getCodeSystemUri()).setCode(concept.getCode()).setDisplay(concept.getDisplay()));
         }
 
         log.debug("Called PERSIST id="+codeSystemEntity.getId().toString());
@@ -357,109 +364,4 @@ public class CodeSystemDao implements CodeSystemRepository {
         return systemEntity;
     }
 
-
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, CodeSystem.ConceptDefinitionComponent concept) {
-        // This inspects codes already present and if not found it adds the code... CRUDE at present
-
-        ConceptEntity conceptEntity = null;
-        for (ConceptEntity codeSystemConcept : codeSystemEntity.getConcepts()) {
-            if (codeSystemConcept.getCode().equals(concept.getCode())) {
-
-                conceptEntity =codeSystemConcept;
-            }
-
-        }
-        if (conceptEntity == null) {
-            log.debug("Add new code = " + concept.getCode());
-            conceptEntity = new ConceptEntity()
-                    .setCode(concept.getCode())
-                    .setCodeSystem(codeSystemEntity)
-                    .setDisplay(concept.getDisplay());
-
-
-            em.persist(conceptEntity);
-            // Need to ensure the local version has a copy of the data
-            codeSystemEntity.getConcepts().add(conceptEntity);
-        }
-
-        return conceptEntity;
-    }
-
-    @Override
-    @Transactional
-    public ConceptEntity findAddCode(CodeSystemEntity codeSystemEntity, ValueSet.ConceptReferenceComponent concept) {
-        // This inspects codes already present and if not found it adds the code... CRUDE at present
-
-
-
-        ConceptEntity conceptEntity = null;
-        for (ConceptEntity codeSystemConcept : codeSystemEntity.getConcepts()) {
-            if (codeSystemConcept.getCode().equals(concept.getCode())) {
-
-                conceptEntity =codeSystemConcept;
-            }
-
-        }
-        if (conceptEntity == null) {
-            log.debug("Add new code = " + concept.getCode());
-            conceptEntity = new ConceptEntity()
-                    .setCode(concept.getCode())
-                    .setCodeSystem(codeSystemEntity)
-                    .setDisplay(concept.getDisplay());
-                // TODO STU3    .setAbstractCode(concept.getAbstract());
-
-
-            em.persist(conceptEntity);
-            // Need to ensure the local version has a copy of the data
-            codeSystemEntity.getConcepts().add(conceptEntity);
-        }
-        // call child code
-        // TODO STU3 Refactor
-        /*
-        if (concept.getConcept().size() > 0) {
-            processChildConcepts(concept,conceptEntity);
-        }
-        */
-
-        return conceptEntity;
-    }
-
-    /*
-    @Transactional
-    private void processChildConcepts(CodeSystem.ConceptReferenceComponent concept, ConceptEntity parentConcept) {
-        String lastConcept="";
-        // TODO STU3
-        /*
-        for (CodeSystem.ConceptReferenceComponent conceptChild : concept.getConcept()) {
-            ConceptParentChildLink childLink = null;
-
-            if (conceptChild.getCode() != null && !conceptChild.getCode().equals(lastConcept)) {
-                // To cope with repeating entries
-                lastConcept = conceptChild.getCode();
-                for (ConceptParentChildLink conceptChildLink : parentConcept.getChildren()) {
-                    if (conceptChildLink.getChild().getCode().equals(concept.getCode())) {
-                        childLink = conceptChildLink;
-                    }
-                }
-                if (childLink == null) {
-                    // TODO We are assuming child code doesn't exist, so just inserts.
-                    childLink = new ConceptParentChildLink();
-                    childLink.setParent(parentConcept);
-                    childLink.setRelationshipType(ConceptParentChildLink.RelationshipTypeEnum.ISA);
-                    childLink.setCodeSystem(parentConcept.getCodeSystem());
-
-
-                    ConceptEntity childConcept = findAddCode(parentConcept.getCodeSystem(), conceptChild);
-
-
-                    childLink.setChild(childConcept);
-                    em.persist(childLink);
-                    // ensure link add to object
-                    parentConcept.getChildren().add(childLink);
-
-                }
-            }
-        }
-    }
-    */
 }

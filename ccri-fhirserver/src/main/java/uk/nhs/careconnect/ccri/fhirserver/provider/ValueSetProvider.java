@@ -5,10 +5,7 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
-import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -95,9 +92,10 @@ public class ValueSetProvider implements IResourceProvider {
     @Search
     public List<ValueSet> search(HttpServletRequest theRequest,
               @OptionalParam(name =ValueSet.SP_NAME) StringParam name,
-               @OptionalParam(name =ValueSet.SP_PUBLISHER) StringParam publisher
+               @OptionalParam(name =ValueSet.SP_PUBLISHER) StringParam publisher,
+                                 @OptionalParam(name = ValueSet.SP_URL) UriParam url
     ) {
-        return valueSetDao.search(ctx, name, publisher);
+        return valueSetDao.search(ctx, name, publisher, url);
     }
 
 

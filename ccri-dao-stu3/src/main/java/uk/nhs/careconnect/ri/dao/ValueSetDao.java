@@ -3,13 +3,16 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
@@ -39,7 +42,11 @@ public class ValueSetDao implements ValueSetRepository {
     private static final Logger log = LoggerFactory.getLogger(ValueSetDao.class);
 
     @Autowired
-    CodeSystemRepository codeSystemRepository;
+    CodeSystemRepository codeSystemDao;
+
+    @Autowired
+    @Lazy
+    ConceptRepository conceptDao;
 
     public void save(FhirContext ctx, ValueSetEntity valueset)
     {
@@ -51,7 +58,7 @@ public class ValueSetDao implements ValueSetRepository {
 
     @Transactional
     @Override
-    public ValueSet create(FhirContext ctx,  ValueSet valueSet) {
+    public ValueSet create(FhirContext ctx,  ValueSet valueSet) throws OperationOutcomeException {
         this.valueSet = valueSet;
 
         ValueSetEntity valueSetEntity = null;
@@ -120,6 +127,19 @@ public class ValueSetDao implements ValueSetRepository {
         log.trace("Call em.persist ValueSetEntity");
         em.persist(valueSetEntity);
 
+        if (valueSet.hasIdentifier()) {
+            for (ValueSetIdentifier identifier : valueSetEntity.getIdentifiers()) {
+                em.remove(identifier);
+            }
+            for (Identifier identifier : valueSet.getIdentifier()) {
+                ValueSetIdentifier valueSetIdentifier = new ValueSetIdentifier();
+                valueSetIdentifier.setValueSetEntity(valueSetEntity);
+                valueSetIdentifier.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
+                valueSetIdentifier.setValue(identifier.getValue());
+                em.persist(valueSetIdentifier);
+            }
+        }
+
         //Created the ValueSet so add the sub concepts
 
         for (ValueSetTelecom telcom : valueSetEntity.getContacts()) {
@@ -157,7 +177,7 @@ public class ValueSetDao implements ValueSetRepository {
         if (valueSet.hasCompose()) {
             for (ValueSet.ConceptSetComponent component :valueSet.getCompose().getInclude()) {
 
-                CodeSystemEntity codeSystemEntity = codeSystemRepository.findBySystem(component.getSystem());
+                CodeSystemEntity codeSystemEntity = codeSystemDao.findBySystem(component.getSystem());
                 log.trace("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
                 System.out.println("Updateing code systems");
                 ValueSetInclude includeValueSetEntity = null;
@@ -220,7 +240,7 @@ public class ValueSetDao implements ValueSetRepository {
                         // This is not the ideal way to add a Concept but works for the RI
                         includeConcept = new ValueSetIncludeConcept();
                         //ConceptEntity conceptEntity
-                        includeConcept.setConcept(codeSystemRepository.findAddCode(codeSystemEntity,concept));
+                        includeConcept.setConcept(conceptDao.findAddCode(new Coding().setSystem(codeSystemEntity.getCodeSystemUri()).setCode(concept.getCode()).setDisplay(concept.getDisplay())));
                         log.trace("codeSystem returned "+includeConcept.getConcept().getCode()+" Id = "+includeConcept.getConcept().getId());
                         includeConcept.setInclude(includeValueSetEntity);
 
@@ -303,7 +323,7 @@ public class ValueSetDao implements ValueSetRepository {
 
         for (ValueSetInclude include : valueSetEntity.getIncludes()) {
             if (include.getConcepts().size() == 0 && include.getFilters().size() == 0) {
-                CodeSystemEntity codeSystem = codeSystemRepository.findBySystem(include.getSystem());
+                CodeSystemEntity codeSystem = codeSystemDao.findBySystem(include.getSystem());
                 for (ConceptEntity concept : codeSystem.getConcepts()) {
                    valueSet.getExpansion().addContains()
                        .setCode(concept.getCode())
@@ -339,7 +359,8 @@ public class ValueSetDao implements ValueSetRepository {
     }
     public List<ValueSet> search (FhirContext ctx,
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
-            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher
+            @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
+            @OptionalParam(name = ValueSet.SP_URL) UriParam url
     )
     {
         List<ValueSetEntity> qryResults = null;
@@ -371,6 +392,17 @@ public class ValueSetDao implements ValueSetRepository {
                     builder.like(
                             builder.upper(root.get("publisher").as(String.class)),
                             builder.upper(builder.literal( publisher.getValue() + "%"))
+                    );
+
+            predList.add(p);
+        }
+        if (url !=null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("url").as(String.class)),
+                            builder.upper(builder.literal( url.getValue()))
                     );
 
             predList.add(p);

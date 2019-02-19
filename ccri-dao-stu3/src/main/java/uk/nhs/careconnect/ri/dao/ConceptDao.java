@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Duration;
 import org.hl7.fhir.dstu3.model.Quantity;
@@ -289,6 +290,15 @@ public class ConceptDao implements ConceptRepository {
 
 
         return conceptEntity;
+    }
+
+    public ConceptEntity findAddCode(String codeSystemUri, CodeSystem.ConceptDefinitionComponent concept) {
+
+        // KGM removed from CodeSystem
+       Coding coding = new Coding().setCode(concept.getCode()).setSystem(codeSystemUri).setDisplay(concept.getDisplay());
+
+       return findAddCode(coding);
+
     }
 
     @Override

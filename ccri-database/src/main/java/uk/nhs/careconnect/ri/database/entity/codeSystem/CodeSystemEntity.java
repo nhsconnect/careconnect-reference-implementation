@@ -71,7 +71,7 @@ public class CodeSystemEntity extends BaseResource {
 
 	// ValueSet CONTENT
 
-	@OneToMany(mappedBy="codeSystemEntity", targetEntity=ConceptEntity.class)
+	@OneToMany(mappedBy="codeSystemEntity", fetch = FetchType.LAZY, targetEntity=ConceptEntity.class)
 	private List<ConceptEntity> concepts;
 
 	public Long getId()

@@ -61,7 +61,7 @@ public class ValueSetEntity extends BaseResource {
 	@Column(name = "publisher")
 	private String publisher;
 
-	@OneToMany(mappedBy="valueSet", targetEntity= ValueSetTelecom.class)
+	@OneToMany(mappedBy="valueSet", fetch = FetchType.LAZY, targetEntity= ValueSetTelecom.class)
 	private Set<ValueSetTelecom> contacts = new HashSet<>();
 
 	// Ignore usage context and jurisdiction for now
