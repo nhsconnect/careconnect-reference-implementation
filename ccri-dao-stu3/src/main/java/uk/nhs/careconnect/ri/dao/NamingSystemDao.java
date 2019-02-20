@@ -264,7 +264,7 @@ public class NamingSystemDao implements NamingSystemRepository {
     public List<NamingSystem> search (FhirContext ctx,
                                       @OptionalParam(name = NamingSystem.SP_NAME) StringParam name,
                                       @OptionalParam(name = NamingSystem.SP_PUBLISHER) StringParam publisher,
-                                      @OptionalParam(name = NamingSystem.SP_ID_TYPE) TokenParam unique
+                                      @OptionalParam(name = NamingSystem.SP_VALUE) TokenParam unique
     ) {
 
         List<NamingSystemEntity> qryResults = searchEntity(ctx, name,publisher,unique);

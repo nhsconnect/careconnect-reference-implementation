@@ -89,7 +89,7 @@ public class NamingSystemProvider implements IResourceProvider {
     public List<NamingSystem> search(HttpServletRequest theRequest,
               @OptionalParam(name =NamingSystem.SP_NAME) StringParam name,
                @OptionalParam(name =NamingSystem.SP_PUBLISHER) StringParam publisher,
-             @OptionalParam(name = NamingSystem.SP_ID_TYPE) TokenParam unique
+             @OptionalParam(name = NamingSystem.SP_VALUE) TokenParam unique
     ) {
         return namingSystemDao.search(ctx, name, publisher, unique);
     }

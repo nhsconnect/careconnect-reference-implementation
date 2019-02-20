@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.database.daointerface;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -29,7 +30,8 @@ public interface ValueSetRepository {
     List<ValueSet> search (FhirContext ctx,
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
-            @OptionalParam(name = ValueSet.SP_URL) UriParam url
+            @OptionalParam(name = ValueSet.SP_URL) UriParam url,
+            @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
     );
 
 }

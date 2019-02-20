@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -16,14 +17,13 @@ import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
+import uk.nhs.careconnect.ri.database.entity.observation.ObservationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -275,14 +275,15 @@ public class ValueSetDao implements ValueSetRepository {
 
     private ValueSetEntity findValueSetEntity(IdType theId) {
 
-    	System.out.println(" the valueset id is " + theId.getValue());
+    	System.out.println(" the valueset id is " + theId.getIdPart());
         ValueSetEntity valueSetEntity = null;
         // Only look up if the id is numeric else need to do a search
-        if (daoutils.isNumeric(theId.getValue())) {
-            valueSetEntity = em.find(ValueSetEntity.class, theId.getIdElement());
+        if (daoutils.isNumeric(theId.getIdPart())) {
+            valueSetEntity = em.find(ValueSetEntity.class,  Integer.parseInt(theId.getIdPart()));
         }
 
         // if null try a search on strId
+        /*
         if (valueSetEntity == null)
         {
             CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -306,7 +307,7 @@ public class ValueSetDao implements ValueSetRepository {
                     break;
                 }
             }
-        }
+        }*/
         return valueSetEntity;
     }
 
@@ -360,7 +361,8 @@ public class ValueSetDao implements ValueSetRepository {
     public List<ValueSet> search (FhirContext ctx,
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
-            @OptionalParam(name = ValueSet.SP_URL) UriParam url
+            @OptionalParam(name = ValueSet.SP_URL) UriParam url,
+                                  @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
     )
     {
         List<ValueSetEntity> qryResults = null;
@@ -406,6 +408,15 @@ public class ValueSetDao implements ValueSetRepository {
                     );
 
             predList.add(p);
+        }
+        if (identifier !=null)
+        {
+            Join<ValueSetEntity, ValueSetIdentifier> join = root.join("identifiers", JoinType.LEFT);
+
+            Predicate p = builder.equal(join.get("value"),identifier.getValue());
+            predList.add(p);
+            // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
+
         }
        
 

@@ -152,6 +152,8 @@ public class JPAStepsDef {
 
     List<Resource> questionnaireResponseList;
 
+    List<ValueSet> valueSetList;
+
     Transaction tx;
 
     static Boolean initialized = false;
@@ -225,12 +227,14 @@ public class JPAStepsDef {
 
     @Given("^I add a ValueSet with an Id of ([^\"]*)$")
     public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {
-        resource = (Resource) valueSetRepository.read(ctx, new IdType().setValue("ValueSet/"+valueSetId));
+        valueSetList = valueSetRepository.search(ctx, new StringParam(valueSetId), null, null, null );
     }
 
     @Then("^the result should be a FHIR ValueSet$")
     public void the_result_should_be_a_FHIR_ValueSet() throws Throwable {
-        Assert.assertThat(resource,instanceOf(ValueSet.class));
+        for (ValueSet valueSet : valueSetList) {
+            validateResource(valueSet);
+        }
     }
 
 

@@ -20,13 +20,8 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
         final ValueSet valueSet = new ValueSet();
 
 
+        valueSet.setId(valueSetEntity.getId().toString());
 
-        if (valueSetEntity.getStrId() != null) {
-            valueSet.setId(valueSetEntity.getStrId());
-        }
-        else {
-            valueSet.setId(valueSetEntity.getId().toString());
-        }
         valueSet.setUrl(valueSetEntity.getUrl());
 
         if (valueSetEntity.getVersion() != null) {
