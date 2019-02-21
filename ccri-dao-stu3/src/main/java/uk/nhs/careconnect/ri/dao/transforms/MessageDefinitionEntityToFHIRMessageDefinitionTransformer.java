@@ -33,6 +33,7 @@ public class MessageDefinitionEntityToFHIRMessageDefinitionTransformer implement
 
         if (messageDefinitionEntity.getTitle() != null) {
             messageDefinition.setTitle(messageDefinitionEntity.getTitle());
+            if (messageDefinition.getName().contains("null")) messageDefinition.setName(messageDefinitionEntity.getTitle());
         }
 
         messageDefinition.setStatus(messageDefinitionEntity.getStatus());

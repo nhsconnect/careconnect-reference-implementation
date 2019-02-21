@@ -94,13 +94,16 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
         if (messageDefinition.hasVersion()) {
             messageDefinitionEntity.setVersion(messageDefinition.getVersion());
         }
-        if (messageDefinition.hasName())
-        {
-            messageDefinitionEntity.setName(messageDefinition.getName());
-        }
         if (messageDefinition.hasTitle()) {
             messageDefinitionEntity.setTitle(messageDefinition.getTitle());
+            messageDefinitionEntity.setName(messageDefinition.getTitle());
         }
+
+        if (messageDefinition.hasName() && messageDefinition.getName() != null) {
+            System.out.println("**** name = "+ messageDefinition.getName());
+            messageDefinitionEntity.setName(messageDefinition.getName());
+        }
+
         if (messageDefinition.hasStatus())
         {
             messageDefinitionEntity.setStatus(messageDefinition.getStatus());
@@ -135,7 +138,8 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
         }
 
         if (messageDefinition.hasCategory()) {
-            messageDefinition.setCategory(messageDefinition.getCategory());
+            //System.out.println("*** has Category "+messageDefinition.getCategory());
+            messageDefinitionEntity.setCategory(messageDefinition.getCategory());
         }
 
         if (messageDefinition.hasResponseRequired()) {
@@ -389,13 +393,19 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
         if (name !=null)
         {
 
-            Predicate p =
-                    builder.like(
-                            builder.upper(root.get("name").as(String.class)),
-                            builder.upper(builder.literal("%" + name.getValue() + "%"))
-                    );
+            Predicate pname = builder.like(
+                    builder.upper(root.get("name").as(String.class)),
+                    builder.upper(builder.literal("%" + name.getValue() + "%"))
+            );
 
+            Predicate ptitle = builder.like(
+                    builder.upper(root.get("title").as(String.class)),
+                    builder.upper(builder.literal("%" + name.getValue() + "%"))
+            );
+
+            Predicate p = builder.or(pname, ptitle);
             predList.add(p);
+
         }
         if (publisher !=null)
         {
@@ -410,6 +420,7 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
         }
         if (url !=null)
         {
+
 
             Predicate p =
                     builder.like(
