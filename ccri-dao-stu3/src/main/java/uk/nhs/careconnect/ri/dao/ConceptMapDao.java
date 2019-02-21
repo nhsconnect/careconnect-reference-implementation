@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.dao;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,12 +23,17 @@ import org.hl7.fhir.dstu3.model.ConceptMap.TargetElementComponent;
 import org.hl7.fhir.dstu3.model.IdType;
 
 import org.hl7.fhir.dstu3.model.UriType;
+import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
@@ -35,7 +41,7 @@ import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
-
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 import uk.nhs.careconnect.ri.dao.transforms.ConceptMapEntityToFHIRConceptMapTransformer;
 //import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 //import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
@@ -204,5 +210,112 @@ ConceptRepository conceptDao;
 	       // }
 	        return conceptMapEntity;
 	    }
+	    
+	    public ConceptMap read(FhirContext ctx, IdType theId) {
+
+	        log.trace("Retrieving ValueSet = " + theId.getValue());
+
+	        ConceptMapEntity conceptMapEntity = findConceptMapEntity(theId);
+
+	        if (conceptMapEntity == null) return null;
+
+	        ConceptMap conceptMap = conceptMapEntityToFHIRConceptMapTransformer.transform(conceptMapEntity);
+
+	        if (conceptMapEntity.getResource() == null) {
+	            String resource = ctx.newJsonParser().encodeResourceToString(conceptMap);
+	            if (resource.length() < 10000) {
+	            	conceptMapEntity.setResource(resource);
+	                em.persist(conceptMapEntity);
+	            }
+	        }
+	        return conceptMap;
+	      
+
+	    }
+	    
+	    public List<ConceptMap> search (FhirContext ctx,
+	            @OptionalParam(name = ConceptMap.SP_NAME) StringParam name,
+	            @OptionalParam(name = ConceptMap.SP_PUBLISHER) StringParam publisher,
+	            @OptionalParam(name = ConceptMap.SP_URL) UriParam url
+	    )
+	    {
+	        List<ConceptMapEntity> qryResults = null;
+
+	        CriteriaBuilder builder = em.getCriteriaBuilder();
+
+	        CriteriaQuery<ConceptMapEntity> criteria = builder.createQuery(ConceptMapEntity.class);
+	        Root<ConceptMapEntity> root = criteria.from(ConceptMapEntity.class);
+	       
+
+	        List<Predicate> predList = new LinkedList<Predicate>();
+	        List<ConceptMap> results = new ArrayList<ConceptMap>();
+
+	        if (name !=null)
+	        {
+
+	            Predicate p =
+	                    builder.like(
+	                            builder.upper(root.get("name").as(String.class)),
+	                            builder.upper(builder.literal("%" + name.getValue() + "%"))
+	                    );
+
+	            predList.add(p);
+	        }
+	        if (publisher !=null)
+	        {
+
+	            Predicate p =
+	                    builder.like(
+	                            builder.upper(root.get("publisher").as(String.class)),
+	                            builder.upper(builder.literal( publisher.getValue() + "%"))
+	                    );
+
+	            predList.add(p);
+	        }
+	        if (url !=null)
+	        {
+
+	            Predicate p =
+	                    builder.like(
+	                            builder.upper(root.get("url").as(String.class)),
+	                            builder.upper(builder.literal( url.getValue()))
+	                    );
+
+	            predList.add(p);
+	        }
+	       
+
+	        Predicate[] predArray = new Predicate[predList.size()];
+	        predList.toArray(predArray);
+	        if (predList.size()>0)
+	        {
+	            criteria.select(root).where(predArray);
+	        }
+	        else
+	        {
+	            criteria.select(root);
+	        }
+
+	        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
+
+	        for (ConceptMapEntity conceptmapEntity : qryResults)
+	        {
+	            if (conceptmapEntity.getResource() != null) {
+	                results.add((ConceptMap) ctx.newJsonParser().parseResource(conceptmapEntity.getResource()));
+	            } else {
+
+	            	ConceptMap conceptMap = conceptMapEntityToFHIRConceptMapTransformer.transform(conceptmapEntity);
+	                String resource = ctx.newJsonParser().encodeResourceToString(conceptMap);
+	                if (resource.length() < 10000) {
+	                	conceptmapEntity.setResource(resource);
+	                    em.persist(conceptmapEntity);
+	                }
+	                results.add(conceptMap);
+	            }
+	        }
+	        return results;
+	    }
+	    
+	    
 	    
 }
