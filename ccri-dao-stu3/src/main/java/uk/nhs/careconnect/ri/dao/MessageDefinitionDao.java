@@ -76,8 +76,8 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
 
-            if (!msg.getId().equals(messageDefinition.getIdElement().getIdPart())) {
-                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+            if (!msg.getId().toString().equals(messageDefinition.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId() + ". Supplied id = "+messageDefinition.getIdElement().getIdPart());
             }
         }
 
@@ -158,6 +158,10 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 MessageDefinitionReplaces messageDefinitionReplaces = new MessageDefinitionReplaces();
                 messageDefinitionReplaces.setMessageDefinition(messageDefinitionEntity);
                 MessageDefinitionEntity event = findEntity(new IdType(reference.getReference()));
+                if (event== null) {
+                    List<MessageDefinitionEntity> list = searchEntity(ctx,null,null, new UriParam(reference.getReference()),null);
+                    if (list.size()>0) event = list.get(0);
+                }
                 if (event != null) {
                     messageDefinitionReplaces.setReplacesMessageDefinition(event);
                 }
@@ -174,10 +178,21 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 MessageDefinitionAllowedResponse allowedResponse = new MessageDefinitionAllowedResponse();
                 allowedResponse.setMessageDefinition(messageDefinitionEntity);
                 if (component.hasMessage()) {
+                 //   System.out.println("******* Has a message");
                     MessageDefinitionEntity event = findEntity(new IdType(component.getMessage().getReference()));
-                    if (event != null) {
-                        allowedResponse.setMessageDefinition(event);
+                    if (event== null) {
+                      //  System.out.println("******* searching for that message");
+                        List<MessageDefinitionEntity> list = searchEntity(ctx,null,null, new UriParam(component.getMessage().getReference()),null);
+                        if (list.size()>0) {
+                           // System.out.println("******* found that message");
+                            event = list.get(0);
+                        }
                     }
+                    if (event != null) {
+                       log.debug("Saving allowed message with id "+event.getId());
+                        allowedResponse.setResponseMessageDefinition(event);
+                    }
+
                 }
                 if (component.hasSituation()) {
                     allowedResponse.setSituation(component.getSituation());
@@ -195,6 +210,10 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 MessageDefinitionParent messageDefinitionParent = new MessageDefinitionParent();
                 messageDefinitionParent.setMessageDefinition(messageDefinitionEntity);
                 MessageDefinitionEntity event = findEntity(new IdType(reference.getReference()));
+                if (event== null) {
+                    List<MessageDefinitionEntity> list = searchEntity(ctx,null,null, new UriParam(reference.getReference()),null);
+                    if (list.size()>0) event = list.get(0);
+                }
                 if (event != null) {
                     messageDefinitionParent.setParentMessageDefinition(event);
                 }
@@ -253,6 +272,15 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 log.info(focusComponent.getCode());
 
                 focus.setResourceType(ResourceType.fromCode(focusComponent.getCode()));
+            }
+            if (focusComponent.hasMax()) {
+                focus.setMaximum(focusComponent.getMax());
+            }
+            if (focusComponent.hasMin()) {
+                focus.setMinimum(focus.getMinimum());
+            }
+            if (focusComponent.hasProfile()) {
+                focus.setProfile(focusComponent.getProfile().getReference());
             }
 
             em.persist(focus);

@@ -75,7 +75,7 @@ public class ValueSetDao implements ValueSetRepository {
                 throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
 
-            if (!msg.getId().equals(valueSet.getIdElement().getIdPart())) {
+            if (!msg.getId().toString().equals(valueSet.getIdElement().getIdPart())) {
                 throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
         }

@@ -71,7 +71,6 @@ public class MessageDefinitionEntityToFHIRMessageDefinitionTransformer implement
 
         if (messageDefinitionEntity.getCategory() != null) {
             messageDefinition.setCategory(messageDefinitionEntity.getCategory());
-
         }
 
         if (messageDefinitionEntity.getResponseRequired() != null) {
@@ -118,26 +117,28 @@ public class MessageDefinitionEntityToFHIRMessageDefinitionTransformer implement
                 focusComponent.setCode(focus.getResourceType().name());
             }
         }
-
+        //System.out.println("Checking AllowedResponse");
         for (MessageDefinitionAllowedResponse allowedResponse : messageDefinitionEntity.getAllowedResponses()) {
+          //  System.out.println("AllowedResponse present");
             MessageDefinition.MessageDefinitionAllowedResponseComponent allowedComponent = messageDefinition.addAllowedResponse();
             if (allowedResponse.getSituation() != null) {
                 allowedComponent.setSituation(allowedResponse.getSituation());
             }
             if (allowedResponse.getResponseMessageDefinition() != null) {
-                allowedComponent.setMessage(new Reference("MessageDefinition/"+allowedResponse.getResponseMessageDefinition().getId()));
+           //     System.out.println("Response present");
+                allowedComponent.setMessage(new Reference("MessageDefinition/"+allowedResponse.getResponseMessageDefinition().getId()).setDisplay(allowedResponse.getResponseMessageDefinition().getUrl()));
             }
         }
 
         for (MessageDefinitionParent parent : messageDefinitionEntity.getParents()) {
             if (parent.getParentMessageDefinition() != null) {
-                messageDefinition.addParent(new Reference("MessageDefinition/"+parent.getParentMessageDefinition().getId()));
+                messageDefinition.addParent(new Reference("MessageDefinition/"+parent.getParentMessageDefinition().getId()).setDisplay(parent.getParentMessageDefinition().getUrl()));
             }
         }
 
-        for (MessageDefinitionReplaces parent : messageDefinitionEntity.getReplaces()) {
-            if (parent.getReplacesMessageDefinition() != null) {
-                messageDefinition.addReplaces(new Reference("MessageDefinition/"+parent.getReplacesMessageDefinition().getId()));
+        for (MessageDefinitionReplaces replaces : messageDefinitionEntity.getReplaces()) {
+            if (replaces.getReplacesMessageDefinition() != null) {
+                messageDefinition.addReplaces(new Reference("MessageDefinition/"+replaces.getReplacesMessageDefinition().getId()).setDisplay(replaces.getReplacesMessageDefinition().getUrl()));
             }
         }
 
