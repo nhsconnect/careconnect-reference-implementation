@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.dao.transforms.ValueSetEntityToFHIRValueSetTransformer;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
+import uk.nhs.careconnect.ri.database.entity.messageDefinition.MessageDefinitionEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.valueSet.*;
@@ -65,6 +67,17 @@ public class ValueSetDao implements ValueSetRepository {
 
         if (valueSet.hasId()) {
             valueSetEntity = findValueSetEntity(valueSet.getIdElement());
+        }
+
+        List<ValueSetEntity> entries = searchEntity(ctx, null, null, new UriParam().setValue(valueSet.getUrl()),null);
+        for (ValueSetEntity msg : entries) {
+            if (valueSet.getId() == null) {
+                throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
+
+            if (!msg.getId().equals(valueSet.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
         }
 
         if (valueSetEntity == null)
@@ -360,14 +373,41 @@ public class ValueSetDao implements ValueSetRepository {
         return valueSet;
 
     }
+
     public List<ValueSet> search (FhirContext ctx,
+                                  @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+                                  @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
+                                  @OptionalParam(name = ValueSet.SP_URL) UriParam url,
+                                  @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
+    ) {
+        List<ValueSet> results = new ArrayList<ValueSet>();
+        List<ValueSetEntity> qryResults = searchEntity(ctx, name, publisher, url, identifier);
+
+        for (ValueSetEntity valuesetEntity : qryResults) {
+            if (valuesetEntity.getResource() != null) {
+                results.add((ValueSet) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
+            } else {
+
+                ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
+                String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
+                if (resource.length() < 10000) {
+                    valuesetEntity.setResource(resource);
+                    em.persist(valuesetEntity);
+                }
+                results.add(valueSet);
+            }
+        }
+        return results;
+    }
+
+    public List<ValueSetEntity> searchEntity (FhirContext ctx,
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
             @OptionalParam(name = ValueSet.SP_URL) UriParam url,
                                   @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
     )
     {
-        List<ValueSetEntity> qryResults = null;
+
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -376,7 +416,7 @@ public class ValueSetDao implements ValueSetRepository {
        
 
         List<Predicate> predList = new LinkedList<Predicate>();
-        List<ValueSet> results = new ArrayList<ValueSet>();
+
 
         if (name !=null)
         {
@@ -433,24 +473,9 @@ public class ValueSetDao implements ValueSetRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
+        return em.createQuery(criteria).setMaxResults(100).getResultList();
 
-        for (ValueSetEntity valuesetEntity : qryResults)
-        {
-            if (valuesetEntity.getResource() != null) {
-                results.add((ValueSet) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
-            } else {
 
-                ValueSet valueSet = valuesetEntityToFHIRValuesetTransformer.transform(valuesetEntity);
-                String resource = ctx.newJsonParser().encodeResourceToString(valueSet);
-                if (resource.length() < 10000) {
-                    valuesetEntity.setResource(resource);
-                    em.persist(valuesetEntity);
-                }
-                results.add(valueSet);
-            }
-        }
-        return results;
     }
 
 

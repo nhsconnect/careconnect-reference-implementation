@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
@@ -237,6 +238,10 @@ public class CodeSystemProvider implements IResourceProvider {
                                 {
                                     CodeSystem newVS = (CodeSystem) resource;
                                     newVS.setName(newVS.getName()+ "..");
+                                    List<CodeSystem> results = codeSystemDao.search(ctx,null,null,new UriParam().setValue(newVS.getUrl()));
+                                    if (results.size()>0) {
+                                        newVS.setId(results.get(0).getIdElement().getIdPart());
+                                    }
                                     CodeSystem newCodeSystem = codeSystemDao.create(ctx, newVS);
                                     System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newCodeSystem));
                                     System.out.println("newCodeSystem.getIdElement()" + newCodeSystem.getIdElement());

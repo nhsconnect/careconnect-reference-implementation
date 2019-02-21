@@ -1,10 +1,12 @@
 package uk.nhs.careconnect.ri.database.entity.messageDefinition;
 
 import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.dstu3.model.MessageDefinition;
 import org.hl7.fhir.dstu3.model.codesystems.MessageheaderResponseRequest;
 import org.hl7.fhir.instance.model.Conformance;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIdentifier;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -86,8 +88,8 @@ ditto for target product
 	ConceptEntity eventCode;
 
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name="CATEGORY", nullable = false)
-	Conformance.MessageSignificanceCategory category;
+	@Column(name="CATEGORY", nullable = true)
+	MessageDefinition.MessageSignificanceCategory category;
 
 	@OneToMany(mappedBy="messageDefinition", targetEntity= MessageDefinitionFocus.class)
 	private List<MessageDefinitionFocus> foci;
@@ -95,8 +97,14 @@ ditto for target product
 	@OneToMany(mappedBy="messageDefinition", targetEntity= MessageDefinitionAllowedResponse.class)
 	private List<MessageDefinitionAllowedResponse> allowedResponses;
 
+	@OneToMany(mappedBy="messageDefinition", targetEntity= MessageDefinitionReplaces.class)
+	private List<MessageDefinitionReplaces> replaces;
+
+	@OneToMany(mappedBy="messageDefinition", targetEntity= MessageDefinitionParent.class)
+	private List<MessageDefinitionParent> parents;
+
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name="RESPONSE_REQUIRED", nullable = false)
+	@Column(name="RESPONSE_REQUIRED", nullable = true)
 	MessageheaderResponseRequest responseRequired;
 
 	public Long getId() {
@@ -195,6 +203,7 @@ ditto for target product
 	}
 
 	public List<MessageDefinitionTelecom> getContacts() {
+		if (contacts == null) return new ArrayList<>();
 		return contacts;
 	}
 
@@ -251,7 +260,9 @@ ditto for target product
 	}
 
 	public List<MessageDefinitionFocus> getFoci() {
-		return foci;
+
+		if (foci == null) return new ArrayList<>();
+		return this.foci;
 	}
 
 	public void setFoci(List<MessageDefinitionFocus> foci) {
@@ -259,18 +270,38 @@ ditto for target product
 	}
 
 	public List<MessageDefinitionAllowedResponse> getAllowedResponses() {
-		return allowedResponses;
+
+		if (allowedResponses == null) return new ArrayList<>();
+		return this.allowedResponses;
 	}
 
 	public void setAllowedResponses(List<MessageDefinitionAllowedResponse> allowedResponses) {
 		this.allowedResponses = allowedResponses;
 	}
 
-	public Conformance.MessageSignificanceCategory getCategory() {
-		return category;
+	public MessageDefinition.MessageSignificanceCategory getCategory() {
+		return this.category;
 	}
 
-	public void setCategory(Conformance.MessageSignificanceCategory category) {
+	public void setCategory(MessageDefinition.MessageSignificanceCategory category) {
 		this.category = category;
+	}
+
+	public List<MessageDefinitionReplaces> getReplaces() {
+		if (replaces == null) return new ArrayList<>();
+		return replaces;
+	}
+
+	public void setReplaces(List<MessageDefinitionReplaces> replaces) {
+		this.replaces = replaces;
+	}
+
+	public List<MessageDefinitionParent> getParents() {
+		if (parents == null) return new ArrayList<>();
+		return parents;
+	}
+
+	public void setParents(List<MessageDefinitionParent> parents) {
+		this.parents = parents;
 	}
 }

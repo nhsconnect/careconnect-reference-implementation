@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTran
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -91,6 +93,17 @@ public class CodeSystemDao implements CodeSystemRepository {
 
         if (codeSystem.hasId()) {
             codeSystemEntity = findBySystem(codeSystem.getUrl());
+        }
+
+        List<CodeSystemEntity> entries = searchEntity(ctx, null, null, new UriParam().setValue(codeSystem.getUrl()));
+        for (CodeSystemEntity msg : entries) {
+            if (codeSystem.getId() == null) {
+                throw new ResourceVersionConflictException("Url "+ msg.getCodeSystemUri()+ " is already present on the system "+ msg.getId());
+            }
+
+            if (!msg.getId().equals(codeSystem.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Unique identifier "+msg.getCodeSystemUri()+ " is already present on the system "+ msg.getId());
+            }
         }
 
         if (codeSystemEntity == null)
@@ -192,14 +205,40 @@ public class CodeSystemDao implements CodeSystemRepository {
         
     }
 
-
     @Override
     public List<CodeSystem> search(FhirContext ctx,
                                    @OptionalParam(name = CodeSystem.SP_NAME) StringParam name,
                                    @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
                                    @OptionalParam(name = CodeSystem.SP_URL) UriParam url
     ) {
-        List<CodeSystemEntity> qryResults = null;
+        List<CodeSystemEntity> qryResults = searchEntity(ctx, name, publisher, url);
+        List<CodeSystem> results = new ArrayList<>();
+
+        for (CodeSystemEntity valuesetEntity : qryResults)
+        {
+            if (valuesetEntity.getResource() != null) {
+                results.add((CodeSystem) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
+            } else {
+
+                CodeSystem codeSystem = codeSystemEntityToFHIRCodeSystemTransformer.transform(valuesetEntity);
+                String resource = ctx.newJsonParser().encodeResourceToString(codeSystem);
+                if (resource.length() < 10000) {
+                    valuesetEntity.setResource(resource);
+                    em.persist(valuesetEntity);
+                }
+                results.add(codeSystem);
+            }
+        }
+        return results;
+    }
+
+
+    public List<CodeSystemEntity> searchEntity(FhirContext ctx,
+                                   @OptionalParam(name = CodeSystem.SP_NAME) StringParam name,
+                                   @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
+                                   @OptionalParam(name = CodeSystem.SP_URL) UriParam url
+    ) {
+
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
 
@@ -207,7 +246,7 @@ public class CodeSystemDao implements CodeSystemRepository {
         Root<CodeSystemEntity> root = criteria.from(CodeSystemEntity.class);
 
         List<Predicate> predList = new LinkedList<>();
-        List<CodeSystem> results = new ArrayList<>();
+
 
         if (name != null)
         {
@@ -255,24 +294,9 @@ public class CodeSystemDao implements CodeSystemRepository {
             criteria.select(root);
         }
 
-        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
+        return em.createQuery(criteria).setMaxResults(100).getResultList();
 
-        for (CodeSystemEntity valuesetEntity : qryResults)
-        {
-            if (valuesetEntity.getResource() != null) {
-                results.add((CodeSystem) ctx.newJsonParser().parseResource(valuesetEntity.getResource()));
-            } else {
 
-                CodeSystem codeSystem = codeSystemEntityToFHIRCodeSystemTransformer.transform(valuesetEntity);
-                String resource = ctx.newJsonParser().encodeResourceToString(codeSystem);
-                if (resource.length() < 10000) {
-                    valuesetEntity.setResource(resource);
-                    em.persist(valuesetEntity);
-                }
-                results.add(codeSystem);
-            }
-        }
-        return results;
     }
 
     @Override

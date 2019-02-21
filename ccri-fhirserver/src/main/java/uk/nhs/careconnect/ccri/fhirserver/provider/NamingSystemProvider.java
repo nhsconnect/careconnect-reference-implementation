@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -16,10 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.NamingSystem;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,16 +217,16 @@ public class NamingSystemProvider implements IResourceProvider {
                     ))
                     {
                         NamingSystem vs = (NamingSystem) entry.getResource();
-
-
                         try {
-
-
-                                    NamingSystem newNamingSystem = namingSystemDao.create(ctx, vs);
-                                    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newNamingSystem));
-                                    System.out.println("newNamingSystem.getIdElement()" + newNamingSystem.getIdElement());
-                                    // NamingSystemComposeComponent vscc = newVS.code .getCompose();
-                                    System.out.println("code concept" + vs.getId());
+                            List<NamingSystem> results = namingSystemDao.search(ctx,null,null,new TokenParam().setValue(vs.getUrl()));
+                            if (results.size()>0) {
+                                vs.setId(results.get(0).getIdElement().getIdPart());
+                            }
+                            NamingSystem newNamingSystem = namingSystemDao.create(ctx, vs);
+                            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newNamingSystem));
+                            System.out.println("newNamingSystem.getIdElement()" + newNamingSystem.getIdElement());
+                            // NamingSystemComposeComponent vscc = newVS.code .getCompose();
+                            System.out.println("code concept" + vs.getId());
 
                         }
                         catch(Exception e) {System.out.println(e.getMessage());}

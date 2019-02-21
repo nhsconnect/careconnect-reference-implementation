@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.database.entity.messageDefinition;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.codesystems.MessageheaderResponseRequest;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 
@@ -30,17 +31,21 @@ public class MessageDefinitionFocus extends BaseResource {
 	private MessageDefinitionEntity messageDefinition;
 
 	@Enumerated(EnumType.ORDINAL)
-	@Column(name="RESOURCE_TYPE", nullable = false)
+	@Column(name="RESOURCE_TYPE")
 	ResourceType resourceType;
 
 	@Column(name = "PROFILE")
 	private String profile;
 
-	@Column(name= "MIN")
-	private Long minimum;
+	@Column(name= "MIN_INT")
+	private Integer minimum;
 
 	@Column(name= "MAX")
 	private String maximum;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CONCEPT",foreignKey= @ForeignKey(name="FK_MESSAGE_FOCUS_CONCEPT"))
+	ConceptEntity code;
 
     public Long getFocusId() { return focusId; }
 	public void setFocusId(Long focusId) { this.focusId = focusId; }
@@ -74,19 +79,19 @@ public class MessageDefinitionFocus extends BaseResource {
 		this.profile = profile;
 	}
 
-	public Long getMinimum() {
-		return minimum;
-	}
-
-	public void setMinimum(Long minimum) {
-		this.minimum = minimum;
-	}
-
 	public String getMaximum() {
 		return maximum;
 	}
 
 	public void setMaximum(String maximum) {
 		this.maximum = maximum;
+	}
+
+	public Integer getMinimum() {
+		return minimum;
+	}
+
+	public void setMinimum(Integer minimum) {
+		this.minimum = minimum;
 	}
 }

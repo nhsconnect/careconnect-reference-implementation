@@ -5,21 +5,19 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
-import ca.uhn.fhir.rest.param.*;
+import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-
-
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-
 import org.apache.http.impl.client.HttpClientBuilder;
-
 import org.hl7.fhir.dstu3.model.*;
-
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,47 +25,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
-
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
-import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
+import uk.nhs.careconnect.ri.database.daointerface.MessageDefinitionRepository;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class ValueSetProvider implements IResourceProvider {
+public class MessageDefinitionProvider implements IResourceProvider {
 
 
 	@Autowired
 	FhirContext ctx;
 
     @Autowired
-    private ValueSetRepository valueSetDao;
+    private MessageDefinitionRepository messageDefinitionDao;
     
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
     
-    @Value("${ccri.valueSetHost}")
-	private String valueSetHost;
-    
+     
     @Override
-    public Class<ValueSet> getResourceType() {
-        return ValueSet.class;
+    public Class<MessageDefinition> getResourceType() {
+        return MessageDefinition.class;
     }
 
 
     @Autowired
     private ResourceTestProvider resourceTestProvider;
 
-    private static final Logger log = LoggerFactory.getLogger(ValueSetProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageDefinitionProvider.class);
 
 
     @Update()
-    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam ValueSet valueSet) {
+    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam MessageDefinition messageDefinition) {
 
     	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
@@ -78,9 +72,9 @@ public class ValueSetProvider implements IResourceProvider {
 
 
         try {
-            ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
-            method.setId(newValueSet.getIdElement());
-            method.setResource(newValueSet);
+            MessageDefinition newMessageDefinition = messageDefinitionDao.create(ctx, messageDefinition);
+            method.setId(newMessageDefinition.getIdElement());
+            method.setResource(newMessageDefinition);
         } catch (Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
@@ -90,20 +84,20 @@ public class ValueSetProvider implements IResourceProvider {
     }
 
     @Search
-    public List<ValueSet> search(HttpServletRequest theRequest,
-              @OptionalParam(name =ValueSet.SP_NAME) StringParam name,
-               @OptionalParam(name =ValueSet.SP_PUBLISHER) StringParam publisher,
-                                 @OptionalParam(name = ValueSet.SP_URL) UriParam url,
-                                 @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
+    public List<MessageDefinition> search(HttpServletRequest theRequest,
+              @OptionalParam(name =MessageDefinition.SP_NAME) StringParam name,
+               @OptionalParam(name =MessageDefinition.SP_PUBLISHER) StringParam publisher,
+                                 @OptionalParam(name = MessageDefinition.SP_URL) UriParam url,
+                                 @OptionalParam(name = MessageDefinition.SP_IDENTIFIER) TokenParam identifier
     ) {
-        return valueSetDao.search(ctx, name, publisher, url,identifier);
+        return messageDefinitionDao.search(ctx, name, publisher, url,identifier);
     }
 
 
 
 
     @Create
-    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam ValueSet valueSet) {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam MessageDefinition messageDefinition) {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -114,9 +108,9 @@ public class ValueSetProvider implements IResourceProvider {
 
 
         try {
-            ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
-            method.setId(newValueSet.getIdElement());
-            method.setResource(newValueSet);
+            MessageDefinition newMessageDefinition = messageDefinitionDao.create(ctx, messageDefinition);
+            method.setId(newMessageDefinition.getIdElement());
+            method.setResource(newMessageDefinition);
         } catch (Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
@@ -125,67 +119,50 @@ public class ValueSetProvider implements IResourceProvider {
     }
 
     @Read
-    public ValueSet get
+    public MessageDefinition get
             (@IdParam IdType internalId) {
     	resourcePermissionProvider.checkPermission("read");
-        ValueSet valueSet = valueSetDao.read(ctx, internalId);
+        MessageDefinition messageDefinition = messageDefinitionDao.read(ctx, internalId);
 
-        if ( valueSet == null) {
+        if ( messageDefinition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
-                    new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
+                    new ResourceNotFoundException("No MessageDefinition/" + internalId.getIdPart()),
                     OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
         }
 
-        return valueSet;
+        return messageDefinition;
     }
     
     @Validate
-    public MethodOutcome testResource(@ResourceParam ValueSet resource,
+    public MethodOutcome testResource(@ResourceParam MessageDefinition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
-    @Operation(name = "$expand", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
-    public ValueSet expand(
-            @IdParam IdType internalId
-
-    ) throws Exception {
-        resourcePermissionProvider.checkPermission("read");
-        ValueSet valueSet = valueSetDao.readAndExpand(ctx, internalId);
-
-        if ( valueSet == null) {
-            throw OperationOutcomeFactory.buildOperationOutcomeException(
-                    new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
-        }
-
-        return valueSet;
-
-    }
 
     @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getValueCodes(
-            @OperationParam(name="id") TokenParam valueSetId,
-            @OperationParam(name="query") ReferenceParam valueSetQuery
+            @OperationParam(name="id") TokenParam messageDefinitionId,
+            @OperationParam(name="query") ReferenceParam messageDefinitionQuery
 
     ) throws Exception {
 
-    	System.out.println("getting value sets" + valueSetHost);
+    	System.out.println("getting message definitions" + messageDefinitionQuery.getValue());
     	
     	HttpClient client1 = getHttpClient();
         HttpGet request = null;
-    	if (valueSetId != null) {
-    	    request = new HttpGet(valueSetHost);
+    	if (messageDefinitionId != null) {
+    	    request = new HttpGet(messageDefinitionQuery.getValue());
         }
-        if (valueSetQuery != null) {
-            request = new HttpGet(valueSetQuery.getValue());
+        if (messageDefinitionQuery != null) {
+            request = new HttpGet(messageDefinitionQuery.getValue());
         }
 
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
         request.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
 
-        Bundle bundle = getRequest(client1,request,valueSetId);
+        Bundle bundle = getRequest(client1,request,messageDefinitionId);
 
         Boolean next = false;
         do {
@@ -201,7 +178,7 @@ public class ValueSetProvider implements IResourceProvider {
             }
             if (next) {
                 log.info("Get next bundle "+request.getURI());
-                bundle = getRequest(client1,request,valueSetId);
+                bundle = getRequest(client1,request,messageDefinitionId);
             }
             log.info("Iteration check = "+ next.toString());
         } while (next);
@@ -213,7 +190,7 @@ public class ValueSetProvider implements IResourceProvider {
 
     }
 
-    private Bundle getRequest(HttpClient client1, HttpGet request, TokenParam valueSetId) {
+    private Bundle getRequest(HttpClient client1, HttpGet request, TokenParam messageDefinitionId) {
         Bundle bundle = null;
         HttpResponse response;
         Reader reader;
@@ -223,25 +200,21 @@ public class ValueSetProvider implements IResourceProvider {
             reader = new InputStreamReader(response.getEntity().getContent());
 
             IBaseResource resource = ctx.newJsonParser().parseResource(reader);
-            //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
 
             System.out.println("resource = " + resource);
             if(resource instanceof Bundle)
             {
                 bundle = (Bundle) resource;
-                System.out.println("Entry Count = " + bundle.getEntry().size());
-                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
-                //retVal.setOperationOutcome(operationOutcome);
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                    System.out.println("  valueset id = " + entry.getResource().getId() );
-                    if (entry.hasResource() && entry.getResource() instanceof ValueSet
-                            && (valueSetId.getValue().contains("ALL")  || valueSetId.getValue().contains(entry.getResource().getId())
+                    //System.out.println(" messagedefinition id = " + entry.getResource().getIdElement().getIdPart() );
+                    if (entry.hasResource() && entry.getResource() instanceof MessageDefinition
+                            && (messageDefinitionId.getValue().contains("ALL")  || messageDefinitionId.getValue().contains(entry.getResource().getId())
                     ))
                     {
-                        ValueSet vs = (ValueSet) entry.getResource();
+                        MessageDefinition vs = (MessageDefinition) entry.getResource();
 
-                        System.out.println("URL IS " + vs.getUrl());
+                       // System.out.println("URL IS " + vs.getUrl());
                         HttpClient client2 = getHttpClient();
 
 
@@ -252,26 +225,27 @@ public class ValueSetProvider implements IResourceProvider {
 
                             HttpResponse response1 = client2.execute(request1);
 
-                            System.out.println(response1.getStatusLine());
+
                             if(response1.getStatusLine().toString().contains("200")) {
                                 //if (response.get .Content.Headers.ContentType.MediaType == "application/json")
                                 reader = new InputStreamReader(response1.getEntity().getContent());
 
 
                                 resource = ctx.newJsonParser().parseResource(reader);
-                                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
-                                if(resource instanceof ValueSet )
+
+                                if(resource instanceof MessageDefinition )
                                 {
-                                    ValueSet newVS = (ValueSet) resource;
+                                    MessageDefinition newVS = (MessageDefinition) resource;
                                     newVS.setName(newVS.getName()+ "..");
-                                    List<ValueSet> results = valueSetDao.search(ctx,null,null,new UriParam().setValue(newVS.getUrl()),null);
+                                    List<MessageDefinition> results = messageDefinitionDao.search(ctx,null,null,new UriParam().setValue(newVS.getUrl()),null);
                                     if (results.size()>0) {
+                                        System.out.println("Update existing resource with id = "+ results.get(0).getIdElement().getIdPart());
                                         newVS.setId(results.get(0).getIdElement().getIdPart());
                                     }
-                                    ValueSet newValueSet = valueSetDao.create(ctx, newVS);
-                                    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newValueSet));
-                                    System.out.println("newValueSet.getIdElement()" + newValueSet.getIdElement());
-                                    // ValueSetComposeComponent vscc = newVS.code .getCompose();
+                                    MessageDefinition newMessageDefinition = messageDefinitionDao.create(ctx, newVS);
+                                    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newMessageDefinition));
+                                    System.out.println("newMessageDefinition.getIdElement()" + newMessageDefinition.getIdElement());
+                                    // MessageDefinitionComposeComponent vscc = newVS.code .getCompose();
                                     System.out.println("code concept" + newVS.getId());
 
                                 }
