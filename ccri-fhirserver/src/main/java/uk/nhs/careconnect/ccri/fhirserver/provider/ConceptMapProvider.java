@@ -7,8 +7,10 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -17,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.ConceptMap;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.ValueSet;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ri.dao.ConceptMapDao;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
@@ -65,6 +69,21 @@ public class ConceptMapProvider implements IResourceProvider {
                                                  @OptionalParam(name =ConceptMap.SP_NAME) StringParam name
     ) {
         return null;
+    }
+    
+    @Read
+    public ConceptMap get
+            (@IdParam IdType internalId) {
+    	resourcePermissionProvider.checkPermission("read");
+    	ConceptMap conceptMap = conceptMapDao.read( ctx, internalId);
+
+        if ( conceptMap == null) {
+            throw OperationOutcomeFactory.buildOperationOutcomeException(
+                    new ResourceNotFoundException("No ConceptMap/" + internalId.getIdPart()),
+                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+        }
+
+        return conceptMap;
     }
     
     @Create
@@ -177,6 +196,16 @@ public class ConceptMapProvider implements IResourceProvider {
         
     	}
     
+    @Search
+    public List<ConceptMap> search(HttpServletRequest theRequest,
+              @OptionalParam(name =ConceptMap.SP_NAME) StringParam name,
+               @OptionalParam(name =ConceptMap.SP_PUBLISHER) StringParam publisher,
+                                 @OptionalParam(name = ConceptMap.SP_URL) UriParam url
+    ) {
+    	System.out.println("Search is invoked");
+        return conceptMapDao.search(ctx, name, publisher, url);
+    }
+
     
 	    private HttpClient getHttpClient(){
 	        final HttpClient httpClient = HttpClientBuilder.create().build();
