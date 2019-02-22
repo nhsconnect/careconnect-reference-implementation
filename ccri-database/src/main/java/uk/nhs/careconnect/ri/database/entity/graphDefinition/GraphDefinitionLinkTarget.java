@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="GraphDefinitionLinkTarget", uniqueConstraints= @UniqueConstraint(name="PK_GRAPH_LINK", columnNames={"GRAPH_LINK_ID"})
+@Table(name="GraphDefinitionLinkTarget", uniqueConstraints= @UniqueConstraint(name="PK_GRAPH_TARGET_LINK", columnNames={"GRAPH_LINK_TARGET_ID"})
 		,indexes = {}
 		)
 public class GraphDefinitionLinkTarget extends BaseResource {
