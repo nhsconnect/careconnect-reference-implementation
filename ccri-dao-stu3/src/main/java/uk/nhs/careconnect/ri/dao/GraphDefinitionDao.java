@@ -264,7 +264,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         GraphDefinitionEntity graphEntity = null;
         // Only look up if the id is numeric else need to do a search
         if (daoutils.isNumeric(theId.getIdPart())) {
-            graphEntity = em.find(GraphDefinitionEntity.class,  Integer.parseInt(theId.getIdPart()));
+            graphEntity = em.find(GraphDefinitionEntity.class,  Long.parseLong(theId.getIdPart()));
         }
 
         // if null try a search on strId
