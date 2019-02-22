@@ -42,7 +42,7 @@ public class GraphDefinitionLinkTarget extends BaseResource {
 	private String description;
 
 	@OneToMany(mappedBy="graphDefinitionLinkTarget", targetEntity=GraphDefinitionLink.class)
-	//@OrderBy(value = "linkId ASC")
+	@OrderBy(value = "graphLink ASC")
 	private Set<GraphDefinitionLink> links = new HashSet<>();
 
 	@OneToMany(mappedBy="graphDefinitionLinkTarget", targetEntity=GraphDefinitionLinkTargetCompartment.class)

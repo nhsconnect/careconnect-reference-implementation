@@ -69,7 +69,7 @@ public class GraphDefinitionEntity extends BaseResource {
     private String profile;
 
     @OneToMany(mappedBy="graph", targetEntity=GraphDefinitionLink.class)
-  // @OrderBy(value = "linkId ASC")
+    @OrderBy(value = "graphLink ASC")
     private Set<GraphDefinitionLink> links = new HashSet<>();
 
     public Enumerations.PublicationStatus getStatus() {
