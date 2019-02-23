@@ -172,8 +172,8 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             newGraphDefinition = graphEntityToFHIRValuesetTransformer.transform(graphEntity);
             String resource = ctx.newJsonParser().encodeResourceToString(newGraphDefinition);
             if (resource.length() < 10000) {
-                graphEntity.setResource(resource);
-                em.persist(graphEntity);
+              // TODO  graphEntity.setResource(resource);
+              // TODO   em.persist(graphEntity);
             }
 
         }
@@ -188,6 +188,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             for (GraphDefinitionLink sublink :target.getLinks()) {
                 removeLinks(sublink);
             }
+            em.remove(target);
         }
         em.remove(link);
     }
