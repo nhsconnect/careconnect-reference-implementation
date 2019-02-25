@@ -23,6 +23,7 @@ import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.messageDefinition.*;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -290,7 +291,18 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
             em.persist(focus);
         }
 
+        for (MessageDefinitionGraph graph : messageDefinitionEntity.getGraphs()) {
+            em.remove(graph);
+        }
 
+        for (Extension extension : messageDefinition.getExtension()) {
+            if (extension.getUrl().equals(CareConnectExtension.UrlGraphDefinition)) {
+                MessageDefinitionGraph graph = new MessageDefinitionGraph();
+                graph.setMessageDefinition(messageDefinitionEntity);
+                graph.setGraph(((Reference) extension.getValue()).getReference());
+                em.persist(graph);
+            }
+        }
 
         log.debug("Called PERSIST id="+messageDefinitionEntity.getId().toString());
         messageDefinition.setId(messageDefinitionEntity.getId().toString());

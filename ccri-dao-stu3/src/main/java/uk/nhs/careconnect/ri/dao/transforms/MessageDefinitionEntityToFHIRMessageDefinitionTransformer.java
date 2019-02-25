@@ -4,11 +4,12 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.MessageDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.messageDefinition.*;
-
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 
 @Component
@@ -141,6 +142,12 @@ public class MessageDefinitionEntityToFHIRMessageDefinitionTransformer implement
             if (replaces.getReplacesMessageDefinition() != null) {
                 messageDefinition.addReplaces(new Reference("MessageDefinition/"+replaces.getReplacesMessageDefinition().getId()).setDisplay(replaces.getReplacesMessageDefinition().getUrl()));
             }
+        }
+
+        for (MessageDefinitionGraph graph : messageDefinitionEntity.getGraphs()) {
+            messageDefinition.addExtension()
+                    .setUrl(CareConnectExtension.UrlGraphDefinition)
+                    .setValue(new Reference(graph.getGraph()));
         }
 
         return messageDefinition;

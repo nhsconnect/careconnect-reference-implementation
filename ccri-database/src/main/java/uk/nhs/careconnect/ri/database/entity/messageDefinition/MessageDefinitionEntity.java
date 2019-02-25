@@ -107,6 +107,9 @@ ditto for target product
 	@Column(name="RESPONSE_REQUIRED", nullable = true)
 	MessageheaderResponseRequest responseRequired;
 
+	@OneToMany(mappedBy="messageDefinition", targetEntity= MessageDefinitionGraph.class)
+	private List<MessageDefinitionGraph> graphs;
+
 	public Long getId() {
 		return id;
 	}
@@ -303,5 +306,13 @@ ditto for target product
 
 	public void setParents(List<MessageDefinitionParent> parents) {
 		this.parents = parents;
+	}
+
+	public List<MessageDefinitionGraph> getGraphs() {
+		return graphs;
+	}
+
+	public void setGraphs(List<MessageDefinitionGraph> graphs) {
+		this.graphs = graphs;
 	}
 }
