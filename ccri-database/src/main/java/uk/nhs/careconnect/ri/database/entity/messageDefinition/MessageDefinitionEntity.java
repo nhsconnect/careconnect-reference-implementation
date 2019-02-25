@@ -309,6 +309,7 @@ ditto for target product
 	}
 
 	public List<MessageDefinitionGraph> getGraphs() {
+		if (graphs == null) return new ArrayList<>();
 		return graphs;
 	}
 
