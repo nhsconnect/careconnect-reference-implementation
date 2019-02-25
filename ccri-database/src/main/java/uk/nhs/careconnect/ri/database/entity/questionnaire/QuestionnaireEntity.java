@@ -26,6 +26,9 @@ public class QuestionnaireEntity extends BaseResource {
     @Column(name="QUESTIONNAIRE_ID")
     private Long id;
 
+    @Column(name = "URL")
+    private String url;
+
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireIdentifier.class)
     private Set<QuestionnaireIdentifier> identifiers = new HashSet<>();
 
@@ -193,5 +196,13 @@ public class QuestionnaireEntity extends BaseResource {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

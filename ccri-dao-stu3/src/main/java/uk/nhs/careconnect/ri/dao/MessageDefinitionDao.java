@@ -281,7 +281,7 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 focus.setMaximum(focusComponent.getMax());
             }
             if (focusComponent.hasMin()) {
-                focus.setMinimum(focus.getMinimum());
+                focus.setMinimum(focusComponent.getMin());
             }
             if (focusComponent.hasProfile()) {
                 focus.setProfile(focusComponent.getProfile().getReference());

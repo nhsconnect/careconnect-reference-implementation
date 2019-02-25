@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Questionnaire;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
@@ -28,14 +29,16 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
 
                     @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                     @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
-                                            @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
+                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
+                    @OptionalParam(name= Questionnaire.SP_URL) UriParam url
 
     );
 
     List<QuestionnaireEntity> searchQuestionnaireEntity (FhirContext ctx,
-                                                         @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
-                                                         @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
-                                                         @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
+                     @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
+                     @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
+                     @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
+                     @OptionalParam(name= Questionnaire.SP_URL) UriParam url
 
 
     );

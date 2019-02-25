@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -54,7 +55,9 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     }
 
     @Update
-    public MethodOutcome updateQuestionnaire(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome updateQuestionnaire(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire,
+                                             @IdParam IdType theId,
+                                             @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
     	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
@@ -118,9 +121,10 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     public List<Questionnaire> searchQuestionnaire(HttpServletRequest theRequest,
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                                                    @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
-                                                   @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes
+                                                   @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
+                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url
     ) {
-        return questionnaireDao.searchQuestionnaire(ctx, identifier,id,codes);
+        return questionnaireDao.searchQuestionnaire(ctx, identifier,id,codes, url);
     }
     
     @Validate

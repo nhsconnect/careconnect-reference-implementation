@@ -3,9 +3,11 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +64,12 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<Questionnaire> searchQuestionnaire(FhirContext ctx, TokenParam identifier, StringParam id, TokenOrListParam codes) {
-        List<QuestionnaireEntity> qryResults = searchQuestionnaireEntity(ctx, identifier, id, codes);
+    public List<Questionnaire> searchQuestionnaire(FhirContext ctx,
+                                                   TokenParam identifier,
+                                                   StringParam id,
+                                                   TokenOrListParam codes,
+                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
+        List<QuestionnaireEntity> qryResults = searchQuestionnaireEntity(ctx, identifier, id, codes, url);
         List<Questionnaire> results = new ArrayList<>();
 
         for (QuestionnaireEntity form : qryResults)
@@ -87,7 +93,11 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx, TokenParam identifier, StringParam resid, TokenOrListParam codes) {
+    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx,
+                                                               TokenParam identifier,
+                                                               StringParam resid,
+                                                               TokenOrListParam codes,
+                                                               @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
         List<QuestionnaireEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -135,6 +145,18 @@ public class QuestionnaireDao implements QuestionnaireRepository {
                     predList.add(p);
                 }
             
+        }
+
+        if (url !=null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("url").as(String.class)),
+                            builder.upper(builder.literal( url.getValue()))
+                    );
+
+            predList.add(p);
         }
 
         Predicate[] predArray = new Predicate[predList.size()];
@@ -216,6 +238,10 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
         if (questionnaireEntity == null) {
             questionnaireEntity = new QuestionnaireEntity();
+        }
+
+        if (questionnaire.hasUrl()) {
+            questionnaireEntity.setUrl(questionnaire.getUrl());
         }
 
         if (questionnaire.hasCode()) {
