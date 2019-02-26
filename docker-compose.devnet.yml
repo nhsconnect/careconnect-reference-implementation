@@ -32,6 +32,7 @@ services:
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - server.servlet.context-path=/ccri-fhir
     ports:
       - 8105:8186
     extra_hosts:
@@ -67,6 +68,7 @@ services:
       - ccri.oauth2.authorize=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - ccri.oauth2.token=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
       - ccri.oauth2.register=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
+      - server.servlet.context-path=/ccri-smartonfhir
     ports:
       - 8106:8186
     extra_hosts:
@@ -194,6 +196,8 @@ services:
        - spring.data.mongodb.database=careconnect-nosql
        - jolokia.username=HSFAdmin
        - jolokia.password=h5fadm!n
+     ports:
+       - 8113:8181
      volumes:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
