@@ -95,12 +95,12 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.15
 
-  ccriui:
-    container_name: ccriui
-    image: ${REGISTRY_PREFIX}ccri-management${IMAGE_TAG}
+  fhirexplorer:
+    container_name: fhirexplorer
+    image: ${REGISTRY_PREFIX}ccri-fhirexplorer${IMAGE_TAG}
     environment:
-      - datasource.ui.serverBase=http://${FHIR_SERVER_BASE_HOST}:8183/ccri-fhir/STU3
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
@@ -109,10 +109,10 @@ services:
     depends_on:
       - ccrifhir
     ports:
-      - 8104:8187
+      - 8104:8188
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
-      - "${FHIR_SERVER_BASE_HOST}:172.168.240.14"
+      - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
     networks:
       - ccri_net
 
