@@ -33,13 +33,18 @@ services:
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - server.servlet.context-path=/ccri-fhir
+      - ccri.software.version=3.7.1
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (unsecured)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     ports:
       - 8105:8186
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
     volumes:
-      - tomcat-log-volume:/usr/local/tomcat/logs
+      - gateway-log-volume:/usr/local/tomcat/logs
     networks:
       - ccri_net
 
@@ -64,6 +69,11 @@ services:
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.software.version=3.7
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (OAuth2 + SMARTonFHIR)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
       - ccri.oauth2=true
       - ccri.oauth2.authorize=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
       - ccri.oauth2.token=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
@@ -75,7 +85,7 @@ services:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
     volumes:
-      - tomcat-log-volume:/usr/local/tomcat/logs
+      - gatewayssl-log-volume:/usr/local/tomcat/logs
     networks:
       - ccri_net
 
