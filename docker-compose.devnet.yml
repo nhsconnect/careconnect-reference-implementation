@@ -95,9 +95,9 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.15
 
-  fhirexplorer:
-    container_name: fhirexplorer
-    image: ${REGISTRY_PREFIX}ccri-fhirexplorer${IMAGE_TAG}
+  ccriui:
+    container_name: ccriui
+    image: ${REGISTRY_PREFIX}ccri-management${IMAGE_TAG}
     environment:
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
