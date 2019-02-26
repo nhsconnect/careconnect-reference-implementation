@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
@@ -17,9 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ClinicalImpressionRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -27,11 +28,17 @@ import java.util.List;
 @Component
 public class ClinicalImpressionProvider implements ICCResourceProvider {
 
-    @Autowired
+	@Autowired
     private ClinicalImpressionRepository impressionDao;
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
 
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
@@ -47,7 +54,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam ClinicalImpression impression, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -72,7 +79,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam ClinicalImpression impression) {
 
-
+    	resourcePermissionProvider.checkPermission("read");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -102,7 +109,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
 
     @Read()
     public ClinicalImpression get(@IdParam IdType impressionId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         ClinicalImpression impression = impressionDao.read(ctx,impressionId);
 
         if ( impression == null) {
@@ -114,5 +121,11 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
         return impression;
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam ClinicalImpression resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

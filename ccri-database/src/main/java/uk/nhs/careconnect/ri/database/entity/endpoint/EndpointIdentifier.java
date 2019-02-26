@@ -21,7 +21,7 @@ public class EndpointIdentifier extends BaseIdentifier {
 	}
 
 	public EndpointIdentifier(EndpointEntity endpointEntity) {
-		this.endpointEntity = endpointEntity;
+		this.endpoint = endpointEntity;
 	}
 
 	@Id
@@ -31,21 +31,17 @@ public class EndpointIdentifier extends BaseIdentifier {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "ENDPOINT_ID",foreignKey= @ForeignKey(name="FK_ENDPOINT_ENDPOINT_IDENTIFIER"))
-	private EndpointEntity endpointEntity;
+	private EndpointEntity endpoint;
 
 
     public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }
 
-	public EndpointEntity getEndPoint() {
-	        return this.endpointEntity;
+	public EndpointEntity getEndpoint() {
+		return endpoint;
 	}
 
-	public void setEndpoint(EndpointEntity endpointEntity) {
-	        this.endpointEntity = endpointEntity;
+	public void setEndpoint(EndpointEntity endpoint) {
+		this.endpoint = endpoint;
 	}
-
-
-
-
 }

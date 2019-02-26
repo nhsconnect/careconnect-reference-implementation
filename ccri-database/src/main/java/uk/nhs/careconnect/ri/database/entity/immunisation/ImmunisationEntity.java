@@ -4,7 +4,7 @@ import org.hl7.fhir.dstu3.model.Immunization;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
@@ -33,24 +33,20 @@ public class ImmunisationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_ID",nullable = false, foreignKey= @ForeignKey(name="FK_IMMUNISATION_VACCINE_CODE"))
-
     private ConceptEntity vacinationCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name="ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ENCOUNTER"))
     private EncounterEntity encounter;
-
 
     @Column(name="STATUS_ID")
     private Immunization.ImmunizationStatus status;
 
     @OneToMany(mappedBy="immunisation", targetEntity = ImmunisationIdentifier.class)
-
     Set<ImmunisationIdentifier> identifiers = new HashSet<>();
 
     @Column(name="notGiven", nullable = false)
-    Boolean notGiven;
+    private Boolean notGiven;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "administrationDateTime")
@@ -65,17 +61,14 @@ public class ImmunisationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REPORT_ORIGIN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REPORT_ORIGIN_CODE"))
-
     private ConceptEntity reportOrigin;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_LOCATION"))
-
     private LocationEntity location;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="MANUFACTURER_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_MANUFACTURER_ORGANISATION"))
-
     private OrganisationEntity organisation;
 
     @Column(name="lotNumber")
@@ -83,12 +76,10 @@ public class ImmunisationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "SITE_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_SITE_CODE"))
-
     private ConceptEntity site;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "ROUTE_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_ROUTE_CODE"))
-
     private ConceptEntity route;
 
     @Column(name="valueQuantity")
@@ -96,27 +87,22 @@ public class ImmunisationEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="valueUnitOfMeasure_CONCEPT_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_valueUnitOfMeasure_CONCEPT_ID"))
-
     private ConceptEntity valueUnitOfMeasure;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRACTITIONER_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_PRACTITIONER_ID"))
-
     private PractitionerEntity practitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REASON_GIVEN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REASON_GIVEN_CODE"))
-
     private ConceptEntity explanationReasonGiven;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "REASON_NOTGIVEN_CODE_ID",foreignKey= @ForeignKey(name="FK_IMMUNISATION_REASON_NOTGIVEN_CODE"))
-
     private ConceptEntity explanationReasonNotGiven;
 
     @Column(name="note")
     String note;
-
 
     @Column(name="parentPresent")
     Boolean parentPresent;
@@ -124,6 +110,10 @@ public class ImmunisationEntity extends BaseResource {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "recordedDateTime")
     private Date recordedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "PROCEDURE_CODE_ID",foreignKey= @ForeignKey(name="FK_PROCEDURE_SITE_CODE"))
+    private ConceptEntity procedure;
 
     public Set<ImmunisationIdentifier> getIdentifiers() {
         return identifiers;
@@ -337,4 +327,19 @@ public class ImmunisationEntity extends BaseResource {
         return this;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setExplanationReasonNotGiven(ConceptEntity explanationReasonNotGiven) {
+        this.explanationReasonNotGiven = explanationReasonNotGiven;
+    }
+
+    public ConceptEntity getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(ConceptEntity procedure) {
+        this.procedure = procedure;
+    }
 }

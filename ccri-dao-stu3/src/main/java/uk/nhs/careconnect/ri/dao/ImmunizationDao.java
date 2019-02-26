@@ -2,9 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.*;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Immunization;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +11,13 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ImmunisationEntityToFHIRImmunizationTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationIdentifier;
-import uk.nhs.careconnect.ri.database.entity.observation.ObservationCategory;
-import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -131,7 +128,7 @@ public class ImmunizationDao implements ImmunizationRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<ImmunisationEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation"),null);
+                    List<ImmunisationEntity> results = searchEntity(ctx, null, null,null, new TokenParam().setValue(spiltStr[1]).setSystem("https://fhir.leedsth.nhs.uk/Id/immunisation"),null, null, null);
                     for (ImmunisationEntity con : results) {
                         immunisationEntity = con;
                         break;
@@ -201,6 +198,22 @@ public class ImmunizationDao implements ImmunizationRepository {
             immunisationEntity.setEncounter(encounterEntity);
         }
 
+        // https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+        for (Extension extension : immunisation.getExtension()) {
+            if (extension.getUrl().equals(CareConnectExtension.UrlImmunizationProcedureCode)) {
+                CodeableConcept concept = (CodeableConcept) extension.getValue();
+                ConceptEntity code = conceptDao.findAddCode(concept.getCoding().get(0));
+                if (code != null) { immunisationEntity.setProcedure(code); }
+                else {
+                    log.info("Code: Missing Procedure System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
+                            +" code = "+immunisation.getReportOrigin().getCoding().get(0).getCode());
+
+                    throw new IllegalArgumentException("Missing Procedure System/Code = "+ immunisation.getReportOrigin().getCoding().get(0).getSystem()
+                            +" code = "+immunisation.getReportOrigin().getCoding().get(0).getCode());
+                }
+            }
+        }
+
 
         em.persist(immunisationEntity);
 
@@ -227,8 +240,16 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<Immunization> search(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, StringParam resid) {
-        List<ImmunisationEntity> qryResults = searchEntity(ctx, patient, date, status,identifier,resid);
+    public List<Immunization> search(FhirContext ctx,
+                                     ReferenceParam patient,
+                                     DateRangeParam date,
+                                     TokenParam status,
+                                     TokenParam identifier,
+                                     StringParam resid,
+                                     TokenParam procedureCode,
+                                     TokenParam notGiven
+    ) {
+        List<ImmunisationEntity> qryResults = searchEntity(ctx, patient, date, status,identifier,resid, procedureCode, notGiven);
         List<Immunization> results = new ArrayList<>();
 
         for (ImmunisationEntity immunisationEntity : qryResults)
@@ -242,7 +263,14 @@ public class ImmunizationDao implements ImmunizationRepository {
     }
 
     @Override
-    public List<ImmunisationEntity> searchEntity(FhirContext ctx,ReferenceParam patient, DateRangeParam date, TokenParam status, TokenParam identifier, StringParam resid) {
+    public List<ImmunisationEntity> searchEntity(FhirContext ctx,
+                                                 ReferenceParam patient,
+                                                 DateRangeParam date,
+                                                 TokenParam status,
+                                                 TokenParam identifier,
+                                                 StringParam resid,
+                                                 TokenParam procedureCode,
+                                                 TokenParam notGiven) {
         List<ImmunisationEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -294,6 +322,22 @@ public class ImmunizationDao implements ImmunizationRepository {
 
             Predicate p = builder.equal(root.get("status"), immstatus);
             predList.add(p);
+
+        }
+
+
+        // https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+        if (notGiven != null) {
+            Predicate p = builder.equal(root.get("notGiven"), notGiven.getValue().toLowerCase());
+            predList.add(p);
+        }
+
+        // https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+        if (procedureCode != null) {
+
+                Join<ImmunisationEntity, ConceptEntity> joinConcept = root.join("procedure", JoinType.LEFT);
+                Predicate p = builder.equal(joinConcept.get("code"),procedureCode.getValue());
+                predList.add(p);
 
         }
         

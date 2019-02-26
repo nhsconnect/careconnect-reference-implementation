@@ -42,6 +42,9 @@ public class ClinicalImpressionEntityToFHIRClinicalImpressionTransformer impleme
                     .setSystem(impressionAssessmentEntity.getRiskCode().getSystem())
                     .setDisplay(impressionAssessmentEntity.getRiskCode().getDisplay());
         }
+        if (impressionAssessmentEntity.getCodeText() != null) {
+            impressionAssessment.getCode().setText(impressionAssessmentEntity.getCodeText());
+        }
         
         if (impressionAssessmentEntity.getPatient() != null) {
             impressionAssessment
@@ -102,21 +105,27 @@ public class ClinicalImpressionEntityToFHIRClinicalImpressionTransformer impleme
                 finding.setItem(new Reference("Observation/"+findingEntity.getItemObservation().getId()));
             } else if (findingEntity.getItemCode() != null) {
                 finding.setItem(new CodeableConcept()
-                    .addCoding()
-                        .setSystem(findingEntity.getItemCode().getSystem())
-                        .setDisplay(findingEntity.getItemCode().getDisplay())
-                        .setCode(findingEntity.getItemCode().getCode())
+                        .setText(findingEntity.getItemCodeText())
+                        .addCoding()
+                            .setSystem(findingEntity.getItemCode().getSystem())
+                            .setDisplay(findingEntity.getItemCode().getDisplay())
+                            .setCode(findingEntity.getItemCode().getCode())
+
                 );
             }
 
         }
         for (ClinicalImpressionPrognosis prognosisEntity : impressionAssessmentEntity.getPrognosis()) {
+            CodeableConcept prog = impressionAssessment.addPrognosisCodeableConcept();
             if (prognosisEntity.getPrognosisCode() != null) {
-                impressionAssessment.addPrognosisCodeableConcept()
+                    prog
                         .addCoding()
                             .setCode(prognosisEntity.getPrognosisCode().getCode())
                         .setSystem(prognosisEntity.getPrognosisCode().getSystem())
                         .setDisplay(prognosisEntity.getPrognosisCode().getDisplay());
+            }
+            if (prognosisEntity.getPrognosisCodeText() != null) {
+                prog.setText(prognosisEntity.getPrognosisCodeText());
             }
             if (prognosisEntity.getPrognosisRisk() != null) {
                 impressionAssessment.addPrognosisReference(new Reference("RiskAssessment/"+prognosisEntity.getPrognosisRisk().getId()));

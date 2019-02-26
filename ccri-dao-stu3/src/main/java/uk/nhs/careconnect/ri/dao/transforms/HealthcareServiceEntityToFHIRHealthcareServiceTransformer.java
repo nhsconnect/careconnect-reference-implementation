@@ -62,7 +62,7 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
 
         System.out.println("Provided By: " + serviceEntity.getProvidedBy().getId());
         if (serviceEntity.getProvidedBy() != null) {
-            service.setProvidedBy(new Reference("Organization/"+serviceEntity.getProvidedBy().getId()));
+            service.setProvidedBy(new Reference("Organization/"+serviceEntity.getProvidedBy().getId()).setDisplay(serviceEntity.getProvidedBy().getName()));
         }
         for (HealthcareServiceSpecialty serviceSpecialty : serviceEntity.getSpecialties()) {
             service.addSpecialty()
@@ -72,7 +72,7 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
                         .setDisplay(serviceSpecialty.getSpecialty().getDisplay());
         }
         for (HealthcareServiceLocation serviceLocation : serviceEntity.getLocations()) {
-            service.addLocation(new Reference("Location/"+serviceLocation.getLocation().getId()));
+            service.addLocation(new Reference("Location/"+serviceLocation.getLocation().getId()).setDisplay(serviceLocation.getLocation().getName()));
         }
 
         for (HealthcareServiceTelecom serviceTelecom : serviceEntity.getTelecoms()) {

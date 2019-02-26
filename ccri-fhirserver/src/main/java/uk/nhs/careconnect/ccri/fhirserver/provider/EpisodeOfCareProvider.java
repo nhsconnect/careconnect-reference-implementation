@@ -4,13 +4,13 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.EpisodeOfCare;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -19,9 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.EpisodeOfCareRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -35,6 +35,13 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return EpisodeOfCare.class;
@@ -51,7 +58,7 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam EpisodeOfCare episode) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -75,7 +82,7 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam EpisodeOfCare episode, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -108,7 +115,7 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
 
     @Read()
     public EpisodeOfCare get(@IdParam IdType episodeId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         EpisodeOfCare episode = episodeDao.read(ctx,episodeId);
 
         if ( episode == null) {
@@ -121,4 +128,10 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     }
 
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam EpisodeOfCare resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 }

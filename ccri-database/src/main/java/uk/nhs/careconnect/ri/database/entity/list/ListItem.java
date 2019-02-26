@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.list;
 
 import uk.nhs.careconnect.ri.database.entity.BaseReferenceItem;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.Date;

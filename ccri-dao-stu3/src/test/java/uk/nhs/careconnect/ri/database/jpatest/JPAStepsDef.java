@@ -18,9 +18,9 @@ import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import uk.nhs.careconnect.ri.database.daointerface.*;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.InputStream;
@@ -150,7 +150,9 @@ public class JPAStepsDef {
 
     List<RiskAssessment> riskAssessmentList;
 
-    List<QuestionnaireResponse> questionnaireResponseList;
+    List<Resource> questionnaireResponseList;
+
+    List<ValueSet> valueSetList;
 
     Transaction tx;
 
@@ -225,12 +227,14 @@ public class JPAStepsDef {
 
     @Given("^I add a ValueSet with an Id of ([^\"]*)$")
     public void i_add_a_ValueSet_with_an_Id_of(String valueSetId) throws Throwable {
-        resource = (Resource) valueSetRepository.read(new IdType().setValue("ValueSet/"+valueSetId));
+        valueSetList = valueSetRepository.search(ctx, new StringParam(valueSetId), null, null, null );
     }
 
     @Then("^the result should be a FHIR ValueSet$")
     public void the_result_should_be_a_FHIR_ValueSet() throws Throwable {
-        Assert.assertThat(resource,instanceOf(ValueSet.class));
+        for (ValueSet valueSet : valueSetList) {
+            validateResource(valueSet);
+        }
     }
 
 
@@ -601,7 +605,7 @@ public class JPAStepsDef {
 
     @When("^I search AllergyIntolerance on Patient ID = (\\d+)$")
     public void i_search_AllergyIntolerance_on_Patient_ID(int patient) throws Throwable {
-        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+        allergyList = allergyIntoleranceRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null, null);
     }
     @Then("^I should get a Bundle of AllergyIntolerance (\\d+) resource$")
     public void i_should_get_a_Bundle_of_AllergyIntolerance_resource(int count) throws Throwable {
@@ -645,7 +649,7 @@ public class JPAStepsDef {
 
     @When("^I search Immunisation on Patient ID = (\\d+)$")
     public void i_search_Immunisation_on_Patient_ID(int patient) throws Throwable {
-        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null);
+        immunisationList = immunizationRepository.search(ctx, new ReferenceParam("Patient/"+patient),null,null, null,null, null, null);
     }
 
     @Then("^I should get a Bundle of Immunisation (\\d+) resource$")
@@ -781,7 +785,7 @@ PROCEDURE
 
     @When("^I search QuestionnaireResponse on Patient ID = (\\d+)$")
     public void i_search_QuestionnaireResponse_on_Patient_ID(int patient) throws Throwable {
-        questionnaireResponseList = questionnaireResponseRepository.searchQuestionnaireResponse(ctx, null,null,null, new ReferenceParam("Patient/"+patient));
+        questionnaireResponseList =  questionnaireResponseRepository.searchQuestionnaireResponse(ctx, null,null,null, new ReferenceParam("Patient/"+patient), null);
     }
 
     @Then("^I should get a Bundle of QuestionnaireResponse (\\d+) resource$")

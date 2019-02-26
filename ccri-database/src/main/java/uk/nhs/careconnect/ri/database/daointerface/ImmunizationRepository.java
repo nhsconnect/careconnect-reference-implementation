@@ -31,7 +31,9 @@ public interface ImmunizationRepository extends BaseRepository<ImmunisationEntit
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Immunization.SP_RES_ID) StringParam id
+            , @OptionalParam(name= Immunization.SP_RES_ID) StringParam id
+            , @OptionalParam(name= "vaccination-procedure") TokenParam procedureCode
+            , @OptionalParam(name= Immunization.SP_NOTGIVEN) TokenParam notGiven
 
     );
 
@@ -40,6 +42,8 @@ public interface ImmunizationRepository extends BaseRepository<ImmunisationEntit
             , @OptionalParam(name = Immunization.SP_DATE) DateRangeParam date
             , @OptionalParam(name = Immunization.SP_STATUS) TokenParam status
             , @OptionalParam(name = Immunization.SP_IDENTIFIER) TokenParam identifier
-            ,@OptionalParam(name= Immunization.SP_RES_ID) StringParam id
+            , @OptionalParam(name= Immunization.SP_RES_ID) StringParam id
+            , @OptionalParam(name= "vaccination-procedure") TokenParam procedureCode
+            , @OptionalParam(name= Immunization.SP_NOTGIVEN) TokenParam notGiven
     );
 }

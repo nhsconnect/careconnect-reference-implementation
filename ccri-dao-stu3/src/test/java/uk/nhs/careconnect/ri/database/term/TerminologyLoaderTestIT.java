@@ -21,9 +21,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.dao.TerminologyLoaderDao;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 
 import java.io.ByteArrayOutputStream;
@@ -186,13 +186,13 @@ public class TerminologyLoaderTestIT {
             mySvc.loadSnomedCt(Collections.singletonList(bos.toByteArray()), details);
             fail();
         } catch (InvalidRequestException e) {
-            assertEquals("Invalid input zip file, expected zip to contain the following name fragments: [Terminology/sct2_Description_Full-en, Terminology/sct2_Relationship_Full, Terminology/sct2_Concept_Full_] but found: []", e.getMessage());
+            assertEquals("Invalid input zip file, expected zip to contain the following name fragments: [codeSystem/sct2_Description_Full-en, codeSystem/sct2_Relationship_Full, codeSystem/sct2_Concept_Full_] but found: []", e.getMessage());
         }
     }
 
     private void addEntry(ZipOutputStream zos, String theClasspathPrefix, String theFileName) throws IOException {
         ourLog.info("Adding {} to test zip", theFileName);
-        zos.putNextEntry(new ZipEntry("SnomedCT_Release_INT_20160131_Full/Terminology/" + theFileName));
+        zos.putNextEntry(new ZipEntry("SnomedCT_Release_INT_20160131_Full/codeSystem/" + theFileName));
         byte[] byteArray = IOUtils.toByteArray(getClass().getResourceAsStream(theClasspathPrefix + theFileName));
         Validate.notNull(byteArray);
         zos.write(byteArray);

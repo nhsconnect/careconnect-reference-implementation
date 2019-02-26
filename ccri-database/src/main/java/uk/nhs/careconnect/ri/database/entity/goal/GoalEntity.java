@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.goal;
 
 import org.hl7.fhir.dstu3.model.Goal;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;

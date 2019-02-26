@@ -2,11 +2,12 @@ package uk.nhs.careconnect.ri.database.entity.endpoint;
 
 import org.hl7.fhir.dstu3.model.Endpoint;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,8 +27,7 @@ public class EndpointEntity extends BaseResource {
     @Column(name = "ENDPOINT_NAME")
 	private String name;
 
-	@OneToMany(mappedBy="endpointEntity", targetEntity=EndpointIdentifier.class)
-
+	@OneToMany(mappedBy="endpoint", targetEntity=EndpointIdentifier.class)
 	private List<EndpointIdentifier> identifiers;
 
 	@Column(name = "STATUS")
@@ -40,11 +40,30 @@ public class EndpointEntity extends BaseResource {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="MANAGING_ORGANISATION_ID",foreignKey= @ForeignKey(name="FK_ENDPOINT_ORGANISATION"))
-
 	private OrganisationEntity managingOrganisation;
+
+	@OneToMany(mappedBy="endpoint", targetEntity=EndpointTelecom.class)
+	private List<EndpointTelecom> contacts;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "PERIOD_START")
+	private Date periodStart;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "PERIOD_END")
+	private Date periodEnd;
+
+	@OneToMany(mappedBy="endpoint", targetEntity=EndpointPayloadMime.class)
+	private List<EndpointPayloadMime> payloadMimes;
+
+	@OneToMany(mappedBy="endpoint", targetEntity=EndpointPayloadType.class)
+	private List<EndpointPayloadType> payloadTypes;
 
 	@Column(name = "ADDRESS")
 	private String address;
+
+	@Column(name = "HEADERS")
+	private String headers;
 
 	public Long getId() {
 		return id;
@@ -117,5 +136,53 @@ public class EndpointEntity extends BaseResource {
 	public EndpointEntity setAddress(String address) {
 		this.address = address;
 		return this;
+	}
+
+	public List<EndpointTelecom> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<EndpointTelecom> contacts) {
+		this.contacts = contacts;
+	}
+
+	public Date getPeriodStart() {
+		return periodStart;
+	}
+
+	public void setPeriodStart(Date periodStart) {
+		this.periodStart = periodStart;
+	}
+
+	public Date getPeriodEnd() {
+		return periodEnd;
+	}
+
+	public void setPeriodEnd(Date periodEnd) {
+		this.periodEnd = periodEnd;
+	}
+
+	public List<EndpointPayloadMime> getPayloadMimes() {
+		return payloadMimes;
+	}
+
+	public void setPayloadMimes(List<EndpointPayloadMime> payloadMimes) {
+		this.payloadMimes = payloadMimes;
+	}
+
+	public List<EndpointPayloadType> getPayloadTypes() {
+		return payloadTypes;
+	}
+
+	public void setPayloadTypes(List<EndpointPayloadType> payloadTypes) {
+		this.payloadTypes = payloadTypes;
+	}
+
+	public String getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(String headers) {
+		this.headers = headers;
 	}
 }

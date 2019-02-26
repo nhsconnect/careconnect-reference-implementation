@@ -1,10 +1,13 @@
 package uk.nhs.careconnect.ri.database.entity;
 
+import org.hl7.fhir.instance.model.CarePlan;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.consent.ConsentEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
+import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.goal.GoalEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
@@ -88,6 +91,14 @@ public class BaseReferenceItem extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REF_CONSENT_ID")
     private ConsentEntity referenceConsent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_FLAG_ID")
+    private FlagEntity referenceFlag;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="REF_CARE_PLAN_ID")
+    private CarePlanEntity referenceCarePlan;
 
     @Override
     public Long getId() {
@@ -220,5 +231,21 @@ public class BaseReferenceItem extends BaseResource {
 
     public void setReferenceConsent(ConsentEntity referenceConsent) {
         this.referenceConsent = referenceConsent;
+    }
+
+    public FlagEntity getReferenceFlag() {
+        return referenceFlag;
+    }
+
+    public void setReferenceFlag(FlagEntity referenceFlag) {
+        this.referenceFlag = referenceFlag;
+    }
+
+    public CarePlanEntity getReferenceCarePlan() {
+        return referenceCarePlan;
+    }
+
+    public void setReferenceCarePlan(CarePlanEntity referenceCarePlan) {
+        this.referenceCarePlan = referenceCarePlan;
     }
 }

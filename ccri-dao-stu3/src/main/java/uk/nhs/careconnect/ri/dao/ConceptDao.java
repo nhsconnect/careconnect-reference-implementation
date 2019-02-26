@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Duration;
 import org.hl7.fhir.dstu3.model.Quantity;
@@ -16,10 +17,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptDesignation;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptDesignation;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -289,6 +290,15 @@ public class ConceptDao implements ConceptRepository {
 
 
         return conceptEntity;
+    }
+
+    public ConceptEntity findAddCode(String codeSystemUri, CodeSystem.ConceptDefinitionComponent concept) {
+
+        // KGM removed from CodeSystem
+       Coding coding = new Coding().setCode(concept.getCode()).setSystem(codeSystemUri).setDisplay(concept.getDisplay());
+
+       return findAddCode(coding);
+
     }
 
     @Override

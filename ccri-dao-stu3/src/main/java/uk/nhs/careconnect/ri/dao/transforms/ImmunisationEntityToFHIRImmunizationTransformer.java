@@ -150,6 +150,18 @@ public class ImmunisationEntityToFHIRImmunizationTransformer implements Transfor
                     .setValue(new BooleanType().setValue(immunisationEntity.getParentPresent()));
         }
 
+        // https://airelogic-apilabs.atlassian.net/browse/ALP4-815
+        if (immunisationEntity.getProcedure() != null) {
+            CodeableConcept concept = new CodeableConcept();
+            concept.addCoding()
+                    .setDisplay(immunisationEntity.getProcedure().getDisplay())
+                    .setCode(immunisationEntity.getProcedure().getCode())
+                    .setSystem(immunisationEntity.getProcedure().getSystem());
+            immunisation.addExtension()
+                    .setUrl(CareConnectExtension.UrlImmunizationProcedureCode)
+                    .setValue(concept);
+        }
+
         return immunisation;
 
     }

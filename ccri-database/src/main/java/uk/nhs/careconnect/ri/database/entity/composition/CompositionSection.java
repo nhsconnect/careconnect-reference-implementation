@@ -3,7 +3,7 @@ package uk.nhs.careconnect.ri.database.entity.composition;
 import org.hl7.fhir.instance.model.List_;
 
 import org.hl7.fhir.dstu3.model.Narrative;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 

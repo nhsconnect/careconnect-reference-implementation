@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.ConsentEntityToFHIRConsentTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.consent.*;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
@@ -21,7 +21,6 @@ import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
-import uk.nhs.careconnect.ri.database.entity.consent.*;
 import uk.nhs.careconnect.ri.database.entity.relatedPerson.RelatedPersonEntity;
 
 import javax.persistence.*;
@@ -203,6 +202,7 @@ public class ConsentDao implements ConsentRepository {
             consentEntity.setPolicyRule(consent.getPolicyRule());
         }
 
+
         em.persist(consentEntity);
 
 
@@ -361,7 +361,7 @@ public class ConsentDao implements ConsentRepository {
             ConsentPurpose consentPurpose = new ConsentPurpose();
             consentPurpose.setConsent(consentEntity);
             ConceptEntity concept = conceptDao.findAddCode(coding);
-            if (concept != null) consentPurpose.setPurpose(concept);
+            if (concept != null) consentPurpose.setPurposeCode(concept);
 
             em.persist(consentPurpose);
         }

@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -18,17 +19,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.CarePlanRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
+//import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
+//import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
+
 @Component
 public class CarePlanProvider implements ICCResourceProvider {
 
+	
     @Autowired
     @Lazy
     private CarePlanRepository carePlanDao;
@@ -37,7 +42,13 @@ public class CarePlanProvider implements ICCResourceProvider {
     FhirContext ctx;
 
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
 
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
     @Override
     public Class<? extends IBaseResource> getResourceType() {
         return CarePlan.class;
@@ -50,7 +61,8 @@ public class CarePlanProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam CarePlan carePlan, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
+    	
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -74,7 +86,7 @@ public class CarePlanProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam CarePlan carePlan) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -113,7 +125,7 @@ public class CarePlanProvider implements ICCResourceProvider {
 
     @Read()
     public CarePlan get(@IdParam IdType carePlanId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         CarePlan carePlan = carePlanDao.read(ctx,carePlanId);
 
         if ( carePlan == null) {
@@ -125,5 +137,10 @@ public class CarePlanProvider implements ICCResourceProvider {
         return carePlan;
     }
 
-
+    @Validate
+    public MethodOutcome testResource(@ResourceParam CarePlan resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 }

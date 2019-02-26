@@ -4,6 +4,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -16,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.EndpointRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -37,6 +38,12 @@ public class EndpointProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
 
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
@@ -48,7 +55,7 @@ public class EndpointProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updateEndpoint(HttpServletRequest theRequest, @ResourceParam Endpoint endpoint, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -72,7 +79,7 @@ public class EndpointProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createEndpoint(HttpServletRequest theRequest, @ResourceParam Endpoint endpoint) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -100,7 +107,7 @@ public class EndpointProvider implements ICCResourceProvider {
 
     @Read()
     public Endpoint getEndpoint(@IdParam IdType endpointId) {
-
+    	resourcePermissionProvider.checkPermission("read");
         Endpoint endpoint = endpointDao.read(ctx,endpointId);
 
         if ( endpoint == null) {
@@ -112,5 +119,11 @@ public class EndpointProvider implements ICCResourceProvider {
         return endpoint;
     }
 
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Endpoint resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
 
 }

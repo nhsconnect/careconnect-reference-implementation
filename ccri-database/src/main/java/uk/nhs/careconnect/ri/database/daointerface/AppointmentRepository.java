@@ -31,15 +31,16 @@ public interface AppointmentRepository extends BaseRepository<AppointmentEntity,
 
     List<Appointment> searchAppointment(FhirContext ctx,
                                                     @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
-                                                    @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam type,
-                                                    @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
+                                                  //  @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam type,
+                                                  //  @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
                                                     @OptionalParam(name = Appointment.SP_RES_ID) StringParam id
     );
 
     List<AppointmentEntity> searchAppointmentEntity(FhirContext ctx,
                                                     @OptionalParam(name = Appointment.SP_IDENTIFIER) TokenParam identifier,
-                                                    @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam type,
-                                                    @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
+                                                   // @OptionalParam(name = Appointment.SP_APPOINTMENT_TYPE) StringParam type,
+                                                   // @OptionalParam(name = Appointment.SP_STATUS) StringParam status,
                                                     @OptionalParam(name = Appointment.SP_RES_ID) StringParam id
     );
+
 }

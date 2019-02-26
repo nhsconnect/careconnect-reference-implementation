@@ -3,9 +3,12 @@ package uk.nhs.careconnect.ri.dao;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +20,20 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireRepository;
 import uk.nhs.careconnect.ri.dao.transforms.QuestionnaireEntityToFHIRQuestionnaireTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,22 +66,40 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<Questionnaire> searchQuestionnaire(FhirContext ctx, TokenParam identifier, StringParam id, TokenOrListParam codes) {
-        List<QuestionnaireEntity> qryResults = searchQuestionnaireEntity(ctx, identifier, id, codes);
+    public List<Questionnaire> search(FhirContext ctx,
+                                                   TokenParam identifier,
+                                                   StringParam id,
+                                                   TokenOrListParam codes,
+                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
+        List<QuestionnaireEntity> qryResults = searchEntity(ctx, identifier, id, codes, url);
         List<Questionnaire> results = new ArrayList<>();
 
         for (QuestionnaireEntity form : qryResults)
         {
-            // log.trace("HAPI Custom = "+doc.getId());
-            Questionnaire questionnaireResponse = questionnaireEntityToFHIRQuestionnaireTransformer.transform(form);
-            results.add(questionnaireResponse);
+
+            if (form.getResource() != null) {
+                results.add((Questionnaire) ctx.newJsonParser().parseResource(form.getResource()));
+            } else {
+
+                Questionnaire questionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(form);
+                String resource = ctx.newJsonParser().encodeResourceToString(questionnaire);
+                if (resource.length() < 10000) {
+                    form.setResource(resource);
+                    em.persist(form);
+                }
+                results.add(questionnaire);
+            }
         }
 
         return results;
     }
 
     @Override
-    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx, TokenParam identifier, StringParam resid, TokenOrListParam codes) {
+    public List<QuestionnaireEntity> searchEntity(FhirContext ctx,
+                                                               TokenParam identifier,
+                                                               StringParam resid,
+                                                               TokenOrListParam codes,
+                                                               @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
         List<QuestionnaireEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -124,6 +149,18 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             
         }
 
+        if (url !=null)
+        {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("url").as(String.class)),
+                            builder.upper(builder.literal( url.getValue()))
+                    );
+
+            predList.add(p);
+        }
+
         Predicate[] predArray = new Predicate[predList.size()];
         predList.toArray(predArray);
         if (predList.size()>0)
@@ -144,9 +181,17 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (daoutils.isNumeric(theId.getIdPart())) {
             QuestionnaireEntity questionnaireEntity = (QuestionnaireEntity) em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
 
-            return questionnaireEntity == null
-                    ? null
-                    : questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            if (questionnaireEntity == null) return null;
+
+            Questionnaire questionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            if (questionnaireEntity.getResource() == null) {
+                String resource = ctx.newJsonParser().encodeResourceToString(questionnaire);
+                if (resource.length() < 10000) {
+                    questionnaireEntity.setResource(resource);
+                    em.persist(questionnaireEntity);
+                }
+            }
+            return questionnaire;
 
         } else {
             return null;
@@ -180,18 +225,37 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
         QuestionnaireEntity questionnaireEntity = null;
         log.debug("Called Questionnaire Create Condition Url: "+theConditional);
-        if (questionnaire.hasId()) {
-            questionnaireEntity =  (QuestionnaireEntity) em.find(QuestionnaireEntity.class,Long.parseLong(questionnaire.getId()));
+
+        if (theId != null && daoutils.isNumeric(theId.getIdPart())) {
+            log.debug("theId.getIdPart()="+theId.getIdPart());
+            questionnaireEntity = em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
+        List<QuestionnaireEntity> entries = searchEntity(ctx, null, null, null, new UriParam().setValue(questionnaire.getUrl()));
+        for (QuestionnaireEntity msg : entries) {
+            if (questionnaire.getId() == null) {
+                throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
+
+            if (!msg.getId().toString().equals(questionnaire.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
+        }
         /*
 
         Conditional Removed
 
          */
 
+
         if (questionnaireEntity == null) {
             questionnaireEntity = new QuestionnaireEntity();
+        }
+
+        questionnaireEntity.setResource(null);
+
+        if (questionnaire.hasUrl()) {
+            questionnaireEntity.setUrl(questionnaire.getUrl());
         }
 
         if (questionnaire.hasCode()) {
@@ -212,17 +276,26 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             questionnaireEntity.setName(questionnaire.getName());
         }
 
+        if (questionnaire.hasPurpose()) {
+            questionnaireEntity.setPurpose(questionnaire.getPurpose());
+        }
         if (questionnaire.hasStatus()) {
             questionnaireEntity.setStatus(questionnaire.getStatus());
         }
         if (questionnaire.hasSubjectType()) {
-            questionnaireEntity.setSubjectType(questionnaire.getResourceType());
+            for (CodeType code : questionnaire.getSubjectType()) {
+          //      log.info(code.getValue());
+                questionnaireEntity.setSubjectType(code.getValue());
+            }
         }
         if (questionnaire.hasTitle()) {
             questionnaireEntity.setTitle(questionnaire.getTitle());
         }
         if (questionnaire.hasVersion()) {
             questionnaireEntity.setVersion(questionnaire.getVersion());
+        }
+        if (questionnaire.hasDescription()) {
+            questionnaireEntity.setDescription(questionnaire.getDescription());
         }
 
         em.persist(questionnaireEntity);
@@ -249,12 +322,20 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
             em.persist(questionnaireIdentifier);
         }
+
+        for (QuestionnaireItem item: questionnaireEntity.getItems()) {
+            removeItem(item);
+        }
+        questionnaireEntity.setItems(new HashSet<>());
+
         if (questionnaire.hasItem()) {
+
+
             for (Questionnaire.QuestionnaireItemComponent itemComponent : questionnaire.getItem()) {
                 QuestionnaireItem item = new QuestionnaireItem();
                 item.setForm(questionnaireEntity);
-                buildItem(itemComponent,item);
 
+                questionnaireEntity.getItems().add(buildItem(itemComponent,item));
             }
         }
 
@@ -262,10 +343,34 @@ public class QuestionnaireDao implements QuestionnaireRepository {
        // log.info("Called PERSIST id="+questionnaireEntity.getId().toString());
         questionnaire.setId(questionnaireEntity.getId().toString());
 
-        return questionnaire;
+        log.debug("Called PERSIST id="+questionnaireEntity.getId().toString());
+        questionnaire.setId(questionnaireEntity.getId().toString());
+
+        Questionnaire newQuestionnaire = null;
+        if (questionnaireEntity != null) {
+            newQuestionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(questionnaireEntity);
+            String resource = ctx.newJsonParser().encodeResourceToString(newQuestionnaire);
+           /* if (resource.length() < 10000) {
+                questionnaireEntity.setResource(resource);
+                em.persist(questionnaireEntity);
+            }*/
+
+        }
+
+        return newQuestionnaire;
     }
 
-    private void buildItem(Questionnaire.QuestionnaireItemComponent itemComponent, QuestionnaireItem item ) {
+    private void removeItem(QuestionnaireItem item) {
+        for (QuestionnaireItem itemChild: item.getChildItems()) {
+            removeItem(itemChild);
+        }
+        for (QuestionnaireItemOptions options : item.getOptions()) {
+            em.remove(options);
+        }
+        em.remove(item);
+    }
+
+    private QuestionnaireItem buildItem(Questionnaire.QuestionnaireItemComponent itemComponent, QuestionnaireItem item ) {
         if (itemComponent.hasType()) {
             item.setItemType(itemComponent.getType());
         }
@@ -287,22 +392,66 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         if (itemComponent.hasText()) {
             item.setItemText(itemComponent.getText());
         }
+        if (itemComponent.hasOptions()) {
+            item.setValueSetOptions(itemComponent.getOptions().getReference());
+        }
+
+
+
+        if (itemComponent.hasDefinition()) {
+            item.setDefinition(itemComponent.getDefinition());
+        }
+
         for (Extension extension : itemComponent.getExtension()) {
-            if (extension.getUrl().contains("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")) {
-                // TODO
+
+            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")) {
+                // TO_DONE KGM 5/2/2019
+              //  log.info(extension.getUrl());
+                if (extension.getValue() instanceof Reference) {
+                    item.setAllowedProfile(((Reference) extension.getValue()).getReference());
+                }
+
+            }
+
+            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")) {
+                // TO_DONE KGM 5/2/2019
+             //   log.info(extension.getUrl());
+                if (extension.getValue() instanceof CodeType) {
+                    item.setAllowedResource(((CodeType) extension.getValue()).getValue());
+                }
+
             }
         }
 
         em.persist(item);
 
-        for (Questionnaire.QuestionnaireItemComponent subItem : itemComponent.getItem()) {
-            QuestionnaireItem subItemEntity = new QuestionnaireItem();
-            subItemEntity.setQuestionnaireParentItem(item);
-            buildItem(subItem, subItemEntity);
+        if (itemComponent.hasOption()) {
+            for (Questionnaire.QuestionnaireItemOptionComponent option : itemComponent.getOption()) {
+                QuestionnaireItemOptions optionEntity = new QuestionnaireItemOptions();
+                optionEntity.setQuestionnaireItem(item);
+                if (option.hasValueCoding()) {
+                    ConceptEntity concept = conceptDao.findAddCode(option.getValueCoding());
+                    if (concept != null) optionEntity.setValueCode(concept);
+                }
+                if (option.hasValueStringType()) {
+                    optionEntity.setValueString(option.getValueStringType().toString());
+                }
+                if (option.hasValueDateType()) {
+                    optionEntity.setValueDateTime(option.getValueDateType().getValueAsString());
+                }
+                if (option.hasValueIntegerType()) {
+                    optionEntity.setValueInteger(option.getValueIntegerType().getValueAsString());
+                }
+                em.persist(optionEntity);
+            }
         }
 
+                for (Questionnaire.QuestionnaireItemComponent subItem : itemComponent.getItem()) {
+                    QuestionnaireItem subItemEntity = new QuestionnaireItem();
+                    subItemEntity.setQuestionnaireParentItem(item);
+                    item.getChildItems().add(buildItem(subItem, subItemEntity));
+        }
+        return item;
     }
-
-
 
 }

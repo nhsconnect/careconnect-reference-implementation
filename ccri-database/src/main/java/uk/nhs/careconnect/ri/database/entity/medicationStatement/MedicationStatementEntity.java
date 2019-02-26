@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.medicationStatement;
 
 import org.hl7.fhir.dstu3.model.MedicationStatement;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
@@ -48,9 +48,7 @@ public class MedicationStatementEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_CONCEPT",foreignKey= @ForeignKey(name="FK_STATEMENT_CATEGORY_CONCEPT"))
-
     ConceptEntity categoryCode;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "MEDICATION_CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_STATEMENT_MEDICATION_CODE"))

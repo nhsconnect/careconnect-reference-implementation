@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
@@ -14,21 +13,14 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.MedicationRepository;
 import uk.nhs.careconnect.ri.dao.transforms.MedicationEntityToFHIRMedicationTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
-import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestIdentifier;
-import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
-import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.net.URI;
 import java.util.*;
 
 @Repository

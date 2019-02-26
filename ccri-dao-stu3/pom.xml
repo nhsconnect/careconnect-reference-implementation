@@ -22,7 +22,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri-parent</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>3.7.1-SNAPSHOT</version>
     </parent>
 
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring-boot}</version>
+            <version>${spring-boot-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.hibernate</groupId>
@@ -49,14 +49,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <version>${spring-boot}</version>
+            <version>${spring-boot-version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
-            <version>5.2.17.Final</version>
+            <version>${hibernate_version}</version>
         </dependency>
 
         <dependency>
@@ -79,7 +79,7 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate_validator_version}</version>
         </dependency>
-        <dependency>
+  <!--      <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-search-orm</artifactId>
             <version>${hibernate_search_version}</version>
@@ -89,7 +89,7 @@
             <artifactId>hibernate-search-elasticsearch</artifactId>
             <version>${hibernate_search_version}</version>
         </dependency>
-
+-->
 
         <dependency>
             <groupId>uk.org.hl7.fhir</groupId>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>4.2.0</version>
+            <version>5.2.3</version>
         </dependency>
 
         <!-- TESTING -->

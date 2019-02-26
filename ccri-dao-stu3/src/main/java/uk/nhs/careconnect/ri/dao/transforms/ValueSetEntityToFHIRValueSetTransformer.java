@@ -6,10 +6,8 @@ import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetInclude;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetIncludeConcept;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetIncludeFilter;
+import uk.nhs.careconnect.ri.database.entity.condition.ConditionIdentifier;
+import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
 
 @Component
@@ -21,17 +19,51 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
     public ValueSet transform(final ValueSetEntity valueSetEntity) {
         final ValueSet valueSet = new ValueSet();
 
-        valueSet.setDescription(valueSetEntity.getDescription());
-        valueSet.setName(valueSetEntity.getName());
-        if (valueSetEntity.getStrId() != null) {
-            valueSet.setId(valueSetEntity.getStrId());
-        }
-        else {
-            valueSet.setId(valueSetEntity.getId().toString());
-        }
+
+        valueSet.setId(valueSetEntity.getId().toString());
+
         valueSet.setUrl(valueSetEntity.getUrl());
 
+        if (valueSetEntity.getVersion() != null) {
+            valueSet.setVersion(valueSetEntity.getVersion());
+        }
+
+        valueSet.setName(valueSetEntity.getName());
+
+        if (valueSetEntity.getTitle() != null) {
+            valueSet.setTitle(valueSetEntity.getTitle());
+        }
+
         valueSet.setStatus(valueSetEntity.getStatus());
+
+        if (valueSetEntity.getExperimental() != null) {
+            valueSet.setExperimental(valueSetEntity.getExperimental());
+        }
+
+        if (valueSetEntity.getChangeDateTime() != null) {
+            valueSet.setDate(valueSetEntity.getChangeDateTime());
+        }
+        if (valueSetEntity.getPublisher() != null) {
+            valueSet.setPublisher(valueSetEntity.getPublisher());
+        }
+
+        valueSet.setDescription(valueSetEntity.getDescription());
+
+        if (valueSetEntity.getImmutable() != null) {
+            valueSet.setImmutable(valueSetEntity.getImmutable());
+        }
+
+        if (valueSetEntity.getPurpose() != null) {
+            valueSet.setPurpose(valueSetEntity.getPurpose());
+        }
+
+        if (valueSetEntity.getCopyright() != null) {
+            valueSet.setCopyright(valueSetEntity.getCopyright());
+        }
+
+        if (valueSetEntity.getExtensible() != null) {
+            valueSet.setExtensible(valueSetEntity.getExtensible());
+        }
 
         log.trace("ValueSetEntity name ="+valueSetEntity.getName());
 
@@ -40,6 +72,19 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
         }
         // Hard coded to not attempt to retrieve SNOMED!
 
+        for (ValueSetIdentifier identifier : valueSetEntity.getIdentifiers()) {
+            valueSet.addIdentifier()
+                    .setSystem(identifier.getSystem().getUri())
+                    .setValue(identifier.getValue());
+        }
+
+        for (ValueSetTelecom telecom : valueSetEntity.getContacts()) {
+            valueSet.addContact()
+                    .addTelecom()
+                    .setUse(telecom.getTelecomUse())
+                    .setValue(telecom.getValue())
+                    .setSystem(telecom.getSystem());
+        }
 
         for (ValueSetInclude includeEntity : valueSetEntity.getIncludes()) {
             log.trace("Compose CodeSystem : "+includeEntity.getSystem());
@@ -54,7 +99,9 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
             for (ValueSetIncludeFilter filterEntity : includeEntity.getFilters()) {
                 include.addFilter()
                         .setOp(filterEntity.getOperator())
-                        .setValue(filterEntity.getValue().getCode());
+                        .setValue(filterEntity.getValueCode())
+                        .setProperty(filterEntity.getPropertyCode());
+
             }
         }
 

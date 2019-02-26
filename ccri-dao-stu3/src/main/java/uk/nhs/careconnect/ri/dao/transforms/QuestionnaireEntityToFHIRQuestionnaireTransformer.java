@@ -8,6 +8,7 @@ import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
 
 
 @Component
@@ -51,8 +52,15 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
 
         questionnaire.setId(questionnaireEntity.getId().toString());
 
+        if (questionnaireEntity.getUrl() != null) {
+            questionnaire.setUrl(questionnaireEntity.getUrl());
+        }
         if (questionnaireEntity.getName() != null) {
             questionnaire.setName(questionnaireEntity.getName());
+        }
+
+        if (questionnaireEntity.getPurpose() != null) {
+            questionnaire.setPurpose(questionnaireEntity.getPurpose());
         }
 
         if (questionnaireEntity.getStatus() != null){
@@ -65,6 +73,10 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
 
         if (questionnaireEntity.getTitle() != null) {
             questionnaire.setTitle(questionnaireEntity.getTitle());
+        }
+
+        if (questionnaireEntity.getDescription() != null) {
+            questionnaire.setDescription(questionnaireEntity.getDescription());
         }
 
         if (questionnaireEntity.getDateTime() != null) {
@@ -88,10 +100,7 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
         }
 
         if (questionnaireEntity.getSubjectType() != null) {
-
-            CodeType type = new CodeType();
-            type.setValue(questionnaireEntity.getSubjectType().toString());
-            questionnaire.getSubjectType().add(type);
+            questionnaire.addSubjectType(questionnaireEntity.getSubjectType());
         }
 
         for (QuestionnaireItem item : questionnaireEntity.getItems()) {
@@ -126,11 +135,7 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             itemComponent.setType(item.getItemType());
         }
 
-        if (item.getItemReferenceType() != null && item.getItemType().equals(Questionnaire.QuestionnaireItemType.REFERENCE)) {
-            Extension referenceType = itemComponent.addExtension();
-            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource");
-            referenceType.setValue(new Coding().setCode(item.getItemReferenceType().getPath()).setSystem("http://hl7.org/fhir/resource-types"));
-        }
+
 
         if (item.getRequired() != null) {
             itemComponent.setRequired(item.getRequired());
@@ -142,10 +147,43 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             itemComponent.setRepeats(item.getRepeats());
         }
 
+        if (item.getAllowedResource() != null && item.getItemType().equals(Questionnaire.QuestionnaireItemType.REFERENCE)) {
+            Extension referenceType = itemComponent.addExtension();
+            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource");
+            referenceType.setValue(new CodeType().setValue(item.getAllowedResource()));
+        }
+        if (item.getAllowedProfile() != null) {
+            itemComponent.addExtension()
+                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                    .setValue(new Reference(item.getAllowedProfile()));
+        }
+
+        if (item.getValueSetOptions() != null) {
+            itemComponent.setOptions(new Reference(item.getValueSetOptions()));
+        }
+
+        if (item.getDefinition() != null) {
+            itemComponent.setDefinition(item.getDefinition());
+        }
+
         if (item.getChildItems() != null) {
             for (QuestionnaireItem childItem : item.getChildItems()) {
                 Questionnaire.QuestionnaireItemComponent childItemComponent = itemComponent.addItem();
                 getItemComponent(childItem, childItemComponent);
+            }
+        }
+
+        for (QuestionnaireItemOptions option : item.getOptions()) {
+            if (option.getValueCode() != null) {
+                itemComponent.addOption( new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode(option.getValueCode().getCode())
+                                .setSystem(option.getValueCode().getSystem())
+                                .setDisplay(option.getValueCode().getDisplay())));
+            }
+            if (option.getValueString() != null) {
+                itemComponent.addOption( new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new StringType().setValue(option.getValueString())));
             }
         }
         return itemComponent;

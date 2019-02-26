@@ -55,6 +55,10 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
                         .setDisplay(conditionEntity.getCode().getDisplay())
                         .setSystem(conditionEntity.getCode().getSystem());
             }
+            if (conditionEntity.getCodeText() != null) {
+                condition.getCode().setText(conditionEntity.getCodeText());
+            }
+
             if (conditionEntity.getContextEncounter() != null) {
                 condition.setContext(new Reference("Encounter/" + conditionEntity.getContextEncounter().getId()));
             } else if (conditionEntity.getContextEpisode() != null) {
@@ -77,11 +81,21 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
                         .setDisplay(conditionEntity.getSeverity().getDisplay())
                         .setSystem(conditionEntity.getSeverity().getSystem());
             }
+            if (conditionEntity.getSeverityText() != null) {
+                condition.getSeverity().setText(conditionEntity.getSeverityText());
+            }
+
             for (ConditionCategory category : conditionEntity.getCategories()) {
-                condition.addCategory().addCoding()
+                CodeableConcept concept = condition.addCategory();
+                if (category.getCategory() != null) {
+                    concept.addCoding()
                         .setCode(category.getCategory().getCode())
                         .setSystem(category.getCategory().getSystem())
                         .setDisplay(category.getCategory().getDisplay());
+                }
+                if (category.getCategoryText() != null) {
+                    concept.setText(category.getCategoryText());
+                }
             }
             for (ConditionIdentifier identifier : conditionEntity.getIdentifiers()) {
                 condition.addIdentifier()

@@ -24,10 +24,10 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.TerminologyLoader;
-import uk.nhs.careconnect.ri.database.entity.Terminology.CodeSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptDesignation;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptParentChildLink;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptDesignation;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -71,9 +71,9 @@ public class TerminologyLoaderDao implements TerminologyLoader {
 
     public static final String LOINC_HIERARCHY_FILE = "MULTI-AXIAL_HIERARCHY.CSV";
 
-    public static final String SCT_FILE_CONCEPT = "Terminology/sct2_Concept_Full_";
-    public static final String SCT_FILE_DESCRIPTION = "Terminology/sct2_Description_Full-en";
-    public static final String SCT_FILE_RELATIONSHIP = "Terminology/sct2_Relationship_Full";
+    public static final String SCT_FILE_CONCEPT = "codeSystem/sct2_Concept_Full_";
+    public static final String SCT_FILE_DESCRIPTION = "codeSystem/sct2_Description_Full-en";
+    public static final String SCT_FILE_RELATIONSHIP = "codeSystem/sct2_Relationship_Full";
 
     private static final Logger ourLog = LoggerFactory.getLogger(TerminologyLoaderDao.class);
 

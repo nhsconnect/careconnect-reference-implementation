@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.careconnect.ccri</groupId>
     <artifactId>ccri-fhirserver</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
+    <version>3.7.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ccri-fhirserver</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>ccri-parent</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>3.7.1-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -24,9 +24,7 @@
         <java.version>1.8</java.version>
 
         <java.version>1.8</java.version>
-        <hapi-fhir-version>3.6.0</hapi-fhir-version>
-        <care-connect-version>3.7.0-SNAPSHOT</care-connect-version>
-        <hawtio.version>2.2.0</hawtio.version>
+        <care-connect-version>3.7.1-SNAPSHOT</care-connect-version>
 
         <junit-version>4.12</junit-version>
         <cucumber-version>1.2.5</cucumber-version>
@@ -105,6 +103,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Spring OAuth2 Dependencies -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>${spring_security_version}</version>
+        </dependency>
+
         <!-- JPA and Database -->
 
         <dependency>
@@ -133,7 +138,7 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate_validator_version}</version>
         </dependency>
-        <dependency>
+    <!--    <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-search-orm</artifactId>
             <version>${hibernate_search_version}</version>
@@ -143,7 +148,7 @@
             <artifactId>hibernate-search-elasticsearch</artifactId>
             <version>${hibernate_search_version}</version>
         </dependency>
-
+-->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -154,8 +159,11 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>4.2.0</version>
+            <version>5.2.3</version>
         </dependency>
+
+
+
 
         <!-- HAPI FHIR -->
 
@@ -206,18 +214,6 @@
 
         <dependency>
             <groupId>uk.nhs.careconnect.ri</groupId>
-            <artifactId>ccri-fhirgateway-common</artifactId>
-            <version>${care-connect-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.nhs.careconnect.ri</groupId>
             <artifactId>ccri-dao-stu3</artifactId>
             <version>${care-connect-version}</version>
             <exclusions>
@@ -248,26 +244,8 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>uk.nhs.careconnect.ri</groupId>
-            <artifactId>ccri-fhirserver-common</artifactId>
-            <version>${care-connect-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
-        <!-- JMX Jolokia
 
-        <dependency>
-            <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-core</artifactId>
-        </dependency>
-
-        -->
 
 
         <!-- Hawt.io -->
@@ -282,19 +260,18 @@
             <artifactId>hawtio-core</artifactId>
             <version>${hawtio.version}</version>
         </dependency>
-<!--
+
         <dependency>
             <groupId>io.hawt</groupId>
-            <artifactId>hawtio-insight-log</artifactId>
-            <version>1.5.11</version>
+            <artifactId>hawtio-log</artifactId>
+            <version>${hawtio.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency> -->
-
+        </dependency>
 
         <!-- Logging -->
         <dependency>
@@ -333,6 +310,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- flying saucer pdf -->
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf</artifactId>
+            <version>9.1.4</version>
+        </dependency>
 
     </dependencies>
 

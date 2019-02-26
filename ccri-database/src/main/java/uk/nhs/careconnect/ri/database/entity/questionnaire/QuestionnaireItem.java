@@ -1,10 +1,8 @@
 package uk.nhs.careconnect.ri.database.entity.questionnaire;
 
 import org.hl7.fhir.dstu3.model.Questionnaire;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -22,7 +20,7 @@ public class QuestionnaireItem extends BaseResource {
 		this.questionnaire = questionnaire;
 	}
 
-	private static final int MAX_DESC_LENGTH = 512;
+	private static final int MAX_DESC_LENGTH = 4096;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,9 +50,6 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="ITEM_TYPE")
 	private Questionnaire.QuestionnaireItemType itemType;
 
-	// Use the extension to lock down References
-	@Column(name="ITEM_RESOURCE_TYPE")
-	private ResourceType itemReferenceType;
 
 	@Column(name="required")
 	private Boolean required;
@@ -69,15 +64,41 @@ public class QuestionnaireItem extends BaseResource {
 	@JoinColumn (name = "QUESTIONNAIRE_ITEM_PARENT_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_QUESTIONNAIRE_ITEM_ID"))
 	private QuestionnaireItem questionnaireParentItem;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn (name = "OPTIONS_VALUESET_ID",foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_ITEM_OPTIONS_VALUESET_ID"))
-	private ValueSetEntity valueSetOptions;
+
+	@Column (name = "OPTIONS_VALUESET_STR")
+	private String valueSetOptions;
 
 	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemOptions.class)
 	private Set<QuestionnaireItemOptions> options = new HashSet<>();
 
 	@OneToMany(mappedBy="questionnaireParentItem", targetEntity=QuestionnaireItem.class)
+	@OrderBy(value = "linkId ASC")
 	private Set<QuestionnaireItem> childItems = new HashSet<>();
+
+	@Column(name="ALLOWED_PROFILE",nullable = true)
+	private String allowedProfile;
+
+	@Column(name="ALLOWED_RESOURCE",nullable = true)
+	private String allowedResource;
+
+	@Column(name = "DEFINITION", length = MAX_DESC_LENGTH)
+	private String definition;
+
+	public String getAllowedProfile() {
+		return allowedProfile;
+	}
+
+	public void setAllowedProfile(String allowedProfile) {
+		this.allowedProfile = allowedProfile;
+	}
+
+	public String getAllowedResource() {
+		return allowedResource;
+	}
+
+	public void setAllowedResource(String allowedResource) {
+		this.allowedResource = allowedResource;
+	}
 
 	public Long getItemId() { return itemId; }
 	public void setItemId(Long itemId) { this.itemId = itemId; }
@@ -134,14 +155,6 @@ public class QuestionnaireItem extends BaseResource {
 		this.itemType = itemType;
 	}
 
-	public ResourceType getItemReferenceType() {
-		return itemReferenceType;
-	}
-
-	public void setItemReferenceType(ResourceType itemReferenceType) {
-		this.itemReferenceType = itemReferenceType;
-	}
-
 	public Boolean getRequired() {
 		return required;
 	}
@@ -174,11 +187,11 @@ public class QuestionnaireItem extends BaseResource {
 		this.questionnaireParentItem = questionnaireParentItem;
 	}
 
-	public ValueSetEntity getValueSetOptions() {
+	public String getValueSetOptions() {
 		return valueSetOptions;
 	}
 
-	public void setValueSetOptions(ValueSetEntity valueSetOptions) {
+	public void setValueSetOptions(String valueSetOptions) {
 		this.valueSetOptions = valueSetOptions;
 	}
 
@@ -209,5 +222,13 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setChildItems(Set<QuestionnaireItem> childItems) {
 		this.childItems = childItems;
+	}
+
+	public String getDefinition() {
+		return definition;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
 	}
 }

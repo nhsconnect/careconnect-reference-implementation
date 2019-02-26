@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ccri.fhirserver.provider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -15,10 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.PractitionerRepository;
-import uk.nhs.careconnect.ri.lib.server.OperationOutcomeFactory;
-import uk.nhs.careconnect.ri.lib.server.ProviderResponseLibrary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -31,7 +32,13 @@ public class PractitionerProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
-
+    
+    @Autowired
+    private ResourceTestProvider resourceTestProvider;
+    
+    @Autowired
+    private ResourcePermissionProvider resourcePermissionProvider;
+    
     private static final Logger log = LoggerFactory.getLogger(PatientProvider.class);
 
     @Override
@@ -47,7 +54,7 @@ public class PractitionerProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome updatePractitioner(HttpServletRequest theRequest, @ResourceParam Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-
+    	resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -70,7 +77,7 @@ public class PractitionerProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome createPractitioner(HttpServletRequest theRequest, @ResourceParam Practitioner practitioner) {
 
-
+    	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -82,15 +89,7 @@ public class PractitionerProvider implements ICCResourceProvider {
         method.setResource(newPractitioner);
         } catch (Exception ex) {
 
-            if (ex instanceof OperationOutcomeException) {
-                OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
-                method.setOperationOutcome(outcomeException.getOutcome());
-                method.setCreated(false);
-            } else {
-                log.error(ex.getMessage());
-                method.setCreated(false);
-                method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
-            }
+            ProviderResponseLibrary.handleException(method,ex);
         }
 
 
@@ -100,6 +99,7 @@ public class PractitionerProvider implements ICCResourceProvider {
     @Read
     public Practitioner getPractitioner
             (@IdParam IdType internalId) {
+    	resourcePermissionProvider.checkPermission("read");
         Practitioner practitioner = practitionerDao.read(ctx, internalId);
 
         if ( practitioner == null) {
@@ -121,5 +121,11 @@ public class PractitionerProvider implements ICCResourceProvider {
         return practitionerDao.searchPractitioner(ctx, identifier, name ,postCode,resid);
     }
 
-
+    @Validate
+    public MethodOutcome testResource(@ResourceParam Practitioner resource,
+                                  @Validate.Mode ValidationModeEnum theMode,
+                                  @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource,theMode,theProfile);
+    }
+    
 }

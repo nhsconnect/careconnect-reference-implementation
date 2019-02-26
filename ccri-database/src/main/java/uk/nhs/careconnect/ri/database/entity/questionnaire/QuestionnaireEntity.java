@@ -2,9 +2,8 @@ package uk.nhs.careconnect.ri.database.entity.questionnaire;
 
 
 import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,6 +25,9 @@ public class QuestionnaireEntity extends BaseResource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="QUESTIONNAIRE_ID")
     private Long id;
+
+    @Column(name = "URL")
+    private String url;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireIdentifier.class)
     private Set<QuestionnaireIdentifier> identifiers = new HashSet<>();
@@ -59,10 +61,17 @@ public class QuestionnaireEntity extends BaseResource {
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_QUESTIONNAIRE_CODE_CONCEPT_ID"))
     private ConceptEntity questionnaireCode;
 
-    @Column(name = "SUBJECT_TYPE")
-    private ResourceType subjectType;
+    @Column(name = "SUBJECT_RESOURCE_TYPE")
+    private String subjectType;
+
+    @Column(name = "PURPOSE", length = MAX_DESC_LENGTH)
+    private String purpose;
+
+    @Column(name = "DESCRIPTION", length = MAX_DESC_LENGTH)
+    private String description;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
+    @OrderBy(value = "linkId ASC")
     private Set<QuestionnaireItem> items = new HashSet<>();
 
     public Set<QuestionnaireItem> getItems() {
@@ -137,11 +146,11 @@ public class QuestionnaireEntity extends BaseResource {
         this.questionnaireCode = questionnaireCode;
     }
 
-    public ResourceType getSubjectType() {
+    public String getSubjectType() {
         return subjectType;
     }
 
-    public void setSubjectType(ResourceType subjectType) {
+    public void setSubjectType(String subjectType) {
         this.subjectType = subjectType;
     }
 
@@ -173,5 +182,27 @@ public class QuestionnaireEntity extends BaseResource {
         return MAX_DESC_LENGTH;
     }
 
+    public String getPurpose() {
+        return purpose;
+    }
 
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

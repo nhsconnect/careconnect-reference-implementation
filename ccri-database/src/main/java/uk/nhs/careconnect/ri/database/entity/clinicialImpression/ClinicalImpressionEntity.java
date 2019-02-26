@@ -2,7 +2,7 @@ package uk.nhs.careconnect.ri.database.entity.clinicialImpression;
 
 import org.hl7.fhir.dstu3.model.ClinicalImpression;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
@@ -41,6 +41,9 @@ public class ClinicalImpressionEntity extends BaseResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CODE_CONCEPT_ID",nullable = true,foreignKey= @ForeignKey(name="FK_IMPRESSION_CODE_CONCEPT_ID"))
     private ConceptEntity impressionCode;
+
+    @Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
+    private String codeText;
 
     @Column(name="DESCRIPTION")
     private String description;
@@ -237,5 +240,16 @@ public class ClinicalImpressionEntity extends BaseResource {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getCodeText() {
+        if (codeText != null)
+            return codeText;
+        if (this.impressionCode != null) return this.impressionCode.getDisplay();
+        return null;
+    }
+
+    public void setCodeText(String codeText) {
+        this.codeText = codeText;
     }
 }

@@ -1,6 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.medicationDispense;
 
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 
 import javax.persistence.*;

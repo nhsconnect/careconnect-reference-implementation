@@ -2,9 +2,7 @@ package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -16,10 +14,9 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.SlotEntityToFHIRSlotTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.dao.transforms.HealthcareServiceEntityToFHIRHealthcareServiceTransformer;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
-import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
@@ -119,7 +116,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
                     String[] spiltStr = query.split("%7C");
                     log.debug(spiltStr[1]);
 
-                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null,null,null);
+                    List<HealthcareServiceEntity> results = searchHealthcareServiceEntity(ctx,  new TokenParam().setValue(spiltStr[1]).setSystem("https://tools.ietf.org/html/rfc4122"),null, null, null);
                     for (HealthcareServiceEntity con : results) {
                         serviceEntity = con;
                         break;
@@ -271,8 +268,8 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<Resource> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation,Set<Include> reverseIncludes) {
-        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, codes,id,organisation,reverseIncludes);
+    public List<Resource> searchHealthcareService(FhirContext ctx, TokenParam identifier, StringParam name,  StringParam id, Set<Include> reverseIncludes) {
+        List<HealthcareServiceEntity> qryResults = searchHealthcareServiceEntity(ctx,identifier,name, id, reverseIncludes);
         List<Resource> results = new ArrayList<>();
 
         for (HealthcareServiceEntity healthcareServiceEntity : qryResults) {
@@ -295,7 +292,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
     }
 
     @Override
-    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name, TokenOrListParam codes, StringParam id,ReferenceParam organisation, Set<Include> reverseIncludes) {
+    public List<HealthcareServiceEntity> searchHealthcareServiceEntity(FhirContext ctx, TokenParam identifier, StringParam name,  StringParam id, Set<Include> reverseIncludes) {
         List<HealthcareServiceEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -1,7 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.riskAssessment;
 
 import org.hl7.fhir.dstu3.model.RiskAssessment;
-import uk.nhs.careconnect.ri.database.entity.Terminology.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
