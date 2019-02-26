@@ -63,6 +63,10 @@ services:
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+      - ccri.oauth2=true
+      - ccri.oauth2.authorize=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
+      - ccri.oauth2.token=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
+      - ccri.oauth2.register=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
     ports:
       - 8106:8186
     extra_hosts:
