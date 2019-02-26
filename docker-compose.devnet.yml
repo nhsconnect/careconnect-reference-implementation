@@ -205,35 +205,19 @@ services:
     networks:
       - oauth_net
 
-  ccricat:
-    container_name: ccricat
-    image: ${REGISTRY_PREFIX}ccri-cat
+  documentviewer:
+    container_name: ccridocumentviewer
+    image: thorlogic/ccri-documentviewer${IMAGE_TAG}
     environment:
-    - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
-    - KEYCLOAK_CLIENT_ID=ccri-cat
-    - SMART_OAUTH2_CLIENT_SECRET=${SMART_OAUTH2_CLIENT_SECRET}
-    - KEYCLOAK_AUTH_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
-    - KEYCLOAK_SERVER_URL=https://${OAUTH2_SERVER_BASE_HOST}/auth
-    - FHIR_SERVER_URL=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
-    - KEYCLOAK_REALM=ReferenceImplementations
-    - CAT_COOKIE_DOMAIN=
-    - SMART_GROWTH_CHART_URL=https://${FHIR_SERVER_BASE_HOST}/gc/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
-    - SMART_CARDIAC_URL=https://${FHIR_SERVER_BASE_HOST}/cardiac/launch.html?iss=https://purple.testlab.nhs.uk/ccri-smartonfhir/STU3&launch=
-    - jolokia.username=HSFAdmin
-    - jolokia.password=h5fadm!n
-    - fhir.resource.serverBase=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
-    - fhir.messaging.serverBase=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
-    - server.port=80
-    - keycloak.rooturl=https://${OAUTH2_SERVER_BASE_HOST}/auth
-    - keycloak.authserverurl=https://${OAUTH2_SERVER_BASE_HOST}/auth
-    - keycloak.realm=ReferenceImplementations
-    - keycloak.client_secret=${KEYCLOAK_CLIENT_SECRET}
-    - keycloak.client_id=ccri-cat
-    - oauth2.client_id=clinical-assurance-tool
-    - oauth2.client_secret=${SMART_OAUTH2_CLIENT_SECRET}
-    - oauth2.cookie_domain=${FHIR_SERVER_BASE_HOST}
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
     ports:
-    - 8108:80
+      - 8108:4201
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
+    networks:
+      - ccri_net
 
 networks:
   ccri_net:
