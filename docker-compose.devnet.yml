@@ -25,9 +25,8 @@ services:
       - datasource.driver=org.postgresql.Driver
       - datasource.path=5432/careconnect
       - datasource.vendor=postgresql
-      - datasource.showSql=true
-      - datasource.showDdl=true
-      - datasource.cleardown.cron=0 19 21 * * *
+      - datasource.showSql=false
+      - datasource.showDdl=false
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
       - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
@@ -35,6 +34,37 @@ services:
       - jolokia.password=h5fadm!n
     ports:
       - 8105:8186
+    extra_hosts:
+      # Define an alias to loop back for REST Connections
+      - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
+    volumes:
+      - tomcat-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+  ccrismartonfhir:
+    container_name: ccrismartonfhir
+    image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
+    depends_on:
+      - ccrisql
+    links:
+      - ccrisql
+    environment:
+      - datasource.username=${MYSQL_DB_USER}
+      - datasource.password=${MYSQL_DB_PASSWORD}
+      - datasource.host=//ccrisql
+      - datasource.driver=org.postgresql.Driver
+      - datasource.path=5432/careconnect
+      - datasource.vendor=postgresql
+      - datasource.showSql=false
+      - datasource.showDdl=false
+      - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
+      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+    ports:
+      - 8106:8186
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
