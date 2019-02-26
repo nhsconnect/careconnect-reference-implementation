@@ -1,7 +1,18 @@
 version: '2'
 services:
-  ccriserver:
-    container_name: ccriserver
+
+  ccrisql:
+    container_name: ccrisql
+    image: ${REGISTRY_PREFIX}ccri-sql${IMAGE_TAG}
+    environment:
+      - POSTGRES_DB=careconnect
+      - POSTGRES_USER=${MYSQL_DB_USER}
+      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    networks:
+      - ccri_net
+
+  ccrifhir:
+    container_name: ccrifhir
     image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
     depends_on:
       - ccrisql
@@ -18,8 +29,8 @@ services:
       - datasource.showDdl=true
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
-      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
-      - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/fhir/STU3
+      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
     extra_hosts:
@@ -30,21 +41,11 @@ services:
     networks:
       - ccri_net
 
-  ccrisql:
-    container_name: ccrisql
-    image: ${REGISTRY_PREFIX}ccri-sql${IMAGE_TAG}
+  ccrimessaging:
+    container_name: ccrimessaging
+    image: ${REGISTRY_PREFIX}ccri-messaging${IMAGE_TAG}
     environment:
-      - POSTGRES_DB=careconnect
-      - POSTGRES_USER=${MYSQL_DB_USER}
-      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
-    networks:
-      - ccri_net
-
-  ccrifhir:
-    container_name: ccrifhir
-    image: ${REGISTRY_PREFIX}ccri-fhir${IMAGE_TAG}
-    environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccrifhir:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.username=HSFAdmin
@@ -55,9 +56,8 @@ services:
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
-      - ccriserver
+      - ccrifhir
       - ccridocument
-      - ccriintegration
     ports:
       - 8105:8183
     volumes:
@@ -66,34 +66,21 @@ services:
       ccri_net:
         ipv4_address: 172.168.240.14
 
-  ccrismartonfhir:
-    container_name: ccrismartonfhir
-    image: ${REGISTRY_PREFIX}ccri-smartonfhir${IMAGE_TAG}
-    environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.oauth2.authorize=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/authorize
-      - fhir.oauth2.token=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/token
-      - fhir.oauth2.register=https://${FHIR_SERVER_BASE_HOST}/ccri-auth/register
-      - jolokia.username=HSFAdmin
-      - jolokia.password=h5fadm!n
-      - ccri.software.version=3.7
-      - ccri.software.name=Care Connect RI FHIR Server
-      - ccri.server=Care Connect API (OAuth2 + SMARTonFHIR)
-      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
-      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
+  ccridataload:
+    container_name: ccridataload
+    image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
     depends_on:
-      - ccriserver
-      - ccridocument
-      - ccriintegration
-    ports:
-      - 8106:8184
-    volumes:
-      - gatewayssl-log-volume:/usr/local/tomcat/logs
+      - ccrifhir
+      - ccrisql
+    environment:
+      - FHIR_SERVER=http://ccrifhir:8186/ccri-fhirserver/STU3
+      - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
+      - POSTGRES_USER=${MYSQL_DB_USER}
+      - POSTGRES_USERNAME=${MYSQL_DB_USER}
+      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
     networks:
-      ccri_net:
-        ipv4_address: 172.168.240.15
+      - ccri_net
+
 
   fhirexplorer:
     container_name: fhirexplorer
@@ -103,7 +90,7 @@ services:
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccriserver=http4://ccrifhir:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
@@ -124,7 +111,7 @@ services:
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccriserver=http4://ccrifhir:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
@@ -149,39 +136,6 @@ services:
     ports:
       - 8114:4200
 
-  ccridataload:
-    container_name: ccridataload
-    image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
-    depends_on:
-      - ccriserver
-      - ccrisql
-    environment:
-      - FHIR_SERVER=http://ccriserver:8186/ccri-fhirserver/STU3
-      - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
-      - POSTGRES_USER=${MYSQL_DB_USER}
-      - POSTGRES_USERNAME=${MYSQL_DB_USER}
-      - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
-    networks:
-       - ccri_net
-
-  ccriintegration:
-    container_name: ccriintegration
-    image: ${REGISTRY_PREFIX}ccri-integration${IMAGE_TAG}
-    depends_on:
-      - ccriserver
-    ports:
-      - 8112:8182
-    environment:
-      - fhir.restserver.serverBase=http4://ccriserver:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.eprBase=http://ccriserver:8186/ccri-fhirserver/STU3
-      - fhir.resource.serverName=Care Connect TIE FHIR Server
-      - fhir.resource.serverVersion=3.7.1-SNAPSHOT
-      - jolokia.username=HSFAdmin
-      - jolokia.password=h5fadm!n
-    volumes:
-      - tie-log-volume:/usr/local/tomcat/logs
-    networks:
-      - ccri_net
 
   ccrimongo:
     container_name: ccrimongo
