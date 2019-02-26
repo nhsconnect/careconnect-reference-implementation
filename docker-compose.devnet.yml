@@ -33,6 +33,8 @@ services:
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
+    ports:
+      - 8105:8186
     extra_hosts:
       # Define an alias to loop back for REST Connections
       - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
@@ -59,7 +61,7 @@ services:
       - ccrifhir
       - ccridocument
     ports:
-      - 8105:8183
+      - 8112:8182
     volumes:
       - gateway-log-volume:/usr/local/tomcat/logs
     networks:
