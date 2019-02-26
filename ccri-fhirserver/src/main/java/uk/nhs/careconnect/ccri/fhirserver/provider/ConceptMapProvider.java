@@ -42,7 +42,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class ConceptMapProvider implements IResourceProvider {
+public class ConceptMapProvider implements ICCResourceProvider {
 	
 	@Autowired
 	FhirContext ctx;
@@ -58,6 +58,11 @@ public class ConceptMapProvider implements IResourceProvider {
 	
 	@Value("${ccri.conceptMapHost}")
 	private String conceptMapHost;
+
+	@Override
+	public Long count() {
+		return conceptMapDao.count();
+	}
 
     @Override
     public Class<ConceptMap> getResourceType() {

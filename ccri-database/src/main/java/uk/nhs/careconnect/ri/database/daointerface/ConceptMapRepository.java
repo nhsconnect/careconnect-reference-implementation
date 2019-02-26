@@ -13,9 +13,10 @@ import java.util.List;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity; 
+import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
-public interface ConceptMapRepository {
+public interface ConceptMapRepository extends BaseRepository<ConceptMapEntity,ConceptMap>{
 
 //	void save(ConceptMapEntity conceptMap);
 

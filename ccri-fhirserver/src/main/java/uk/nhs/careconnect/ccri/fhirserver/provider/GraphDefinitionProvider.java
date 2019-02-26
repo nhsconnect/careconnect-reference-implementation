@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class GraphDefinitionProvider implements IResourceProvider {
+public class GraphDefinitionProvider implements ICCResourceProvider {
 
 
 	@Autowired
@@ -55,6 +55,10 @@ public class GraphDefinitionProvider implements IResourceProvider {
         return GraphDefinition.class;
     }
 
+    @Override
+    public Long count() {
+        return graphDao.count();
+    }
 
     @Autowired
     private ResourceTestProvider resourceTestProvider;

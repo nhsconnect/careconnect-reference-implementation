@@ -34,8 +34,10 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
@@ -64,9 +66,27 @@ public class ConceptMapDao implements ConceptMapRepository{
 ConceptRepository conceptDao;
 
 	    private static final Logger log = LoggerFactory.getLogger(ConceptMapDao.class);
-	    
-	    
-	    ConceptMap conceptMap;
+
+	@Override
+	public Long count() {
+		CriteriaBuilder qb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+		cq.select(qb.count(cq.from(ConceptMap.class)));
+		//cq.where(/*your stuff*/);
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public ConceptMapEntity readEntity(FhirContext ctx, IdType theId) {
+		return null;
+	}
+
+	@Override
+	public void save(FhirContext ctx, ConceptMapEntity resource) throws OperationOutcomeException {
+
+	}
+
+	ConceptMap conceptMap;
 	    
 	    @Transactional
 	    @Override

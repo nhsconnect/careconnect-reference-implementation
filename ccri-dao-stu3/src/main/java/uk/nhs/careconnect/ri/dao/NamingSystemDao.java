@@ -15,6 +15,7 @@ import uk.nhs.careconnect.ri.dao.transforms.NamingSystemEntityToFHIRNamingSystem
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.NamingSystemRepository;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemTelecom;
@@ -56,6 +57,15 @@ public class NamingSystemDao implements NamingSystemRepository {
 
 
     NamingSystem namingSystem;
+
+    @Override
+    public Long count() {
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(NamingSystemEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
 
     @Transactional
     @Override

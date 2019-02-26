@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class MessageDefinitionProvider implements IResourceProvider {
+public class MessageDefinitionProvider implements ICCResourceProvider {
 
 
 	@Autowired
@@ -59,6 +59,10 @@ public class MessageDefinitionProvider implements IResourceProvider {
 
     private static final Logger log = LoggerFactory.getLogger(MessageDefinitionProvider.class);
 
+    @Override
+    public Long count() {
+        return messageDefinitionDao.count();
+    }
 
     @Update()
     public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam MessageDefinition messageDefinition) {

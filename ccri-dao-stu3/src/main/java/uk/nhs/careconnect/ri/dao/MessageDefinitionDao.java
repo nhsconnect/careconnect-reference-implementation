@@ -61,6 +61,20 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
     MessageDefinition messageDefinition;
 
     @Override
+    public Long count() {
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(MessageDefinitionEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    @Override
+    public MessageDefinitionEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
+    @Override
     public MessageDefinition create(FhirContext ctx,  MessageDefinition messageDefinition) throws OperationOutcomeException {
         this.messageDefinition = messageDefinition;
 

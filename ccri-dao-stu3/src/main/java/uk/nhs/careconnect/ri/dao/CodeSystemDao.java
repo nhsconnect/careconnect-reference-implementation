@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTran
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
+import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.EntityManager;
@@ -68,6 +69,21 @@ public class CodeSystemDao implements CodeSystemRepository {
     // What we need to do is process concepts coming from CodeSystems in a transactional mode (@Transactional)
     // For CodeSystem inserts we need to get the codes into the database as without storing them in massive memory objects
     // Other resources should run as transactional
+
+
+    @Override
+    public CodeSystemEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
+    @Override
+    public Long count() {
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(CodeSystemEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
 
     @Override
     public void setProcessDeferred(boolean theProcessDeferred) {

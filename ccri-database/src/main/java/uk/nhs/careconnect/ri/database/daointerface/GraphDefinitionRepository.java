@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.database.entity.graphDefinition.GraphDefinitionEnti
 import java.util.List;
 
 
-public interface GraphDefinitionRepository {
+public interface GraphDefinitionRepository extends BaseRepository<GraphDefinitionEntity,GraphDefinition> {
 
 
     void save(FhirContext ctx, GraphDefinitionEntity valueset);

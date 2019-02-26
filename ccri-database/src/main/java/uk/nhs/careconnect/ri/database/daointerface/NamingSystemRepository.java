@@ -13,7 +13,7 @@ import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemEntity;
 import java.util.List;
 
 
-public interface NamingSystemRepository {
+public interface NamingSystemRepository extends BaseRepository<NamingSystemEntity,NamingSystem> {
 
 
 

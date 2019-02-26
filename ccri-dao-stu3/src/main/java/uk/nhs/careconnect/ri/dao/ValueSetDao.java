@@ -58,6 +58,20 @@ public class ValueSetDao implements ValueSetRepository {
 
     ValueSet valueSet;
 
+    @Override
+    public Long count() {
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(ValueSetEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    @Override
+    public ValueSetEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
+
     @Transactional
     @Override
     public ValueSet create(FhirContext ctx,  ValueSet valueSet) throws OperationOutcomeException {

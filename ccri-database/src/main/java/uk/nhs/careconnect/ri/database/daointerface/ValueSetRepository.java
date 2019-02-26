@@ -14,7 +14,7 @@ import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 import java.util.List;
 
 
-public interface ValueSetRepository {
+public interface ValueSetRepository extends BaseRepository<ValueSetEntity,ValueSet> {
 
 
 

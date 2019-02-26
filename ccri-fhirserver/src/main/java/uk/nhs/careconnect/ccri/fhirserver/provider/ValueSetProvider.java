@@ -39,7 +39,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class ValueSetProvider implements IResourceProvider {
+public class ValueSetProvider implements ICCResourceProvider {
 
 
 	@Autowired
@@ -59,6 +59,10 @@ public class ValueSetProvider implements IResourceProvider {
         return ValueSet.class;
     }
 
+    @Override
+    public Long count() {
+        return valueSetDao.count();
+    }
 
     @Autowired
     private ResourceTestProvider resourceTestProvider;

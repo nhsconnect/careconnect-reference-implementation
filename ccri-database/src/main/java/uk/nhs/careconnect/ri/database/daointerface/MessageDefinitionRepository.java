@@ -7,13 +7,15 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MessageDefinition;
+import org.hl7.fhir.dstu3.model.ValueSet;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.messageDefinition.MessageDefinitionEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import java.util.List;
 
 
-public interface MessageDefinitionRepository {
+public interface MessageDefinitionRepository extends BaseRepository<MessageDefinitionEntity, MessageDefinition> {
 
 
 

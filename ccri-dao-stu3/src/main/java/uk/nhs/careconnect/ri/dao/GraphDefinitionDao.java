@@ -16,6 +16,7 @@ import uk.nhs.careconnect.ri.dao.transforms.GraphDefinitionEntityToFHIRGraphDefi
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.GraphDefinitionRepository;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.graphDefinition.*;
 
 import javax.persistence.EntityManager;
@@ -52,6 +53,19 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
 
     GraphDefinition graph;
+
+    @Override
+    public Long count() {
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(GraphDefinitionEntity.class)));
+        //cq.where(/*your stuff*/);
+        return em.createQuery(cq).getSingleResult();
+    }
+    @Override
+    public GraphDefinitionEntity readEntity(FhirContext ctx, IdType theId) {
+        return null;
+    }
 
     @Transactional
     @Override

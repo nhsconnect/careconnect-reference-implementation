@@ -35,7 +35,7 @@ import java.io.Reader;
 import java.util.List;
 
 @Component
-public class NamingSystemProvider implements IResourceProvider {
+public class NamingSystemProvider implements ICCResourceProvider {
 
 
 	@Autowired
@@ -53,6 +53,10 @@ public class NamingSystemProvider implements IResourceProvider {
         return NamingSystem.class;
     }
 
+    @Override
+    public Long count() {
+        return namingSystemDao.count();
+    }
 
     @Autowired
     private ResourceTestProvider resourceTestProvider;

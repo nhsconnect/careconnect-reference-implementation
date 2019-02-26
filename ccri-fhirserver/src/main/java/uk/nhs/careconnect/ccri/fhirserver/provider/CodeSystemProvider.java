@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class CodeSystemProvider implements IResourceProvider {
+public class CodeSystemProvider implements ICCResourceProvider {
 
 	@Autowired
     private CodeSystemRepository codeSystemDao;
@@ -54,6 +54,10 @@ public class CodeSystemProvider implements IResourceProvider {
     @Autowired
     FhirContext ctx;
 
+    @Override
+    public Long count() {
+        return codeSystemDao.count();
+    }
 
     private static final Logger log = LoggerFactory.getLogger(CodeSystemProvider.class);
 

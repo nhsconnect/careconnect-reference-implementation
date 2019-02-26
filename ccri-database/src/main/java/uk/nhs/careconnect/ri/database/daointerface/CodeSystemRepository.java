@@ -12,10 +12,11 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import java.util.List;
 
-public interface CodeSystemRepository {
+public interface CodeSystemRepository extends BaseRepository<CodeSystemEntity,CodeSystem> {
 
     CodeSystemEntity findBySystem(String system);
 
