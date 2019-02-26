@@ -122,9 +122,10 @@ public class QuestionnaireProvider implements ICCResourceProvider {
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                                                    @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
-                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url
+                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url,
+                                      @OptionalParam(name= Questionnaire.SP_NAME) StringParam name
     ) {
-        return questionnaireDao.search(ctx, identifier,id,codes, url);
+        return questionnaireDao.search(ctx, identifier,id,codes, url, name);
     }
     
     @Validate

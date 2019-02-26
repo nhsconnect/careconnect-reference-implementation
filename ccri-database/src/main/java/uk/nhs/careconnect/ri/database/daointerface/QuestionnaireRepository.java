@@ -30,7 +30,8 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
                     @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                     @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                     @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
-                    @OptionalParam(name= Questionnaire.SP_URL) UriParam url
+                    @OptionalParam(name= Questionnaire.SP_URL) UriParam url,
+                    @OptionalParam(name= Questionnaire.SP_NAME) StringParam name
 
     );
 
@@ -38,7 +39,8 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
                      @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                      @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                      @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
-                     @OptionalParam(name= Questionnaire.SP_URL) UriParam url
+                     @OptionalParam(name= Questionnaire.SP_URL) UriParam url,
+                     @OptionalParam(name= Questionnaire.SP_NAME) StringParam name
 
 
     );

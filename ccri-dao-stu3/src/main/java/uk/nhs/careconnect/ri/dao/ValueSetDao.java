@@ -432,8 +432,7 @@ public class ValueSetDao implements ValueSetRepository {
         List<Predicate> predList = new LinkedList<Predicate>();
 
 
-        if (name !=null)
-        {
+        if (name != null) {
 
             Predicate p =
                     builder.like(
@@ -443,8 +442,8 @@ public class ValueSetDao implements ValueSetRepository {
 
             predList.add(p);
         }
-        if (publisher !=null)
-        {
+
+        if (publisher != null) {
 
             Predicate p =
                     builder.like(
@@ -454,8 +453,7 @@ public class ValueSetDao implements ValueSetRepository {
 
             predList.add(p);
         }
-        if (url !=null)
-        {
+        if (url != null) {
 
             Predicate p =
                     builder.like(

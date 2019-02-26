@@ -70,8 +70,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
                                                    TokenParam identifier,
                                                    StringParam id,
                                                    TokenOrListParam codes,
-                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
-        List<QuestionnaireEntity> qryResults = searchEntity(ctx, identifier, id, codes, url);
+                                                   @OptionalParam(name= Questionnaire.SP_URL) UriParam url,
+                                      @OptionalParam(name= Questionnaire.SP_NAME) StringParam name) {
+        List<QuestionnaireEntity> qryResults = searchEntity(ctx, identifier, id, codes, url, name);
         List<Questionnaire> results = new ArrayList<>();
 
         for (QuestionnaireEntity form : qryResults)
@@ -99,7 +100,8 @@ public class QuestionnaireDao implements QuestionnaireRepository {
                                                                TokenParam identifier,
                                                                StringParam resid,
                                                                TokenOrListParam codes,
-                                                               @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
+                                                               @OptionalParam(name= Questionnaire.SP_URL) UriParam url,
+                                                  @OptionalParam(name= Questionnaire.SP_NAME) StringParam name) {
         List<QuestionnaireEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -121,6 +123,17 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         }
         if (resid != null) {
             Predicate p = builder.equal(root.get("id"),resid.getValue());
+            predList.add(p);
+        }
+
+        if (name !=null) {
+
+            Predicate p =
+                    builder.like(
+                            builder.upper(root.get("name").as(String.class)),
+                            builder.upper(builder.literal("%" + name.getValue() + "%"))
+                    );
+
             predList.add(p);
         }
         
@@ -231,7 +244,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             questionnaireEntity = em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
-        List<QuestionnaireEntity> entries = searchEntity(ctx, null, null, null, new UriParam().setValue(questionnaire.getUrl()));
+        List<QuestionnaireEntity> entries = searchEntity(ctx, null, null, null, new UriParam().setValue(questionnaire.getUrl()), null);
         for (QuestionnaireEntity msg : entries) {
             if (questionnaire.getId() == null) {
                 throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
