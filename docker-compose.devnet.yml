@@ -116,6 +116,39 @@ services:
     networks:
       - ccri_net
 
+  cc-portal:
+    container_name: cc-portal
+    image: ${REGISTRY_PREFIX}ccri-hieportal${IMAGE_TAG}
+    environment:
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - jolokia.jmxendpoint.ccriserver=http4://ccriserver:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+    depends_on:
+      - ccrifhir
+    ports:
+      - 8115:8187
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
+    networks:
+      - ccri_net
+
+  cc-logon:
+    container_name: cc-logon
+    image: ${REGISTRY_PREFIX}ccri-logon${IMAGE_TAG}
+    environment:
+      - keycloak.rooturl=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - keycloak.authserverurl=https://${OAUTH2_SERVER_BASE_HOST}/auth
+      - keycloak.realm=ReferenceImplementations
+      - keycloak.client_secret=${KEYCLOAK_CLIENT_SECRET}
+      - keycloak.client_id=ccri-cat
+    ports:
+      - 8114:4200
+
   ccridataload:
     container_name: ccridataload
     image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
