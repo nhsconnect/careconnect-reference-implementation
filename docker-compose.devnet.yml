@@ -53,7 +53,7 @@ services:
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - ccri.software.version=3.7
-      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.software.name=CCRI-Messaging
       - ccri.server=Care Connect API (unsecured)
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
