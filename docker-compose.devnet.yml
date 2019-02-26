@@ -109,7 +109,6 @@ services:
     image: ${REGISTRY_PREFIX}ccri-cli${IMAGE_TAG}
     depends_on:
       - ccrifhir
-      - ccrisql
     environment:
       - FHIR_SERVER=http://ccrifhir:8186/ccri-fhirserver/STU3
       - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
