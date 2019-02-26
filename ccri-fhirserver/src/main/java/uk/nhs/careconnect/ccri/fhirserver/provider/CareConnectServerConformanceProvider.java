@@ -164,14 +164,7 @@ import java.util.List;
 
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
 
-                    if (restResourceComponent.getType().equals("OperationDefinition")) {
-                        nextRest.getResource().remove(restResourceComponent);
-                        break;
-                    }
-                    if (restResourceComponent.getType().equals("StructureDefinition")) {
-                        nextRest.getResource().remove(restResourceComponent);
-                        break;
-                    }
+
                     if (CCRI_role.equals("EPRCareConnectAPI")) {
                         // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
                         restResourceComponent.setSearchInclude(new ArrayList<>());
@@ -181,41 +174,37 @@ import java.util.List;
                     setProfile(restResourceComponent);
 
                     List<ResourceInteractionComponent> l = restResourceComponent.getInteraction();
-                    for(int i=0;i<l.size();i++)
-                    	if(CRUD_read.equals("false"))
-                    	if (restResourceComponent.getInteraction().get(i).getCode().toString()=="READ")
-                    	{
-                    		restResourceComponent.getInteraction().remove(i);
-                    	}	
-                    for(int i=0;i<l.size();i++)
-                    	if(CRUD_update.equals("false"))
-                    	if (restResourceComponent.getInteraction().get(i).getCode().toString()=="UPDATE")
-                    	{
-                    		restResourceComponent.getInteraction().remove(i);
-                    	}	
-                    for(int i=0;i<l.size();i++)
-                    	if(CRUD_create.equals("false"))
-                    	if (restResourceComponent.getInteraction().get(i).getCode().toString()=="CREATE")
-                    	{
-                    		restResourceComponent.getInteraction().remove(i);
-                    	}	
-                    for(int i=0;i<l.size();i++)
-                    	if(CRUD_delete.equals("false"))
-                    	if (restResourceComponent.getInteraction().get(i).getCode().toString()=="DELETE")
-                    	{
-                    		restResourceComponent.getInteraction().remove(i);
-                    	}	
-                    
-                    
-                   for (IResourceProvider provider : restfulServer.getResourceProviders()) {
+                    for (int i = 0; i < l.size(); i++)
+                        if (CRUD_read.equals("false"))
+                            if (restResourceComponent.getInteraction().get(i).getCode().toString() == "READ") {
+                                restResourceComponent.getInteraction().remove(i);
+                            }
+                    for (int i = 0; i < l.size(); i++)
+                        if (CRUD_update.equals("false"))
+                            if (restResourceComponent.getInteraction().get(i).getCode().toString() == "UPDATE") {
+                                restResourceComponent.getInteraction().remove(i);
+                            }
+                    for (int i = 0; i < l.size(); i++)
+                        if (CRUD_create.equals("false"))
+                            if (restResourceComponent.getInteraction().get(i).getCode().toString() == "CREATE") {
+                                restResourceComponent.getInteraction().remove(i);
+                            }
+                    for (int i = 0; i < l.size(); i++)
+                        if (CRUD_delete.equals("false"))
+                            if (restResourceComponent.getInteraction().get(i).getCode().toString() == "DELETE") {
+                                restResourceComponent.getInteraction().remove(i);
+                            }
 
-                        log.info("Provider Resource - " + provider.getResourceType().getSimpleName());
+                    log.info("restResourceComponent.getType() = " + restResourceComponent.getType());
+                    for (IResourceProvider provider : restfulServer.getResourceProviders()) {
+
+                        log.trace("Provider Resource - " + provider.getResourceType().getSimpleName());
                         if (restResourceComponent.getType().equals(provider.getResourceType().getSimpleName())
                                 || (restResourceComponent.getType().contains("List") && provider.getResourceType().getSimpleName().contains("List")))
                             if (provider instanceof ICCResourceProvider) {
                                 log.info("ICCResourceProvider - " + provider.getClass());
                                 ICCResourceProvider resourceProvider = (ICCResourceProvider) provider;
-                               
+
                                 Extension extension = restResourceComponent.getExtensionFirstRep();
                                 if (extension == null) {
                                     extension = restResourceComponent.addExtension();
@@ -223,6 +212,21 @@ import java.util.List;
                                 extension.setUrl("http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount")
                                         .setValue(new DecimalType(resourceProvider.count()));
                             }
+                    }
+                }
+
+
+                for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
+                    if (restResourceComponent.getType().equals("StructureDefinition")) {
+                        nextRest.getResource().remove(restResourceComponent);
+                        break;
+                    }
+                }
+                for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
+
+                    if (restResourceComponent.getType().equals("OperationDefinition")) {
+                        nextRest.getResource().remove(restResourceComponent);
+                        break;
                     }
                 }
             }
@@ -243,6 +247,7 @@ import java.util.List;
                 resource.getProfile().setReference(CareConnectProfile.PractitionerRole_1);
                 break;
             case "Organization":
+                log.info("Org called");
                 resource.getProfile().setReference(CareConnectProfile.Organization_1);
                 break;
             case "Location":
