@@ -60,11 +60,11 @@ public class CodeSystemProvider implements IResourceProvider {
     @Search
     public List<CodeSystem> search(HttpServletRequest theRequest,
                  @OptionalParam(name =CodeSystem.SP_NAME) StringParam name,
-                 @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
+               //  @OptionalParam(name = CodeSystem.SP_PUBLISHER) StringParam publisher,
                  @OptionalParam(name = CodeSystem.SP_URL) UriParam url)
 
     {
-        return codeSystemDao.search(ctx, name, publisher,url);
+        return codeSystemDao.search(ctx, name, null,url);
     }
 
     @Read

@@ -92,11 +92,11 @@ public class ValueSetProvider implements IResourceProvider {
     @Search
     public List<ValueSet> search(HttpServletRequest theRequest,
               @OptionalParam(name =ValueSet.SP_NAME) StringParam name,
-               @OptionalParam(name =ValueSet.SP_PUBLISHER) StringParam publisher,
+             //  @OptionalParam(name =ValueSet.SP_PUBLISHER) StringParam publisher,
                                  @OptionalParam(name = ValueSet.SP_URL) UriParam url,
-                                 @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
+                                @OptionalParam(name = ValueSet.SP_IDENTIFIER) TokenParam identifier
     ) {
-        return valueSetDao.search(ctx, name, publisher, url,identifier);
+        return valueSetDao.search(ctx, name, null, url,identifier);
     }
 
 

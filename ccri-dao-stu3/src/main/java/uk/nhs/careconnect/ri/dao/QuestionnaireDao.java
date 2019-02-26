@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -64,12 +66,12 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<Questionnaire> searchQuestionnaire(FhirContext ctx,
+    public List<Questionnaire> search(FhirContext ctx,
                                                    TokenParam identifier,
                                                    StringParam id,
                                                    TokenOrListParam codes,
                                                    @OptionalParam(name= Questionnaire.SP_URL) UriParam url) {
-        List<QuestionnaireEntity> qryResults = searchQuestionnaireEntity(ctx, identifier, id, codes, url);
+        List<QuestionnaireEntity> qryResults = searchEntity(ctx, identifier, id, codes, url);
         List<Questionnaire> results = new ArrayList<>();
 
         for (QuestionnaireEntity form : qryResults)
@@ -93,7 +95,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     }
 
     @Override
-    public List<QuestionnaireEntity> searchQuestionnaireEntity(FhirContext ctx,
+    public List<QuestionnaireEntity> searchEntity(FhirContext ctx,
                                                                TokenParam identifier,
                                                                StringParam resid,
                                                                TokenOrListParam codes,
@@ -229,16 +231,28 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             questionnaireEntity = em.find(QuestionnaireEntity.class, Long.parseLong(theId.getIdPart()));
         }
 
+        List<QuestionnaireEntity> entries = searchEntity(ctx, null, null, null, new UriParam().setValue(questionnaire.getUrl()));
+        for (QuestionnaireEntity msg : entries) {
+            if (questionnaire.getId() == null) {
+                throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
+
+            if (!msg.getId().toString().equals(questionnaire.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+            }
+        }
         /*
 
         Conditional Removed
 
          */
-        questionnaireEntity.setResource(null);
+
 
         if (questionnaireEntity == null) {
             questionnaireEntity = new QuestionnaireEntity();
         }
+
+        questionnaireEntity.setResource(null);
 
         if (questionnaire.hasUrl()) {
             questionnaireEntity.setUrl(questionnaire.getUrl());

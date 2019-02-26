@@ -55,7 +55,7 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     }
 
     @Update
-    public MethodOutcome updateQuestionnaire(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire,
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire,
                                              @IdParam IdType theId,
                                              @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
@@ -81,7 +81,7 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     }
 
     @Create
-    public MethodOutcome createQuestionnaire(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire) {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Questionnaire questionnaire) {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -104,7 +104,7 @@ public class QuestionnaireProvider implements ICCResourceProvider {
    
 
     @Read()
-    public Questionnaire getQuestionnaire(@IdParam IdType questionnaireId) {
+    public Questionnaire get(@IdParam IdType questionnaireId) {
     	resourcePermissionProvider.checkPermission("read");
         Questionnaire questionnaire = questionnaireDao.read(ctx,questionnaireId);
 
@@ -118,13 +118,13 @@ public class QuestionnaireProvider implements ICCResourceProvider {
     }
 
     @Search
-    public List<Questionnaire> searchQuestionnaire(HttpServletRequest theRequest,
+    public List<Questionnaire> search(HttpServletRequest theRequest,
                                                    @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                                                    @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                                                    @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
                                                    @OptionalParam(name= Questionnaire.SP_URL) UriParam url
     ) {
-        return questionnaireDao.searchQuestionnaire(ctx, identifier,id,codes, url);
+        return questionnaireDao.search(ctx, identifier,id,codes, url);
     }
     
     @Validate

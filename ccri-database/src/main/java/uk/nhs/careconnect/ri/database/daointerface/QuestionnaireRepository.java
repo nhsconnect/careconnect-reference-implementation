@@ -25,7 +25,7 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
 
     Questionnaire create(FhirContext ctx, Questionnaire questionnaire, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
-    List<Questionnaire> searchQuestionnaire(FhirContext ctx,
+    List<Questionnaire> search(FhirContext ctx,
 
                     @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                     @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
@@ -34,7 +34,7 @@ public interface QuestionnaireRepository extends BaseRepository<QuestionnaireEnt
 
     );
 
-    List<QuestionnaireEntity> searchQuestionnaireEntity (FhirContext ctx,
+    List<QuestionnaireEntity> searchEntity (FhirContext ctx,
                      @OptionalParam(name = Questionnaire.SP_IDENTIFIER) TokenParam identifier,
                      @OptionalParam(name= Questionnaire.SP_RES_ID) StringParam id,
                      @OptionalParam(name= Questionnaire.SP_CODE) TokenOrListParam codes,
