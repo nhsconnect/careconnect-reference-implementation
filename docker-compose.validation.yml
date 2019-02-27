@@ -1,0 +1,10 @@
+version: '2'
+services:
+
+  tkwvalidation:
+    container_name: tkwvalidation
+    image: damianmurphy/fhir_production_validator:20190227a
+    ports:
+      - 4849:4849
+    volumes:
+      - /docker:/home/service/data

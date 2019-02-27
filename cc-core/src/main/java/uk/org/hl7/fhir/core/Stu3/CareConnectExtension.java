@@ -18,4 +18,5 @@ public class CareConnectExtension {
     public static final String UrlAssociatedEncounter = "http://hl7.org/fhir/StructureDefinition/encounter-associatedEncounter";
     public static final String UrlServiceType = "http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType";
     public static final String UrlGraphDefinition = "http://hl7.org/fhir/4.0/StructureDefinition/extension-MessageDefinition.graph";
+    public static final String UrlCapabilityStatementRestOperation = "http://hl7.org/fhir/4.0/StructureDefinition/extension-CapabilityStatement.rest.operation";
 }
