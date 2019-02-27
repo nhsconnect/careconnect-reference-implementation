@@ -78,7 +78,7 @@ import java.util.List;
                 if (lastRefresh != null) {
                     java.time.Duration duration = java.time.Duration.between(Instant.now(), lastRefresh);
                     // May need to revisit
-                    if ((duration.getSeconds() * 86400) < 5) return capabilityStatement;
+                    if ((duration.getSeconds() * 60) < 2) return capabilityStatement;
                 }
         }
         lastRefresh = Instant.now();
