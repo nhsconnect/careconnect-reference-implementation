@@ -17,8 +17,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
+import javax.lang.model.type.ReferenceType;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -213,6 +215,7 @@ import java.util.List;
                                         .setValue(new DecimalType(resourceProvider.count()));
                             }
                     }
+                    getOperations(restResourceComponent,nextRest);
                 }
 
 
@@ -234,6 +237,45 @@ import java.util.List;
 
         return capabilityStatement;
     }
+
+    private void getOperations(CapabilityStatement.CapabilityStatementRestResourceComponent resource, CapabilityStatement.CapabilityStatementRestComponent rest) {
+// Fix for HAPI putting operations as system level entries
+        if (rest.getOperation() != null) {
+            for (CapabilityStatement.CapabilityStatementRestOperationComponent operationComponent : rest.getOperation()) {
+                if (operationComponent.hasDefinition() && operationComponent.getDefinition().hasReference()) {
+                    String[] elements = operationComponent.getDefinition().getReference().split("-");
+                    if (elements.length>2) {
+                        log.info(operationComponent.getDefinition().getReference());
+                        String[] defArray = elements[0].split("/");
+                        if (defArray.length>1 && defArray[1].equals(resource.getType())) {
+                            log.info("MATCH");
+                            Extension extension = resource.addExtension()
+                                    .setUrl(CareConnectExtension.UrlCapabilityStatementRestOperation);
+                            extension.addExtension()
+                                    .setUrl("name")
+                                    .setValue(new StringType(operationComponent.getName()));
+                            if (operationComponent.getName().equals("validate")) {
+                                extension.addExtension()
+                                        .setUrl("definition")
+                                        .setValue(new Reference("http://hl7.org/fhir/OperationDefinition/Resource-validate"));
+                            }
+                            if (operationComponent.getName().equals("expand")) {
+                                extension.addExtension()
+                                        .setUrl("definition")
+                                        .setValue(new Reference("http://hl7.org/fhir/OperationDefinition/ValueSet-expand"));
+                            }
+                            if (operationComponent.getName().equals("translate")) {
+                                extension.addExtension()
+                                        .setUrl("definition")
+                                        .setValue(new Reference("http://hl7.org/fhir/OperationDefinition/ConceptMap-translate"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private void setProfile(CapabilityStatement.CapabilityStatementRestResourceComponent resource) {
         switch(resource.getType()) {
