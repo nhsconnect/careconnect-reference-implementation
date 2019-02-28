@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.annotation.Validate;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -56,16 +60,21 @@ public class ResourceTestProvider {
     		retVal.setOperationOutcome(null);
     		return retVal;
     	}
-    	
-    	
-         
-       
-    	final HttpClient client1 = getHttpClient();
+
+		if (resourceToValidate == null) {
+			Exception e = new InternalErrorException("Failed conversion to FHIR Resource");
+			ProviderResponseLibrary.handleException(retVal,e);
+			return retVal;
+		}
+
+		final HttpClient client1 = getHttpClient();
         final HttpPost request = new HttpPost(tkw_server);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
         request.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
         try {
+
 				request.setEntity(new StringEntity(ctx.newJsonParser().encodeResourceToString(resourceToValidate)));
+
 				response = client1.execute(request);
 				reader = new InputStreamReader(response.getEntity().getContent());
 				
@@ -82,12 +91,15 @@ public class ResourceTestProvider {
 		            throw new InternalErrorException("Server Error", (OperationOutcome) resource);
 		         }
 
-			
+
         	} catch (Exception e) {
 				// TODO Auto-generated catch block
+
 				e.printStackTrace();
+				// https://airelogic-apilabs.atlassian.net/browse/ALP4-922
+				ProviderResponseLibrary.handleException(retVal,e);
 			}
-      		
+
         return retVal;
 
 }
