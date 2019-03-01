@@ -35,6 +35,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
@@ -42,7 +43,8 @@ import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
 
 import uk.nhs.careconnect.ri.dao.transforms.ConceptMapEntityToFHIRConceptMapTransformer;
-
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 
 @Repository
@@ -57,6 +59,10 @@ public class ConceptMapDao implements ConceptMapRepository{
 	    @Autowired
         @Lazy
 ConceptRepository conceptDao;
+
+	@Autowired
+	@Lazy
+	ValueSetRepository valueSetDao;
 
 	    private static final Logger log = LoggerFactory.getLogger(ConceptMapDao.class);
 
@@ -88,9 +94,7 @@ ConceptRepository conceptDao;
 	    //	System.out.println("call came to save Concept MAP : " + conceptMap.getUrlElement().getValue() );
 	        this.conceptMap = conceptMap;
 	        ConceptMapEntity conceptMapEntity = null;
-	        ConceptMapGroup conceptMapGroupEntity =  new ConceptMapGroup();	        
-	        ConceptMapGroupElement conceptMapElementGroupEntity = new ConceptMapGroupElement();	        
-	        ConceptMapGroupTarget conceptMapGroupTargetEntity = new ConceptMapGroupTarget();
+
 	        System.out.println("id is" + conceptMap.getIdElement());
 	        long newConceptMapId = -1;
 	        if (conceptMap.hasId()) {
@@ -133,6 +137,26 @@ ConceptRepository conceptDao;
 			        {
 			        	conceptMapEntity.setDescription(conceptMap.getDescription());
 			        }
+
+					if (conceptMap.hasPublisher())
+					{
+						conceptMapEntity.setPublisher(conceptMap.getPublisher());
+					}
+					if (conceptMap.hasCopyright())
+					{
+						conceptMapEntity.setCopyright(conceptMap.getCopyright());
+					}
+					if (conceptMap.hasVersion())
+					{
+						conceptMapEntity.setVersion(conceptMap.getVersion());
+					}
+
+			        if (conceptMap.hasTargetReference()) {
+						conceptMapEntity.setTargetValueset(conceptMap.getTargetReference().getReference());
+					}
+					if (conceptMap.hasSourceReference()) {
+						conceptMapEntity.setSourceValueset(conceptMap.getSourceReference().getReference());
+					}
 			        
 			        
 		       	log.trace("Call em.persist ConceptMapEntity");
@@ -148,22 +172,40 @@ ConceptRepository conceptDao;
 			        
 			  System.out.println("newConceptMapId = " + newConceptMapId);    
 			  conceptMapEntity.setResource(null);
+
+			  for(ConceptMapGroup grp : conceptMapEntity.getGroups()) {
+			  	for (ConceptMapGroupElement el :grp.getElements()) {
+			  		for (ConceptMapGroupTarget tgt : el.getTargets()) {
+			  			em.remove(tgt);
+					}
+			  		em.remove(el);
+				}
+			  	em.remove(grp);
+			  }
+
 			  for (ConceptMapGroupComponent cmGroup : conceptMap.getGroup()) 
 			  {
-				  conceptMapGroupEntity.setSource(cmGroup.getSource());
-				  conceptMapGroupEntity.setTarget(cmGroup.getTarget());
-				  em.persist(conceptMapGroupEntity);      // Persisting ConceptMapGroup conceptmapgroup
-				 
+				  ConceptMapGroup conceptMapGroupEntity =  new ConceptMapGroup();
+
+
+					conceptMapGroupEntity.setConceptMap(conceptMapEntity);
+					conceptMapGroupEntity.setSource(cmGroup.getSource());
+					conceptMapGroupEntity.setTarget(cmGroup.getTarget());
+					em.persist(conceptMapGroupEntity);      // Persisting ConceptMapGroup conceptmapgroup
+
 				  for (SourceElementComponent cmElement : cmGroup.getElement())
 				  {
-				     
+					  ConceptMapGroupElement conceptMapElementGroupEntity = new ConceptMapGroupElement();
+					  conceptMapElementGroupEntity.setConceptMapGroup(conceptMapGroupEntity);
 					  Coding element_code = new Coding().setCode(cmElement.getCode()).setDisplay(cmElement.getDisplay()).setSystem(cmGroup.getTarget());
 					  ConceptEntity element_concept = conceptDao.findAddCode(element_code);
 					  conceptMapElementGroupEntity.setSourceCode(element_concept);   
 					  em.persist(conceptMapElementGroupEntity);  // Persisting Elements conceptmapelement
 					  
 					  for (TargetElementComponent cmTarget : cmElement.getTarget() )
-					  {						  
+					  {
+						  ConceptMapGroupTarget conceptMapGroupTargetEntity = new ConceptMapGroupTarget();
+						  conceptMapGroupTargetEntity.setConceptMapGroupElement(conceptMapElementGroupEntity);
 						  Coding code = new Coding().setCode(cmTarget.getCode()).setDisplay(cmTarget.getDisplay()).setSystem(cmGroup.getTarget());
 						  ConceptEntity concept = conceptDao.findAddCode(code);
 						  conceptMapGroupTargetEntity.setTargetCode( concept);
@@ -174,7 +216,7 @@ ConceptRepository conceptDao;
 				  }				 				  
 		        }
 			  
-			  conceptMapElementGroupEntity.setConceptMapGroup(conceptMapGroupEntity);
+			 // conceptMapElementGroupEntity.setConceptMapGroup(conceptMapGroupEntity);
 			  return conceptMap;
 	    }   
 	    
@@ -293,9 +335,8 @@ ConceptRepository conceptDao;
 
 	        CriteriaQuery<ConceptMapEntity> criteria = builder.createQuery(ConceptMapEntity.class);
 	        Root<ConceptMapEntity> root = criteria.from(ConceptMapEntity.class);
-	       
 
-	        List<Predicate> predList = new LinkedList<Predicate>();
+	        List<Predicate> predList = new LinkedList<>();
 
 
 	        if (name !=null)

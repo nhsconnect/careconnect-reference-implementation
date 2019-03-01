@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 
 import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
-import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
+import uk.nhs.careconnect.ri.database.entity.conceptMap.*;
+import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemTelecom;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientAddress;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientIdentifier;
@@ -41,6 +42,8 @@ public class ConceptMapEntityToFHIRConceptMapTransformer implements Transformer<
     public ConceptMapEntityToFHIRConceptMapTransformer(@Autowired Transformer<BaseAddress, Address> addressTransformer) {
         this.addressTransformer = addressTransformer;
     }
+
+
 	
     @Override
     public ConceptMap transform(final ConceptMapEntity conceptMapEntity) {
@@ -60,6 +63,76 @@ public class ConceptMapEntityToFHIRConceptMapTransformer implements Transformer<
         conceptMap.setStatus(conceptMapEntity.getStatus());
 
         log.trace("ValueSetEntity name ="+conceptMapEntity.getName());
+
+        if (conceptMapEntity.getPublisher() != null) {
+            conceptMap.setPublisher(conceptMapEntity.getPublisher());
+        }
+        if (conceptMapEntity.getVersion() != null) {
+            conceptMap.setVersion(conceptMapEntity.getVersion());
+        }
+        if (conceptMapEntity.getCopyright() != null) {
+            conceptMap.setCopyright(conceptMapEntity.getCopyright());
+        }
+        if (conceptMapEntity.getTargetValueset() != null) {
+            conceptMap.setTarget(new Reference(conceptMapEntity.getTargetValueset()));
+        }
+        if (conceptMapEntity.getSourceValueset() != null) {
+            conceptMap.setSource(new Reference(conceptMapEntity.getSourceValueset()));
+        }
+
+        for (ConceptMapTelecom telecom : conceptMapEntity.getContacts()) {
+           conceptMap.addContact()
+                    .addTelecom()
+                    .setUse(telecom.getTelecomUse())
+                    .setValue(telecom.getValue())
+                    .setSystem(telecom.getSystem());
+        }
+
+        for (ConceptMapGroup group : conceptMapEntity.getGroups()) {
+            ConceptMap.ConceptMapGroupComponent component = conceptMap.addGroup();
+
+            if (group.getSource() != null) {
+                component.setSource(group.getSource());
+            }
+            if (group.getSourceVersion() != null) {
+                component.setSourceVersion(group.getSourceVersion());
+            }
+            if (group.getTarget() != null) {
+                component.setTarget(group.getTarget());
+            }
+            if (group.getSourceVersion() != null) {
+                component.setTargetVersion(group.getTargetVersion());
+            }
+            if (group.getUnmappedCode() != null) {
+                component.getUnmapped()
+                        .setCode(group.getUnmappedCode().getCode())
+                        .setDisplay(group.getUnmappedCode().getDisplay());
+            }
+            if (group.getUnmappedUrl() != null) {
+                component.getUnmapped().setUrl(group.getUnmappedUrl());
+            }
+            if (group.getUnmappedMode() !=null) {
+           // TODO     component.getUnmapped().setMode(group.getUnmappedMode())
+            }
+            for (ConceptMapGroupElement element : group.getElements()) {
+
+                ConceptMap.SourceElementComponent source = component.addElement();
+                if (element.getSourceCode() != null) {
+                    source.setCode(element.getSourceCode().getCode());
+                    source.setDisplay(element.getSourceCode().getDisplay());
+                }
+                for (ConceptMapGroupTarget target : element.getTargets()) {
+                    ConceptMap.TargetElementComponent tgt = source.addTarget();
+                    tgt.setCode(target.getTargetCode().getCode());
+                    tgt.setDisplay(target.getTargetCode().getDisplay());
+                    if (target.getEquivalenceCode() != null) {
+                        tgt.setEquivalence(target.getEquivalenceCode());
+                    }
+                }
+
+            }
+
+        }
 
         /*if (conceptMapEntity.getCodeSystem() != null) {
             log.trace("CodeSystem Id = "+conceptMapEntity.getCodeSystem().getId());

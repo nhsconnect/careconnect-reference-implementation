@@ -67,7 +67,7 @@ public class PatientProvider implements ICCResourceProvider {
 
 
     @Read
-    public Patient getPatientById(@IdParam IdType internalId) {
+    public Patient read(@IdParam IdType internalId) {
     	
     	resourcePermissionProvider.checkPermission("read");
     	

@@ -69,9 +69,11 @@ public class ConceptMapProvider implements ICCResourceProvider {
     
     @Search
     public List<ConceptMap> search(HttpServletRequest theRequest,
-                                                 @OptionalParam(name =ConceptMap.SP_NAME) StringParam name
+								   @OptionalParam(name = ConceptMap.SP_NAME) StringParam name,
+								   @OptionalParam(name = ConceptMap.SP_PUBLISHER) StringParam publisher,
+								   @OptionalParam(name = ConceptMap.SP_URL) UriParam url
     ) {
-        return null;
+		return conceptMapDao.search(ctx, name, publisher, url);
     }
     
     @Read
@@ -104,7 +106,7 @@ public class ConceptMapProvider implements ICCResourceProvider {
     }
     
     @Update()
-    public MethodOutcome updateConceptMaps(HttpServletRequest theRequest,@ResourceParam  ConceptMap conceptMap) {
+    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam  ConceptMap conceptMap) {
     		System.out.println("update method is called");
 	    	resourcePermissionProvider.checkPermission("update");
 	        MethodOutcome method = new MethodOutcome();
@@ -257,17 +259,17 @@ public class ConceptMapProvider implements ICCResourceProvider {
 		return bundle;
 	}
 
-
+/*
 	@Search
     public List<ConceptMap> search(HttpServletRequest theRequest,
               @OptionalParam(name =ConceptMap.SP_NAME) StringParam name,
                @OptionalParam(name =ConceptMap.SP_PUBLISHER) StringParam publisher,
-                                 @OptionalParam(name = ConceptMap.SP_URL) UriParam url
+               @OptionalParam(name = ConceptMap.SP_URL) UriParam url
     ) {
     	System.out.println("Search is invoked");
         return conceptMapDao.search(ctx, name, publisher, url);
     }
-
+*/
     
 	    private HttpClient getHttpClient(){
 	        final HttpClient httpClient = HttpClientBuilder.create().build();

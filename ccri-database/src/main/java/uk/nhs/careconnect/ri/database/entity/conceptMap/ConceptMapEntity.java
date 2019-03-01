@@ -74,11 +74,19 @@ ditto for target product
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="SOURCE_VALUESET_ID",foreignKey= @ForeignKey(name="FK_SOURCE_VALUESET"))
-	private ValueSetEntity sourceValueset;
+	private ValueSetEntity xxsourceValueset;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="TARGET_VALUESET_ID",foreignKey= @ForeignKey(name="FK_TARGET_VALUESET"))
-	private ValueSetEntity tagetValueset;
+	private ValueSetEntity xxtargetValueset;
+
+
+	@JoinColumn(name="SOURCE_VALUESET")
+	private String sourceValueset;
+
+
+	@JoinColumn(name="TARGET_VALUESET")
+	private String targetValueset;
 
 	@OneToMany(mappedBy="conceptMap", targetEntity= ConceptMapGroup.class)
 	private List<ConceptMapGroup> groups;
@@ -213,27 +221,43 @@ ditto for target product
 		this.copyright = copyright;
 	}
 
-	public ValueSetEntity getSourceValueset() {
-		return sourceValueset;
-	}
-
-	public void setSourceValueset(ValueSetEntity sourceValueset) {
-		this.sourceValueset = sourceValueset;
-	}
-
-	public ValueSetEntity getTagetValueset() {
-		return tagetValueset;
-	}
-
-	public void setTagetValueset(ValueSetEntity tagetValueset) {
-		this.tagetValueset = tagetValueset;
-	}
-
 	public List<ConceptMapGroup> getGroups() {
 		return groups;
 	}
 
 	public void setGroups(List<ConceptMapGroup> groups) {
 		this.groups = groups;
+	}
+
+	public ValueSetEntity getXxsourceValueset() {
+		return xxsourceValueset;
+	}
+
+	public void setXxsourceValueset(ValueSetEntity xxsourceValueset) {
+		this.xxsourceValueset = xxsourceValueset;
+	}
+
+	public ValueSetEntity getXxtargetValueset() {
+		return xxtargetValueset;
+	}
+
+	public void setXxtargetValueset(ValueSetEntity xxtargetValueset) {
+		this.xxtargetValueset = xxtargetValueset;
+	}
+
+	public String getSourceValueset() {
+		return sourceValueset;
+	}
+
+	public void setSourceValueset(String sourceValueset) {
+		this.sourceValueset = sourceValueset;
+	}
+
+	public String getTargetValueset() {
+		return targetValueset;
+	}
+
+	public void setTargetValueset(String targetValueset) {
+		this.targetValueset = targetValueset;
 	}
 }
