@@ -181,7 +181,7 @@ services:
       - keycloak.client_secret=${KEYCLOAK_CLIENT_SECRET}
       - keycloak.client_id=ccri-cat
     ports:
-      - 8114:4200
+      - 8114:8189
 
 
   ccrimongo:
