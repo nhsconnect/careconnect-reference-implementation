@@ -97,7 +97,7 @@ public class ConceptMapProvider implements ICCResourceProvider {
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
         method.setOperationOutcome(opOutcome);
-        newConceptMap = conceptMapDao.create(conceptMap);
+        newConceptMap = conceptMapDao.create(ctx, conceptMap);
         method.setId(newConceptMap.getIdElement());
         method.setResource(newConceptMap);
         return method;
@@ -111,7 +111,7 @@ public class ConceptMapProvider implements ICCResourceProvider {
 	        method.setCreated(true);
 	        OperationOutcome opOutcome = new OperationOutcome();
 	        method.setOperationOutcome(opOutcome);
-	        ConceptMap newConceptMap = conceptMapDao.create(conceptMap);
+	        ConceptMap newConceptMap = conceptMapDao.create(ctx, conceptMap);
 	        method.setId(newConceptMap.getIdElement());
 	        method.setResource(newConceptMap);
 	        
@@ -228,7 +228,7 @@ public class ConceptMapProvider implements ICCResourceProvider {
 									if (results.size()>0) {
 										newVS.setId(results.get(0).getIdElement().getIdPart());
 									}
-									ConceptMap newConceptMap = conceptMapDao.create(newVS);
+									ConceptMap newConceptMap = conceptMapDao.create(ctx, newVS);
 									System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newConceptMap));
 									System.out.println("newConceptMap.getIdElement()" + newConceptMap.getIdElement());
 									// ConceptMapComposeComponent vscc = newVS.code .getCompose();

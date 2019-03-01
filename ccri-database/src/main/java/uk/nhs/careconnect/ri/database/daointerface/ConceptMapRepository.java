@@ -21,7 +21,7 @@ public interface ConceptMapRepository extends BaseRepository<ConceptMapEntity,Co
 //	void save(ConceptMapEntity conceptMap);
 
 
-    ConceptMap create(ConceptMap conceptMap);
+    ConceptMap create(FhirContext ctx, ConceptMap conceptMap);
 
   //  ConceptMap read(IdType theId) ;
  //   ValueSet create(FhirContext ctx,ValueSet valueSet)  throws OperationOutcomeException;
@@ -32,6 +32,12 @@ public interface ConceptMapRepository extends BaseRepository<ConceptMapEntity,Co
             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
             @OptionalParam(name = ValueSet.SP_URL) UriParam url
+    );
+
+    List<ConceptMapEntity> searchEntity (FhirContext ctx,
+                             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,
+                             @OptionalParam(name = ValueSet.SP_PUBLISHER) StringParam publisher,
+                             @OptionalParam(name = ValueSet.SP_URL) UriParam url
     );
 
 //    List<ConceptMap> searchConceptMap (

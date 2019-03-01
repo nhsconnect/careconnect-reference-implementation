@@ -15,15 +15,13 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transactional;
 
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.ConceptMap;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.ConceptMap.ConceptMapGroupComponent;
 import org.hl7.fhir.dstu3.model.ConceptMap.SourceElementComponent;
 import org.hl7.fhir.dstu3.model.ConceptMap.TargetElementComponent;
-import org.hl7.fhir.dstu3.model.IdType;
 
-import org.hl7.fhir.dstu3.model.UriType;
-import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +35,14 @@ import ca.uhn.fhir.rest.param.UriParam;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+
 import uk.nhs.careconnect.ri.dao.transforms.ConceptMapEntityToFHIRConceptMapTransformer;
-//import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
-//import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
-//import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeConcept;
-//import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIncludeFilter;
-import uk.nhs.careconnect.ri.dao.transforms.PatientEntityToFHIRPatientTransformer;
+
 
 
 @Repository
@@ -90,7 +83,7 @@ ConceptRepository conceptDao;
 	    
 	    @Transactional
 	    @Override
-	    public ConceptMap create(ConceptMap conceptMap) {
+	    public ConceptMap create(FhirContext ctx, ConceptMap conceptMap) {
 	    	
 	    //	System.out.println("call came to save Concept MAP : " + conceptMap.getUrlElement().getValue() );
 	        this.conceptMap = conceptMap;
@@ -103,17 +96,27 @@ ConceptRepository conceptDao;
 	        if (conceptMap.hasId()) {
 	            conceptMapEntity = findConceptMapEntity(conceptMap.getIdElement());
 	        }
-	        if(getExistingConceptMapEntity(conceptMap.getUrlElement() )==0)
-	        	{
+
+			if (conceptMap.hasUrl()) {
+				List<ConceptMapEntity> entries = searchEntity(ctx, null, null, new UriParam().setValue(conceptMap.getUrl()));
+				for (ConceptMapEntity nameSys : entries) {
+					if (conceptMap.getId() == null) {
+						throw new ResourceVersionConflictException("Url "+conceptMap.getUrl()+ " is already present on the system "+ nameSys.getId());
+					}
+
+					if (!nameSys.getId().equals(conceptMapEntity.getId())) {
+						throw new ResourceVersionConflictException("Url "+conceptMap.getUrl()+ " is already present on the system "+ nameSys.getId());
+					}
+				}
+			}
+	        
+	     //   if(getExistingConceptMapEntity(conceptMap.getUrlElement() )==0)
+	       // 	{
 			        if (conceptMapEntity == null)
 			        {
 			            conceptMapEntity = new ConceptMapEntity();
 			        }
-		
-			        if (conceptMap.hasId())
-			        {
-			            conceptMapEntity.setId(Long.parseLong(conceptMap.getId()));
-			        }
+			        // Removed Id
 			        if (conceptMap.hasUrl())
 			        {
 			        	conceptMapEntity.setUrl(conceptMap.getUrl());
@@ -137,14 +140,14 @@ ConceptRepository conceptDao;
 		       	log.info("Called PERSIST id="+conceptMapEntity.getId().toString());
 		        conceptMap.setId(conceptMapEntity.getId().toString());
 		        newConceptMapId = conceptMapEntity.getId();
-		      }
-		      else
-		      {
-		       	newConceptMapId = getExistingConceptMapEntity(conceptMap.getUrlElement() );
-		      }
+		   //   }
+		 //     else
+		//      {
+		//       	newConceptMapId = getExistingConceptMapEntity(conceptMap.getUrlElement() );
+		//      }
 			        
 			  System.out.println("newConceptMapId = " + newConceptMapId);    
-			  
+			  conceptMapEntity.setResource(null);
 			  for (ConceptMapGroupComponent cmGroup : conceptMap.getGroup()) 
 			  {
 				  conceptMapGroupEntity.setSource(cmGroup.getSource());
@@ -205,28 +208,27 @@ ConceptRepository conceptDao;
 	        // if null try a search on strId
 	        
 	            CriteriaBuilder builder =  em.getCriteriaBuilder();
-	            
-	            
 
-	            CriteriaQuery<ConceptMapEntity> criteria = builder.createQuery(ConceptMapEntity.class);
-	            Root<ConceptMapEntity> root = criteria.from(ConceptMapEntity.class);
-	            List<Predicate> predList = new LinkedList<Predicate>();
-	            Predicate p = builder.equal(root.<String>get("id"),theId.getIdPart());
-	            predList.add(p);
-	            Predicate[] predArray = new Predicate[predList.size()];
-	            predList.toArray(predArray);
-	            if (predList.size()>0)
-	            {
-	                criteria.select(root).where(predArray);
+			if (daoutils.isNumeric(theId.getIdPart())) {
 
-	                List<ConceptMapEntity> qryResults = em.createQuery(criteria).getResultList();
+				CriteriaQuery<ConceptMapEntity> criteria = builder.createQuery(ConceptMapEntity.class);
+				Root<ConceptMapEntity> root = criteria.from(ConceptMapEntity.class);
+				List<Predicate> predList = new LinkedList<Predicate>();
+				Predicate p = builder.equal(root.<String>get("id"), theId.getIdPart());
+				predList.add(p);
+				Predicate[] predArray = new Predicate[predList.size()];
+				predList.toArray(predArray);
+				if (predList.size() > 0) {
+					criteria.select(root).where(predArray);
 
-	                for (ConceptMapEntity cme : qryResults)
-	                {
-	                	conceptMapEntity = cme;
-	                    break;
-	                }
-	            }
+					List<ConceptMapEntity> qryResults = em.createQuery(criteria).getResultList();
+
+					for (ConceptMapEntity cme : qryResults) {
+						conceptMapEntity = cme;
+						break;
+					}
+				}
+			}
 	       // }
 	        return conceptMapEntity;
 	    }
@@ -252,8 +254,34 @@ ConceptRepository conceptDao;
 	      
 
 	    }
-	    
-	    public List<ConceptMap> search (FhirContext ctx,
+
+	public List<ConceptMap> search (FhirContext ctx,
+										  @OptionalParam(name = ConceptMap.SP_NAME) StringParam name,
+										  @OptionalParam(name = ConceptMap.SP_PUBLISHER) StringParam publisher,
+										  @OptionalParam(name = ConceptMap.SP_URL) UriParam url
+	) {
+		List<ConceptMapEntity> qryResults = searchEntity(ctx,name,publisher, url);
+		List<ConceptMap> results = new ArrayList<>();
+
+		for (ConceptMapEntity conceptmapEntity : qryResults)
+		{
+			if (conceptmapEntity.getResource() != null) {
+				results.add((ConceptMap) ctx.newJsonParser().parseResource(conceptmapEntity.getResource()));
+			} else {
+
+				ConceptMap conceptMap = conceptMapEntityToFHIRConceptMapTransformer.transform(conceptmapEntity);
+				String resource = ctx.newJsonParser().encodeResourceToString(conceptMap);
+				if (resource.length() < 10000) {
+					conceptmapEntity.setResource(resource);
+					em.persist(conceptmapEntity);
+				}
+				results.add(conceptMap);
+			}
+		}
+		return results;
+	}
+
+	    public List<ConceptMapEntity> searchEntity (FhirContext ctx,
 	            @OptionalParam(name = ConceptMap.SP_NAME) StringParam name,
 	            @OptionalParam(name = ConceptMap.SP_PUBLISHER) StringParam publisher,
 	            @OptionalParam(name = ConceptMap.SP_URL) UriParam url
@@ -268,7 +296,7 @@ ConceptRepository conceptDao;
 	       
 
 	        List<Predicate> predList = new LinkedList<Predicate>();
-	        List<ConceptMap> results = new ArrayList<ConceptMap>();
+
 
 	        if (name !=null)
 	        {
@@ -318,22 +346,7 @@ ConceptRepository conceptDao;
 
 	        qryResults = em.createQuery(criteria).setMaxResults(100).getResultList();
 
-	        for (ConceptMapEntity conceptmapEntity : qryResults)
-	        {
-	            if (conceptmapEntity.getResource() != null) {
-	                results.add((ConceptMap) ctx.newJsonParser().parseResource(conceptmapEntity.getResource()));
-	            } else {
-
-	            	ConceptMap conceptMap = conceptMapEntityToFHIRConceptMapTransformer.transform(conceptmapEntity);
-	                String resource = ctx.newJsonParser().encodeResourceToString(conceptMap);
-	                if (resource.length() < 10000) {
-	                	conceptmapEntity.setResource(resource);
-	                    em.persist(conceptmapEntity);
-	                }
-	                results.add(conceptMap);
-	            }
-	        }
-	        return results;
+	       return qryResults;
 	    }
 	    
 	    
