@@ -5,6 +5,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
+import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 
 @Component
@@ -19,7 +20,7 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
 
         Observation observation = new Observation();
         try {
-            Meta meta = new Meta(); //.addProfile(CareConnectITKProfile.Observation_1);
+            Meta meta = new Meta().addProfile(CareConnectProfile.Observation_1);
 
             if (observationEntity.getUpdated() != null) {
                 meta.setLastUpdated(observationEntity.getUpdated());
