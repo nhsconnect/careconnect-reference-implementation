@@ -62,7 +62,7 @@ public class ResourceTestProvider {
     	}
 
 		if (resourceToValidate == null) {
-			Exception e = new InternalErrorException("Failed conversion to FHIR Resource");
+			Exception e = new InternalErrorException("Failed conversion to FHIR Resource. (Check resource type matches validation endpoint)");
 			ProviderResponseLibrary.handleException(retVal,e);
 			return retVal;
 		}
