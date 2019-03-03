@@ -94,6 +94,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             graphEntity = new GraphDefinitionEntity();
         }
 
+        graphEntity.setResource(null);
 
 
         if (graph.hasUrl())

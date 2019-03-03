@@ -99,6 +99,7 @@ public class ValueSetDao implements ValueSetRepository {
             valueSetEntity = new ValueSetEntity();
         }
 
+        valueSetEntity.setResource(null);
 
         if (valueSet.hasId())
         {

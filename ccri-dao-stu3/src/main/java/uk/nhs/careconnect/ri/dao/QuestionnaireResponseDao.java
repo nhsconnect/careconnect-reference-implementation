@@ -443,6 +443,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             formEntity = new QuestionnaireResponseEntity();
         }
 
+        formEntity.setResource(null);
         formEntity.setStatus(form.getStatus());
 
         if (form.hasAuthored()) {

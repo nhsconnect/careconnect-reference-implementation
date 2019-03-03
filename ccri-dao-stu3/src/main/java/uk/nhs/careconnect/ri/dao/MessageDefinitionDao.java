@@ -102,6 +102,8 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
             messageDefinitionEntity = new MessageDefinitionEntity();
         }
 
+        messageDefinitionEntity.setResource(null);
+
         if (messageDefinition.hasUrl())
         {
             messageDefinitionEntity.setUrl(messageDefinition.getUrl());

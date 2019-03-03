@@ -113,6 +113,7 @@ ConceptRepository conceptDao;
 					}
 				}
 			}
+			conceptMapEntity.setResource(null);
 	        
 	     //   if(getExistingConceptMapEntity(conceptMap.getUrlElement() )==0)
 	       // 	{

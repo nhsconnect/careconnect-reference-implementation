@@ -106,6 +106,7 @@ public class NamingSystemDao implements NamingSystemRepository {
             namingSystemEntity = new NamingSystemEntity();
         }
 
+        namingSystemEntity.setResource(null);
 
 
         if (namingSystem.hasName())

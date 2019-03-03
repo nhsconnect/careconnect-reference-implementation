@@ -127,7 +127,7 @@ public class CodeSystemDao implements CodeSystemRepository {
             codeSystemEntity = new CodeSystemEntity();
         }
 
-
+        codeSystemEntity.setResource(null);
 
         if (codeSystem.hasUrl())
         {
