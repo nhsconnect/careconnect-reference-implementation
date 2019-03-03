@@ -91,11 +91,11 @@ public class NamingSystemDao implements NamingSystemRepository {
            List<NamingSystemEntity> entries = searchEntity(ctx, null, null, new TokenParam().setValue(component.getValue()));
            for (NamingSystemEntity nameSys : entries) {
                if (namingSystem.getId() == null) {
-                   throw new ResourceVersionConflictException("Unique identifier "+component.getValue()+ " is already present on the system "+ nameSys.getId());
+                   throw new ResourceVersionConflictException("NamingSystem Unique identifier "+component.getValue()+ " is already present on the system "+ nameSys.getId());
                }
 
                if (!nameSys.getId().equals(namingSystemEntity.getId())) {
-                   throw new ResourceVersionConflictException("Unique identifier "+component.getValue()+ " is already present on the system "+ nameSys.getId());
+                   throw new ResourceVersionConflictException("NamingSystem Unique identifier "+component.getValue()+ " is already present on the system "+ nameSys.getId());
                }
            }
        }

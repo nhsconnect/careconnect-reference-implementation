@@ -81,11 +81,11 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         List<GraphDefinitionEntity> entries = searchEntity(ctx, null, null, new UriParam().setValue(graph.getUrl()));
         for (GraphDefinitionEntity msg : entries) {
             if (graph.getId() == null) {
-                throw new ResourceVersionConflictException("Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
+                throw new ResourceVersionConflictException("GraphDefinition Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
 
             if (!msg.getId().toString().equals(graph.getIdElement().getIdPart())) {
-                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+                throw new ResourceVersionConflictException("GraphDefinition url "+msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
         }
 

@@ -118,7 +118,7 @@ public class CodeSystemDao implements CodeSystemRepository {
             }
 
             if (!msg.getId().toString().equals(codeSystem.getIdElement().getIdPart())) {
-                throw new ResourceVersionConflictException("Unique identifier "+msg.getCodeSystemUri()+ " is already present on the system "+ msg.getId());
+                throw new ResourceVersionConflictException("CodeSystem Url "+msg.getCodeSystemUri()+ " is already present on the system "+ msg.getId());
             }
         }
 

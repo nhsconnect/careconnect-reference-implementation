@@ -251,7 +251,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             }
 
             if (!msg.getId().toString().equals(questionnaire.getIdElement().getIdPart())) {
-                throw new ResourceVersionConflictException("Unique identifier "+msg.getUrl()+ " is already present on the system "+ msg.getId());
+                throw new ResourceVersionConflictException("Questionnaire url "+msg.getUrl()+ " is already present on the system "+ msg.getId());
             }
         }
         /*
