@@ -38,7 +38,7 @@ services:
       - ccri.server=Care Connect API (unsecured)
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-      - ccri.tkw_server=http://tkwvalidation:8116/$validate
+      - ccri.tkw_server=http://tkwvalidation:4849/$validate
     ports:
       - 8105:8186
     extra_hosts:
@@ -141,6 +141,7 @@ services:
       - jolokia.jmxendpoint.ccportal=http4://cc-portal:8187/cc-portal?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.tkw=http4://tkwvalidation:4849/?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
