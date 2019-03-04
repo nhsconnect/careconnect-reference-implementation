@@ -59,6 +59,13 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             questionnaire.setName(questionnaireEntity.getName());
         }
 
+        if (questionnaireEntity.getPublisher() != null) {
+            questionnaire.setPublisher(questionnaireEntity.getPublisher());
+        }
+        if (questionnaireEntity.getCopyright() != null) {
+            questionnaire.setCopyright(questionnaireEntity.getCopyright());
+        }
+
         if (questionnaireEntity.getPurpose() != null) {
             questionnaire.setPurpose(questionnaireEntity.getPurpose());
         }

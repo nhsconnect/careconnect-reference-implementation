@@ -67,6 +67,12 @@ public class QuestionnaireEntity extends BaseResource {
     @Column(name = "PURPOSE", length = MAX_DESC_LENGTH)
     private String purpose;
 
+    @Column(name = "PUBLISHER")
+    private String publisher;
+
+    @Column(name = "COPYRIGHT")
+    private String copyright;
+
     @Column(name = "DESCRIPTION", length = MAX_DESC_LENGTH)
     private String description;
 
@@ -204,5 +210,21 @@ public class QuestionnaireEntity extends BaseResource {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
     }
 }
