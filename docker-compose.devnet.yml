@@ -217,7 +217,7 @@ services:
     ports:
       - 8116:4849
     volumes:
-      - /docker:/home/service/data
+      - /docker-data:/home/service/data
     networks:
       - ccri_net
 
