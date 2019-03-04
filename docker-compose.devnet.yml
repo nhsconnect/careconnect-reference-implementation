@@ -242,8 +242,8 @@ services:
     container_name: ccridocumentviewer
     image: ${REGISTRY_PREFIX}ccri-documentviewer${IMAGE_TAG}
     environment:
-      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
     ports:
       - 8108:4201
     extra_hosts:
