@@ -35,13 +35,16 @@ public class QuestionnaireResponseEntity extends BaseResource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "QUESTIONNAIRE_ID",foreignKey= @ForeignKey(name="FK_FORM_QUESTIONNAIRE_ID"))
-    private QuestionnaireEntity questionnaire;
+    private QuestionnaireEntity xxquestionnaire;
+
+    @Column (name = "QUESTIONNAIRE_URI")
+    private String questionnaire;
 
     @Column (name = "QUESTIONNAIRE_IDENTIFIER_SYSTEM")
-    private String questionnaireIdSystem;
+    private String xxquestionnaireIdSystem;
 
     @Column (name = "QUESTIONNAIRE_IDENTIFIER_VALUE")
-    private String questionnaireIdValue;
+    private String xxquestionnaireIdValue;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
@@ -191,14 +194,6 @@ public class QuestionnaireResponseEntity extends BaseResource {
         this.authorPractitioner = authorPractitioner;
     }
 
-    public QuestionnaireEntity getQuestionnaire() {
-        return questionnaire;
-    }
-
-    public void setQuestionnaire(QuestionnaireEntity questionnaire) {
-        this.questionnaire = questionnaire;
-    }
-
     public Set<QuestionnaireResponseItem> getItems() {
         return items;
     }
@@ -207,19 +202,11 @@ public class QuestionnaireResponseEntity extends BaseResource {
         this.items = items;
     }
 
-    public String getQuestionnaireIdSystem() {
-        return questionnaireIdSystem;
+    public String getQuestionnaire() {
+        return questionnaire;
     }
 
-    public void setQuestionnaireIdSystem(String questionnaireIdSystem) {
-        this.questionnaireIdSystem = questionnaireIdSystem;
-    }
-
-    public String getQuestionnaireIdValue() {
-        return questionnaireIdValue;
-    }
-
-    public void setQuestionnaireIdValue(String questionnaireIdValue) {
-        this.questionnaireIdValue = questionnaireIdValue;
+    public void setQuestionnaire(String questionnaire) {
+        this.questionnaire = questionnaire;
     }
 }

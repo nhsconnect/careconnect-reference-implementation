@@ -79,15 +79,15 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             form.setSubject(new Reference("Patient/"+formEntity.getPatient().getId()).setDisplay(formEntity.getPatient().getNames().get(0).getDisplayName()));
         }
         if (formEntity.getQuestionnaire() != null) {
-            form.setQuestionnaire(new Reference("Questionnaire/"+formEntity.getQuestionnaire().getId()).setDisplay(formEntity.getQuestionnaire().getName()));
+            form.setQuestionnaire(new Reference(formEntity.getQuestionnaire()));
         }
-        if (formEntity.getQuestionnaireIdValue() != null) {
+       /* if (formEntity.getQuestionnaireIdValue() != null) {
             Reference id = new Reference();
                     id.getIdentifier()
                     .setSystem(formEntity.getQuestionnaireIdSystem())
                     .setValue((formEntity.getQuestionnaireIdValue()));
             form.setQuestionnaire(id);
-        }
+        }*/
         if (formEntity.getSourcePatient() != null) {
             form.setSource(new Reference("Patient/"+formEntity.getSourcePatient().getId()).setDisplay(formEntity.getSourcePatient().getNames().get(0).getDisplayName()));
         }

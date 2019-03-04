@@ -43,9 +43,6 @@ import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
 
 import uk.nhs.careconnect.ri.dao.transforms.ConceptMapEntityToFHIRConceptMapTransformer;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
-
 
 @Repository
 @Transactional

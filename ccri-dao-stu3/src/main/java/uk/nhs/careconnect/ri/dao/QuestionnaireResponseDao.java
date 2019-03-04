@@ -313,7 +313,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
             }
             if (resid != null) {
-                Predicate p = builder.equal(root.get("id"),resid.getValue());
+                Predicate p = builder.equal(root.get("questionnaire"),resid.getValue());
                 predList.add(p);
             }
 
@@ -332,8 +332,9 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             }
 
             if (questionnaire != null) {
-
-
+                Predicate p = builder.equal(root.get(""),questionnaire.getValue());
+                predList.add(p);
+                    /*
                 if (questionnaire.getValue() != null) { log.info("value - " + questionnaire.getValue()); }
                 if (questionnaire.getQueryParameterQualifier() != null) { log.info("QueryParam - " + questionnaire.getQueryParameterQualifier()); }
                 //if (questionnaire.getChain() != null) { log.info("chain - " + questionnaire.getChain()); }
@@ -360,6 +361,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                         predList.add(p);
                     }
                 }
+                */
             }
 
 
@@ -492,13 +494,14 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         if (form.hasQuestionnaire()) {
             if (form.getQuestionnaire().hasReference()) {
-                QuestionnaireEntity questionnaireEntity = questionnaireDao.readEntity(ctx, new IdType(form.getQuestionnaire().getReference()));
-                formEntity.setQuestionnaire(questionnaireEntity);
+                //QuestionnaireEntity questionnaireEntity = questionnaireDao.readEntity(ctx, new IdType(form.getQuestionnaire().getReference()));
+                formEntity.setQuestionnaire(form.getQuestionnaire().getReference());
             }
+            /*
             if (form.getQuestionnaire().hasIdentifier()) {
                 formEntity.setQuestionnaireIdSystem(form.getQuestionnaire().getIdentifier().getSystem());
                 formEntity.setQuestionnaireIdValue(form.getQuestionnaire().getIdentifier().getValue());
-            }
+            }*/
         }
         if (form.hasSource()) {
             if (form.getSource().getReference().contains("Patient")) {
