@@ -93,9 +93,9 @@ services:
     container_name: ccrimessaging
     image: ${REGISTRY_PREFIX}ccri-messaging${IMAGE_TAG}
     environment:
-      - fhir.restserver.serverBase=http4://ccrifhir:8186/ccri-fhirserver/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccriintegration:8182/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.serverBase=http4://ccrifhir:8186/ccri-fhir/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tieBase=http4://ccrimessaging:8182/ccri-messaging/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - ccri.software.version=3.7
@@ -137,9 +137,9 @@ services:
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - jolokia.jmxendpoint.ccriserver=http4://ccrifhir:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccportal=http4://cc-portal:8187/cc-portal/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
@@ -158,9 +158,6 @@ services:
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - jolokia.jmxendpoint.ccriserver=http4://ccrifhir:8186/ccri-fhirserver/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccriintegration=http4://ccriintegration:8182/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
@@ -198,7 +195,7 @@ services:
      links:
        - ccrimongo
      environment:
-       - fhir.resource.serverBase=http://127.0.0.1:8080/careconnect-gateway/STU3
+       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
@@ -246,7 +243,7 @@ services:
     image: ${REGISTRY_PREFIX}ccri-documentviewer${IMAGE_TAG}
     environment:
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
     ports:
       - 8108:4201
     extra_hosts:
