@@ -137,9 +137,9 @@ services:
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - jolokia.jmxendpoint.ccportal=http4://cc-portal:8187/cc-portal/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccportal=http4://cc-portal:8187/cc-portal?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
