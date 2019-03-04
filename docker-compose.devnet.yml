@@ -38,6 +38,7 @@ services:
       - ccri.server=Care Connect API (unsecured)
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
+      - ccri.tkw_server=http://tkwvalidation:4849/$validate
     ports:
       - 8105:8186
     extra_hosts:
@@ -208,6 +209,16 @@ services:
        - mongo-log-volume:/usr/local/tomcat/logs
      networks:
        - ccri_net
+
+  tkwvalidation:
+    container_name: tkwvalidation
+    image: damianmurphy/fhir_production_validator:20190301
+    ports:
+      - 4849:4849
+    volumes:
+    - /docker:/home/service/data
+    networks:
+      - ccri_net
 
   oauthsql:
     container_name: oauthsql
