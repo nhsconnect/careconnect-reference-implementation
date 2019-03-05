@@ -96,12 +96,13 @@ services:
     environment:
       - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tkwBase=http4://tkwvalidation:4949?throwExceptionOnFailure=true&bridgeEndpoint=true
+      - ccri.epr.server.base=http://ccrifhir:8186/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - ccri.software.version=3.7
       - ccri.software.name=CCRI-Messaging
       - ccri.server=Care Connect API (unsecured)
-      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccrifhir
