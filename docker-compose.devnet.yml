@@ -211,6 +211,15 @@ services:
      networks:
        - ccri_net
 
+  tkwvalidation:
+    container_name: tkwvalidation
+    image: damianmurphy/fhir_production_validator:20190301
+    ports:
+      - 8116:4849
+    volumes:
+      - /docker-data:/home/service/data
+    networks:
+      - ccri_net
 
   oauthsql:
     container_name: oauthsql
