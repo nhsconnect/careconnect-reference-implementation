@@ -332,7 +332,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
             }
 
             if (questionnaire != null) {
-                Predicate p = builder.equal(root.get(""),questionnaire.getValue());
+                Predicate p = builder.equal(root.get("questionnaire"),questionnaire.getValue());
                 predList.add(p);
                     /*
                 if (questionnaire.getValue() != null) { log.info("value - " + questionnaire.getValue()); }

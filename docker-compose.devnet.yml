@@ -94,9 +94,8 @@ services:
     container_name: ccrimessaging
     image: ${REGISTRY_PREFIX}ccri-messaging${IMAGE_TAG}
     environment:
-      - fhir.restserver.serverBase=http4://ccrifhir:8186/ccri-fhir/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tieBase=http4://ccrimessaging:8182/ccri-messaging/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.tkwBase=http4://tkwvalidation:4949?throwExceptionOnFailure=true&bridgeEndpoint=true
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - ccri.software.version=3.7

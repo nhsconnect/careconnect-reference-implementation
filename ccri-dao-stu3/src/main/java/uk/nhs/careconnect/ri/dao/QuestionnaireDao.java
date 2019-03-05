@@ -83,12 +83,15 @@ public class QuestionnaireDao implements QuestionnaireRepository {
             } else {
 
                 Questionnaire questionnaire = questionnaireEntityToFHIRQuestionnaireTransformer.transform(form);
+                /*
                 String resource = ctx.newJsonParser().encodeResourceToString(questionnaire);
                 if (resource.length() < 10000) {
                     form.setResource(resource);
                     em.persist(form);
                 }
+                */
                 results.add(questionnaire);
+
             }
         }
 
