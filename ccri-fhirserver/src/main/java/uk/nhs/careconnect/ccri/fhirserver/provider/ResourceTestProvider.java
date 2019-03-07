@@ -29,6 +29,8 @@ import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -115,12 +117,27 @@ public class ResourceTestProvider {
 				ProviderResponseLibrary.handleException(retVal, e);
 			}
 		} else {
-			retVal.setOperationOutcome(validateResource(resourceToValidate));
-			if (resourceToValidate instanceof Bundle) {
+			OperationOutcome outcome = validateResource(resourceToValidate);
+			List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
+			for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+				Boolean remove = false;
 
-			} else {
-
+				if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
+					remove = true;
+				}
+				if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
+					remove = true;
+				}
+				if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
+					remove = true;
+				}
+				if (remove) {
+					log.info("Stripped "+issue.getDiagnostics());
+					issueRemove.add(issue);
+				}
 			}
+			outcome.getIssue().removeAll(issueRemove);
+			retVal.setOperationOutcome(outcome);
 		}
         return retVal;
 
