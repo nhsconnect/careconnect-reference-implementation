@@ -41,9 +41,9 @@ public class MedicationStatementEntityToFHIRMedicationStatementTransformer imple
             medicationStatement.setMeta(meta);
 
             for (MedicationStatementIdentifier identifier : medicationStatementEntity.getIdentifiers()) {
-                medicationStatement.addIdentifier()
-                        .setSystem(identifier.getSystem().getUri())
-                        .setValue(identifier.getValue());
+                Identifier ident = medicationStatement.addIdentifier();
+                if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+                if (identifier.getValue() != null) ident.setValue(identifier.getValue());
             }
             if (medicationStatementEntity.getPatient() != null) {
                 medicationStatement.setSubject(new Reference("Patient/" + medicationStatementEntity.getPatient().getId()));

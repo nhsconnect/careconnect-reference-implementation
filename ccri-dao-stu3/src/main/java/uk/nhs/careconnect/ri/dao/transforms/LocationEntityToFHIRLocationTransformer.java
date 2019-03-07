@@ -1,15 +1,13 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.Location;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
+import uk.nhs.careconnect.ri.database.entity.location.LocationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.location.LocationTelecom;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
@@ -41,11 +39,11 @@ public class LocationEntityToFHIRLocationTransformer implements Transformer<Loca
         }
         location.setMeta(meta);
 
-        for(int f=0;f<locationEntity.getIdentifiers().size();f++)
+        for(LocationIdentifier identifier : locationEntity.getIdentifiers())
         {
-            location.addIdentifier()
-                    .setSystem(locationEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(locationEntity.getIdentifiers().get(f).getValue());
+            Identifier ident = location.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
 

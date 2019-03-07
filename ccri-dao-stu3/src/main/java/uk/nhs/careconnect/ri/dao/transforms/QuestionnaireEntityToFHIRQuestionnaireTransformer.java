@@ -44,9 +44,9 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
 
         for(QuestionnaireIdentifier identifier : questionnaireEntity.getIdentifiers())
         {
-            questionnaire.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = questionnaire.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
 

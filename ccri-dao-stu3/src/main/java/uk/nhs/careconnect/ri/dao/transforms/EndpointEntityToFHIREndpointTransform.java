@@ -2,12 +2,14 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Endpoint;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointEntity;
+import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointIdentifier;
 
 @Component
 public class EndpointEntityToFHIREndpointTransform implements Transformer<EndpointEntity, Endpoint> {
@@ -34,11 +36,11 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
 
 
 
-        for(int f=0;f<endpointEntity.getIdentifiers().size();f++)
+        for(EndpointIdentifier identifier: endpointEntity.getIdentifiers())
         {
-            endpoint.addIdentifier()
-                    .setSystem(endpointEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(endpointEntity.getIdentifiers().get(f).getValue());
+            Identifier ident = endpoint.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         endpoint.setId(endpointEntity.getId().toString());

@@ -39,9 +39,9 @@ public class FlagEntityToFHIRFlagTransformer implements Transformer<FlagEntity
 
         for(FlagIdentifier identifier : flagEntity.getIdentifiers())
         {
-            flag.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident =flag.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         if (flagEntity.getStatus() != null){

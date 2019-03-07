@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerAddress;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
+import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 @Component
@@ -44,13 +46,12 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
             practitioner.setActive(practitionerEntity.getActive());
         }
 
-        for(int f=0;f<practitionerEntity.getIdentifiers().size();f++)
+        for(PractitionerIdentifier identifier :practitionerEntity.getIdentifiers())
         {
-            practitioner.addIdentifier()
-                    .setSystem(practitionerEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(practitionerEntity.getIdentifiers().get(f).getValue());
+            Identifier ident = practitioner.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
-
 
         practitioner.setId(practitionerEntity.getId().toString());
 

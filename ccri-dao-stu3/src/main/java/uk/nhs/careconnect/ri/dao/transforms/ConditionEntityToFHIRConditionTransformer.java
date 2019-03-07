@@ -98,9 +98,9 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
                 }
             }
             for (ConditionIdentifier identifier : conditionEntity.getIdentifiers()) {
-                condition.addIdentifier()
-                        .setSystem(identifier.getSystem().getUri())
-                        .setValue(identifier.getValue());
+                Identifier ident = condition.addIdentifier();
+                if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+                if (identifier.getValue() != null) ident.setValue(identifier.getValue());
             }
             for (ConditionNote conditionNote : conditionEntity.getNotes()) {
                 Annotation annotation = condition.addNote();

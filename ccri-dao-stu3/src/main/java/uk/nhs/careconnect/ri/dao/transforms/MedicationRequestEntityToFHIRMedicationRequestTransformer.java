@@ -45,10 +45,11 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
 
         for(MedicationRequestIdentifier identifier : medicationRequestEntity.getIdentifiers())
         {
-            medicationRequest.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = medicationRequest.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
+
         if (medicationRequestEntity.getPatient() != null) {
             medicationRequest.setSubject(new Reference("Patient/"+medicationRequestEntity.getPatient().getId()));
         }

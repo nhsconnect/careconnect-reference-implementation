@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Slot;
@@ -35,9 +36,9 @@ public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, 
 
         for(SlotIdentifier identifier : slotEntity.getIdentifiers())
         {
-            slot.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = slot.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         if (slotEntity.getServiceCategory() != null) {

@@ -39,9 +39,9 @@ public class ListEntityToFHIRListResourceTransformer implements Transformer<List
 
         for(ListIdentifier identifier : listEntity.getIdentifiers())
         {
-            list.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = list.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         if (listEntity.getStatus() != null){

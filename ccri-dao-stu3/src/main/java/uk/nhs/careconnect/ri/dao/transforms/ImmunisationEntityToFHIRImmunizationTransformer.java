@@ -108,9 +108,9 @@ public class ImmunisationEntityToFHIRImmunizationTransformer implements Transfor
 
 
         for (ImmunisationIdentifier identifier : immunisationEntity.getIdentifiers()) {
-            immunisation.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = immunisation.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
         if (immunisationEntity.getReportOrigin() != null) {
             immunisation.getReportOrigin().addCoding()

@@ -89,9 +89,9 @@ public class ClinicalImpressionEntityToFHIRClinicalImpressionTransformer impleme
         }
 
         for (ClinicalImpressionIdentifier identifier : impressionAssessmentEntity.getIdentifiers()) {
-            impressionAssessment.addIdentifier()
-                .setSystem(identifier.getSystem().getUri())
-                .setValue(identifier.getValue());
+            Identifier ident = impressionAssessment.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         for (ClinicalImpressionFinding findingEntity : impressionAssessmentEntity.getFindings()) {

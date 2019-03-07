@@ -82,9 +82,9 @@ public class CareTeamEntityToFHIRCareTeamTransformer implements Transformer<Care
         }
 
         for (CareTeamIdentifier identifier : careTeamEntity.getIdentifiers()) {
-            careTeam.addIdentifier()
-                .setSystem(identifier.getSystem().getUri())
-                .setValue(identifier.getValue());
+            Identifier ident = careTeam.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         for (CareTeamMember careTeamMember : careTeamEntity.getMembers()) {

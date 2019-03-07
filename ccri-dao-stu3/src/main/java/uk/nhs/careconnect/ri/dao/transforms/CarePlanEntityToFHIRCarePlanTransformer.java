@@ -119,9 +119,9 @@ public class CarePlanEntityToFHIRCarePlanTransformer implements Transformer<Care
         }
 
         for (CarePlanIdentifier identifier : carePlanEntity.getIdentifiers()) {
-            carePlan.addIdentifier()
-                .setSystem(identifier.getSystem().getUri())
-                .setValue(identifier.getValue());
+            Identifier ident = carePlan.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         for (CarePlanAuthor author : carePlanEntity.getAuthors()) {

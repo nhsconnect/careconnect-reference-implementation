@@ -41,13 +41,11 @@ public class RelatedPersonEntityToFHIRRelatedPersonTransformer implements Transf
 
         person.setId(personEntity.getId().toString());
 
-        for(RelatedPersonIdentifier personIdentifier : personEntity.getIdentifiers()) {
-            Identifier identifier =  person.addIdentifier();
-
-            identifier.setSystem(personIdentifier.getSystemUri()).setValue(personIdentifier.getValue());
-
+        for(RelatedPersonIdentifier identifier : personEntity.getIdentifiers()) {
+            Identifier ident = person.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
-
 
         Boolean officialFound = false;
         for (RelatedPersonName nameEntity : personEntity.getNames()) {

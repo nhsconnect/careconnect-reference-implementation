@@ -2,14 +2,12 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Organization;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationAddress;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.organization.OrganisationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationTelecom;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
@@ -42,11 +40,11 @@ public class OrganisationEntityToFHIROrganizationTransformer implements Transfor
         }
         organisation.setMeta(meta);
 
-        for(int f=0;f<organisationEntity.getIdentifiers().size();f++)
+        for(OrganisationIdentifier identifier : organisationEntity.getIdentifiers())
         {
-            organisation.addIdentifier()
-                    .setSystem(organisationEntity.getIdentifiers().get(f).getSystem().getUri())
-                    .setValue(organisationEntity.getIdentifiers().get(f).getValue());
+            Identifier ident = organisation.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
 

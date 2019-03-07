@@ -46,9 +46,9 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
 
         for(QuestionnaireResponseIdentifier identifier : formEntity.getIdentifiers())
         {
-            form.getIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = form.getIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         if (formEntity.getAuthoredDateTime() != null) {

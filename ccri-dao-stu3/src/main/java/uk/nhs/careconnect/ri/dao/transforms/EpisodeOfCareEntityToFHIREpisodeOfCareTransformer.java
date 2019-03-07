@@ -1,10 +1,7 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.EpisodeOfCare;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareEntity;
 import uk.nhs.careconnect.ri.database.entity.episode.EpisodeOfCareIdentifier;
@@ -35,10 +32,11 @@ public class EpisodeOfCareEntityToFHIREpisodeOfCareTransformer implements Transf
 
         for(EpisodeOfCareIdentifier identifier : episodeEntity.getIdentifiers())
         {
-            episode.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = episode.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
+
         if (episodeEntity.getCareManager() != null) {
             episode.setCareManager(new Reference("Practitioner/"+episodeEntity.getCareManager().getId()));
             episode.getCareManager().setDisplay(episodeEntity.getCareManager().getNames().get(0).getDisplayName());

@@ -289,9 +289,9 @@ public class ObservationEntityToFHIRObservationTransformer implements Transforme
             observation.setStatus(observationEntity.getStatus());
 
             for (ObservationIdentifier identifier : observationEntity.getIdentifiers()) {
-                observation.addIdentifier()
-                        .setSystem(identifier.getSystem().getUri())
-                        .setValue(identifier.getValue());
+                Identifier ident = observation.addIdentifier();
+                if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+                if (identifier.getValue() != null) ident.setValue(identifier.getValue());
             }
         }
         catch (Exception ex) {

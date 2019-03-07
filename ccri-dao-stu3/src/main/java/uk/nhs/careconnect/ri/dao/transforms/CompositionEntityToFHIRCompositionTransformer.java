@@ -115,9 +115,9 @@ public class CompositionEntityToFHIRCompositionTransformer implements Transforme
         }
 
         for (CompositionIdentifier identifier : compositionEntity.getIdentifiers()) {
-            composition.getIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = composition.getIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         return composition;

@@ -34,9 +34,9 @@ public class ReferralRequestEntityToFHIRReferralRequestTransformer implements Tr
 
         for(ReferralRequestIdentifier identifier : referralRequestEntity.getIdentifiers())
         {
-            referral.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = referral.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
 

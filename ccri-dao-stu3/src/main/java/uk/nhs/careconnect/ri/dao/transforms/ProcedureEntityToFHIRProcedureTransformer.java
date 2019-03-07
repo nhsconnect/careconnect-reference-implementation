@@ -124,10 +124,11 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
             }
         }
         for (ProcedureIdentifier identifier : procedureEntity.getIdentifiers()) {
-            procedure.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = procedure.addIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
+
     }
     catch (Exception ex) {
         log.error(ex.getMessage());

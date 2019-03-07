@@ -46,29 +46,29 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
 
         for(PatientIdentifier patientIdentifier : patientEntity.getIdentifiers())
         {
-            Identifier identifier = patient.addIdentifier()
-                    .setSystem(patientIdentifier.getSystemUri())
-                    .setValue(patientIdentifier.getValue());
-                    //.setUse(Identifier.IdentifierUse.SECONDARY);
+            Identifier identifier = patient.addIdentifier();
+            if (patientIdentifier.getSystem() != null) identifier.setSystem(patientIdentifier.getSystem().getUri());
+            if (patientIdentifier.getValue() != null) identifier.setValue(patientIdentifier.getValue());
 
-            if (identifier.getSystem().equals("https://fhir.leedsth.nhs.uk/Id/PPMIdentifier")) {
-                //identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+
+            if (identifier.getSystem() != null) {
+                // NHS Verification Status
+                if ((patientIdentifier.getSystemUri().equals(CareConnectSystem.NHSNumber))
+                        && (patientEntity.getNHSVerificationCode() != null)) {
+                    //identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+                    CodeableConcept verificationStatusCode = new CodeableConcept();
+                    verificationStatusCode
+                            .addCoding()
+                            .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
+                            .setDisplay(patientEntity.getNHSVerificationCode().getDisplay())
+                            .setCode(patientEntity.getNHSVerificationCode().getCode());
+                    Extension verificationStatus = new Extension()
+                            .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
+                            .setValue(verificationStatusCode);
+                    identifier.addExtension(verificationStatus);
+                }
             }
-           // NHS Verification Status
-            if ( (patientIdentifier.getSystemUri().equals(CareConnectSystem.NHSNumber))
-                    && (patientEntity.getNHSVerificationCode() != null)) {
-                //identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
-                CodeableConcept verificationStatusCode = new CodeableConcept();
-                verificationStatusCode
-                        .addCoding()
-                        .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
-                        .setDisplay(patientEntity.getNHSVerificationCode().getDisplay())
-                        .setCode(patientEntity.getNHSVerificationCode().getCode());
-                Extension verificationStatus = new Extension()
-                        .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
-                        .setValue(verificationStatusCode);
-                identifier.addExtension(verificationStatus);
-            }
+
 
         }
 

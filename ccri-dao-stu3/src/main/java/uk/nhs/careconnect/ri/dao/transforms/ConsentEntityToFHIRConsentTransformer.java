@@ -62,9 +62,9 @@ public class ConsentEntityToFHIRConsentTransformer implements Transformer<Consen
 
 
         for (ConsentIdentifier identifier : consentEntity.getIdentifiers()) {
-            consent.getIdentifier()
-                .setSystem(identifier.getSystem().getUri())
-                .setValue(identifier.getValue());
+            Identifier ident = consent.getIdentifier();
+            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
+            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
         }
 
         for (ConsentActor consentActor : consentEntity.getActors()) {
