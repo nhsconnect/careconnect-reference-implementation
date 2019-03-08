@@ -127,7 +127,7 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             } else if (answerEntity.getValueString() != null) {
                 answer.setValue(new StringType(answerEntity.getValueString()));
             } else if (answerEntity.getValueDate() != null) {
-                answer.setValue(new DateType().setValue(answerEntity.getValueDate()));
+                answer.setValue(new DateTimeType().setValue(answerEntity.getValueDate()));
             } else if (answerEntity.getValueCoding() != null) {
                 answer.setValue(new Coding()
                         .setCode(answerEntity.getValueCoding().getCode())
@@ -166,6 +166,9 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
             }
             else if (answerEntity.getReferencePerson() != null) {
                 answer.setValue(new Reference("RelatedPerson/"+answerEntity.getReferencePerson().getId()));
+            }
+            else if (answerEntity.getReferenceProcedure() != null) {
+                answer.setValue(new Reference("Procedure/"+answerEntity.getReferenceProcedure().getId()));
             }
 
         }
