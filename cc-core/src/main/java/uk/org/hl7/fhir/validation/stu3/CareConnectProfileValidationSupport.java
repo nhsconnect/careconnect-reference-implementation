@@ -372,6 +372,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
     private IBaseResource doCCRIGetQuestionnaire(final String theUrl) {
         if (client == null && this.questionnaireServer !=null) {
+            log.info("Alternate source for profiles "+this.questionnaireServer);
             client = ctx.newRestfulGenericClient(this.questionnaireServer);
 
             Bundle results = client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(theUrl)).returnBundle(Bundle.class).execute();

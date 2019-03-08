@@ -162,55 +162,11 @@ public class ResourceTestProvider {
 
 
 	public OperationOutcome validateResource(IBaseResource resource) {
-		OperationOutcome outcome = null;
+
 		ValidationResult results = val.validateWithResult(resource);
 
-		outcome = (OperationOutcome) results.toOperationOutcome();
-		/*
-		if (bundle != null) {
-			for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-				Resource resource = entry.getResource();
+		return (OperationOutcome) results.toOperationOutcome();
 
-				ValidationResult results = val.validateWithResult(resource);
-
-
-				outcome = (OperationOutcome) results.toOperationOutcome();
-
-
-				StringBuilder b = new StringBuilder("Validation results:" + ansi().boldOff());
-				int count = 0;
-				for (SingleValidationMessage next : results.getMessages()) {
-					// We are not used a UK Terminology server and can't expand resources at present. Hence ignoring these errors/warnings
-					if (next.getMessage().contains("and a code from this value set is required") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-						System.out.println("match **");
-					} else if (next.getMessage().contains("a code is required from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-						System.out.println("match ** ** ");
-					} else if (next.getMessage().contains("and a code is recommended to come from this value set") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-						System.out.println("match ** ** **");
-					} else if (next.getMessage().contains("and a code is recommended to come from this value set") && next.getMessage().contains("https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-ConditionCategory-1")) {
-						System.out.println("match ** ** **");
-					} else if (next.getMessage().contains("and a code should come from this value set unless it has no suitable code") && next.getMessage().contains(CareConnectSystem.SNOMEDCT)) {
-						System.out.println("match ** ** ** **");
-					} else if (next.getMessage().contains("and a code should come from this value set unless it has no suitable code") && next.getMessage().contains("https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-ConditionCategory-1")) {
-						System.out.println("match ** ** ** **");
-					} else if (next.getMessage().contains("path Patient.name (fhirPath = true and (use memberOf")) {
-						System.out.println("** ** ** Code Issue ValueSet expansion not implemented in instanceValidator" );
-					} else if (next.getMessage().contains("Error Multiple filters not handled yet")) {
-						System.out.println("** ** ** multiple filters in ValueSet not implemented" );
-					} else {
-
-						count++;
-
-						String message ="HL7 FHIR CareConnect Validation - "+next.getSeverity() + " " + next.getMessage()+ " Resource="+resource.getResourceType().toString()+"/"+resource.getIdElement().getIdPart();
-						System.out.println(message);
-						outcome.addIssue()
-								.setCode(next.getSeverity())
-					}
-				}
-
-			}
-		}*/
-		return outcome;
 	}
 
 }
