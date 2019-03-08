@@ -72,7 +72,7 @@ public class QuestionnaireItem extends BaseResource {
 	private Set<QuestionnaireItemOptions> options = new HashSet<>();
 
 	@OneToMany(mappedBy="questionnaireParentItem", targetEntity=QuestionnaireItem.class)
-	@OrderBy(value = "linkId ASC")
+	@OrderBy(value = "itemId ASC")
 	private Set<QuestionnaireItem> childItems = new HashSet<>();
 
 	@Column(name="ALLOWED_PROFILE",nullable = true)

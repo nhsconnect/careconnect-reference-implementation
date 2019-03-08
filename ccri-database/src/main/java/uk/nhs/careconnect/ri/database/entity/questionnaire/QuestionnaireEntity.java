@@ -77,7 +77,7 @@ public class QuestionnaireEntity extends BaseResource {
     private String description;
 
     @OneToMany(mappedBy="questionnaire", targetEntity=QuestionnaireItem.class)
-    @OrderBy(value = "linkId ASC")
+    @OrderBy(value = "itemId ASC")
     private Set<QuestionnaireItem> items = new HashSet<>();
 
     public Set<QuestionnaireItem> getItems() {

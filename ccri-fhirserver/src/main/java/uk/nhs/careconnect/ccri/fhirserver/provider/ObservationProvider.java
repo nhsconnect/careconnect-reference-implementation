@@ -66,6 +66,10 @@ public class ObservationProvider implements ICCResourceProvider {
         	
         method.setOperationOutcome(opOutcome);
         try {
+            MethodOutcome testMethod = resourceTestProvider.testResource(observation,null,null);
+            if (!resourceTestProvider.pass(testMethod)) {
+                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+            }
             Observation newObservation = observationDao.save(ctx,observation,theId,theConditional);
             method.setId(newObservation.getIdElement());
             method.setResource(newObservation);
@@ -87,6 +91,10 @@ public class ObservationProvider implements ICCResourceProvider {
         log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(observation));
         method.setOperationOutcome(opOutcome);
         try {
+            MethodOutcome testMethod = resourceTestProvider.testResource(observation,null,null);
+            if (!resourceTestProvider.pass(testMethod)) {
+                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+            }
             Observation newObservation = observationDao.save(ctx, observation, null, null);
             method.setId(newObservation.getIdElement());
             method.setResource(newObservation);
@@ -99,7 +107,7 @@ public class ObservationProvider implements ICCResourceProvider {
     }
 
     @Read
-    public Observation getObservationById(@IdParam IdType internalId) {
+    public Observation get(@IdParam IdType internalId) {
     	
     	resourcePermissionProvider.checkPermission("read");
         Observation observation = observationDao.read(ctx,internalId);

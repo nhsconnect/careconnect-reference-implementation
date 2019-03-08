@@ -63,6 +63,10 @@ public class ConsentProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
         try {
+            MethodOutcome testMethod = resourceTestProvider.testResource(consent,null,null);
+            if (!resourceTestProvider.pass(testMethod)) {
+                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+            }
             Consent newConsent = consentDao.create(ctx,consent, theId, theConditional);
             method.setId(newConsent.getIdElement());
             method.setResource(newConsent);
@@ -88,6 +92,10 @@ public class ConsentProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
         try {
+            MethodOutcome testMethod = resourceTestProvider.testResource(consent,null,null);
+            if (!resourceTestProvider.pass(testMethod)) {
+                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+            }
             Consent newConsent = consentDao.create(ctx,consent, null,null);
             method.setId(newConsent.getIdElement());
             method.setResource(newConsent);

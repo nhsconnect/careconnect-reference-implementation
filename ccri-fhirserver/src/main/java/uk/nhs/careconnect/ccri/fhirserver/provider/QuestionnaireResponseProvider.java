@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -57,9 +58,11 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     }
 
     @Update
-    public MethodOutcome updateQuestionnaireResponse(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
     	resourcePermissionProvider.checkPermission("update");
+
+
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -67,6 +70,13 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
     try {
+
+        MethodOutcome testMethod = resourceTestProvider.testResource(form,null,null);
+        if (!resourceTestProvider.pass(testMethod)) {
+            throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+        }
+
+
         QuestionnaireResponse newForm = formDao.create(ctx, form, theId, theConditional);
         method.setId(newForm.getIdElement());
         method.setResource(newForm);
@@ -81,7 +91,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     }
 
     @Create
-    public MethodOutcome createQuestionnaireResponse(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form) {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form) {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -90,9 +100,13 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
         try {
-        QuestionnaireResponse newForm = formDao.create(ctx, form,null,null);
-        method.setId(newForm.getIdElement());
-        method.setResource(newForm);
+            MethodOutcome testMethod = resourceTestProvider.testResource(form,null,null);
+            if (!resourceTestProvider.pass(testMethod)) {
+                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
+            }
+            QuestionnaireResponse newForm = formDao.create(ctx, form,null,null);
+            method.setId(newForm.getIdElement());
+            method.setResource(newForm);
         } catch (Exception ex) {
 
             ProviderResponseLibrary.handleException(method,ex);

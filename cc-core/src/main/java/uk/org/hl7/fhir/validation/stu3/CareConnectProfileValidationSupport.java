@@ -2,6 +2,7 @@ package uk.org.hl7.fhir.validation.stu3;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.apache.commons.io.Charsets;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.dstu3.model.*;
@@ -43,6 +44,8 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     private static int SC_OK = 200;
 
     private FhirContext ctx = null;
+
+    IGenericClient client;
 
     private IParser parser;
     /**
@@ -364,11 +367,30 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     return new CodeValidationResult(IssueSeverity.WARNING, "CareConnect Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
-
+    private IBaseResource doCCRIGetQuestionnaire(final String theUrl) {
+        if (client == null) {
+            client = ctx.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3");
+        }
+        Bundle results = client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(theUrl)).returnBundle(Bundle.class).execute();
+        log.info("Seearching for Questionnaire "+theUrl);
+        if (results.getEntry().size()>0) {
+            log.info("Found Questionnaire");
+            Bundle.BundleEntryComponent entry = results.getEntry().get(0);
+            return entry.getResource();
+        } else {
+            log.info("NOT FOUND Questionnaire");
+            return null;
+        }
+    }
 
   private IBaseResource fetchURL(final String theUrl) {
     logD("  This URL not yet loaded: %s%n", theUrl);
 
+
+    // Temp fix to get around Questionnaire not being supported by Reference Server 8/March/2019 KGM
+    if (theUrl.contains("Questionnaire") && (!theUrl.contains("QuestionnaireResponse") ) ) {
+        return doCCRIGetQuestionnaire(theUrl);
+    }
     StringBuilder result = new StringBuilder();
 
     try {
