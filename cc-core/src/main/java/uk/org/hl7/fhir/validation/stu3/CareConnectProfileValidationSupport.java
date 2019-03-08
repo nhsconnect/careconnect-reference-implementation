@@ -53,15 +53,18 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
      */
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
+    private String questionnaireServer;
+
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport .class);
 
     private Map<String, IBaseResource> cachedResource ;
 
 
-    public CareConnectProfileValidationSupport(final FhirContext theCtx) {
+    public CareConnectProfileValidationSupport(final FhirContext theCtx, String questionnaireServer) {
         this.ctx = theCtx;
         this.cachedResource = new HashMap<String, IBaseResource>();
         parser = ctx.newXmlParser();
+        this.questionnaireServer = questionnaireServer;
     }
 
       private void logD(String message) {
@@ -368,19 +371,23 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
     private IBaseResource doCCRIGetQuestionnaire(final String theUrl) {
-        if (client == null) {
-            client = ctx.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3");
+        if (client == null && this.questionnaireServer !=null) {
+            client = ctx.newRestfulGenericClient(this.questionnaireServer);
+
+            Bundle results = client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(theUrl)).returnBundle(Bundle.class).execute();
+            log.info("Seearching for Questionnaire " + theUrl);
+            if (results.getEntry().size() > 0) {
+                log.info("Found Questionnaire");
+                Bundle.BundleEntryComponent entry = results.getEntry().get(0);
+                return entry.getResource();
+            } else {
+                log.info("NOT FOUND Questionnaire");
+                return null;
+            }
         }
-        Bundle results = client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(theUrl)).returnBundle(Bundle.class).execute();
-        log.info("Seearching for Questionnaire "+theUrl);
-        if (results.getEntry().size()>0) {
-            log.info("Found Questionnaire");
-            Bundle.BundleEntryComponent entry = results.getEntry().get(0);
-            return entry.getResource();
-        } else {
-            log.info("NOT FOUND Questionnaire");
+        else {
             return null;
-        }
+            }
     }
 
   private IBaseResource fetchURL(final String theUrl) {

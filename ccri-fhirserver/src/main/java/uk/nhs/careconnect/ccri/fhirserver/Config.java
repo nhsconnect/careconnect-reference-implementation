@@ -39,6 +39,12 @@ public class Config {
     @Value("${ccri.server.base}")
     private String serverBase;
 
+    @Value("${server.port}")
+    private String serverPort;
+
+    @Value("server.servlet.context-path")
+    private String serverPath;
+
 
     @Bean(name="fhirValidator")
     public FhirValidator fhirValidator () {
@@ -59,7 +65,7 @@ public class Config {
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(new DefaultProfileValidationSupport());
-        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(ctx));
+        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(ctx, "http://localhost:"+serverPort+serverPath+"/STU3"));
         validationSupportChain.addValidationSupport(new SNOMEDUKMockValidationSupport());
 
         instanceValidator.setValidationSupport(validationSupportChain);

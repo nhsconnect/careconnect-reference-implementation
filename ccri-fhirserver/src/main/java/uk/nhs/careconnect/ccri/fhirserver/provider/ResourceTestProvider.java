@@ -145,6 +145,9 @@ public class ResourceTestProvider {
 				if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
 					remove = true;
 				}
+				if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
+					remove = true;
+				}
 				if (remove) {
 					log.info("Stripped "+issue.getDiagnostics());
 					issueRemove.add(issue);
@@ -159,7 +162,7 @@ public class ResourceTestProvider {
 
 
 	public OperationOutcome validateResource(IBaseResource resource) {
-		OperationOutcome outcome = new OperationOutcome();
+		OperationOutcome outcome = null;
 		ValidationResult results = val.validateWithResult(resource);
 
 		outcome = (OperationOutcome) results.toOperationOutcome();
