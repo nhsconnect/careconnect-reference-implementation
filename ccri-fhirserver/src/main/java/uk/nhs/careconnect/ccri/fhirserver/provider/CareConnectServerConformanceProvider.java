@@ -277,7 +277,7 @@ import java.util.List;
     }
 
 
-    private void setProfile(CapabilityStatement.CapabilityStatementRestResourceComponent resource) {
+   public void setProfile(CapabilityStatement.CapabilityStatementRestResourceComponent resource) {
         switch(resource.getType()) {
             case "Patient":
                 resource.getProfile().setReference(CareConnectProfile.Patient_1);

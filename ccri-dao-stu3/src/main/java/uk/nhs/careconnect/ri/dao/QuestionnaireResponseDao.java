@@ -29,6 +29,7 @@ import uk.nhs.careconnect.ri.database.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
@@ -102,6 +103,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     @Autowired
     @Lazy
     RelatedPersonRepository personDao;
+
+    @Autowired
+    @Lazy
+    ProcedureRepository procedureDao;
 
     @Autowired
     @Lazy
@@ -690,6 +695,10 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                                     case "Consent":
                                         ConsentEntity consentEntity = consentDao.readEntity(ctx, new IdType(reference.getReference()));
                                         answerEntity.setReferenceConsent(consentEntity);
+                                        break;
+                                    case "Procedure":
+                                        ProcedureEntity procedureEntity = procedureDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        answerEntity.setReferenceProcedure(procedureEntity);
                                         break;
                                     case "RelatedPerson":
                                         RelatedPersonEntity relatedPersonEntity = personDao.readEntity(ctx, new IdType(reference.getReference()));
