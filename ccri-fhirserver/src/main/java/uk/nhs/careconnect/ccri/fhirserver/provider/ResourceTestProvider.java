@@ -66,19 +66,7 @@ public class ResourceTestProvider {
         return httpClient;
     }
 
-    public Boolean pass(MethodOutcome methodOutcome) {
 
-    	if (methodOutcome.getOperationOutcome() == null) return false;
-    	OperationOutcome outcome = (OperationOutcome) methodOutcome.getOperationOutcome();
-    	for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-    		switch (issue.getSeverity()) {
-				case ERROR:
-				case FATAL:
-					return false;
-			}
-		}
-    	return true;
-	}
     public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
