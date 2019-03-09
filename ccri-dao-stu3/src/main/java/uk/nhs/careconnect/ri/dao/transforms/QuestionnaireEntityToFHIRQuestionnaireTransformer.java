@@ -169,8 +169,14 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             itemComponent.setOptions(new Reference(item.getValueSetOptions()));
         }
 
-        if (item.getDefinition() != null) {
-            itemComponent.setDefinition(item.getDefinition());
+        if (item.getDefinitionUri() != null) {
+            itemComponent.setDefinition(item.getDefinitionUri());
+        }
+
+        if (item.getDesignNote() != null ) {
+            Extension referenceType = itemComponent.addExtension();
+            referenceType.setUrl("http://hl7.org/fhir/StructureDefinition/designNote");
+            referenceType.setValue(new MarkdownType().setValue(item.getDesignNote()));
         }
 
         if (item.getChildItems() != null) {

@@ -82,7 +82,10 @@ public class QuestionnaireItem extends BaseResource {
 	private String allowedResource;
 
 	@Column(name = "DEFINITION", length = MAX_DESC_LENGTH)
-	private String definition;
+	private String designNote;
+
+	@Column(name = "DEFINITION_URI", length = MAX_DESC_LENGTH)
+	private String definitionUri;
 
 	public String getAllowedProfile() {
 		return allowedProfile;
@@ -224,11 +227,19 @@ public class QuestionnaireItem extends BaseResource {
 		this.childItems = childItems;
 	}
 
-	public String getDefinition() {
-		return definition;
+	public String getDesignNote() {
+		return designNote;
 	}
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
+	public void setDesignNote(String designNote) {
+		this.designNote = designNote;
+	}
+
+	public String getDefinitionUri() {
+		return definitionUri;
+	}
+
+	public void setDefinitionUri(String definitionUri) {
+		this.definitionUri = definitionUri;
 	}
 }

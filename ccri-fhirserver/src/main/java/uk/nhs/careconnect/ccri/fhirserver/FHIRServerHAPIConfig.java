@@ -9,15 +9,9 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
-import ca.uhn.fhir.validation.ResultSeverityEnum;
-import org.hl7.fhir.dstu3.hapi.validation.DefaultProfileValidationSupport;
-import org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator;
-import org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,9 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
 import uk.nhs.careconnect.ccri.fhirserver.oauth2.OAuth2Interceptor;
 import uk.nhs.careconnect.ccri.fhirserver.provider.*;
-import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireRepository;
-import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
-import uk.org.hl7.fhir.validation.stu3.SNOMEDUKMockValidationSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -76,7 +67,7 @@ public class FHIRServerHAPIConfig extends RestfulServer {
     @Value("${server.port}")
     private String serverPort;
 
-    @Value("server.servlet.context-path")
+    @Value("${server.servlet.context-path}")
     private String serverPath;
 
     // @Value("#{'${some.server.url}'.split(',')}")
@@ -117,8 +108,6 @@ public class FHIRServerHAPIConfig extends RestfulServer {
     @Value("#{'${ccri.GPConnectAdaptor_resources}'.split(',')}")
     private List<String>  GPConnectAdaptor_resources;
 
-    @Autowired
-    QuestionnaireRepository questionnaireDao;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -274,46 +263,14 @@ public class FHIRServerHAPIConfig extends RestfulServer {
         setDefaultResponseEncoding(EncodingEnum.JSON);
 
         ctx = getFhirContext();
-/*
+
+
         if (validate) {
 
-            // KGM this should work to handle all incoming requests but
-            https://github.com/jamesagnew/hapi-fhir/issues/1225
+            CCRequestValidatingInterceptor requestInterceptor = new CCRequestValidatingInterceptor(log, (FhirValidator) applicationContext.getBean("fhirValidator"));
 
-
-            RequestValidatingInterceptor requestInterceptor = new RequestValidatingInterceptor();
-
-            FhirValidator val = ctx.newValidator();
-
-            val.setValidateAgainstStandardSchema(true);
-
-            val.setValidateAgainstStandardSchematron(false);
-
-            DefaultProfileValidationSupport defaultProfileValidationSupport = new DefaultProfileValidationSupport();
-
-            FhirInstanceValidator instanceValidator = new FhirInstanceValidator(defaultProfileValidationSupport);
-            val.registerValidatorModule(instanceValidator);
-
-
-            ValidationSupportChain validationSupportChain = new ValidationSupportChain();
-
-            validationSupportChain.addValidationSupport(new DefaultProfileValidationSupport());
-            validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(ctx, "http://localhost:"+serverPort+serverPath+"/STU3"));
-            validationSupportChain.addValidationSupport(new SNOMEDUKMockValidationSupport());
-
-            instanceValidator.setValidationSupport(validationSupportChain);
-
-            requestInterceptor.addValidatorModule(instanceValidator);
-
-            requestInterceptor.setFailOnSeverity(ResultSeverityEnum.ERROR);
-            requestInterceptor.setAddResponseHeaderOnSeverity(ResultSeverityEnum.INFORMATION);
-            requestInterceptor.setResponseHeaderValue("Validation on ${line}: ${message} ${severity}");
-            requestInterceptor.setResponseHeaderValueNoIssues("No issues detected");
-
-            // Now register the validating interceptor
             registerInterceptor(requestInterceptor);
         }
-        */
 
         // Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
     }

@@ -71,10 +71,11 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
     try {
 
+        /* Moved to Validation interceptor
         MethodOutcome testMethod = resourceTestProvider.testResource(form,null,null);
         if (!resourceTestProvider.pass(testMethod)) {
             throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
-        }
+        }*/
 
 
         QuestionnaireResponse newForm = formDao.create(ctx, form, theId, theConditional);
@@ -100,10 +101,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
         try {
-            MethodOutcome testMethod = resourceTestProvider.testResource(form,null,null);
-            if (!resourceTestProvider.pass(testMethod)) {
-                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
-            }
+
             QuestionnaireResponse newForm = formDao.create(ctx, form,null,null);
             method.setId(newForm.getIdElement());
             method.setResource(newForm);

@@ -64,10 +64,7 @@ public class FlagProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
 
     try {
-        MethodOutcome testMethod = resourceTestProvider.testResource(flag,null,null);
-        if (!resourceTestProvider.pass(testMethod)) {
-            throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
-        }
+
         log.trace(theId.getId());
         Flag newList = flagDao.create(ctx, flag, theId, theConditional);
         method.setId(newList.getIdElement());
@@ -92,10 +89,7 @@ public class FlagProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
         try {
-            MethodOutcome testMethod = resourceTestProvider.testResource(flag,null,null);
-            if (!resourceTestProvider.pass(testMethod)) {
-                throw new ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException(ctx, testMethod.getOperationOutcome());
-            }
+
             Flag newFlag = flagDao.create(ctx, flag,null,null);
             method.setId(newFlag.getIdElement());
             method.setResource(newFlag);

@@ -421,7 +421,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
 
         if (itemComponent.hasDefinition()) {
-            item.setDefinition(itemComponent.getDefinition());
+            item.setDefinitionUri(itemComponent.getDefinition());
         }
 
         for (Extension extension : itemComponent.getExtension()) {
@@ -442,6 +442,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
                     item.setAllowedResource(((CodeType) extension.getValue()).getValue());
                 }
 
+            }
+            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/designNote")) {
+                item.setDesignNote(((MarkdownType) extension.getValue()).toString());
             }
         }
 
