@@ -277,33 +277,6 @@ services:
     networks:
       - ccri_net
 
-  cardiac:
-    image: thorlogic/cardiac
-    container_name: cardiac
-    ports:
-      - "8117:8000"
-    restart: always
-    networks:
-      - ccri_net
-
-  bpcentile:
-    image: thorlogic/bpcentile
-    container_name: bpcentile
-    ports:
-      - "8118:8001"
-    restart: always
-    networks:
-      - ccri_net
-
-
-  growth-chart:
-    image: thorlogic/growth-chart
-    container_name: growth-chart
-    ports:
-      - "8119:9000"
-    restart: always
-    networks:
-      - ccri_net
 
 networks:
   ccri_net:
