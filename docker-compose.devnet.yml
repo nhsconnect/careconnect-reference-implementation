@@ -144,6 +144,7 @@ services:
       - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.tkw=http4://tkwvalidation:4849?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccsmart=http4://ccsmartproxy:80/cc-smart/jolokia?throwExceptionOnFailure=false&bridgeEndpoint=true
     depends_on:
       - ccrifhir
     ports:
@@ -263,6 +264,44 @@ services:
     extra_hosts:
       # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
       - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
+    networks:
+      - ccri_net
+
+  ccsmartproxy:
+    image: thorlogic/ccsmartproxy
+    container_name: ccsmartproxy
+    ports:
+      - "8116:80"
+    volumes:
+      - /docker/ccsmartproxy:/var/log/nginx/log
+    networks:
+      - ccri_net
+
+  cardiac:
+    image: thorlogic/cardiac
+    container_name: cardiac
+    ports:
+      - "8117:8000"
+    restart: always
+    networks:
+      - ccri_net
+
+  bpcentile:
+    image: thorlogic/bpcentile
+    container_name: bpcentile
+    ports:
+      - "8118:8001"
+    restart: always
+    networks:
+      - ccri_net
+
+
+  growth-chart:
+    image: thorlogic/growth-chart
+    container_name: growth-chart
+    ports:
+      - "8119:9000"
+    restart: always
     networks:
       - ccri_net
 
