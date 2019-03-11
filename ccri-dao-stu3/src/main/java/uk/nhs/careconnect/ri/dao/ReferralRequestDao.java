@@ -74,6 +74,9 @@ public class ReferralRequestDao implements ReferralRequestRepository {
     ObservationRepository observationDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
 
     private static final Logger log = LoggerFactory.getLogger(ReferralRequestDao.class);

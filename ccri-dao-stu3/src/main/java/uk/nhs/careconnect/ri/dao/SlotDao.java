@@ -53,6 +53,9 @@ public class SlotDao implements SlotRepository {
     ScheduleRepository scheduleDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
 
     private static final Logger log = LoggerFactory.getLogger(SlotDao.class);

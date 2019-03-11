@@ -59,6 +59,9 @@ public class ProcedureDao implements ProcedureRepository {
     EncounterRepository encounterDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
     
     @Autowired

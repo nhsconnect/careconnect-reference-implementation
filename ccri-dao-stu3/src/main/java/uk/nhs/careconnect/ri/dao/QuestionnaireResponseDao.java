@@ -112,6 +112,8 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     @Lazy
     ListRepository listDao;
 
+    @Autowired
+    private LibDao libDao;
 
     @Autowired
     private QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer formEntityToFHIRQuestionnaireResponseTransformer;

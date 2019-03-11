@@ -60,6 +60,9 @@ public class RiskAssessmentDao implements RiskAssessmentRepository {
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    private LibDao libDao;
     
     @Autowired
     RiskAssessmentEntityToFHIRRiskAssessmentTransformer riskEntityToFHIRRiskAssessmentTransformer;

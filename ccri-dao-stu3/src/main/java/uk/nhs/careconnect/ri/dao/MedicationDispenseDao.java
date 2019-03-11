@@ -76,6 +76,9 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
 
     @Autowired
     MedicationRepository medicationDao;
+
+    @Autowired
+    private LibDao libDao;
     
     @Autowired
     MedicationDispenseEntityToFHIRMedicationDispenseTransformer medicationDispenseEntityToFHIRMedicationDispenseTransformer;

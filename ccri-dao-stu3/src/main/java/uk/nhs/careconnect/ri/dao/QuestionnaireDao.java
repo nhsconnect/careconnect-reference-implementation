@@ -55,6 +55,8 @@ public class QuestionnaireDao implements QuestionnaireRepository {
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+    @Autowired
+    private LibDao libDao;
 
 
     private static final Logger log = LoggerFactory.getLogger(QuestionnaireDao.class);

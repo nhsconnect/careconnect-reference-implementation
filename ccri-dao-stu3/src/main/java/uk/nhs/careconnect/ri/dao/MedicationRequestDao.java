@@ -70,6 +70,8 @@ public class MedicationRequestDao implements MedicationRequestRepository {
     @Autowired
     MedicationRepository medicationDao;
 
+    @Autowired
+    private LibDao libDao;
 
 
     private static final Logger log = LoggerFactory.getLogger(MedicationRequestDao.class);

@@ -60,6 +60,9 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
 
 

@@ -52,6 +52,9 @@ public class LocationDao implements LocationRepository {
     @Autowired
     private ConceptRepository codeSvc;
 
+    @Autowired
+    private LibDao libDao;
+
 
     private static final Logger log = LoggerFactory.getLogger(LocationDao.class);
 

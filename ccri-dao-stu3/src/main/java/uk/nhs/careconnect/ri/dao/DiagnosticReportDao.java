@@ -62,6 +62,9 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     DiagnosticReportEntityToFHIRDiagnosticReportTransformer diagnosticReportEntityToFHIRDiagnosticReportTransformer;
 
 

@@ -51,6 +51,9 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
     @Autowired
     private ConceptRepository codeDao;
 
+    @Autowired
+    private LibDao libDao;
+
     @Override
     public void save(FhirContext ctx, PractitionerRole practitioner) {
 

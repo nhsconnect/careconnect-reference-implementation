@@ -60,6 +60,9 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
     OrganisationRepository organisationDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private EpisodeOfCareEntityToFHIREpisodeOfCareTransformer episodeOfCareEntityToFHIREpisodeOfCareTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(EpisodeOfCareDao.class);

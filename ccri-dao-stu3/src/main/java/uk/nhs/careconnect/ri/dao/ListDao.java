@@ -80,6 +80,9 @@ public class ListDao implements ListRepository {
     @Autowired
     DocumentReferenceRepository documentDao;
 
+    @Autowired
+    private LibDao libDao;
+
 
     @Autowired
     private ListEntityToFHIRListResourceTransformer listEntityToFHIRListResourceTranslister;

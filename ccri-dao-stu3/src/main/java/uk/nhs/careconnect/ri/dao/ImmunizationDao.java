@@ -58,6 +58,9 @@ public class ImmunizationDao implements ImmunizationRepository {
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+    @Autowired
+    private LibDao libDao;
+
 
     private static final Logger log = LoggerFactory.getLogger(ImmunizationDao.class);
 

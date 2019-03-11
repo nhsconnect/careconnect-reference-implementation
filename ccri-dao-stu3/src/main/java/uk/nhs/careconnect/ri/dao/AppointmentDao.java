@@ -55,6 +55,9 @@ public class AppointmentDao implements AppointmentRepository {
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+    @Autowired
+    private LibDao libDao;
+
     private static final Logger log = LoggerFactory.getLogger(AppointmentDao.class);
 
     @Override

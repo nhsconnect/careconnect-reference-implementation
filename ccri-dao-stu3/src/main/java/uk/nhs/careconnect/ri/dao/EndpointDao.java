@@ -50,6 +50,9 @@ public class EndpointDao implements EndpointRepository {
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+    @Autowired
+    private LibDao libDao;
+
     private static final Logger log = LoggerFactory.getLogger(EndpointDao.class);
     
     @Override

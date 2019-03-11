@@ -57,6 +57,9 @@ public class ConditionDao implements ConditionRepository {
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     ConditionEntityToFHIRConditionTransformer conditionEntityToFHIRConditionTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(ConditionDao.class);

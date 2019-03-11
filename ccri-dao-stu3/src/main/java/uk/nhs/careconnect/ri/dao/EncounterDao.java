@@ -84,6 +84,9 @@ public class  EncounterDao implements EncounterRepository {
     EpisodeOfCareRepository episodeDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     ProcedureEntityToFHIRProcedureTransformer procedureEntityToFHIRProcedureTransformer;
 
     @Autowired

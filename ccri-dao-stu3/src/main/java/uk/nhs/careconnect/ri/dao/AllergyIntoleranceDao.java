@@ -17,6 +17,7 @@ import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceManifesta
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceReaction;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.database.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.allergy.AllergyIntoleranceEntity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
@@ -57,6 +58,8 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
     @Autowired
     private CodeSystemRepository codeSystemSvc;
 
+    @Autowired
+    private LibDao libDao;
 
     private static final Logger log = LoggerFactory.getLogger(AllergyIntoleranceDao.class);
 
@@ -205,8 +208,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             }
             if (allergyIdentifier == null)  allergyIdentifier = new AllergyIntoleranceIdentifier();
 
-            allergyIdentifier.setValue(identifier.getValue());
-            allergyIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            allergyIdentifier = (AllergyIntoleranceIdentifier) libDao.setIdentifier(identifier,  allergyIdentifier);
             allergyIdentifier.setAllergyIntolerance(allergyEntity);
             em.persist(allergyIdentifier);
         }

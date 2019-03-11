@@ -96,6 +96,9 @@ public class CarePlanDao implements CarePlanRepository {
     ConsentRepository consentDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     ClinicalImpressionRepository impressionDao;
 
     @Autowired

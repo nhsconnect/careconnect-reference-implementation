@@ -54,7 +54,8 @@ public class FlagDao implements FlagRepository {
     @Lazy
     EncounterRepository encounterDao;
 
-
+    @Autowired
+    private LibDao libDao;
 
     @Autowired
     @Lazy

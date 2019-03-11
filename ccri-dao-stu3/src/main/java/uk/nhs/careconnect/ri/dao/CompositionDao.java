@@ -65,6 +65,9 @@ public class CompositionDao implements CompositionRepository {
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     CompositionEntityToFHIRCompositionTransformer compositionEntityToFHIRCompositionTransformer;
 
 

@@ -55,6 +55,9 @@ public class GoalDao implements GoalRepository {
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    private LibDao libDao;
     
     @Autowired
     GoalEntityToFHIRGoalTransformer goalEntityToFHIRGoalTransformer;

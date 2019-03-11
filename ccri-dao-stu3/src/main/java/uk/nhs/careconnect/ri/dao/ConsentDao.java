@@ -82,6 +82,9 @@ public class ConsentDao implements ConsentRepository {
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
+
+    @Autowired
+    private LibDao libDao;
     
     @Autowired
     ConsentEntityToFHIRConsentTransformer consentEntityToFHIRConsentTransformer;

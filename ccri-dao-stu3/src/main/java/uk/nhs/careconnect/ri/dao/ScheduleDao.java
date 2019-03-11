@@ -60,6 +60,8 @@ public class ScheduleDao implements ScheduleRepository {
     @Autowired
     PractitionerRoleRepository practitionerRoleDao;
 
+    @Autowired
+    private LibDao libDao;
 
     @Autowired
     HealthcareServiceRepository healthcareServiceDao;

@@ -76,6 +76,9 @@ public class MedicationAdministrationDao implements MedicationAdministrationRepo
 
     @Autowired
     MedicationRepository medicationDao;
+
+    @Autowired
+    private LibDao libDao;
     
     @Autowired
     MedicationAdministrationEntityToFHIRMedicationAdministrationTransformer medicationAdministrationEntityToFHIRMedicationAdministrationTransformer;

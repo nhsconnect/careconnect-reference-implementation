@@ -65,6 +65,9 @@ public class CareTeamDao implements CareTeamRepository {
     RelatedPersonRepository personDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
     
     @Autowired

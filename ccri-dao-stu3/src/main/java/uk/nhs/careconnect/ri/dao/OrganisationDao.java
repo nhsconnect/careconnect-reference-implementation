@@ -48,6 +48,9 @@ public class OrganisationDao implements OrganisationRepository {
     private ConceptRepository codeSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private OrganisationEntityToFHIROrganizationTransformer organizationEntityToFHIROrganizationTransformer;
 
 

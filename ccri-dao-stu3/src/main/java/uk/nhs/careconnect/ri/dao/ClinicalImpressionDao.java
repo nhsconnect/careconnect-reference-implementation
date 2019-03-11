@@ -71,6 +71,9 @@ public class ClinicalImpressionDao implements ClinicalImpressionRepository {
     ObservationRepository observationDao;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private CodeSystemRepository codeSystemSvc;
     
     @Autowired

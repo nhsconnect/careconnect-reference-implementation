@@ -50,6 +50,9 @@ public class ValueSetDao implements ValueSetRepository {
     @Lazy
     ConceptRepository conceptDao;
 
+    @Autowired
+    private LibDao libDao;
+
     public void save(FhirContext ctx, ValueSetEntity valueset)
     {
         em.persist(valueset);

@@ -49,6 +49,9 @@ public class PractitionerDao implements PractitionerRepository {
     @Autowired
     private ConceptRepository codeSvc;
 
+    @Autowired
+    private LibDao libDao;
+
 
     private static final Logger log = LoggerFactory.getLogger(PractitionerDao.class);
 

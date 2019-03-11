@@ -56,6 +56,9 @@ public class RelatedPersonDao implements RelatedPersonRepository {
     private CodeSystemRepository codeSystemSvc;
 
     @Autowired
+    private LibDao libDao;
+
+    @Autowired
     private RelatedPersonEntityToFHIRRelatedPersonTransformer personEntityToFHIRRelatedPersonTransformer;
 
     @Autowired
