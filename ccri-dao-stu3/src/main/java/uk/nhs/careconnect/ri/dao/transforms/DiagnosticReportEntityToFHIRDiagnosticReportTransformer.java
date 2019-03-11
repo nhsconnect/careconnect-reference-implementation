@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportEntity;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportIdentifier;
 import uk.nhs.careconnect.ri.database.entity.diagnosticReport.DiagnosticReportResult;
@@ -52,8 +53,7 @@ public class DiagnosticReportEntityToFHIRDiagnosticReportTransformer implements 
 
         for (DiagnosticReportIdentifier identifier : diagnosticReportEntity.getIdentifiers()) {
             Identifier ident = diagnosticReport.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (DiagnosticReportResult reportResult : diagnosticReportEntity.getResults()) {

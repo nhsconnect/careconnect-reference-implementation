@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.HealthcareService;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.*;
 
@@ -38,8 +39,7 @@ public class HealthcareServiceEntityToFHIRHealthcareServiceTransformer implement
         for(HealthcareServiceIdentifier identifier : serviceEntity.getIdentifiers())
         {
             Identifier ident = service.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         if (serviceEntity.getActive() != null) {

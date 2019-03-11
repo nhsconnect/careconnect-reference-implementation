@@ -2,10 +2,12 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionIdentifier;
 import uk.nhs.careconnect.ri.database.entity.valueSet.*;
 
@@ -73,9 +75,8 @@ public class ValueSetEntityToFHIRValueSetTransformer implements Transformer<Valu
         // Hard coded to not attempt to retrieve SNOMED!
 
         for (ValueSetIdentifier identifier : valueSetEntity.getIdentifiers()) {
-            valueSet.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = valueSet.addIdentifier();
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (ValueSetTelecom telecom : valueSetEntity.getContacts()) {

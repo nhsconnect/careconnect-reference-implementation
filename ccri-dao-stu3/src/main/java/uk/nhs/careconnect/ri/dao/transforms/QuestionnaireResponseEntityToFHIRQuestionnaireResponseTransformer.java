@@ -4,6 +4,7 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseIdentifier;
@@ -47,8 +48,7 @@ public class QuestionnaireResponseEntityToFHIRQuestionnaireResponseTransformer i
         for(QuestionnaireResponseIdentifier identifier : formEntity.getIdentifiers())
         {
             Identifier ident = form.getIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         if (formEntity.getAuthoredDateTime() != null) {

@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentEntity;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentIdentifier;
 import uk.nhs.careconnect.ri.database.entity.appointment.AppointmentReason;
@@ -41,8 +42,7 @@ public class AppointmentEntityToFHIRAppointmentTransformer implements Transforme
         for(AppointmentIdentifier identifier : appointmentEntity.getIdentifiers())
         {
             Identifier ident = appointment.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         if (appointmentEntity.getStatus() != null) {

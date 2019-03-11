@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionIdentifier;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionSection;
@@ -116,8 +117,7 @@ public class CompositionEntityToFHIRCompositionTransformer implements Transforme
 
         for (CompositionIdentifier identifier : compositionEntity.getIdentifiers()) {
             Identifier ident = composition.getIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         return composition;

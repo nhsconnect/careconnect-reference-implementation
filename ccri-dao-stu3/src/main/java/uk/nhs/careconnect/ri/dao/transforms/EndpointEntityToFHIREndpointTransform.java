@@ -8,6 +8,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointIdentifier;
 
@@ -39,8 +40,7 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
         for(EndpointIdentifier identifier: endpointEntity.getIdentifiers())
         {
             Identifier ident = endpoint.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         endpoint.setId(endpointEntity.getId().toString());

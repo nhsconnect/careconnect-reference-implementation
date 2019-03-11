@@ -5,6 +5,7 @@ import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleActor;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleEntity;
 import uk.nhs.careconnect.ri.database.entity.schedule.ScheduleIdentifier;
@@ -38,8 +39,7 @@ public class ScheduleEntityToFHIRScheduleTransformer implements Transformer<Sche
             for(ScheduleIdentifier identifier : scheduleEntity.getIdentifiers())
             {
                 Identifier ident = schedule.addIdentifier();
-                if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-                if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+                ident = daoutils.getIdentifier(identifier, ident);
             }
 
             if (scheduleEntity.getActive() != null) {

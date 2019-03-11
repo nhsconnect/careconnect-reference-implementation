@@ -49,8 +49,7 @@ public class PractitionerEntityToFHIRPractitionerTransformer implements Transfor
         for(PractitionerIdentifier identifier :practitionerEntity.getIdentifiers())
         {
             Identifier ident = practitioner.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         practitioner.setId(practitionerEntity.getId().toString());

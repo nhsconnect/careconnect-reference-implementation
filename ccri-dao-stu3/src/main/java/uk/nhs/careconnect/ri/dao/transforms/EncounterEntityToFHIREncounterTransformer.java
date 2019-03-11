@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.encounter.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
@@ -46,8 +47,7 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
         for(EncounterIdentifier identifier : encounterEntity.getIdentifiers())
         {
             Identifier ident = encounter.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for(EncounterEpisode episode : encounterEntity.getEpisodes())

@@ -1,12 +1,10 @@
 package uk.nhs.careconnect.ri.dao.transforms;
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.RiskAssessment;
-import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.*;
 
-import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.riskAssessment.RiskAssessmentEntity;
 import uk.nhs.careconnect.ri.database.entity.riskAssessment.RiskAssessmentIdentifier;
 import uk.nhs.careconnect.ri.database.entity.riskAssessment.RiskAssessmentPrediction;
@@ -70,9 +68,8 @@ public class RiskAssessmentEntityToFHIRRiskAssessmentTransformer implements Tran
 
 
         for (RiskAssessmentIdentifier identifier : riskAssessmentEntity.getIdentifiers()) {
-            riskAssessment.getIdentifier()
-                .setSystem(identifier.getSystem().getUri())
-                .setValue(identifier.getValue());
+            Identifier ident = riskAssessment.getIdentifier();
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (RiskAssessmentPrediction prediction : riskAssessmentEntity.getPredictions()) {

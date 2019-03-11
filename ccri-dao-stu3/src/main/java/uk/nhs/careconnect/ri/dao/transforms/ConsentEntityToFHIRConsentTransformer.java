@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.consent.*;
 import uk.nhs.careconnect.ri.database.entity.consent.*;
 
@@ -63,8 +64,7 @@ public class ConsentEntityToFHIRConsentTransformer implements Transformer<Consen
 
         for (ConsentIdentifier identifier : consentEntity.getIdentifiers()) {
             Identifier ident = consent.getIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (ConsentActor consentActor : consentEntity.getActors()) {

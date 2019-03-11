@@ -47,8 +47,8 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
         for(PatientIdentifier patientIdentifier : patientEntity.getIdentifiers())
         {
             Identifier identifier = patient.addIdentifier();
-            if (patientIdentifier.getSystem() != null) identifier.setSystem(patientIdentifier.getSystem().getUri());
-            if (patientIdentifier.getValue() != null) identifier.setValue(patientIdentifier.getValue());
+
+            identifier = daoutils.getIdentifier(patientIdentifier, identifier);
 
 
             if (identifier.getSystem() != null) {

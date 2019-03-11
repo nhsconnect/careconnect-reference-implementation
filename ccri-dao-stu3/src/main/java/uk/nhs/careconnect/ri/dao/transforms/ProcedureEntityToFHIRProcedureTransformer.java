@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureEntity;
 import uk.nhs.careconnect.ri.database.entity.procedure.ProcedureIdentifier;
 import uk.nhs.careconnect.ri.database.entity.procedure.ProcedurePerformer;
@@ -125,8 +126,7 @@ public class ProcedureEntityToFHIRProcedureTransformer implements Transformer<Pr
         }
         for (ProcedureIdentifier identifier : procedureEntity.getIdentifiers()) {
             Identifier ident = procedure.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
     }

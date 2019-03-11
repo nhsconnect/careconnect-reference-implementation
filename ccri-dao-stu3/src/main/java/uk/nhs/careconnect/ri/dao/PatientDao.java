@@ -18,6 +18,7 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.*;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.AddressEntity;
+import uk.nhs.careconnect.ri.database.entity.BaseIdentifier;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
 import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
@@ -103,6 +104,9 @@ public class PatientDao implements PatientRepository {
 
     @Autowired
     private CarePlanEntityToFHIRCarePlanTransformer carePlanEntityToFHIRCarePlanTransformer;
+
+    @Autowired
+    private LibDao libDao;
 
     @Autowired
     private DocumentReferenceEntityToFHIRDocumentReferenceTransformer documentReferenceEntityToFHIRDocumentReferenceTransformer;
@@ -326,8 +330,12 @@ public class PatientDao implements PatientRepository {
                 patientEntity.addIdentifier(patientIdentifier);
             }
 
+            /*
             patientIdentifier.setValue(daoutils.removeSpace(identifier.getValue()));
             patientIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+
+            */
+            patientIdentifier = (PatientIdentifier) libDao.setIdentifier(identifier,  patientIdentifier);
             patientIdentifier.setPatient(patientEntity);
 
             em.persist(patientIdentifier);

@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.observation.*;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.database.entity.patient.PatientIdentifier;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.QuestionnaireResponseEntity;
 
@@ -62,6 +63,9 @@ public class ObservationDao implements ObservationRepository {
     @Autowired
     @Lazy
     EncounterRepository encounterDao;
+
+    @Autowired
+    private LibDao libDao;
 
     @Autowired
     private CodeSystemRepository codeSystemSvc;
@@ -312,8 +316,7 @@ public class ObservationDao implements ObservationRepository {
             }
             if (observationIdentifier == null)  observationIdentifier = new ObservationIdentifier();
 
-            observationIdentifier.setValue(identifier.getValue());
-            observationIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            observationIdentifier = (ObservationIdentifier) libDao.setIdentifier(identifier,  observationIdentifier);
             observationIdentifier.setObservation(observationEntity);
             em.persist(observationIdentifier);
 

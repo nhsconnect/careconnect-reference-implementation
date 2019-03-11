@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionEntity;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionFinding;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionIdentifier;
@@ -90,8 +91,7 @@ public class ClinicalImpressionEntityToFHIRClinicalImpressionTransformer impleme
 
         for (ClinicalImpressionIdentifier identifier : impressionAssessmentEntity.getIdentifiers()) {
             Identifier ident = impressionAssessment.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (ClinicalImpressionFinding findingEntity : impressionAssessmentEntity.getFindings()) {

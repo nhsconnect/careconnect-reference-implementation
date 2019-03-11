@@ -4,9 +4,11 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRole;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerRoleIdentifier;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerSpecialty;
@@ -45,9 +47,8 @@ public class PractitionerRoleToFHIRPractitionerRoleTransformer implements Transf
 
         for(PractitionerRoleIdentifier identifier : roleEntity.getIdentifiers())
         {
-            practitionerRole.addIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = practitionerRole.addIdentifier();
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
 

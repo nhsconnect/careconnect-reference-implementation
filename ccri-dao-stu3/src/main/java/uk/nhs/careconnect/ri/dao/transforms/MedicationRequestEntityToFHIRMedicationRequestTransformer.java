@@ -5,6 +5,7 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestDosage;
 import uk.nhs.careconnect.ri.database.entity.medicationRequest.MedicationRequestEntity;
@@ -46,8 +47,7 @@ public class MedicationRequestEntityToFHIRMedicationRequestTransformer implement
         for(MedicationRequestIdentifier identifier : medicationRequestEntity.getIdentifiers())
         {
             Identifier ident = medicationRequest.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         if (medicationRequestEntity.getPatient() != null) {

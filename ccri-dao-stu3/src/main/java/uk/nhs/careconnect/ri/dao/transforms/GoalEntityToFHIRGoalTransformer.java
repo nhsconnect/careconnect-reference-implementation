@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.goal.GoalEntity;
 import uk.nhs.careconnect.ri.database.entity.goal.GoalIdentifier;
 
@@ -49,8 +50,7 @@ public class GoalEntityToFHIRGoalTransformer implements Transformer<GoalEntity, 
 
         for (GoalIdentifier identifier : goalEntity.getIdentifiers()) {
             Identifier ident = goal.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
 

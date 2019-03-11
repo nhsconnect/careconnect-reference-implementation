@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
@@ -109,8 +110,7 @@ public class ImmunisationEntityToFHIRImmunizationTransformer implements Transfor
 
         for (ImmunisationIdentifier identifier : immunisationEntity.getIdentifiers()) {
             Identifier ident = immunisation.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
         if (immunisationEntity.getReportOrigin() != null) {
             immunisation.getReportOrigin().addCoding()

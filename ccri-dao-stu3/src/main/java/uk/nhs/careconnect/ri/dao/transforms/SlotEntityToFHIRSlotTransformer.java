@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotEntity;
 import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
@@ -37,8 +38,7 @@ public class SlotEntityToFHIRSlotTransformer implements Transformer<SlotEntity, 
         for(SlotIdentifier identifier : slotEntity.getIdentifiers())
         {
             Identifier ident = slot.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         if (slotEntity.getServiceCategory() != null) {

@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.dao.transforms;
 import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionCategory;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionIdentifier;
@@ -99,8 +100,7 @@ public class ConditionEntityToFHIRConditionTransformer implements Transformer<Co
             }
             for (ConditionIdentifier identifier : conditionEntity.getIdentifiers()) {
                 Identifier ident = condition.addIdentifier();
-                if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-                if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+                ident = daoutils.getIdentifier(identifier, ident);
             }
             for (ConditionNote conditionNote : conditionEntity.getNotes()) {
                 Annotation annotation = condition.addNote();
