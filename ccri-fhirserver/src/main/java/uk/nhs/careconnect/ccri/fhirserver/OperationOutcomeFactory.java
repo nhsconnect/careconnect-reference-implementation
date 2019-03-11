@@ -58,6 +58,7 @@ public class OperationOutcomeFactory {
                 remove = true;
             }
             // This is a rule in FHIR but seems wrong
+            // Logged as issue https://github.com/jamesagnew/hapi-fhir/issues/1235
             if (issue.getDiagnostics().contains("Entry isn't reachable by traversing from first Bundle entry")) {
                 remove = true;
             }
