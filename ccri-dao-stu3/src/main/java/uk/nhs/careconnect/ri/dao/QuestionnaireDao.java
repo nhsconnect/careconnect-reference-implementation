@@ -26,6 +26,7 @@ import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
 import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.EntityManager;
@@ -340,8 +341,7 @@ public class QuestionnaireDao implements QuestionnaireRepository {
 
             }
 
-            questionnaireIdentifier.setValue(ident.getValue());
-            questionnaireIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+            questionnaireIdentifier= (QuestionnaireIdentifier) libDao.setIdentifier(ident,  questionnaireIdentifier);
             log.debug("Questionnaire System Code: "+questionnaireIdentifier.getSystemUri());
 
             em.persist(questionnaireIdentifier);

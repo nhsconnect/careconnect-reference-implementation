@@ -182,8 +182,7 @@ public class HealthcareServiceDao implements HealthcareServiceRepository {
             }
             if (serviceIdentifier == null)  serviceIdentifier = new HealthcareServiceIdentifier();
 
-            serviceIdentifier.setValue(identifier.getValue());
-            serviceIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             serviceIdentifier= (HealthcareServiceIdentifier) libDao.setIdentifier(identifier, serviceIdentifier );
             serviceIdentifier.setService(serviceEntity);
             em.persist(serviceIdentifier);
         }

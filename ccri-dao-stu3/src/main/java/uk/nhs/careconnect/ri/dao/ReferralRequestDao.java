@@ -312,8 +312,7 @@ public class ReferralRequestDao implements ReferralRequestRepository {
             }
             if (referralRequestIdentifier == null)  referralRequestIdentifier = new ReferralRequestIdentifier();
 
-            referralRequestIdentifier.setValue(identifier.getValue());
-            referralRequestIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            referralRequestIdentifier = (ReferralRequestIdentifier) libDao.setIdentifier(identifier, referralRequestIdentifier );
             referralRequestIdentifier.setReferralRequest(referralRequestEntity);
             em.persist(referralRequestIdentifier);
         }

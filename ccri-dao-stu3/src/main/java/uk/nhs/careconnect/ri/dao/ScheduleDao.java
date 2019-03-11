@@ -161,8 +161,7 @@ public class ScheduleDao implements ScheduleRepository {
             }
             if (scheduleIdentifier == null)  scheduleIdentifier = new ScheduleIdentifier();
 
-            scheduleIdentifier.setValue(identifier.getValue());
-            scheduleIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            scheduleIdentifier= (ScheduleIdentifier) libDao.setIdentifier(identifier, scheduleIdentifier );
             scheduleIdentifier.setSchedule(scheduleEntity);
             em.persist(scheduleIdentifier);
         }

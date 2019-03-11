@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 
 
@@ -120,28 +121,9 @@ public class ResourceTestProvider {
 			}
 		} else {
 			OperationOutcome outcome = validateResource(resourceToValidate);
-			List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
-			for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-				Boolean remove = false;
+			outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcome);
 
-				if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
-					remove = true;
-				}
-				if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
-					remove = true;
-				}
-				if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
-					remove = true;
-				}
-				if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
-					remove = true;
-				}
-				if (remove) {
-					log.info("Stripped "+issue.getDiagnostics());
-					issueRemove.add(issue);
-				}
-			}
-			outcome.getIssue().removeAll(issueRemove);
+
 			retVal.setOperationOutcome(outcome);
 		}
         return retVal;

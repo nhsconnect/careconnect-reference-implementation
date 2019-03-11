@@ -26,6 +26,7 @@ import uk.nhs.careconnect.ri.database.entity.questionnaireResponse.Questionnaire
 import uk.nhs.careconnect.ri.database.entity.list.ListEntity;
 import uk.nhs.careconnect.ri.database.entity.list.ListIdentifier;
 import uk.nhs.careconnect.ri.database.entity.list.ListItem;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
 
 import javax.persistence.EntityManager;
@@ -298,8 +299,7 @@ public class ListDao implements ListRepository {
 
             }
 
-            listIdentifier.setValue(ident.getValue());
-            listIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+            listIdentifier= (ListIdentifier) libDao.setIdentifier(ident,  listIdentifier);
             log.debug("ListResource System Code: " + listIdentifier.getSystemUri());
 
             em.persist(listIdentifier);

@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.dao.transforms.PractitionerEntityToFHIRPractitioner
 import uk.nhs.careconnect.ri.database.entity.AddressEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.*;
 import uk.nhs.careconnect.ri.database.entity.practitioner.*;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -165,8 +166,7 @@ public class PractitionerDao implements PractitionerRepository {
             }
             if (practitionerIdentifier == null)  practitionerIdentifier = new PractitionerIdentifier();
 
-            practitionerIdentifier.setValue(ident.getValue());
-            practitionerIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+            practitionerIdentifier= (PractitionerIdentifier) libDao.setIdentifier(ident, practitionerIdentifier );
             practitionerIdentifier.setPractitioner(practitionerEntity);
             em.persist(practitionerIdentifier);
         }

@@ -195,8 +195,7 @@ public class AppointmentDao implements AppointmentRepository {
             }
             if (appointmentIdentifier == null)  appointmentIdentifier = new AppointmentIdentifier();
 
-            appointmentIdentifier.setValue(identifier.getValue());
-            appointmentIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            appointmentIdentifier= (AppointmentIdentifier) libDao.setIdentifier(identifier, appointmentIdentifier );
             appointmentIdentifier.setAppointment(appointmentEntity);
             em.persist(appointmentIdentifier);
         }

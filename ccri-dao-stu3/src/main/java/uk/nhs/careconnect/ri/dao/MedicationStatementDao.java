@@ -283,8 +283,7 @@ public class MedicationStatementDao implements MedicationStatementRepository {
             }
             if (statementIdentifier == null)  statementIdentifier = new MedicationStatementIdentifier();
 
-            statementIdentifier.setValue(identifier.getValue());
-            statementIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             statementIdentifier= (MedicationStatementIdentifier) libDao.setIdentifier(identifier,  statementIdentifier);
             statementIdentifier.setMedicationStatement(statementEntity);
             em.persist(statementIdentifier);
         }

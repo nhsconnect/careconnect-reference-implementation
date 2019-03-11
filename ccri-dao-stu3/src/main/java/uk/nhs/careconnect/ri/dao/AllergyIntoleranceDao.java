@@ -209,6 +209,7 @@ public class AllergyIntoleranceDao implements AllergyIntoleranceRepository {
             if (allergyIdentifier == null)  allergyIdentifier = new AllergyIntoleranceIdentifier();
 
             allergyIdentifier = (AllergyIntoleranceIdentifier) libDao.setIdentifier(identifier,  allergyIdentifier);
+            //  = () libDao.setIdentifier(identifier,  );
             allergyIdentifier.setAllergyIntolerance(allergyEntity);
             em.persist(allergyIdentifier);
         }

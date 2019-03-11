@@ -321,8 +321,7 @@ public class CarePlanDao implements CarePlanRepository {
             }
             if (carePlanIdentifier == null)  carePlanIdentifier = new CarePlanIdentifier();
 
-            carePlanIdentifier.setValue(identifier.getValue());
-            carePlanIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            carePlanIdentifier= (CarePlanIdentifier) libDao.setIdentifier(identifier, carePlanIdentifier );
             carePlanIdentifier.setCarePlan(carePlanEntity);
             em.persist(carePlanIdentifier);
         }

@@ -330,11 +330,6 @@ public class PatientDao implements PatientRepository {
                 patientEntity.addIdentifier(patientIdentifier);
             }
 
-            /*
-            patientIdentifier.setValue(daoutils.removeSpace(identifier.getValue()));
-            patientIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
-
-            */
             patientIdentifier = (PatientIdentifier) libDao.setIdentifier(identifier,  patientIdentifier);
             patientIdentifier.setPatient(patientEntity);
 
@@ -388,6 +383,7 @@ public class PatientDao implements PatientRepository {
         }
         for (Address address : patient.getAddress()) {
             PatientAddress patientAdr = null;
+            /*
             for (PatientAddress adrSearch : patientEntity.getAddresses()) {
                 // look for matching postcode and first line of address
                 if (adrSearch.getAddress().getPostcode().equals(address.getPostalCode())) {
@@ -396,7 +392,7 @@ public class PatientDao implements PatientRepository {
                         break;
                     }
                 }
-            }
+            }*/
             if (patientAdr == null) {
                 patientAdr = new PatientAddress();
                 patientAdr.setPatientEntity(patientEntity);

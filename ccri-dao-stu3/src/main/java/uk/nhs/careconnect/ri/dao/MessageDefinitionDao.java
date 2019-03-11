@@ -52,6 +52,9 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
     @Lazy
     ConceptRepository conceptDao;
 
+    @Autowired
+    private LibDao libDao;
+
     public void save(FhirContext ctx, MessageDefinitionEntity messageDefinition)
     {
         em.persist(messageDefinition);
@@ -251,8 +254,7 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
                 Identifier identifier = messageDefinition.getIdentifier();
                 MessageDefinitionIdentifier messageDefinitionIdentifier = new MessageDefinitionIdentifier();
                 messageDefinitionIdentifier.setMessageDefinition(messageDefinitionEntity);
-                messageDefinitionIdentifier.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
-                messageDefinitionIdentifier.setValue(identifier.getValue());
+                messageDefinitionIdentifier= (MessageDefinitionIdentifier) libDao.setIdentifier(identifier,  messageDefinitionIdentifier );
                 em.persist(messageDefinitionIdentifier);
             }
         }

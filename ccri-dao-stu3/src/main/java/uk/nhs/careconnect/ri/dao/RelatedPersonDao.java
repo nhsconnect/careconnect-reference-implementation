@@ -20,6 +20,7 @@ import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 
 import uk.nhs.careconnect.ri.database.entity.relatedPerson.*;
 
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -260,8 +261,7 @@ public class RelatedPersonDao implements RelatedPersonRepository {
             }
             if (personIdentifier == null)  personIdentifier = new RelatedPersonIdentifier();
 
-            personIdentifier.setValue(daoutils.removeSpace(identifier.getValue()));
-            personIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            personIdentifier= (RelatedPersonIdentifier) libDao.setIdentifier(identifier,  personIdentifier);
             personIdentifier.setRelatedPerson(personEntity);
             em.persist(personIdentifier);
         }

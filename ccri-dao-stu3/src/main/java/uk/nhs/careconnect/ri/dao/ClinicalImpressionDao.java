@@ -235,8 +235,7 @@ public class ClinicalImpressionDao implements ClinicalImpressionRepository {
             }
             if (impressionIdentifier == null)  impressionIdentifier = new ClinicalImpressionIdentifier();
 
-            impressionIdentifier.setValue(identifier.getValue());
-            impressionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             impressionIdentifier= (ClinicalImpressionIdentifier) libDao.setIdentifier(identifier, impressionIdentifier );
             impressionIdentifier.setClinicalImpression(impressionEntity);
             em.persist(impressionIdentifier);
         }

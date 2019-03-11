@@ -165,8 +165,7 @@ public class ValueSetDao implements ValueSetRepository {
             for (Identifier identifier : valueSet.getIdentifier()) {
                 ValueSetIdentifier valueSetIdentifier = new ValueSetIdentifier();
                 valueSetIdentifier.setValueSetEntity(valueSetEntity);
-                valueSetIdentifier.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
-                valueSetIdentifier.setValue(identifier.getValue());
+                valueSetIdentifier= (ValueSetIdentifier) libDao.setIdentifier(identifier, valueSetIdentifier );
                 em.persist(valueSetIdentifier);
             }
         }

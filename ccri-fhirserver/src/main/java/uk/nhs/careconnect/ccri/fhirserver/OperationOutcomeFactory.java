@@ -4,10 +4,18 @@ package uk.nhs.careconnect.ccri.fhirserver;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.nhs.careconnect.ccri.fhirserver.provider.ResourceTestProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OperationOutcomeFactory {
 
     private OperationOutcomeFactory() { }
+
+    private static final Logger log = LoggerFactory.getLogger(OperationOutcomeFactory.class);
 
     public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, OperationOutcome.IssueSeverity code, OperationOutcome.IssueType issueType) {
         CodeableConcept codeableConcept = new CodeableConcept()
@@ -26,6 +34,40 @@ public class OperationOutcomeFactory {
 
         exception.setOperationOutcome(operationOutcome);
         return exception;
+    }
+
+    public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome) {
+        List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
+        for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+            Boolean remove = false;
+
+            // Not supporting SNOMED CT at present
+            if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
+                remove = true;
+            }
+
+            if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
+                remove = true;
+            }
+            // Fault in profile??
+            if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
+                remove = true;
+            }
+            // Appears to be a fault in CareConnect profiles
+            if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
+                remove = true;
+            }
+            // This is a rule in FHIR but seems wrong
+            if (issue.getDiagnostics().contains("Entry isn't reachable by traversing from first Bundle entry")) {
+                remove = true;
+            }
+            if (remove) {
+                log.info("Stripped " + issue.getDiagnostics());
+                issueRemove.add(issue);
+            }
+        }
+        outcome.getIssue().removeAll(issueRemove);
+        return outcome;
     }
 
     public static OperationOutcome createOperationOutcome (String message) {

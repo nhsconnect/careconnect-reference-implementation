@@ -43,8 +43,7 @@ public class RelatedPersonEntityToFHIRRelatedPersonTransformer implements Transf
 
         for(RelatedPersonIdentifier identifier : personEntity.getIdentifiers()) {
             Identifier ident = person.addIdentifier();
-            if (identifier.getSystem() != null) ident.setSystem(identifier.getSystem().getUri());
-            if (identifier.getValue() != null) ident.setValue(identifier.getValue());
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         Boolean officialFound = false;

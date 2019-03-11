@@ -178,8 +178,7 @@ public class CareTeamDao implements CareTeamRepository {
             }
             if (teamIdentifier == null)  teamIdentifier = new CareTeamIdentifier();
 
-            teamIdentifier.setValue(identifier.getValue());
-            teamIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            teamIdentifier= (CareTeamIdentifier) libDao.setIdentifier(identifier, teamIdentifier );
             teamIdentifier.setCareTeam(teamEntity);
             em.persist(teamIdentifier);
         }

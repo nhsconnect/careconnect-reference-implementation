@@ -22,6 +22,7 @@ import uk.nhs.careconnect.ri.database.entity.location.LocationAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationTelecom;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationIdentifier;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -184,8 +185,7 @@ public class LocationDao implements LocationRepository {
 
             }
 
-            locationIdentifier.setValue(ident.getValue());
-            locationIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+            locationIdentifier= (LocationIdentifier) libDao.setIdentifier(ident,  locationIdentifier);
             log.debug("Location System Code: "+locationIdentifier.getSystemUri());
 
             em.persist(locationIdentifier);

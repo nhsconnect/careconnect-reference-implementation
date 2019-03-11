@@ -24,6 +24,7 @@ import uk.nhs.careconnect.ri.database.entity.flag.FlagIdentifier;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -283,8 +284,7 @@ public class FlagDao implements FlagRepository {
 
                 }
 
-                flagIdentifier.setValue(ident.getValue());
-                flagIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+                flagIdentifier= (FlagIdentifier) libDao.setIdentifier(ident,  flagIdentifier);
                 log.debug("Flag System Code: " + flagIdentifier.getSystemUri());
 
                 em.persist(flagIdentifier);

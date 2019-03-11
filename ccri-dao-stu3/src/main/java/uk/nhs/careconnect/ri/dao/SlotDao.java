@@ -198,8 +198,7 @@ public class SlotDao implements SlotRepository {
             }
             if (slotIdentifier == null)  slotIdentifier = new SlotIdentifier();
 
-            slotIdentifier.setValue(identifier.getValue());
-            slotIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            slotIdentifier= (SlotIdentifier) libDao.setIdentifier(identifier,  slotIdentifier);
             slotIdentifier.setSlot(slotEntity);
             em.persist(slotIdentifier);
             slotEntity.getIdentifiers().add(slotIdentifier); // KGM add the identifier to the slot so transform includes the slot 2/10/2018

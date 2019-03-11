@@ -145,8 +145,7 @@ public class GoalDao implements GoalRepository {
             }
             if (goalIdentifier == null)  goalIdentifier = new GoalIdentifier();
 
-            goalIdentifier.setValue(identifier.getValue());
-            goalIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            goalIdentifier= (GoalIdentifier) libDao.setIdentifier(identifier, goalIdentifier );
             goalIdentifier.setGoal(goalEntity);
             em.persist(goalIdentifier);
         }

@@ -228,8 +228,7 @@ public class ConditionDao implements ConditionRepository {
             }
             if (conditionIdentifier == null)  conditionIdentifier = new ConditionIdentifier();
 
-            conditionIdentifier.setValue(identifier.getValue());
-            conditionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            conditionIdentifier= (ConditionIdentifier) libDao.setIdentifier(identifier,conditionIdentifier );
             conditionIdentifier.setCondition(conditionEntity);
             em.persist(conditionIdentifier);
         }

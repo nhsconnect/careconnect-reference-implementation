@@ -174,8 +174,7 @@ public class EndpointDao implements EndpointRepository {
             }
             if (endpointIdentifier == null)  endpointIdentifier = new EndpointIdentifier();
 
-            endpointIdentifier.setValue(identifier.getValue());
-            endpointIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            endpointIdentifier= (EndpointIdentifier) libDao.setIdentifier(identifier,  endpointIdentifier);
             endpointIdentifier.setEndpoint(endpointEntity);
             em.persist(endpointIdentifier);
         }

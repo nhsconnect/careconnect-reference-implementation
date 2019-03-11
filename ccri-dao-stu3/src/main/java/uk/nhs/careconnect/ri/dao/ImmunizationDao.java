@@ -231,8 +231,7 @@ public class ImmunizationDao implements ImmunizationRepository {
             }
             if (immunisationIdentifier == null)  immunisationIdentifier = new ImmunisationIdentifier();
 
-            immunisationIdentifier.setValue(identifier.getValue());
-            immunisationIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            immunisationIdentifier= (ImmunisationIdentifier) libDao.setIdentifier(identifier, immunisationIdentifier );
             immunisationIdentifier.setImmunisation(immunisationEntity);
             em.persist(immunisationIdentifier);
         }

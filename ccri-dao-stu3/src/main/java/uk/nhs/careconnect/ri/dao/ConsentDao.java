@@ -223,8 +223,7 @@ public class ConsentDao implements ConsentRepository {
             }
             if (consentIdentifier == null)  consentIdentifier = new ConsentIdentifier();
 
-            consentIdentifier.setValue(identifier.getValue());
-            consentIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            consentIdentifier= (ConsentIdentifier) libDao.setIdentifier(identifier, consentIdentifier );
             consentIdentifier.setConsent(consentEntity);
             em.persist(consentIdentifier);
 

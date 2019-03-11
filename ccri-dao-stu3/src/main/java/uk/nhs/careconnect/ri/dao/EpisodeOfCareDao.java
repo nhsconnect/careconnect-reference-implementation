@@ -212,8 +212,7 @@ public class EpisodeOfCareDao implements EpisodeOfCareRepository {
             }
             if (episodeIdentifier == null)  episodeIdentifier = new EpisodeOfCareIdentifier();
 
-            episodeIdentifier.setValue(identifier.getValue());
-            episodeIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            episodeIdentifier= (EpisodeOfCareIdentifier) libDao.setIdentifier(identifier, episodeIdentifier );
             episodeIdentifier.setEpisode(episodeEntity);
             em.persist(episodeIdentifier);
         }

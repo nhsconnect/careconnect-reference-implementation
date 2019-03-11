@@ -281,8 +281,7 @@ public class MedicationAdministrationDao implements MedicationAdministrationRepo
             }
             if (administrationIdentifier == null)  administrationIdentifier = new MedicationAdministrationIdentifier();
 
-            administrationIdentifier.setValue(identifier.getValue());
-            administrationIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            administrationIdentifier= (MedicationAdministrationIdentifier) libDao.setIdentifier(identifier,  administrationIdentifier);
             administrationIdentifier.setMedicationAdministration(administrationEntity);
             em.persist(administrationIdentifier);
         }

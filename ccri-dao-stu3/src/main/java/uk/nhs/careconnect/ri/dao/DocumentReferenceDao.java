@@ -301,8 +301,7 @@ public class DocumentReferenceDao implements DocumentReferenceRepository {
             }
             if (documentReferenceIdentifier == null)  documentReferenceIdentifier = new DocumentReferenceIdentifier();
 
-            documentReferenceIdentifier.setValue(identifier.getValue());
-            documentReferenceIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            documentReferenceIdentifier= (DocumentReferenceIdentifier) libDao.setIdentifier(identifier,  documentReferenceIdentifier);
             documentReferenceIdentifier.setDocumentReference(documentReferenceEntity);
             em.persist(documentReferenceIdentifier);
         }

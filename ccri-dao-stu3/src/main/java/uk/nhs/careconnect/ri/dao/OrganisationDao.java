@@ -21,6 +21,7 @@ import uk.nhs.careconnect.ri.database.entity.organization.OrganisationAddress;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationIdentifier;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationTelecom;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIdentifier;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
@@ -177,8 +178,7 @@ public class OrganisationDao implements OrganisationRepository {
             }
             if (organisationIdentifier == null)  organisationIdentifier = new OrganisationIdentifier();
 
-            organisationIdentifier.setValue(ident.getValue());
-            organisationIdentifier.setSystem(codeSystemSvc.findSystem(ident.getSystem()));
+            organisationIdentifier= (OrganisationIdentifier) libDao.setIdentifier(ident, organisationIdentifier );
             organisationIdentifier.setOrganisation(organisationEntity);
             em.persist(organisationIdentifier);
         }

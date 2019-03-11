@@ -349,8 +349,7 @@ public class MedicationDispenseDao implements MedicationDispenseRepository {
             }
             if (dispenseIdentifier == null)  dispenseIdentifier = new MedicationDispenseIdentifier();
 
-            dispenseIdentifier.setValue(identifier.getValue());
-            dispenseIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             dispenseIdentifier= (MedicationDispenseIdentifier) libDao.setIdentifier(identifier, dispenseIdentifier );
             dispenseIdentifier.setMedicationDispense(dispenseEntity);
             em.persist(dispenseIdentifier);
         }

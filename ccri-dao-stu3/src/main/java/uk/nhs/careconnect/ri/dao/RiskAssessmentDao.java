@@ -181,8 +181,7 @@ public class RiskAssessmentDao implements RiskAssessmentRepository {
             }
             if (riskIdentifier == null)  riskIdentifier = new RiskAssessmentIdentifier();
 
-            riskIdentifier.setValue(identifier.getValue());
-            riskIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            riskIdentifier= (RiskAssessmentIdentifier) libDao.setIdentifier(identifier, riskIdentifier );
             riskIdentifier.setRiskAssessment(riskEntity);
             em.persist(riskIdentifier);
         }

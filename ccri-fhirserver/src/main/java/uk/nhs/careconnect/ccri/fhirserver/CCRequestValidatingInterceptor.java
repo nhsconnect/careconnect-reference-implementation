@@ -82,28 +82,8 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     OperationOutcome outcome = (OperationOutcome) results.toOperationOutcome();
 
-                    List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
-                    for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-                        Boolean remove = false;
+                    outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcome);
 
-                        if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
-                            remove = true;
-                        }
-                        if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
-                            remove = true;
-                        }
-                        if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
-                            remove = true;
-                        }
-                        if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
-                            remove = true;
-                        }
-                        if (remove) {
-                            log.info("Stripped "+issue.getDiagnostics());
-                            issueRemove.add(issue);
-                        }
-                    }
-                    outcome.getIssue().removeAll(issueRemove);
                     if (!pass(outcome)) {
                         log.info("VALIDATION FAILED");
                         System.out.println(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));

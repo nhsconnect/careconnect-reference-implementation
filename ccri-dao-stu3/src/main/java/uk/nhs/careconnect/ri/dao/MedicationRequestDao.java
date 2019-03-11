@@ -289,8 +289,7 @@ public class MedicationRequestDao implements MedicationRequestRepository {
             }
             if (prescriptionIdentifier == null)  prescriptionIdentifier = new MedicationRequestIdentifier();
 
-            prescriptionIdentifier.setValue(identifier.getValue());
-            prescriptionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             prescriptionIdentifier= (MedicationRequestIdentifier) libDao.setIdentifier(identifier, prescriptionIdentifier );
             prescriptionIdentifier.setMedicationRequest(prescriptionEntity);
             em.persist(prescriptionIdentifier);
         }

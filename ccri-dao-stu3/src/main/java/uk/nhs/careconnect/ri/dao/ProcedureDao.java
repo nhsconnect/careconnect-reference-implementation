@@ -231,8 +231,7 @@ public class ProcedureDao implements ProcedureRepository {
             }
             if (procedureIdentifier == null)  procedureIdentifier = new ProcedureIdentifier();
 
-            procedureIdentifier.setValue(identifier.getValue());
-            procedureIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             procedureIdentifier= (ProcedureIdentifier) libDao.setIdentifier(identifier, procedureIdentifier );
             procedureIdentifier.setProcedure(procedureEntity);
             em.persist(procedureIdentifier);
         }

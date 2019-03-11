@@ -188,9 +188,9 @@ public class PractitionerRoleDao implements PractitionerRoleRepository {
 
                 log.trace("Not found Identifier!");
 
-                practitionerRoleIdentifier.setValue(identifier.getValue());
+
                 practitionerRoleIdentifier.setPractitionerRole(roleEntity);
-                practitionerRoleIdentifier.setSystem(codeSystemDao.findSystem(identifier.getSystem()));
+                practitionerRoleIdentifier= (PractitionerRoleIdentifier) libDao.setIdentifier(identifier,  practitionerRoleIdentifier);
                 em.persist(practitionerRoleIdentifier);
                 roleEntity.getIdentifiers().add(practitionerRoleIdentifier);
             }

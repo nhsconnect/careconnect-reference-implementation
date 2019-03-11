@@ -2,12 +2,14 @@ package uk.nhs.careconnect.ri.dao.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.MessageDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.messageDefinition.*;
 import uk.org.hl7.fhir.core.Stu3.CareConnectExtension;
 
@@ -90,9 +92,8 @@ public class MessageDefinitionEntityToFHIRMessageDefinitionTransformer implement
 
 
         for (MessageDefinitionIdentifier identifier : messageDefinitionEntity.getIdentifiers()) {
-            messageDefinition.getIdentifier()
-                    .setSystem(identifier.getSystem().getUri())
-                    .setValue(identifier.getValue());
+            Identifier ident = messageDefinition.getIdentifier();
+            ident = daoutils.getIdentifier(identifier, ident);
         }
 
         for (MessageDefinitionTelecom telecom : messageDefinitionEntity.getContacts()) {

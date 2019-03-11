@@ -362,8 +362,7 @@ public class  EncounterDao implements EncounterRepository {
             }
             if (encounterIdentifier == null)  encounterIdentifier = new EncounterIdentifier();
 
-            if (identifier.hasValue()) encounterIdentifier.setValue(identifier.getValue());
-            if (identifier.hasSystem()) encounterIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             encounterIdentifier= (EncounterIdentifier) libDao.setIdentifier(identifier, encounterIdentifier );
             encounterIdentifier.setEncounter(encounterEntity);
             em.persist(encounterIdentifier);
         }

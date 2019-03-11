@@ -232,8 +232,7 @@ public class CompositionDao implements CompositionRepository {
             }
             if (compositionIdentifier == null)  compositionIdentifier = new CompositionIdentifier();
 
-            compositionIdentifier.setValue(identifier.getValue());
-            compositionIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+            compositionIdentifier= (CompositionIdentifier) libDao.setIdentifier(identifier,compositionIdentifier  );
             compositionIdentifier.setComposition(compositionEntity);
             em.persist(compositionIdentifier);
         }

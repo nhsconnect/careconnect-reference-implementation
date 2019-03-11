@@ -196,8 +196,7 @@ public class DiagnosticReportDao implements DiagnosticReportRepository {
             }
             if (diagnosticReportIdentifier == null)  diagnosticReportIdentifier = new DiagnosticReportIdentifier();
 
-            diagnosticReportIdentifier.setValue(identifier.getValue());
-            diagnosticReportIdentifier.setSystem(codeSystemSvc.findSystem(identifier.getSystem()));
+             diagnosticReportIdentifier= (DiagnosticReportIdentifier) libDao.setIdentifier(identifier, diagnosticReportIdentifier );
             diagnosticReportIdentifier.setDiagnosticReport(diagnosticReportEntity);
             em.persist(diagnosticReportIdentifier);
         }
