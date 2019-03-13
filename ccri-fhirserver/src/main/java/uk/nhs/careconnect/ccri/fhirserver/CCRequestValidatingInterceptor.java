@@ -16,6 +16,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,12 +32,13 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
     ValidationResult results;
 
-    FhirContext ctx = FhirContext.forDstu3();
+    FhirContext ctx;
 
-    public CCRequestValidatingInterceptor(Logger ourLog, FhirValidator fhirValidator) {
+    public CCRequestValidatingInterceptor(Logger ourLog, FhirValidator fhirValidator,  FhirContext ctx) {
         super();
         this.log = ourLog;
         this.fhirValidator = fhirValidator;
+        this.ctx = ctx;
     }
 
     public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {
