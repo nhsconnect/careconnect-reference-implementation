@@ -1,9 +1,7 @@
 package uk.nhs.careconnect.ccri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.EncodingEnum;
-import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServerUtils;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
@@ -23,8 +21,7 @@ import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class CCRequestValidatingInterceptor extends InterceptorAdapter {
     private Logger log = null; //LoggerFactory.getLogger(ServerInterceptor.class);

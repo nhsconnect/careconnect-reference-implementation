@@ -6,7 +6,6 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.careconnect.ccri.fhirserver.provider.ResourceTestProvider;
 
 import java.util.ArrayList;
 import java.util.List;
