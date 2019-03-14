@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class StructureDefinitionProvider implements IResourceProvider {
+public class StructureDefinitionProvider implements ICCResourceProvider {
 
 	@Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
@@ -58,6 +58,11 @@ public class StructureDefinitionProvider implements IResourceProvider {
     FhirContext ctx;
 
     private static final Logger log = LoggerFactory.getLogger(StructureDefinitionProvider.class);
+
+    @Override
+    public Long count() {
+        return structureDefinitionDao.count();
+    }
 
     @Search
     public List<StructureDefinition> search(HttpServletRequest theRequest,
