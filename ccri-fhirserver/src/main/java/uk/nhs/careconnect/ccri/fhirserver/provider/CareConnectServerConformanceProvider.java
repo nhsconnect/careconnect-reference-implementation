@@ -175,28 +175,29 @@ import java.util.List;
                     log.info("restResourceComponent.getType - " + restResourceComponent.getType());
                     setProfile(restResourceComponent);
 
-                    List<ResourceInteractionComponent> l = restResourceComponent.getInteraction();
+
                     List<ResourceInteractionComponent> remove = new ArrayList<>();
-                    for (int i = 0; i < l.size(); i++)
+                    for (ResourceInteractionComponent l : restResourceComponent.getInteraction()) {
                         if (CRUD_read.equals("false"))
-                            if (restResourceComponent.getInteraction().get(i).getCode().toString().equals("READ")) {
-                                remove.add(restResourceComponent.getInteraction().get(i));
+                            if (l.getCode().toString().equals("READ")) {
+                                remove.add(l);
                             }
-                    for (int i = 0; i < l.size(); i++)
+
                         if (CRUD_update.equals("false"))
-                            if (restResourceComponent.getInteraction().get(i).getCode().toString().equals("UPDATE")) {
-                                remove.add(restResourceComponent.getInteraction().get(i));
+                            if (l.getCode().toString().equals("UPDATE")) {
+                                remove.add(l);
                             }
-                    for (int i = 0; i < l.size(); i++)
+
                         if (CRUD_create.equals("false"))
-                            if (restResourceComponent.getInteraction().get(i).getCode().toString().equals("CREATE")) {
-                                remove.add(restResourceComponent.getInteraction().get(i));
+                            if (l.getCode().toString().equals("CREATE")) {
+                                remove.add(l);
                             }
-                    for (int i = 0; i < l.size(); i++)
+
                         if (CRUD_delete.equals("false"))
-                            if (restResourceComponent.getInteraction().get(i).getCode().toString().equals("DELETE")) {
-                                remove.add(restResourceComponent.getInteraction().get(i));
+                            if (l.getCode().toString().equals("DELETE")) {
+                                remove.add(l);
                             }
+                    }
 
                     restResourceComponent.getInteraction().removeAll(remove);
 
