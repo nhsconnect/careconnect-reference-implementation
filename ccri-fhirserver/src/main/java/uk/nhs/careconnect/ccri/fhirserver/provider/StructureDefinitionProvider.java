@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class StructureDefinitionProvider implements ICCResourceProvider {
+public class StructureDefinitionProvider implements IResourceProvider {
 
 	@Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
@@ -59,11 +59,12 @@ public class StructureDefinitionProvider implements ICCResourceProvider {
 
     private static final Logger log = LoggerFactory.getLogger(StructureDefinitionProvider.class);
 
+    /*
     @Override
     public Long count() {
         return structureDefinitionDao.count();
     }
-
+*/
     @Search
     public List<StructureDefinition> search(HttpServletRequest theRequest,
                                             @OptionalParam(name = StructureDefinition.SP_NAME) StringParam name,
@@ -76,7 +77,7 @@ public class StructureDefinitionProvider implements ICCResourceProvider {
     @Read
     public StructureDefinition get
             (@IdParam IdType internalId) {
-        resourcePermissionProvider.checkPermission("sread");
+        resourcePermissionProvider.checkPermission("read");
         StructureDefinition structureDefinition = structureDefinitionDao.read( ctx, internalId);
 
         if ( structureDefinition == null) {
@@ -270,17 +271,6 @@ public class StructureDefinitionProvider implements ICCResourceProvider {
         return bundle;
     }
 
-/*
-	@Search
-    public List<StructureDefinition> search(HttpServletRequest theRequest,
-              @OptionalParam(name =StructureDefinition.SP_NAME) StringParam name,
-               @OptionalParam(name =StructureDefinition.SP_PUBLISHER) StringParam publisher,
-               @OptionalParam(name = StructureDefinition.SP_URL) UriParam url
-    ) {
-    	System.out.println("Search is invoked");
-        return structureDefinitionDao.search(ctx, name, publisher, url);
-    }
-*/
 
     private HttpClient getHttpClient(){
         final HttpClient httpClient = HttpClientBuilder.create().build();
