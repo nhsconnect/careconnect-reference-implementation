@@ -4,6 +4,8 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.MethodNotAllowedException;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
@@ -23,9 +25,13 @@ public class ResourcePermissionProvider {
 	   
 	@Value("${ccri.CRUD_create}")
 	private String CRUD_create;
-    
-    public void checkPermission(String operation) {
-        
+
+	private static final Logger log = LoggerFactory.getLogger(ResourcePermissionProvider.class);
+
+
+	public void checkPermission(String operation) {
+
+    	log.trace("Check "+operation);
         if(CRUD_read.equals("false") && operation.equals("read"))
 		{
 			throw OperationOutcomeFactory.buildOperationOutcomeException(

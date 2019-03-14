@@ -218,13 +218,14 @@ import java.util.List;
                     getOperations(restResourceComponent,nextRest);
                 }
 
-
+/*
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
                     if (restResourceComponent.getType().equals("StructureDefinition")) {
                         nextRest.getResource().remove(restResourceComponent);
                         break;
                     }
                 }
+                */
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
 
                     if (restResourceComponent.getType().equals("OperationDefinition")) {

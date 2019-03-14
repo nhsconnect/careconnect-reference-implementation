@@ -6,9 +6,9 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,10 @@ import uk.nhs.careconnect.ri.database.daointerface.StructureDefinitionRepository
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.database.entity.structureDefinition.StructureDefinitionEntity;
-
+import uk.nhs.careconnect.ri.database.entity.structureDefinition.StructureDefinitionIdentifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -40,18 +39,18 @@ public class StructureDefinitionDao implements StructureDefinitionRepository{
 
 	 @PersistenceContext
 	    EntityManager em;
- 
-	 @Autowired
-	    private StructureDefinitionEntityToFHIRStructureDefinitionTransformer structureDefinitionEntityToFHIRStructureDefinitionTransformer;
-	    @Autowired
-        @Lazy
-ConceptRepository conceptDao;
+
 
 	@Autowired
-	@Lazy
-	ValueSetRepository valueSetDao;
+	private LibDao libDao;
+ 
+	 @Autowired
+	 private StructureDefinitionEntityToFHIRStructureDefinitionTransformer structureDefinitionEntityToFHIRStructureDefinitionTransformer;
 
-	    private static final Logger log = LoggerFactory.getLogger(StructureDefinitionDao.class);
+	//StructureDefinition structureDefinition;
+
+
+	private static final Logger log = LoggerFactory.getLogger(StructureDefinitionDao.class);
 
 	@Override
 	public Long count() {
@@ -72,14 +71,14 @@ ConceptRepository conceptDao;
 
 	}
 
-	StructureDefinition structureDefinition;
-	    
-	    @Transactional
+
+
 	    @Override
-	    public StructureDefinition create(FhirContext ctx, StructureDefinition structureDefinition) {
-	    	
-	    //	System.out.println("call came to save Concept MAP : " + structureDefinition.getUrlElement().getValue() );
-	        this.structureDefinition = structureDefinition;
+	    public StructureDefinition create(FhirContext ctx, StructureDefinition structureDefinition) throws OperationOutcomeException {
+
+			log.info("Structured Definition Create");
+	    	System.out.println("call came to save StructureDefinition : " + structureDefinition.getUrlElement().getValue() );
+	       // this.structureDefinition = structureDefinition;
 	        StructureDefinitionEntity structureDefinitionEntity = null;
 
 	        System.out.println("id is" + structureDefinition.getIdElement());
@@ -100,84 +99,71 @@ ConceptRepository conceptDao;
 					}
 				}
 			}
-			structureDefinitionEntity.setResource(null);
+
 	        
-	     //   if(getExistingStructureDefinitionEntity(structureDefinition.getUrlElement() )==0)
-	       // 	{
-			        if (structureDefinitionEntity == null)
-			        {
-			            structureDefinitionEntity = new StructureDefinitionEntity();
-			        }
-			        // Removed Id
-			        if (structureDefinition.hasUrl())
-			        {
-			        	structureDefinitionEntity.setUrl(structureDefinition.getUrl());
-			        }
-			        if (structureDefinition.hasName())
-			        {
-			        	structureDefinitionEntity.setName(structureDefinition.getName());
-			        }
-			        if (structureDefinition.hasStatus())
-			        {
-			        	structureDefinitionEntity.setStatus(structureDefinition.getStatus());
-			        }
-			        if (structureDefinition.hasDescription())
-			        {
-			        	structureDefinitionEntity.setDescription(structureDefinition.getDescription());
-			        }
 
-					if (structureDefinition.hasPublisher())
-					{
-						structureDefinitionEntity.setPublisher(structureDefinition.getPublisher());
-					}
-					if (structureDefinition.hasCopyright())
-					{
-						structureDefinitionEntity.setCopyright(structureDefinition.getCopyright());
-					}
-					if (structureDefinition.hasVersion())
-					{
-						structureDefinitionEntity.setVersion(structureDefinition.getVersion());
-					}
+			if (structureDefinitionEntity == null)
+			{
+				structureDefinitionEntity = new StructureDefinitionEntity();
+			}
+			structureDefinitionEntity.setResource(null);
+			// Removed Id
+			if (structureDefinition.hasUrl())
+			{
+				structureDefinitionEntity.setUrl(structureDefinition.getUrl());
+			}
+			if (structureDefinition.hasName())
+			{
+				structureDefinitionEntity.setName(structureDefinition.getName());
+			}
+			if (structureDefinition.hasStatus())
+			{
+				structureDefinitionEntity.setStatus(structureDefinition.getStatus());
+			}
+			if (structureDefinition.hasDescription())
+			{
+				structureDefinitionEntity.setDescription(structureDefinition.getDescription());
+			}
 
+			if (structureDefinition.hasPublisher())
+			{
+				structureDefinitionEntity.setPublisher(structureDefinition.getPublisher());
+			}
+			if (structureDefinition.hasCopyright())
+			{
+				structureDefinitionEntity.setCopyright(structureDefinition.getCopyright());
+			}
+			if (structureDefinition.hasVersion())
+			{
+				structureDefinitionEntity.setVersion(structureDefinition.getVersion());
+			}
 
+			structureDefinitionEntity.setResource(ctx.newJsonParser().encodeResourceToString(structureDefinition));
 			        
-			        
-		       	log.trace("Call em.persist StructureDefinitionEntity");
-		       	em.persist(structureDefinitionEntity); // persisting Concept Maps conceptmap
-		       	log.info("Called PERSIST id="+structureDefinitionEntity.getId().toString());
-		        structureDefinition.setId(structureDefinitionEntity.getId().toString());
-		        newStructureDefinitionId = structureDefinitionEntity.getId();
-		   //   }
-		 //     else
-		//      {
-		//       	newStructureDefinitionId = getExistingStructureDefinitionEntity(structureDefinition.getUrlElement() );
-		//      }
-			        
-			  System.out.println("newStructureDefinitionId = " + newStructureDefinitionId);    
-			  structureDefinitionEntity.setResource(null);
+			log.trace("Call em.persist StructureDefinitionEntity");
+			em.persist(structureDefinitionEntity); // persisting Concept Maps structureDefinition
+
+			log.info("Called PERSIST id="+structureDefinitionEntity.getId().toString());
+
+			if (structureDefinition.hasIdentifier()) {
+				for (StructureDefinitionIdentifier identifier : structureDefinitionEntity.getIdentifiers()) {
+					em.remove(identifier);
+				}
+				for (Identifier identifier : structureDefinition.getIdentifier()) {
+					StructureDefinitionIdentifier structureDefinitionIdentifier = new StructureDefinitionIdentifier();
+					structureDefinitionIdentifier.setStructuredDefinition(structureDefinitionEntity);
+					structureDefinitionIdentifier = (StructureDefinitionIdentifier) libDao.setIdentifier(identifier, structureDefinitionIdentifier );
+					em.persist(structureDefinitionIdentifier);
+				}
+			}
+
+			structureDefinition.setId(structureDefinitionEntity.getId().toString());
 
 
-			  
-			 // structureDefinitionElementGroupEntity.setStructureDefinitionGroup(structureDefinitionGroupEntity);
-			  return structureDefinition;
+			return structureDefinitionEntityToFHIRStructureDefinitionTransformer.transform(structureDefinitionEntity,ctx);
 	    }   
 	    
-	    private long getExistingStructureDefinitionEntity(UriType url)
-	    {
-	    	
-	    	CriteriaBuilder cb = em.getCriteriaBuilder();
-	    	CriteriaQuery<StructureDefinitionEntity> cq = cb.createQuery(StructureDefinitionEntity.class);
-	    	
-	    	Root<StructureDefinitionEntity> conceptmap = cq.from(StructureDefinitionEntity.class) ;
-	    	cq.where(cb.equal(conceptmap.get("url"),url.getValue() ) );
-	    	cq.select(conceptmap);
-	    	TypedQuery<StructureDefinitionEntity> q = em.createQuery(cq);
-	    	
-	    	List<StructureDefinitionEntity> conceptmaps = q.getResultList();
-	    	if(conceptmaps.size()>0) return conceptmaps.get(0).getId() ; 
-	    	else return 0;
-	    	
-	    }
+
 	    
 	    private StructureDefinitionEntity findStructureDefinitionEntity(IdType theId) {
 
@@ -225,7 +211,7 @@ ConceptRepository conceptDao;
 
 	        if (structureDefinitionEntity == null) return null;
 
-	        StructureDefinition structureDefinition = structureDefinitionEntityToFHIRStructureDefinitionTransformer.transform(structureDefinitionEntity);
+	        StructureDefinition structureDefinition = structureDefinitionEntityToFHIRStructureDefinitionTransformer.transform(structureDefinitionEntity, ctx);
 
 	        if (structureDefinitionEntity.getResource() == null) {
 	            String resource = ctx.newJsonParser().encodeResourceToString(structureDefinition);
@@ -247,20 +233,13 @@ ConceptRepository conceptDao;
 		List<StructureDefinitionEntity> qryResults = searchEntity(ctx,name,publisher, url);
 		List<StructureDefinition> results = new ArrayList<>();
 
-		for (StructureDefinitionEntity conceptmapEntity : qryResults)
+		for (StructureDefinitionEntity structureDefinitionEntity : qryResults)
 		{
-			if (conceptmapEntity.getResource() != null) {
-				results.add((StructureDefinition) ctx.newJsonParser().parseResource(conceptmapEntity.getResource()));
-			} else {
 
-				StructureDefinition structureDefinition = structureDefinitionEntityToFHIRStructureDefinitionTransformer.transform(conceptmapEntity);
-				String resource = ctx.newJsonParser().encodeResourceToString(structureDefinition);
-				if (resource.length() < 10000) {
-					conceptmapEntity.setResource(resource);
-					em.persist(conceptmapEntity);
-				}
-				results.add(structureDefinition);
-			}
+			StructureDefinition structureDefinition = structureDefinitionEntityToFHIRStructureDefinitionTransformer.transform(structureDefinitionEntity, ctx);
+
+			results.add(structureDefinition);
+
 		}
 		return results;
 	}
@@ -331,7 +310,5 @@ ConceptRepository conceptDao;
 
 	       return qryResults;
 	    }
-	    
-	    
 	    
 }

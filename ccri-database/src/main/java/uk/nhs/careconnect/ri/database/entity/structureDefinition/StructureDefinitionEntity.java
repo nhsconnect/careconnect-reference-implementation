@@ -47,10 +47,10 @@ public class StructureDefinitionEntity extends BaseResource {
     @Column(name = "DATETIME")
     private Date dateTime;
 
-    @Column(name = "publisher")
+    @Column(name = "publisher",length = MAX_DESC_LENGTH,nullable = true)
     private String publisher;
 
-    @Column(name = "COPYRIGHT")
+    @Column(name = "COPYRIGHT",length = MAX_DESC_LENGTH,nullable = true)
     private String copyright;
 
     // Ignore usage context and jurisdiction for now
@@ -63,10 +63,10 @@ public class StructureDefinitionEntity extends BaseResource {
     @Column(name = "purpose",length = MAX_DESC_LENGTH)
     private String purpose;
 
-    @Column(name="START")
+    @Column(name="START",length = MAX_DESC_LENGTH,nullable = true)
     String start;
 
-    @Column(name = "profile")
+    @Column(name = "profile",length = MAX_DESC_LENGTH,nullable = true)
     private String profile;
 
 

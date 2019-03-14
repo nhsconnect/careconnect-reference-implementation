@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.structureDefinition.StructureDefinitionEntity;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface StructureDefinitionRepository extends BaseRepository<StructureD
 //	void save(StructureDefinitionEntity structureDefinition);
 
 
-    StructureDefinition create(FhirContext ctx, StructureDefinition structuredDefinition);
+    StructureDefinition create(FhirContext ctx, StructureDefinition structuredDefinition) throws OperationOutcomeException;
 
   //  StructureDefinition read(IdType theId) ;
  //   ValueSet create(FhirContext ctx,ValueSet valueSet)  throws OperationOutcomeException;
