@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 
 import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.slf4j.Logger;
@@ -64,6 +65,23 @@ public class StructureDefinitionDao implements StructureDefinitionRepository{
 	@Override
 	public StructureDefinitionEntity readEntity(FhirContext ctx, IdType theId) {
 		return null;
+	}
+
+
+	@Override
+	public OperationOutcome delete(FhirContext ctx, IdType theId) {
+		log.trace("Retrieving ValueSet = " + theId.getValue());
+
+		StructureDefinitionEntity structureDefinitionEntity = findStructureDefinitionEntity(theId);
+
+		if (structureDefinitionEntity == null) return null;
+
+		for (StructureDefinitionIdentifier identifier : structureDefinitionEntity.getIdentifiers()) {
+			em.remove(identifier);
+		}
+		em.remove(structureDefinitionEntity);
+		return new OperationOutcome();
+
 	}
 
 	@Override

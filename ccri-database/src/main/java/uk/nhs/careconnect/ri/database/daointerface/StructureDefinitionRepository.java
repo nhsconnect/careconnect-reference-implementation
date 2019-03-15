@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
@@ -25,6 +26,8 @@ public interface StructureDefinitionRepository extends BaseRepository<StructureD
  //   ValueSet create(FhirContext ctx,ValueSet valueSet)  throws OperationOutcomeException;
 
     StructureDefinition read(FhirContext ctx, IdType theId) ;
+
+    OperationOutcome delete(FhirContext ctx, IdType theId) ;
 
     List<StructureDefinition> search(FhirContext ctx,
                             @OptionalParam(name = ValueSet.SP_NAME) StringParam name,

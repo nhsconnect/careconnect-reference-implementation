@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class StructureDefinitionProvider implements IResourceProvider {
+public class StructureDefinitionProvider implements ICCResourceProvider {
 
 	@Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
@@ -59,12 +59,12 @@ public class StructureDefinitionProvider implements IResourceProvider {
 
     private static final Logger log = LoggerFactory.getLogger(StructureDefinitionProvider.class);
 
-    /*
+
     @Override
     public Long count() {
         return structureDefinitionDao.count();
     }
-*/
+
     @Search
     public List<StructureDefinition> search(HttpServletRequest theRequest,
                                             @OptionalParam(name = StructureDefinition.SP_NAME) StringParam name,
@@ -124,6 +124,25 @@ public class StructureDefinitionProvider implements IResourceProvider {
             method.setCreated(false);
             method.setId(newStructureDefinition.getIdElement());
             method.setResource(newStructureDefinition);
+        } catch (Exception ex) {
+            log.info(ex.getMessage());
+            ProviderResponseLibrary.handleException(method,ex);
+        }
+
+        return method;
+    }
+
+    @Delete
+    public MethodOutcome delete
+            (@IdParam IdType internalId) {
+        resourcePermissionProvider.checkPermission("delete");
+        MethodOutcome method = new MethodOutcome();
+
+        try {
+            OperationOutcome outcome = structureDefinitionDao.delete(ctx,internalId);
+            method.setCreated(false);
+            //method.setId(newStructureDefinition.getIdElement());
+            method.setResource(outcome);
         } catch (Exception ex) {
             log.info(ex.getMessage());
             ProviderResponseLibrary.handleException(method,ex);
