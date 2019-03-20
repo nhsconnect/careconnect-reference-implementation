@@ -1,10 +1,14 @@
 package uk.nhs.careconnect.ccri.fhirserver.provider;
 
 import ca.uhn.fhir.context.FhirContext;
+//import ca.uhn.fhir.jpa.dao.IFhirResourceDaoConceptMap;
+//import ca.uhn.fhir.jpa.term.TranslationRequest;
+//import ca.uhn.fhir.jpa.term.TranslationResult;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -17,20 +21,29 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CodeType;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ConceptMap;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.context.Theme;
 
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
-
+import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
+import uk.nhs.careconnect.ri.database.entity.TranslationResults;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -119,7 +132,34 @@ public class ConceptMapProvider implements ICCResourceProvider {
 	        
         return method;
     }
-    
+    @Operation(name = "$translate", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
+    //public void translateResource(@ResourceParam Code code,) {
+    public Parameters  translateResource(
+    		@OperationParam(name = "code", min = 0, max = 1) CodeType theSourceCode,
+    		@OperationParam(name = "system", min = 0, max = 1) UriType theSourceCodeSystem,
+    		@OperationParam(name = "version", min = 0, max = 1) StringType theSourceCodeSystemVersion,
+    		@OperationParam(name = "source", min = 0, max = 1) UriType theSourceValueSet,
+    		@OperationParam(name = "coding", min = 0, max = 1) Coding theSourceCoding,
+    		@OperationParam(name = "codeableConcept", min = 0, max = 1) CodeableConcept theSourceCodeableConcept,
+    		@OperationParam(name = "target", min = 0, max = 1) UriType theTargetValueSet,
+    		@OperationParam(name = "targetsystem", min = 0, max = 1) UriType theTargetCodeSystem,
+    		RequestDetails theRequestDetails) 
+    {
+    		//return resourceTestProvider.testResource(resource,theMode,theProfile);
+    	TranslationRequests translationRequest = new TranslationRequests();
+    	//translationRequest.getCodeableConcept().addCoding().setCodeElement(VersionConvertor_30_40.convertCode(theSourceCode));
+    	System.out.println("the source code is " + theSourceCode);
+    	translationRequest.getCodeableConcept().addCoding().setCodeElement(theSourceCode).setSystemElement(theSourceCodeSystem);
+    	
+    	
+    	//.setCodeElement(theSourceCode);
+    	
+    	//IFhirResourceDaoConceptMap<ConceptMap> dao = (IFhirResourceDaoConceptMap<ConceptMap>) getDao();
+    	TranslationResults result  = conceptMapDao.translate(translationRequest, theRequestDetails);
+    		//System.out.println("$transalate is called");
+    		return(result.toParameters());
+    		
+    	}
     @Validate
     public MethodOutcome testResource(@ResourceParam ConceptMap resource,
                                   @Validate.Mode ValidationModeEnum theMode,
