@@ -9,9 +9,11 @@ import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.SystemEntity;
+import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import java.util.List;
@@ -34,6 +36,7 @@ public interface CodeSystemRepository extends BaseRepository<CodeSystemEntity,Co
                              @OptionalParam(name = CodeSystem.SP_URL) UriParam url
     );
     public void setProcessDeferred(boolean theProcessDeferred);
+    public List<ConceptMapGroupTarget> translate(TranslationRequests theTranslationRequests); 
 
  //   void saveDeferred();
 

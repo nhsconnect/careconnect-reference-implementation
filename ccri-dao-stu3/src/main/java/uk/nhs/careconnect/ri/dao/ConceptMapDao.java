@@ -1,8 +1,10 @@
 package uk.nhs.careconnect.ri.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,12 +32,17 @@ import org.springframework.stereotype.Repository;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
+import uk.nhs.careconnect.ri.database.entity.TranslationMatches;
+import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
+import uk.nhs.careconnect.ri.database.entity.TranslationResults;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
@@ -389,5 +396,68 @@ ConceptRepository conceptDao;
 	    }
 	    
 	    
+	    @Autowired
+		private CodeSystemRepository myHapiTerminologySvc;
+
+		@Override
+		public TranslationResults translate(TranslationRequests theTranslationRequest, RequestDetails theRequestDetails) {
+		//	if (theTranslationRequest.hasReverse() && theTranslationRequest.getReverseAsBoolean()) {
+		//		return buildReverseTranslationResult(myHapiTerminologySvc.translateWithReverse(theTranslationRequest));
+		//	}
+
+			return buildTranslationResult(myHapiTerminologySvc.translate(theTranslationRequest));
+		}
+		
+		private TranslationResults buildTranslationResult(List<ConceptMapGroupTarget> theTargets) {
+			TranslationResults retVal = new TranslationResults();
+
+			String msg;
+			if (theTargets.isEmpty()) {
+
+				retVal.setResult(new BooleanType(false));
+
+				msg = "empty";
+				/*getContext().getLocalizer().getMessage(
+					FhirResourceDaoConceptMapDstu3.class,
+					"noMatchesFound");
+				*/
+				retVal.setMessage(new StringType(msg));
+
+			} else {
+
+				retVal.setResult(new BooleanType(true));
+
+				msg = "empty";
+				//msg = getContext().getLocalizer().getMessage(
+			//		FhirResourceDaoConceptMapDstu3.class,
+			//		"matchesFound");
+
+				retVal.setMessage(new StringType(msg));
+
+				TranslationMatches translationMatch;
+				Set<ConceptMapGroupTarget> targetsToReturn = new HashSet<>();
+				for (ConceptMapGroupTarget target : theTargets) {
+					if (targetsToReturn.add(target)) {
+						translationMatch = new TranslationMatches();
+
+						if (target.getEquivalenceCode() != null) {
+							translationMatch.setEquivalence((new CodeType(target.getEquivalenceCode().toCode())));
+						}
+
+						translationMatch.setConcept(
+							new Coding()
+								.setCode(target.getTargetCode().getCode() )
+								.setSystem(target.getTargetCode().getSystem())
+								.setDisplay(target.getTargetCode().getDisplay()));
+
+						translationMatch.setSource((new UriType(target.getConceptMapGroupElement().getConceptMapGroup().getConceptMap().getUrl())));
+
+						retVal.addMatch(translationMatch);
+					}
+				}
+			}
+
+			return retVal;
+		}
 	    
 }
