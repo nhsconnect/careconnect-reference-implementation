@@ -2,7 +2,10 @@ package uk.nhs.careconnect.ri.database.daointerface;
 
 
 import ca.uhn.fhir.context.FhirContext;
+//import ca.uhn.fhir.jpa.term.TranslationRequest;
+//import ca.uhn.fhir.jpa.term.TranslationResult;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
@@ -13,6 +16,8 @@ import java.util.List;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
+import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
+import uk.nhs.careconnect.ri.database.entity.TranslationResults;
 import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapEntity;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
@@ -43,4 +48,5 @@ public interface ConceptMapRepository extends BaseRepository<ConceptMapEntity,Co
 //    List<ConceptMap> searchConceptMap (
   //          @OptionalParam(name = ConceptMap.SP_NAME) StringParam name
   //  );
+    public TranslationResults translate(TranslationRequests theTranslationRequests, RequestDetails theRequestDetails);
 }

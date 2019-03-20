@@ -1,5 +1,7 @@
 package uk.nhs.careconnect.ri.database.daointerface;
 
+import ca.uhn.fhir.jpa.term.TranslationRequest;
+import ca.uhn.fhir.jpa.term.TranslationResult;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -46,7 +48,8 @@ public interface ConceptRepository {
   //  public void beginTransaction(Transaction tx);
 
     public void commitTransaction(Transaction tx);
-
+    
+    
 
 
 }
