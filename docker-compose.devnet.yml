@@ -260,6 +260,7 @@ services:
     environment:
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+      - conf.logon=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/document-viewer
     ports:
       - 8108:4201
     extra_hosts:
