@@ -18,15 +18,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CodeType;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.ConceptMap;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.UriType;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +27,10 @@ import org.springframework.stereotype.Component;
 
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 
+import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptMapRepository;
 import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
 import uk.nhs.careconnect.ri.database.entity.TranslationResults;
-
-import org.hl7.fhir.dstu3.model.Parameters;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -102,31 +93,43 @@ public class ConceptMapProvider implements ICCResourceProvider {
     
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam ConceptMap conceptMap) {
-    	ConceptMap newConceptMap = null;
-    	resourcePermissionProvider.checkPermission("create");
-        MethodOutcome method = new MethodOutcome();
-        method.setCreated(true);
-        OperationOutcome opOutcome = new OperationOutcome();
-        method.setOperationOutcome(opOutcome);
-        newConceptMap = conceptMapDao.create(ctx, conceptMap);
-        method.setId(newConceptMap.getIdElement());
-        method.setResource(newConceptMap);
-        return method;
+		log.info("create method is called");
+		resourcePermissionProvider.checkPermission("create");
+		MethodOutcome method = new MethodOutcome();
+
+		OperationOutcome opOutcome = new OperationOutcome();
+
+		method.setOperationOutcome(opOutcome);
+
+		try {
+			ConceptMap newConceptMap = conceptMapDao.create(ctx,conceptMap);
+			method.setCreated(true);
+			method.setId(newConceptMap.getIdElement());
+			method.setResource(newConceptMap);
+		} catch (Exception ex) {
+			log.info(ex.getMessage());
+			ProviderResponseLibrary.handleException(method,ex);
+		}
+		return method;
     }
     
     @Update()
     public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam  ConceptMap conceptMap) {
     		System.out.println("update method is called");
 	    	resourcePermissionProvider.checkPermission("update");
-	        MethodOutcome method = new MethodOutcome();
-	        method.setCreated(true);
-	        OperationOutcome opOutcome = new OperationOutcome();
-	        method.setOperationOutcome(opOutcome);
-	        ConceptMap newConceptMap = conceptMapDao.create(ctx, conceptMap);
-	        method.setId(newConceptMap.getIdElement());
-	        method.setResource(newConceptMap);
-	        
-        return method;
+		MethodOutcome method = new MethodOutcome();
+
+		try {
+			ConceptMap newConceptMap = conceptMapDao.create(ctx,conceptMap);
+			method.setCreated(false);
+			method.setId(newConceptMap.getIdElement());
+			method.setResource(newConceptMap);
+		} catch (Exception ex) {
+			log.info(ex.getMessage());
+			ProviderResponseLibrary.handleException(method,ex);
+		}
+
+		return method;
     }
     
     @Operation(name = "$translate", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
