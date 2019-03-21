@@ -269,15 +269,15 @@ services:
     networks:
       - ccri_net
 
-  ccsmartproxy:
-    image: thorlogic/ccsmartproxy
-    container_name: ccsmartproxy
-    ports:
-      - 8117:80
-    volumes:
-      - /docker/ccsmartproxy:/var/log/nginx/log
-    networks:
-      - ccri_net
+#  ccsmartproxy:
+#    image: thorlogic/ccsmartproxy
+#    container_name: ccsmartproxy
+#    ports:
+#      - 8117:80
+#    volumes:
+#      - /docker/ccsmartproxy:/var/log/nginx/log
+#    networks:
+#      - ccri_net
 
 
 networks:
