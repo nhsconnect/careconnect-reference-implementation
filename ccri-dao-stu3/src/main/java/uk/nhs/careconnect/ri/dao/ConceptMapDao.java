@@ -117,7 +117,7 @@ ConceptRepository conceptDao;
 					}
 				}
 			}
-			conceptMapEntity.setResource(null);
+
 	        
 	     //   if(getExistingConceptMapEntity(conceptMap.getUrlElement() )==0)
 	       // 	{
@@ -125,6 +125,8 @@ ConceptRepository conceptDao;
 			        {
 			            conceptMapEntity = new ConceptMapEntity();
 			        }
+
+			        conceptMapEntity.setResource(null);
 			        // Removed Id
 			        if (conceptMap.hasUrl())
 			        {

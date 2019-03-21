@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.database.entity.conceptMap;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,6 +49,9 @@ public class ConceptMapGroupElement {
 	}
 
 	public List<ConceptMapGroupTarget> getTargets() {
+		if (targets == null) {
+			this.targets = new ArrayList<>();
+		}
 		return targets;
 	}
 

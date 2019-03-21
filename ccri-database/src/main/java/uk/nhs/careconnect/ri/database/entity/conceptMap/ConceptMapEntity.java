@@ -4,6 +4,7 @@ import org.hl7.fhir.dstu3.model.Enumerations;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetInclude;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -222,6 +223,9 @@ ditto for target product
 	}
 
 	public List<ConceptMapGroup> getGroups() {
+		if (groups == null) {
+			this.groups = new ArrayList<>();
+		}
 		return groups;
 	}
 

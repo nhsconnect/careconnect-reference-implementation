@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -75,6 +76,10 @@ public class ConceptMapGroup  {
 	}
 
 	public List<ConceptMapGroupElement> getElements() {
+		if (elements == null) {
+			this.elements = new ArrayList<>();
+		}
+
 		return elements;
 	}
 
