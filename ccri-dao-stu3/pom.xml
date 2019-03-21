@@ -135,6 +135,11 @@
             <version>23.0</version>
         </dependency>
 
+ 		<dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-base</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
 
         <!-- Flyway for database migrations
 

@@ -1,37 +1,58 @@
 package uk.nhs.careconnect.ri.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+//import ca.uhn.fhir.jpa.entity.TermConceptMap;
+//import ca.uhn.fhir.jpa.entity.TermConceptMapGroup;
+//import ca.uhn.fhir.jpa.entity.TermConceptMapGroupElement;
+//import ca.uhn.fhir.jpa.entity.TermConceptMapGroupElementTarget;
+//import ca.uhn.fhir.jpa.term.TranslationQuery;
+//import ca.uhn.fhir.jpa.term.TranslationRequest;
+//import uk.nhs.careconnect.ccri.fhirserver.provider.ScrollableResultsIterator;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.dao.transforms.CodeSystemEntityToFHIRCodeSystemTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
+import uk.nhs.careconnect.ri.database.entity.TranslationQueries;
+import uk.nhs.careconnect.ri.database.entity.TranslationRequests;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.*;
 import uk.nhs.careconnect.ri.database.entity.composition.CompositionEntity;
+import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroup;
+import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupElement;
+import uk.nhs.careconnect.ri.database.entity.conceptMap.ConceptMapGroupTarget;
 import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import com.github.benmanes.caffeine.cache.Cache;
 
 @Repository
 @Transactional
@@ -65,11 +86,13 @@ public class CodeSystemDao implements CodeSystemRepository {
     private List<ConceptEntity> myConceptsToSaveLater = new ArrayList<ConceptEntity>();
 
     private List<ConceptParentChildLink> myConceptLinksToSaveLater = new ArrayList<ConceptParentChildLink>();
+    private static boolean ourLastResultsFromTranslationCache;
 
     // What we need to do is process concepts coming from CodeSystems in a transactional mode (@Transactional)
     // For CodeSystem inserts we need to get the codes into the database as without storing them in massive memory objects
     // Other resources should run as transactional
-
+    //TermConceptMapGroupElementTarget
+    private Cache<TranslationQueries, List<ConceptMapGroupTarget>> myTranslationCache;
 
     @Override
     public CodeSystemEntity readEntity(FhirContext ctx, IdType theId) {
@@ -403,5 +426,123 @@ public class CodeSystemDao implements CodeSystemRepository {
         }
         return systemEntity;
     }
+    
+    @Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public List<ConceptMapGroupTarget> translate(TranslationRequests theTranslationRequests) {
+		List<ConceptMapGroupTarget> retVal = new ArrayList<>();
+
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<ConceptMapGroupTarget> query = criteriaBuilder.createQuery(ConceptMapGroupTarget.class);
+		//TermConceptMapGroupElementTarget.class);
+		Root<ConceptMapGroupTarget> root = query.from(ConceptMapGroupTarget.class);
+		//TermConceptMapGroupElement
+		Join<ConceptMapGroupTarget, ConceptMapGroupElement> elementJoin = root.join("conceptMapGroupElement");
+		//TermConceptMapGroup
+		Join<ConceptMapGroupElement, ConceptMapGroup> groupJoin = elementJoin.join("conceptMapGroup");
+		//ConceptMapGroup
+		Join<ConceptMapGroup, ConceptMap> conceptMapJoin = groupJoin.join("conceptMap");
+
+		List<TranslationQueries> translationQueries = theTranslationRequests.getTranslationQueries();
+		List<ConceptMapGroupTarget> cachedTargets;
+		ArrayList<Predicate> predicates;
+		Coding coding;
+		System.out.println("trans query");
+		
+		
+		for (TranslationQueries translationQuery : translationQueries) {
+			System.out.println("get coding " + translationQuery.getCoding().getCode() + " get display " + translationQueries.get(0)
+			+ translationQuery.getCoding().getSystem()
+					);
+		cachedTargets = null; //myTranslationCache .getIfPresent(translationQuery);
+			if (cachedTargets == null) {
+				final List<ConceptMapGroupTarget> targets = new ArrayList<>();
+
+				predicates = new ArrayList<>();
+
+				//coding =  VersionConvertor_30_40.convertCoding(translationQuery.getCoding());
+				coding = translationQuery.getCoding();
+				
+			//				Coding element_code = new Coding().setCode(translationQuery.getCoding().getCode()).setDisplay(translationQuery.getCoding().getDisplay());
+				
+				//Coding element_code = new Coding().setCode(value) coding) translationQuery.getCoding() );						
+						//cmElement.getDisplay()).setSystem(cmGroup.getTarget());
+				System.out.println(coding);
+				//System.out.println(element_code);
+				
+				ConceptEntity ce = conceptDao.findCode( translationQuery.getCoding());
+						
+					//	(coding.getCode());
+				//ce.fi
+				System.out.println( translationQuery.getCoding().getId() );
+				//Coding code = new Coding().setCode(translationQueries.get .getCode()).setDisplay(cmTarget.getDisplay()).setSystem(cmGroup.getTarget());
+				
+				if (coding.hasCode()) {
+					System.out.println("code is " + coding.getCode() + " id is "  +ce.getId());
+					//predicates.add(criteriaBuilder.equal(elementJoin.get("sourceCode"), ce.getId()));// .getCode() ));
+					predicates.add(criteriaBuilder.equal(elementJoin.get("sourceCode"), 32994));// .getCode() ));
+				} else {
+					throw new InvalidRequestException("A code must be provided for translation to occur.");
+				}
+
+				if (coding.hasSystem()) {
+					System.out.println("has system");
+					predicates.add(criteriaBuilder.equal(groupJoin.get("source"), coding.getSystem()));
+				}
+
+				if (coding.hasVersion()) {
+					System.out.println("has version");
+					predicates.add(criteriaBuilder.equal(groupJoin.get("mySourceVersion"), coding.getVersion()));
+				}
+
+				if (translationQuery.hasTargetSystem()) {
+					System.out.println("has target system");
+					predicates.add(criteriaBuilder.equal(groupJoin.get("myTarget"), translationQuery.getTargetSystem().getValueAsString()));
+				}
+
+				if (translationQuery.hasSource()) {
+					System.out.println("has source");
+					predicates.add(criteriaBuilder.equal(conceptMapJoin.get("mySource"), translationQuery.getSource().getValueAsString()));
+				}
+
+				if (translationQuery.hasTarget()) {
+					System.out.println("has target");
+					predicates.add(criteriaBuilder.equal(conceptMapJoin.get("myTarget"), translationQuery.getTarget().getValueAsString()));
+				}
+
+				if (translationQuery.hasResourceId()) {
+					System.out.println("has resource pid");
+					predicates.add(criteriaBuilder.equal(conceptMapJoin.get("myResourcePid"), translationQuery.getResourceId()));
+				}
+
+				Predicate outerPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+				query.where(outerPredicate);
+
+				// Use scrollable results.
+				final TypedQuery<ConceptMapGroupTarget> typedQuery = em.createQuery(query.select(root));
+				org.hibernate.query.Query<ConceptMapGroupTarget> hibernateQuery = (org.hibernate.query.Query<ConceptMapGroupTarget>) typedQuery;
+			//	hibernateQuery.setFetchSize(myFetchSize);
+				hibernateQuery.setFetchSize(20);
+				ScrollableResults scrollableResults = hibernateQuery.scroll(ScrollMode.FORWARD_ONLY);
+				Iterator<ConceptMapGroupTarget> scrollableResultsIterator = new ScrollableResultsIterator<>(scrollableResults);
+				
+				System.out.println("scrollableResultsIterator : " + scrollableResultsIterator.hasNext() ); 
+				
+				while (scrollableResultsIterator.hasNext()) {
+					targets.add(scrollableResultsIterator.next());
+				}
+
+				ourLastResultsFromTranslationCache = false; // For testing.
+			//	myTranslationCache.get(translationQuery, k -> targets);
+				
+				retVal.addAll(targets);
+			} else {
+				ourLastResultsFromTranslationCache = true; // For testing.
+				retVal.addAll(cachedTargets);
+			}
+		}
+
+		return retVal;
+	}
 
 }
