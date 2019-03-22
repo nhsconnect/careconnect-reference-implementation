@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bpcentile
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: helloweb-ip
+spec:
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+      nodePort: 30002
+  selector:
+    app: bpcentile
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpcentile
+  labels:
+    app: bpcentile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bpcentile
+  template:
+    metadata:
+      labels:
+        app: bpcentile
+    spec:
+      containers:
+        - name: bpcentile
+          image: gcr.io/cc-smart/bpcentile
+          ports:
+            - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal
+spec:
+  ports:
+    - protocol: TCP
+      port: 8187
+      targetPort: 8187
+      nodePort: 30005
+  selector:
+    app: portal
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal
+  labels:
+    app: portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portal
+  template:
+    metadata:
+      labels:
+        app: portal
+    spec:
+      containers:
+        - name: portal
+          image: gcr.io/cc-smart/ccri-hieportal
+          ports:
+            - containerPort: 8187
