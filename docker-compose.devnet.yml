@@ -201,8 +201,8 @@ services:
      links:
        - ccrimongo
      environment:
-       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
-       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
+       - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosql
