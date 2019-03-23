@@ -164,6 +164,7 @@ services:
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - conf.logon=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/document-viewer
+      - oauth2.cookie_domain=${FHIR_SERVER_BASE_HOST}
     depends_on:
       - ccrifhir
     ports:
