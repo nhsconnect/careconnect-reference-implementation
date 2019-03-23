@@ -246,7 +246,7 @@ services:
       - oidc.datasource.mysql.schema=oic
       - oidc.datasource.mysql.url=jdbc:postgresql://oauthsql:5432/oic
       - JAVA_OPTIONS=-Dspring.profiles.active=local,users-keycloak,docker-purple
-      - hspc.platform.accountLoginPage=https://${FHIR_SERVER_BASE_HOST}/document-viewer/logon
+      - hspc.platform.accountLoginPage=https://${FHIR_SERVER_BASE_HOST}/document-viewer/login
       - hspc.platform.accountLogoutPage=https://${FHIR_SERVER_BASE_HOST}/document-viewer/logout
     ports:
       - 8107:8080
