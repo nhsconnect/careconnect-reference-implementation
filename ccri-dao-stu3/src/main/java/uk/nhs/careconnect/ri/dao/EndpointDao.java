@@ -19,6 +19,7 @@ import uk.nhs.careconnect.ri.dao.transforms.EndpointEntityToFHIREndpointTransfor
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointIdentifier;
+import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointPayloadType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -162,22 +163,30 @@ public class EndpointDao implements EndpointRepository {
 
         em.persist(endpointEntity);
         log.debug("persist endpoint");
-
+        for (EndpointIdentifier orgSearch : endpointEntity.getIdentifiers()) {
+            em.remove(orgSearch);
+        }
         for (Identifier identifier : endpoint.getIdentifier()) {
-            EndpointIdentifier endpointIdentifier = null;
-
-            for (EndpointIdentifier orgSearch : endpointEntity.getIdentifiers()) {
-                if (identifier.getSystem().equals(orgSearch.getSystemUri()) && identifier.getValue().equals(orgSearch.getValue())) {
-                    endpointIdentifier = orgSearch;
-                    break;
-                }
-            }
-            if (endpointIdentifier == null)  endpointIdentifier = new EndpointIdentifier();
+            EndpointIdentifier endpointIdentifier = new EndpointIdentifier();
 
             endpointIdentifier= (EndpointIdentifier) libDao.setIdentifier(identifier,  endpointIdentifier);
             endpointIdentifier.setEndpoint(endpointEntity);
             em.persist(endpointIdentifier);
         }
+
+        for (EndpointPayloadType endpointPayloadType :endpointEntity.getPayloadTypes()) {
+            em.remove(endpointPayloadType);
+        }
+        for (CodeableConcept codeableConcept: endpoint.getPayloadType()) {
+            ConceptEntity conceptEntity = conceptDao.findAddCode(codeableConcept.getCoding().get(0));
+            if (conceptEntity != null) {
+                EndpointPayloadType endpointPayloadType = new EndpointPayloadType();
+                endpointPayloadType.setEndpoint(endpointEntity);
+                endpointPayloadType.setPayloadType(conceptEntity);
+                em.persist(endpointPayloadType);
+            }
+        }
+
         log.debug("persist endpoint identifiers");
 
         return endpointEntityToFHIREndpointTransform.transform(endpointEntity);

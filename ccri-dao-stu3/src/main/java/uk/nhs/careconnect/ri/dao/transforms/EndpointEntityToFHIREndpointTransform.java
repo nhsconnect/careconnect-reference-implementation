@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointEntity;
 import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointIdentifier;
+import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointPayloadMime;
+import uk.nhs.careconnect.ri.database.entity.endpoint.EndpointPayloadType;
 
 @Component
 public class EndpointEntityToFHIREndpointTransform implements Transformer<EndpointEntity, Endpoint> {
@@ -35,6 +37,10 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
         }
         endpoint.setMeta(meta);
 
+
+        if (endpointEntity.getStatus() != null) {
+            endpoint.setStatus(endpointEntity.getStatus());
+        }
 
 
         for(EndpointIdentifier identifier: endpointEntity.getIdentifiers())
@@ -61,12 +67,24 @@ public class EndpointEntityToFHIREndpointTransform implements Transformer<Endpoi
                     .setDisplay(endpointEntity.getConnectionType().getDisplay())
                     .setSystem(endpointEntity.getConnectionType().getSystem());
         }
+
         log.trace("endpoint tfm5");
         if (endpointEntity.getAddress() != null) {
             endpoint.setAddress(endpointEntity.getAddress());
         }
 
         log.trace("endpoint tfm6");
+
+        for(EndpointPayloadType endpointPayloadType : endpointEntity.getPayloadTypes()) {
+            endpoint.addPayloadType()
+                    .addCoding()
+                    .setSystem(endpointPayloadType.getPayloadType().getSystem())
+                    .setCode(endpointPayloadType.getPayloadType().getCode())
+                    .setDisplay(endpointPayloadType.getPayloadType().getDisplay());
+        }
+        for(EndpointPayloadMime endpointPayloadMime : endpointEntity.getPayloadMimes()) {
+            endpoint.addPayloadMimeType(endpointPayloadMime.getMimeType().getCode());
+        }
 
         return endpoint;
     }
