@@ -145,6 +145,8 @@ services:
       - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.tkw=http4://tkwvalidation:4849?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccsmart=http4://ccsmartproxy:80/cc-smart?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - conf.logon=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/document-viewer
+      - oauth2.cookie_domain=${FHIR_SERVER_BASE_HOST}
     depends_on:
       - ccrifhir
     ports:
