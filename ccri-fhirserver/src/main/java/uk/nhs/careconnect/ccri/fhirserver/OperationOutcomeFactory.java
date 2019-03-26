@@ -48,12 +48,16 @@ public class OperationOutcomeFactory {
             if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
                 remove = true;
             }
-            // Fault in profile??
+            // Fault in profile?? Yes
             if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
                 remove = true;
             }
-            // Appears to be a fault in CareConnect profiles
+            // Need to check further, poss hapi issue?
             if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
+                remove = true;
+            }
+            // Appears to be a fault in CareConnect profiles
+            if (issue.getDiagnostics().contains("Could not match discriminator (code) for slice Observation")) {
                 remove = true;
             }
             // This is a rule in FHIR but seems wrong
