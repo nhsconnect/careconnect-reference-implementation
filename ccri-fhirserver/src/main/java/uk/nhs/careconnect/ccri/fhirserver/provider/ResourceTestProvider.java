@@ -15,6 +15,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
@@ -47,8 +48,8 @@ public class ResourceTestProvider {
 
 	@Value("${ccri.tkw_server}")
 	private String tkw_server;
-	
-    @Autowired
+
+    @Autowired()
     FhirContext ctx;
 
  //   @Autowired
@@ -133,9 +134,14 @@ public class ResourceTestProvider {
 
 	public OperationOutcome validateResource(IBaseResource resource) {
 
-		ValidationResult results = val.validateWithResult(resource);
+    	// TODO add conversion to R4 here.  KGM March 2019
 
-		return (OperationOutcome) results.toOperationOutcome();
+		VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+		IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+
+		ValidationResult results = val.validateWithResult(convertedResource);
+
+		return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome());
 
 	}
 

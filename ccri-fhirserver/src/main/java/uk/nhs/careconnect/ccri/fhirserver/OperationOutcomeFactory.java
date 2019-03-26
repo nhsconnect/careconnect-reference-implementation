@@ -35,6 +35,51 @@ public class OperationOutcomeFactory {
         return exception;
     }
 
+    public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome) {
+
+        OperationOutcome operationOutcome = new OperationOutcome();
+        // TODO - Basic Conversion from r4 to stu3
+        if (outcome.hasIssue()) {
+            for (org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+                OperationOutcome.OperationOutcomeIssueComponent r3issue = operationOutcome.addIssue();
+                if (issue.hasCode()) {
+                    switch(issue.getCode()) {
+                        case PROCESSING:
+                            r3issue.setCode(OperationOutcome.IssueType.PROCESSING);
+                            break;
+                            default:
+                                log.error("Missing "+issue.getCode().getDisplay());
+
+                    }
+                }
+                if (issue.hasSeverity()) {
+                    switch (issue.getSeverity()) {
+                        case ERROR:
+                            r3issue.setSeverity(OperationOutcome.IssueSeverity.ERROR);
+                            break;
+                        case INFORMATION:
+                            r3issue.setSeverity(OperationOutcome.IssueSeverity.INFORMATION);
+                            break;
+                        case FATAL:
+                            r3issue.setSeverity(OperationOutcome.IssueSeverity.FATAL);
+                            break;
+                        case WARNING:
+                            r3issue.setSeverity(OperationOutcome.IssueSeverity.WARNING);
+                            break;
+                        case NULL:
+                            r3issue.setSeverity(OperationOutcome.IssueSeverity.NULL);
+                            break;
+                    }
+                }
+                if (issue.hasDiagnostics()) {
+                    r3issue.setDiagnostics(issue.getDiagnostics());
+                }
+            }
+        }
+
+        return removeUnsupportedIssues(operationOutcome);
+    }
+
     public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome) {
         List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
