@@ -44,18 +44,18 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
      */
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
-    private String questionnaireServer;
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupport.class);
 
     private Map<String, IBaseResource> cachedResource ;
 
+    private String alternateServer;
 
-    public CareConnectProfileValidationSupport(final FhirContext theCtx, String questionnaireServer) {
+    public CareConnectProfileValidationSupport(final FhirContext theCtx, String alternateServer) {
         this.ctx = theCtx;
         this.cachedResource = new HashMap<String, IBaseResource>();
         parser = ctx.newXmlParser();
-        this.questionnaireServer = questionnaireServer;
+        this.alternateServer = alternateServer;
     }
 
       private void logD(String message) {
@@ -348,35 +348,51 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     return new CodeValidationResult(IssueSeverity.WARNING, "CareConnect Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
-    private IBaseResource doCCRIGetQuestionnaire(final String theUrl) {
-        if (client == null && this.questionnaireServer !=null) {
-            log.info("Alternate source for profiles "+this.questionnaireServer);
-            client = ctx.newRestfulGenericClient(this.questionnaireServer);
+    private IBaseResource doCheckCCRI(final String theUrl) {
 
-            Bundle results = client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(theUrl)).returnBundle(Bundle.class).execute();
-            log.info("Seearching for Questionnaire " + theUrl);
-            if (results.getEntry().size() > 0) {
-                log.info("Found Questionnaire");
-                Bundle.BundleEntryComponent entry = results.getEntry().get(0);
-                return entry.getResource();
-            } else {
-                log.info("NOT FOUND Questionnaire");
-                return null;
+        if (client == null && this.alternateServer !=null) {
+            log.info("Alternate source for profiles " + this.alternateServer);
+            client = ctx.newRestfulGenericClient(this.alternateServer);
+        }
+
+        if (client != null) {
+            if (theUrl.contains("Questionnaire") && (!theUrl.contains("QuestionnaireResponse") ) ) {
+                org.hl7.fhir.dstu3.model.Bundle results = client.search().forResource(org.hl7.fhir.dstu3.model.Questionnaire.class).where(org.hl7.fhir.dstu3.model.Questionnaire.URL.matches().value(theUrl)).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
+                log.info("Seearching for Questionnaire " + theUrl);
+                if (results.getEntry().size() > 0) {
+                    log.info("Found Questionnaire");
+                    org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry = results.getEntry().get(0);
+                    return entry.getResource();
+                } else {
+                    log.info("NOT FOUND Questionnaire");
+                    return null;
+                }
             }
+            if (theUrl.contains("StructureDefinition")  )  {
+                org.hl7.fhir.dstu3.model.Bundle results = client.search().forResource(org.hl7.fhir.dstu3.model.StructureDefinition.class).where(org.hl7.fhir.dstu3.model.StructureDefinition.URL.matches().value(theUrl)).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
+                log.info("Seearching for StructureDefinition " + theUrl);
+                if (results.getEntry().size() > 0) {
+                    log.info("Found StructureDefinition");
+                    org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry = results.getEntry().get(0);
+                    return entry.getResource();
+                } else {
+                    log.info("NOT FOUND StructureDefinition");
+                    return null;
+                }
+            }
+            return null;
+
         }
         else {
             return null;
-            }
+        }
     }
 
   private IBaseResource fetchURL(final String theUrl) {
     logD("  This URL not yet loaded: %s%n", theUrl);
 
 
-    // Temp fix to get around Questionnaire not being supported by Reference Server 8/March/2019 KGM
-    if (theUrl.contains("Questionnaire") && (!theUrl.contains("QuestionnaireResponse") ) ) {
-        return doCCRIGetQuestionnaire(theUrl);
-    }
+
     StringBuilder result = new StringBuilder();
 
     try {
@@ -449,12 +465,14 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
               theUrl);
       log.warn(ex.getMessage());
     }
-    if (result.length() > 0) {
+      if (result.length() > 0) {
 
-      return parser.parseResource(result.toString());
-    } else {
-      return null;
-    }
+          return parser.parseResource(result.toString());
+      } else {
+          // Temp fix to get around Questionnaire not being supported by Reference Server 8/March/2019 KGM
+          return doCheckCCRI(theUrl);
+
+      }
   }
 
 }

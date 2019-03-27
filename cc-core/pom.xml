@@ -30,13 +30,13 @@
 
     <!-- At least one "structures" JAR must also be included -->
 
-
+<!--
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
@@ -48,12 +48,7 @@
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-structures-r4</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
+
 
     </dependencies>
 

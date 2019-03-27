@@ -1,7 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.composition;
 
-import org.hl7.fhir.instance.model.List_;
-
+import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Narrative;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
@@ -42,7 +41,7 @@ public class CompositionSection {
     private ConceptEntity orderBy;
 
     @Column(name="mode")
-    private List_.ListMode mode;
+    private ListResource.ListMode mode;
 
     public Long getSectionId() {
         return sectionId;
@@ -92,11 +91,11 @@ public class CompositionSection {
         this.orderBy = orderBy;
     }
 
-    public List_.ListMode getMode() {
+    public ListResource.ListMode getMode() {
         return mode;
     }
 
-    public void setMode(List_.ListMode mode) {
+    public void setMode(ListResource.ListMode mode) {
         this.mode = mode;
     }
 

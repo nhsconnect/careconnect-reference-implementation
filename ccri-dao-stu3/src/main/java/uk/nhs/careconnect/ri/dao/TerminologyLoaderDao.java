@@ -28,7 +28,7 @@ import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptDesignation;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

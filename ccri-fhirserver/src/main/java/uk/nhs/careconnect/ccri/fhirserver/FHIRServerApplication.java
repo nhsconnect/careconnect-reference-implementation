@@ -11,6 +11,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
@@ -60,8 +61,9 @@ public class FHIRServerApplication {
         return registration;
     }
 
-    @Bean
-    public FhirContext getFhirContext() {
+    @Bean(name="stu3ctx")
+    @Primary
+    public FhirContext getStu3FhirContext() {
         System.setProperty("ccri.server.base",this.serverBase);
         System.setProperty("ccri.software.name",this.softwareName);
         System.setProperty("ccri.software.version",this.softwareVersion);
@@ -69,6 +71,13 @@ public class FHIRServerApplication {
         System.setProperty("ccri.server",this.server);
         return FhirContext.forDstu3();
     }
+
+    @Bean(name="r4ctx")
+    public FhirContext getR4FhirContext() {
+
+        return FhirContext.forR4();
+    }
+
 
     @Bean
     CorsConfigurationSource

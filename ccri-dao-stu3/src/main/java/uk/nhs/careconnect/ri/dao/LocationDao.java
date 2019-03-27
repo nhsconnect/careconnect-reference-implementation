@@ -22,8 +22,8 @@ import uk.nhs.careconnect.ri.database.entity.location.LocationAddress;
 import uk.nhs.careconnect.ri.database.entity.location.LocationTelecom;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 import uk.nhs.careconnect.ri.database.entity.location.LocationIdentifier;
-import uk.nhs.careconnect.ri.database.entity.slot.SlotIdentifier;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

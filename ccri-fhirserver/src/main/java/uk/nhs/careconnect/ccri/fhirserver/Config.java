@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,11 +42,15 @@ public class Config {
     @Value("${server.servlet.context-path}")
     private String serverPath;
 
+    @Qualifier("r4ctx")
+    @Autowired()
+    FhirContext r4ctx;
+
 
     @Bean(name="fhirValidator")
     public FhirValidator fhirValidator () {
 
-        FhirContext r4ctx = FhirContext.forR4();
+
 
         FhirValidator val = r4ctx.newValidator();
 

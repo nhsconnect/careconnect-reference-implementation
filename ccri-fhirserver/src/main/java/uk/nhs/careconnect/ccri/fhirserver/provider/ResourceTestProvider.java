@@ -23,7 +23,9 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
@@ -49,8 +51,13 @@ public class ResourceTestProvider {
 	@Value("${ccri.tkw_server}")
 	private String tkw_server;
 
+	@Qualifier("stu3ctx")
     @Autowired()
     FhirContext ctx;
+
+    @Qualifier("r4ctx")
+    @Autowired()
+    FhirContext r4ctx;
 
  //   @Autowired
 //	FhirInstanceValidator instanceValidator;
@@ -134,10 +141,13 @@ public class ResourceTestProvider {
 
 	public OperationOutcome validateResource(IBaseResource resource) {
 
-    	// TODO add conversion to R4 here.  KGM March 2019
+
 
 		VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
 		IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+
+
+        log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
 
 		ValidationResult results = val.validateWithResult(convertedResource);
 
