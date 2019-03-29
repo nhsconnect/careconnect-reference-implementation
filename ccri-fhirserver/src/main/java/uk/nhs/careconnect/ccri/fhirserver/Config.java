@@ -46,6 +46,9 @@ public class Config {
     @Autowired()
     FhirContext r4ctx;
 
+    @Autowired()
+    FhirContext stu3ctx;
+
 
     @Bean(name="fhirValidator")
     public FhirValidator fhirValidator () {
@@ -68,7 +71,7 @@ public class Config {
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(new DefaultProfileValidationSupport());
-        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(r4ctx, "http://localhost:"+serverPort+serverPath+"/STU3"));
+        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
         validationSupportChain.addValidationSupport(new SNOMEDUKMockValidationSupport());
 
         instanceValidator.setValidationSupport(validationSupportChain);

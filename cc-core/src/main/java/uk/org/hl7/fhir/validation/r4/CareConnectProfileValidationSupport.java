@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.r4.model.*;
@@ -34,11 +35,15 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
     private static int SC_OK = 200;
 
-    private FhirContext ctx = null;
+    private FhirContext ctxR4 = null;
+
+    private FhirContext ctxStu3 = null;
 
     IGenericClient client;
 
-    private IParser parser;
+    private IParser parserR4;
+
+    private IParser parserStu3;
     /**
      * Milliseconds we'll wait to read data over http.
      */
@@ -51,10 +56,12 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
     private String alternateServer;
 
-    public CareConnectProfileValidationSupport(final FhirContext theCtx, String alternateServer) {
-        this.ctx = theCtx;
+    public CareConnectProfileValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String alternateServer) {
+        this.ctxR4 = r4Ctx;
+        this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<String, IBaseResource>();
-        parser = ctx.newXmlParser();
+        parserR4 = ctxR4.newXmlParser();
+        parserStu3 = ctxStu3.newXmlParser();
         this.alternateServer = alternateServer;
     }
 
@@ -266,7 +273,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("******* CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
+      logW("******* CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, IBaseResource> codeSystems = cachedResource;
 
@@ -352,7 +359,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
 
         if (client == null && this.alternateServer !=null) {
             log.info("Alternate source for profiles " + this.alternateServer);
-            client = ctx.newRestfulGenericClient(this.alternateServer);
+            client = ctxStu3.newRestfulGenericClient(this.alternateServer);
         }
 
         if (client != null) {
@@ -466,8 +473,9 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
       log.warn(ex.getMessage());
     }
       if (result.length() > 0) {
+          return convertToR4(parserStu3.parseResource(result.toString()));
 
-          return parser.parseResource(result.toString());
+
       } else {
           // Temp fix to get around Questionnaire not being supported by Reference Server 8/March/2019 KGM
           return doCheckCCRI(theUrl);
@@ -475,4 +483,13 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
       }
   }
 
+  public IBaseResource convertToR4(IBaseResource stu3resource) {
+        if (stu3resource == null) return null;
+      VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+      return convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) stu3resource, true);
+
+
+     // log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+
+  }
 }
