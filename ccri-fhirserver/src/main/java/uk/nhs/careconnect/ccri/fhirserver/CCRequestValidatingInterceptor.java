@@ -88,7 +88,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     org.hl7.fhir.r4.model.OperationOutcome outcomer4 = (org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome();
 
-                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcomer4);
+                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcomer4, null);
 
                     if (!pass(outcome)) {
                         log.info("VALIDATION FAILED");

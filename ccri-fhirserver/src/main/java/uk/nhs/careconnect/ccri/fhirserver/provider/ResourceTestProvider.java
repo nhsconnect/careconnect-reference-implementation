@@ -151,7 +151,7 @@ public class ResourceTestProvider {
 
 		ValidationResult results = val.validateWithResult(convertedResource);
 
-		return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome());
+		return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), this.r4ctx);
 
 	}
 

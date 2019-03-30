@@ -3,7 +3,7 @@ package uk.nhs.careconnect.ccri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.validation.FhirValidator;
-import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
+
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.nhs.careconnect.ccri.fhirserver.provider.DatabaseBackedPagingProvider;
 import uk.org.hl7.fhir.validation.r4.CareConnectProfileValidationSupport;
+import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 import uk.org.hl7.fhir.validation.r4.SNOMEDUKMockValidationSupport;
 
 
@@ -62,7 +63,7 @@ public class Config {
         // todo reactivate once this is fixed https://github.com/nhsconnect/careconnect-reference-implementation/issues/36
         val.setValidateAgainstStandardSchematron(false);
 
-        DefaultProfileValidationSupport defaultProfileValidationSupport = new DefaultProfileValidationSupport();
+        DefaultProfileValidationSupportStu3AsR4 defaultProfileValidationSupport = new DefaultProfileValidationSupportStu3AsR4();
 
         FhirInstanceValidator instanceValidator = new FhirInstanceValidator(defaultProfileValidationSupport);
         val.registerValidatorModule(instanceValidator);
@@ -70,7 +71,7 @@ public class Config {
 
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
-        validationSupportChain.addValidationSupport(new DefaultProfileValidationSupport());
+        validationSupportChain.addValidationSupport(new DefaultProfileValidationSupportStu3AsR4());
         validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
         validationSupportChain.addValidationSupport(new SNOMEDUKMockValidationSupport());
 

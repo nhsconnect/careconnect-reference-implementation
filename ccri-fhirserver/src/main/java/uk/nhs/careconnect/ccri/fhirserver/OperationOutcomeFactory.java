@@ -1,9 +1,11 @@
 package uk.nhs.careconnect.ccri.fhirserver;
 
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.r4.model.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,10 @@ public class OperationOutcomeFactory {
         return exception;
     }
 
-    public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome) {
-
+    public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome, FhirContext ctx) {
+        if (ctx != null) {
+            log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));
+        }
         OperationOutcome operationOutcome = new OperationOutcome();
         // TODO - Basic Conversion from r4 to stu3
         if (outcome.hasIssue()) {
@@ -74,6 +78,11 @@ public class OperationOutcomeFactory {
                 if (issue.hasDiagnostics()) {
                     r3issue.setDiagnostics(issue.getDiagnostics());
                 }
+                if (issue.hasLocation()) {
+                    for (StringType stringType : issue.getLocation()) {
+                        r3issue.addLocation(stringType.getValue());
+                    }
+                }
             }
         }
 
@@ -81,6 +90,9 @@ public class OperationOutcomeFactory {
     }
 
     public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome) {
+
+
+
         List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
             Boolean remove = false;
@@ -94,22 +106,31 @@ public class OperationOutcomeFactory {
                 remove = true;
             }
             // Fault in profile?? Yes
+            /*
             if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {
                 remove = true;
             }
+            */
+
             // Need to check further, poss hapi issue?
+            /*
             if (issue.getDiagnostics().contains("Could not verify slice for profile https://fhir.nhs.uk/STU3/StructureDefinition")) {
                 remove = true;
             }
+            */
             // Appears to be a fault in CareConnect profiles
+            /*
             if (issue.getDiagnostics().contains("Could not match discriminator (code) for slice Observation")) {
                 remove = true;
             }
+            */
+
             // This is a rule in FHIR but seems wrong
             // Logged as issue https://github.com/jamesagnew/hapi-fhir/issues/1235
-            if (issue.getDiagnostics().contains("Entry isn't reachable by traversing from first Bundle entry")) {
+           /* Now using r4 validator so not present
+           if (issue.getDiagnostics().contains("Entry isn't reachable by traversing from first Bundle entry")) {
                 remove = true;
-            }
+            } */
             if (remove) {
                 log.info("Stripped " + issue.getDiagnostics());
                 issueRemove.add(issue);

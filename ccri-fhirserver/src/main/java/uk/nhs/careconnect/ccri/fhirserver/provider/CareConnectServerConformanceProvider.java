@@ -172,7 +172,7 @@ import java.util.List;
                         restResourceComponent.setSearchInclude(new ArrayList<>());
                     }
 
-                    log.info("restResourceComponent.getType - " + restResourceComponent.getType());
+                    log.debug("restResourceComponent.getType - " + restResourceComponent.getType());
                     setProfile(restResourceComponent);
 
 
@@ -201,14 +201,14 @@ import java.util.List;
 
                     restResourceComponent.getInteraction().removeAll(remove);
 
-                    log.info("restResourceComponent.getType() = " + restResourceComponent.getType());
+                    log.debug("restResourceComponent.getType() = " + restResourceComponent.getType());
                     for (IResourceProvider provider : restfulServer.getResourceProviders()) {
 
                         log.trace("Provider Resource - " + provider.getResourceType().getSimpleName());
                         if (restResourceComponent.getType().equals(provider.getResourceType().getSimpleName())
                                 || (restResourceComponent.getType().contains("List") && provider.getResourceType().getSimpleName().contains("List")))
                             if (provider instanceof ICCResourceProvider) {
-                                log.info("ICCResourceProvider - " + provider.getClass());
+                                log.debug("ICCResourceProvider - " + provider.getClass());
                                 ICCResourceProvider resourceProvider = (ICCResourceProvider) provider;
 
                                 Extension extension = restResourceComponent.getExtensionFirstRep();
@@ -250,10 +250,10 @@ import java.util.List;
                 if (operationComponent.hasDefinition() && operationComponent.getDefinition().hasReference()) {
                     String[] elements = operationComponent.getDefinition().getReference().split("-");
                     if (elements.length>2) {
-                        log.info(operationComponent.getDefinition().getReference());
+                        log.debug(operationComponent.getDefinition().getReference());
                         String[] defArray = elements[0].split("/");
                         if (defArray.length>1 && defArray[1].equals(resource.getType())) {
-                            log.info("MATCH");
+                            log.debug("MATCH");
                             Extension extension = resource.addExtension()
                                     .setUrl(CareConnectExtension.UrlCapabilityStatementRestOperation);
                             extension.addExtension()
