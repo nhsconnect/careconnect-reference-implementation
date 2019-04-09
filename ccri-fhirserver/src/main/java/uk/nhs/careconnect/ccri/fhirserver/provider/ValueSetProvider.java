@@ -204,6 +204,8 @@ public class ValueSetProvider implements ICCResourceProvider {
                                        String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
                                        url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
                                        log.info(url);
+                                       url = url.replace("^","%5E");
+                                       url = url.replace("|","%7C");
 
                                        vsExpansion = (ValueSet) client
                                                .operation()
