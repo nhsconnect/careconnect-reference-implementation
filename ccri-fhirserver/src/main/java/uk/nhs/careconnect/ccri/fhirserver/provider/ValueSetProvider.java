@@ -5,6 +5,8 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.impl.GenericClient;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Parameter;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -44,6 +47,9 @@ public class ValueSetProvider implements ICCResourceProvider {
 
 	@Autowired
 	FhirContext ctx;
+
+
+	IGenericClient client;
 
     @Autowired
     private ValueSetRepository valueSetDao;
@@ -158,6 +164,49 @@ public class ValueSetProvider implements ICCResourceProvider {
         resourcePermissionProvider.checkPermission("read");
         ValueSet valueSet = valueSetDao.readAndExpand(ctx, internalId);
 
+        if (!valueSet.hasExpansion()&&valueSet.hasCompose()) {
+            if (valueSet.getCompose().hasInclude()) {
+               for (ValueSet.ConceptSetComponent include : valueSet.getCompose().getInclude()) {
+                   if (include.hasSystem() && include.getSystem().equals("http://snomed.info/sct")) {
+                       log.info("SNOMED");
+
+                       // http://hl7.org/fhir/snomedct.html
+
+                       if (client == null) {
+                           client = ctx.newRestfulGenericClient("http://ontoserver.dataproducts.nhs.uk/fhir");
+                       }
+                       for (ValueSet.ConceptSetFilterComponent filter : include.getFilter()) {
+                           if (filter.hasOp()) {
+                               log.info("has Filter");
+                               switch (filter.getOp()) {
+                                   case IN:
+                                       log.info("IN Filter detected");
+                                   //    Parameters parameters = new Parameters();
+                                   //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
+                                       ValueSet vsExpansion = (ValueSet) client
+                                               .operation()
+                                               .onType(ValueSet.class)
+                                               .named("expand")
+                                               .withSearchParameter(Parameters.class,"identifier", new UriParam("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=refset/"+filter.getValue()))
+                                               .returnResourceType(ValueSet.class)
+                                               .useHttpGet()
+                                               .execute();
+                                       log.info("EXPANSION RETURNED");
+                                       log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(vsExpansion));
+                                       if (vsExpansion.hasExpansion()) {
+                                           for (ValueSet.ValueSetExpansionContainsComponent contains : vsExpansion.getExpansion().getContains()) {
+                                               valueSet.getExpansion().addContains(contains);
+                                           }
+                                       }
+
+                                       break;
+                               }
+                           }
+                       }
+                   }
+                }
+            }
+        }
         if ( valueSet == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
@@ -167,6 +216,8 @@ public class ValueSetProvider implements ICCResourceProvider {
         return valueSet;
 
     }
+
+
 
     @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
     public MethodOutcome getValueCodes(
