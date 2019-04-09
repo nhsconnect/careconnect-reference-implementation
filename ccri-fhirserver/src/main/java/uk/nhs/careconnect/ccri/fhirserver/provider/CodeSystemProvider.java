@@ -203,16 +203,16 @@ public class CodeSystemProvider implements ICCResourceProvider {
 
             IBaseResource resource = ctx.newJsonParser().parseResource(reader);
 
-            System.out.println("resource = " + resource);
+          //  System.out.println("resource = " + resource);
             if(resource instanceof Bundle)
             {
                 bundle = (Bundle) resource;
                 System.out.println("Entry Count = " + bundle.getEntry().size());
-                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+            //    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
                 //retVal.setOperationOutcome(operationOutcome);
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                    System.out.println("  codesystem id = " + entry.getResource().getId() );
+                 //   System.out.println("  codesystem id = " + entry.getResource().getId() );
                     if (entry.hasResource() && entry.getResource() instanceof CodeSystem
                             && (codeSystemId.getValue().contains("ALL")  || codeSystemId.getValue().contains(entry.getResource().getId())
                     ))
@@ -242,15 +242,15 @@ public class CodeSystemProvider implements ICCResourceProvider {
                                 {
                                     CodeSystem newVS = (CodeSystem) resource;
                                     newVS.setName(newVS.getName()+ "..");
+                                    System.out.println("Search for existing CodeSystem = "+newVS.getUrl());
                                     List<CodeSystem> results = codeSystemDao.search(ctx,null,null,new UriParam().setValue(newVS.getUrl()));
                                     if (results.size()>0) {
+                                        System.out.println("Found "+results.size()+" entries");
                                         newVS.setId(results.get(0).getIdElement().getIdPart());
+                                    } else {
+                                        System.out.println("Not found CS for "+newVS.getUrl());
                                     }
                                     CodeSystem newCodeSystem = codeSystemDao.create(ctx, newVS);
-                                    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newCodeSystem));
-                                    System.out.println("newCodeSystem.getIdElement()" + newCodeSystem.getIdElement());
-                                    // CodeSystemComposeComponent vscc = newVS.code .getCompose();
-                                    System.out.println("code concept" + newVS.getId());
 
                                 }
                             }

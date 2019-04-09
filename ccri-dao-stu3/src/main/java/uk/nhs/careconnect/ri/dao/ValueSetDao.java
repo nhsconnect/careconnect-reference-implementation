@@ -211,7 +211,7 @@ public class ValueSetDao implements ValueSetRepository {
 
                 CodeSystemEntity codeSystemEntity = codeSystemDao.findBySystem(component.getSystem());
                 log.trace("CodeSystem Id = "+ codeSystemEntity.getId()+ " Uri = " + codeSystemEntity.getCodeSystemUri());
-                System.out.println("Updateing code systems");
+                System.out.println("Updating code systems");
                 ValueSetInclude includeValueSetEntity = null;
 
                 // Search for existing entries
