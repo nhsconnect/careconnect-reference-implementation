@@ -38,7 +38,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Parameter;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
@@ -178,12 +181,13 @@ public class ValueSetProvider implements ICCResourceProvider {
                        for (ValueSet.ConceptSetFilterComponent filter : include.getFilter()) {
                            if (filter.hasOp()) {
                                log.info("has Filter");
+                               ValueSet vsExpansion = null;
                                switch (filter.getOp()) {
                                    case IN:
                                        log.info("IN Filter detected");
                                    //    Parameters parameters = new Parameters();
                                    //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
-                                       ValueSet vsExpansion = (ValueSet) client
+                                       vsExpansion = (ValueSet) client
                                                .operation()
                                                .onType(ValueSet.class)
                                                .named("expand")
@@ -191,15 +195,38 @@ public class ValueSetProvider implements ICCResourceProvider {
                                                .returnResourceType(ValueSet.class)
                                                .useHttpGet()
                                                .execute();
-                                       log.info("EXPANSION RETURNED");
-                                       log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(vsExpansion));
-                                       if (vsExpansion.hasExpansion()) {
-                                           for (ValueSet.ValueSetExpansionContainsComponent contains : vsExpansion.getExpansion().getContains()) {
-                                               valueSet.getExpansion().addContains(contains);
-                                           }
-                                       }
 
                                        break;
+                                   case EQUAL:
+                                       log.info("IN Filter detected - "+filter.getValue());
+                                       //    Parameters parameters = new Parameters();
+                                       //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
+                                       String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
+                                       url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
+                                       log.info(url);
+
+                                       vsExpansion = (ValueSet) client
+                                               .operation()
+                                               .onType(ValueSet.class)
+                                               .named("expand")
+                                               .withSearchParameter(Parameters.class,"identifier", new UriParam(url))
+                                               .returnResourceType(ValueSet.class)
+                                               .useHttpGet()
+                                               .execute();
+                               }
+                               if (vsExpansion != null) {
+                                   log.info("EXPANSION RETURNED");
+                                   log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(vsExpansion));
+                                   if (vsExpansion.hasExpansion()) {
+                                       for (ValueSet.ValueSetExpansionContainsComponent contains : vsExpansion.getExpansion().getContains()) {
+                                           try {
+                                               valueSet.getExpansion().addContains(contains);
+                                           } catch (Exception ex) {
+                                                System.out.println(ex.getMessage());
+                                           }
+                                       }
+                                   }
+
                                }
                            }
                        }
