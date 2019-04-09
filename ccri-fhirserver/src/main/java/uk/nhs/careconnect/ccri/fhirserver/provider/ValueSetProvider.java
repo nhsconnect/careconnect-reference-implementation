@@ -198,15 +198,15 @@ public class ValueSetProvider implements ICCResourceProvider {
 
                                        break;
                                    case EQUAL:
-                                       log.info("IN Filter detected - "+filter.getValue());
+                                       log.info("EQUAL Filter detected - "+filter.getValue());
                                        //    Parameters parameters = new Parameters();
                                        //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
                                        String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
-                                       url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
+                                       //url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
                                        log.info(url);
                                        url = url.replace("^","%5E");
                                        url = url.replace("|","%7C");
-
+                                       log.info(url);
                                        vsExpansion = (ValueSet) client
                                                .operation()
                                                .onType(ValueSet.class)
