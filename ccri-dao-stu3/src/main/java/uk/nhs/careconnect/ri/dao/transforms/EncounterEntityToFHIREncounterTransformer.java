@@ -52,8 +52,10 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
 
         for(EncounterEpisode episode : encounterEntity.getEpisodes())
         {
-            encounter.addEpisodeOfCare()
-                    .setReference("EpisodeOfCare/"+episode.getEpisode().getId());
+            if (episode.getEpisode() != null) {
+                encounter.addEpisodeOfCare()
+                        .setReference("EpisodeOfCare/" + episode.getEpisode().getId());
+            }
         }
 
         if (encounterEntity.getPatient() != null) {
