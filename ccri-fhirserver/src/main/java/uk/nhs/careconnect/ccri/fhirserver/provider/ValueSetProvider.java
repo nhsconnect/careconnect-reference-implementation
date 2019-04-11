@@ -51,11 +51,13 @@ public class ValueSetProvider implements ICCResourceProvider {
 	@Autowired
 	FhirContext ctx;
 
-
 	IGenericClient client;
 
     @Autowired
     private ValueSetRepository valueSetDao;
+
+    @Autowired
+    private ValidationSupportProvider validationSupportProvider;
     
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
