@@ -83,8 +83,12 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
                     IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
-
-                    results = this.fhirValidator.validateWithResult(convertedResource);
+                    try {
+                        results = this.fhirValidator.validateWithResult(convertedResource);
+                    } catch (Exception val) {
+                        log.error(val.getMessage());
+                        return true;
+                    }
 
                     org.hl7.fhir.r4.model.OperationOutcome outcomer4 = (org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome();
 

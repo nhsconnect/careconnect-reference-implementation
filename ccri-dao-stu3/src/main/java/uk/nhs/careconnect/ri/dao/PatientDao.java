@@ -208,7 +208,7 @@ public class PatientDao implements PatientRepository {
             log.trace("Adding new Patient");
             patientEntity = new PatientEntity();
         }
-
+        patientEntity.setResource(null);
         if (patient.hasExtension())
         {
             for (Extension extension : patient.getExtension()) {
@@ -439,7 +439,7 @@ public class PatientDao implements PatientRepository {
 
 
         newPatient = patientEntityToFHIRPatientTransformer.transform(patientEntity);
-        //patientEntity.setResource(ctx.newJsonParser().encodeResourceToString(newPatient));
+
         //em.persist(patientEntity);
 
 
