@@ -424,15 +424,16 @@ public class PatientDao implements PatientRepository {
         }
         for (ContactPoint contact : patient.getTelecom()) {
             PatientTelecom patientTel  = new PatientTelecom();
-                patientTel.setPatientEntity(patientEntity);
-                patientEntity.addTelecom(patientTel);
-                patientTel.setValue(contact.getValue());
+
+            patientTel.setPatientEntity(patientEntity);
+            patientTel.setValue(contact.getValue());
 
             if (contact.hasSystem())
                 patientTel.setSystem(contact.getSystem());
             if (contact.hasUse())
                 patientTel.setTelecomUse(contact.getUse());
             em.persist(patientTel);
+            patientEntity.addTelecom(patientTel);
         }
 
         Patient newPatient = null;
