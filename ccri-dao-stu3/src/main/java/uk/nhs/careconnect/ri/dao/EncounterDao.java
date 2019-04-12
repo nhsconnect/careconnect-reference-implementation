@@ -474,6 +474,29 @@ public class  EncounterDao implements EncounterRepository {
             }
 
         }
+        for (EncounterExtension extension : encounterEntity.getExtensions()) {
+            em.remove(extension);
+        }
+        if (encounter.hasExtension())
+        {
+            for (Extension extension : encounter.getExtension()) {
+                switch (extension.getUrl()) {
+                    case CareConnectExtension.UrlServiceType :
+                        // already processed
+                        break;
+                    default:
+                        EncounterExtension encounterExtension = new EncounterExtension();
+                        encounterExtension.setEncounter(encounterEntity);
+                        if (extension.hasUrl()) {
+                            encounterExtension.setUrl(extension.getUrl());
+                        }
+                        // TODO
+
+                        em.persist(encounterExtension);
+                }
+
+            }
+        }
 
         return encounterEntityToFHIREncounterTransformer.transform(encounterEntity);
     }
@@ -788,6 +811,21 @@ public class  EncounterDao implements EncounterRepository {
             Join<EncounterEntity, ConceptEntity> joinConcept = root.join("type", JoinType.LEFT);
             Predicate p = builder.equal(joinConcept.get("code"),type.getValue());
             predList.add(p);
+        }
+
+        if (episode !=null) {
+            if (daoutils.isNumeric(episode.getIdPart())) {
+                // force failure
+                Join<EncounterEntity, EpisodeOfCareEntity> join = root.join("episodes", JoinType.LEFT);
+
+                Predicate p = builder.equal(join.get("id"), episode.getIdPart());
+                predList.add(p);
+            } else {
+                // force failure
+                Join<EncounterEntity, EpisodeOfCareEntity> join = root.join("episodes", JoinType.LEFT);
+                Predicate p = builder.equal(join.get("id"), -1);
+                predList.add(p);
+            }
         }
 
         if (status != null) {

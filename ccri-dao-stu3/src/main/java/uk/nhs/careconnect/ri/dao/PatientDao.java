@@ -25,6 +25,7 @@ import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.documentReference.DocumentReferenceEntity;
 import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterExtension;
 import uk.nhs.careconnect.ri.database.entity.flag.FlagEntity;
 import uk.nhs.careconnect.ri.database.entity.immunisation.ImmunisationEntity;
 import uk.nhs.careconnect.ri.database.entity.medicationStatement.MedicationStatementEntity;
@@ -436,6 +437,29 @@ public class PatientDao implements PatientRepository {
             patientEntity.addTelecom(patientTel);
         }
 
+        for (PatientExtension extension : patientEntity.getExtensions()) {
+            em.remove(extension);
+        }
+        if (patient.hasExtension())
+        {
+            for (Extension extension : patient.getExtension()) {
+                switch (extension.getUrl()) {
+                    case CareConnectExtension.UrlEthnicCategory :
+                        // already processed
+                        break;
+                    default:
+                        PatientExtension patientExtension = new PatientExtension();
+                        patientExtension.setPatientEntity(patientEntity);
+                        if (extension.hasUrl()) {
+                            patientExtension.setUrl(extension.getUrl());
+                        }
+                        // TODO
+
+                        em.persist(patientExtension);
+                }
+
+            }
+        }
         Patient newPatient = null;
 
 

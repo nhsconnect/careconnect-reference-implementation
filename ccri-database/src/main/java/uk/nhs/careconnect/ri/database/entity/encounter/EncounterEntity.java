@@ -95,6 +95,9 @@ public class EncounterEntity extends BaseResource {
     @OneToMany(mappedBy="encounter", targetEntity = EncounterLocation.class)
     Set<EncounterLocation> locations = new HashSet<>();
 
+    @OneToMany(mappedBy="encounter", targetEntity = EncounterExtension.class)
+    Set<EncounterExtension> extensions = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PART_OF_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_ENCOUNTER_PART_OF_ENCOUNTER_ID"))
     private EncounterEntity partOfEncounter;
@@ -463,5 +466,13 @@ public class EncounterEntity extends BaseResource {
 
     public void setMedicationAdministrationEncounters(Set<MedicationAdministrationEntity> medicationAdministrationEncounters) {
         this.medicationAdministrationEncounters = medicationAdministrationEncounters;
+    }
+
+    public Set<EncounterExtension> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Set<EncounterExtension> extensions) {
+        this.extensions = extensions;
     }
 }
