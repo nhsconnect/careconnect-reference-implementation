@@ -151,6 +151,17 @@ public class EncounterEntityToFHIREncounterTransformer implements Transformer<En
             encounter.setPartOf(new Reference("Encounter/"+encounterEntity.getPartOfEncounter().getId()));
         }
 
+        for (EncounterExtension extension : encounterEntity.getExtensions()) {
+            Extension ext = encounter.addExtension();
+            if (extension.getUrl()!=null) {
+                ext.setUrl(extension.getUrl());
+            }
+            Type type = extension.getValue();
+            if (type != null) {
+                ext.setValue(type);
+            }
+        }
+
         return encounter;
 
     }

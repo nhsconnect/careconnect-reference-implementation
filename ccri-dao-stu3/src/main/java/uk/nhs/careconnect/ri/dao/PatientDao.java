@@ -454,6 +454,9 @@ public class PatientDao implements PatientRepository {
                             patientExtension.setUrl(extension.getUrl());
                         }
                         // TODO
+                        if (extension.hasValue()) {
+                            patientExtension.setValue(extension.getValue());
+                        }
 
                         em.persist(patientExtension);
                 }

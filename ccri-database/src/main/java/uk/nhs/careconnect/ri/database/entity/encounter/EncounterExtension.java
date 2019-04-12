@@ -33,4 +33,6 @@ public class EncounterExtension extends BaseExtension {
     public void setEncounter(EncounterEntity encounter) {
         this.encounter = encounter;
     }
+
+
 }

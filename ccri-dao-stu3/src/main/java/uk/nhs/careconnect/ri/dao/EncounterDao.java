@@ -268,8 +268,7 @@ public class  EncounterDao implements EncounterRepository {
             		
             		log.trace("System/code  is : " + extensionValue.getCoding().get(0).getSystem());
             		ConceptEntity code = conceptDao.findAddCode(extensionValue.getCoding().get(0));
-            		if (code != null) 
-            			{ 
+            		if (code != null) {
             				log.debug("the code found in the db");
             				encounterEntity.setServiceType(code);
             			}

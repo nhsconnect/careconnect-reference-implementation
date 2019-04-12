@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.dao.daoutils;
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterExtension;
 import uk.nhs.careconnect.ri.database.entity.patient.*;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerName;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
@@ -164,6 +165,17 @@ public class PatientEntityToFHIRPatientTransformer implements Transformer<Patien
         if (patientEntity.getPractice()!=null) {
             patient.setManagingOrganization(new Reference("Organization/"+patientEntity.getPractice().getId()));
             patient.getManagingOrganization().setDisplay(patientEntity.getPractice().getName());
+        }
+
+        for (PatientExtension extension : patientEntity.getExtensions()) {
+            Extension ext = patient.addExtension();
+            if (extension.getUrl()!=null) {
+                ext.setUrl(extension.getUrl());
+            }
+            Type type = extension.getValue();
+            if (type != null) {
+                ext.setValue(type);
+            }
         }
 
         return patient;
