@@ -282,7 +282,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
 
-  ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
+  public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
     return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
   }
 

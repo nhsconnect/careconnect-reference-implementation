@@ -149,7 +149,7 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
     return provideStructureDefinitionMap(theContext).get(url);
   }
 
-  ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
+  public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
     return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
   }
 

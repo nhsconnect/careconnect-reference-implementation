@@ -161,7 +161,7 @@ public class DefaultProfileValidationSupportStu3AsR4 implements IValidationSuppo
         return provideStructureDefinitionMap(r4Context).get(url);
     }
 
-    ValueSet fetchValueSet(FhirContext r4Context, String theSystem) {
+    public ValueSet fetchValueSet(FhirContext r4Context, String theSystem) {
         return (ValueSet) fetchCodeSystemOrValueSet(r4Context, theSystem, false);
     }
 

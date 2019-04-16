@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.database.entity;
 
-import com.sun.jndi.toolkit.url.Uri;
 import org.hl7.fhir.dstu3.model.*;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 
