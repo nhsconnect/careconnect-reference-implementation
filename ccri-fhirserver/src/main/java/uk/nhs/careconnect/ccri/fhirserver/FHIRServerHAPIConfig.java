@@ -137,10 +137,6 @@ public class FHIRServerHAPIConfig extends RestfulServer {
 		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
 		 */
 
-        if (serverBase != null && !serverBase.isEmpty()) {
-            setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
-        }
-
 
 
         /*
