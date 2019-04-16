@@ -72,8 +72,9 @@ public class Config {
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(new DefaultProfileValidationSupportStu3AsR4());
-        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupport(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
-        validationSupportChain.addValidationSupport(new SNOMEDUKMockValidationSupport());
+        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupport(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
+        validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupport(r4ctx, stu3ctx,"http://ontoserver.dataproducts.nhs.uk/fhir"));
+        validationSupportChain.addValidationSupport(new FHIRTerminologyValidationSupport());
 
         instanceValidator.setValidationSupport(validationSupportChain);
 
