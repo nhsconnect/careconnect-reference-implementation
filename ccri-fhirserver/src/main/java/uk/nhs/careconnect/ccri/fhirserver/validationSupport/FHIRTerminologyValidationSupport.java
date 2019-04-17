@@ -1,8 +1,6 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -23,29 +21,17 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-public class SNOMEDUKDbValidationSupport implements IValidationSupport {
+public class FHIRTerminologyValidationSupport implements IValidationSupport {
 
-  private static final String URL_PREFIX_VALUE_SET = "https://fhir.hl7.org.uk/STU3/ValueSet/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION = "https://fhir.hl7.org.uk/STU3/StructureDefinition/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "https://fhir.hl7.org.uk/STU3/";
+  private static final String URL_PREFIX_VALUE_SET = "http://terminology.hl7.org/ValueSet/";
+  private static final String URL_PREFIX_STRUCTURE_DEFINITION = "http://terminology.hl7.org/StructureDefinition/";
+  private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "http://terminology.hl7.org/";
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupport.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FHIRTerminologyValidationSupport.class);
 
   private Map<String, CodeSystem> myCodeSystems;
   private Map<String, StructureDefinition> myStructureDefinitions;
   private Map<String, ValueSet> myValueSets;
-
-  private FhirContext ctxR4 = null;
-
-  private FhirContext ctxStu3 = null;
-
-  IGenericClient client;
-
-  private IParser parserR4;
-
-  private IParser parserStu3;
-
-  private String alternateServer;
 
   private void logD(String message) {
       log.debug(message);
@@ -57,17 +43,9 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
         System.out.println(message);
     }
 
-  public SNOMEDUKDbValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String alternateServer) {
-    this.ctxR4 = r4Ctx;
-    this.ctxStu3 = stu3Ctx;
-
-    parserR4 = ctxR4.newXmlParser();
-    parserStu3 = ctxStu3.newXmlParser();
-    this.alternateServer = alternateServer;
-  }
   @Override
   public ValueSetExpander.ValueSetExpansionOutcome expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
-    logW("SNOMED expandValueSet System="+conceptSetComponent.getSystem());
+    logW("FHIRTerminology expandValueSet System="+conceptSetComponent.getSystem());
     return null;
   }
 
@@ -88,13 +66,13 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    //logD("SNOMEDValidator fetchCodeSystem "+theSystem);
+    //logD("FHIRTerminologyMOCK fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("SNOMEDValidator fetchCodeSystemOrValueSet: system="+theSystem);
+      logD("FHIRTerminologyMOCK fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
@@ -103,14 +81,14 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
         valueSets = new HashMap<String, ValueSet>();
 
 
-          if (theSystem.equals(CareConnectSystem.SNOMEDCT)) {
+          if (theSystem.equals(CareConnectSystem.FHIRTerminology)) {
               
-              // Mock SNOMED support TODO point to real SNOMED UK Server
+              // Mock FHIRTerminology support TODO point to real FHIRTerminology UK Server
               
-              CodeSystem SNOMEDSystem = new CodeSystem();
-              SNOMEDSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
-              SNOMEDSystem.setUrl(CareConnectSystem.SNOMEDCT);
-              codeSystems.put(CareConnectSystem.SNOMEDCT,SNOMEDSystem);
+              CodeSystem FHIRTerminologySystem = new CodeSystem();
+              FHIRTerminologySystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
+              FHIRTerminologySystem.setUrl(CareConnectSystem.FHIRTerminology);
+              codeSystems.put(CareConnectSystem.FHIRTerminology,FHIRTerminologySystem);
               
           }
         myCodeSystems = codeSystems;
@@ -171,8 +149,8 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    logD("SNOMEDValidator Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
-    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
+    logD("FHIRTerminologyMOCK Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
+    InputStream valuesetText = FHIRTerminologyValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
 
@@ -201,8 +179,8 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    logD("SNOMEDValidator Loading structure definitions from classpath: "+ theClasspath);
-    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
+    logD("FHIRTerminologyMOCK Loading structure definitions from classpath: "+ theClasspath);
+    InputStream valuesetText = FHIRTerminologyValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
 
@@ -233,7 +211,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
-    logD("SNOMEDValidator testIfConceptIsInList: {} code="+ theCode);
+    logD("FHIRTerminologyMOCK testIfConceptIsInList: {} code="+ theCode);
 
 
     String code = theCode;
@@ -245,7 +223,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInListInner(List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
-    logD("SNOMEDValidator testIfConceptIsInListInner: code=" + code);
+    logD("FHIRTerminologyMOCK testIfConceptIsInListInner: code=" + code);
 
     /* This is a mock and we will do a basic check (is the code Numeric!
     return positive if numeric else false */
@@ -261,7 +239,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     /* Ignore the list for now KGM Dec 2017 TODO
     for (ConceptDefinitionComponent next : conceptList) {
       // KGM
-      logD("SNOMEDValidator testIfConceptIsInListInner NextCode = "+next.getCode());
+      logD("FHIRTerminologyMOCK testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
 
 
@@ -275,7 +253,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
-    logD("SNOMEDValidator validateCode system = "+ theCodeSystem);
+    logD("FHIRTerminologyMOCK validateCode system = "+ theCodeSystem);
 
     if (cs != null) {
       boolean caseSensitive = true;
@@ -290,7 +268,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
       }
     }
 
-    return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
+    return new CodeValidationResult(IssueSeverity.WARNING, "FHIRTerminologyMOCK Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
 }

@@ -109,6 +109,7 @@ public class FHIRServerHAPIConfig extends RestfulServer {
     private List<String>  GPConnectAdaptor_resources;
 
 
+
     @SuppressWarnings("unchecked")
     @Override
     protected void initialize() throws ServletException {

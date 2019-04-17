@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -87,6 +87,15 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
     private void logW(String message) {
         log.warn(message);
         System.out.println(message);
+    }
+
+    private void logT(String message) {
+        log.trace(message);
+    }
+
+    private void logT(String message,Object value) {
+        log.warn(String.format(message, value));
+        System.out.printf(message,value);
     }
 
     @Override
@@ -216,7 +225,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
             return null;
         }
 
-        logD(
+        logT(
                 "CareConnectValidator asked to fetch Resource: %s%n",
                 theUrl);
 
@@ -230,7 +239,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
                 logW("  No data returned from: %s%n", theUrl);
             }
         } else {
-            logD( "  This URL was already loaded: %s%n", theUrl);
+            logT( "  This URL was already loaded: %s%n", theUrl);
         }
 
         return (T) cachedResource.get(theUrl);
@@ -399,9 +408,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
     }
 
   private IBaseResource fetchURL(final String theUrl) {
-    logD("  This URL not yet loaded: %s%n", theUrl);
-
-
+    logT("  This URL not yet loaded: %s%n", theUrl);
 
     StringBuilder result = new StringBuilder();
 
@@ -428,13 +435,13 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
             try {
               int httpCode = conn.getResponseCode();
               if (httpCode == SC_OK) {
-                log.trace("    Got a 200 status");
+
                 String line;
                 try {
                   while ((line = rd.readLine()) != null) {
                     result.append(line);
                   }
-                  log.trace("    No more data");
+
                   rd.close();
                 } catch (IOException ex) {
                   logW(

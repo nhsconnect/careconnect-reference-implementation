@@ -1,6 +1,9 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.param.UriParam;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -21,17 +24,29 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-public class FHIRTerminologyValidationSupport implements IValidationSupport {
+public class SNOMEDUKDbValidationSupport implements IValidationSupport {
 
-  private static final String URL_PREFIX_VALUE_SET = "http://terminology.hl7.org/ValueSet/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION = "http://terminology.hl7.org/StructureDefinition/";
-  private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "http://terminology.hl7.org/";
+  private static final String URL_PREFIX_VALUE_SET = "https://fhir.hl7.org.uk/STU3/ValueSet/";
+  private static final String URL_PREFIX_STRUCTURE_DEFINITION = "https://fhir.hl7.org.uk/STU3/StructureDefinition/";
+  private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "https://fhir.hl7.org.uk/STU3/";
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FHIRTerminologyValidationSupport.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupport.class);
 
   private Map<String, CodeSystem> myCodeSystems;
   private Map<String, StructureDefinition> myStructureDefinitions;
   private Map<String, ValueSet> myValueSets;
+
+  private FhirContext ctxR4 = null;
+
+  private FhirContext ctxStu3 = null;
+
+  IGenericClient client;
+
+  private IParser parserR4;
+
+  private IParser parserStu3;
+
+  private String terminologyServer;
 
   private void logD(String message) {
       log.debug(message);
@@ -43,9 +58,18 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
         System.out.println(message);
     }
 
+  public SNOMEDUKDbValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
+    this.ctxR4 = r4Ctx;
+    this.ctxStu3 = stu3Ctx;
+
+    parserR4 = ctxR4.newXmlParser();
+    parserStu3 = ctxStu3.newXmlParser();
+    this.terminologyServer = terminologyServer;
+    client = stu3Ctx.newRestfulGenericClient(terminologyServer);
+  }
   @Override
   public ValueSetExpander.ValueSetExpansionOutcome expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
-    logW("FHIRTerminology expandValueSet System="+conceptSetComponent.getSystem());
+    logW("SNOMED expandValueSet System="+conceptSetComponent.getSystem());
     return null;
   }
 
@@ -66,13 +90,13 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    //logD("FHIRTerminologyMOCK fetchCodeSystem "+theSystem);
+    //logD("SNOMEDValidator fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("FHIRTerminologyMOCK fetchCodeSystemOrValueSet: system="+theSystem);
+      logD("SNOMEDValidator fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
@@ -81,14 +105,14 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
         valueSets = new HashMap<String, ValueSet>();
 
 
-          if (theSystem.equals(CareConnectSystem.FHIRTerminology)) {
+          if (theSystem.equals(CareConnectSystem.SNOMEDCT)) {
               
-              // Mock FHIRTerminology support TODO point to real FHIRTerminology UK Server
+              // Mock SNOMED support TODO point to real SNOMED UK Server
               
-              CodeSystem FHIRTerminologySystem = new CodeSystem();
-              FHIRTerminologySystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
-              FHIRTerminologySystem.setUrl(CareConnectSystem.FHIRTerminology);
-              codeSystems.put(CareConnectSystem.FHIRTerminology,FHIRTerminologySystem);
+              CodeSystem SNOMEDSystem = new CodeSystem();
+              SNOMEDSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
+              SNOMEDSystem.setUrl(CareConnectSystem.SNOMEDCT);
+              codeSystems.put(CareConnectSystem.SNOMEDCT,SNOMEDSystem);
               
           }
         myCodeSystems = codeSystems;
@@ -149,8 +173,8 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
   }
 
   private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    logD("FHIRTerminologyMOCK Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
-    InputStream valuesetText = FHIRTerminologyValidationSupport.class.getResourceAsStream(theClasspath);
+    logD("SNOMEDValidator Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
+    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
 
@@ -179,8 +203,8 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
   }
 
   private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    logD("FHIRTerminologyMOCK Loading structure definitions from classpath: "+ theClasspath);
-    InputStream valuesetText = FHIRTerminologyValidationSupport.class.getResourceAsStream(theClasspath);
+    logD("SNOMEDValidator Loading structure definitions from classpath: "+ theClasspath);
+    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
 
@@ -211,7 +235,7 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
-    logD("FHIRTerminologyMOCK testIfConceptIsInList: {} code="+ theCode);
+    logD("SNOMEDValidator testIfConceptIsInList: {} code="+ theCode);
 
 
     String code = theCode;
@@ -223,7 +247,7 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInListInner(List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
-    logD("FHIRTerminologyMOCK testIfConceptIsInListInner: code=" + code);
+    logD("SNOMEDValidator testIfConceptIsInListInner: code=" + code);
 
     /* This is a mock and we will do a basic check (is the code Numeric!
     return positive if numeric else false */
@@ -232,14 +256,52 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
     CodeValidationResult retVal = null;
 
       if (isNumeric(code)) {
-          CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
-          concept.setCode(code);
-          retVal = new CodeValidationResult(concept);
+
+
+          org.hl7.fhir.dstu3.model.Parameters params = new org.hl7.fhir.dstu3.model.Parameters();
+            params.addParameter(
+                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                            new org.hl7.fhir.dstu3.model.StringType("url"))
+                            .setValue(new org.hl7.fhir.dstu3.model.StringType("http://snomed.info/sct?fhir_vs")));
+          params.addParameter(
+                  new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                          new org.hl7.fhir.dstu3.model.StringType("code"))
+                          .setValue(new org.hl7.fhir.dstu3.model.StringType(code)));
+          params.addParameter(
+                  new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                          new org.hl7.fhir.dstu3.model.StringType("system"))
+                          .setValue(new org.hl7.fhir.dstu3.model.StringType("http://snomed.info/sct")));
+
+
+          org.hl7.fhir.dstu3.model.Parameters paramResult =  client
+                  .operation()
+                  .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                  .named("validate-code")
+                  .withParameters(params)
+                  .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
+                  .useHttpGet()
+                  .execute();
+          logD(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
+          if (paramResult != null) {
+             for(org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
+                if (param.getName().equals("result"))  {
+                   if (param.getValue() instanceof org.hl7.fhir.dstu3.model.BooleanType) {
+                     org.hl7.fhir.dstu3.model.BooleanType bool = (org.hl7.fhir.dstu3.model.BooleanType) param.getValue();
+                     if (bool.booleanValue()) {
+                       CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
+                       concept.setCode(code);
+                       retVal = new CodeValidationResult(concept);
+                     }
+                   }
+
+                }
+             }
+          }
       }
     /* Ignore the list for now KGM Dec 2017 TODO
     for (ConceptDefinitionComponent next : conceptList) {
       // KGM
-      logD("FHIRTerminologyMOCK testIfConceptIsInListInner NextCode = "+next.getCode());
+      logD("SNOMEDValidator testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
 
 
@@ -253,7 +315,7 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
-    logD("FHIRTerminologyMOCK validateCode system = "+ theCodeSystem);
+    logD("SNOMEDValidator validateCode system = "+ theCodeSystem);
 
     if (cs != null) {
       boolean caseSensitive = true;
@@ -268,7 +330,7 @@ public class FHIRTerminologyValidationSupport implements IValidationSupport {
       }
     }
 
-    return new CodeValidationResult(IssueSeverity.WARNING, "FHIRTerminologyMOCK Unknown code: " + theCodeSystem + " / " + theCode);
+    return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
 }

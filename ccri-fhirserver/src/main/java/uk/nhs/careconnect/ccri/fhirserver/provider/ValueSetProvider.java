@@ -64,7 +64,10 @@ public class ValueSetProvider implements ICCResourceProvider {
     
     @Value("${ccri.valueSetHost}")
 	private String valueSetHost;
-    
+
+    @Value("${ccri.terminologyServer}")
+    private String terminologyServer;
+
     @Override
     public Class<ValueSet> getResourceType() {
         return ValueSet.class;
@@ -178,7 +181,7 @@ public class ValueSetProvider implements ICCResourceProvider {
                        // http://hl7.org/fhir/snomedct.html
 
                        if (client == null) {
-                           client = ctx.newRestfulGenericClient("http://ontoserver.dataproducts.nhs.uk/fhir");
+                           client = ctx.newRestfulGenericClient(terminologyServer);
                        }
                        for (ValueSet.ConceptSetFilterComponent filter : include.getFilter()) {
                            if (filter.hasOp()) {
