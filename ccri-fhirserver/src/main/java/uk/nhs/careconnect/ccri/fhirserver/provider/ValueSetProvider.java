@@ -211,6 +211,7 @@ public class ValueSetProvider implements ICCResourceProvider {
                                        log.info(url);
                                        url = url.replace("^","%5E");
                                        url = url.replace("|","%7C");
+                                       url = url.replace("<","%3C");
                                        log.info(url);
                                        vsExpansion = (ValueSet) client
                                                .operation()

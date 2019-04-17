@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.nhs.careconnect.ccri.fhirserver.provider.DatabaseBackedPagingProvider;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupport;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.FHIRTerminologyValidationSupport;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.SNOMEDUKDbValidationSupport;
 import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 
@@ -77,7 +76,6 @@ public class Config {
         validationSupportChain.addValidationSupport(new DefaultProfileValidationSupportStu3AsR4());
         validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupport(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
         validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupport(r4ctx, stu3ctx,terminologyServer));
-        validationSupportChain.addValidationSupport(new FHIRTerminologyValidationSupport());
 
         instanceValidator.setValidationSupport(validationSupportChain);
 

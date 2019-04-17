@@ -76,7 +76,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
       }
     private void logD(String message,Object value) {
         log.debug(String.format(message, value));
-        System.out.printf(message,value);
+      //  System.out.printf(message,value);
     }
 
     private void logW(String message,Object value) {

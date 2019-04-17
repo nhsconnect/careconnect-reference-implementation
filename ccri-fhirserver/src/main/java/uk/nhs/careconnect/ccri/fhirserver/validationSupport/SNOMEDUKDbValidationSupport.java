@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.r4.model.*;
@@ -50,13 +51,18 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
 
   private void logD(String message) {
       log.debug(message);
-      System.out.println(message);
+   //   System.out.println(message);
   }
 
     private void logW(String message) {
         log.warn(message);
-        System.out.println(message);
+      //  System.out.println(message);
     }
+
+  private void logT(String message) {
+    log.trace(message);
+    //System.out.println(message);
+  }
 
   public SNOMEDUKDbValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
     this.ctxR4 = r4Ctx;
@@ -69,8 +75,58 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
   @Override
   public ValueSetExpander.ValueSetExpansionOutcome expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
-    logW("SNOMED expandValueSet System="+conceptSetComponent.getSystem());
-    return null;
+    if (conceptSetComponent.getValueSet() != null) {
+      logW("SNOMED expandValueSet ValueSet="+ conceptSetComponent.getValueSet().toString());
+    } else {
+      logW("SNOMED expandValueSet System="+ conceptSetComponent.getSystem());
+    }
+    System.out.println("SNOMED expandValueSet");
+    ValueSetExpander.ValueSetExpansionOutcome expand = null;
+
+    for (ValueSet.ConceptSetFilterComponent filter : conceptSetComponent.getFilter()) {
+      if (filter.hasOp()) {
+        log.info("has Filter");
+        org.hl7.fhir.dstu3.model.ValueSet vsExpansion = null;
+        switch (filter.getOp()) {
+          case IN:
+            log.info("IN Filter detected");
+
+            vsExpansion = (org.hl7.fhir.dstu3.model.ValueSet) client
+                    .operation()
+                    .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .named("expand")
+                    .withSearchParameter(org.hl7.fhir.dstu3.model.Parameters.class,"identifier", new UriParam("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=refset/"+filter.getValue()))
+                    .returnResourceType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .useHttpGet()
+                    .execute();
+
+            break;
+          case EQUAL:
+            log.info("EQUAL Filter detected - "+filter.getValue());
+            String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
+            //url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
+            log.info(url);
+            url = url.replace("^","%5E");
+            url = url.replace("|","%7C");
+            url = url.replace("<","%3C");
+            vsExpansion = (org.hl7.fhir.dstu3.model.ValueSet) client
+                    .operation()
+                    .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .named("expand")
+                    .withSearchParameter(org.hl7.fhir.dstu3.model.Parameters.class,"identifier", new UriParam(url))
+                    .returnResourceType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .useHttpGet()
+                    .execute();
+        }
+        if (vsExpansion != null) {
+
+          log.debug("EXPANSION RETURNED");
+          expand = new ValueSetExpander.ValueSetExpansionOutcome((ValueSet) convertToR4(vsExpansion));
+          log.trace(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(vsExpansion));
+        }
+      }
+    }
+    return expand;
   }
 
   @Override
@@ -96,29 +152,30 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("SNOMEDValidator fetchCodeSystemOrValueSet: system="+theSystem);
+      if (codeSystem) {
+        logD("SNOMEDValidator fetch[CodeSystem]OrValueSet: system="+theSystem);
+      } else {
+        logD("SNOMEDValidator fetchCodeSystemOr[ValueSet]: valueSet="+theSystem);
+      }
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
       if (codeSystems == null || valueSets == null) {
         codeSystems = new HashMap<String, CodeSystem>();
         valueSets = new HashMap<String, ValueSet>();
-
-
-          if (theSystem.equals(CareConnectSystem.SNOMEDCT)) {
-              
-              // Mock SNOMED support TODO point to real SNOMED UK Server
-              
-              CodeSystem SNOMEDSystem = new CodeSystem();
-              SNOMEDSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
-              SNOMEDSystem.setUrl(CareConnectSystem.SNOMEDCT);
-              codeSystems.put(CareConnectSystem.SNOMEDCT,SNOMEDSystem);
-              
-          }
         myCodeSystems = codeSystems;
         myValueSets = valueSets;
       }
-      
+
+      if (theSystem.equals(CareConnectSystem.SNOMEDCT) && codeSystem) {
+        if (codeSystems.get(theSystem) == null) {
+          CodeSystem SNOMEDSystem = new CodeSystem();
+          SNOMEDSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
+          SNOMEDSystem.setUrl(CareConnectSystem.SNOMEDCT);
+          codeSystems.put(CareConnectSystem.SNOMEDCT, SNOMEDSystem);
+        }
+      }
+
 
       if (codeSystem) {
         return codeSystems.get(theSystem);
@@ -172,57 +229,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     return cs != null && cs.getContent() != CodeSystem.CodeSystemContentMode.NOTPRESENT;
   }
 
-  private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    logD("SNOMEDValidator Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
-    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
-    if (valuesetText != null) {
-      InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
 
-      Bundle bundle = theContext.newXmlParser().parseResource(Bundle.class, reader);
-      for (Bundle.BundleEntryComponent next : bundle.getEntry()) {
-        if (next.getResource() instanceof CodeSystem) {
-          CodeSystem nextValueSet = (CodeSystem) next.getResource();
-          nextValueSet.getText().setDivAsString("");
-          String system = nextValueSet.getUrl();
-          if (isNotBlank(system)) {
-            theCodeSystems.put(system, nextValueSet);
-          }
-        } else if (next.getResource() instanceof ValueSet) {
-          ValueSet nextValueSet = (ValueSet) next.getResource();
-          nextValueSet.getText().setDivAsString("");
-          String system = nextValueSet.getUrl();
-          if (isNotBlank(system)) {
-            theValueSets.put(system, nextValueSet);
-          }
-        }
-      }
-    } else {
-      logW("Unable to load resource: "+ theClasspath);
-
-    }
-  }
-
-  private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    logD("SNOMEDValidator Loading structure definitions from classpath: "+ theClasspath);
-    InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
-    if (valuesetText != null) {
-      InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
-
-      Bundle bundle = theContext.newXmlParser().parseResource(Bundle.class, reader);
-      for (Bundle.BundleEntryComponent next : bundle.getEntry()) {
-        if (next.getResource() instanceof StructureDefinition) {
-          StructureDefinition nextSd = (StructureDefinition) next.getResource();
-          nextSd.getText().setDivAsString("");
-          String system = nextSd.getUrl();
-          if (isNotBlank(system)) {
-            theCodeSystems.put(system, nextSd);
-          }
-        }
-      }
-    } else {
-      log.warn("Unable to load resource: {}", theClasspath);
-    }
-  }
 
   private Map<String, StructureDefinition> provideStructureDefinitionMap(FhirContext theContext) {
     Map<String, StructureDefinition> structureDefinitions = myStructureDefinitions;
@@ -281,7 +288,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
                   .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
                   .useHttpGet()
                   .execute();
-          logD(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
+          logT(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
           if (paramResult != null) {
              for(org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
                 if (param.getName().equals("result"))  {
@@ -331,6 +338,16 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     }
 
     return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
+  }
+
+  public IBaseResource convertToR4(IBaseResource stu3resource) {
+    if (stu3resource == null) return null;
+    VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+    return convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) stu3resource, true);
+
+
+    // log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+
   }
 
 }
