@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableTransactionManagement()
 @PropertySource("classpath:application.properties")
 @ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.dao"})
-public class FHIRServerApplication {
+public class CCRIFHIRServer {
 
     @Autowired
     ApplicationContext context;
@@ -50,7 +50,7 @@ public class FHIRServerApplication {
       //  System.setProperty("server.context-path", "/ccri-fhirserver");
         System.setProperty("management.contextPath","");
 
-        SpringApplication.run(FHIRServerApplication.class, args);
+        SpringApplication.run(CCRIFHIRServer.class, args);
     }
 
     @Bean

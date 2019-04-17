@@ -4,34 +4,29 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.UriParam;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.convertors.VersionConvertor_30_40;
+
+import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.hapi.ctx.IValidationSupport;
-import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.r4.terminologies.ValueSetExpander;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-public class SNOMEDUKDbValidationSupport implements IValidationSupport {
+public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
   private static final String URL_PREFIX_VALUE_SET = "https://fhir.hl7.org.uk/STU3/ValueSet/";
   private static final String URL_PREFIX_STRUCTURE_DEFINITION = "https://fhir.hl7.org.uk/STU3/StructureDefinition/";
   private static final String URL_PREFIX_STRUCTURE_DEFINITION_BASE = "https://fhir.hl7.org.uk/STU3/";
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupport.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupportSTU3.class);
 
   private Map<String, CodeSystem> myCodeSystems;
   private Map<String, StructureDefinition> myStructureDefinitions;
@@ -64,7 +59,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     //System.out.println(message);
   }
 
-  public SNOMEDUKDbValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
+  public SNOMEDUKDbValidationSupportSTU3(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
     this.ctxR4 = r4Ctx;
     this.ctxStu3 = stu3Ctx;
 
@@ -74,14 +69,14 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     client = stu3Ctx.newRestfulGenericClient(terminologyServer);
   }
   @Override
-  public ValueSetExpander.ValueSetExpansionOutcome expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
+  public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
     if (conceptSetComponent.getValueSet() != null) {
       logW("SNOMED expandValueSet ValueSet="+ conceptSetComponent.getValueSet().toString());
     } else {
       logW("SNOMED expandValueSet System="+ conceptSetComponent.getSystem());
     }
     System.out.println("SNOMED expandValueSet");
-    ValueSetExpander.ValueSetExpansionOutcome expand = null;
+    ValueSet.ValueSetExpansionComponent expand = null;
 
     for (ValueSet.ConceptSetFilterComponent filter : conceptSetComponent.getFilter()) {
       if (filter.hasOp()) {
@@ -109,19 +104,19 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
             url = url.replace("^","%5E");
             url = url.replace("|","%7C");
             url = url.replace("<","%3C");
-            vsExpansion = (org.hl7.fhir.dstu3.model.ValueSet) client
+            vsExpansion =  client
                     .operation()
-                    .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .onType(ValueSet.class)
                     .named("expand")
-                    .withSearchParameter(org.hl7.fhir.dstu3.model.Parameters.class,"identifier", new UriParam(url))
-                    .returnResourceType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                    .withSearchParameter(Parameters.class,"identifier", new UriParam(url))
+                    .returnResourceType(ValueSet.class)
                     .useHttpGet()
                     .execute();
         }
         if (vsExpansion != null) {
 
           log.debug("EXPANSION RETURNED");
-          expand = new ValueSetExpander.ValueSetExpansionOutcome((ValueSet) convertToR4(vsExpansion));
+          expand = vsExpansion.getExpansion();
           log.trace(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(vsExpansion));
         }
       }
@@ -340,14 +335,6 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
-  public IBaseResource convertToR4(IBaseResource stu3resource) {
-    if (stu3resource == null) return null;
-    VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
-    return convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) stu3resource, true);
 
-
-    // log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
-
-  }
 
 }

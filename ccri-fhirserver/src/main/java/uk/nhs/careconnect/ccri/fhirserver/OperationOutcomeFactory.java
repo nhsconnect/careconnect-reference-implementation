@@ -5,7 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +37,14 @@ public class OperationOutcomeFactory {
         return exception;
     }
 
-    public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome, FhirContext ctx) {
+    public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome, FhirContext ctx) {
         if (ctx != null) {
             log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));
         }
         OperationOutcome operationOutcome = new OperationOutcome();
         // TODO - Basic Conversion from r4 to stu3
         if (outcome.hasIssue()) {
-            for (org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+            for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
                 OperationOutcome.OperationOutcomeIssueComponent r3issue = operationOutcome.addIssue();
                 if (issue.hasCode()) {
                     switch(issue.getCode()) {

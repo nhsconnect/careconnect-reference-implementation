@@ -11,12 +11,13 @@ import ca.uhn.fhir.rest.server.method.ResourceParameter;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.convertors.VersionConvertor_30_40;
+//import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.*;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 
+import org.slf4j.LoggerFactory;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ import java.nio.charset.Charset;
 
 
 public class CCRequestValidatingInterceptor extends InterceptorAdapter {
-    private Logger log = null; //LoggerFactory.getLogger(ServerInterceptor.class);
+    private Logger log = LoggerFactory.getLogger(CCRequestValidatingInterceptor.class);
     private String myErrorMessageFormat = "ERROR - ${operationType} - ${idOrResourceName}";
 
     private FhirValidator fhirValidator;
@@ -36,7 +37,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
     public CCRequestValidatingInterceptor(Logger ourLog, FhirValidator fhirValidator, FhirContext ctx) {
         super();
-        this.log = ourLog;
+        //this.log = ourLog;
         this.fhirValidator = fhirValidator;
 
         this.ctx = ctx; /// FhirContext.forR4();
@@ -81,18 +82,19 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     // TODO add conversion to R4 here.  KGM March 2019
 
-                    VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
-                    IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+                    //VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+                    //IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
                     try {
-                        results = this.fhirValidator.validateWithResult(convertedResource);
+                        log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
+                        results = this.fhirValidator.validateWithResult(resource);
                     } catch (Exception val) {
                         log.error(val.getMessage());
                         return true;
                     }
 
-                    org.hl7.fhir.r4.model.OperationOutcome outcomer4 = (org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome();
+                    //OperationOutcome outcomeR4 = ;
 
-                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcomer4, null);
+                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome(), null);
 
                     if (!pass(outcome)) {
                         log.info("VALIDATION FAILED");

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class CareConnectProfileDbValidationSupport implements IValidationSupport {
+public class CareConnectProfileDbValidationSupportR3 implements IValidationSupport {
 
     // KGM 21st May 2018 Incorporated Tim Coates code to use UK FHIR Reference Servers.
 
@@ -55,13 +55,13 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileDbValidationSupport.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileDbValidationSupportR3.class);
 
     private Map<String, IBaseResource> cachedResource ;
 
     private String alternateServer;
 
-    public CareConnectProfileDbValidationSupport(final FhirContext r4Ctx, FhirContext stu3Ctx, String alternateServer) {
+    public CareConnectProfileDbValidationSupportR3(final FhirContext r4Ctx, FhirContext stu3Ctx, String alternateServer) {
         this.ctxR4 = r4Ctx;
         this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<String, IBaseResource>();
@@ -95,7 +95,6 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
 
     private void logT(String message,Object value) {
         log.warn(String.format(message, value));
-        System.out.printf(message,value);
     }
 
     @Override
@@ -310,7 +309,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
 
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
-    logD("CareConnect testIfConceptIsInList: {} code="+ theCode);
+    logT("CareConnect testIfConceptIsInList: {} code="+ theCode);
 
     String code = theCode;
     if (theCaseSensitive == false) {
@@ -321,17 +320,17 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
   }
 
   private CodeValidationResult testIfConceptIsInListInner(List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
-    logD("CareConnect testIfConceptIsInListInner: code=" + code);
+    logT("CareConnect testIfConceptIsInListInner: code=" + code);
     CodeValidationResult retVal = null;
     for (CodeSystem.ConceptDefinitionComponent next : conceptList) {
       // KGM
-      logD("CareConnect testIfConceptIsInListInner NextCode = "+next.getCode());
+      logT("CareConnect testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
       if (theCaseSensitive == false) {
         nextCandidate = nextCandidate.toUpperCase();
       }
       if (nextCandidate.equals(code)) {
-        logD("The Code "+code+" is in the list");
+        logD("Code "+code+" is in the list");
         retVal = new CodeValidationResult(next);
         break;
       }
