@@ -98,6 +98,7 @@ public class OperationOutcomeFactory {
             Boolean remove = false;
 
             // Not supporting SNOMED CT at present
+            /*
             if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
                 remove = true;
             }
@@ -105,6 +106,8 @@ public class OperationOutcomeFactory {
             if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
                 remove = true;
             }
+            */
+
             // Fault in profile?? Yes
 
             if (issue.getDiagnostics().contains("(fhirPath = true and (use memberOf 'https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-NameUse-1'))")) {

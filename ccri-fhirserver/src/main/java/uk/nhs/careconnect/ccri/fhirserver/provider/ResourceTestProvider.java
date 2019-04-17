@@ -79,7 +79,7 @@ public class ResourceTestProvider {
     public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @Validate.Profile String theProfile) {
-        log.info("Checking testresource" + validate_flag);
+
         MethodOutcome retVal = new MethodOutcome();
     	if(!validate_flag)
     	{
@@ -147,7 +147,7 @@ public class ResourceTestProvider {
 		IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
 
 
-        log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+        log.trace(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
 
 		ValidationResult results = val.validateWithResult(convertedResource);
 

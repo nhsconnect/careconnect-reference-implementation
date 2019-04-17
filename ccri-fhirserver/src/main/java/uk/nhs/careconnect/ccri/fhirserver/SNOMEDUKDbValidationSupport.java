@@ -88,13 +88,13 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    //logD("SNOMEDMOCK fetchCodeSystem "+theSystem);
+    //logD("SNOMEDValidator fetchCodeSystem "+theSystem);
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 
   private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
     synchronized (this) {
-      logD("SNOMEDMOCK fetchCodeSystemOrValueSet: system="+theSystem);
+      logD("SNOMEDValidator fetchCodeSystemOrValueSet: system="+theSystem);
 
       Map<String, CodeSystem> codeSystems = myCodeSystems;
       Map<String, ValueSet> valueSets = myValueSets;
@@ -171,7 +171,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
-    logD("SNOMEDMOCK Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
+    logD("SNOMEDValidator Loading CodeSystem/ValueSet from classpath: "+ theClasspath);
     InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
@@ -201,7 +201,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private void loadStructureDefinitions(FhirContext theContext, Map<String, StructureDefinition> theCodeSystems, String theClasspath) {
-    logD("SNOMEDMOCK Loading structure definitions from classpath: "+ theClasspath);
+    logD("SNOMEDValidator Loading structure definitions from classpath: "+ theClasspath);
     InputStream valuesetText = SNOMEDUKDbValidationSupport.class.getResourceAsStream(theClasspath);
     if (valuesetText != null) {
       InputStreamReader reader = new InputStreamReader(valuesetText, Charsets.UTF_8);
@@ -233,7 +233,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInList(String theCode, List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive) {
-    logD("SNOMEDMOCK testIfConceptIsInList: {} code="+ theCode);
+    logD("SNOMEDValidator testIfConceptIsInList: {} code="+ theCode);
 
 
     String code = theCode;
@@ -245,7 +245,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   }
 
   private CodeValidationResult testIfConceptIsInListInner(List<CodeSystem.ConceptDefinitionComponent> conceptList, boolean theCaseSensitive, String code) {
-    logD("SNOMEDMOCK testIfConceptIsInListInner: code=" + code);
+    logD("SNOMEDValidator testIfConceptIsInListInner: code=" + code);
 
     /* This is a mock and we will do a basic check (is the code Numeric!
     return positive if numeric else false */
@@ -261,7 +261,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
     /* Ignore the list for now KGM Dec 2017 TODO
     for (ConceptDefinitionComponent next : conceptList) {
       // KGM
-      logD("SNOMEDMOCK testIfConceptIsInListInner NextCode = "+next.getCode());
+      logD("SNOMEDValidator testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
 
 
@@ -275,7 +275,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
-    logD("SNOMEDMOCK validateCode system = "+ theCodeSystem);
+    logD("SNOMEDValidator validateCode system = "+ theCodeSystem);
 
     if (cs != null) {
       boolean caseSensitive = true;
@@ -290,7 +290,7 @@ public class SNOMEDUKDbValidationSupport implements IValidationSupport {
       }
     }
 
-    return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDMOCK Unknown code: " + theCodeSystem + " / " + theCode);
+    return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
 }

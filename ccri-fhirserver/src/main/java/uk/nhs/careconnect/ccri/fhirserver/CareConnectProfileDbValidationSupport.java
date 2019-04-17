@@ -134,7 +134,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
     public final CodeSystem fetchCodeSystem(
             final FhirContext theContext, final String theSystem) {
         logD(
-                "MyInstanceValidator asked to fetch Code System: %s%n",
+                "CareConnectValidator asked to fetch Code System: %s%n",
                 theSystem);
 
 
@@ -179,6 +179,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
     private Boolean isSupported(String theUrl) {
 
         // For extensions not contained in HAPI jar
+        /*
         if (theUrl.startsWith("http://hl7.org/fhir/StructureDefinition/")) {
             log.trace(" *** TEST ");
             return true;
@@ -189,23 +190,17 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
             return true;
         }
 
+        */
+        if (theUrl.startsWith("https://fhir.hl7.org.uk")) {
 
-
-        if (theUrl.startsWith("http://hl7.org/fhir/")
-                || theUrl.startsWith("https://hl7.org/fhir/")  ||
-                theUrl.startsWith("http://snomed.info/sct")
-
-                ) {
-            log.trace("  Returning null as it's an HL7 one");
-            return false;
+            return true;
         }
-        if (!theUrl.startsWith("https://fhir.hl7.org.uk")  &&
-                !theUrl.startsWith("https://fhir.nhs.uk")
-                ) {
+        if (theUrl.startsWith("https://fhir.nhs.uk")) {
 
-            return false;
+            return true;
         }
-        return true;
+
+        return false;
     }
 
     @Override
@@ -222,13 +217,13 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
         }
 
         logD(
-                "MyInstanceValidator asked to fetch Resource: %s%n",
+                "CareConnectValidator asked to fetch Resource: %s%n",
                 theUrl);
 
         if (cachedResource.get(theUrl) == null) {
             IBaseResource response = fetchURL(theUrl);
             if (response != null) {
-                log.trace("  About to parse response into a Resource");
+
                 cachedResource.put(theUrl, response);
                 logD("  Resource added to cache: %s%n", theUrl);
             } else {
@@ -255,7 +250,7 @@ public class CareConnectProfileDbValidationSupport implements IValidationSupport
             final FhirContext theCtx,
             final String theUrl) {
         logD(
-                "MyInstanceValidator asked to fetch StructureDefinition: %s%n",
+                "CareConnectValidator asked to fetch StructureDefinition: %s%n",
                 theUrl);
 
         if (!isSupported(theUrl)) {

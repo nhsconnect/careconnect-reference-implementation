@@ -111,6 +111,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
             switch (issue.getSeverity()) {
                 case ERROR:
                 case FATAL:
+                case WARNING:
                     return false;
             }
         }
