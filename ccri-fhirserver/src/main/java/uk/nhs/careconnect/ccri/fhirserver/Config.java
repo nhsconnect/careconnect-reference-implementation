@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.nhs.careconnect.ccri.fhirserver.provider.DatabaseBackedPagingProvider;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupportR3;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupportSTU3;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.SNOMEDUKDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.SNOMEDUKDbValidationSupportSTU3;
 
 
@@ -45,10 +43,11 @@ public class Config {
     @Value("${server.servlet.context-path}")
     private String serverPath;
 
+    /*
     @Qualifier("r4ctx")
     @Autowired()
     FhirContext r4ctx;
-
+*/
     @Autowired()
     FhirContext stu3ctx;
 
@@ -60,7 +59,7 @@ public class Config {
 
 
 
-        FhirValidator val = r4ctx.newValidator();
+        FhirValidator val = stu3ctx.newValidator();
 
         val.setValidateAgainstStandardSchema(true);
 
@@ -76,8 +75,8 @@ public class Config {
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(new DefaultProfileValidationSupport());
-        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(r4ctx, stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
-        validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportSTU3(r4ctx, stu3ctx,terminologyServer));
+        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(stu3ctx,"http://localhost:"+serverPort+serverPath+"/STU3"));
+        validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportSTU3(stu3ctx,terminologyServer));
 
         instanceValidator.setValidationSupport(validationSupportChain);
 

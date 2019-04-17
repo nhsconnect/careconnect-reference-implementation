@@ -32,13 +32,10 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
   private Map<String, StructureDefinition> myStructureDefinitions;
   private Map<String, ValueSet> myValueSets;
 
-  private FhirContext ctxR4 = null;
 
   private FhirContext ctxStu3 = null;
 
   IGenericClient client;
-
-  private IParser parserR4;
 
   private IParser parserStu3;
 
@@ -59,11 +56,11 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     //System.out.println(message);
   }
 
-  public SNOMEDUKDbValidationSupportSTU3(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
-    this.ctxR4 = r4Ctx;
+  public SNOMEDUKDbValidationSupportSTU3(FhirContext stu3Ctx, String terminologyServer) {
+
     this.ctxStu3 = stu3Ctx;
 
-    parserR4 = ctxR4.newXmlParser();
+
     parserStu3 = ctxStu3.newXmlParser();
     this.terminologyServer = terminologyServer;
     client = stu3Ctx.newRestfulGenericClient(terminologyServer);

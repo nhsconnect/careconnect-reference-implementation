@@ -40,7 +40,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
         //this.log = ourLog;
         this.fhirValidator = fhirValidator;
 
-        this.ctx = ctx; /// FhirContext.forR4();
+        this.ctx = ctx;
     }
 
     public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {

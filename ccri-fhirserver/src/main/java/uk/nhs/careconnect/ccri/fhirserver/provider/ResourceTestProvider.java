@@ -46,9 +46,6 @@ public class ResourceTestProvider {
     @Autowired()
     FhirContext ctx;
 
-    @Qualifier("r4ctx")
-    @Autowired()
-    FhirContext r4ctx;
 
  //   @Autowired
 //	FhirInstanceValidator instanceValidator;
@@ -142,7 +139,7 @@ public class ResourceTestProvider {
 */
 		ValidationResult results = val.validateWithResult(resource);
 
-		return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.dstu3.model.OperationOutcome) results.toOperationOutcome(), this.r4ctx);
+		return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome(), this.ctx);
 
 	}
 

@@ -37,7 +37,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     private static int SC_OK = 200;
 
-    private FhirContext ctxR4 = null;
+
 
     private FhirContext ctxStu3 = null;
 
@@ -58,11 +58,11 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     private String alternateServer;
 
-    public CareConnectProfileDbValidationSupportSTU3(final FhirContext r4Ctx, FhirContext stu3Ctx, String alternateServer) {
-        this.ctxR4 = r4Ctx;
+    public CareConnectProfileDbValidationSupportSTU3( FhirContext stu3Ctx, String alternateServer) {
+
         this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<String, IBaseResource>();
-        parserR4 = ctxR4.newXmlParser();
+
         parserStu3 = ctxStu3.newXmlParser();
         this.alternateServer = alternateServer;
     }
