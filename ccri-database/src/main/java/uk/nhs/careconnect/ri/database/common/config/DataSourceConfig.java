@@ -71,7 +71,11 @@ public class DataSourceConfig {
         final BasicDataSource dataSource = new BasicDataSource();
         System.out.println("In Data Source");
         dataSource.setDriverClassName(driverName);
-        dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
+        if (path != null && !path.isEmpty()) {
+            dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
+        } else {
+            dataSource.setUrl("jdbc:" + vendor + ":" + host);
+        }
 
         System.out.println(dataSource.getUrl());
         dataSource.setUsername(username);
