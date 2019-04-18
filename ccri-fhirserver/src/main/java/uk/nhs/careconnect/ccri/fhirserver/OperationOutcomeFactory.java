@@ -5,7 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.r4.model.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +37,17 @@ public class OperationOutcomeFactory {
         return exception;
     }
 
-    public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome, FhirContext ctx) {
+    public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome, FhirContext ctx) {
+
+        // This function converts from R4 to STU3 and then calls the STU3 version
+
         if (ctx != null) {
             log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));
         }
         OperationOutcome operationOutcome = new OperationOutcome();
         // TODO - Basic Conversion from r4 to stu3
         if (outcome.hasIssue()) {
-            for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+            for (org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
                 OperationOutcome.OperationOutcomeIssueComponent r3issue = operationOutcome.addIssue();
                 if (issue.hasCode()) {
                     switch(issue.getCode()) {
@@ -89,6 +92,8 @@ public class OperationOutcomeFactory {
         return removeUnsupportedIssues(operationOutcome);
     }
 
+
+
     public static OperationOutcome removeUnsupportedIssues(OperationOutcome outcome) {
 
 
@@ -97,16 +102,6 @@ public class OperationOutcomeFactory {
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
             Boolean remove = false;
 
-            // Not supporting SNOMED CT at present
-            /*
-            if (issue.getDiagnostics().contains("ValueSet http://snomed.info/sct not found")) {
-                remove = true;
-            }
-
-            if (issue.getDiagnostics().contains("http://snomed.info/sct")) {
-                remove = true;
-            }
-            */
 
             // Fault in profile?? Yes
 
@@ -129,10 +124,10 @@ public class OperationOutcomeFactory {
 
             //
             // Logged as issue https://github.com/jamesagnew/hapi-fhir/issues/1235
-           /* Now using r4 validator so not present
+           /* Fixed on r4 validator but remove if using stu3 validation */
            if (issue.getDiagnostics().contains("Entry isn't reachable by traversing from first Bundle entry")) {
                 remove = true;
-            } */
+            }
             if (remove) {
                 log.info("Stripped " + issue.getDiagnostics());
                 issueRemove.add(issue);

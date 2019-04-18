@@ -11,7 +11,7 @@ import ca.uhn.fhir.rest.server.method.ResourceParameter;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.commons.lang3.StringUtils;
-//import org.hl7.fhir.convertors.VersionConvertor_30_40;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.*;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -78,15 +78,12 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
                         resource = setProfile(resource);
                     }
 
-                    //
 
-                    // TODO add conversion to R4 here.  KGM March 2019
-
-                    //VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
-                    //IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+                    VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+                    IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
                     try {
-                        log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
-                        results = this.fhirValidator.validateWithResult(resource);
+                        log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+                        results = this.fhirValidator.validateWithResult(convertedResource);
                     } catch (Exception val) {
                         log.error(val.getMessage());
                         return true;
@@ -94,7 +91,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     //OperationOutcome outcomeR4 = ;
 
-                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome(), null);
+                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), null);
 
                     if (!pass(outcome)) {
                         log.info("VALIDATION FAILED");

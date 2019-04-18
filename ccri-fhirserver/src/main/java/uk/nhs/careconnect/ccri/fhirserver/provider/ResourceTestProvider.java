@@ -15,6 +15,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -46,10 +47,14 @@ public class ResourceTestProvider {
     @Autowired()
     FhirContext ctx;
 
+	@Qualifier("r4ctx")
+	@Autowired()
+	FhirContext r4ctx;
 
  //   @Autowired
 //	FhirInstanceValidator instanceValidator;
 
+	@Qualifier("fhirValidatorSTU3")
     @Autowired
     FhirValidator val;
     
@@ -130,16 +135,22 @@ public class ResourceTestProvider {
 	public OperationOutcome validateResource(IBaseResource resource) {
 
 
-/*
-		VersionConvertor_30_40 convertor = new ;
-		log.info(resource.getClass().getCanonicalName());
-		org.hl7.fhir.r4.model.Resource convertedResource = VersionConvertor_30_40.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
-		log.info(convertedResource.getClass().getCanonicalName());
-        log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
-*/
-		ValidationResult results = val.validateWithResult(resource);
+		if (true) {
+			// stu3
+			log.trace(this.ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
+			ValidationResult results = val.validateWithResult(resource);
+			return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome());
+		} else {
+			// r4
+			log.info(resource.getClass().getCanonicalName());
+			org.hl7.fhir.r4.model.Resource convertedResource = VersionConvertor_30_40.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+			log.info(convertedResource.getClass().getCanonicalName());
+			log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
 
-		return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome(), this.ctx);
+			ValidationResult results = val.validateWithResult(convertedResource);
+
+			return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), this.r4ctx);
+		}
 
 	}
 

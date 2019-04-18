@@ -264,7 +264,7 @@ public class FHIRServerHAPIConfig extends RestfulServer {
 
         if (validate) {
 
-            CCRequestValidatingInterceptor requestInterceptor = new CCRequestValidatingInterceptor(log, (FhirValidator) applicationContext.getBean("fhirValidator"), ctx);
+            CCRequestValidatingInterceptor requestInterceptor = new CCRequestValidatingInterceptor(log, (FhirValidator) applicationContext.getBean("fhirValidatorSTU3"), ctx);
 
             registerInterceptor(requestInterceptor);
         }

@@ -37,13 +37,10 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     private static int SC_OK = 200;
 
-
-
     private FhirContext ctxStu3 = null;
 
     IGenericClient client;
 
-    private IParser parserR4;
 
     private IParser parserStu3;
     /**
@@ -91,7 +88,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     }
 
     private void logT(String message,Object value) {
-        log.warn(String.format(message, value));
+        log.trace(String.format(message, value));
     }
 
     @Override
@@ -227,10 +224,13 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
         if (cachedResource.get(theUrl) == null) {
             IBaseResource response = fetchURL(theUrl);
+            if (response instanceof StructureDefinition) {
+                response = CareConnectProfileFix.fixProfile((StructureDefinition) response);
+            }
             if (response != null) {
 
                 cachedResource.put(theUrl, response);
-                logD("  Resource added to cache: %s%n", theUrl);
+                logT("  Resource added to cache: %s%n", theUrl);
             } else {
                 logW("  No data returned from: %s%n", theUrl);
             }
@@ -267,7 +267,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
             IBaseResource response = fetchURL(theUrl);
             log.trace("  About to parse response into a StructureDefinition");
 
-            cachedResource.put(theUrl, (StructureDefinition) response);
+            cachedResource.put(theUrl, CareConnectProfileFix.fixProfile((StructureDefinition) response));
             logD("  StructureDefinition now added to the cache: %s%n", theUrl);
         } else {
             logD("  This URL was already loaded: %s%n", theUrl);
@@ -419,7 +419,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
         conn.setRequestProperty("Accept", "application/xml");
         conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
         conn.setReadTimeout(READ_TIMEOUT_MILLIS);
-        logD("    Connected");
+
         try {
           conn.setRequestMethod("GET");
           try {
