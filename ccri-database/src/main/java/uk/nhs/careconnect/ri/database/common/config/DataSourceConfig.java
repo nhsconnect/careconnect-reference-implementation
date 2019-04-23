@@ -66,7 +66,7 @@ public class DataSourceConfig {
 
 
     //@Bean()
-    @Bean(destroyMethod = "")
+    @Bean(destroyMethod = "close")
     public DataSource dataSource() {
         final BasicDataSource dataSource = new BasicDataSource();
         System.out.println("In Data Source");
@@ -109,20 +109,14 @@ public class DataSourceConfig {
 
 
     @Bean
-    public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
-        final Database database = Database.valueOf(vendor.toUpperCase());
-        /*
-        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setShowSql(showSql);
-        vendorAdapter.setGenerateDdl(showDdl);
-        vendorAdapter.setDatabase(database);
-        */
+    public EntityManagerFactory entityManagerFactory() {
+      //  final Database database = Database.valueOf(vendor.toUpperCase());
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setPersistenceUnitName("CCRI_PERSISTENCE_UNIT");
        // factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("uk.nhs.careconnect.ri.database.entity");
-        factory.setDataSource(dataSource);
+        factory.setDataSource(dataSource());
         factory.setPersistenceProvider(new HibernatePersistenceProvider());
         factory.setJpaProperties(jpaProperties());
         factory.afterPropertiesSet();
@@ -143,21 +137,29 @@ public class DataSourceConfig {
         extraProperties.put("hibernate.cache.use_structured_entries", "false");
         extraProperties.put("hibernate.cache.use_minimal_puts", "false");
 
+
         extraProperties.put("hibernate.c3p0.min_size","5");
         extraProperties.put("hibernate.c3p0.max_size","20");
         extraProperties.put("hibernate.c3p0.timeout","300");
         extraProperties.put("hibernate.c3p0.max_statements","50");
         extraProperties.put("hibernate.c3p0.idle_test_period","3000");
+
         //extraProperties.put("hibernate.connection.isolation", String.valueOf(Connection.TRANSACTION_SERIALIZABLE));
 
         // 2017-10-10 KGM added to resolve mysql wait_timeout issue
         extraProperties.put("current_session_context_class","thread");
 
+/*
         extraProperties.put("hibernate.connection.driver_class",driverName);
-        extraProperties.put("hibernate.connection.url","jdbc:" + vendor + ":" + host + ":" + path);
+        if (path != null && !path.isEmpty()) {
+            extraProperties.put("hibernate.connection.url","jdbc:" + vendor + ":" + host + ":" + path);
+        } else {
+            extraProperties.put("hibernate.connection.url","jdbc:" + vendor + ":" + host);
+        }
         extraProperties.put("hibernate.connection.username",username);
         extraProperties.put("hibernate.connection.password",password);
-        extraProperties.put("hibernate.connection.provider_class","org.hibernate.connection.C3P0ConnectionProvider");
+*/
+       // extraProperties.put("hibernate.connection.provider_class","org.hibernate.connection.C3P0ConnectionProvider");
        // revisit for JMX monitoring extraProperties.put("hibernate.generate_statistics","true");
 
         return extraProperties;
