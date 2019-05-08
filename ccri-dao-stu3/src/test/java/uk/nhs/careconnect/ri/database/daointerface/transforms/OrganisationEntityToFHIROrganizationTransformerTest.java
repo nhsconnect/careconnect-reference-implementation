@@ -2,8 +2,8 @@ package uk.nhs.careconnect.ri.database.daointerface.transforms;
 
 import org.hl7.fhir.dstu3.model.Organization;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.dao.transforms.BaseAddressToFHIRAddressTransformer;
-import uk.nhs.careconnect.ri.dao.transforms.OrganisationEntityToFHIROrganizationTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.BaseAddressToFHIRAddressTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.OrganisationEntityToFHIROrganizationTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.transforms.builder.OrganisationEntityBuilder;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 

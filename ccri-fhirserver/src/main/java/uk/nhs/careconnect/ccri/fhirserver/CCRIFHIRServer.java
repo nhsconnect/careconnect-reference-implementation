@@ -21,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @SpringBootApplication(exclude = {ElasticsearchAutoConfiguration.class})
 @EnableTransactionManagement()
 @PropertySource("classpath:application.properties")
-@ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.dao"})
+@ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.stu3.dao","uk.nhs.careconnect.ri.r4.dao"})
 public class CCRIFHIRServer {
 
     @Autowired
@@ -55,9 +55,17 @@ public class CCRIFHIRServer {
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new FHIRServerHAPIConfig(context), "/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new FHIRServerHAPIConfigSTU3(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean ServletRegistrationR4Bean() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new FHIRServerHAPIConfigR4(context), "/R4/*");
+        registration.setName("FhirServletR4");
+        registration.setLoadOnStartup(2);
         return registration;
     }
 

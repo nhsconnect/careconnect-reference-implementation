@@ -37,6 +37,25 @@ public class OperationOutcomeFactory {
         return exception;
     }
 
+    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity code, org.hl7.fhir.r4.model.OperationOutcome.IssueType issueType) {
+        org.hl7.fhir.r4.model.CodeableConcept codeableConcept = new org.hl7.fhir.r4.model.CodeableConcept()
+                .setText(exception.getMessage());
+
+
+        org.hl7.fhir.r4.model.OperationOutcome operationOutcome = new org.hl7.fhir.r4.model.OperationOutcome();
+
+        operationOutcome.addIssue()
+                .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
+                .setCode(issueType)
+                .setDetails(codeableConcept);
+
+        // operationOutcome.getMeta()
+        //         .addProfile(SystemURL.SD_GPC_OPERATIONOUTCOME);
+
+        exception.setOperationOutcome(operationOutcome);
+        return exception;
+    }
+
     public static OperationOutcome removeUnsupportedIssues(org.hl7.fhir.r4.model.OperationOutcome outcome, FhirContext ctx) {
 
         // This function converts from R4 to STU3 and then calls the STU3 version

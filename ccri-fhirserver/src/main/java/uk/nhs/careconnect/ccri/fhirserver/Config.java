@@ -4,7 +4,6 @@ package uk.nhs.careconnect.ccri.fhirserver;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.validation.FhirValidator;
 
-import org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -13,11 +12,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.nhs.careconnect.ccri.fhirserver.provider.DatabaseBackedPagingProvider;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.DatabaseBackedPagingProvider;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupportR4;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileDbValidationSupportSTU3;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.SNOMEDUKDbValidationSupportR4;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.SNOMEDUKDbValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.SNOMEDUKDbValidationSupportSTU3;
 import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 
 

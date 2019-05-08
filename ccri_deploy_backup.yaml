@@ -146,7 +146,7 @@ spec:
             - name: ccri.edms.server.base
               value: "http://localhost:8181/ccri-document/STU3"
             - name: ccri.software.version
-              value: "3.7"
+              value: "3.8"
             - name: ccri.software.name
               value: "CCRI Messaging" 
             - name: ccri.server
