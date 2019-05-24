@@ -5,20 +5,16 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.NamingSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-import uk.nhs.careconnect.ri.stu3.dao.transforms.NamingSystemEntityToFHIRNamingSystemTransformer;
-import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
-import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.NamingSystemRepository;
-import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemEntity;
-import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemTelecom;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemUniqueId;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.NamingSystemEntityToFHIRNamingSystemTransformer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,20 +31,12 @@ public class NamingSystemDao implements NamingSystemRepository {
     @PersistenceContext
     EntityManager em;
 
-    @Autowired
-    private CodeSystemRepository codeSystemSvc;
-
-    @Autowired
-    @Lazy
-    ConceptRepository conceptDao;
 
     @Autowired
     private NamingSystemEntityToFHIRNamingSystemTransformer namingSystemEntityToFHIRValuesetTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(NamingSystemDao.class);
 
-    @Autowired
-    CodeSystemRepository codeSystemRepository;
 
     public void save(FhirContext ctx, NamingSystemEntity namingSystem)
     {
@@ -69,7 +57,7 @@ public class NamingSystemDao implements NamingSystemRepository {
 
     @Transactional
     @Override
-    public NamingSystem create(FhirContext ctx,  NamingSystem namingSystem) {
+    public NamingSystem create(FhirContext ctx, NamingSystem namingSystem) {
         this.namingSystem = namingSystem;
 
         NamingSystemEntity namingSystemEntity = null;
@@ -127,36 +115,15 @@ public class NamingSystemDao implements NamingSystemRepository {
             namingSystemEntity.setChangedDate(namingSystem.getDate());
         }
 
-        if (namingSystem.hasPublisher()) {
-            namingSystemEntity.setPublisher(namingSystem.getPublisher());
-        }
 
-        if (namingSystem.hasType()) {
-            ConceptEntity code = conceptDao.findAddCode(namingSystem.getType().getCoding().get(0));
-            if (code != null) {
-                namingSystemEntity.set_type(code);
-            } else {
-                log.info("Code: Missing System/Code = " +namingSystem.getType().getCoding().get(0).getSystem() + " code = " + namingSystem.getType().getCoding().get(0).getCode());
-
-                throw new IllegalArgumentException("Missing System/Code = " +namingSystem.getType().getCoding().get(0).getSystem() + " code = " + namingSystem.getType().getCoding().get(0).getCode());
-            }
-            namingSystemEntity.setChangedDate(namingSystem.getDate());
-        }
-
-        if (namingSystem.hasDescription())
-        {
-            namingSystemEntity.setDescription(namingSystem.getDescription());
-        }
-
-        if (namingSystem.hasUsage()) {
-            namingSystemEntity.setUsage(namingSystem.getUsage());
-        }
 
         if (namingSystem.hasReplacedBy()) {
             NamingSystemEntity replacedBy = readEntity(ctx, new IdType(namingSystem.getReplacedBy().getReference()));
             namingSystemEntity.setReplacedBy(replacedBy);
         }
 
+        String resource = ctx.newJsonParser().encodeResourceToString(namingSystem);
+        namingSystemEntity.setResource(resource);
 
 
         log.trace("Call em.persist NamingSystemEntity");
@@ -164,32 +131,8 @@ public class NamingSystemDao implements NamingSystemRepository {
 
         //Created the NamingSystem so add the sub concepts
 
-        for (NamingSystemTelecom telcom : namingSystemEntity.getContacts()) {
-            em.remove(telcom);
-        }
-        namingSystemEntity.setContacts(new ArrayList<>());
 
-        for (ContactDetail contact : namingSystem.getContact()) {
-            for (ContactPoint contactPoint : contact.getTelecom()) {
-                NamingSystemTelecom telecom = new NamingSystemTelecom();
-                telecom.setNamingSystem(namingSystemEntity);
-                if (contactPoint.hasSystem()) {
-                    telecom.setSystem(contactPoint.getSystem());
-                }
-                if (contactPoint.hasValue()) {
-                    telecom.setValue(contactPoint.getValue());
-                }
-                if (contactPoint.hasUse()) {
-                    telecom.setTelecomUse(contactPoint.getUse());
-                }
-                namingSystemEntity.getContacts().add(telecom);
-                em.persist(telecom);
-            }
-        }
 
-        for (NamingSystemUniqueId uniqueId : namingSystemEntity.getNamingSystemUniqueIds()) {
-            em.remove(uniqueId);
-        }
         namingSystemEntity.setNamingSystemUniqueIds(new ArrayList<>());
         log.trace("NamingSystem = "+namingSystem.getUrl());
         if (namingSystem.hasUniqueId()) {
@@ -202,7 +145,7 @@ public class NamingSystemDao implements NamingSystemRepository {
                     namingSystemUniqueId.setIdentifierType(component.getType());
                 }
                 if (component.hasValue()) {
-                    namingSystemUniqueId.set_value(component.getValue());
+                    namingSystemUniqueId.setValue(component.getValue());
                 }
                 if (component.hasPreferred()) {
                     namingSystemUniqueId.setPreferred(component.getPreferred());
@@ -227,17 +170,7 @@ public class NamingSystemDao implements NamingSystemRepository {
         log.debug("Called PERSIST id="+namingSystemEntity.getId().toString());
         namingSystem.setId(namingSystemEntity.getId().toString());
 
-        NamingSystem newNamingSystem = null;
-        if (namingSystemEntity != null) {
-            newNamingSystem = namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity);
-            String resource = ctx.newJsonParser().encodeResourceToString(newNamingSystem);
-            if (resource.length() < 10000) {
-                namingSystemEntity.setResource(resource);
-                em.persist(namingSystemEntity);
-            }
-
-        }
-        return newNamingSystem;
+        return namingSystem;
     }
 
 
@@ -267,7 +200,7 @@ public class NamingSystemDao implements NamingSystemRepository {
 
         return namingSystemEntity == null
                 ? null
-                : namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity);
+                : namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity, ctx);
 
     }
 
@@ -287,7 +220,7 @@ public class NamingSystemDao implements NamingSystemRepository {
                 results.add((NamingSystem) ctx.newJsonParser().parseResource(namingSystemEntity.getResource()));
             } else {
 
-                NamingSystem namingSystem = namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity);
+                NamingSystem namingSystem = namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity, ctx);
                 String resource = ctx.newJsonParser().encodeResourceToString(namingSystem);
                 if (resource.length() < 10000) {
                     namingSystemEntity.setResource(resource);
@@ -339,7 +272,7 @@ public class NamingSystemDao implements NamingSystemRepository {
 
             Join<NamingSystem, NamingSystemUniqueId> join = root.join("namingSystemUniqueIds", JoinType.LEFT);
             Predicate p =
-                    builder.equal(join.get("_value"),unique.getValue());
+                    builder.equal(join.get("value"),unique.getValue());
 
             predList.add(p);
         }

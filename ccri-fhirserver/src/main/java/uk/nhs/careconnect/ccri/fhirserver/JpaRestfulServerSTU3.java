@@ -25,16 +25,16 @@ import java.util.List;
 import java.util.TimeZone;
 
 @WebServlet(urlPatterns = { "/ccri-fhir/*" }, displayName = "FHIR Server")
-public class FHIRServerHAPIConfigSTU3 extends RestfulServer {
+public class JpaRestfulServerSTU3 extends RestfulServer {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FHIRServerHAPIConfigSTU3.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JpaRestfulServerSTU3.class);
 
   
 
     private ApplicationContext applicationContext;
 
-    FHIRServerHAPIConfigSTU3(ApplicationContext context) {
+    JpaRestfulServerSTU3(ApplicationContext context) {
         this.applicationContext = context;
     }
 

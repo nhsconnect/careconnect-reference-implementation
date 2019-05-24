@@ -15,7 +15,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 import uk.nhs.careconnect.ccri.fhirserver.oauth2.OAuth2Interceptor;
 import uk.nhs.careconnect.ccri.fhirserver.r4.provider.CareConnectServerConformanceR4Provider;
-import uk.nhs.careconnect.ccri.fhirserver.r4.provider.ObservationDefinitionProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,16 +24,16 @@ import java.util.List;
 import java.util.TimeZone;
 
 @WebServlet(urlPatterns = { "/ccri-fhir/*" }, displayName = "FHIR Server")
-public class FHIRServerHAPIConfigR4 extends RestfulServer {
+public class JpaRestfulServerR4 extends RestfulServer {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FHIRServerHAPIConfigR4.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JpaRestfulServerR4.class);
 
 
 
     private ApplicationContext applicationContext;
 
-    FHIRServerHAPIConfigR4(ApplicationContext context) {
+    JpaRestfulServerR4(ApplicationContext context) {
         this.applicationContext = context;
     }
 

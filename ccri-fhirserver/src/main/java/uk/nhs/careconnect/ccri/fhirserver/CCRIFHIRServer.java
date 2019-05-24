@@ -55,7 +55,7 @@ public class CCRIFHIRServer {
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new FHIRServerHAPIConfigSTU3(context), "/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new JpaRestfulServerSTU3(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
         return registration;
@@ -63,7 +63,7 @@ public class CCRIFHIRServer {
 
     @Bean
     public ServletRegistrationBean ServletRegistrationR4Bean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new FHIRServerHAPIConfigR4(context), "/R4/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new JpaRestfulServerR4(context), "/R4/*");
         registration.setName("FhirServletR4");
         registration.setLoadOnStartup(2);
         return registration;

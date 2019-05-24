@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ri.stu3.dao;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Identifier;
 import uk.nhs.careconnect.ri.database.entity.BaseIdentifier;
+import uk.nhs.careconnect.ri.database.entity.BaseIdentifier2;
 
 public final class daoutils {
 
@@ -29,6 +30,16 @@ public final class daoutils {
             }
 
         return null;
+    }
+
+    public static Identifier getIdentifierStrict(BaseIdentifier2 baseIdentifier, Identifier identifier) {
+        if (baseIdentifier.getSystem() != null) identifier.setSystem(baseIdentifier.getSystemValue());
+        if (baseIdentifier.getValue() != null) identifier.setValue(baseIdentifier.getValue());
+        if (baseIdentifier.getUse() != null) {
+            identifier.setUse(baseIdentifier.getIdentifierUse());
+        }
+
+        return identifier;
     }
 
     public static Identifier getIdentifier(BaseIdentifier baseIdentifier, Identifier identifier) {
