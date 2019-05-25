@@ -10,6 +10,7 @@ import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileFix;
 
 import java.io.BufferedReader;
@@ -57,13 +58,13 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     private String alternateServer;
 
-    public CareConnectProfileDbValidationSupportSTU3( FhirContext stu3Ctx, String alternateServer) {
+    public CareConnectProfileDbValidationSupportSTU3( FhirContext stu3Ctx) {
 
         this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<String, IBaseResource>();
 
         parserStu3 = ctxStu3.newXmlParser();
-        this.alternateServer = alternateServer;
+        this.alternateServer = HapiProperties.getTerminologyServerSecondary();
     }
 
       private void logD(String message) {

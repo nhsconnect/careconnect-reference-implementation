@@ -39,26 +39,6 @@ public class JpaRestfulServerR4 extends RestfulServer {
 
     private FhirContext ctx;
 
-    @Value("${ccri.role}")
-    private String ccri_role;
-
-    @Value("${ccri.software.name}")
-    private String softwareName;
-
-    @Value("${ccri.software.version}")
-    private String softwareVersion;
-
-    @Value("${ccri.server}")
-    private String server;
-
-    @Value("${ccri.server.baseR4}")
-    private String serverBase;
-
-    @Value("${ccri.validate_flag}")
-    private Boolean validate;
-
-    @Value("${ccri.oauth2}")
-    private boolean oauth2;
 
     @Value("${server.port}")
     private String serverPort;
@@ -80,7 +60,7 @@ public class JpaRestfulServerR4 extends RestfulServer {
         // Get the spring context from the web container (it's declared in web.xml)
         FhirVersionEnum fhirVersion = FhirVersionEnum.R4;
         setFhirContext(new FhirContext(fhirVersion));
-
+        String serverBase = HapiProperties.getServerAddress();
         if (serverBase != null && !serverBase.isEmpty()) {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverBase));
         }
@@ -108,9 +88,10 @@ public class JpaRestfulServerR4 extends RestfulServer {
         // Replace built in conformance provider (CapabilityStatement)
         setServerConformanceProvider(new CareConnectServerConformanceR4Provider());
 
-        setServerName(softwareName);
-        setServerVersion(softwareVersion);
-        setImplementationDescription(server);
+        setServerName(HapiProperties.getServerName());
+        setServerVersion(HapiProperties.getSoftwareVersion());
+        setImplementationDescription(HapiProperties.getSoftwareImplementationDesc());
+
 
         ServerInterceptor loggingInterceptor = new ServerInterceptor(log);
         registerInterceptor(loggingInterceptor);
@@ -133,13 +114,13 @@ public class JpaRestfulServerR4 extends RestfulServer {
 
         // Create the interceptor and register it
         CorsInterceptor interceptor = new CorsInterceptor(config);
-        getInterceptorService().registerInterceptor(interceptor);
+        registerInterceptor(interceptor);
 
         ServerInterceptor gatewayInterceptor = new ServerInterceptor(log);
-        if (oauth2) {
-            getInterceptorService().registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter
+        if (HapiProperties.getValidationFlag()) {
+            registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter
         }
-        getInterceptorService().registerInterceptor(gatewayInterceptor);
+        registerInterceptor(gatewayInterceptor);
 
         FifoMemoryPagingProvider pp = new FifoMemoryPagingProvider(10);
         pp.setDefaultPageSize(10);
@@ -152,7 +133,7 @@ public class JpaRestfulServerR4 extends RestfulServer {
         ctx = getFhirContext();
 
 
-        getInterceptorService().registerInterceptor( new ResponseHighlighterInterceptor());
+        registerInterceptor( new ResponseHighlighterInterceptor());
 
         // Remove as believe due to issues on docker ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
     }
@@ -162,7 +143,7 @@ public class JpaRestfulServerR4 extends RestfulServer {
     @Override
     public String toString() {
         return "HAPIRestfulConfig{" +
-                "serverBase='" + serverBase + '\'' +
+                "serverBase='" + HapiProperties.getServerBase() + '\'' +
                 '}';
     }
 }

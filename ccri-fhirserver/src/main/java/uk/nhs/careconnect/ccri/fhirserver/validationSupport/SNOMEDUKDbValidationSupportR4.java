@@ -12,6 +12,7 @@ import org.hl7.fhir.r4.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.terminologies.ValueSetExpander;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.util.ArrayList;
@@ -60,14 +61,19 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
     //System.out.println(message);
   }
 
-  public SNOMEDUKDbValidationSupportR4(final FhirContext r4Ctx, FhirContext stu3Ctx, String terminologyServer) {
+  public SNOMEDUKDbValidationSupportR4(final FhirContext r4Ctx, FhirContext stu3Ctx) {
     this.ctxR4 = r4Ctx;
     this.ctxStu3 = stu3Ctx;
 
     parserR4 = ctxR4.newXmlParser();
     parserStu3 = ctxStu3.newXmlParser();
-    this.terminologyServer = terminologyServer;
-    client = stu3Ctx.newRestfulGenericClient(terminologyServer);
+    this.terminologyServer = HapiProperties.getTerminologyServer();
+    log.info(this.terminologyServer);
+    try {
+    client = ctxStu3.newRestfulGenericClient(terminologyServer);
+  } catch (Exception ex){
+        log.error(ex.getMessage());
+    }
   }
   @Override
   public ValueSetExpander.ValueSetExpansionOutcome expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {

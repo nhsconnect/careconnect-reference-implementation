@@ -1,6 +1,4 @@
-package uk.nhs.careconnect.ri.database.common.config;
-
-import javax.sql.DataSource;
+package uk.nhs.careconnect.ccri.fhirserver;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.flywaydb.core.Flyway;
@@ -13,13 +11,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
@@ -31,32 +29,7 @@ import java.util.Properties;
                        basePackages = "uk.nhs.careconnect.ri.database")
 public class DataSourceConfig {
 
-    @Value("${datasource.vendor:h2}")
-    private String vendor;
 
-    @Value("${datasource.host:mem}")
-    private String host;
-
-    @Value("${datasource.path:db1}")
-    private String path;
-
-    @Value("${datasource.username:}")
-    private String username;
-
-    @Value("${datasource.password:}")
-    private String password;
-
-    @Value("${datasource.showSql:false}")
-    private boolean showSql;
-
-    @Value("${datasource.showDdl:true}")
-    private boolean showDdl;
-
-    @Value("${datasource.dialect:org.hibernate.dialect.DerbyTenSevenDialect}")
-    private String dialect;
-
-    @Value("${datasource.driver:org.apache.derby.jdbc.EmbeddedDriver}")
-    private String driverName;
 
     @Value("${flyway.locations}")
     private String flywayLocations;
@@ -70,16 +43,13 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         final BasicDataSource dataSource = new BasicDataSource();
         System.out.println("In Data Source");
-        dataSource.setDriverClassName(driverName);
-        if (path != null && !path.isEmpty()) {
-            dataSource.setUrl("jdbc:" + vendor + ":" + host + ":" + path);
-        } else {
-            dataSource.setUrl("jdbc:" + vendor + ":" + host);
-        }
+        dataSource.setDriverClassName(HapiProperties.getDataSourceDriver());
+
+        dataSource.setUrl(HapiProperties.getDataSourceUrl());
 
         System.out.println(dataSource.getUrl());
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
+        dataSource.setUsername(HapiProperties.getDataSourceUsername());
+        dataSource.setPassword(HapiProperties.getDataSourcePassword());
 
         dataSource.setValidationQuery("select 1 as dbcp_connection_test");
 
@@ -126,9 +96,9 @@ public class DataSourceConfig {
     }
     private Properties jpaProperties() {
         Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", dialect);
+        extraProperties.put("hibernate.dialect", HapiProperties.getHibernateDialect());
         extraProperties.put("hibernate.format_sql", "true");
-        extraProperties.put("hibernate.show_sql", showSql);
+        extraProperties.put("hibernate.show_sql", HapiProperties.getHibernateShowSql());
         extraProperties.put("hibernate.hbm2ddl.auto", "update");
         extraProperties.put("hibernate.jdbc.batch_size", "20");
         extraProperties.put("hibernate.jdbc.time_zone","UTC");

@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PersonName",indexes =
         {
-            @Index(name = "IDX_PERSON_FAMILY", columnList="family_name")
-                , @Index(name = "IDX_PERSON_GIVEN", columnList="given_name")
+            @Index(name = "IDX_MPIPERSON_FAMILY", columnList="family_name")
+                , @Index(name = "IDX_MPIPERSON_GIVEN", columnList="given_name")
         })
 public class PersonName extends BaseHumanName {
 

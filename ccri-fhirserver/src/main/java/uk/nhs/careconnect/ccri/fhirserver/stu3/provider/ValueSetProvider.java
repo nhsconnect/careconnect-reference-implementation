@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
@@ -55,12 +56,6 @@ public class ValueSetProvider implements ICCResourceProvider {
     
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
-    
-    @Value("${ccri.valueSetHost}")
-	private String valueSetHost;
-
-    @Value("${ccri.terminologyServer}")
-    private String terminologyServer;
 
     @Override
     public Class<ValueSet> getResourceType() {
@@ -175,7 +170,7 @@ public class ValueSetProvider implements ICCResourceProvider {
                        // http://hl7.org/fhir/snomedct.html
 
                        if (client == null) {
-                           client = ctx.newRestfulGenericClient(terminologyServer);
+                           client = ctx.newRestfulGenericClient(HapiProperties.getTerminologyServer());
                        }
                        for (ValueSet.ConceptSetFilterComponent filter : include.getFilter()) {
                            if (filter.hasOp()) {
@@ -255,12 +250,12 @@ public class ValueSetProvider implements ICCResourceProvider {
 
     ) throws Exception {
 
-    	System.out.println("getting value sets" + valueSetHost);
+    	System.out.println("getting value sets" + HapiProperties.getTerminologyServerSecondary());
     	
     	HttpClient client1 = getHttpClient();
         HttpGet request = null;
     	if (valueSetId != null) {
-    	    request = new HttpGet(valueSetHost);
+    	    request = new HttpGet(HapiProperties.getTerminologyServerSecondary()+"ValueSet/");
         }
         if (valueSetQuery != null) {
             request = new HttpGet(valueSetQuery.getValue());

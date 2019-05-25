@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
 import java.io.InputStreamReader;
@@ -33,15 +34,9 @@ import java.io.Reader;
 @Component
 public class ResourceTestProvider {
 
-	@Value("${ccri.validate_flag}")
-	private Boolean validate_flag;
 
 	@Value("${ccri.validate_use_tkw}")
 	private Boolean tkw_flag;
-
-
-	@Value("${ccri.tkw_server}")
-	private String tkw_server;
 
 	@Qualifier("stu3ctx")
     @Autowired()
@@ -74,7 +69,7 @@ public class ResourceTestProvider {
                                   @Validate.Profile String theProfile) {
 
         MethodOutcome retVal = new MethodOutcome();
-    	if(!validate_flag)
+    	if(!HapiProperties.getValidationFlag())
     	{
     	//	MethodOutcome retVal = new MethodOutcome();
     		retVal.setOperationOutcome(null);
@@ -92,7 +87,7 @@ public class ResourceTestProvider {
 		if (tkw_flag) {
 
 			final HttpClient client1 = getHttpClient();
-			final HttpPost request = new HttpPost(tkw_server);
+			final HttpPost request = new HttpPost(HapiProperties.getValidationServer());
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
 			request.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
 			try {

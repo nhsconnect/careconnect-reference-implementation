@@ -26,7 +26,7 @@ public class CCRIFHIRServer {
 
     @Autowired
     ApplicationContext context;
-
+/*
     @Value("${ccri.software.version}")
     String softwareVersion;
 
@@ -41,7 +41,7 @@ public class CCRIFHIRServer {
 
     @Value("${ccri.server.base}")
     String serverBase;
-
+*/
     public static void main(String[] args) {
 
         System.setProperty("hawtio.authenticationEnabled", "false");
@@ -72,11 +72,7 @@ public class CCRIFHIRServer {
     @Bean(name="stu3ctx")
     @Primary
     public FhirContext getStu3FhirContext() {
-        System.setProperty("ccri.server.base",this.serverBase);
-        System.setProperty("ccri.software.name",this.softwareName);
-        System.setProperty("ccri.software.version",this.softwareVersion);
-        System.setProperty("ccri.guide",this.guide);
-        System.setProperty("ccri.server",this.server);
+
         return FhirContext.forDstu3();
     }
 
