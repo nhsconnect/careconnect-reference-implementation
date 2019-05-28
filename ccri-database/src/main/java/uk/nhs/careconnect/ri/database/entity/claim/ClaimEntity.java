@@ -61,8 +61,12 @@ public class ClaimEntity extends BaseResource {
     private Date periodEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "ENTERED_PRACTITIONER",foreignKey= @ForeignKey(name="FK_ENTERED_PRACTITIONER_ID"))
-    private PractitionerEntity enteredPractitioner;
+    @JoinColumn (name = "ENTERER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_ENTERED_PRACTITIONER_ID"))
+    private PractitionerEntity entererPractitioner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "ENTERER_PATIENT",foreignKey= @ForeignKey(name="FK_ENTERED_PATIENT_ID"))
+    private PatientEntity entererPatient;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "INSURER_ORGANISATION",foreignKey= @ForeignKey(name="FK_INSURER_ORGANISATION_ID"))
@@ -182,16 +186,26 @@ public class ClaimEntity extends BaseResource {
         this.periodEnd = periodEnd;
     }
 
-    public PractitionerEntity getEnteredPractitioner() {
-        return enteredPractitioner;
-    }
 
-    public void setEnteredPractitioner(PractitionerEntity enteredPractitioner) {
-        this.enteredPractitioner = enteredPractitioner;
-    }
 
     public OrganisationEntity getInsurerOrganisation() {
         return insurerOrganisation;
+    }
+
+    public PractitionerEntity getEntererPractitioner() {
+        return entererPractitioner;
+    }
+
+    public void setEntererPractitioner(PractitionerEntity entererPractitioner) {
+        this.entererPractitioner = entererPractitioner;
+    }
+
+    public PatientEntity getEntererPatient() {
+        return entererPatient;
+    }
+
+    public void setEntererPatient(PatientEntity entererPatient) {
+        this.entererPatient = entererPatient;
     }
 
     public void setInsurerOrganisation(OrganisationEntity insurerOrganisation) {
