@@ -1,7 +1,9 @@
 package uk.nhs.careconnect.ri.stu3.dao;
 
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,5 +127,12 @@ public class LibDao {
         }
 
         return systemEntity;
+    }
+
+    public Extension getResourceTypeExt(String resourceType) {
+        UriType uri = new UriType();
+        uri.setValue(resourceType);
+        Extension uriExt = new Extension().setUrl("http://fhir.gov.uk/StructureDefinition/resourceType");
+        return uriExt;
     }
 }

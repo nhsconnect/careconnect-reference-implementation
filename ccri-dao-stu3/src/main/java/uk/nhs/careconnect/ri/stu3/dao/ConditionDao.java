@@ -105,6 +105,16 @@ public class ConditionDao implements ConditionRepository {
     }
 
     @Override
+    public ConditionEntity readEntity(FhirContext ctx, TokenParam identifier) {
+
+        List<ConditionEntity> conditions = searchEntity(ctx, null, null, null,null,identifier,null);
+        for (ConditionEntity condition : conditions) {
+            return condition;
+        }
+        return null;
+    }
+
+    @Override
     public Condition create(FhirContext ctx,Condition condition, IdType theId, String theConditional) throws OperationOutcomeException
     {
 

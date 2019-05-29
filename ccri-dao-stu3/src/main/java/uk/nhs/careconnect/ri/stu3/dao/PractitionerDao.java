@@ -16,6 +16,7 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.OrganisationRepository;
 import uk.nhs.careconnect.ri.database.daointerface.PractitionerRepository;
+import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.stu3.dao.transforms.PractitionerEntityToFHIRPractitionerTransformer;
 import uk.nhs.careconnect.ri.database.entity.AddressEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.*;
@@ -87,6 +88,17 @@ public class PractitionerDao implements PractitionerRepository {
         PractitionerEntity practitionerEntity = (PractitionerEntity) em.find(PractitionerEntity.class,Long.parseLong(theId.getIdPart()));
 
         return practitionerEntity;
+    }
+
+    @Override
+    public PractitionerEntity readEntity(FhirContext ctx, TokenParam identifier) {
+
+        List<PractitionerEntity> pracs= searchPractitionerEntity(ctx, identifier, null, null,null);
+        for (PractitionerEntity prac : pracs) {
+            return prac;
+        }
+
+        return null;
     }
 
     @Override

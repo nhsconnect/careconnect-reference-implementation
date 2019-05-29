@@ -21,6 +21,8 @@ public interface PractitionerRepository extends BaseRepository<PractitionerEntit
 
     PractitionerEntity readEntity(FhirContext ctx, IdType theId);
 
+    PractitionerEntity readEntity(FhirContext ctx,TokenParam identifier);
+
     Practitioner create(FhirContext ctx, Practitioner practitioner, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 

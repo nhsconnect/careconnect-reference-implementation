@@ -66,7 +66,7 @@ public class DataSourceConfig {
         log.info("FLYWAY Locations = "+ flywayLocations);
         flyway.setLocations(flywayLocations);
         flyway.setDataSource(dataSource());
-       // flyway.repair();
+        flyway.repair();
         return flyway;
     }
 

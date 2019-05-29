@@ -96,6 +96,18 @@ public class OrganisationDao implements OrganisationRepository {
     }
     }
 
+    @Override
+    public OrganisationEntity readEntity(FhirContext ctx, TokenParam identifier) {
+        OrganisationEntity organisationEntity = null;
+
+        List<OrganisationEntity> orgs= searchOrganizationEntity(ctx, identifier, null, null,null);
+        for (OrganisationEntity org : orgs) {
+            return org;
+        }
+
+        return null;
+    }
+
     private String decode(String value) {
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());

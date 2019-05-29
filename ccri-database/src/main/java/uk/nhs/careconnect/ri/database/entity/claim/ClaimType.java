@@ -12,8 +12,7 @@ public class ClaimType extends BaseCodeableConcept {
     @Column(name= "CLAIM_TYPE_ID")
     private Long Id;
 
-    @OneToOne
-    @MapsId("_ID")
+    @OneToOne(mappedBy = "type")
     private ClaimEntity claim;
 
     public void setId(Long id) {

@@ -13,8 +13,7 @@ public class ClaimSubType extends BaseCodeableConcept {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @OneToOne
-    @MapsId("_ID")
+    @OneToOne(mappedBy = "subType")
     private ClaimEntity claim;
 
     public void setId(Long id) {

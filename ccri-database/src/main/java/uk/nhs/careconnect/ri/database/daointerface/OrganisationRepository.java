@@ -23,6 +23,8 @@ public interface OrganisationRepository extends BaseRepository<OrganisationEntit
 
     OrganisationEntity readEntity(FhirContext ctx,IdType theId);
 
+    OrganisationEntity readEntity(FhirContext ctx,TokenParam identifier);
+
 
    List<Organization> searchOrganization (FhirContext ctx,
             @OptionalParam(name = Organization.SP_IDENTIFIER) TokenParam identifier,

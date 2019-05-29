@@ -34,10 +34,12 @@ public class ClaimEntity extends BaseResource {
     private Claim.ClaimStatus status;
 
 
-    @OneToOne(mappedBy = "claim", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "TYPE_ID",foreignKey= @ForeignKey(name="FK_CLAIM_TYPE_ID"))
     private ClaimType type;
 
-    @OneToOne(mappedBy = "claim", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "SUB_TYPE_ID",foreignKey= @ForeignKey(name="FK_CLAIM_SUB_TYPE_ID"))
     private ClaimSubType subType;
 
     @Enumerated(EnumType.ORDINAL)
@@ -80,7 +82,8 @@ public class ClaimEntity extends BaseResource {
     @JoinColumn (name = "PROVIDER_ORGANISATION",foreignKey= @ForeignKey(name="FK_PROVIDER_ORGANISATION_ID"))
     private OrganisationEntity providerOrganisation;
 
-    @OneToOne(mappedBy = "claim", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "PRIORITY_ID",foreignKey= @ForeignKey(name="FK_CLAIM_PRIORITY_ID"))
     private ClaimPriority priority;
 
     @OneToMany(mappedBy="claim", targetEntity=ClaimRelated.class)
@@ -90,7 +93,8 @@ public class ClaimEntity extends BaseResource {
     @OneToMany(mappedBy="claim", targetEntity=ClaimSupportingInformation.class)
     private Set<ClaimSupportingInformation> supportingInfos = new HashSet<>();
 
-
+    @OneToMany(mappedBy="claim", targetEntity=ClaimDiagnosis.class)
+    private Set<ClaimDiagnosis> diagnoses = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -250,5 +254,13 @@ public class ClaimEntity extends BaseResource {
 
     public void setSupportingInfos(Set<ClaimSupportingInformation> supportingInfos) {
         this.supportingInfos = supportingInfos;
+    }
+
+    public Set<ClaimDiagnosis> getDiagnoses() {
+        return diagnoses;
+    }
+
+    public void setDiagnoses(Set<ClaimDiagnosis> diagnoses) {
+        this.diagnoses = diagnoses;
     }
 }

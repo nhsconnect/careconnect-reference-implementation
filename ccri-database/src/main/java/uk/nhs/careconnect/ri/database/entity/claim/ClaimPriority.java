@@ -13,8 +13,7 @@ public class ClaimPriority extends BaseCodeableConcept {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @OneToOne
-    @MapsId("_ID")
+    @OneToOne(mappedBy = "priority")
     private ClaimEntity claim;
 
     public void setId(Long id) {

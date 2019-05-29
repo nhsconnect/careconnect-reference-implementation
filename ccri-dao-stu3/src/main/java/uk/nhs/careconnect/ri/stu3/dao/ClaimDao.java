@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.Claim;
 import org.slf4j.Logger;
@@ -12,15 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.daointerface.ClaimRepository;
-import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.database.daointerface.PatientRepository;
-import uk.nhs.careconnect.ri.database.daointerface.PractitionerRepository;
-import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
-import uk.nhs.careconnect.ri.database.entity.claim.ClaimIdentifier;
-import uk.nhs.careconnect.ri.database.entity.claim.ClaimType;
+import uk.nhs.careconnect.ri.database.daointerface.*;
+import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanCondition;
+import uk.nhs.careconnect.ri.database.entity.claim.*;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
+import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
+import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 import uk.nhs.careconnect.ri.stu3.dao.transforms.ClaimEntityToFHIRClaim;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,7 +50,13 @@ public class ClaimDao implements ClaimRepository {
     PatientRepository patientDao;
 
     @Autowired
+    OrganisationRepository organisationDao;
+
+    @Autowired
     PractitionerRepository practitionerDao;
+
+    @Autowired
+    ConditionRepository conditionDao;
 
 
     @Autowired
@@ -107,6 +113,8 @@ public class ClaimDao implements ClaimRepository {
             }
             if (patientEntity != null ) {
                 claimEntity.setPatient(patientEntity);
+            } else {
+                throw new ResourceNotFoundException("Patient reference was not found");
             }
         }
 
@@ -123,20 +131,81 @@ public class ClaimDao implements ClaimRepository {
             }
         }
 
+        if (claim.hasCreated()) {
+            claimEntity.setCreated(claim.getCreated());
+        }
+        if (claim.hasExtension()) {
+            log.info("has Extension");
+            for (Extension ext : claim.getExtension()) {
+                log.info(ext.getUrl());
+                if (ext.getUrl().equals("https://fhir.gov.uk/Extension/claimEntererPatient")) {
+                    log.info("processing EntererPatient Extension");
+
+                    Reference ref = (Reference) ext.getValue();
+                    patientEntity = null;
+                    if (ref.hasReference()) {
+                        log.trace(ref.getReference());
+                        patientEntity = patientDao.readEntity(ctx, new IdType(ref.getReference()));
+
+                    }
+                    if (ref.hasIdentifier()) {
+                        // This copes with reference.identifier param (a short cut?)
+                        log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+                        patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                    }
+                    if (patientEntity != null) {
+                        claimEntity.setEntererPatient(patientEntity);
+                    }
+                }
+            }
+        }
+        if (claim.hasEnterer() ) {
+
+                Reference ref = claim.getEnterer();
+                PractitionerEntity practitionerEntity = null;
+                if (ref.hasReference()) {
+                    log.trace(ref.getReference());
+                    practitionerEntity = practitionerDao.readEntity(ctx, new IdType(ref.getReference()));
+
+                }
+                if (ref.hasIdentifier()) {
+                    // This copes with reference.identifier param (a short cut?)
+                    log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                if (practitionerEntity != null) {
+                    claimEntity.setEntererPractitioner(practitionerEntity);
+                }
+
+        }
+        if (claim.hasOrganization()) {
+
+            Reference ref = claim.getOrganization();
+            OrganisationEntity organisationEntity = null;
+            if (ref.hasReference()) {
+                log.trace(ref.getReference());
+                organisationEntity = organisationDao.readEntity(ctx, new IdType(ref.getReference()));
+
+            }
+            if (ref.hasIdentifier()) {
+                // This copes with reference.identifier param (a short cut?)
+                log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+                organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+            }
+            if (organisationEntity != null) {
+                claimEntity.setProviderOrganisation(organisationEntity);
+            }
+        }
+
 
         String resource = ctx.newJsonParser().encodeResourceToString(claim);
         claimEntity.setResource(resource);
-
-        em.persist(claimEntity);
 
         if (claim.hasType()) {
             ClaimType claimType = claimEntity.getType();
             if (claimType == null) {
                 claimType = new ClaimType();
                 log.info("Claim Id = "+claimEntity.getId());
-                claimType.setClaim(claimEntity);
-               // claimEntity.setType(claimType);
-
             }
             claimType.setConceptCode(null);
             if (claim.getType().hasCoding()) {
@@ -152,8 +221,57 @@ public class ClaimDao implements ClaimRepository {
                 claimType.setConceptText(claim.getType().getText());
             }
            em.persist(claimType);
+           claimEntity.setType(claimType);
         }
-        //em.persist(claim);
+
+        if (claim.hasSubType()) {
+            ClaimSubType
+                    claimSubType = claimEntity.getSubType();
+            if (claimSubType == null) {
+                claimSubType = new ClaimSubType();
+                log.info("Claim Id = "+claimEntity.getId());
+            }
+            claimSubType.setConceptCode(null);
+            if (claim.getSubTypeFirstRep().hasCoding() && claim.getSubTypeFirstRep().getCodingFirstRep().hasSystem()) {
+                ConceptEntity code = conceptDao.findAddCode(claim.getSubTypeFirstRep().getCoding().get(0));
+                if (code != null) {
+                    claimSubType.setConceptCode(code);
+                } else {
+
+                    throw new IllegalArgumentException("Missing System/Code = " + claim.getSubTypeFirstRep().getCoding().get(0).getSystem() + " code = " + claim.getSubTypeFirstRep().getCoding().get(0).getCode());
+                }
+            }
+            if (claim.getType().hasText()) {
+                claimSubType.setConceptText(claim.getSubTypeFirstRep().getText());
+            }
+            em.persist(claimSubType);
+            claimEntity.setSubType(claimSubType);
+        }
+
+        if (claim.hasPriority()) {
+            ClaimPriority
+                    claimPriority = claimEntity.getPriority();
+            if (claimPriority == null) {
+                claimPriority= new ClaimPriority();
+                log.info("Claim Id = "+claimEntity.getId());
+            }
+            claimPriority.setConceptCode(null);
+            if (claim.getPriority().hasCoding() && claim.getPriority().getCodingFirstRep().hasSystem() ) {
+                ConceptEntity code = conceptDao.findAddCode(claim.getPriority().getCoding().get(0));
+                if (code != null) {
+                    claimPriority.setConceptCode(code);
+                } else {
+
+                    throw new IllegalArgumentException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
+                }
+            }
+            if (claim.getPriority().hasText()) {
+                claimPriority.setConceptText(claim.getPriority().getText());
+            }
+            em.persist(claimPriority);
+            claimEntity.setPriority(claimPriority);
+        }
+        em.persist(claimEntity);
 
         for (Identifier identifier : claim.getIdentifier()) {
             ClaimIdentifier claimIdentifier = null;
@@ -169,6 +287,33 @@ public class ClaimDao implements ClaimRepository {
             claimIdentifier= (ClaimIdentifier) libDao.setIdentifier(identifier, claimIdentifier );
             claimIdentifier.setClaim(claimEntity);
             em.persist(claimIdentifier);
+        }
+
+        for (ClaimDiagnosis claimDiagnosis : claimEntity.getDiagnoses()) {
+            em.remove(claimDiagnosis);
+        }
+
+        for (Claim.DiagnosisComponent diagnosis : claim.getDiagnosis()) {
+            ClaimDiagnosis claimDiagnosis = new ClaimDiagnosis();
+            claimDiagnosis.setClaim(claimEntity);
+
+            if (diagnosis.hasDiagnosisReference()) {
+                if (diagnosis.getDiagnosisReference().hasReference()) {
+                    ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new IdType(diagnosis.getDiagnosisReference().getReference()));
+                    if (conditionEntity == null) throw new ResourceNotFoundException("Condition not found");
+                    claimDiagnosis.setCondition(conditionEntity);
+                }
+                if (diagnosis.getDiagnosisReference().hasIdentifier()) {
+                    ConditionEntity conditionEntity = conditionDao.readEntity(ctx, new TokenParam()
+                            .setSystem(diagnosis.getDiagnosisReference().getIdentifier().getSystem())
+                            .setValue(diagnosis.getDiagnosisReference().getIdentifier().getValue())
+                    );
+                    if (conditionEntity == null) throw new ResourceNotFoundException("Condition not found");
+                    claimDiagnosis.setCondition(conditionEntity);
+                }
+            }
+
+            em.persist(claimDiagnosis);
         }
         log.debug("Claim.saveCategory");
 
