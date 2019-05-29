@@ -10,6 +10,7 @@ public class ClaimSubType extends BaseCodeableConcept {
 
     @Id
     @Column(name= "CLAIM_SUB_TYPE_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @OneToOne

@@ -18,8 +18,8 @@ import uk.nhs.careconnect.ri.database.daointerface.PatientRepository;
 import uk.nhs.careconnect.ri.database.daointerface.PractitionerRepository;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimIdentifier;
-import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
-import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.claim.ClaimType;
+import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.stu3.dao.transforms.ClaimEntityToFHIRClaim;
 import javax.persistence.EntityManager;
@@ -98,10 +98,15 @@ public class ClaimDao implements ClaimRepository {
             if (claim.getPatient().hasReference()) {
                 log.trace(claim.getPatient().getReference());
                 patientEntity = patientDao.readEntity(ctx, new IdType(claim.getPatient().getReference()));
-                claimEntity.setPatient(patientEntity);
+
             }
             if (claim.getPatient().hasIdentifier()) {
-                // TODO KGM
+                // This copes with reference.identifier param (a short cut?)
+                log.trace(claim.getPatient().getIdentifier().getSystem() + " " + claim.getPatient().getIdentifier().getValue());
+                patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(claim.getPatient().getIdentifier().getSystem()).setValue(claim.getPatient().getIdentifier().getValue()));
+            }
+            if (patientEntity != null ) {
+                claimEntity.setPatient(patientEntity);
             }
         }
 
@@ -118,12 +123,37 @@ public class ClaimDao implements ClaimRepository {
             }
         }
 
+
         String resource = ctx.newJsonParser().encodeResourceToString(claim);
         claimEntity.setResource(resource);
 
         em.persist(claimEntity);
 
+        if (claim.hasType()) {
+            ClaimType claimType = claimEntity.getType();
+            if (claimType == null) {
+                claimType = new ClaimType();
+                log.info("Claim Id = "+claimEntity.getId());
+                claimType.setClaim(claimEntity);
+               // claimEntity.setType(claimType);
 
+            }
+            claimType.setConceptCode(null);
+            if (claim.getType().hasCoding()) {
+                ConceptEntity code = conceptDao.findAddCode(claim.getType().getCoding().get(0));
+                if (code != null) {
+                    claimType.setConceptCode(code);
+                } else {
+
+                    throw new IllegalArgumentException("Missing System/Code = " + claim.getType().getCoding().get(0).getSystem() + " code = " + claim.getType().getCoding().get(0).getCode());
+                }
+            }
+            if (claim.getType().hasText()) {
+                claimType.setConceptText(claim.getType().getText());
+            }
+           em.persist(claimType);
+        }
+        //em.persist(claim);
 
         for (Identifier identifier : claim.getIdentifier()) {
             ClaimIdentifier claimIdentifier = null;

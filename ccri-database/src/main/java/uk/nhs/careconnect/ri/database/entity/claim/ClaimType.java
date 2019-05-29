@@ -8,6 +8,7 @@ import javax.persistence.*;
 public class ClaimType extends BaseCodeableConcept {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "CLAIM_TYPE_ID")
     private Long Id;
 

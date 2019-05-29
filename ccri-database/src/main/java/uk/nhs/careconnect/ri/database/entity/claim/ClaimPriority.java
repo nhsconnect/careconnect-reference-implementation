@@ -10,6 +10,7 @@ public class ClaimPriority extends BaseCodeableConcept {
 
     @Id
     @Column(name= "CLAIM_PRIORITY_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @OneToOne

@@ -152,6 +152,25 @@ public class PatientDao implements PatientRepository {
     }
 
     @Override
+    public Patient read(FhirContext ctx, TokenParam identifier) {
+        Patient patient = null;
+        List<Resource> patients = search(ctx, null,null,null,null,null,null,identifier,null,null,null, null, null);
+        for (Resource resource : patients ) {
+            if (resource instanceof Patient) return (Patient) resource;
+        }
+        return patient;
+    }
+
+    @Override
+    public PatientEntity readEntity(FhirContext ctx, TokenParam identifier) {
+        PatientEntity patient = null;
+        List<PatientEntity> patients = searchEntity(ctx, null,null,null,null,null,null,identifier,null,null,null, null, null);
+        for (PatientEntity resource : patients ) {
+            return resource;
+        }
+        return patient;
+    }
+    @Override
     public PatientEntity readEntity(FhirContext ctx,IdType theId) {
 
         return  (PatientEntity) em.find(PatientEntity.class,Long.parseLong(theId.getIdPart()));
