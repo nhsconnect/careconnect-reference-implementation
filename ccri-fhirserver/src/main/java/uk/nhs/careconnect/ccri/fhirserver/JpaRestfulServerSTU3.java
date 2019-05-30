@@ -64,6 +64,9 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
     @Value("#{'${ccri.HealthProviderDirectory_resources}'.split(',')}")
     private List<String>  HealthProviderDirectory_resources;
 
+    @Value("#{'${ccri.GOV_resources}'.split(',')}")
+    private List<String>  GOV_resources;
+
     @Value("#{'${ccri.TerminologyServices_resources}'.split(',')}")
     private List<String>  TerminologyServices_resources;
 
@@ -135,6 +138,9 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
                 break;
             case "EPRCareConnectAPI" :
                 permissions =  EPRCareConnectAPI_resources;
+                break;
+            case "GOV" :
+                permissions =  GOV_resources;
                 break;
             case "MPI" :
                 permissions = MPI_resources;

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ICCResourceProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,18 +81,6 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
         WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(theRequest.getServletContext());
         log.info("restful2 Server not null = " + ctx.getEnvironment().getProperty("ccri.validate_flag"));
 
-        String CRUD_update = ctx.getEnvironment().getProperty("ccri.CRUD_update");
-        String CRUD_delete = ctx.getEnvironment().getProperty("ccri.CRUD_delete");
-        String CRUD_create = ctx.getEnvironment().getProperty("ccri.CRUD_create");
-        String CRUD_read = ctx.getEnvironment().getProperty("ccri.CRUD_read");
-
-        String CCRI_role = ctx.getEnvironment().getProperty("ccri.role");
-
-
-        oauth2authorize = ctx.getEnvironment().getProperty("ccri.oauth2.authorize");
-        oauth2token = ctx.getEnvironment().getProperty("ccri.oauth2.token");
-        oauth2register = ctx.getEnvironment().getProperty("ccri.oauth2.register");
-        oauth2 = ctx.getEnvironment().getProperty("ccri.oauth2");
 
         if (capabilityStatement != null && myCache) {
             return capabilityStatement;
@@ -148,7 +137,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
                     }
                 }
 
-                if (CCRI_role.equals("EPRCareConnectAPI")) {
+                if (HapiProperties.getServerRole().equals("EPRCareConnectAPI")) {
 // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
                     nextRest.setOperation(new ArrayList<>());
                 }
@@ -156,7 +145,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
                 for (CapabilityStatement.CapabilityStatementRestResourceComponent restResourceComponent : nextRest.getResource()) {
 
 
-                    if (CCRI_role.equals("EPRCareConnectAPI")) {
+                    if (HapiProperties.getServerRole().equals("EPRCareConnectAPI")) {
 // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
                         restResourceComponent.setSearchInclude(new ArrayList<>());
                     }
@@ -167,22 +156,22 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
 
                     List<ResourceInteractionComponent> remove = new ArrayList<>();
                     for (ResourceInteractionComponent l : restResourceComponent.getInteraction()) {
-                        if (CRUD_read.equals("false"))
+                        if (!HapiProperties.getServerCrudRead())
                             if (l.getCode().toString().equals("READ")) {
                                 remove.add(l);
                             }
 
-                        if (CRUD_update.equals("false"))
+                        if (!HapiProperties.getServerCrudUpdate())
                             if (l.getCode().toString().equals("UPDATE")) {
                                 remove.add(l);
                             }
 
-                        if (CRUD_create.equals("false"))
+                        if (!HapiProperties.getServerCrudCreate())
                             if (l.getCode().toString().equals("CREATE")) {
                                 remove.add(l);
                             }
 
-                        if (CRUD_delete.equals("false"))
+                        if (!HapiProperties.getServerCrudDelete())
                             if (l.getCode().toString().equals("DELETE")) {
                                 remove.add(l);
                             }

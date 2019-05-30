@@ -64,6 +64,9 @@ public class HapiProperties {
 
     static final String SECURITY_OAUTH = "security.oauth2";
     static final String SECURITY_OPENID_CONFIG = "security.oauth2.configuration.server";
+    static final String SECURITY_OAUTH2_AUTHORIZE = "security.oauth2.configuration.authorize";
+    static final String SECURITY_OAUTH2_REGISTER = "security.oauth2.configuration.register";
+    static final String SECURITY_OAUTH2_TOKEN = "security.oauth2.configuration.token";
     static final String SECURITY_OAUTH_SCOPE = "security.oauth2.scope";
     static final String SECURITY_SMART_SCOPE = "security.oauth2.smart";
 
@@ -77,6 +80,10 @@ public class HapiProperties {
     static final String TERMINOLOGY_SERVER_SECONDARY = "terminology.server.secondary";
 
     static final String SERVER_ROLE = "ccri.role";
+    static final String SERVER_CRUD_READ = "ccri.CRUD_read";
+    static final String SERVER_CRUD_UPDATE = "ccri.CRUD_update";
+    static final String SERVER_CRUD_CREATE = "ccri.CRUD_create";
+    static final String SERVER_CRUD_DELETE = "ccri.CRUD_delete";
     private static Properties properties;
 
     /*
@@ -407,8 +414,21 @@ public class HapiProperties {
         return HapiProperties.getBooleanProperty(SECURITY_OAUTH, false);
     }
 
+
     public static String getSecurityOpenidConfig() {
         return HapiProperties.getProperty(SECURITY_OPENID_CONFIG);
+    }
+
+    public static String getSecurityOauth2Authorize() {
+        return HapiProperties.getProperty(SECURITY_OAUTH2_AUTHORIZE);
+    }
+
+    public static String getSecurityOauth2Register() {
+        return HapiProperties.getProperty(SECURITY_OAUTH2_REGISTER);
+    }
+
+    public static String getSecurityOauth2Token() {
+        return HapiProperties.getProperty(SECURITY_OAUTH2_TOKEN);
     }
 
     public static Boolean getSecuritySmartScope() {
@@ -444,5 +464,21 @@ public class HapiProperties {
     }
     public static String getServerRole() {
         return HapiProperties.getProperty(SERVER_ROLE);
+    }
+
+    public static Boolean getServerCrudRead() {
+        return HapiProperties.getBooleanProperty(SERVER_CRUD_READ, false);
+    }
+
+    public static Boolean getServerCrudUpdate() {
+        return HapiProperties.getBooleanProperty(SERVER_CRUD_UPDATE, false);
+    }
+
+    public static Boolean getServerCrudCreate() {
+        return HapiProperties.getBooleanProperty(SERVER_CRUD_CREATE, false);
+    }
+
+    public static Boolean getServerCrudDelete() {
+        return HapiProperties.getBooleanProperty(SERVER_CRUD_DELETE, false);
     }
 }
