@@ -109,8 +109,9 @@ public class TaskProvider implements ICCResourceProvider {
             , @OptionalParam(name = Task.SP_OWNER) ReferenceParam owner
             , @OptionalParam(name = Task.SP_REQUESTER) ReferenceParam requester
             , @OptionalParam(name = Task.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Task.SP_CODE) TokenParam code
     ) {
-        return taskDao.search(ctx,patient, identifier,id, owner, requester,status);
+        return taskDao.search(ctx,patient, identifier,id, owner, requester,status, code);
     }
 
     @Read()

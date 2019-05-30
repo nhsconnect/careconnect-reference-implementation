@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ri.stu3.dao.transforms;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Task;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.task.TaskEntity;
 import uk.nhs.careconnect.ri.stu3.dao.LibDao;
-
-import java.util.ArrayList;
 
 @Component
 public class TaskEntityToFHIRTask implements Transformer<TaskEntity, Task> {
@@ -84,6 +83,22 @@ public class TaskEntityToFHIRTask implements Transformer<TaskEntity, Task> {
             Reference ref = new Reference("Organization/"+taskEntity.getOwnerOrganisation().getId())
                     .setDisplay(taskEntity.getOwnerOrganisation().getName());
             task.setOwner(ref);
+        }
+
+        task.setCode(null);
+        if (taskEntity.getCode() != null) {
+            CodeableConcept concept = new CodeableConcept();
+
+            if (taskEntity.getCode().getConceptText() != null) {
+                concept.setText(taskEntity.getCode().getConceptText());
+            }
+            if (taskEntity.getCode().getConceptCode() != null) {
+                concept.addCoding()
+                        .setCode(taskEntity.getCode().getConceptCode().getCode())
+                        .setDisplay(taskEntity.getCode().getConceptCode().getDisplay())
+                        .setSystem(taskEntity.getCode().getConceptCode().getSystem());
+            }
+            task.setCode(concept);
         }
 
         task.setAuthoredOn(taskEntity.getAuthored());

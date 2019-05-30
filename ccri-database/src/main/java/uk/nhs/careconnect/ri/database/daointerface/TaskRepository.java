@@ -34,6 +34,7 @@ public interface TaskRepository extends BaseRepository<TaskEntity,Task> {
             , @OptionalParam(name = Task.SP_OWNER) ReferenceParam owner
             , @OptionalParam(name = Task.SP_REQUESTER) ReferenceParam requester
             , @OptionalParam(name = Task.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Task.SP_CODE) TokenParam code
 
     );
 
@@ -44,5 +45,6 @@ public interface TaskRepository extends BaseRepository<TaskEntity,Task> {
             , @OptionalParam(name = Task.SP_OWNER) ReferenceParam owner
             , @OptionalParam(name = Task.SP_REQUESTER) ReferenceParam requester
             , @OptionalParam(name = Task.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Task.SP_CODE) TokenParam code
     );
 }

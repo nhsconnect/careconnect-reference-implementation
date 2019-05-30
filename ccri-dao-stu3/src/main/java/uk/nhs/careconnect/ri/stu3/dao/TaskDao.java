@@ -15,10 +15,10 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
 import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
 import uk.nhs.careconnect.ri.database.entity.task.*;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -30,7 +30,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -227,6 +226,31 @@ public class TaskDao implements TaskRepository {
             }
         }
 
+        taskEntity.setPriority(task.getPriority());
+
+        if (task.hasCode()) {
+            TaskCode taskCode = taskEntity.getCode();
+            if (taskCode == null) {
+                taskCode = new TaskCode();
+                log.info("Claim Id = "+taskEntity.getId());
+            }
+            taskCode.setConceptCode(null);
+            if (task.getCode().hasCoding()) {
+                ConceptEntity code = conceptDao.findCode(task.getCode().getCoding().get(0));
+                if (code != null) {
+                    taskCode.setConceptCode(code);
+                } else {
+
+                    throw new IllegalArgumentException("Missing System/Code = " + task.getCode().getCoding().get(0).getSystem() + " code = " + task.getCode().getCoding().get(0).getCode());
+                }
+            }
+            if (task.getCode().hasText()) {
+                taskCode.setConceptText(task.getCode().getText());
+            }
+            em.persist(taskCode);
+            taskEntity.setCode(taskCode);
+        }
+
         if (task.hasAuthoredOn()) {
             taskEntity.setAuthored(task.getAuthoredOn());
         }
@@ -269,9 +293,11 @@ public class TaskDao implements TaskRepository {
     public List<Resource> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id
             , @OptionalParam(name = Task.SP_OWNER) ReferenceParam owner
             , @OptionalParam(name = Task.SP_REQUESTER) ReferenceParam requester
-            , @OptionalParam(name = Task.SP_STATUS) TokenParam status) {
+            , @OptionalParam(name = Task.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Task.SP_CODE) TokenParam code
+    ) {
 
-        List<TaskEntity> qryResults =  searchEntity(ctx,patient, identifier,id, owner, requester, status);
+        List<TaskEntity> qryResults =  searchEntity(ctx,patient, identifier,id, owner, requester, status,code);
         List<Resource> results = new ArrayList<>();
 
         for (TaskEntity taskIntoleranceEntity : qryResults)
@@ -289,6 +315,7 @@ public class TaskDao implements TaskRepository {
             , @OptionalParam(name = Task.SP_OWNER) ReferenceParam owner
             , @OptionalParam(name = Task.SP_REQUESTER) ReferenceParam requester
             , @OptionalParam(name = Task.SP_STATUS) TokenParam status
+            , @OptionalParam(name = Task.SP_CODE) TokenParam code
                                          ) {
         List<TaskEntity> qryResults = null;
 
@@ -303,12 +330,12 @@ public class TaskDao implements TaskRepository {
         if (patient != null) {
             // KGM 4/1/2018 only search on patient id
             if (daoutils.isNumeric(patient.getIdPart())) {
-                Join<TaskEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+                Join<TaskEntity, PatientEntity> join = root.join("forPatient", JoinType.LEFT);
 
                 Predicate p = builder.equal(join.get("id"), patient.getIdPart());
                 predList.add(p);
             } else {
-                Join<TaskEntity, PatientEntity> join = root.join("patient", JoinType.LEFT);
+                Join<TaskEntity, PatientEntity> join = root.join("forPatient", JoinType.LEFT);
 
                 Predicate p = builder.equal(join.get("id"), -1);
                 predList.add(p);
@@ -328,10 +355,125 @@ public class TaskDao implements TaskRepository {
 
         }
 
+        if (owner !=null)
+        {
 
-        ParameterExpression<Date> parameterLower = builder.parameter(Date.class);
-        ParameterExpression<Date> parameterUpper = builder.parameter(Date.class);
+            if (owner.getBaseUrl().contains("Patient")) {
+                if (daoutils.isNumeric(owner.getIdPart())) {
+                    Join<TaskEntity, PatientEntity> join = root.join("ownerPatient", JoinType.LEFT);
 
+                    Predicate p = builder.equal(join.get("id"), owner.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, PatientEntity> join = root.join("ownerPatient", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            } else if (owner.getBaseUrl().contains("Practitioner")) {
+                if (daoutils.isNumeric(owner.getIdPart())) {
+                    Join<TaskEntity, PractitionerEntity> join = root.join("ownerPractitioner", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), owner.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, PractitionerEntity> join = root.join("ownerPractitioner", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            } else if (owner.getBaseUrl().contains("Organization")) {
+                if (daoutils.isNumeric(owner.getIdPart())) {
+                    Join<TaskEntity, OrganisationEntity> join = root.join("ownerOrganisation", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), owner.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, OrganisationEntity> join = root.join("ownerOrganisation", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            }
+
+        }
+
+        if (requester !=null)
+        {
+
+            if (requester.getBaseUrl().contains("Patient")) {
+                if (daoutils.isNumeric(requester.getIdPart())) {
+                    Join<TaskEntity, PatientEntity> join = root.join("requesterPatient", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), requester.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, PatientEntity> join = root.join("requesterPatient", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            } else if (requester.getBaseUrl().contains("Practitioner")) {
+                if (daoutils.isNumeric(requester.getIdPart())) {
+                    Join<TaskEntity, PractitionerEntity> join = root.join("requesterPractitioner", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), requester.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, PractitionerEntity> join = root.join("requesterPractitioner", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            } else if (requester.getBaseUrl().contains("Organization")) {
+                if (daoutils.isNumeric(requester.getIdPart())) {
+                    Join<TaskEntity, OrganisationEntity> join = root.join("requesterOrganisation", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), requester.getIdPart());
+                    predList.add(p);
+                } else {
+                    Join<TaskEntity, OrganisationEntity> join = root.join("requesterOrganisation", JoinType.LEFT);
+
+                    Predicate p = builder.equal(join.get("id"), -1);
+                    predList.add(p);
+                }
+            }
+
+        }
+
+        if (status != null) {
+            Integer taskstatus = null;
+            switch (status.getValue().toLowerCase()) {
+                case "draft":
+                    taskstatus = 0;
+                    break;
+                case "requested":
+                    taskstatus = 1;
+                    break;
+                case "received":
+                    taskstatus = 2;
+                    break;
+                case "accepted":
+                    taskstatus = 3;
+                    break;
+
+                default:
+                    taskstatus=-1;
+            }
+
+
+            Predicate p = builder.equal(root.get("status"), taskstatus);
+            predList.add(p);
+
+        }
+
+        if (code != null) {
+
+            Join<TaskEntity, TaskCode> joinCode = root.join("code", JoinType.LEFT);
+            Join<TaskCode, ConceptEntity> joinConcept = joinCode.join("conceptCode", JoinType.LEFT);
+            Predicate p = builder.equal(joinConcept.get("code"),code.getValue());
+            predList.add(p);
+        }
 
 
         Predicate[] predArray = new Predicate[predList.size()];

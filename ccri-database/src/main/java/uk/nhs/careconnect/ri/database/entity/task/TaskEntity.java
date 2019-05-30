@@ -50,6 +50,10 @@ public class TaskEntity extends BaseResource {
     @Column(name="priority")
     private Task.TaskPriority priority;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "CODE_ID",foreignKey= @ForeignKey(name="FK_TASK_CODE_ID"))
+    private TaskCode code;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "FOCUS_CLAIM_ID",foreignKey= @ForeignKey(name="FK_TASK_FOCUS_CLAIM_ID"))
     private ClaimEntity focusClaim;
@@ -288,5 +292,13 @@ public class TaskEntity extends BaseResource {
 
     public void setFocusClaim(ClaimEntity focusClaim) {
         this.focusClaim = focusClaim;
+    }
+
+    public TaskCode getCode() {
+        return code;
+    }
+
+    public void setCode(TaskCode code) {
+        this.code = code;
     }
 }

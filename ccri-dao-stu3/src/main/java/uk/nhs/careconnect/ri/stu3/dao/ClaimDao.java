@@ -218,7 +218,7 @@ public class ClaimDao implements ClaimRepository {
             }
             claimType.setConceptCode(null);
             if (claim.getType().hasCoding()) {
-                ConceptEntity code = conceptDao.findAddCode(claim.getType().getCoding().get(0));
+                ConceptEntity code = conceptDao.findCode(claim.getType().getCoding().get(0));
                 if (code != null) {
                     claimType.setConceptCode(code);
                 } else {
@@ -242,7 +242,7 @@ public class ClaimDao implements ClaimRepository {
             }
             claimSubType.setConceptCode(null);
             if (claim.getSubTypeFirstRep().hasCoding() && claim.getSubTypeFirstRep().getCodingFirstRep().hasSystem()) {
-                ConceptEntity code = conceptDao.findAddCode(claim.getSubTypeFirstRep().getCoding().get(0));
+                ConceptEntity code = conceptDao.findCode(claim.getSubTypeFirstRep().getCoding().get(0));
                 if (code != null) {
                     claimSubType.setConceptCode(code);
                 } else {
