@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
+import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
 import uk.nhs.careconnect.ri.database.entity.task.*;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
@@ -138,22 +139,80 @@ public class TaskDao implements TaskRepository {
             }
         }
         OrganisationEntity organisationEntity = null;
+        PractitionerEntity practitionerEntity =  null;
+        patientEntity = null;
         if (task.hasRequester() ) {
-            if (task.getRequester().getAgent().hasReference()) {
-                organisationEntity = organisationDao.readEntity(ctx, new IdType(task.getRequester().getAgent().getReference()));
+            Reference ref = task.getRequester().getAgent();
+            if (ref.hasReference()) {
 
+                organisationEntity = organisationDao.readEntity(ctx, new IdType(ref.getReference()));
+
+                if (organisationEntity == null) {
+                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                if (organisationEntity == null && practitionerEntity == null) {
+                    patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
             }
             if (task.getRequester().getAgent().hasIdentifier()) {
-
-                organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(task.getRequester().getAgent().getIdentifier().getSystem()).setValue(task.getRequester().getAgent().getIdentifier().getValue()));
+                organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                if (organisationEntity == null) {
+                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                if (organisationEntity == null && practitionerEntity == null) {
+                    patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
             }
+
             if (organisationEntity != null ) {
                 taskEntity.setRequesterOrganisation(organisationEntity);
+            } else if (practitionerEntity != null ) {
+                taskEntity.setRequesterPractitioner(practitionerEntity);
+            } else if (practitionerEntity != null ) {
+                taskEntity.setRequesterPatient(patientEntity);
             } else {
                 throw new ResourceNotFoundException("Requester reference was not found");
             }
         }
+        organisationEntity = null;
+        practitionerEntity =  null;
+        patientEntity = null;
+        HealthcareServiceEntity serviceEntity = null;
+        if (task.hasOwner() ) {
+            Reference ref = task.getOwner();
+            if (ref.hasReference()) {
 
+                organisationEntity = organisationDao.readEntity(ctx, new IdType(ref.getReference()));
+
+                if (organisationEntity == null) {
+                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                if (organisationEntity == null && practitionerEntity == null) {
+                    patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                // TODO Add Service
+            }
+            if (task.getRequester().getAgent().hasIdentifier()) {
+                organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                if (organisationEntity == null) {
+                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                if (organisationEntity == null && practitionerEntity == null) {
+                    patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+                }
+                // TODO Add Service
+            }
+
+            if (organisationEntity != null ) {
+                taskEntity.setOwnerOrganisation(organisationEntity);
+            } else if (practitionerEntity != null ) {
+                taskEntity.setOwnerPractitioner(practitionerEntity);
+            } else if (practitionerEntity != null ) {
+                taskEntity.setOwnerPatient(patientEntity);
+            } else {
+                throw new ResourceNotFoundException("Owner reference was not found");
+            }
+        }
 
         if (task.hasStatus()) {
             taskEntity.setStatus(task.getStatus());
@@ -171,30 +230,6 @@ public class TaskDao implements TaskRepository {
         if (task.hasAuthoredOn()) {
             taskEntity.setAuthored(task.getAuthoredOn());
         }
-
-        if (task.hasRequester() ) {
-
-             if (task.getRequester().getAgentTarget() instanceof Practitioner) {
-                 Reference ref = task.getRequester().getAgent();
-                 PractitionerEntity practitionerEntity = null;
-                 if (ref.hasReference()) {
-                     log.trace(ref.getReference());
-                     practitionerEntity = practitionerDao.readEntity(ctx, new IdType(ref.getReference()));
-
-                 }
-                 if (ref.hasIdentifier()) {
-                     // This copes with reference.identifier param (a short cut?)
-                     log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
-                     practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
-                 }
-                 if (practitionerEntity != null) {
-                     taskEntity.setRequesterPractitioner(practitionerEntity);
-                 }
-             }
-
-        }
-
-
 
 
         if (task.hasPriority()) {

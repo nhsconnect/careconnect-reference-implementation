@@ -39,8 +39,17 @@ public class TaskEntityToFHIRTask implements Transformer<TaskEntity, Task> {
                             .setDisplay(taskEntity.getForPatient().getNames().get(0).getDisplayName()));
         }
 
+        task.setFocus(null);
+        if (taskEntity.getFocusClaim() != null) {
+            task
+                    .setFocus(new Reference("Claim/"+taskEntity.getFocusClaim().getId())
+                            .setDisplay(taskEntity.getFocusClaim().getType().getConceptText()));
+        }
+
+        // Requester
+
         task.setRequester(null);
-        task.setExtension(new ArrayList<>());
+
         if (taskEntity.getRequesterPatient() != null) {
             Reference patRef = new Reference("Patient/"+taskEntity.getRequesterPatient().getId())
                     .setDisplay(taskEntity.getRequesterPatient().getNames().get(0).getDisplayName());
@@ -57,7 +66,28 @@ public class TaskEntityToFHIRTask implements Transformer<TaskEntity, Task> {
             task.setRequester(new Task.TaskRequesterComponent().setAgent(ref));
         }
 
+        // Owner
 
+        task.setOwner(null);
+
+        if (taskEntity.getOwnerPatient() != null) {
+            Reference patRef = new Reference("Patient/"+taskEntity.getOwnerPatient().getId())
+                    .setDisplay(taskEntity.getOwnerPatient().getNames().get(0).getDisplayName());
+            task.setOwner(patRef);
+        }
+        if (taskEntity.getOwnerPractitioner() != null) {
+            Reference ref = new Reference("Practitioner/"+taskEntity.getOwnerPractitioner().getId())
+                    .setDisplay(taskEntity.getOwnerPractitioner().getNames().get(0).getDisplayName());
+            task.setOwner(ref);
+        }
+        if (taskEntity.getOwnerOrganisation() != null) {
+            Reference ref = new Reference("Organization/"+taskEntity.getOwnerOrganisation().getId())
+                    .setDisplay(taskEntity.getOwnerOrganisation().getName());
+            task.setOwner(ref);
+        }
+
+        task.setAuthoredOn(taskEntity.getAuthored());
+        task.setLastModified(task.getLastModified());
 
         return task;
     }

@@ -87,7 +87,7 @@ public class ClaimEntityToFHIRClaim implements Transformer<ClaimEntity, Claim> {
             }
             claim.getDiagnosis().add(component);
         }
-
+        claim.setCreated(claimEntity.getCreated());
 
         return claim;
     }
