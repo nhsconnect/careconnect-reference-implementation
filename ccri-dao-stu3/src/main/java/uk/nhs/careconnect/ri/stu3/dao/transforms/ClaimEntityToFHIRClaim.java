@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimDiagnosis;
 import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
+import uk.nhs.careconnect.ri.database.entity.claim.ClaimRelated;
 import uk.nhs.careconnect.ri.stu3.dao.LibDao;
 import java.util.ArrayList;
 
@@ -89,6 +90,27 @@ public class ClaimEntityToFHIRClaim implements Transformer<ClaimEntity, Claim> {
         }
         claim.setCreated(claimEntity.getCreated());
 
+        claim.setRelated(new ArrayList<>());
+        for (ClaimRelated related : claimEntity.getRelatedClaims()) {
+            Claim.RelatedClaimComponent component = new Claim.RelatedClaimComponent();
+            if (related.getRelatedClaim() != null) {
+                component.setClaim(new Reference("Claim/"+related.getRelatedClaim().getId()));
+            }
+            if (related.getConceptCode() != null) {
+                if (component.getRelationship().hasCoding()) {
+                    component.getRelationship()
+                            .addCoding()
+                            .setSystem(component.getRelationship().getCodingFirstRep().getSystem())
+                            .setCode(component.getRelationship().getCodingFirstRep().getCode())
+                            .setDisplay(component.getRelationship().getCodingFirstRep().getDisplay());
+                }
+                if (component.getRelationship().hasText()) {
+                    component.getRelationship().setText(component.getRelationship().getText());
+                }
+            }
+
+            claim.getRelated().add(component);
+        }
         return claim;
     }
 }
