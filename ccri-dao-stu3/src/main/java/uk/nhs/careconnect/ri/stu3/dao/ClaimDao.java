@@ -326,6 +326,46 @@ public class ClaimDao implements ClaimRepository {
         }
         log.debug("Claim.saveCategory");
 
+        for(ClaimRelated claimRelated : claimEntity.getRelatedClaims()) {
+            em.remove(claimRelated);
+        }
+        for (Claim.RelatedClaimComponent component : claim.getRelated()) {
+            ClaimRelated claimRelated = new ClaimRelated();
+            claimRelated.setClaim(claimEntity);
+            ClaimEntity relatedClaim = null;
+            if (component.hasClaim() ) {
+                if (component.getClaim().hasReference()) {
+                    relatedClaim = readEntity(ctx, new IdType(component.getClaim().getReference()));
+                }
+                if (component.getClaim().hasIdentifier()) {
+                    // This copes with reference.identifier param (a short cut?)
+                    log.trace(component.getClaim().getIdentifier().getSystem() + " " + component.getClaim().getIdentifier().getValue());
+                    relatedClaim = readEntity(ctx, new TokenParam().setSystem(component.getClaim().getIdentifier().getSystem()).setValue(component.getClaim().getIdentifier().getValue()));
+                }
+                if (relatedClaim != null) {
+                    claimRelated.setRelatedClaim(relatedClaim);
+                } else {
+                    throw new ResourceNotFoundException("Focus reference was not found");
+                }
+            }
+            if (component.hasRelationship()) {
+                if (component.getRelationship().hasCoding() && component.getRelationship().getCodingFirstRep().hasSystem()) {
+                    ConceptEntity code = conceptDao.findAddCode(component.getRelationship().getCoding().get(0));
+                    if (code != null) {
+                        claimRelated.setConceptCode(code);
+                    } else {
+
+                        throw new IllegalArgumentException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
+                    }
+                }
+                if (component.getRelationship().hasText()) {
+                    claimRelated.setConceptText(component.getRelationship().getText());
+                }
+            }
+
+            em.persist(claimRelated);
+        }
+
         claim.setId(claimEntity.getId().toString());
 
         return claim;

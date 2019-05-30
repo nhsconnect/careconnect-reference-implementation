@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.ri.database.entity.claim;
 
+import uk.nhs.careconnect.ri.database.entity.BaseCodeableConcept;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 
 import javax.persistence.*;
@@ -8,7 +9,7 @@ import javax.persistence.*;
 @Table(name="ClaimRelated", uniqueConstraints= @UniqueConstraint(name="PK_CLAIM_RELATED", columnNames={"CLAIM_RELATED_ID"})
 		,indexes = {}
 		)
-public class ClaimRelated extends BaseResource {
+public class ClaimRelated extends BaseCodeableConcept {
 
 	public ClaimRelated() {
 	}
