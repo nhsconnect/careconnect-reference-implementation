@@ -21,6 +21,9 @@ public interface ClaimRepository extends BaseRepository<ClaimEntity,Claim> {
 
     ClaimEntity readEntity(FhirContext ctx, IdType theId);
 
+
+    ClaimEntity readEntity(FhirContext ctx, TokenParam identifier);
+
     Claim create(FhirContext ctx, Claim claim, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
 

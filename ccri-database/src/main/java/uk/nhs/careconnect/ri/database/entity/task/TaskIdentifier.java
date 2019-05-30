@@ -23,9 +23,18 @@ public class TaskIdentifier extends BaseIdentifier {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "TASK_ID",foreignKey= @ForeignKey(name="FK_TASK_IDENTIFIER_TASK_ID"))
-
     private TaskEntity task;
 
+    @Column(name ="GROUP_IDENTIFIER")
+	private Boolean group;
+
+	public Boolean getGroup() {
+		return group;
+	}
+
+	public void setGroup(Boolean group) {
+		this.group = group;
+	}
 
 	public Long getIdentifierId() { return identifierId; }
 	public void setIdentifierId(Long identifierId) { this.identifierId = identifierId; }

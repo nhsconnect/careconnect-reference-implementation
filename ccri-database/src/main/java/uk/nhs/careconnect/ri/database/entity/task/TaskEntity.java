@@ -2,6 +2,11 @@ package uk.nhs.careconnect.ri.database.entity.task;
 
 import org.hl7.fhir.dstu3.model.Task;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
+import uk.nhs.careconnect.ri.database.entity.Person.PersonEntity;
+import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
+import uk.nhs.careconnect.ri.database.entity.claim.ClaimEntity;
+import uk.nhs.careconnect.ri.database.entity.encounter.EncounterEntity;
+import uk.nhs.careconnect.ri.database.entity.healthcareService.HealthcareServiceEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
@@ -30,18 +35,36 @@ public class TaskEntity extends BaseResource {
     @OneToMany(mappedBy="task", targetEntity=TaskIdentifier.class)
     private Set<TaskIdentifier> identifiers = new HashSet<>();
 
+    @OneToMany(mappedBy="task", targetEntity=TaskPartOf.class)
+    private Set<TaskPartOf> partOfs = new HashSet<>();
+
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")
     private Task.TaskStatus status;
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="intent")
+    private Task.TaskIntent intent;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="priority")
+    private Task.TaskPriority priority;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "PATIENT_ID",foreignKey= @ForeignKey(name="FK_TASK_PATIENT_ID"))
-    private PatientEntity patient;
+    @JoinColumn (name = "FOCUS_CLAIM_ID",foreignKey= @ForeignKey(name="FK_TASK_FOCUS_CLAIM_ID"))
+    private ClaimEntity focusClaim;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "FOR_PATIENT_ID",foreignKey= @ForeignKey(name="FK_TASK_PATIENT_ID"))
+    private PatientEntity forPatient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="CONTEXT_ENCOUNTER_ID",foreignKey= @ForeignKey(name="FK_TASK_ENCOUNTER_ID"))
+    private EncounterEntity contextEncounter;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATED")
-    private Date created;
+    @Column(name = "AUTHORED")
+    private Date authored;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "PERIOD_START")
@@ -52,39 +75,45 @@ public class TaskEntity extends BaseResource {
     private Date periodEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "ENTERER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_ENTERED_PRACTITIONER_ID"))
-    private PractitionerEntity entererPractitioner;
+    @JoinColumn (name = "REQUESTER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_REQUESTER_PRACTITIONER_ID"))
+    private PractitionerEntity requesterPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "ENTERER_PATIENT",foreignKey= @ForeignKey(name="FK_ENTERED_PATIENT_ID"))
-    private PatientEntity entererPatient;
+    @JoinColumn (name = "REQUESTER_PATIENT",foreignKey= @ForeignKey(name="FK_REQUESTER_PATIENT_ID"))
+    private PatientEntity requesterPatient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "INSURER_ORGANISATION",foreignKey= @ForeignKey(name="FK_INSURER_ORGANISATION_ID"))
-    private OrganisationEntity insurerOrganisation;
+    @JoinColumn (name = "REQUESTER_ORGANISATION",foreignKey= @ForeignKey(name="FK_REQUESTER_ORGANISATION_ID"))
+    private OrganisationEntity requesterOrganisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "PROVIDER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_PROVIDER_PRACTITIONER_ID"))
-    private PractitionerEntity providerPractitioner;
+    @JoinColumn (name = "OWNER_PRACTITIONER",foreignKey= @ForeignKey(name="FK_OWNER_PRACTITIONER_ID"))
+    private PractitionerEntity ownerPractitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "PROVIDER_ORGANISATION",foreignKey= @ForeignKey(name="FK_PROVIDER_ORGANISATION_ID"))
-    private OrganisationEntity providerOrganisation;
+    @JoinColumn (name = "OWNER_ORGANISATION",foreignKey= @ForeignKey(name="FK_OWNER_ORGANISATION_ID"))
+    private OrganisationEntity ownerOrganisation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "OWNER_PATIENT",foreignKey= @ForeignKey(name="FK_OWNER_PATIENT_ID"))
+    private PatientEntity ownerPatient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "OWNER_RELATED_PERSON",foreignKey= @ForeignKey(name="FK_OWNER_PERSON_ID"))
+    private PersonEntity ownerPerson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "OWNER_CARE_TEAM",foreignKey= @ForeignKey(name="FK_OWNER_CARE_TEAM_ID"))
+    private CareTeamEntity ownerTeam;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "OWNER_SERVICE",foreignKey= @ForeignKey(name="FK_OWNER_SERVICE_ID"))
+    private HealthcareServiceEntity ownerService;
 
     public Long getId() {
         return id;
     }
 
-
-
-    public PatientEntity getPatient() {
-        return patient;
-    }
-
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -116,16 +145,6 @@ public class TaskEntity extends BaseResource {
         this.status = status;
     }
 
-
-    @Override
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public Date getPeriodStart() {
         return periodStart;
     }
@@ -142,47 +161,132 @@ public class TaskEntity extends BaseResource {
         this.periodEnd = periodEnd;
     }
 
-
-
-    public OrganisationEntity getInsurerOrganisation() {
-        return insurerOrganisation;
+    public Set<TaskPartOf> getPartOfs() {
+        return partOfs;
     }
 
-    public PractitionerEntity getEntererPractitioner() {
-        return entererPractitioner;
+    public void setPartOfs(Set<TaskPartOf> partOfs) {
+        this.partOfs = partOfs;
     }
 
-    public void setEntererPractitioner(PractitionerEntity entererPractitioner) {
-        this.entererPractitioner = entererPractitioner;
+    public Task.TaskIntent getIntent() {
+        return intent;
     }
 
-    public PatientEntity getEntererPatient() {
-        return entererPatient;
+    public void setIntent(Task.TaskIntent intent) {
+        this.intent = intent;
     }
 
-    public void setEntererPatient(PatientEntity entererPatient) {
-        this.entererPatient = entererPatient;
+    public Task.TaskPriority getPriority() {
+        return priority;
     }
 
-    public void setInsurerOrganisation(OrganisationEntity insurerOrganisation) {
-        this.insurerOrganisation = insurerOrganisation;
+    public void setPriority(Task.TaskPriority priority) {
+        this.priority = priority;
     }
 
-    public PractitionerEntity getProviderPractitioner() {
-        return providerPractitioner;
+    public PatientEntity getForPatient() {
+        return forPatient;
     }
 
-    public void setProviderPractitioner(PractitionerEntity providerPractitioner) {
-        this.providerPractitioner = providerPractitioner;
+    public void setForPatient(PatientEntity forPatient) {
+        this.forPatient = forPatient;
     }
 
-    public OrganisationEntity getProviderOrganisation() {
-        return providerOrganisation;
+    public EncounterEntity getContextEncounter() {
+        return contextEncounter;
     }
 
-    public void setProviderOrganisation(OrganisationEntity providerOrganisation) {
-        this.providerOrganisation = providerOrganisation;
+    public void setContextEncounter(EncounterEntity contextEncounter) {
+        this.contextEncounter = contextEncounter;
+    }
+
+    public Date getAuthored() {
+        return authored;
+    }
+
+    public void setAuthored(Date authored) {
+        this.authored = authored;
     }
 
 
+    public PractitionerEntity getOwnerPractitioner() {
+        return ownerPractitioner;
+    }
+
+    public void setOwnerPractitioner(PractitionerEntity ownerPractitioner) {
+        this.ownerPractitioner = ownerPractitioner;
+    }
+
+    public OrganisationEntity getOwnerOrganisation() {
+        return ownerOrganisation;
+    }
+
+    public void setOwnerOrganisation(OrganisationEntity ownerOrganisation) {
+        this.ownerOrganisation = ownerOrganisation;
+    }
+
+    public PatientEntity getOwnerPatient() {
+        return ownerPatient;
+    }
+
+    public void setOwnerPatient(PatientEntity ownerPatient) {
+        this.ownerPatient = ownerPatient;
+    }
+
+    public PersonEntity getOwnerPerson() {
+        return ownerPerson;
+    }
+
+    public void setOwnerPerson(PersonEntity ownerPerson) {
+        this.ownerPerson = ownerPerson;
+    }
+
+    public CareTeamEntity getOwnerTeam() {
+        return ownerTeam;
+    }
+
+    public void setOwnerTeam(CareTeamEntity ownerTeam) {
+        this.ownerTeam = ownerTeam;
+    }
+
+    public HealthcareServiceEntity getOwnerService() {
+        return ownerService;
+    }
+
+    public void setOwnerService(HealthcareServiceEntity ownerService) {
+        this.ownerService = ownerService;
+    }
+
+    public PractitionerEntity getRequesterPractitioner() {
+        return requesterPractitioner;
+    }
+
+    public void setRequesterPractitioner(PractitionerEntity requesterPractitioner) {
+        this.requesterPractitioner = requesterPractitioner;
+    }
+
+    public PatientEntity getRequesterPatient() {
+        return requesterPatient;
+    }
+
+    public void setRequesterPatient(PatientEntity requesterPatient) {
+        this.requesterPatient = requesterPatient;
+    }
+
+    public OrganisationEntity getRequesterOrganisation() {
+        return requesterOrganisation;
+    }
+
+    public void setRequesterOrganisation(OrganisationEntity requesterOrganisation) {
+        this.requesterOrganisation = requesterOrganisation;
+    }
+
+    public ClaimEntity getFocusClaim() {
+        return focusClaim;
+    }
+
+    public void setFocusClaim(ClaimEntity focusClaim) {
+        this.focusClaim = focusClaim;
+    }
 }

@@ -89,6 +89,15 @@ public class ClaimDao implements ClaimRepository {
     }
 
     @Override
+    public ClaimEntity readEntity(FhirContext ctx, TokenParam identifier) {
+        List<ClaimEntity> claimEntities = searchEntity(ctx,null,identifier,null);
+        for (ClaimEntity claimEntity : claimEntities) {
+            return claimEntity;
+        }
+        return null;
+    }
+
+    @Override
     public Claim create(FhirContext ctx, Claim claim, IdType theId, String theConditional) throws OperationOutcomeException {
         ClaimEntity claimEntity = null;
 

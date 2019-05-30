@@ -31,7 +31,7 @@ public class DataSourceConfig {
 
 
 
-    @Value("${flyway.locations}")
+    @Value("${spring.flyway.locations}")
     private String flywayLocations;
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataSourceConfig.class);
