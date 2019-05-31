@@ -4,12 +4,9 @@ import org.apache.commons.collections4.Transformer;
 import org.hl7.fhir.dstu3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.*;
 import uk.nhs.careconnect.ri.stu3.dao.daoutils;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
 
 
 @Component
@@ -199,6 +196,35 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
                         .setValue(new StringType().setValue(option.getValueString())));
             }
         }
+
+        for (QuestionnaireItemEnable enable : item.getEnabled()) {
+            Questionnaire.QuestionnaireItemEnableWhenComponent when = new Questionnaire.QuestionnaireItemEnableWhenComponent();
+            if (enable.getAnswerCode() != null) {
+                when.setAnswer(new Coding()
+                                .setCode(enable.getAnswerCode().getCode())
+                                .setSystem(enable.getAnswerCode().getSystem())
+                                .setDisplay(enable.getAnswerCode().getDisplay()));
+            }
+            if (enable.getAnswerString() != null) {
+                when.setAnswer(new StringType().setValue(enable.getAnswerString()));
+            }
+
+            /*
+            if (enable.getAnswerInteger() != null) {
+                when.setAnswer(new IntegerType().setValue(enable.getAnswerInteger().));
+            }
+
+             */
+
+            if (enable.getHasAnswer() != null) {
+                when.setHasAnswer(enable.getHasAnswer());
+            }
+            if (enable.getQuestion() != null ) {
+                when.setQuestion(enable.getQuestion());
+            }
+            itemComponent.addEnableWhen(when);
+        }
+
         return itemComponent;
     }
 

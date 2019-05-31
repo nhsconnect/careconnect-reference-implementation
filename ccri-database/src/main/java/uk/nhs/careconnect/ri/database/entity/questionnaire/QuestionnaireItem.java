@@ -50,6 +50,8 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="ITEM_TYPE")
 	private Questionnaire.QuestionnaireItemType itemType;
 
+	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemEnable.class)
+	private Set<QuestionnaireItemEnable> enabled = new HashSet<>();
 
 	@Column(name="required")
 	private Boolean required;
@@ -241,5 +243,13 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setDefinitionUri(String definitionUri) {
 		this.definitionUri = definitionUri;
+	}
+
+	public Set<QuestionnaireItemEnable> getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Set<QuestionnaireItemEnable> enabled) {
+		this.enabled = enabled;
 	}
 }

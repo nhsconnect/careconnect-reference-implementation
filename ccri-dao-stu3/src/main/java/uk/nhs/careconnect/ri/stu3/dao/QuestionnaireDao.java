@@ -19,13 +19,10 @@ import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.QuestionnaireRepository;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.*;
 import uk.nhs.careconnect.ri.stu3.dao.transforms.QuestionnaireEntityToFHIRQuestionnaireTransformer;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireIdentifier;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItem;
-import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireItemOptions;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -386,6 +383,9 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         for (QuestionnaireItem itemChild: item.getChildItems()) {
             removeItem(itemChild);
         }
+        for (QuestionnaireItemEnable enable : item.getEnabled()) {
+            em.remove(enable);
+        }
         for (QuestionnaireItemOptions options : item.getOptions()) {
             em.remove(options);
         }
@@ -449,6 +449,33 @@ public class QuestionnaireDao implements QuestionnaireRepository {
         }
 
         em.persist(item);
+
+        if (itemComponent.hasEnableWhen()) {
+            for (Questionnaire.QuestionnaireItemEnableWhenComponent when : itemComponent.getEnableWhen()) {
+                QuestionnaireItemEnable enable = new QuestionnaireItemEnable();
+                enable.setQuestionnaireItem(item);
+                if (when.hasHasAnswer()) {
+                    enable.setHasAnswer(when.getHasAnswer());
+                }
+                if (when.hasQuestion()) {
+                    enable.setQuestion(when.getQuestion());
+                }
+                if (when.hasAnswerCoding()) {
+                    ConceptEntity concept = conceptDao.findAddCode(when.getAnswerCoding());
+                    if (concept != null) enable.setAnswerCode(concept);
+                }
+                if (when.hasAnswerStringType()) {
+                    enable.setAnswerString(when.getAnswerStringType().toString());
+                }
+                if (when.hasAnswerDateType()) {
+                    enable.setAnswerDateTime(when.getAnswerDateType().getValueAsString());
+                }
+                if (when.hasAnswerIntegerType()) {
+                    enable.setAnswerInteger(when.getAnswerIntegerType().getValueAsString());
+                }
+                em.persist(enable);
+            }
+        }
 
         if (itemComponent.hasOption()) {
             for (Questionnaire.QuestionnaireItemOptionComponent option : itemComponent.getOption()) {
