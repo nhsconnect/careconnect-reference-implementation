@@ -1,21 +1,22 @@
 package uk.nhs.careconnect.ri.stu3.dao;
 
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.UriType;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.param.TokenParam;
+import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
-import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
+import uk.nhs.careconnect.ri.database.daointerface.*;
 import uk.nhs.careconnect.ri.database.entity.BaseIdentifier;
 import uk.nhs.careconnect.ri.database.entity.BaseIdentifier2;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.namingSystem.NamingSystemUniqueId;
+import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
+import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
+import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,6 +35,18 @@ public class LibDao {
 
     @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    @Lazy
+    PatientRepository patientDao;
+
+    @Autowired
+    @Lazy
+    OrganisationRepository organisationDao;
+
+    @Autowired
+    @Lazy
+    PractitionerRepository practitionerDao;
 
     @Autowired
     @Lazy
@@ -127,6 +140,51 @@ public class LibDao {
         }
 
         return systemEntity;
+    }
+
+    public OrganisationEntity findOrganisationEntity(FhirContext ctx, Reference ref) {
+        OrganisationEntity organisationEntity = null;
+        if (ref.hasReference()) {
+            log.trace(ref.getReference());
+            organisationEntity = organisationDao.readEntity(ctx, new IdType(ref.getReference()));
+
+        }
+        if (ref.hasIdentifier()) {
+            // This copes with reference.identifier param (a short cut?)
+            log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+            organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+        }
+        return organisationEntity;
+    }
+
+    public PatientEntity findPatientEntity(FhirContext ctx, Reference ref) {
+        PatientEntity patientEntity = null;
+        if (ref.hasReference()) {
+            log.trace(ref.getReference());
+            patientEntity = patientDao.readEntity(ctx, new IdType(ref.getReference()));
+
+        }
+        if (ref.hasIdentifier()) {
+            // This copes with reference.identifier param (a short cut?)
+            log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+            patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+        }
+        return patientEntity;
+    }
+
+    public PractitionerEntity findPractitionerEntity(FhirContext ctx, Reference ref) {
+        PractitionerEntity practitionerEntity = null;
+        if (ref.hasReference()) {
+            log.trace(ref.getReference());
+            practitionerEntity = practitionerDao.readEntity(ctx, new IdType(ref.getReference()));
+
+        }
+        if (ref.hasIdentifier()) {
+            // This copes with reference.identifier param (a short cut?)
+            log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
+            practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
+        }
+        return practitionerEntity;
     }
 
     public Extension getResourceTypeExt(String resourceType) {

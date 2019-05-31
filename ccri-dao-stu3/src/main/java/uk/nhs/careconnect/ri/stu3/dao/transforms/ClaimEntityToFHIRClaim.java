@@ -61,6 +61,13 @@ public class ClaimEntityToFHIRClaim implements Transformer<ClaimEntity, Claim> {
             claim.setOrganization(new Reference("Organization/"+claimEntity.getProviderOrganisation().getId())
                     .setDisplay(claimEntity.getProviderOrganisation().getName()));
         }
+
+        claim.setInsurer(null);
+        if (claimEntity.getInsurerOrganisation() != null) {
+            claim.setInsurer(new Reference("Organization/"+claimEntity.getInsurerOrganisation().getId())
+                    .setDisplay(claimEntity.getInsurerOrganisation().getName()));
+        }
+
         claim.setType(null);
         if (claimEntity.getType() != null) {
             CodeableConcept concept = new CodeableConcept();
@@ -97,18 +104,17 @@ public class ClaimEntityToFHIRClaim implements Transformer<ClaimEntity, Claim> {
                 component.setClaim(new Reference("Claim/"+related.getRelatedClaim().getId()));
             }
             if (related.getConceptCode() != null) {
-                if (component.getRelationship().hasCoding()) {
+                if (related.getConceptCode().getCode() != null) {
                     component.getRelationship()
                             .addCoding()
-                            .setSystem(component.getRelationship().getCodingFirstRep().getSystem())
-                            .setCode(component.getRelationship().getCodingFirstRep().getCode())
-                            .setDisplay(component.getRelationship().getCodingFirstRep().getDisplay());
+                            .setSystem(related.getConceptCode().getSystem())
+                            .setCode(related.getConceptCode().getCode())
+                            .setDisplay(related.getConceptCode().getDisplay());
                 }
-                if (component.getRelationship().hasText()) {
-                    component.getRelationship().setText(component.getRelationship().getText());
+                if (related.getConceptText()!= null) {
+                    component.getRelationship().setText(related.getConceptText());
                 }
             }
-
             claim.getRelated().add(component);
         }
         return claim;

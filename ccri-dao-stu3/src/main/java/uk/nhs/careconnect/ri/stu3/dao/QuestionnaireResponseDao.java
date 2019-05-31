@@ -56,11 +56,6 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
     @PersistenceContext
     EntityManager em;
 
-    @Autowired
-    PatientRepository patientDao;
-
-    @Autowired
-    PractitionerRepository practitionerDao;
 
     @Autowired
     @Lazy
@@ -460,13 +455,11 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         }
         if (form.hasAuthor()) {
             if (form.getAuthor().getReference().contains("Patient")) {
-                PatientEntity patientEntity = null;
-                patientEntity = patientDao.readEntity(ctx, new IdType(form.getAuthor().getReference()));
+                PatientEntity patientEntity = libDao.findPatientEntity(ctx, form.getAuthor());
                 formEntity.setAuthorPatient(patientEntity);
             }
             if (form.getAuthor().getReference().contains("Practitioner")) {
-                PractitionerEntity practitionerEntity = null;
-                practitionerEntity = practitionerDao.readEntity(ctx, new IdType(form.getAuthor().getReference()));
+                PractitionerEntity practitionerEntity = libDao.findPractitionerEntity(ctx, form.getAuthor());
                 formEntity.setAuthorPractitioner(practitionerEntity);
             }
         }
@@ -493,8 +486,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
 
         if (form.hasSubject()) {
             if (form.getSubject().getReference().contains("Patient")) {
-                PatientEntity patientEntity = null;
-                patientEntity = patientDao.readEntity(ctx, new IdType(form.getSubject().getReference()));
+                PatientEntity patientEntity = libDao.findPatientEntity(ctx, form.getSubject());
                 formEntity.setPatient(patientEntity);
             }
         }
@@ -512,13 +504,11 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         }
         if (form.hasSource()) {
             if (form.getSource().getReference().contains("Patient")) {
-                PatientEntity patientEntity = null;
-                patientEntity = patientDao.readEntity(ctx, new IdType(form.getSource().getReference()));
+                PatientEntity patientEntity = libDao.findPatientEntity(ctx, form.getSource());
                 formEntity.setSourcePatient(patientEntity);
             }
             if (form.getSource().getReference().contains("Practitioner")) {
-                PractitionerEntity practitionerEntity = null;
-                practitionerEntity = practitionerDao.readEntity(ctx, new IdType(form.getSource().getReference()));
+                PractitionerEntity practitionerEntity = libDao.findPractitionerEntity(ctx, form.getSource());
                 formEntity.setSourcePractitioner(practitionerEntity);
             }
         }
@@ -602,8 +592,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
         }
         if (item.hasSubject()) {
             if (item.getSubject().getReference().contains("Patient")) {
-                PatientEntity patientEntity = null;
-                patientEntity = patientDao.readEntity(ctx, new IdType(item.getSubject().getReference()));
+                PatientEntity patientEntity = libDao.findPatientEntity(ctx, item.getSubject());
                 itemEntity.setPatient(patientEntity);
             }
         }
@@ -673,7 +662,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                                         answerEntity.setReferenceObservation(observationEntity);
                                         break;
                                     case "Practitioner":
-                                        PractitionerEntity practitionerEntity = practitionerDao.readEntity(ctx, new IdType(reference.getReference()));
+                                        PractitionerEntity practitionerEntity = libDao.findPractitionerEntity(ctx, reference);
                                         answerEntity.setReferencePractitioner(practitionerEntity);
                                         break;
                                     case "Flag":

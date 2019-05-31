@@ -53,15 +53,6 @@ public class ClaimDao implements ClaimRepository {
     ConceptRepository conceptDao;
 
     @Autowired
-    PatientRepository patientDao;
-
-    @Autowired
-    OrganisationRepository organisationDao;
-
-    @Autowired
-    PractitionerRepository practitionerDao;
-
-    @Autowired
     ConditionRepository conditionDao;
 
 
@@ -135,16 +126,9 @@ public class ClaimDao implements ClaimRepository {
 
         PatientEntity patientEntity = null;
         if (claim.hasPatient()) {
-            if (claim.getPatient().hasReference()) {
-                log.trace(claim.getPatient().getReference());
-                patientEntity = patientDao.readEntity(ctx, new IdType(claim.getPatient().getReference()));
 
-            }
-            if (claim.getPatient().hasIdentifier()) {
-                // This copes with reference.identifier param (a short cut?)
-                log.trace(claim.getPatient().getIdentifier().getSystem() + " " + claim.getPatient().getIdentifier().getValue());
-                patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(claim.getPatient().getIdentifier().getSystem()).setValue(claim.getPatient().getIdentifier().getValue()));
-            }
+            patientEntity = libDao.findPatientEntity(ctx, claim.getPatient());
+
             if (patientEntity != null ) {
                 claimEntity.setPatient(patientEntity);
             } else {
@@ -176,17 +160,7 @@ public class ClaimDao implements ClaimRepository {
                     log.info("processing EntererPatient Extension");
 
                     Reference ref = (Reference) ext.getValue();
-                    patientEntity = null;
-                    if (ref.hasReference()) {
-                        log.trace(ref.getReference());
-                        patientEntity = patientDao.readEntity(ctx, new IdType(ref.getReference()));
-
-                    }
-                    if (ref.hasIdentifier()) {
-                        // This copes with reference.identifier param (a short cut?)
-                        log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
-                        patientEntity = patientDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
-                    }
+                    patientEntity = libDao.findPatientEntity(ctx,ref);
                     if (patientEntity != null) {
                         claimEntity.setEntererPatient(patientEntity);
                     }
@@ -196,17 +170,8 @@ public class ClaimDao implements ClaimRepository {
         if (claim.hasEnterer() ) {
 
                 Reference ref = claim.getEnterer();
-                PractitionerEntity practitionerEntity = null;
-                if (ref.hasReference()) {
-                    log.trace(ref.getReference());
-                    practitionerEntity = practitionerDao.readEntity(ctx, new IdType(ref.getReference()));
+                PractitionerEntity practitionerEntity = libDao.findPractitionerEntity(ctx,ref);
 
-                }
-                if (ref.hasIdentifier()) {
-                    // This copes with reference.identifier param (a short cut?)
-                    log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
-                    practitionerEntity = practitionerDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
-                }
                 if (practitionerEntity != null) {
                     claimEntity.setEntererPractitioner(practitionerEntity);
                 }
@@ -215,19 +180,18 @@ public class ClaimDao implements ClaimRepository {
         if (claim.hasOrganization()) {
 
             Reference ref = claim.getOrganization();
-            OrganisationEntity organisationEntity = null;
-            if (ref.hasReference()) {
-                log.trace(ref.getReference());
-                organisationEntity = organisationDao.readEntity(ctx, new IdType(ref.getReference()));
-
-            }
-            if (ref.hasIdentifier()) {
-                // This copes with reference.identifier param (a short cut?)
-                log.trace(ref.getIdentifier().getSystem() + " " + ref.getIdentifier().getValue());
-                organisationEntity = organisationDao.readEntity(ctx, new TokenParam().setSystem(ref.getIdentifier().getSystem()).setValue(ref.getIdentifier().getValue()));
-            }
+            OrganisationEntity organisationEntity = libDao.findOrganisationEntity(ctx, ref);
             if (organisationEntity != null) {
                 claimEntity.setProviderOrganisation(organisationEntity);
+            }
+        }
+
+        if (claim.hasInsurer()) {
+
+            Reference ref = claim.getInsurer();
+            OrganisationEntity organisationEntity = libDao.findOrganisationEntity(ctx, ref);
+            if (organisationEntity != null) {
+                claimEntity.setInsurerOrganisation(organisationEntity);
             }
         }
 
