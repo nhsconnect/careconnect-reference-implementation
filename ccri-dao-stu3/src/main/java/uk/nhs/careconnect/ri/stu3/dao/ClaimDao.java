@@ -1,10 +1,15 @@
 package uk.nhs.careconnect.ri.stu3.dao;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.Claim;
 import org.slf4j.Logger;
@@ -21,6 +26,7 @@ import uk.nhs.careconnect.ri.database.entity.condition.ConditionEntity;
 import uk.nhs.careconnect.ri.database.entity.organization.OrganisationEntity;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 import uk.nhs.careconnect.ri.database.entity.practitioner.PractitionerEntity;
+import uk.nhs.careconnect.ri.database.entity.questionnaire.QuestionnaireEntity;
 import uk.nhs.careconnect.ri.stu3.dao.transforms.ClaimEntityToFHIRClaim;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -90,7 +96,7 @@ public class ClaimDao implements ClaimRepository {
 
     @Override
     public ClaimEntity readEntity(FhirContext ctx, TokenParam identifier) {
-        List<ClaimEntity> claimEntities = searchEntity(ctx,null,identifier,null);
+        List<ClaimEntity> claimEntities = searchEntity(ctx,null,identifier,null, null, null);
         for (ClaimEntity claimEntity : claimEntities) {
             return claimEntity;
         }
@@ -103,7 +109,26 @@ public class ClaimDao implements ClaimRepository {
 
         if (claim.hasId()) claimEntity = readEntity(ctx, claim.getIdElement());
 
-        
+        if (claim.getIdentifier().size()== 0 && theId != null) {
+            throw new PreconditionFailedException("Business rule violation. At least one identifier needs to be supplied when updating a resource");
+        }
+
+        List<ClaimEntity> entries = searchEntity(ctx
+                , null
+                , new TokenParam().setSystem(claim.getIdentifierFirstRep().getSystem()).setValue(claim.getIdentifierFirstRep().getValue())
+                ,null
+                ,null
+                ,null
+        );
+        for (ClaimEntity msg : entries) {
+            if (claim.getId() == null) {
+                throw new ResourceVersionConflictException("Claim is already present on the system "+ msg.getId() + ". Update existing claim.");
+            }
+
+            if (!msg.getId().toString().equals(claim.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Claim is already present on the system with a different Id "+ msg.getId() + ". Update existing claim.");
+            }
+        }
 
         if (claimEntity == null) claimEntity = new ClaimEntity();
 
@@ -223,7 +248,7 @@ public class ClaimDao implements ClaimRepository {
                     claimType.setConceptCode(code);
                 } else {
 
-                    throw new IllegalArgumentException("Missing System/Code = " + claim.getType().getCoding().get(0).getSystem() + " code = " + claim.getType().getCoding().get(0).getCode());
+                    throw new PreconditionFailedException("Missing System/Code = " + claim.getType().getCoding().get(0).getSystem() + " code = " + claim.getType().getCoding().get(0).getCode());
                 }
             }
             if (claim.getType().hasText()) {
@@ -247,7 +272,7 @@ public class ClaimDao implements ClaimRepository {
                     claimSubType.setConceptCode(code);
                 } else {
 
-                    throw new IllegalArgumentException("Missing System/Code = " + claim.getSubTypeFirstRep().getCoding().get(0).getSystem() + " code = " + claim.getSubTypeFirstRep().getCoding().get(0).getCode());
+                    throw new PreconditionFailedException("Missing System/Code = " + claim.getSubTypeFirstRep().getCoding().get(0).getSystem() + " code = " + claim.getSubTypeFirstRep().getCoding().get(0).getCode());
                 }
             }
             if (claim.getType().hasText()) {
@@ -271,7 +296,7 @@ public class ClaimDao implements ClaimRepository {
                     claimPriority.setConceptCode(code);
                 } else {
 
-                    throw new IllegalArgumentException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
+                    throw new PreconditionFailedException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
                 }
             }
             if (claim.getPriority().hasText()) {
@@ -355,7 +380,7 @@ public class ClaimDao implements ClaimRepository {
                         claimRelated.setConceptCode(code);
                     } else {
 
-                        throw new IllegalArgumentException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
+                        throw new PreconditionFailedException("Missing System/Code = " + claim.getPriority().getCoding().get(0).getSystem() + " code = " + claim.getPriority().getCoding().get(0).getCode());
                     }
                 }
                 if (component.getRelationship().hasText()) {
@@ -372,9 +397,11 @@ public class ClaimDao implements ClaimRepository {
     }
 
     @Override
-    public List<Resource> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id) {
+    public List<Resource> search(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam id
+            , @OptionalParam(name = Claim.SP_USE) TokenParam use
+            , @OptionalParam(name = "status") TokenParam status) {
 
-        List<ClaimEntity> qryResults =  searchEntity(ctx,patient, identifier,id);
+        List<ClaimEntity> qryResults =  searchEntity(ctx,patient, identifier,id, use, status);
         List<Resource> results = new ArrayList<>();
 
         for (ClaimEntity claimIntoleranceEntity : qryResults)
@@ -388,7 +415,10 @@ public class ClaimDao implements ClaimRepository {
     }
 
     @Override
-    public List<ClaimEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid) {
+    public List<ClaimEntity> searchEntity(FhirContext ctx, ReferenceParam patient, TokenParam identifier, StringParam resid
+            , @OptionalParam(name = Claim.SP_USE) TokenParam use
+            , @OptionalParam(name = "status") TokenParam status
+    ) {
         List<ClaimEntity> qryResults = null;
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -426,6 +456,60 @@ public class ClaimDao implements ClaimRepository {
             // TODO predList.add(builder.equal(join.get("system"),identifier.getSystem()));
 
         }
+
+        if (status != null) {
+            Integer taskstatus = null;
+
+            switch (status.getValue().toLowerCase()) {
+                case "active":
+                    taskstatus = 0;
+                    break;
+                case "cancelled":
+                    taskstatus = 1;
+                    break;
+                case "draft":
+                    taskstatus = 2;
+                    break;
+                case "entered-in-error":
+                    taskstatus = 3;
+                    break;
+
+                default:
+                    taskstatus=-1;
+            }
+
+
+            Predicate p = builder.equal(root.get("status"), taskstatus);
+            predList.add(p);
+
+        }
+        if (use != null) {
+            Integer taskstatus = null;
+
+            switch (use.getValue().toLowerCase()) {
+                case "complete":
+                    taskstatus = 0;
+                    break;
+                case "proposed":
+                    taskstatus = 1;
+                    break;
+                case "exploratory":
+                    taskstatus = 2;
+                    break;
+                case "other":
+                    taskstatus = 3;
+                    break;
+
+                default:
+                    taskstatus=-1;
+            }
+
+
+            Predicate p = builder.equal(root.get("use"), taskstatus);
+            predList.add(p);
+
+        }
+
 
 
         ParameterExpression<Date> parameterLower = builder.parameter(Date.class);

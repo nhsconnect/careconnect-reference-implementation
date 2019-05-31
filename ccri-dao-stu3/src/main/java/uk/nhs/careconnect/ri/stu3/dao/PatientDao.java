@@ -182,6 +182,8 @@ public class PatientDao implements PatientRepository {
 
         PatientEntity patientEntity = null;
         log.info("Started patient updated");
+
+
         if (theId != null) {
             log.trace("theId.getIdPart()="+theId.getIdPart());
             patientEntity = (PatientEntity) em.find(PatientEntity.class, Long.parseLong(theId.getIdPart()));

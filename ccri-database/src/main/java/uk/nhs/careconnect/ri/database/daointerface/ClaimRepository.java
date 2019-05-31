@@ -32,11 +32,15 @@ public interface ClaimRepository extends BaseRepository<ClaimEntity,Claim> {
             @OptionalParam(name = Claim.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Claim.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Claim.SP_RES_ID) StringParam id
+            , @OptionalParam(name = Claim.SP_USE) TokenParam use
+            , @OptionalParam(name = "status") TokenParam status
     );
 
     List<ClaimEntity> searchEntity(FhirContext ctx,
                                       @OptionalParam(name = Claim.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Claim.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Claim.SP_RES_ID) StringParam id
+            , @OptionalParam(name = Claim.SP_USE) TokenParam use
+            , @OptionalParam(name = "status") TokenParam status
     );
 }

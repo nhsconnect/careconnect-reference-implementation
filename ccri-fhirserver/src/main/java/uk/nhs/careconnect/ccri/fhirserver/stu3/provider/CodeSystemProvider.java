@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.http.HttpHeaders;
@@ -100,7 +101,10 @@ public class CodeSystemProvider implements ICCResourceProvider {
             CodeSystem newCodeSystem = codeSystemDao.create(ctx, codeSystem);
             method.setId(newCodeSystem.getIdElement());
             method.setResource(newCodeSystem);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -125,7 +129,10 @@ public class CodeSystemProvider implements ICCResourceProvider {
             CodeSystem newCodeSystem = codeSystemDao.create(ctx, codeSystem);
             method.setId(newCodeSystem.getIdElement());
             method.setResource(newCodeSystem);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 

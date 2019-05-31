@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.*;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
@@ -88,7 +89,10 @@ public class ValueSetProvider implements ICCResourceProvider {
             ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
             method.setId(newValueSet.getIdElement());
             method.setResource(newValueSet);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -124,7 +128,10 @@ public class ValueSetProvider implements ICCResourceProvider {
             ValueSet newValueSet = valueSetDao.create(ctx, valueSet);
             method.setId(newValueSet.getIdElement());
             method.setResource(newValueSet);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 

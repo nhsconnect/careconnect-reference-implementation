@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.http.HttpHeaders;
@@ -77,7 +78,10 @@ public class NamingSystemProvider implements ICCResourceProvider {
             NamingSystem newNamingSystem = namingSystemDao.create(ctx, namingSystem);
             method.setId(newNamingSystem.getIdElement());
             method.setResource(newNamingSystem);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -112,7 +116,10 @@ public class NamingSystemProvider implements ICCResourceProvider {
             NamingSystem newNamingSystem = namingSystemDao.create(ctx, namingSystem);
             method.setId(newNamingSystem.getIdElement());
             method.setResource(newNamingSystem);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 

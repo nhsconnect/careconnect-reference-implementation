@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
@@ -106,8 +107,10 @@ public class ConceptMapProvider implements ICCResourceProvider {
 			method.setCreated(true);
 			method.setId(newConceptMap.getIdElement());
 			method.setResource(newConceptMap);
-		} catch (Exception ex) {
-			log.info(ex.getMessage());
+		} catch (BaseServerResponseException srv) {
+			// HAPI Exceptions pass through
+			throw srv;
+		} catch(Exception ex) {
 			ProviderResponseLibrary.handleException(method,ex);
 		}
 		return method;
@@ -124,8 +127,10 @@ public class ConceptMapProvider implements ICCResourceProvider {
 			method.setCreated(false);
 			method.setId(newConceptMap.getIdElement());
 			method.setResource(newConceptMap);
-		} catch (Exception ex) {
-			log.info(ex.getMessage());
+		} catch (BaseServerResponseException srv) {
+			// HAPI Exceptions pass through
+			throw srv;
+		} catch(Exception ex) {
 			ProviderResponseLibrary.handleException(method,ex);
 		}
 

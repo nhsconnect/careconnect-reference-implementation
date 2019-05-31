@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Claim;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -68,8 +69,10 @@ public class ClaimProvider implements ICCResourceProvider {
             Claim newClaim = claimDao.create(ctx,claim, theId, theConditional);
             method.setId(newClaim.getIdElement());
             method.setResource(newClaim);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -80,7 +83,7 @@ public class ClaimProvider implements ICCResourceProvider {
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Claim claim) throws OperationOutcomeException {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Claim claim) {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -93,7 +96,10 @@ public class ClaimProvider implements ICCResourceProvider {
             Claim newClaim = claimDao.create(ctx,claim, null,null);
             method.setId(newClaim.getIdElement());
             method.setResource(newClaim);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -106,8 +112,10 @@ public class ClaimProvider implements ICCResourceProvider {
                                  @OptionalParam(name = Claim.SP_PATIENT) ReferenceParam patient
             , @OptionalParam(name = Claim.SP_IDENTIFIER) TokenParam identifier
             , @OptionalParam(name = Claim.SP_RES_ID) StringParam id
+            , @OptionalParam(name = Claim.SP_USE) TokenParam use
+            , @OptionalParam(name = "status") TokenParam status
     ) {
-        return claimDao.search(ctx,patient, identifier,id);
+        return claimDao.search(ctx,patient, identifier,id, use, status);
     }
 
     @Read()

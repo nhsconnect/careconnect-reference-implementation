@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
@@ -70,8 +71,10 @@ public class ObservationProvider implements ICCResourceProvider {
             Observation newObservation = observationDao.save(ctx,observation,theId,theConditional);
             method.setId(newObservation.getIdElement());
             method.setResource(newObservation);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -92,11 +95,12 @@ public class ObservationProvider implements ICCResourceProvider {
             Observation newObservation = observationDao.save(ctx, observation, null, null);
             method.setId(newObservation.getIdElement());
             method.setResource(newObservation);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
-
         return method;
     }
 

@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
+import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.PatientRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -108,7 +110,7 @@ public class PatientProvider implements ICCResourceProvider {
         Patient newPatient = null;
         try {
             newPatient = patientDao.update(ctx, patient, theId, theConditional);
-        } catch (Exception ex) {
+        } catch (OperationOutcomeException ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
         method.setId(newPatient.getIdElement());
@@ -143,6 +145,9 @@ public class PatientProvider implements ICCResourceProvider {
             newPatient = patientDao.update(ctx, patient, null, null);
             method.setId(newPatient.getIdElement());
             method.setResource(newPatient);
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
         } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }

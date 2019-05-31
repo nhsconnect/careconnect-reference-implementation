@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -69,8 +70,10 @@ public class ConditionProvider implements ICCResourceProvider {
             Condition newCondition = conditionDao.create(ctx, condition, theId, theConditional);
             method.setId(newCondition.getIdElement());
             method.setResource(newCondition);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -111,13 +114,12 @@ public class ConditionProvider implements ICCResourceProvider {
         Condition newCondition = conditionDao.create(ctx,condition, null,null);
         method.setId(newCondition.getIdElement());
         method.setResource(newCondition);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
-
-
-
 
         return method;
     }

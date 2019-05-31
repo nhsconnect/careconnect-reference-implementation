@@ -3,6 +3,7 @@ package uk.nhs.careconnect.ccri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -15,7 +16,9 @@ import java.io.*;
 public class ProviderResponseLibrary {
     private static final Logger log = LoggerFactory.getLogger(ProviderResponseLibrary.class);
 
-    public static MethodOutcome handleException(MethodOutcome method, Exception ex) {
+    public static MethodOutcome handleException(MethodOutcome method, Exception ex)  {
+
+
         if (ex instanceof OperationOutcomeException) {
 
             OperationOutcomeException outcomeException = (OperationOutcomeException) ex;

@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -42,10 +43,10 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
     @Autowired
     FhirContext ctx;
-    
+
     @Autowired
     private ResourceTestProvider resourceTestProvider;
-    
+
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
 
@@ -59,7 +60,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     @Update
     public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form, @IdParam IdType theId, @ConditionalUrlParam String theConditional, RequestDetails theRequestDetails) {
 
-    	resourcePermissionProvider.checkPermission("update");
+        resourcePermissionProvider.checkPermission("update");
 
 
         MethodOutcome method = new MethodOutcome();
@@ -68,7 +69,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
         method.setOperationOutcome(opOutcome);
 
-    try {
+        try {
 
         /* Moved to Validation interceptor
         MethodOutcome testMethod = resourceTestProvider.testResource(form,null,null);
@@ -77,14 +78,16 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         }*/
 
 
-        QuestionnaireResponse newForm = formDao.create(ctx, form, theId, theConditional);
-        method.setId(newForm.getIdElement());
-        method.setResource(newForm);
+            QuestionnaireResponse newForm = formDao.create(ctx, form, theId, theConditional);
+            method.setId(newForm.getIdElement());
+            method.setResource(newForm);
 
-    } catch (Exception ex) {
-
-        ProviderResponseLibrary.handleException(method,ex);
-    }
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method, ex);
+        }
 
 
         return method;
@@ -93,7 +96,7 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam QuestionnaireResponse form) {
 
-    	resourcePermissionProvider.checkPermission("create");
+        resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -101,25 +104,26 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
         method.setOperationOutcome(opOutcome);
         try {
 
-            QuestionnaireResponse newForm = formDao.create(ctx, form,null,null);
+            QuestionnaireResponse newForm = formDao.create(ctx, form, null, null);
             method.setId(newForm.getIdElement());
             method.setResource(newForm);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
         return method;
     }
 
-   
 
     @Read()
     public QuestionnaireResponse getQuestionnaireResponse(@IdParam IdType formId) {
-    	resourcePermissionProvider.checkPermission("read");
-        QuestionnaireResponse form = formDao.read(ctx,formId);
+        resourcePermissionProvider.checkPermission("read");
+        QuestionnaireResponse form = formDao.read(ctx, formId);
 
-        if ( form == null) {
+        if (form == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No QuestionnaireResponse/ " + formId.getIdPart()),
                     OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
@@ -127,22 +131,23 @@ public class QuestionnaireResponseProvider implements ICCResourceProvider {
 
         return form;
     }
+
     @Search
     public List<Resource> searchQuestionnaire(HttpServletRequest theRequest,
                                               @OptionalParam(name = QuestionnaireResponse.SP_IDENTIFIER) TokenParam identifier,
-                                              @OptionalParam(name= QuestionnaireResponse.SP_RES_ID) StringParam id,
-                                              @OptionalParam(name= QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
+                                              @OptionalParam(name = QuestionnaireResponse.SP_RES_ID) StringParam id,
+                                              @OptionalParam(name = QuestionnaireResponse.SP_QUESTIONNAIRE) ReferenceParam questionnaire,
                                               @OptionalParam(name = QuestionnaireResponse.SP_PATIENT) ReferenceParam patient,
-                                              @IncludeParam(allow= {"*"}) Set<Include> includes
+                                              @IncludeParam(allow = {"*"}) Set<Include> includes
     ) {
-        return formDao.searchQuestionnaireResponse(ctx, identifier,id,questionnaire,patient, includes);
+        return formDao.searchQuestionnaireResponse(ctx, identifier, id, questionnaire, patient, includes);
     }
 
     @Validate
     public MethodOutcome testResource(@ResourceParam QuestionnaireResponse resource,
-                                  @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResource(resource,theMode,theProfile);
+                                      @Validate.Mode ValidationModeEnum theMode,
+                                      @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource, theMode, theProfile);
     }
 
 }

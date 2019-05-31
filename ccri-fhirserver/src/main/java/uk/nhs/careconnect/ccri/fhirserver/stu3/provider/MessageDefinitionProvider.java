@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.apache.http.HttpHeaders;
@@ -77,7 +78,10 @@ public class MessageDefinitionProvider implements ICCResourceProvider {
             MessageDefinition newMessageDefinition = messageDefinitionDao.create(ctx, messageDefinition);
             method.setId(newMessageDefinition.getIdElement());
             method.setResource(newMessageDefinition);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 
@@ -113,7 +117,10 @@ public class MessageDefinitionProvider implements ICCResourceProvider {
             MessageDefinition newMessageDefinition = messageDefinitionDao.create(ctx, messageDefinition);
             method.setId(newMessageDefinition.getIdElement());
             method.setResource(newMessageDefinition);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
 

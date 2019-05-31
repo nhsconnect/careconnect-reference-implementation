@@ -5,7 +5,10 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +102,24 @@ public class TaskDao implements TaskRepository {
         if (task.hasId()) taskEntity = readEntity(ctx, task.getIdElement());
 
 
+        if (task.getIdentifier().size()== 0 && theId != null) {
+            throw new PreconditionFailedException("Business rule violation. At least one identifier needs to be supplied when updating a resource");
+        }
+
+        List<TaskEntity> entries = searchEntity(ctx, null, new TokenParam().setSystem(task.getIdentifierFirstRep().getSystem()).setValue(task.getIdentifierFirstRep().getValue()),null, null, null,null, null);
+        for (TaskEntity msg : entries) {
+            if (task.getId() == null) {
+                throw new ResourceVersionConflictException("Task is already present on the system "+ msg.getId() + ". Update existing Task.");
+            }
+
+            if (!msg.getId().toString().equals(task.getIdElement().getIdPart())) {
+                throw new ResourceVersionConflictException("Task is already present on the system with a different Id "+ msg.getId() + ". Update existing Task.");
+            }
+        }
+
         if (taskEntity == null) taskEntity = new TaskEntity();
+
+
 
         ClaimEntity claimEntity = null;
         if (task.hasFocus() ) {
@@ -206,7 +226,7 @@ public class TaskDao implements TaskRepository {
                 taskEntity.setOwnerOrganisation(organisationEntity);
             } else if (practitionerEntity != null ) {
                 taskEntity.setOwnerPractitioner(practitionerEntity);
-            } else if (practitionerEntity != null ) {
+            } else if (patientEntity != null ) {
                 taskEntity.setOwnerPatient(patientEntity);
             } else {
                 throw new ResourceNotFoundException("Owner reference was not found");
@@ -241,7 +261,7 @@ public class TaskDao implements TaskRepository {
                     taskCode.setConceptCode(code);
                 } else {
 
-                    throw new IllegalArgumentException("Missing System/Code = " + task.getCode().getCoding().get(0).getSystem() + " code = " + task.getCode().getCoding().get(0).getCode());
+                    throw new PreconditionFailedException("Missing System/Code = " + task.getCode().getCoding().get(0).getSystem() + " code = " + task.getCode().getCoding().get(0).getCode());
                 }
             }
             if (task.getCode().hasText()) {
@@ -358,7 +378,7 @@ public class TaskDao implements TaskRepository {
         if (owner !=null)
         {
 
-            if (owner.getBaseUrl().contains("Patient")) {
+            if (owner.getValue().contains("Patient")) {
                 if (daoutils.isNumeric(owner.getIdPart())) {
                     Join<TaskEntity, PatientEntity> join = root.join("ownerPatient", JoinType.LEFT);
 
@@ -370,7 +390,7 @@ public class TaskDao implements TaskRepository {
                     Predicate p = builder.equal(join.get("id"), -1);
                     predList.add(p);
                 }
-            } else if (owner.getBaseUrl().contains("Practitioner")) {
+            } else if (owner.getValue().contains("Practitioner")) {
                 if (daoutils.isNumeric(owner.getIdPart())) {
                     Join<TaskEntity, PractitionerEntity> join = root.join("ownerPractitioner", JoinType.LEFT);
 
@@ -382,7 +402,7 @@ public class TaskDao implements TaskRepository {
                     Predicate p = builder.equal(join.get("id"), -1);
                     predList.add(p);
                 }
-            } else if (owner.getBaseUrl().contains("Organization")) {
+            } else if (owner.getValue().contains("Organization")) {
                 if (daoutils.isNumeric(owner.getIdPart())) {
                     Join<TaskEntity, OrganisationEntity> join = root.join("ownerOrganisation", JoinType.LEFT);
 
@@ -401,7 +421,7 @@ public class TaskDao implements TaskRepository {
         if (requester !=null)
         {
 
-            if (requester.getBaseUrl().contains("Patient")) {
+            if (requester.getValue().contains("Patient")) {
                 if (daoutils.isNumeric(requester.getIdPart())) {
                     Join<TaskEntity, PatientEntity> join = root.join("requesterPatient", JoinType.LEFT);
 
@@ -413,7 +433,7 @@ public class TaskDao implements TaskRepository {
                     Predicate p = builder.equal(join.get("id"), -1);
                     predList.add(p);
                 }
-            } else if (requester.getBaseUrl().contains("Practitioner")) {
+            } else if (requester.getValue().contains("Practitioner")) {
                 if (daoutils.isNumeric(requester.getIdPart())) {
                     Join<TaskEntity, PractitionerEntity> join = root.join("requesterPractitioner", JoinType.LEFT);
 
@@ -425,7 +445,7 @@ public class TaskDao implements TaskRepository {
                     Predicate p = builder.equal(join.get("id"), -1);
                     predList.add(p);
                 }
-            } else if (requester.getBaseUrl().contains("Organization")) {
+            } else if (requester.getValue().contains("Organization")) {
                 if (daoutils.isNumeric(requester.getIdPart())) {
                     Join<TaskEntity, OrganisationEntity> join = root.join("requesterOrganisation", JoinType.LEFT);
 
@@ -486,7 +506,7 @@ public class TaskDao implements TaskRepository {
         {
             criteria.select(root);
         }
-        criteria.orderBy(builder.desc(root.get("created")));
+        criteria.orderBy(builder.desc(root.get("authored")));
 
         TypedQuery<TaskEntity> typedQuery = em.createQuery(criteria).setMaxResults(daoutils.MAXROWS);
 

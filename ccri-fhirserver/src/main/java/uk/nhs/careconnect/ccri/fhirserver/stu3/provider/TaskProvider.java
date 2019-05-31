@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.Task;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -68,19 +69,18 @@ public class TaskProvider implements ICCResourceProvider {
             Task newTask = taskDao.create(ctx,task, theId, theConditional);
             method.setId(newTask.getIdElement());
             method.setResource(newTask);
-        } catch (Exception ex) {
-
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
-
-
-
 
         return method;
     }
 
     @Create
-    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Task task) throws OperationOutcomeException {
+    public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam Task task)  {
 
     	resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
@@ -93,10 +93,12 @@ public class TaskProvider implements ICCResourceProvider {
             Task newTask = taskDao.create(ctx,task, null,null);
             method.setId(newTask.getIdElement());
             method.setResource(newTask);
-        } catch (Exception ex) {
+        } catch (BaseServerResponseException srv) {
+            // HAPI Exceptions pass through
+            throw srv;
+        } catch(Exception ex) {
             ProviderResponseLibrary.handleException(method,ex);
         }
-
 
         return method;
     }
