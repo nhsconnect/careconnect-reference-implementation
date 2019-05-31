@@ -39,6 +39,9 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="PREFIX",length = MAX_DESC_LENGTH,nullable = true)
 	private String prefix;
 
+	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemCode.class)
+	private Set<QuestionnaireItemCode> codes = new HashSet<>();
+
 	@Column(name="ITEM_TEXT",nullable = true)
 	private String itemText;
 
@@ -251,5 +254,13 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setEnabled(Set<QuestionnaireItemEnable> enabled) {
 		this.enabled = enabled;
+	}
+
+	public Set<QuestionnaireItemCode> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(Set<QuestionnaireItemCode> codes) {
+		this.codes = codes;
 	}
 }

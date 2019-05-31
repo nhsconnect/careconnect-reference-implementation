@@ -225,6 +225,15 @@ public class QuestionnaireEntityToFHIRQuestionnaireTransformer implements Transf
             itemComponent.addEnableWhen(when);
         }
 
+        for (QuestionnaireItemCode code : item.getCodes()) {
+            if (code != null) {
+                itemComponent.addCode(new Coding()
+                                .setCode(code.getCode().getCode())
+                                .setSystem(code.getCode().getSystem())
+                                .setDisplay(code.getCode().getDisplay()));
+            }
+        }
+
         return itemComponent;
     }
 
