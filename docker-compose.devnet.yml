@@ -193,7 +193,7 @@ services:
 
   ccrimongo:
     container_name: ccrimongo
-    image: mongo:3.6.3
+    image: mongo:3.6.4
     networks:
       - ccri_net
 
