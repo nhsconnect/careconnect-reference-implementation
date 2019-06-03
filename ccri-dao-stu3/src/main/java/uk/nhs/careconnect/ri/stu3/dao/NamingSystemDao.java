@@ -217,7 +217,7 @@ public class NamingSystemDao implements NamingSystemRepository {
         for (NamingSystemEntity namingSystemEntity : qryResults)
         {
             if (namingSystemEntity.getResource() != null) {
-                results.add((NamingSystem) ctx.newJsonParser().parseResource(namingSystemEntity.getResource()));
+                results.add(namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity, ctx));
             } else {
 
                 NamingSystem namingSystem = namingSystemEntityToFHIRValuesetTransformer.transform(namingSystemEntity, ctx);
