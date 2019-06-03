@@ -5,12 +5,16 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import com.google.common.annotations.VisibleForTesting;
+import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class HapiProperties {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HapiProperties.class);
+
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
     static final String ALLOW_MULTIPLE_DELETE = "allow_multiple_delete";
     static final String ALLOW_PLACEHOLDER_REFERENCES = "allow_placeholder_references";
@@ -145,7 +149,17 @@ public class HapiProperties {
 
     private static String getProperty(String propertyName) {
         Properties properties = HapiProperties.getProperties();
-
+        log.trace("Looking for property = " + propertyName);
+        if (System.getenv(propertyName)!= null) {
+            String value= System.getenv(propertyName);
+            log.debug("System Environment property Found " + propertyName+ " = "+ value);
+            return value;
+        }
+        if (System.getProperty(propertyName)!= null) {
+            String value= System.getenv(propertyName);
+            log.debug("System Property Found " + propertyName+ " = "+ value);
+            return value;
+        }
         if (properties != null) {
             return properties.getProperty(propertyName);
         }
@@ -157,6 +171,7 @@ public class HapiProperties {
         Properties properties = HapiProperties.getProperties();
 
         if (properties != null) {
+
             String value = properties.getProperty(propertyName);
 
             if (value != null && value.length() > 0) {

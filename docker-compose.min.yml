@@ -25,22 +25,12 @@ services:
     environment:
       - datasource.username=${MYSQL_DB_USER}
       - datasource.password=${MYSQL_DB_PASSWORD}
-      - datasource.host=//ccrisql
       - datasource.driver=org.postgresql.Driver
-      - datasource.path=5432/careconnect
-      - datasource.vendor=postgresql
+      - datasource.url=jdbc:postgresql://ccrisql:5432/careconnect
       - datasource.showSql=false
       - datasource.showDdl=false
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
-      - ccri.implementation.description=Care Connect Reference Implementation
-      - ccri.software.version=3.8.0-SNAPSHOT
-      - ccri.software.name=CCRI-Server
-      - ccri.server=Care Connect API (unsecured)
-      - ccri.server.base=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-      - ccri.CRUD_create=true
-      - ccri.oauth2=false
     ports:
       - 8186:8186
     extra_hosts:
