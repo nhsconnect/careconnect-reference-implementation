@@ -6,9 +6,9 @@ services:
 
   ccrisql:
     container_name: ccrisql
-    image: thorlogic/ccri-sql${IMAGE_TAG}
+    image: postgres:11.3
     volumes:
-      - ccri-postgres=/var/lib/postgresql/data
+      - sfs-postgres:/var/lib/postgresql/data
     environment:
      - POSTGRES_DB=careconnect
      - POSTGRES_USER=${MYSQL_DB_USER}
@@ -70,7 +70,7 @@ volumes:
   tie-log-volume:
   mongo-log-volume:
   sqlvol:
-  ccri-postgres : {}
+  sfs-postgres :
 
 networks:
   ccri_net:
