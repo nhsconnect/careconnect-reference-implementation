@@ -1,4 +1,5 @@
 version: '2.1'
+
 services:
 
 # Care Connect Query API
@@ -6,6 +7,8 @@ services:
   ccrisql:
     container_name: ccrisql
     image: thorlogic/ccri-sql${IMAGE_TAG}
+    volumes:
+      - ccri-postgres=/var/lib/postgresql/data
     environment:
      - POSTGRES_DB=careconnect
      - POSTGRES_USER=${MYSQL_DB_USER}
@@ -67,6 +70,7 @@ volumes:
   tie-log-volume:
   mongo-log-volume:
   sqlvol:
+  ccri-postgres : {}
 
 networks:
   ccri_net:
