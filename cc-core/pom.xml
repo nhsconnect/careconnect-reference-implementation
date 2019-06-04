@@ -9,7 +9,7 @@
     <version>3.8.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <hapi-fhir-version>3.8.0-SNAPSHOT</hapi-fhir-version>
+        <hapi-fhir-version>3.8.0</hapi-fhir-version>
     </properties>
 
     <dependencies>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-converter</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
+            <version>3.8.0</version>
             <scope>compile</scope>
         </dependency>
 

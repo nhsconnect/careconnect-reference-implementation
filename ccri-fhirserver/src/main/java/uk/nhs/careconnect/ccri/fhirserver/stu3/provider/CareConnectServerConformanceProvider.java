@@ -78,7 +78,8 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
             if (lastRefresh != null) {
                 java.time.Duration duration = java.time.Duration.between(Instant.now(), lastRefresh);
                 // May need to revisit
-                if ((duration.getSeconds() * 60) < 2) return capabilityStatement;
+                if ((duration.getSeconds() * 60) < 1) return capabilityStatement;
+                capabilityStatement = null;
             }
         }
         lastRefresh = Instant.now();
