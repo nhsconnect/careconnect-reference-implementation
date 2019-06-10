@@ -72,6 +72,7 @@ public class TaskDao implements TaskRepository {
     public Task read(FhirContext ctx, IdType theId) {
         if (daoutils.isNumeric(theId.getIdPart())) {
             TaskEntity task = (TaskEntity) em.find(TaskEntity.class, Long.parseLong(theId.getIdPart()));
+            if (task == null) return null;
             return taskEntityToFHIRTask.transform(task, ctx);
         }
         return null;
