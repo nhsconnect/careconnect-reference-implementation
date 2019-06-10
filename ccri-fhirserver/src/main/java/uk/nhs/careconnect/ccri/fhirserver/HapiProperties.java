@@ -70,11 +70,12 @@ public class HapiProperties {
     static final String SECURITY_OAUTH_SCOPE = "security.oauth2.scope";
     static final String SECURITY_SMART_SCOPE = "security.oauth2.smart";
 
-    static final String GP_CONNECT_SERVER = "gpconnect.address";
     static final String GP_CONNECT_SERVER_V0 = "gpconnect.addressDSTU2";
 
-    static final String GP_CONNECT_ASID_FROM = "gpconnect.ASIDfrom";
-    static final String GP_CONNECT_ASID_TO = "gpconnect.ASIDto";
+    static final String NHS_SERVER = "nhs.address";
+
+    static final String NHS_ASID_FROM = "nhs.ASIDfrom";
+    static final String NHS_ASID_TO = "nhs.ASIDto";
 
     static final String TERMINOLOGY_SERVER = "terminology.server.primary";
     static final String TERMINOLOGY_SERVER_SECONDARY = "terminology.server.secondary";
@@ -439,21 +440,24 @@ public class HapiProperties {
         return HapiProperties.getProperty(SECURITY_OAUTH_SCOPE);
     }
 
-    public static String getGpConnectServer() {
-        return HapiProperties.getProperty(GP_CONNECT_SERVER);
-    }
 
-    public static String getGpConnectServerV0() {
+    public static String getNHSServerV0() {
         return HapiProperties.getProperty(GP_CONNECT_SERVER_V0);
     }
 
-    public static String getGpConnectAsidFrom() {
-        return HapiProperties.getProperty(GP_CONNECT_ASID_FROM);
+    public static String getNhsServer() {
+        return HapiProperties.getProperty(NHS_SERVER);
     }
 
-    public static String getGpConnectAsidTo() {
-        return HapiProperties.getProperty(GP_CONNECT_ASID_TO);
+    public static String getNhsAsidFrom() {
+        return HapiProperties.getProperty(NHS_ASID_FROM);
     }
+
+    public static String getNhsAsidTo() {
+        return HapiProperties.getProperty(NHS_ASID_TO);
+    }
+
+
 
     public static String getTerminologyServer() {
         return HapiProperties.getProperty(TERMINOLOGY_SERVER);
