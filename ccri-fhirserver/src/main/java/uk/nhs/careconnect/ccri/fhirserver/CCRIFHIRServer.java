@@ -17,9 +17,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(exclude = {ElasticsearchAutoConfiguration.class})
 @EnableTransactionManagement()
+@EnableSwagger2
 @PropertySource("classpath:application.properties")
 @ComponentScan({"uk.nhs.careconnect.ccri","uk.nhs.careconnect.ri.database","uk.nhs.careconnect.ri.stu3.dao","uk.nhs.careconnect.ri.r4.dao"})
 public class CCRIFHIRServer {
