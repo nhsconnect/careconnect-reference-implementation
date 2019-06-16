@@ -44,7 +44,9 @@ public class OpenAPIService {
     public String greeting() {
         HttpClient client = getHttpClient();
 
-        HttpGet request = new HttpGet("http://127.0.0.1:"+serverPort+serverPath+"/STU3/metadata");
+        String apidocs = "http://localhost:"+serverPort+serverPath+"/STU3/metadata";
+
+        HttpGet request = new HttpGet(apidocs);
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         request.setHeader(HttpHeaders.ACCEPT, "application/json");
 
@@ -70,7 +72,7 @@ public class OpenAPIService {
             log.error("IO Exception " + ex.getMessage());
         }
 
-        return "Unable to resolve swagger/openapi documentation";
+        return "Unable to resolve swagger/openapi documentation from " + apidocs;
     }
 
     private String parseConformanceStatement(CapabilityStatement capabilityStatement) {
