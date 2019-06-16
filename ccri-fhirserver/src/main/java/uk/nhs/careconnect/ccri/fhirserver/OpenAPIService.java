@@ -24,6 +24,8 @@ import java.util.Map;
 @RestController
 public class OpenAPIService {
 
+    // Swagger guide https://swagger.io/docs/specification/2-0/basic-structure/
+
     @Autowired
     private ApplicationContext appCtx;
 
@@ -38,7 +40,7 @@ public class OpenAPIService {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpenAPIService.class);
 
-    @RequestMapping("/openapi")
+    @RequestMapping("/apidocs")
     public String greeting() {
         HttpClient client = getHttpClient();
 
@@ -74,7 +76,7 @@ public class OpenAPIService {
     private String parseConformanceStatement(CapabilityStatement capabilityStatement) {
         JSONObject obj = new JSONObject();
 
-        obj.put("openapi", "3.0.0");
+        obj.put("swagger", "2.0");
 
         JSONObject info = new JSONObject();
         obj.put("info",info);
@@ -192,8 +194,8 @@ public class OpenAPIService {
                 parms.put("in", "query");
                 parms.put("description", search.getDocumentation());
                 parms.put("required", false);
-                parms.put("schema", new JSONObject()
-                        .put("type", "string"));
+               // parms.put("schema", new JSONObject()
+                       parms.put("type", "string");
             }
         }
         if (interactionComponent.getCode().equals(CapabilityStatement.TypeRestfulInteraction.CREATE)) {
@@ -204,8 +206,8 @@ public class OpenAPIService {
             parm.put("in", "body");
             parm.put("description", "The resource ");
             parm.put("required", true);
-            parm.put("schema",  new JSONObject()
-                    .put("type","object"));
+           // parm.put("schema",  new JSONObject()
+                    parm.put("type","object");
             opObj.put("responses", getResponses());
         }
 
@@ -236,8 +238,8 @@ public class OpenAPIService {
         parm.put("in", "path");
         parm.put("description", "The logical id of the resource");
         parm.put("required", true);
-        parm.put("schema",  new JSONObject()
-                .put("type","string"));
+       // parm.put("schema",  new JSONObject()
+                parm.put("type","string");
         opObj.put("responses", getResponses());
         if (interactionComponent.getCode().equals(CapabilityStatement.TypeRestfulInteraction.UPDATE)) {
 
@@ -247,8 +249,8 @@ public class OpenAPIService {
             parm.put("in", "body");
             parm.put("description", "The resource ");
             parm.put("required", true);
-            parm.put("schema",  new JSONObject()
-                    .put("type","object"));
+            //parm.put("schema",  new JSONObject()
+                    parm.put("type","object");
             opObj.put("responses", getResponses());
         }
         return opObj;
