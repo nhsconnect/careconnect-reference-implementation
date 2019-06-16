@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class OpenAPIService {
@@ -101,33 +103,55 @@ public class OpenAPIService {
         opObjC.put("parameters", paramsC);
         opObjC.put("responses", getResponses());
 
+        Map pathMap= new HashMap<String, JSONObject>();
+
         for (CapabilityStatement.CapabilityStatementRestComponent rest : capabilityStatement.getRest()) {
             for (CapabilityStatement.CapabilityStatementRestResourceComponent resourceComponent : rest.getResource()) {
 
                 for (CapabilityStatement.ResourceInteractionComponent interactionComponent : resourceComponent.getInteraction()) {
-                    JSONObject resObj = new JSONObject();
-
-
+                    JSONObject resObj = null;
                     switch (interactionComponent.getCode()) {
                         case READ:
-                            paths.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                            if (pathMap.containsKey("/STU3/"+resourceComponent.getType()+"/{id}")) {
+                                resObj = (JSONObject) pathMap.get("/STU3/"+resourceComponent.getType()+"/{id}");
+                            } else {
+                                resObj = new JSONObject();
+                                pathMap.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                                paths.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                            }
                             resObj.put("get",getId(resourceComponent, interactionComponent));
                             break;
                         case SEARCHTYPE:
-                            paths.put("/STU3/"+resourceComponent.getType(),resObj);
+                            if (pathMap.containsKey("/STU3/"+resourceComponent.getType())) {
+                                resObj = (JSONObject) pathMap.get("/STU3/"+resourceComponent.getType());
+                            } else {
+                                resObj = new JSONObject();
+                                pathMap.put("/STU3/"+resourceComponent.getType(),resObj);
+                                paths.put("/STU3/"+resourceComponent.getType(),resObj);
+                            }
                             resObj.put("get",getSearch(resourceComponent, interactionComponent));
-
                             break;
                         case UPDATE:
-                            paths.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                            if (pathMap.containsKey("/STU3/"+resourceComponent.getType()+"/{id}")) {
+                                resObj = (JSONObject) pathMap.get("/STU3/"+resourceComponent.getType()+"/{id}");
+                            } else {
+                                resObj = new JSONObject();
+                                pathMap.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                                paths.put("/STU3/"+resourceComponent.getType()+"/{id}",resObj);
+                            }
                             resObj.put("put",getId(resourceComponent, interactionComponent));
                             break;
                         case CREATE:
-                            log.info("CREATE!");
-                            paths.put("/STU3/"+resourceComponent.getType(),resObj);
-                            JSONObject opObj = new JSONObject();
-                            resObj.put("post",opObj);
-                            obj.put("description",resourceComponent.getType());
+
+                            if (pathMap.containsKey("/STU3/"+resourceComponent.getType())) {
+                                resObj = (JSONObject) pathMap.get("/STU3/"+resourceComponent.getType());
+                            } else {
+                                resObj = new JSONObject();
+                                pathMap.put("/STU3/"+resourceComponent.getType(),resObj);
+                                paths.put("/STU3/"+resourceComponent.getType(),resObj);
+                            }
+
+                            resObj.put("post",getSearch(resourceComponent, interactionComponent));
                             break;
 
                     }
@@ -140,30 +164,50 @@ public class OpenAPIService {
     }
 
 
+
+
     private JSONObject getSearch(CapabilityStatement.CapabilityStatementRestResourceComponent resourceComponent,
                                  CapabilityStatement.ResourceInteractionComponent interactionComponent) {
         JSONObject opObj = new JSONObject();
 
         opObj.put("description","For detailed description see: "
          +"<a href=\"https://hl7.org/fhir/stu3/"+resourceComponent.getType()+".html\" target=\"_blank\">FHIR "+resourceComponent.getType()+"</a> ");
-        opObj.put("consumes", new JSONArray());
+        JSONArray c = new JSONArray();
+        c.put("application/fhir+json");
+        c.put("application/fhir+xml");
+        opObj.put("consumes", c);
+
         JSONArray ps = new JSONArray();
         ps.put("application/fhir+json");
         ps.put("application/fhir+xml");
         opObj.put("produces",ps);
         JSONArray paramss = new JSONArray();
         opObj.put("parameters", paramss);
-        for ( CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent search : resourceComponent.getSearchParam()) {
-            JSONObject parms = new JSONObject();
-            paramss.put(parms);
-            parms.put("name", search.getName());
-            parms.put("in", "query");
-            parms.put("description", search.getDocumentation());
-            parms.put("required", false);
-            parms.put("schema",  new JSONObject()
-                    .put("type","string"));
-        }
 
+        if (interactionComponent.getCode().equals(CapabilityStatement.TypeRestfulInteraction.SEARCHTYPE)) {
+            for (CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent search : resourceComponent.getSearchParam()) {
+                JSONObject parms = new JSONObject();
+                paramss.put(parms);
+                parms.put("name", search.getName());
+                parms.put("in", "query");
+                parms.put("description", search.getDocumentation());
+                parms.put("required", false);
+                parms.put("schema", new JSONObject()
+                        .put("type", "string"));
+            }
+        }
+        if (interactionComponent.getCode().equals(CapabilityStatement.TypeRestfulInteraction.CREATE)) {
+
+            JSONObject parm = new JSONObject();
+            paramss.put(parm);
+            parm.put("name","body");
+            parm.put("in", "body");
+            parm.put("description", "The resource ");
+            parm.put("required", true);
+            parm.put("schema",  new JSONObject()
+                    .put("type","object"));
+            opObj.put("responses", getResponses());
+        }
 
         opObj.put("responses", getResponses());
         return opObj;
