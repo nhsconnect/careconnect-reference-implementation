@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.interceptor;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.IResource;

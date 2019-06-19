@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.configuration;
 
 
 import ca.uhn.fhir.context.FhirContext;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.DatabaseBackedPagingProvider;
 import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileDbValidationSupportSTU3;
@@ -106,7 +107,7 @@ public class Config {
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
-        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportR4(r4ctx, stu3ctx,HapiProperties.getTerminologyServerSecondary()));
+        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportR4(r4ctx, stu3ctx, HapiProperties.getTerminologyServerSecondary()));
         validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportR4(r4ctx, stu3ctx));
 
         instanceValidator.setValidationSupport(validationSupportChain);

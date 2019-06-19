@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.configuration;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.flywaydb.core.Flyway;
@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;

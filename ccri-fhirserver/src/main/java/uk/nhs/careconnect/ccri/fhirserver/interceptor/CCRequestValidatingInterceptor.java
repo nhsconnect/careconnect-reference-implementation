@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.interceptor;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -18,6 +18,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
+import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
 
 import javax.servlet.http.HttpServletRequest;

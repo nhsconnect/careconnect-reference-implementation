@@ -4,10 +4,9 @@ import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
-import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 
 
 @Component

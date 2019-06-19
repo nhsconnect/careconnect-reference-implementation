@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.support;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

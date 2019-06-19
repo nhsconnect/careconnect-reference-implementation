@@ -25,12 +25,11 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
-import uk.nhs.careconnect.ccri.fhirserver.OperationOutcomeFactory;
+import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 
-import uk.nhs.careconnect.ccri.fhirserver.ProviderResponseLibrary;
+import uk.nhs.careconnect.ccri.fhirserver.support.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 
 import javax.servlet.http.HttpServletRequest;

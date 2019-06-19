@@ -2,7 +2,6 @@ package uk.nhs.careconnect.ccri.fhirserver;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
@@ -18,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import uk.nhs.careconnect.ccri.fhirserver.support.CorsFilter;
 
 @SpringBootApplication(exclude = {ElasticsearchAutoConfiguration.class})
 @EnableTransactionManagement()

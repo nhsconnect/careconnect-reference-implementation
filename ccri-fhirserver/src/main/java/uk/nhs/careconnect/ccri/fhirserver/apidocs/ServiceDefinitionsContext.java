@@ -1,7 +1,8 @@
-package uk.nhs.careconnect.ccri.fhirserver;
+package uk.nhs.careconnect.ccri.fhirserver.apidocs;
 
 import org.springframework.stereotype.Component;
 import springfox.documentation.swagger.web.SwaggerResource;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 
 import java.util.ArrayList;
 import java.util.List;
