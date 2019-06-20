@@ -131,7 +131,9 @@ public class NamingSystemDao implements NamingSystemRepository {
 
         //Created the NamingSystem so add the sub concepts
 
-
+        for (NamingSystemUniqueId id : namingSystemEntity.getNamingSystemUniqueIds()) {
+            em.remove(id);
+        }
 
         namingSystemEntity.setNamingSystemUniqueIds(new ArrayList<>());
         log.trace("NamingSystem = "+namingSystem.getUrl());

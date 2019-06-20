@@ -472,8 +472,6 @@ public class HapiProperties {
         return HapiProperties.getProperty(NHS_ASID_TO);
     }
 
-
-
     public static String getTerminologyServer() {
         return HapiProperties.getProperty(TERMINOLOGY_SERVER);
     }
