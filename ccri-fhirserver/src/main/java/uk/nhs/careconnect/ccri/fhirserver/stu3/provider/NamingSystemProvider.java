@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.support.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.NamingSystemRepository;
@@ -31,22 +32,23 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
 public class NamingSystemProvider implements ICCResourceProvider {
 
 
-	@Autowired
-	FhirContext ctx;
+    @Autowired
+    FhirContext ctx;
 
     @Autowired
     private NamingSystemRepository namingSystemDao;
-    
+
     @Autowired
     private ResourcePermissionProvider resourcePermissionProvider;
 
-    
+
     @Override
     public Class<NamingSystem> getResourceType() {
         return NamingSystem.class;
@@ -64,9 +66,9 @@ public class NamingSystemProvider implements ICCResourceProvider {
 
 
     @Update()
-    public MethodOutcome update(HttpServletRequest theRequest,@ResourceParam NamingSystem namingSystem) {
+    public MethodOutcome update(HttpServletRequest theRequest, @ResourceParam NamingSystem namingSystem) {
 
-    	resourcePermissionProvider.checkPermission("update");
+        resourcePermissionProvider.checkPermission("update");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -81,8 +83,8 @@ public class NamingSystemProvider implements ICCResourceProvider {
         } catch (BaseServerResponseException srv) {
             // HAPI Exceptions pass through
             throw srv;
-        } catch(Exception ex) {
-            ProviderResponseLibrary.handleException(method,ex);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method, ex);
         }
 
 
@@ -91,20 +93,18 @@ public class NamingSystemProvider implements ICCResourceProvider {
 
     @Search
     public List<NamingSystem> search(HttpServletRequest theRequest,
-              @OptionalParam(name =NamingSystem.SP_NAME) StringParam name,
-               @OptionalParam(name =NamingSystem.SP_PUBLISHER) StringParam publisher,
-             @OptionalParam(name = NamingSystem.SP_VALUE) TokenParam unique
+                                     @OptionalParam(name = NamingSystem.SP_NAME) StringParam name,
+                                     @OptionalParam(name = NamingSystem.SP_PUBLISHER) StringParam publisher,
+                                     @OptionalParam(name = NamingSystem.SP_VALUE) TokenParam unique
     ) {
         return namingSystemDao.search(ctx, name, publisher, unique);
     }
 
 
-
-
     @Create
     public MethodOutcome create(HttpServletRequest theRequest, @ResourceParam NamingSystem namingSystem) {
 
-    	resourcePermissionProvider.checkPermission("create");
+        resourcePermissionProvider.checkPermission("create");
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
@@ -119,8 +119,8 @@ public class NamingSystemProvider implements ICCResourceProvider {
         } catch (BaseServerResponseException srv) {
             // HAPI Exceptions pass through
             throw srv;
-        } catch(Exception ex) {
-            ProviderResponseLibrary.handleException(method,ex);
+        } catch (Exception ex) {
+            ProviderResponseLibrary.handleException(method, ex);
         }
 
         return method;
@@ -129,10 +129,10 @@ public class NamingSystemProvider implements ICCResourceProvider {
     @Read
     public NamingSystem get
             (@IdParam IdType internalId) {
-    	resourcePermissionProvider.checkPermission("read");
+        resourcePermissionProvider.checkPermission("read");
         NamingSystem namingSystem = namingSystemDao.read(ctx, internalId);
 
-        if ( namingSystem == null) {
+        if (namingSystem == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No NamingSystem/" + internalId.getIdPart()),
                     OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
@@ -140,29 +140,28 @@ public class NamingSystemProvider implements ICCResourceProvider {
 
         return namingSystem;
     }
-    
+
     @Validate
     public MethodOutcome testResource(@ResourceParam NamingSystem resource,
-                                  @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
-        return resourceTestProvider.testResource(resource,theMode,theProfile);
+                                      @Validate.Mode ValidationModeEnum theMode,
+                                      @Validate.Profile String theProfile) {
+        return resourceTestProvider.testResource(resource, theMode, theProfile);
     }
 
 
-
-    @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
-    public MethodOutcome getValueCodes(
-            @OperationParam(name="id") TokenParam namingSystemId,
-            @OperationParam(name="query") ReferenceParam namingSystemQuery
+    @Operation(name = "$refresh", idempotent = true, bundleType = BundleTypeEnum.COLLECTION)
+    public MethodOutcome refresh(
+            @OperationParam(name = "id") TokenParam namingSystemId,
+            @OperationParam(name = "query") ReferenceParam namingSystemQuery
 
     ) throws Exception {
 
-    	System.out.println("getting value sets" + namingSystemQuery.getValue());
-    	
-    	HttpClient client1 = getHttpClient();
+        System.out.println("getting Naming Systems" + HapiProperties.getTerminologyServerSecondary());
+
+        HttpClient client1 = getHttpClient();
         HttpGet request = null;
-    	if (namingSystemId != null) {
-    	    request = new HttpGet(namingSystemQuery.getValue());
+        if (namingSystemId != null) {
+            request = new HttpGet(HapiProperties.getTerminologyServerSecondary() + "NamingSystem/");
         }
         if (namingSystemQuery != null) {
             request = new HttpGet(namingSystemQuery.getValue());
@@ -171,7 +170,7 @@ public class NamingSystemProvider implements ICCResourceProvider {
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/fhir+json");
         request.setHeader(HttpHeaders.ACCEPT, "application/fhir+json");
 
-        Bundle bundle = getRequest(client1,request,namingSystemId);
+        Bundle bundle = getRequest(client1, request, namingSystemId);
 
         Boolean next = false;
         do {
@@ -186,17 +185,17 @@ public class NamingSystemProvider implements ICCResourceProvider {
                 }
             }
             if (next) {
-                log.info("Get next bundle "+request.getURI());
-                bundle = getRequest(client1,request,namingSystemId);
+                log.info("Get next bundle " + request.getURI());
+                bundle = getRequest(client1, request, namingSystemId);
             }
-            log.info("Iteration check = "+ next.toString());
+            log.info("Iteration check = " + next.toString());
         } while (next);
 
         log.info("Finished");
 
         MethodOutcome retVal = new MethodOutcome();
         return retVal;
-        
+
     }
 
     private Bundle getRequest(HttpClient client1, HttpGet request, TokenParam namingSystemId) {
@@ -212,44 +211,35 @@ public class NamingSystemProvider implements ICCResourceProvider {
             //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
 
             System.out.println("resource = " + resource);
-            if(resource instanceof Bundle)
-            {
+            if (resource instanceof Bundle) {
                 bundle = (Bundle) resource;
                 System.out.println("Entry Count = " + bundle.getEntry().size());
                 System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
                 //retVal.setOperationOutcome(operationOutcome);
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                    System.out.println("  namingSystem id = " + entry.getResource().getId() );
+                    System.out.println("  namingSystem id = " + entry.getResource().getId());
                     if (entry.hasResource() && entry.getResource() instanceof NamingSystem
-                            && (namingSystemId.getValue().contains("ALL")  || namingSystemId.getValue().contains(entry.getResource().getId())
-                    ))
-                    {
-                        NamingSystem vs = (NamingSystem) entry.getResource();
-                        try {
-                            List<NamingSystem> results = namingSystemDao.search(ctx,null,null,new TokenParam().setValue(vs.getUrl()));
-                            if (results.size()>0) {
-                                vs.setId(results.get(0).getIdElement().getIdPart());
-                            }
-                            NamingSystem newNamingSystem = namingSystemDao.create(ctx, vs);
-                            System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newNamingSystem));
-                            System.out.println("newNamingSystem.getIdElement()" + newNamingSystem.getIdElement());
-                            // NamingSystemComposeComponent vscc = newVS.code .getCompose();
-                            System.out.println("code concept" + vs.getId());
+                            && (namingSystemId.getValue().contains("ALL") || namingSystemId.getValue().contains(entry.getResource().getId())
+                    )) {
 
+
+                        NamingSystem newVS = (NamingSystem) entry.getResource();
+                        ;
+                        newVS.setName(newVS.getName() + "..");
+                        List<NamingSystem> results = namingSystemDao.search(ctx, null, null, new TokenParam().setValue(newVS.getUniqueIdFirstRep().getValue()));
+                        if (results.size() > 0) {
+                            newVS.setId(results.get(0).getIdElement().getIdPart());
                         }
-                        catch(Exception e) {System.out.println(e.getMessage());}
-
+                        NamingSystem newNamingSystem = namingSystemDao.create(ctx, newVS);
+                        System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newNamingSystem));
+                        System.out.println("newNamingSystem.getIdElement()" + newNamingSystem.getIdElement());
+                        // NamingSystemComposeComponent vscc = newVS.code .getCompose();
+                        System.out.println("code concept" + newVS.getId());
                     }
+
                 }
-
-
             }
-            else
-            {
-                throw new InternalErrorException("Server Error", (OperationOutcome) resource);
-            }
-
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -257,10 +247,10 @@ public class NamingSystemProvider implements ICCResourceProvider {
         }
         return bundle;
     }
-    
-    private HttpClient getHttpClient(){
+
+    private HttpClient getHttpClient() {
         final HttpClient httpClient = HttpClientBuilder.create().build();
         return httpClient;
     }
-    
+
 }

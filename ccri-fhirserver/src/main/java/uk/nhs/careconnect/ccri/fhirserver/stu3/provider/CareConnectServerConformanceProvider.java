@@ -96,7 +96,7 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
 
         capabilityStatement = super.getServerConformance(theRequest);
 
-        capabilityStatement.setPublisher("NHS Digital & Dept for Work and Pensions");
+        capabilityStatement.setPublisher("NHS Digital & Project Wildfyre");
         capabilityStatement.setDateElement(conformanceDate());
         capabilityStatement.setFhirVersion(FhirVersionEnum.DSTU3.getFhirVersionString());
         capabilityStatement.setAcceptUnknown(CapabilityStatement.UnknownContentCode.EXTENSIONS); // TODO: make this configurable - this is a fairly big
@@ -115,7 +115,7 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
         // KGM only add if not already present
         if (capabilityStatement.getImplementationGuide().size() == 0) {
             capabilityStatement.getImplementationGuide().add(new UriType(HapiProperties.getSoftwareImplementationDesc()));
-            capabilityStatement.setPublisher("NHS Digital & Dept for Work and Pensions");
+            capabilityStatement.setPublisher("NHS Digital & Project Wildfyre");
         }
 
         if (restfulServer != null) {

@@ -104,7 +104,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
 // KGM only add if not already present
         if (capabilityStatement.getImplementationGuide().size() == 0) {
             capabilityStatement.getImplementationGuide().add(new CanonicalType(System.getProperty("ccri.guide")));
-            capabilityStatement.setPublisher("NHS Digital and Dept for Work and Pensions");
+            capabilityStatement.setPublisher("NHS Digital and Project Wildfyre");
         }
 
         if (restfulServer != null) {
