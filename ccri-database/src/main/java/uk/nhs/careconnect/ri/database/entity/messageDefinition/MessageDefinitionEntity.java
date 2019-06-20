@@ -3,10 +3,8 @@ package uk.nhs.careconnect.ri.database.entity.messageDefinition;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.MessageDefinition;
 import org.hl7.fhir.dstu3.model.codesystems.MessageheaderResponseRequest;
-import org.hl7.fhir.instance.model.Conformance;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
-import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetIdentifier;
 
 import javax.persistence.*;
 import java.util.ArrayList;

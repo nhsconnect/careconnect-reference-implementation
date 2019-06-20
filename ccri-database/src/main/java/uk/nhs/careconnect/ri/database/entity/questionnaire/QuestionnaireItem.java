@@ -39,6 +39,9 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="PREFIX",length = MAX_DESC_LENGTH,nullable = true)
 	private String prefix;
 
+	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemCode.class)
+	private Set<QuestionnaireItemCode> codes = new HashSet<>();
+
 	@Column(name="ITEM_TEXT",nullable = true)
 	private String itemText;
 
@@ -50,6 +53,8 @@ public class QuestionnaireItem extends BaseResource {
 	@Column(name="ITEM_TYPE")
 	private Questionnaire.QuestionnaireItemType itemType;
 
+	@OneToMany(mappedBy="questionnaireItem", targetEntity=QuestionnaireItemEnable.class)
+	private Set<QuestionnaireItemEnable> enabled = new HashSet<>();
 
 	@Column(name="required")
 	private Boolean required;
@@ -241,5 +246,21 @@ public class QuestionnaireItem extends BaseResource {
 
 	public void setDefinitionUri(String definitionUri) {
 		this.definitionUri = definitionUri;
+	}
+
+	public Set<QuestionnaireItemEnable> getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Set<QuestionnaireItemEnable> enabled) {
+		this.enabled = enabled;
+	}
+
+	public Set<QuestionnaireItemCode> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(Set<QuestionnaireItemCode> codes) {
+		this.codes = codes;
 	}
 }

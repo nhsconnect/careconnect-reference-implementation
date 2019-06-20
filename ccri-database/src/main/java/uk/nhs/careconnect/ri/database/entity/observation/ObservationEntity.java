@@ -41,7 +41,6 @@ public class ObservationEntity extends BaseResource {
     @Column(name="CODE_TEXT", length = MAX_DESC_LENGTH)
     private String codeText;
 
-
     // The parent should not be null but child observations don't have a status.
     @Enumerated(EnumType.ORDINAL)
     @Column(name="status")

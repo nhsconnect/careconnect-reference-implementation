@@ -22,6 +22,8 @@ public interface ConditionRepository extends BaseRepository<ConditionEntity,Cond
 
     ConditionEntity readEntity(FhirContext ctx, IdType theId);
 
+    ConditionEntity readEntity(FhirContext ctx, TokenParam identifier);
+
     Condition create(FhirContext ctx,Condition condition, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;
 
     List<Condition> search(FhirContext ctx,

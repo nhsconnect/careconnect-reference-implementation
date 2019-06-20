@@ -100,7 +100,7 @@ spec:
             - name: ccri.implementation.description
 	      value: Care Connect Reference Implementation
 	    - name: ccri.software.version
-	      value: 3.7.1
+	      value: 3.8.0-SNAPSHOT
 	    - name: ccri.software.name
 	      value: CCRI-Server
 	    - name: ccri.server
@@ -146,7 +146,7 @@ spec:
             - name: ccri.edms.server.base
               value: "http://localhost:8181/ccri-document/STU3"
             - name: ccri.software.version
-              value: "3.7"
+              value: "3.8"
             - name: ccri.software.name
               value: "CCRI Messaging" 
             - name: ccri.server
@@ -238,7 +238,7 @@ spec:
             - name: ccri.server.base
               value: "https://data.developer.nhs.uk/ccri-document/STU3"
             - name: ccri.software.version
-              value: "3.7.1"
+              value: "3.8.0-SNAPSHOT"
             - name: ccri.software.name
               value: "CCRI Document"
             - name: ccri.server

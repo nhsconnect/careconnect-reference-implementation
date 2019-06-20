@@ -8,7 +8,7 @@ import java.util.Date;
 
 
 @Entity
-@Table(name="NamingSystemGroup", uniqueConstraints= @UniqueConstraint(name="PK_NAMING_SYSTEM_UNIQUE", columnNames={"NAMING_SYSTEM_UNIQUE_ID"})
+@Table(name="NamingSystemUnique", uniqueConstraints= @UniqueConstraint(name="PK_NAMING_SYSTEM_UNIQUE", columnNames={"NAMING_SYSTEM_UNIQUE_ID"})
 		)
 public class NamingSystemUniqueId {
 
@@ -34,7 +34,7 @@ public class NamingSystemUniqueId {
 	NamingSystem.NamingSystemIdentifierType identifierType;
 
 	@Column(name = "_VALUE")
-	private String _value;
+	private String value;
 
 	@Column(name = "PREFERRED_B")
 	private Boolean preferred;
@@ -70,17 +70,19 @@ public class NamingSystemUniqueId {
 		return identifierType;
 	}
 
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	public void setIdentifierType(NamingSystem.NamingSystemIdentifierType identifierType) {
 		this.identifierType = identifierType;
 	}
 
-	public String get_value() {
-		return _value;
-	}
 
-	public void set_value(String _value) {
-		this._value = _value;
-	}
 
 	public Boolean getPreferred() {
 		return preferred;

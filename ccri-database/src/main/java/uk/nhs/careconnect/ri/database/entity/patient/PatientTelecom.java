@@ -38,7 +38,8 @@ public class PatientTelecom extends BaseContactPoint {
 	public PatientEntity getPatient() {
 	        return this.patientEntity;
 	}
-	public void setPatientEntity(PatientEntity organisationEntity) {
+
+	public void setPatientEntity(PatientEntity patientEntity) {
 	        this.patientEntity = patientEntity;
 	}
 

@@ -4,7 +4,7 @@ import org.hl7.fhir.dstu3.model.Observation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.nhs.careconnect.ri.dao.transforms.ObservationEntityToFHIRObservationTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.ObservationEntityToFHIRObservationTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.transforms.builder.ObservationEntityBuilder;
 import uk.nhs.careconnect.ri.database.entity.observation.ObservationEntity;
 

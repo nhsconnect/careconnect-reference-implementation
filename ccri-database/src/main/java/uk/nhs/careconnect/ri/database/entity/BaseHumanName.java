@@ -33,16 +33,6 @@ public class BaseHumanName extends BaseResource {
     public HumanName.NameUse getNameUse() {
         return this.nameUse;
     }
-    public org.hl7.fhir.instance.model.HumanName.NameUse getNameUseDstu2() {
-
-        switch (this.nameUse) {
-            case USUAL: return org.hl7.fhir.instance.model.HumanName.NameUse.USUAL;
-            case OLD: return org.hl7.fhir.instance.model.HumanName.NameUse.OLD;
-            case ANONYMOUS: return org.hl7.fhir.instance.model.HumanName.NameUse.ANONYMOUS;
-            case MAIDEN: return org.hl7.fhir.instance.model.HumanName.NameUse.MAIDEN;
-            default : return null;
-        }
-    }
 
     public void setNameUse(HumanName.NameUse nameUse) {
         this.nameUse = nameUse;

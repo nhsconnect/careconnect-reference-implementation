@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.database.entity;
 
-import org.hl7.fhir.instance.model.CarePlan;
 import uk.nhs.careconnect.ri.database.entity.carePlan.CarePlanEntity;
 import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
 import uk.nhs.careconnect.ri.database.entity.clinicialImpression.ClinicalImpressionEntity;

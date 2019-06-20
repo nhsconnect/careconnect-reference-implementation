@@ -3,7 +3,7 @@ package uk.nhs.careconnect.ri.database.daointerface.transforms;
 import org.hl7.fhir.dstu3.model.Address;
 import org.junit.Before;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.dao.transforms.BaseAddressToFHIRAddressTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.BaseAddressToFHIRAddressTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.transforms.builder.PatientAddressBuilder;
 import uk.nhs.careconnect.ri.database.entity.BaseAddress;
 

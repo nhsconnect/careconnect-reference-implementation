@@ -41,7 +41,5 @@ public interface StructureDefinitionRepository extends BaseRepository<StructureD
                                                  @OptionalParam(name = ValueSet.SP_URL) UriParam url
     );
 
-//    List<StructureDefinition> searchStructureDefinition (
-  //          @OptionalParam(name = StructureDefinition.SP_NAME) StringParam name
-  //  );
+
 }

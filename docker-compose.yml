@@ -34,7 +34,7 @@ services:
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
       - ccri.implementation.description=Care Connect Reference Implementation
-      - ccri.software.version=3.7.1
+      - ccri.software.version=3.8.0-SNAPSHOT
       - ccri.software.name=CCRI-Server
       - ccri.server=Care Connect API (unsecured)
       - ccri.server.base=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
@@ -86,7 +86,7 @@ services:
        - ccrimongo
      environment:
        - ccri.server.base=https://data.developer.nhs.uk/ccri-document/STU3
-       - ccri.software.version=3.7.1
+       - ccri.software.version=3.8.0-SNAPSHOT
        - ccri.software.name=CCRI Document
        - ccri.server=CCRI Document FHIR Server
        - ccri.validate_flag=false
@@ -110,7 +110,7 @@ services:
     environment:
     - ccri.server.base=http://data.developer.nhs.uk/ccri-messaging/STU3
     - ccri.edms.server.base=http://localhost:8181/ccri-document/STU3
-    - ccri.software.version=3.7.1
+    - ccri.software.version=3.8.0-SNAPSHOT
     - ccri.software.name=CCRI-Messaging
     - ccri.server=CCRI Messaging FHIR Server
     - ccri.validate_flag=false

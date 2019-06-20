@@ -18,6 +18,8 @@ public interface ConceptRepository {
 
     ConceptEntity findCode(Duration duration);
 
+    ConceptEntity findAddCode(org.hl7.fhir.r4.model.Coding code);
+
     ConceptEntity findAddCode(Coding code);
 
     ConceptEntity findAddCode(Quantity quantity);
