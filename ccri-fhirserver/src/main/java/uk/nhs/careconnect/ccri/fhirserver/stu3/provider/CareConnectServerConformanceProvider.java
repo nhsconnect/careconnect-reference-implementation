@@ -103,19 +103,18 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
         // effort since the parser
         // needs to be modified to actually allow it
 
-        capabilityStatement.getImplementation().setDescription(serverConfiguration.getImplementationDescription());
+
         capabilityStatement.setKind(CapabilityStatement.CapabilityStatementKind.INSTANCE);
-
-
         capabilityStatement.getSoftware().setName(HapiProperties.getSoftwareName());
         capabilityStatement.getSoftware().setVersion(HapiProperties.getSoftwareVersion());
-        capabilityStatement.getImplementation().setDescription(HapiProperties.getServerName());
-        capabilityStatement.getImplementation().setUrl(HapiProperties.getServerBase());
 
+        capabilityStatement.getImplementation().setDescription(HapiProperties.getSoftwareImplementationDesc());
+        capabilityStatement.getImplementation().setUrl(HapiProperties.getSoftwareImplementationUrl());
+        capabilityStatement.setPublisher("NHS Digital & Project Wildfyre");
         // KGM only add if not already present
         if (capabilityStatement.getImplementationGuide().size() == 0) {
-            capabilityStatement.getImplementationGuide().add(new UriType(HapiProperties.getSoftwareImplementationDesc()));
-            capabilityStatement.setPublisher("NHS Digital & Project Wildfyre");
+            capabilityStatement.getImplementationGuide().add(new UriType(HapiProperties.getSoftwareImplementationGuide()));
+
         }
 
         if (restfulServer != null) {

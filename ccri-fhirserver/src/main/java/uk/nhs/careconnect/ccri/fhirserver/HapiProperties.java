@@ -54,7 +54,9 @@ public class HapiProperties {
 
     static final String SOFTWARE_NAME = "software.name";
     static final String SOFTWARE_VERSION = "software.version";
-    static final String SOFTWARE_IMPLEMENTATION_DESC = "software.implementation";
+    static final String SOFTWARE_IMPLEMENTATION_DESC = "software.implementation.desc";
+    static final String SOFTWARE_IMPLEMENTATION_URL = "software.implementation.url";
+    static final String SOFTWARE_IMPLEMENTATION_GUIDE = "software.implementation.guide";
 
     static final String VALIDATION_FLAG = "validate.flag";
     static final String VALIDATION_SERVER = "validation.server";
@@ -396,6 +398,14 @@ public class HapiProperties {
 
     public static String getSoftwareImplementationDesc() {
         return HapiProperties.getProperty(SOFTWARE_IMPLEMENTATION_DESC);
+    }
+
+    public static String getSoftwareImplementationUrl() {
+        return HapiProperties.getProperty(SOFTWARE_IMPLEMENTATION_URL);
+    }
+
+    public static String getSoftwareImplementationGuide() {
+        return HapiProperties.getProperty(SOFTWARE_IMPLEMENTATION_GUIDE);
     }
 
     public static Boolean getValidationFlag() {
