@@ -1,0 +1,79 @@
+version: '2.1'
+
+services:
+
+# Care Connect Query API
+
+  ccrisql:
+    container_name: ccrisql
+    image: postgres:11.3
+    volumes:
+      - sfs-postgres:/var/lib/postgresql/data
+    environment:
+     - POSTGRES_DB=careconnect
+     - POSTGRES_USER=${MYSQL_DB_USER}
+     - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
+    ports:
+     - 5434:5432
+    networks:
+     - ccri_net
+
+  ccriserver:
+    container_name: ccriserver
+    image: thorlogic/ccri-fhirserver${IMAGE_TAG}
+    depends_on:
+      - ccrisql
+    links:
+      - ccrisql
+    environment:
+      - datasource.username=${MYSQL_DB_USER}
+      - datasource.password=${MYSQL_DB_PASSWORD}
+      - datasource.driver=org.postgresql.Driver
+      - datasource.url=jdbc:postgresql://ccrisql:5432/careconnect
+      - datasource.showSql=false
+      - datasource.showDdl=false
+      - datasource.cleardown.cron=0 19 21 * * *
+      - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
+    ports:
+      - 8186:8186
+    extra_hosts:
+      # Define an alias to loop back for REST Connections
+      - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
+    volumes:
+      - tomcat-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+# Data Load imports a set of sample data into the reference implementation (optional)
+
+
+# provides technical demonstration of the Care Connect API
+
+  fhirexplorer:
+    container_name: fhirexplorer
+    image: thorlogic/ccri-fhirexplorer${IMAGE_TAG}
+    environment:
+      - fhir.resource.serverBase=http://localhost:8186/ccri-fhir/STU3
+      - fhir.messaging.serverBase=http://localhost:8182/ccri-messaging/STU3
+    depends_on:
+      - ccriserver
+    ports:
+      - 8081:8188
+    extra_hosts:
+      # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
+      - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
+    networks:
+      - ccri_net
+
+volumes:
+  tomcat-log-volume:
+  tie-log-volume:
+  mongo-log-volume:
+  sqlvol:
+  sfs-postgres :
+
+networks:
+  ccri_net:
+    driver: bridge
+
+
