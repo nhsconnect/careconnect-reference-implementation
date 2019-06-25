@@ -206,7 +206,7 @@ services:
        - ccrimongo4
      environment:
        - server.servlet.context-path=ccri-document
-       - server.context-path=ccri-document
+       - server.context-path=/ccri-document
        - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
