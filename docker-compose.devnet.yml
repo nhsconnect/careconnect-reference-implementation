@@ -199,12 +199,14 @@ services:
 
   ccridocument:
      container_name: ccridocument
-     image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
+     image: thorlogic/document-repository
      depends_on:
        - ccrimongo
      links:
        - ccrimongo
      environment:
+       - server.servlet.context-path=ccri-document
+       - server.context-path=ccri-document
        - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
