@@ -192,7 +192,7 @@ services:
 
 
   ccrimongo:
-    container_name: ccrimongo
+    container_name: ccrimongo4
     image: mongo:3.6.4
     networks:
       - ccri_net
@@ -201,9 +201,9 @@ services:
      container_name: ccridocument
      image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
-       - ccrimongo
+       - ccrimongo4
      links:
-       - ccrimongo
+       - ccrimongo4
      environment:
        - server.servlet.context-path=ccri-document
        - server.context-path=ccri-document
