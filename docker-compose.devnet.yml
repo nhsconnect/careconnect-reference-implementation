@@ -191,7 +191,7 @@ services:
       - 8114:8189
 
 
-  ccrimongo:
+  ccrimongo4:
     container_name: ccrimongo4
     image: mongo:3.6.4
     networks:
