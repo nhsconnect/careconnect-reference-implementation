@@ -199,7 +199,7 @@ services:
 
   ccridocument:
      container_name: ccridocument
-     image: thorlogic/document-repository
+     image: thorlogic/document-repository:latest
      depends_on:
        - ccrimongo
      links:
