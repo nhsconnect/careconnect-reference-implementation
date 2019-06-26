@@ -41,6 +41,7 @@ services:
       - ccri.tkw_server=http://tkwvalidation:4849/$$validate
       - ccri.EPR_resources=AllergyIntolerance,Appointment,Bundle,CarePlan,CareTeam,CodeSystem,ClinicalImpression,ConceptMap,Condition,Consent,DocumentReference,Encounter,Endpoint,EpisodeOfCare,Flag,GraphDefinition,HealthcareService,Immunization,List,Location,Medication,MedicationAdministration,MedicationDispense,MedicationRequest,MedicationStatement,MessageDefinition,NamingSystem,Observation,Organization,Patient,Practitioner,PractitionerRole,Procedure,Questionnaire,QuestionnaireResponse,ReferralRequest,RelatedPerson,Schedule,Slot,StructureDefinition,ValueSet
       - ccri.validate_use_tkw=false
+      - ccri.validate_flag=false
     ports:
       - 8105:8186
     extra_hosts:
