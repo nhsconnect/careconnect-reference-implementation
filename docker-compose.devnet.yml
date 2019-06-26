@@ -191,8 +191,8 @@ services:
       - 8114:8189
 
 
-  ccrimongo4:
-    container_name: ccrimongo4
+  ccrimongo5:
+    container_name: ccrimongo5
     image: mongo:3.6.4
     networks:
       - ccri_net
@@ -201,9 +201,9 @@ services:
      container_name: ccridocument
      image: ${REGISTRY_PREFIX}ccri-document${IMAGE_TAG}
      depends_on:
-       - ccrimongo4
+       - ccrimongo5
      links:
-       - ccrimongo4
+       - ccrimongo5
      environment:
        - server.servlet.context-path=/ccri-document
        - server.context-path=/ccri-document
@@ -211,7 +211,7 @@ services:
        - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
-       - spring.data.mongodb.uri=mongodb://ccrimongo4:27017/careconnect-nosql
+       - spring.data.mongodb.uri=mongodb://ccrimongo5:27017/careconnect-nosql
        - spring.data.mongodb.database=careconnect-nosql
        - jolokia.username=HSFAdmin
        - jolokia.password=h5fadm!n
