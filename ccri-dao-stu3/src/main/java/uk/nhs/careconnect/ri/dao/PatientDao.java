@@ -127,8 +127,6 @@ public class PatientDao implements PatientRepository {
     @Override
     public void save(FhirContext ctx, PatientEntity patient)
     {
-
-
         em.persist(patient);
     }
 
@@ -208,6 +206,7 @@ public class PatientDao implements PatientRepository {
             log.trace("Adding new Patient");
             patientEntity = new PatientEntity();
         }
+        patientEntity.setResource(null);
 
         if (patient.hasExtension())
         {
