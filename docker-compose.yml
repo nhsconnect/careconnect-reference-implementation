@@ -41,6 +41,7 @@ services:
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
       - ccri.CRUD_create=true
       - ccri.oauth2=false
+      - ccri.validate_flag=false
     ports:
       - 8186:8186
     extra_hosts:
