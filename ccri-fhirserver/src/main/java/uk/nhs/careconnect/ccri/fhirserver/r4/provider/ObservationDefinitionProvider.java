@@ -22,7 +22,7 @@ import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ICCResourceProvider;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ResourcePermissionProvider;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ResourceTestProvider;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
-import uk.nhs.careconnect.ri.database.r4interface.ObservationDefinitionRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ObservationDefinitionRepository;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -60,9 +60,10 @@ public class ObservationDefinitionProvider implements ICCResourceProvider {
                                               @OptionalParam(name = "category") TokenParam category,
                                               @OptionalParam(name = "code") TokenOrListParam code
             , @OptionalParam(name = "identifier") TokenParam identifier
+            , @OptionalParam(name = "name") StringParam name
             , @OptionalParam(name = ObservationDefinition.SP_RES_ID) StringParam id
     ) {
-        return observationDefinitionDao.search(ctx,category,code,identifier,id);
+        return observationDefinitionDao.search(ctx,category,code,identifier,name, id);
     }
 
     @Read

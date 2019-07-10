@@ -17,12 +17,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
+import uk.nhs.careconnect.ri.database.daointerface.ValueSetRepository;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.observationDefinition.ObservationDefinitionCategory;
 import uk.nhs.careconnect.ri.database.entity.observationDefinition.ObservationDefinitionEntity;
 import uk.nhs.careconnect.ri.database.entity.observationDefinition.ObservationDefinitionIdentifier;
-import uk.nhs.careconnect.ri.database.r4interface.ObservationDefinitionRepository;
+import uk.nhs.careconnect.ri.database.entity.valueSet.ValueSetEntity;
+import uk.nhs.careconnect.ri.database.daointerface.ObservationDefinitionRepository;
 import uk.nhs.careconnect.ri.r4.dao.transform.ObservationDefinitionEntityToFHIRObservationDefinitionTransformer;
 
 import javax.persistence.EntityManager;
@@ -47,6 +49,10 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
     @Autowired
     @Lazy
     ConceptRepository conceptDao;
+
+    @Autowired
+    @Lazy
+    ValueSetRepository valueSetDao;
 
     @Autowired
     private ObservationDefinitionEntityToFHIRObservationDefinitionTransformer observationDefinitionEntityToFHIRObservationDefinitionTransformer;
@@ -105,7 +111,8 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
             List<ObservationDefinitionEntity> entries = searchEntity(ctx, null,
                     new TokenOrListParam().add(new TokenParam().setSystem(observationDefinition.getCode().getCodingFirstRep().getSystem()).setValue(observationDefinition.getCode().getCodingFirstRep().getCode()))
                     , null
-                    , null);
+                    , null
+            ,null);
             for (ObservationDefinitionEntity nameSys : entries) {
                 if (observationDefinition.getId() == null) {
                     throw new ResourceVersionConflictException(observationDefinition.getCode().getCodingFirstRep().getSystem() + " code=" + observationDefinition.getCode().getCodingFirstRep().getCode() + " is already present on the system " + nameSys.getId());
@@ -138,6 +145,59 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
                 observationDefinitionEntity.setCodeText(observationDefinition.getCode().getText());
             }
 
+        }
+        ValueSetEntity valueSetEntity = null;
+
+        if (observationDefinition.hasNormalCodedValueSet()) {
+            org.hl7.fhir.dstu3.model.IdType idType = new org.hl7.fhir.dstu3.model.IdType();
+            idType.setValueAsString(observationDefinition.getNormalCodedValueSet().getReference());
+            valueSetEntity = valueSetDao.readEntity(ctx, idType);
+            if (valueSetEntity != null ) {
+                observationDefinitionEntity.setNormalValueSet(valueSetEntity);
+            } else {
+                observationDefinitionEntity.setNormalValueSet(null);
+               // throw new ResourceNotFoundException("Normal ValueSet reference was not found");
+            }
+        }
+
+        if (observationDefinition.hasAbnormalCodedValueSet()) {
+            org.hl7.fhir.dstu3.model.IdType idType = new org.hl7.fhir.dstu3.model.IdType();
+            idType.setValueAsString(observationDefinition.getAbnormalCodedValueSet().getReference());
+            valueSetEntity = valueSetDao.readEntity(ctx, idType);
+            if (valueSetEntity != null ) {
+                observationDefinitionEntity.setAbnormalValueSet(valueSetEntity);
+
+            } else {
+                observationDefinitionEntity.setAbnormalValueSet(null);
+               // throw new ResourceNotFoundException("Abnormal ValueSet reference was not found");
+            }
+        }
+
+        if (observationDefinition.hasValidCodedValueSet()) {
+            log.info("Has ValidCodedValueSet");
+            org.hl7.fhir.dstu3.model.IdType idType = new org.hl7.fhir.dstu3.model.IdType();
+            idType.setValueAsString(observationDefinition.getValidCodedValueSet().getReference());
+            valueSetEntity = valueSetDao.readEntity(ctx, idType);
+
+            if (valueSetEntity != null ) {
+                observationDefinitionEntity.setValidValueSet(valueSetEntity);
+            } else {
+                observationDefinitionEntity.setValidValueSet(null);
+               // throw new ResourceNotFoundException("Valid ValueSet reference was not found");
+            }
+        }
+
+        if (observationDefinition.hasCriticalCodedValueSet()) {
+            org.hl7.fhir.dstu3.model.IdType idType = new org.hl7.fhir.dstu3.model.IdType();
+            idType.setValueAsString(observationDefinition.getCriticalCodedValueSet().getReference());
+            valueSetEntity = valueSetDao.readEntity(ctx, idType);
+
+            if (valueSetEntity != null ) {
+                observationDefinitionEntity.setCriticalValueSet(valueSetEntity);
+            } else {
+                observationDefinitionEntity.setCriticalValueSet(null);
+               // throw new ResourceNotFoundException("Critical ValueSet reference was not found");
+            }
         }
 
         observationDefinitionEntity.setResource(null);
@@ -271,9 +331,9 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
 
 
     @Override
-    public List<ObservationDefinition> search(FhirContext ctx, TokenParam category, TokenOrListParam code, TokenParam identifier, StringParam id) {
+    public List<ObservationDefinition> search(FhirContext ctx, TokenParam category, TokenOrListParam code, TokenParam identifier, StringParam name, StringParam id) {
 
-        List<ObservationDefinitionEntity> qryResults = searchEntity(ctx, category, code, identifier, id);
+        List<ObservationDefinitionEntity> qryResults = searchEntity(ctx, category, code, identifier, name, id);
         List<ObservationDefinition> results = new ArrayList<>();
 
         for (ObservationDefinitionEntity observationDefinitionEntity : qryResults) {
@@ -287,7 +347,7 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
     }
 
     @Override
-    public List<ObservationDefinitionEntity> searchEntity(FhirContext ctx, TokenParam category, TokenOrListParam codes, TokenParam identifier, StringParam id) {
+    public List<ObservationDefinitionEntity> searchEntity(FhirContext ctx, TokenParam category, TokenOrListParam codes, TokenParam identifier, StringParam name,  StringParam id) {
 
         List<ObservationDefinitionEntity> qryResults = null;
 
@@ -307,6 +367,17 @@ public class ObservationDefinitionDao implements ObservationDefinitionRepository
             Join<ObservationDefinitionEntity, ObservationDefinitionCategory> join = root.join("categories", JoinType.LEFT);
             Join<ObservationDefinitionCategory, ConceptEntity> joinConcept = join.join("category", JoinType.LEFT);
             Predicate p = builder.equal(joinConcept.get("code"),category.getValue());
+            predList.add(p);
+        }
+        if (name!=null) {
+            log.trace("Search on ObservationDefinition name = "+name.getValue());
+            Join<ObservationDefinitionEntity,
+                    ConceptEntity> joinConcept = root.join("code", JoinType.LEFT);
+            Predicate p =   builder.like(
+                    builder.upper(joinConcept.get("myDisplay").as(String.class)),
+                    builder.upper(builder.literal("%" + name.getValue() + "%"))
+            );
+
             predList.add(p);
         }
         if (codes!=null) {

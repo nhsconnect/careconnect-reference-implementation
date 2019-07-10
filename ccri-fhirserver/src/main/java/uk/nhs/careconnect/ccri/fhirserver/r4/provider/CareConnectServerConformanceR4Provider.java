@@ -5,10 +5,16 @@ import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 import org.hl7.fhir.r4.hapi.rest.server.ServerCapabilityStatementProvider;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.CapabilityStatement.ResourceInteractionComponent;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
@@ -17,6 +23,9 @@ import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ICCResourceProvider;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,15 +47,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectServerConformanceR4Provider.class);
 
-    public String validate_flag2 = null;
-
-    private String oauth2authorize;
-
-    private String oauth2token;
-
-    private String oauth2register;
-
-    private String oauth2;
+    private JSONObject openIdObj;
 
     private Instant lastRefresh;
 
@@ -112,30 +113,82 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
             for (CapabilityStatement.CapabilityStatementRestComponent nextRest : capabilityStatement.getRest()) {
                 nextRest.setMode(CapabilityStatement.RestfulCapabilityMode.SERVER);
 
-                // KGM only add if not already present
-                if (nextRest.getSecurity().getService().size() == 0 && oauth2.equals("true")) {
-                    if (oauth2token != null && oauth2register != null && oauth2authorize != null) {
-                        nextRest.getSecurity()
-                                .addService().addCoding()
-                                .setSystem("http://hl7.org/fhir/restful-security-service")
-                                .setDisplay("SMART-on-FHIR")
-                                .setSystem("SMART-on-FHIR");
+                if (HapiProperties.getSecurityOauth()) {
+
+                    nextRest.getSecurity()
+                            .addService().addCoding()
+                            .setSystem("http://hl7.org/fhir/restful-security-service")
+                            .setDisplay("SMART-on-FHIR")
+                            .setSystem("SMART-on-FHIR");
+
+                    if (HapiProperties.getSecurityOpenidConfig() != null) {
                         Extension securityExtension = nextRest.getSecurity().addExtension()
                                 .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+                        HttpClient client = getHttpClient();
+                        HttpGet request = new HttpGet(HapiProperties.getSecurityOpenidConfig());
+                        request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+                        request.setHeader(HttpHeaders.ACCEPT, "application/json");
+                        if (openIdObj == null) {
+                            try {
 
-                        securityExtension.addExtension()
-                                .setUrl("authorize")
-                                .setValue(new UriType(oauth2authorize));
+                                HttpResponse response = client.execute(request);
+                                //System.out.println(response.getStatusLine());
+                                if (response.getStatusLine().toString().contains("200")) {
+                                    InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+                                    BufferedReader bR = new BufferedReader(reader);
+                                    String line = "";
 
-                        securityExtension.addExtension()
-                                .setUrl("register")
-                                .setValue(new UriType(oauth2register));
+                                    StringBuilder responseStrBuilder = new StringBuilder();
+                                    while ((line = bR.readLine()) != null) {
 
-                        securityExtension.addExtension()
-                                .setUrl("token")
-                                .setValue(new UriType(oauth2token));
+                                        responseStrBuilder.append(line);
+                                    }
+                                    openIdObj = new JSONObject(responseStrBuilder.toString());
+                                }
+                            } catch (UnknownHostException e) {
+                                System.out.println("Host not known");
+                            } catch (Exception ex) {
+                                System.out.println(ex.getMessage());
+                            }
+                        }
+                        if (openIdObj != null) {
+                            if (openIdObj.has("token_endpoint")) {
+                                securityExtension.addExtension()
+                                        .setUrl("token")
+                                        .setValue(new org.hl7.fhir.dstu3.model.UriType(openIdObj.getString("token_endpoint")));
+                            }
+                            if (openIdObj.has("authorization_endpoint")) {
+                                securityExtension.addExtension()
+                                        .setUrl("authorize")
+                                        .setValue(new org.hl7.fhir.dstu3.model.UriType(openIdObj.getString("authorization_endpoint")));
+                            }
+                            if (openIdObj.has("register_endpoint")) {
+                                securityExtension.addExtension()
+                                        .setUrl("register")
+                                        .setValue(new org.hl7.fhir.dstu3.model.UriType(openIdObj.getString("register_endpoint")));
+                            }
+                        }
+                    } else {
+                        if (HapiProperties.getSecurityOauth2Authorize() != null && HapiProperties.getSecurityOauth2Register() != null && HapiProperties.getSecurityOauth2Token() != null) {
+
+                            Extension securityExtension = nextRest.getSecurity().addExtension()
+                                    .setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+
+                            securityExtension.addExtension()
+                                    .setUrl("authorize")
+                                    .setValue(new org.hl7.fhir.dstu3.model.UriType(HapiProperties.getSecurityOauth2Authorize()));
+
+                            securityExtension.addExtension()
+                                    .setUrl("register")
+                                    .setValue(new org.hl7.fhir.dstu3.model.UriType(HapiProperties.getSecurityOauth2Register()));
+
+                            securityExtension.addExtension()
+                                    .setUrl("token")
+                                    .setValue(new org.hl7.fhir.dstu3.model.UriType(HapiProperties.getSecurityOauth2Token()));
+                        }
                     }
                 }
+
 
                 if (HapiProperties.getServerRole().equals("EPRCareConnectAPI")) {
 // jira https://airelogic-apilabs.atlassian.net/browse/ALP4-815
@@ -221,48 +274,10 @@ break;
         return capabilityStatement;
     }
 
-/*
-private void getOperations(CapabilityStatement.CapabilityStatementRestResourceComponent resource, CapabilityStatement.CapabilityStatementRestComponent rest) {
-// Fix for HAPI putting operations as system level entries
-if (rest.getOperation() != null) {
-for (CapabilityStatement.CapabilityStatementRestOperationComponent operationComponent : rest.getOperation()) {
-if (operationComponent.hasDefinition() && operationComponent.getDefinition().hasReference()) {
-String[] elements = operationComponent.getDefinition().getReference().split("-");
-if (elements.length>2) {
-log.debug(operationComponent.getDefinition().getReference());
-String[] defArray = elements[0].split("/");
-if (defArray.length>1 && defArray[1].equals(resource.getType())) {
-log.debug("MATCH");
-Extension extension = resource.addExtension()
-.setUrl(CareConnectExtension.UrlCapabilityStatementRestOperation);
-extension.addExtension()
-.setUrl("name")
-.setValue(new StringType(operationComponent.getName()));
-if (operationComponent.getName().equals("validate")) {
-extension.addExtension()
-.setUrl("definition")
-.setValue(new Reference("http://hl7.org/fhir/OperationDefinition/Resource-validate"));
-}
-if (operationComponent.getName().equals("expand")) {
-extension.addExtension()
-.setUrl("definition")
-.setValue(new Reference("http://hl7.org/fhir/OperationDefinition/ValueSet-expand"));
-}
-if (operationComponent.getName().equals("translate")) {
-extension.addExtension()
-.setUrl("definition")
-.setValue(new Reference("http://hl7.org/fhir/OperationDefinition/ConceptMap-translate"));
-}
-}
-
-
-}
-}
-        }
-        }
-        }
-
- */
+    private HttpClient getHttpClient(){
+        final HttpClient httpClient = HttpClientBuilder.create().build();
+        return httpClient;
+    }
 
 
     private DateTimeType conformanceDate() {

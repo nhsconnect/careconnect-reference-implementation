@@ -69,7 +69,20 @@ public class ValueSetDao implements ValueSetRepository {
 
     @Override
     public ValueSetEntity readEntity(FhirContext ctx, IdType theId) {
-        return null;
+
+        log.info("vs readEntity id is " + theId.getIdPart());
+        ValueSetEntity valueSetEntity = null;
+        // Only look up if the id is numeric else need to do a search
+        if (daoutils.isNumeric(theId.getIdPart())) {
+            valueSetEntity = em.find(ValueSetEntity.class,  Integer.parseInt(theId.getIdPart()));
+        } else {
+            if (theId.getValue() != null) {
+                List<ValueSetEntity> vs = searchEntity(ctx, null, null, new UriParam().setValue(theId.getValue()), null);
+                if (vs != null && vs.size() > 0) return vs.get(0);
+            }
+        }
+
+        return valueSetEntity;
     }
 
     @Transactional

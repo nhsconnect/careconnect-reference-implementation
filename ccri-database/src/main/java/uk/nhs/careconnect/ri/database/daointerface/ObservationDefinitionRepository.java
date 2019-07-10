@@ -1,19 +1,18 @@
-package uk.nhs.careconnect.ri.database.r4interface;
+package uk.nhs.careconnect.ri.database.daointerface;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.ConditionalUrlParam;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.*;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ObservationDefinition;
-import org.hl7.fhir.r4.model.Resource;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 import uk.nhs.careconnect.ri.database.entity.observationDefinition.ObservationDefinitionEntity;
+
 import java.util.List;
 
-public interface ObservationDefinitionRepository extends BaseRepository<ObservationDefinitionEntity, ObservationDefinition> {
+public interface ObservationDefinitionRepository extends BaseR4Repository<ObservationDefinitionEntity, ObservationDefinition> {
 
     ObservationDefinition create(FhirContext ctx, ObservationDefinition observation, @IdParam IdType theId) throws OperationOutcomeException;
 
@@ -27,6 +26,7 @@ public interface ObservationDefinitionRepository extends BaseRepository<Observat
                           @OptionalParam(name = "category") TokenParam category,
                           @OptionalParam(name = "code") TokenOrListParam codes
             , @OptionalParam(name = "identifier") TokenParam identifier
+            , @OptionalParam(name = "name") StringParam name
             , @OptionalParam(name = ObservationDefinition.SP_RES_ID) StringParam id
 
     );
@@ -35,6 +35,7 @@ public interface ObservationDefinitionRepository extends BaseRepository<Observat
                                          @OptionalParam(name = "category") TokenParam category,
                                          @OptionalParam(name = "code") TokenOrListParam codes
             , @OptionalParam(name = "identifier") TokenParam identifier
+            , @OptionalParam(name = "name") StringParam name
             , @OptionalParam(name = ObservationDefinition.SP_RES_ID) StringParam id
     );
 }
