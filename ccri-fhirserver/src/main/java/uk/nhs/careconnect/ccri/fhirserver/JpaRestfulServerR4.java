@@ -118,7 +118,7 @@ public class JpaRestfulServerR4 extends RestfulServer {
         registerInterceptor(interceptor);
 
         ServerInterceptor gatewayInterceptor = new ServerInterceptor(log);
-        if (HapiProperties.getValidationFlag()) {
+        if (HapiProperties.getSecurityOauth()) {
             registerInterceptor(new OAuth2Interceptor());  // Add OAuth2 Security Filter
         }
         registerInterceptor(gatewayInterceptor);
