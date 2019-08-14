@@ -267,6 +267,16 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
   }
 
   @Override
+  public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1) {
+    return null;
+  }
+
+  @Override
+  public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+    return null;
+  }
+
+  @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
     logD("SNOMEDMOCK validateCode system = "+ theCodeSystem);

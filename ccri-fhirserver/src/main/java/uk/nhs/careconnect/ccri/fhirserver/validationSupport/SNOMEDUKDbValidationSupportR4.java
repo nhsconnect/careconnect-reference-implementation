@@ -352,4 +352,13 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
 
   }
 
+  @Override
+  public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1, String s2) {
+    return null;
+  }
+
+  @Override
+  public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+    return null;
+  }
 }

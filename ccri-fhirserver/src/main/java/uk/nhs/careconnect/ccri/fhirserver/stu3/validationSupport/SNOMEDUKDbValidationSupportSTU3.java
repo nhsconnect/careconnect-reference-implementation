@@ -337,6 +337,13 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
   }
 
+  @Override
+  public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1) {
+    return null;
+  }
 
-
+  @Override
+  public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+    return null;
+  }
 }

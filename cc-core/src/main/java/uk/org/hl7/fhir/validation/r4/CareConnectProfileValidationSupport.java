@@ -492,4 +492,14 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
      // log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
 
   }
+
+    @Override
+    public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1, String s2) {
+        return null;
+    }
+
+    @Override
+    public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+        return null;
+    }
 }

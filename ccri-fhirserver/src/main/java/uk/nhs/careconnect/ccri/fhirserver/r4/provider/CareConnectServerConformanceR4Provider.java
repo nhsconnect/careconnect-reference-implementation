@@ -2,9 +2,10 @@ package uk.nhs.careconnect.ccri.fhirserver.r4.provider;
 
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Metadata;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
+
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ICCResourceProvider;
+import ca.uhn.fhir.rest.server.RestfulServerConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -41,7 +43,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
     private boolean myCache = true;
     private volatile CapabilityStatement capabilityStatement;
 
-    private RestulfulServerConfiguration serverConfiguration;
+    private RestfulServerConfiguration serverConfiguration;
 
     private RestfulServer restfulServer;
 
@@ -67,8 +69,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
 
     @Override
     @Metadata
-    public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
-
+    public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
 
         if (capabilityStatement != null) {
             if (lastRefresh != null) {
@@ -87,7 +88,7 @@ public class CareConnectServerConformanceR4Provider extends ServerCapabilityStat
             return capabilityStatement;
         }
 
-        capabilityStatement = super.getServerConformance(theRequest);
+        capabilityStatement = super.getServerConformance(theRequest, theRequestDetails);
 
         capabilityStatement.setPublisher("Mayfield IS");
         capabilityStatement.setDateElement(conformanceDate());

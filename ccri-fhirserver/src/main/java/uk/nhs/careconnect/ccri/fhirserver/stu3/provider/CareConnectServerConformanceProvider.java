@@ -3,9 +3,10 @@ package uk.nhs.careconnect.ccri.fhirserver.stu3.provider;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Metadata;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.RestulfulServerConfiguration;
+import ca.uhn.fhir.rest.server.RestfulServerConfiguration;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -45,7 +46,7 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
     private boolean myCache = true;
     private volatile CapabilityStatement capabilityStatement;
 
-    private RestulfulServerConfiguration serverConfiguration;
+    private RestfulServerConfiguration serverConfiguration;
 
     private RestfulServer restfulServer;
 
@@ -73,7 +74,7 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
 
     @Override
     @Metadata
-    public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
+    public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
 
 
         if (capabilityStatement != null) {
@@ -94,7 +95,7 @@ public class CareConnectServerConformanceProvider extends ServerCapabilityStatem
             return capabilityStatement;
         }
 
-        capabilityStatement = super.getServerConformance(theRequest);
+        capabilityStatement = super.getServerConformance(theRequest, theRequestDetails);
 
         capabilityStatement.setPublisher("NHS Digital & Project Wildfyre");
         capabilityStatement.setDateElement(conformanceDate());
