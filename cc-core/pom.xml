@@ -9,7 +9,7 @@
     <version>4.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <hapi-fhir-version>4.0.0-SNAPSHOT</hapi-fhir-version>
+        <hapi-fhir-version>4.0.0</hapi-fhir-version>
     </properties>
 
     <dependencies>

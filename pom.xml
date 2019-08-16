@@ -20,7 +20,7 @@
 
     <properties>
         <care-connect-version>4.0.0-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>4.0.0-SNAPSHOT</hapi-fhir-version>
+        <hapi-fhir-version>4.0.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <slf4j>1.7.25</slf4j>
         <spring-boot-version>2.1.1.RELEASE</spring-boot-version>
