@@ -93,6 +93,10 @@ public class HapiProperties {
     static final String SERVER_CRUD_UPDATE = "ccri.CRUD_update";
     static final String SERVER_CRUD_CREATE = "ccri.CRUD_create";
     static final String SERVER_CRUD_DELETE = "ccri.CRUD_delete";
+
+
+
+    static final String SNOMED_VERSION_URL = "terminology.snomed.version";
     private static Properties properties;
 
     /*
@@ -491,6 +495,12 @@ public class HapiProperties {
     public static String getTerminologyServerSecondary() {
         return HapiProperties.getProperty(TERMINOLOGY_SERVER_SECONDARY);
     }
+
+    public static String getSnomedVersionUrl() {
+        return HapiProperties.getProperty(SNOMED_VERSION_URL);
+    }
+
+
     public static String getServerRole() {
         return HapiProperties.getProperty(SERVER_ROLE);
     }

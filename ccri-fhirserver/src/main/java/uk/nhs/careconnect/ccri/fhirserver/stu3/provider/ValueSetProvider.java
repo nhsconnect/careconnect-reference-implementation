@@ -185,23 +185,20 @@ public class ValueSetProvider implements ICCResourceProvider {
                                switch (filter.getOp()) {
                                    case IN:
                                        log.info("IN Filter detected");
-                                   //    Parameters parameters = new Parameters();
-                                   //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
+
                                        vsExpansion = (ValueSet) client
                                                .operation()
                                                .onType(ValueSet.class)
                                                .named("expand")
-                                               .withSearchParameter(Parameters.class,"identifier", new UriParam("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=refset/"+filter.getValue()))
+                                               .withSearchParameter(Parameters.class,"identifier", new UriParam(HapiProperties.getSnomedVersionUrl()+"?fhir_vs=refset/"+filter.getValue()))
                                                .returnResourceType(ValueSet.class)
                                                .useHttpGet()
                                                .execute();
 
                                        break;
                                    case EQUAL:
-                                       log.info("EQUAL Filter detected - "+filter.getValue());
-                                       //    Parameters parameters = new Parameters();
-                                       //    parameters.addParameter().setName("identifier").setValue(new StringType("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=isa/"+filter.getValue()));
-                                       String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
+                                       log.info("EQUAL Filter detected - {}", filter.getValue());
+                                      String url = HapiProperties.getSnomedVersionUrl()+"?fhir_vs=ecl/"+filter.getValue();
                                        //url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
                                        log.info(url);
                                        url = url.replace("^","%5E");

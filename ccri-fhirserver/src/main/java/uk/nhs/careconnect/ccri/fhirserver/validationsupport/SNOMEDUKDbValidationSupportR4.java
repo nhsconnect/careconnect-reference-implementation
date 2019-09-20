@@ -97,7 +97,7 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
                     .operation()
                     .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
                     .named("expand")
-                    .withSearchParameter(org.hl7.fhir.dstu3.model.Parameters.class,"identifier", new UriParam("http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=refset/"+filter.getValue()))
+                    .withSearchParameter(org.hl7.fhir.dstu3.model.Parameters.class,"identifier", new UriParam(HapiProperties.getSnomedVersionUrl()+"?fhir_vs=refset/"+filter.getValue()))
                     .returnResourceType(org.hl7.fhir.dstu3.model.ValueSet.class)
                     .useHttpGet()
                     .execute();
@@ -105,7 +105,7 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
             break;
           case EQUAL:
             log.info("EQUAL Filter detected - {}", filter.getValue());
-            String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
+            String url = HapiProperties.getSnomedVersionUrl()+"?fhir_vs=ecl/"+filter.getValue();
 
             log.info(url);
             url = url.replace("^","%5E");
