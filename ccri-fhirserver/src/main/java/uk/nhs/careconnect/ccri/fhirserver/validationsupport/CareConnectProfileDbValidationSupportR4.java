@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
+package uk.nhs.careconnect.ccri.fhirserver.validationsupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;

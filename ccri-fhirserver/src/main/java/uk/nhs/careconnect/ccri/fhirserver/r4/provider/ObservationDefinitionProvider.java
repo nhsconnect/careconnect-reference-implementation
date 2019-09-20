@@ -75,7 +75,7 @@ public class ObservationDefinitionProvider implements ICCResourceProvider {
         if ( observationDefinition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ObservationDefinition/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return observationDefinition;
@@ -133,7 +133,7 @@ public class ObservationDefinitionProvider implements ICCResourceProvider {
         try {
             OperationOutcome outcome = observationDefinitionDao.delete(ctx,internalId);
             method.setCreated(false);
-            //method.setId(newObservationDefinition.getIdElement());
+
             method.setResource(outcome);
         } catch (Exception ex) {
             log.info(ex.getMessage());

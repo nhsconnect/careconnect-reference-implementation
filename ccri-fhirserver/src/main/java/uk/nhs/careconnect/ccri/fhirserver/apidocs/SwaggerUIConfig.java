@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ccri.fhirserver.apidocs;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -14,15 +13,11 @@ import java.util.List;
 @Configuration
 public class SwaggerUIConfig {
 
-    @Autowired
-    private ServiceDefinitionsContext definitionContext;
-
-
     @Primary
     @Bean
     @Lazy
-    public SwaggerResourcesProvider swaggerResourcesProvider( ) {
-        System.out.println("swaggerResourceProvider");
+    public SwaggerResourcesProvider swaggerResourcesProvider(ServiceDefinitionsContext definitionContext ) {
+
         return () -> {
             List<SwaggerResource> resources = new ArrayList<>();
             resources.clear();

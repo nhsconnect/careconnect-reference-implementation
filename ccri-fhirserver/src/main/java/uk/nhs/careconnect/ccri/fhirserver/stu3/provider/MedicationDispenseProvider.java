@@ -122,7 +122,7 @@ public class MedicationDispenseProvider implements ICCResourceProvider {
         if ( dispense == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No MedicationDispense/ " + dispenseId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return dispense;

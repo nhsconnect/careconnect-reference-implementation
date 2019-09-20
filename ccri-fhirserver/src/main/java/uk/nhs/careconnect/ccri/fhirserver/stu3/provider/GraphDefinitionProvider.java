@@ -136,7 +136,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
         if ( graph == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No GraphDefinition/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return graph;

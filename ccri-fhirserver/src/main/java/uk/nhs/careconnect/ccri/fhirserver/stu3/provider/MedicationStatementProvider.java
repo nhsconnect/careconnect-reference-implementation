@@ -120,7 +120,7 @@ public class MedicationStatementProvider implements ICCResourceProvider {
         if ( statement == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No MedicationStatement/ " + statementId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return statement;

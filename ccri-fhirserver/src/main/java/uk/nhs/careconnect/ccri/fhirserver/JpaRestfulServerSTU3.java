@@ -40,7 +40,7 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
         this.applicationContext = context;
     }
 
-    private FhirContext ctx;
+    private static FhirContext ctx;
 
 
     @Value("${server.port}")
@@ -111,7 +111,7 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
         AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
         autowireCapableBeanFactory.autowireBean(this);
 
-        log.info("REST Servlet initialised with config: " + toString());
+        log.info("REST Servlet initialised with config: {}", toString());
 
 		/* 
          * We want to support FHIR DSTU2 format. This means that the server
@@ -127,8 +127,6 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
          * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
          * contains bean definitions for a resource provider for each resource type
          */
-        //  setResourceProviders(applicationContext.getBean(PatientProvider.class),
-        //          applicationContext.getBean(OrganizationProvider.class));
 
         // Initilising the permissions
 
@@ -174,27 +172,26 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
             case "GPConnectAdaptor" :
                 permissions =  GPConnectAdaptor_resources;
                 break;
+            default:
         }
 
 
         Class<?> classType = null;
-        log.info("Resource count " + permissions.size());
+        log.info("Resource count {}", permissions.size());
 
         List<IResourceProvider> permissionlist = new ArrayList<>();
         for (String permission : permissions) {
             try {
                 classType = Class.forName("uk.nhs.careconnect.ccri.fhirserver.stu3.provider." + permission + "Provider");
-                log.info("class methods " + classType.getMethods()[4].getName() );
+                log.info("class methods {}", classType.getMethods()[4].getName() );
             } catch (ClassNotFoundException  e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            System.out.println(permission);
+
             permissionlist.add((IResourceProvider) applicationContext.getBean(classType));
         }
 
-        //Class<?> classType1 = Class.forName("uk.nhs.careconnect.ccri.fhirserver.stu3.provider.PatientProvider");
-        //classType1.getMethod("update").setAccessible(false);
 
 
         setResourceProviders(permissionlist);

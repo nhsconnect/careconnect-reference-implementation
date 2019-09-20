@@ -145,7 +145,7 @@ public class ConditionProvider implements ICCResourceProvider {
         if ( condition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Condition/ " + conditionId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return condition;

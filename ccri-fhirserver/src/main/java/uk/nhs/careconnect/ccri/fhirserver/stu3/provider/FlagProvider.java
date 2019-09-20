@@ -111,7 +111,7 @@ public class FlagProvider implements ICCResourceProvider {
         if ( form == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No List/ " + flagId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return form;

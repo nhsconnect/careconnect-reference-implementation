@@ -11,7 +11,7 @@ import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
-import uk.nhs.careconnect.ccri.fhirserver.validationSupport.CareConnectProfileFix;
+import uk.nhs.careconnect.ccri.fhirserver.validationsupport.CareConnectProfileFix;
 
 import java.io.BufferedReader;
 import java.io.IOException;

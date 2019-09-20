@@ -5,14 +5,16 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import com.google.common.annotations.VisibleForTesting;
-import uk.nhs.careconnect.ri.database.entity.careTeam.CareTeamEntity;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class HapiProperties {
 
+    private HapiProperties () {
+        
+    }
+    
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HapiProperties.class);
 
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
@@ -152,15 +154,15 @@ public class HapiProperties {
 
     private static String getProperty(String propertyName) {
         Properties properties = HapiProperties.getProperties();
-        log.trace("Looking for property = " + propertyName);
+        log.trace("Looking for property = {}", propertyName);
         if (System.getenv(propertyName)!= null) {
             String value= System.getenv(propertyName);
-            log.debug("System Environment property Found " + propertyName+ " = "+ value);
+            log.debug("System Environment property Found {} = {}", propertyName, value);
             return value;
         }
         if (System.getProperty(propertyName)!= null) {
             String value= System.getenv(propertyName);
-            log.debug("System Property Found " + propertyName+ " = "+ value);
+            log.debug("System Property Found {} = {}" , propertyName, value);
             return value;
         }
         if (properties != null) {
@@ -185,7 +187,7 @@ public class HapiProperties {
         return defaultValue;
     }
 
-    private static Boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
+    private static boolean getBooleanProperty(String propertyName, boolean defaultValue) {
         String value = HapiProperties.getProperty(propertyName);
 
         if (value == null || value.length() == 0) {
@@ -235,7 +237,7 @@ public class HapiProperties {
         return EncodingEnum.JSON;
     }
 
-    public static Boolean getDefaultPrettyPrint() {
+    public static boolean getDefaultPrettyPrint() {
         return HapiProperties.getBooleanProperty(DEFAULT_PRETTY_PRINT, true);
     }
 
@@ -271,7 +273,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(LOGGER_ERROR_FORMAT, "ERROR - ${requestVerb} ${requestUrl}");
     }
 
-    public static Boolean getLoggerLogExceptions() {
+    public static boolean getLoggerLogExceptions() {
         return HapiProperties.getBooleanProperty(LOGGER_LOG_EXCEPTIONS, true);
     }
 
@@ -295,15 +297,15 @@ public class HapiProperties {
         return HapiProperties.getProperty(DATASOURCE_PASSWORD);
     }
 
-    public static Boolean getAllowMultipleDelete() {
+    public static boolean getAllowMultipleDelete() {
         return HapiProperties.getBooleanProperty(ALLOW_MULTIPLE_DELETE, false);
     }
 
-    public static Boolean getAllowExternalReferences() {
+    public static boolean getAllowExternalReferences() {
         return HapiProperties.getBooleanProperty(ALLOW_EXTERNAL_REFERENCES, false);
     }
 
-    public static Boolean getExpungeEnabled() {
+    public static boolean getExpungeEnabled() {
         return HapiProperties.getBooleanProperty("expunge_enabled", true);
     }
 
@@ -311,11 +313,11 @@ public class HapiProperties {
         return HapiProperties.getIntegerProperty(TEST_PORT, 0);
     }
 
-    public static Boolean getTesterConfigRefustToFetchThirdPartyUrls() {
+    public static boolean getTesterConfigRefustToFetchThirdPartyUrls() {
         return HapiProperties.getBooleanProperty(TESTER_CONFIG_REFUSE_TO_FETCH_THIRD_PARTY_URLS, false);
     }
 
-    public static Boolean getCorsEnabled() {
+    public static boolean getCorsEnabled() {
         return HapiProperties.getBooleanProperty(CORS_ENABLED, true);
     }
 
@@ -335,27 +337,27 @@ public class HapiProperties {
         return HapiProperties.getProperty(SERVER_ID, "home");
     }
 
-    public static Boolean getAllowPlaceholderReferences() {
+    public static boolean getAllowPlaceholderReferences() {
         return HapiProperties.getBooleanProperty(ALLOW_PLACEHOLDER_REFERENCES, true);
     }
 
-    public static Boolean getSubscriptionEmailEnabled() {
+    public static boolean getSubscriptionEmailEnabled() {
         return HapiProperties.getBooleanProperty(SUBSCRIPTION_EMAIL_ENABLED, false);
     }
 
-    public static Boolean getSubscriptionRestHookEnabled() {
+    public static boolean getSubscriptionRestHookEnabled() {
         return HapiProperties.getBooleanProperty(SUBSCRIPTION_RESTHOOK_ENABLED, false);
     }
 
-    public static Boolean getSubscriptionWebsocketEnabled() {
+    public static boolean getSubscriptionWebsocketEnabled() {
         return HapiProperties.getBooleanProperty(SUBSCRIPTION_WEBSOCKET_ENABLED, false);
     }
 
-    public static Boolean getAllowContainsSearches() {
+    public static boolean getAllowContainsSearches() {
         return HapiProperties.getBooleanProperty(ALLOW_CONTAINS_SEARCHES, true);
     }
 
-    public static Boolean getAllowOverrideDefaultSearchParams() {
+    public static boolean getAllowOverrideDefaultSearchParams() {
         return HapiProperties.getBooleanProperty(ALLOW_OVERRIDE_DEFAULT_SEARCH_PARAMS, true);
     }
 
@@ -363,7 +365,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(EMAIL_FROM, "some@test.com");
     }
 
-    public static Boolean getEmailEnabled() {
+    public static boolean getEmailEnabled() {
         return HapiProperties.getBooleanProperty("email.enabled", false);
     }
 
@@ -408,7 +410,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(SOFTWARE_IMPLEMENTATION_GUIDE);
     }
 
-    public static Boolean getValidationFlag() {
+    public static boolean getValidationFlag() {
         return HapiProperties.getBooleanProperty(VALIDATION_FLAG, false);
     }
 
@@ -436,7 +438,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(HIBERNATE_SHOW_SQL);
     }
 
-    public static Boolean getSecurityOauth() {
+    public static boolean getSecurityOauth() {
         return HapiProperties.getBooleanProperty(SECURITY_OAUTH, false);
     }
 
@@ -457,7 +459,7 @@ public class HapiProperties {
         return HapiProperties.getProperty(SECURITY_OAUTH2_TOKEN);
     }
 
-    public static Boolean getSecuritySmartScope() {
+    public static boolean getSecuritySmartScope() {
         return HapiProperties.getBooleanProperty(SECURITY_SMART_SCOPE, false);
     }
 
@@ -493,19 +495,19 @@ public class HapiProperties {
         return HapiProperties.getProperty(SERVER_ROLE);
     }
 
-    public static Boolean getServerCrudRead() {
+    public static boolean getServerCrudRead() {
         return HapiProperties.getBooleanProperty(SERVER_CRUD_READ, false);
     }
 
-    public static Boolean getServerCrudUpdate() {
+    public static boolean getServerCrudUpdate() {
         return HapiProperties.getBooleanProperty(SERVER_CRUD_UPDATE, false);
     }
 
-    public static Boolean getServerCrudCreate() {
+    public static boolean getServerCrudCreate() {
         return HapiProperties.getBooleanProperty(SERVER_CRUD_CREATE, false);
     }
 
-    public static Boolean getServerCrudDelete() {
+    public static boolean getServerCrudDelete() {
         return HapiProperties.getBooleanProperty(SERVER_CRUD_DELETE, false);
     }
 }

@@ -24,28 +24,28 @@ public class ResourcePermissionProvider {
 		{
 			throw OperationOutcomeFactory.buildOperationOutcomeException(
 			new NotImplementedOperationException("Not implemented GET"),
-			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+			 OperationOutcome.IssueType.INVALID);
 		}
 		
 		if(!HapiProperties.getServerCrudUpdate() && operation.equals("update"))
 		{
 			throw OperationOutcomeFactory.buildOperationOutcomeException(
 			new NotImplementedOperationException("Not implemented PUT"),
-			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+			 OperationOutcome.IssueType.INVALID);
 		}
 		
 		if(!HapiProperties.getServerCrudDelete() && operation.equals("delete"))
 		{
 			throw OperationOutcomeFactory.buildOperationOutcomeException(
 			new NotImplementedOperationException("Not implemented DEL"),
-			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+			 OperationOutcome.IssueType.INVALID);
 		}
 		
 		if(!HapiProperties.getServerCrudCreate() && operation.equals("create"))
 		{
 			throw OperationOutcomeFactory.buildOperationOutcomeException(
 			new NotImplementedOperationException("Not implemented POST"),
-			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+			 OperationOutcome.IssueType.INVALID);
 		}
               		
     }

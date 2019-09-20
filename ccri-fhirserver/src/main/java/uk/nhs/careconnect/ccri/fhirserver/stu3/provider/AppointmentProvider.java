@@ -119,7 +119,7 @@ public class AppointmentProvider implements ICCResourceProvider {
         if ( appointment == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Appointment/ " + serviceId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return appointment;

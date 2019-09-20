@@ -135,7 +135,7 @@ public class NamingSystemProvider implements ICCResourceProvider {
         if (namingSystem == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No NamingSystem/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return namingSystem;

@@ -146,7 +146,7 @@ public class ValueSetProvider implements ICCResourceProvider {
         if ( valueSet == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                   OperationOutcome.IssueType.NOTFOUND);
         }
 
         return valueSet;
@@ -240,7 +240,7 @@ public class ValueSetProvider implements ICCResourceProvider {
         if ( valueSet == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ValueSet/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return valueSet;

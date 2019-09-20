@@ -1,9 +1,13 @@
-package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
+package uk.nhs.careconnect.ccri.fhirserver.validationsupport;
 
 import org.hl7.fhir.dstu3.model.ElementDefinition;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 
 public class CareConnectProfileFix {
+
+    private CareConnectProfileFix() {
+
+    }
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileFix.class);
 
@@ -22,26 +26,26 @@ public class CareConnectProfileFix {
     }
 
     public static ElementDefinition fixElement(ElementDefinition element) {
-     //   log.info(element.getId());
+
         if (element.hasBinding() && element.getBinding().hasValueSetReference()) {
             // Remove invalid SNOMED reference
             if (element.getBinding().getValueSetReference().getReference().equals("http://snomed.info/sct")) {
                 log.info("Removing invalid SNOMED valueSet reference");
-                element.setBinding(null); // getBinding().setValueSet(null);
+                element.setBinding(null);
             } else
             if (removeTooCostlyECL(element.getBinding().getValueSetReference().getReference())) {
                 log.info("Removing costly valueSet reference");
-                element.setBinding(null); // getBinding().setValueSet(null);
+                element.setBinding(null);
             }
         }
         if (element.hasBinding() && element.getBinding().hasValueSetUriType()) {
             if (element.getBinding().getValueSetUriType().equals("http://snomed.info/sct")) {
                 log.info("Removing invalid SNOMED valueSet reference");
-                element.setBinding(null); // getBinding().setValueSet(null);
+                element.setBinding(null);
             } else
             if (removeTooCostlyECL(element.getBinding().getValueSetUriType().getValue())) {
                 log.info("Removing costly valueSet reference");
-                element.setBinding(null); // getBinding().setValueSet(null);
+                element.setBinding(null);
             }
         }
 
@@ -49,17 +53,17 @@ public class CareConnectProfileFix {
             // Remove invalid SNOMED reference
 
         }
-        if (element.hasBinding() && element.getBinding().hasValueSetUriType()) {
-            if (element.getBinding().getValueSetUriType().equals("http://snomed.info/sct")) {
+        if (element.hasBinding() && element.getBinding().hasValueSetUriType() &&
+                element.getBinding().getValueSetUriType().equals("http://snomed.info/sct")) {
                 log.info("Removing invalid SNOMED valueSet reference");
-                element.setBinding(null); // getBinding().setValueSet(null);
-            }
+                element.setBinding(null);
+
         }
 
         return element;
     }
 
-    private static Boolean removeTooCostlyECL(String uri) {
+    private static boolean removeTooCostlyECL(String uri) {
         if (uri !=null) {
             // Too costly
             if (uri.equals("https://fhir.hl7.org.uk/STU3/ValueSet/CareConnect-MedicationCode-1"))

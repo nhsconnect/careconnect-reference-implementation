@@ -123,7 +123,7 @@ public class ProcedureProvider implements ICCResourceProvider {
         if ( procedure == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Procedure/ " + procedureId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return procedure;

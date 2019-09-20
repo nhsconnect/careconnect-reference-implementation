@@ -32,7 +32,7 @@ public class JpaRestfulServerR4 extends RestfulServer {
 
 
 
-    private ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
 
     JpaRestfulServerR4(ApplicationContext context) {
         this.applicationContext = context;

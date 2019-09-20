@@ -112,7 +112,7 @@ public class ObservationProvider implements ICCResourceProvider {
         if (observation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No observation found for ID: " + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
         return observation;
     }

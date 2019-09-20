@@ -116,7 +116,7 @@ public class DiagnosticReportProvider implements ICCResourceProvider {
         if ( diagnosticReport == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No DiagnosticReport/ " + diagnosticReportId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return diagnosticReport;

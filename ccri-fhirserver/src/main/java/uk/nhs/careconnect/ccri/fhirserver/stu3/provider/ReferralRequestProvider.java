@@ -117,7 +117,7 @@ public class ReferralRequestProvider implements ICCResourceProvider {
         if ( referral == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ReferralRequest/ " + referralId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return referral;

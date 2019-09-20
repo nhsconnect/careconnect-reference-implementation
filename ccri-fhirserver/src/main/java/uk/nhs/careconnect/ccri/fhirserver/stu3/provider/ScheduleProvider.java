@@ -121,7 +121,7 @@ public class ScheduleProvider implements ICCResourceProvider {
         if ( schedule == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Schedule/ " + scheduleId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return schedule;

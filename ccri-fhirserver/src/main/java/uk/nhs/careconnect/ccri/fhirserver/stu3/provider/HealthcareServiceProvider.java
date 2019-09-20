@@ -121,7 +121,7 @@ public class HealthcareServiceProvider implements ICCResourceProvider {
         if ( service == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No HealthcareService/ " + serviceId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return service;

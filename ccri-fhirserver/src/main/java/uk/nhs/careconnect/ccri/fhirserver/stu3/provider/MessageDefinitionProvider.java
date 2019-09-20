@@ -136,7 +136,7 @@ public class MessageDefinitionProvider implements ICCResourceProvider {
         if ( messageDefinition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No MessageDefinition/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return messageDefinition;

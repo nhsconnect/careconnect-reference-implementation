@@ -28,35 +28,18 @@ public class CCRIFHIRServer {
 
     @Autowired
     ApplicationContext context;
-/*
-    @Value("${ccri.software.version}")
-    String softwareVersion;
 
-    @Value("${ccri.software.name}")
-    String softwareName;
-
-    @Value("${ccri.server}")
-    String server;
-
-    @Value("${ccri.guide}")
-    String guide;
-
-    @Value("${ccri.server.base}")
-    String serverBase;
-*/
     public static void main(String[] args) {
 
         System.setProperty("hawtio.authenticationEnabled", "false");
         System.setProperty("management.security.enabled","false");
-      //  System.setProperty("server.port", "8186");
-      //  System.setProperty("server.context-path", "/ccri-fhirserver");
         System.setProperty("management.contextPath","");
 
         SpringApplication.run(CCRIFHIRServer.class, args);
     }
 
     @Bean
-    public ServletRegistrationBean ServletRegistrationBean() {
+    public ServletRegistrationBean servletRegistrationBean() {
         ServletRegistrationBean registration = new ServletRegistrationBean(new JpaRestfulServerSTU3(context), "/STU3/*");
         registration.setName("FhirServlet");
         registration.setLoadOnStartup(1);
@@ -64,7 +47,7 @@ public class CCRIFHIRServer {
     }
 
     @Bean
-    public ServletRegistrationBean ServletRegistrationR4Bean() {
+    public ServletRegistrationBean servletRegistrationR4Bean() {
         ServletRegistrationBean registration = new ServletRegistrationBean(new JpaRestfulServerR4(context), "/R4/*");
         registration.setName("FhirServletR4");
         registration.setLoadOnStartup(2);

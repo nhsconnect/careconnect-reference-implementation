@@ -131,7 +131,7 @@ public class CarePlanProvider implements ICCResourceProvider {
         if ( carePlan == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No CarePlan/ " + carePlanId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return carePlan;

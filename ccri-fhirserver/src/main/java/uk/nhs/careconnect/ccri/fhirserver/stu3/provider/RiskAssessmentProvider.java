@@ -116,7 +116,7 @@ public class RiskAssessmentProvider implements ICCResourceProvider {
         if ( riskAssessment == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No RiskAssessment/ " + riskAssessmentId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return riskAssessment;

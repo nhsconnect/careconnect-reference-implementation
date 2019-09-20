@@ -114,7 +114,7 @@ public class DocumentReferenceProvider implements ICCResourceProvider {
         if ( documentReference == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No DocumentReference/ " + documentReferenceId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return documentReference;

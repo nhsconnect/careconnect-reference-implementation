@@ -102,7 +102,7 @@ public class OrganizationProvider implements ICCResourceProvider {
         if ( organisation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Organization/" + organisationId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
         return organisation;
     }

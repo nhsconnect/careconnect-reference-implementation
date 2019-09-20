@@ -117,7 +117,7 @@ public class CareTeamProvider implements ICCResourceProvider {
         if ( careTeam == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No CareTeam/ " + careTeamId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return careTeam;

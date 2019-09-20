@@ -115,7 +115,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
         if ( impression == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ClinicalImpression/ " + impressionId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return impression;

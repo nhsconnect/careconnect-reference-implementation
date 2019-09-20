@@ -127,7 +127,7 @@ public class AllergyIntoleranceProvider implements ICCResourceProvider {
         if ( allergy == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No AllergyIntolerance/ " + allergyId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return allergy;

@@ -113,7 +113,7 @@ public class EndpointProvider implements ICCResourceProvider {
         if ( endpoint == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Endpoint/ " + endpointId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return endpoint;

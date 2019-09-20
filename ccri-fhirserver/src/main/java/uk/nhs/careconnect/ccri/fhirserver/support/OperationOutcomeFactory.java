@@ -18,7 +18,7 @@ public class OperationOutcomeFactory {
 
     private static final Logger log = LoggerFactory.getLogger(OperationOutcomeFactory.class);
 
-    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, OperationOutcome.IssueSeverity code, OperationOutcome.IssueType issueType) {
+    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, OperationOutcome.IssueType issueType) {
         CodeableConcept codeableConcept = new CodeableConcept()
                 .setText(exception.getMessage());
 
@@ -30,14 +30,12 @@ public class OperationOutcomeFactory {
                 .setCode(issueType)
                 .setDetails(codeableConcept);
 
-       // operationOutcome.getMeta()
-       //         .addProfile(SystemURL.SD_GPC_OPERATIONOUTCOME);
 
         exception.setOperationOutcome(operationOutcome);
         return exception;
     }
 
-    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception, org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity code, org.hl7.fhir.r4.model.OperationOutcome.IssueType issueType) {
+    public static BaseServerResponseException buildOperationOutcomeException(BaseServerResponseException exception,  org.hl7.fhir.r4.model.OperationOutcome.IssueType issueType) {
         org.hl7.fhir.r4.model.CodeableConcept codeableConcept = new org.hl7.fhir.r4.model.CodeableConcept()
                 .setText(exception.getMessage());
 
@@ -49,10 +47,7 @@ public class OperationOutcomeFactory {
                 .setCode(issueType)
                 .setDetails(codeableConcept);
 
-        // operationOutcome.getMeta()
-        //         .addProfile(SystemURL.SD_GPC_OPERATIONOUTCOME);
-
-        exception.setOperationOutcome(operationOutcome);
+         exception.setOperationOutcome(operationOutcome);
         return exception;
     }
 
@@ -69,13 +64,10 @@ public class OperationOutcomeFactory {
             for (org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
                 OperationOutcome.OperationOutcomeIssueComponent r3issue = operationOutcome.addIssue();
                 if (issue.hasCode()) {
-                    switch(issue.getCode()) {
-                        case PROCESSING:
-                            r3issue.setCode(OperationOutcome.IssueType.PROCESSING);
-                            break;
-                            default:
-                                log.error("Missing "+issue.getCode().getDisplay());
-
+                    if (issue.getCode().equals(org.hl7.fhir.r4.model.OperationOutcome.IssueType.PROCESSING)) {
+                        r3issue.setCode(OperationOutcome.IssueType.PROCESSING);
+                    } else {
+                                    log.error("Missing {}", issue.getCode().getDisplay());
                     }
                 }
                 if (issue.hasSeverity()) {
@@ -119,7 +111,7 @@ public class OperationOutcomeFactory {
 
         List<OperationOutcome.OperationOutcomeIssueComponent> issueRemove = new ArrayList<>();
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-            Boolean remove = false;
+            boolean remove = false;
 
 
             // Fault in profile?? Yes
@@ -148,7 +140,7 @@ public class OperationOutcomeFactory {
                 remove = true;
             }
             if (remove) {
-                log.info("Stripped " + issue.getDiagnostics());
+                log.info("Stripped {}", issue.getDiagnostics());
                 issueRemove.add(issue);
             }
         }
@@ -183,10 +175,46 @@ public class OperationOutcomeFactory {
         return issueType;
     }
 
-    public static void convertToException (OperationOutcome outcome ) throws BaseServerResponseException {
+    private static void processCode(OperationOutcome outcome, OperationOutcome.OperationOutcomeIssueComponent issue, String text, String diagnostics) {
+        switch (issue.getCode()) {
+            case NOTFOUND:
+                throw new ResourceNotFoundException(text,outcome);
+            case PROCESSING:
+
+                if (diagnostics.contains("The FHIR endpoint on this server does not know how to handle")) {
+                    throw new NotImplementedOperationException(text,outcome);
+                } else {
+                    throw new UnprocessableEntityException(text, outcome);
+                }
+            case SECURITY:
+                throw new AuthenticationException();
+            case INVALID:
+                // 400
+                throw new InvalidRequestException(text,outcome);
+            case EXCEPTION:
+                throw new InternalErrorException(text,outcome);
+            case FORBIDDEN:
+                throw new ForbiddenOperationException(text,outcome);
+            case CONFLICT:
+                throw new ResourceVersionConflictException(text,outcome);
+            case NOTSUPPORTED:
+                // 501
+                throw new NotImplementedOperationException(text,outcome);
+            case DUPLICATE:
+                throw new PreconditionFailedException(text,outcome);
+            case BUSINESSRULE:
+                /// Check this is 405
+                throw new MethodNotAllowedException(text,outcome);
+
+            default:
+                throw new UnprocessableEntityException(text, outcome);
+
+        }
+    }
+    public static void convertToException (OperationOutcome outcome ) {
         for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
 
-            // TODO Revist the mapping here.
+
             String text = null;
             String diagnostics = "";
             if (issue.getDiagnostics() != null ) diagnostics = issue.getDiagnostics();
@@ -196,50 +224,7 @@ public class OperationOutcomeFactory {
 
             if (text==null) text = "Unknown Reason";
 
-            switch (issue.getCode()) {
-                case NOTFOUND:
-                    throw new ResourceNotFoundException(text,outcome);
-                case PROCESSING:
-
-                    if (diagnostics.contains("The FHIR endpoint on this server does not know how to handle")) {
-                        throw new NotImplementedOperationException(text,outcome);
-                    } else {
-                        throw new UnprocessableEntityException(text, outcome);
-                    }
-                case SECURITY:
-                    throw new AuthenticationException();
-                case INVALID:
-                    // 400
-                    throw new InvalidRequestException(text,outcome);
-                case EXCEPTION:
-                    throw new InternalErrorException(text,outcome);
-                case FORBIDDEN:
-                    throw new ForbiddenOperationException(text,outcome);
-                case CONFLICT:
-                    throw new ResourceVersionConflictException(text,outcome);
-                case NOTSUPPORTED:
-                    // 501
-                    throw new NotImplementedOperationException(text,outcome);
-                case DUPLICATE:
-                    throw new PreconditionFailedException(text,outcome);
-                case BUSINESSRULE:
-                    /// Check this is 405
-                    throw new MethodNotAllowedException(text,outcome);
-
-
-                    /*
-                    registerExceptionType(MethodNotAllowedException.STATUS_CODE, MethodNotAllowedException.class);
-                    registerExceptionType(NotImplementedOperationException.STATUS_CODE, NotImplementedOperationException.class);
-                    registerExceptionType(NotModifiedException.STATUS_CODE, NotModifiedException.class);
-
-                    registerExceptionType(ResourceGoneException.STATUS_CODE, ResourceGoneException.class);
-                    registerExceptionType(PreconditionFailedException.STATUS_CODE, PreconditionFailedException.class);
-
-                   */
-                default:
-                    throw new UnprocessableEntityException(text, outcome);
-
-            }
+            processCode(outcome, issue, text, diagnostics);
         }
         // Catch all
         throw new UnprocessableEntityException("Unknown Error", outcome);

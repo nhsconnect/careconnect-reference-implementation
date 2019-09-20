@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver.validationSupport;
+package uk.nhs.careconnect.ccri.fhirserver.validationsupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -93,7 +93,7 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
           case IN:
             log.info("IN Filter detected");
 
-            vsExpansion = (org.hl7.fhir.dstu3.model.ValueSet) client
+            vsExpansion = client
                     .operation()
                     .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
                     .named("expand")
@@ -104,14 +104,14 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
 
             break;
           case EQUAL:
-            log.info("EQUAL Filter detected - "+filter.getValue());
+            log.info("EQUAL Filter detected - {}", filter.getValue());
             String url = "http://snomed.info/sct/999000031000000106/version/20180321?fhir_vs=ecl/"+filter.getValue();
-            //url = URLEncoder.encode(url, StandardCharsets.UTF_8.toString());
+
             log.info(url);
             url = url.replace("^","%5E");
             url = url.replace("|","%7C");
             url = url.replace("<","%3C");
-            vsExpansion = (org.hl7.fhir.dstu3.model.ValueSet) client
+            vsExpansion = client
                     .operation()
                     .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
                     .named("expand")
@@ -148,7 +148,7 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
 
   @Override
   public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    //logD("SNOMEDValidator fetchCodeSystem "+theSystem);
+
     return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
   }
 

@@ -83,7 +83,7 @@ public class StructureDefinitionProvider implements ICCResourceProvider {
         if ( structureDefinition == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No StructureDefinition/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return structureDefinition;

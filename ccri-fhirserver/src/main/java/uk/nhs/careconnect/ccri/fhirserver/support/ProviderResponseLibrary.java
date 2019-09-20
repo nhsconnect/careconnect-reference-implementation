@@ -15,19 +15,18 @@ import java.io.*;
 public class ProviderResponseLibrary {
     private static final Logger log = LoggerFactory.getLogger(ProviderResponseLibrary.class);
 
-    public static MethodOutcome handleException(MethodOutcome method, Exception ex)  {
+    private ProviderResponseLibrary () {
+    }
 
-
+    public static MethodOutcome handleException(MethodOutcome method, Exception ex) {
         if (ex instanceof OperationOutcomeException) {
 
             OperationOutcomeException outcomeException = (OperationOutcomeException) ex;
             if (outcomeException.getOutcome().hasIssue()) {
                 log.error(outcomeException.getOutcome().getIssueFirstRep().getDiagnostics());
-                System.out.println("test");
             }
-
-            OperationOutcomeFactory.convertToException(outcomeException.getOutcome());
-
+            method.setOperationOutcome(outcomeException.getOutcome());
+            method.setCreated(false);
         } else {
             log.error(ex.getMessage());
             if (ex.getStackTrace().length >0) {
@@ -38,22 +37,25 @@ public class ProviderResponseLibrary {
 
             }
             if (ex.getCause() != null) {
-                log.error(ex.getCause().toString());
+                log.error("Cause {}",ex.getCause());
             }
-            OperationOutcomeFactory.convertToException(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
+            method.setCreated(false);
+            method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
         }
-        return null;
+
+        return method;
     }
 
-    public static void createException(FhirContext ctx, IBaseResource resource) throws Exception {
+    public static void createException(FhirContext ctx, IBaseResource resource) {
         if (resource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) resource;
-            log.info("Sever Returned: "+ctx.newJsonParser().encodeResourceToString(operationOutcome));
+            String json = ctx.newJsonParser().encodeResourceToString(operationOutcome);
+            log.info("Sever Returned: {}", json);
 
             OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
-            throw new InternalErrorException("Server Error",(OperationOutcome) resource);
+            throw new InternalErrorException("Server Error");
         }
     }
 
@@ -71,15 +73,15 @@ public class ProviderResponseLibrary {
             }
         } else
         if (message instanceof String) {
-            log.trace("RESPONSE String = "+(String) message);
+            log.trace("RESPONSE String = {}", message);
             try {
                 resource = ctx.newXmlParser().parseResource((String) message);
             } catch (Exception ex) {
                 resource = ctx.newJsonParser().parseResource((String) message);
             }
-            log.trace("RETURNED String Resource "+resource.getClass().getSimpleName());
+            log.trace("RETURNED String Resource {}",resource.getClass().getSimpleName());
         } else {
-            log.info("MESSAGE TYPE "+message.getClass());
+            log.info("MESSAGE TYPE {}", message.getClass());
         }
         return resource;
     }

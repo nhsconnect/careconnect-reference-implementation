@@ -116,7 +116,7 @@ public class ImmunizationProvider implements ICCResourceProvider {
         if ( immunisation == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Immunisation/ " + immunisationId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return immunisation;

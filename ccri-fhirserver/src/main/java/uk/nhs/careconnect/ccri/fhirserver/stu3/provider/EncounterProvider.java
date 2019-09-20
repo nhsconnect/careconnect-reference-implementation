@@ -134,7 +134,7 @@ public class EncounterProvider implements ICCResourceProvider {
         if ( encounter == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Encounter/ " + encounterId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return encounter;

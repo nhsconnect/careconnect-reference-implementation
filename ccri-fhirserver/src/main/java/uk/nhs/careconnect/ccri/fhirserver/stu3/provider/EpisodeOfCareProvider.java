@@ -121,7 +121,7 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
         if ( episode == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No EpisodeOfCare/ " + episodeId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return episode;

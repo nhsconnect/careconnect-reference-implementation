@@ -124,7 +124,7 @@ public class MedicationRequestProvider implements ICCResourceProvider {
         if ( prescription == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No MedicationRequest/ " + prescriptionId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return prescription;

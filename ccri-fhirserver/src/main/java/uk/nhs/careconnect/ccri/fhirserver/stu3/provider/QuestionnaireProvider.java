@@ -115,7 +115,7 @@ public class QuestionnaireProvider implements ICCResourceProvider {
         if (questionnaire == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Questionnaire/ " + questionnaireId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                    OperationOutcome.IssueType.NOTFOUND);
         }
 
         return questionnaire;

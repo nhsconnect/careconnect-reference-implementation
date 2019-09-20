@@ -86,7 +86,7 @@ public class ConceptMapProvider implements ICCResourceProvider {
         if ( conceptMap == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No ConceptMap/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return conceptMap;

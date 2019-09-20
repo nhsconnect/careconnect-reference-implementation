@@ -105,7 +105,7 @@ public class PractitionerRoleProvider implements ICCResourceProvider {
         if ( practitionerRole == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No PractitionerRole/" + internalId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                     OperationOutcome.IssueType.NOTFOUND);
         }
 
         return practitionerRole;

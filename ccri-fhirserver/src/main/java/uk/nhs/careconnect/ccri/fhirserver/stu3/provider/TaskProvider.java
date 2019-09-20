@@ -124,7 +124,7 @@ public class TaskProvider implements ICCResourceProvider {
         if ( task == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                     new ResourceNotFoundException("No Task/ " + taskId.getIdPart()),
-                    OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.NOTFOUND);
+                  OperationOutcome.IssueType.NOTFOUND);
         }
 
         return task;
