@@ -94,14 +94,7 @@ public class PatientProvider implements ICCResourceProvider {
         log.debug("Update Patient Provider called");
         
         resourcePermissionProvider.checkPermission("update");
-        /*
-        if(CRUD_update.equals("false"))
-		{
-			throw OperationOutcomeFactory.buildOperationOutcomeException(
-			new InvalidRequestException("Invalid Request"),
-			OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
-		}
-        */
+
         MethodOutcome method = new MethodOutcome();
         method.setCreated(true);
         OperationOutcome opOutcome = new OperationOutcome();
