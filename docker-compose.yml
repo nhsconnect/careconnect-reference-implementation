@@ -1,11 +1,14 @@
 version: '2.1'
+
 services:
 
 # Care Connect Query API
 
   ccrisql:
     container_name: ccrisql
-    image: thorlogic/ccri-sql${IMAGE_TAG}
+    image: postgres:11.3
+    volumes:
+      - sfs-postgres:/var/lib/postgresql/data
     environment:
      - POSTGRES_DB=careconnect
      - POSTGRES_USER=${MYSQL_DB_USER}
@@ -25,23 +28,12 @@ services:
     environment:
       - datasource.username=${MYSQL_DB_USER}
       - datasource.password=${MYSQL_DB_PASSWORD}
-      - datasource.host=//ccrisql
       - datasource.driver=org.postgresql.Driver
-      - datasource.path=5432/careconnect
-      - datasource.vendor=postgresql
+      - datasource.url=jdbc:postgresql://ccrisql:5432/careconnect
       - datasource.showSql=false
       - datasource.showDdl=false
       - datasource.cleardown.cron=0 19 21 * * *
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
-      - ccri.implementation.description=Care Connect Reference Implementation
-      - ccri.software.version=3.7.1
-      - ccri.software.name=CCRI-Server
-      - ccri.server=Care Connect API (unsecured)
-      - ccri.server.base=http://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
-      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-      - ccri.CRUD_create=true
-      - ccri.oauth2=false
-      - ccri.validate_flag=false
     ports:
       - 8186:8186
     extra_hosts:
@@ -54,104 +46,6 @@ services:
 
 # Data Load imports a set of sample data into the reference implementation (optional)
 
-  ccridataload:
-    container_name: ccridataload
-    image: thorlogic/ccri-dataload${IMAGE_TAG}
-    depends_on:
-    - ccriserver
-    environment:
-    - FHIR_SERVER=http://ccriserver:8186/ccri-fhir/STU3
-    - POSTGRES_JDBC=postgresql://ccrisql:5432/careconnect
-    - POSTGRES_USER=${MYSQL_DB_USER}
-    - POSTGRES_USERNAME=${MYSQL_DB_USER}
-    - POSTGRES_PASSWORD=${MYSQL_DB_PASSWORD}
-    networks:
-    - ccri_net
-
-# Care Connect (Unstructured) Document API implementation
-
-  ccrimongo:
-      container_name: ccrimongo
-      image: mongo:4.0.5
-      ports:
-        - 27107:27107
-      networks:
-        - ccri_net
-
-  ccridocument:
-     container_name: ccridocument
-     image: thorlogic/ccri-document${IMAGE_TAG}
-     depends_on:
-       - ccrimongo
-     links:
-       - ccrimongo
-     environment:
-       - ccri.server.base=https://data.developer.nhs.uk/ccri-document/STU3
-       - ccri.software.version=3.7.1
-       - ccri.software.name=CCRI Document
-       - ccri.server=CCRI Document FHIR Server
-       - ccri.validate_flag=false
-       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-       - spring.data.mongodb.uri=mongodb://ccrimongo:27017/careconnect-nosqlc
-       - spring.data.mongodb.database=careconnect-nosql
-     ports:
-       - 8181:8181
-     volumes:
-       - mongo-log-volume:/usr/local/tomcat/logs
-     networks:
-       - ccri_net
-
-# Care Connect Get Record API and Transfer of Care Endpoint
-
-  ccrimessaging:
-    container_name: ccrimessaging
-    image: thorlogic/ccri-messaging${IMAGE_TAG}
-    depends_on:
-    - ccriserver
-    environment:
-    - ccri.server.base=http://data.developer.nhs.uk/ccri-messaging/STU3
-    - ccri.edms.server.base=http://localhost:8181/ccri-document/STU3
-    - ccri.software.version=3.7.1
-    - ccri.software.name=CCRI-Messaging
-    - ccri.server=CCRI Messaging FHIR Server
-    - ccri.validate_flag=false
-    - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
-    - fhir.restserver.eprBase=http4://ccriserver:8186/ccri-fhir/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-    - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-    - fhir.restserver.tkwBase=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
-    - org.slf4j.simpleLogger.defaultLogLevel=info
-    ports:
-    - 8182:8182
-    volumes:
-    - tie-log-volume:/usr/local/tomcat/logs
-    networks:
-      - ccri_net
-
-# App to allow keycloak login to the apps
-  logon:
-    container_name: ccrilogon
-    image: thorlogic/ccri-logon${IMAGE_TAG}
-    ports:
-      - 4200:4200
-
-# Renders (Transfer Of Care) FHIR Documents and provides a FHIR document import
-
-  documentviewer:
-    container_name: ccridocumentviewer
-    image: thorlogic/ccri-documentviewer${IMAGE_TAG}
-    environment:
-    - fhir.resource.serverBase=http://localhost:8186/ccri-fhir/STU3
-    - fhir.messaging.serverBase=http://localhost:8182/ccri-messaging/STU3
-    depends_on:
-    - ccriserver
-    - ccrimessaging
-    ports:
-    - 8080:4201
-    extra_hosts:
-    # Define an alias to the CCRI Container to ensure that the correct Server Base is displayed by HAPI
-    - "${FHIR_SERVER_BASE_HOST}:172.168.250.14"
-    networks:
-    - ccri_net
 
 # provides technical demonstration of the Care Connect API
 
@@ -176,6 +70,7 @@ volumes:
   tie-log-volume:
   mongo-log-volume:
   sqlvol:
+  sfs-postgres :
 
 networks:
   ccri_net:

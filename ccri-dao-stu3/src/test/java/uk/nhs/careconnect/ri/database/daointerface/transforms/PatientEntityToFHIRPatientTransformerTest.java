@@ -6,8 +6,8 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.Before;
 import org.junit.Test;
-import uk.nhs.careconnect.ri.dao.transforms.BaseAddressToFHIRAddressTransformer;
-import uk.nhs.careconnect.ri.dao.transforms.PatientEntityToFHIRPatientTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.BaseAddressToFHIRAddressTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.PatientEntityToFHIRPatientTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.transforms.builder.PatientEntityBuilder;
 import uk.nhs.careconnect.ri.database.entity.patient.PatientEntity;
 

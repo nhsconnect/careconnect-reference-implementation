@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.nhs.careconnect.ri.dao.transforms.BaseAddressToFHIRAddressTransformer;
-import uk.nhs.careconnect.ri.dao.transforms.LocationEntityToFHIRLocationTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.BaseAddressToFHIRAddressTransformer;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.LocationEntityToFHIRLocationTransformer;
 import uk.nhs.careconnect.ri.database.daointerface.transforms.builder.LocationEntityBuilder;
 import uk.nhs.careconnect.ri.database.entity.location.LocationEntity;
 

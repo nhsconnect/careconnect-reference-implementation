@@ -6,10 +6,10 @@
 
     <groupId>uk.org.hl7.fhir</groupId>
     <artifactId>cc-core</artifactId>
-    <version>3.7.1</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
-        <hapi-fhir-version>3.7.0</hapi-fhir-version>
+        <hapi-fhir-version>4.0.3</hapi-fhir-version>
     </properties>
 
     <dependencies>
@@ -30,13 +30,13 @@
 
     <!-- At least one "structures" JAR must also be included -->
 
-
+<!--
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
@@ -48,11 +48,11 @@
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
+
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-structures-r4</artifactId>
-            <version>3.7.0</version>
-            <scope>compile</scope>
+            <artifactId>hapi-fhir-converter</artifactId>
+            <version>${hapi-fhir-version}</version>
         </dependency>
 
     </dependencies>
@@ -70,10 +70,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
         </plugins>

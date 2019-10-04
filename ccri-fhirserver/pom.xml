@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.careconnect.ccri</groupId>
     <artifactId>ccri-fhirserver</artifactId>
-    <version>3.7.1</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ccri-fhirserver</name>
@@ -14,17 +14,15 @@
 
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
-        <artifactId>ccri-parent</artifactId>
-        <version>3.7.1</version>
+        <artifactId>clinical-data-repository-sql</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-
-        <java.version>1.8</java.version>
-        <care-connect-version>3.7.1</care-connect-version>
+        <java.version>11</java.version>
+        <care-connect-version>4.0.0-SNAPSHOT</care-connect-version>
 
         <junit-version>4.12</junit-version>
         <cucumber-version>1.2.5</cucumber-version>
@@ -119,6 +117,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>7.2.2.jre8</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate_version}</version>
@@ -157,9 +161,15 @@
         </dependency>
 
         <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-converter</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>5.2.3</version>
+            <version>5.2.4</version>
         </dependency>
 
 
@@ -236,6 +246,23 @@
         <dependency>
             <groupId>uk.nhs.careconnect.ri</groupId>
             <artifactId>ccri-dao-stu3</artifactId>
+            <version>${care-connect-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.nhs.careconnect.ri</groupId>
+            <artifactId>ccri-dao-r4</artifactId>
             <version>${care-connect-version}</version>
             <exclusions>
                 <exclusion>
@@ -343,6 +370,19 @@
             <artifactId>jansi</artifactId>
             <version>1.16</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -25,6 +25,10 @@ public interface PatientRepository extends BaseRepository<PatientEntity,Patient>
 
     Patient read(FhirContext ctx, IdType theId);
 
+    Patient read(FhirContext ctx, TokenParam identifier);
+
+    PatientEntity readEntity(FhirContext ctx, TokenParam identifier);
+
     PatientEntity readEntity(FhirContext ctx,IdType theId);
 
     Patient update(FhirContext ctx, Patient patient, @IdParam IdType theId, @ConditionalUrlParam String theConditional) throws OperationOutcomeException;

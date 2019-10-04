@@ -297,7 +297,7 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
   }
 
 
-  ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
+  public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
     return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
   }
 
@@ -497,4 +497,13 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
     }
   }
 
+    @Override
+    public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1) {
+        return null;
+    }
+
+    @Override
+    public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+        return null;
+    }
 }

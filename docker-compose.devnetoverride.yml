@@ -14,11 +14,11 @@ services:
 
   ccrismartonfhir:
     volumes:
-    - /docker-data/ccri-gatewayssl-logs:/usr/local/tomcat/logs
+      - /docker-data/ccri-gatewayssl-logs:/usr/local/tomcat/logs
 
   ccridocument:
-     volumes:
-       - /docker-data/ccri-document-logs:/usr/local/tomcat/logs
+    volumes:
+      - /docker-data/ccri-document-logs:/usr/local/tomcat/logs
 
   ccrimessaging:
     volumes:

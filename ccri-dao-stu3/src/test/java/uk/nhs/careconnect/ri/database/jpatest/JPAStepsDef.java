@@ -1251,7 +1251,7 @@ PROCEDURE
             validator.registerValidatorModule(instanceValidator);
 
             IValidationSupport valSupport = new CareConnectValidation();
-            ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
+            ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupportStu3AsR4(), valSupport);
             instanceValidator.setValidationSupport(support);
             */
         }

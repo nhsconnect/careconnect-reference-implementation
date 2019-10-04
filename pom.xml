@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.nhs.careconnect.ri</groupId>
-    <artifactId>ccri-parent</artifactId>
-    <version>3.7.1</version>
+    <artifactId>clinical-data-repository-sql</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -19,8 +19,8 @@
     </parent>
 
     <properties>
-        <care-connect-version>3.7.1</care-connect-version>
-        <hapi-fhir-version>3.7.0</hapi-fhir-version>
+        <care-connect-version>4.0.0-SNAPSHOT</care-connect-version>
+        <hapi-fhir-version>4.0.3</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <slf4j>1.7.25</slf4j>
         <spring-boot-version>2.1.1.RELEASE</spring-boot-version>
@@ -42,6 +42,31 @@
 
     </properties>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-dnault-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/dnault/maven</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>oss-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>uk.org.hl7.fhir</groupId>
@@ -49,19 +74,6 @@
             <version>${care-connect-version}</version>
         </dependency>
 
-<!--
-       <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-        </dependency>
--->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -98,12 +110,21 @@
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi-fhir-version}</version>
+        </dependency>
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
             <version>${hapi-fhir-version}</version>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-validation-resources-r4</artifactId>
+            <version>${hapi-fhir-version}</version>
         </dependency>
         <dependency>
             <groupId>com.phloc</groupId>
@@ -141,25 +162,6 @@
         </pluginManagement>
     </build>
 
-    <!--
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.20.1</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <alwaysGenerateSurefireReport>false</alwaysGenerateSurefireReport>
-                    <showSuccess>false</showSuccess>
-                    <aggregate>true</aggregate>
-
-                    <linkXRef>true</linkXRef>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-    -->
 
     <modules>
 
@@ -167,14 +169,8 @@
         <module>ccri-database</module>
         <module>ccri-dao-stu3</module>
         <module>ccri-fhirserver</module>
+        <module>ccri-dao-r4</module>
 
     </modules>
-<!--
-    <distributionManagement>
-        <repository>
-            <id>bintray-kevinmayfield-careconnect</id>
-            <name>kevinmayfield-careconnect</name>
-            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/CareConnectPkg/;publish=1</url>
-        </repository>
-    </distributionManagement> -->
+
 </project>

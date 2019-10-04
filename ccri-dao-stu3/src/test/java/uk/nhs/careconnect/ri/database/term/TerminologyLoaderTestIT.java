@@ -20,11 +20,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
-import uk.nhs.careconnect.ri.dao.TerminologyLoaderDao;
+import uk.nhs.careconnect.ri.stu3.dao.TerminologyLoaderDao;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.CodeSystemEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptEntity;
 import uk.nhs.careconnect.ri.database.entity.codeSystem.ConceptParentChildLink;
-import uk.org.hl7.fhir.core.Dstu2.CareConnectSystem;
+import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;

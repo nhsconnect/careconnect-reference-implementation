@@ -149,7 +149,7 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
     return provideStructureDefinitionMap(theContext).get(url);
   }
 
-  ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
+  public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
     return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
   }
 
@@ -264,6 +264,16 @@ public class SNOMEDUKMockValidationSupport implements IValidationSupport {
     */
 
     return retVal;
+  }
+
+  @Override
+  public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1) {
+    return null;
+  }
+
+  @Override
+  public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
+    return null;
   }
 
   @Override

@@ -52,11 +52,11 @@ Scenario: Patient Read
              And they shall all be FHIR Patient resources
              And the results should be a list of CareConnect Patients
 
-  Scenario: Patient gender Search Male
-             Given I search for a Patient with a gender of MALE
-             Then the result should be a list with several entries
-             And they shall all be FHIR Patient resources
-             And the results should be a list of CareConnect Patients
+  #Scenario: Patient gender Search Male
+             #Given I search for a Patient with a gender of MALE
+             #Then the result should be a list with several entries
+             #And they shall all be FHIR Patient resources
+             #And the results should be a list of CareConnect Patients
 
 
  Scenario: Patient identifier Search Found
@@ -114,8 +114,8 @@ Scenario: Patient Read
                   Given I search for a Patient with a phone of "0113 9737320"
                   Then the result should be a list with 0 entry
 
-  Scenario:  Patient Conditional
+  #Scenario:  Patient Conditional
 
-    When I Conditional add a Patient
-    Then I search Patient on Patient PPMID = 1101
-    Then I should get a Bundle of Patient 1 resource
+    #When I Conditional add a Patient
+    #Then I search Patient on Patient PPMID = 1101
+    #Then I should get a Bundle of Patient 1 resource

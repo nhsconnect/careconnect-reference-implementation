@@ -79,17 +79,19 @@ public class PatientEntity extends BaseResource {
 
     // Patient IDENTIFIERS
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientIdentifier.class)
-
     private List<PatientIdentifier> identifiers = new ArrayList<>();
+
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientAddress.class)
-
     private List<PatientAddress> addresses;
+
     @OneToMany(mappedBy="patientEntity", targetEntity=PatientTelecom.class)
-
     private List<PatientTelecom> telecoms;
-    @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
 
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientName.class)
     private List<PatientName> names;
+
+    @OneToMany(mappedBy="patientEntity", targetEntity=PatientExtension.class)
+    private List<PatientExtension> extensions = new ArrayList<>();
 
 
     // For Reverse Includes
@@ -384,5 +386,13 @@ public class PatientEntity extends BaseResource {
 
     public void setPatientCarePlans(Set<CarePlanEntity> patientCarePlans) {
         this.patientCarePlans = patientCarePlans;
+    }
+
+    public List<PatientExtension> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(List<PatientExtension> extensions) {
+        this.extensions = extensions;
     }
 }
