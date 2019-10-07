@@ -184,7 +184,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
                 ((Flag) resource).getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Flag-1"));
                 break;
             case "DocumentReference":
-                ((DocumentReference) resource).getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1"));
+                //((DocumentReference) resource).getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1"));
                 break;
 
 
