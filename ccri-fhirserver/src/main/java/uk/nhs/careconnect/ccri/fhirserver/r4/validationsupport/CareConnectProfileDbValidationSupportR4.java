@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver.validationsupport;
+package uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -199,11 +199,11 @@ public class CareConnectProfileDbValidationSupportR4 implements IValidationSuppo
         }
 
         */
-        if (theUrl.startsWith("https://fhir.hl7.org.uk")) {
+        if (theUrl.startsWith("https://fhir.hl7.org.uk/STU3")) {
 
             return true;
         }
-        if (theUrl.startsWith("https://fhir.nhs.uk")) {
+        if (theUrl.startsWith("https://fhir.nhs.uk/STU3")) {
 
             return true;
         }

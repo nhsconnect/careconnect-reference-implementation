@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.DatabaseBackedPagingProvider;
-import uk.nhs.careconnect.ccri.fhirserver.validationsupport.CareConnectProfileDbValidationSupportR4;
+import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.CareConnectProfileDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileDbValidationSupportSTU3;
-import uk.nhs.careconnect.ccri.fhirserver.validationsupport.SNOMEDUKDbValidationSupportR4;
+import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.SNOMEDUKDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.SNOMEDUKDbValidationSupportSTU3;
 import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 

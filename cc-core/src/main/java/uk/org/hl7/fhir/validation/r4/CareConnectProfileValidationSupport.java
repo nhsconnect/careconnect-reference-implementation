@@ -192,8 +192,8 @@ public class CareConnectProfileValidationSupport implements IValidationSupport {
             log.trace("  Returning null as it's an HL7 one");
             return false;
         }
-        if (!theUrl.startsWith("https://fhir.hl7.org.uk")  &&
-                !theUrl.startsWith("https://fhir.nhs.uk")
+        if (!theUrl.startsWith("https://fhir.hl7.org.uk/STU3")  &&
+                !theUrl.startsWith("https://fhir.nhs.uk/STU3")
                 ) {
 
             return false;

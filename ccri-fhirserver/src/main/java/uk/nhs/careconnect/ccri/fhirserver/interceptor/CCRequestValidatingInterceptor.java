@@ -79,12 +79,12 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
                         resource = setProfile(resource);
                     }
 
-
-                    VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
-                    IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+                    // Should not need to convert in the interceptor.
+                    //VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+                    //IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
                     try {
-                        log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
-                        results = this.fhirValidator.validateWithResult(convertedResource);
+                        //log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+                        results = this.fhirValidator.validateWithResult(resource);
                     } catch (Exception val) {
                         log.error(val.getMessage());
                         return true;
@@ -92,7 +92,13 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
                     //OperationOutcome outcomeR4 = ;
 
-                    OperationOutcome outcome = OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), null);
+                    OperationOutcome outcome = null;
+                    if (results.toOperationOutcome() instanceof org.hl7.fhir.r4.model.OperationOutcome) {OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), null);
+                        outcome = OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), null);
+                    } else {
+                        outcome = OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome());
+                    }
+
 
                     if (!pass(outcome)) {
                         log.info("VALIDATION FAILED");
@@ -111,7 +117,7 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
             switch (issue.getSeverity()) {
                 case ERROR:
                 case FATAL:
-                case WARNING:
+                //case WARNING:
                     return false;
             }
         }

@@ -468,17 +468,19 @@ public class PatientDao implements PatientRepository {
                         // already processed
                         break;
                     default:
-                        PatientExtension patientExtension = new PatientExtension();
-                        patientExtension.setPatientEntity(patientEntity);
-                        if (extension.hasUrl()) {
-                            patientExtension.setUrl(extension.getUrl());
-                        }
-                        // TODO
                         if (extension.hasValue()) {
-                            patientExtension.setValue(extension.getValue());
-                        }
+                            PatientExtension patientExtension = new PatientExtension();
+                            patientExtension.setPatientEntity(patientEntity);
+                            if (extension.hasUrl()) {
+                                patientExtension.setUrl(extension.getUrl());
+                            }
+                            // TODO
+                            if (extension.hasValue()) {
+                                patientExtension.setValue(extension.getValue());
+                            }
 
-                        em.persist(patientExtension);
+                            em.persist(patientExtension);
+                        }
                 }
 
             }

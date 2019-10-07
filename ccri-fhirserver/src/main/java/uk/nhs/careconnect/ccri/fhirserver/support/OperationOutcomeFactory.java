@@ -120,6 +120,9 @@ public class OperationOutcomeFactory {
                 remove = true;
             }
 
+            if (issue.getDiagnostics().contains("Patient.name[official]")) {
+                remove = true;
+            }
 
             // Need to check further, poss hapi issue?
 
