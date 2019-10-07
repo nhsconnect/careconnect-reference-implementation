@@ -8,12 +8,15 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.nhs.careconnect.fhir.OperationOutcomeException;
 
 import java.io.*;
 
 public class ProviderResponseLibrary {
     private static final Logger log = LoggerFactory.getLogger(ProviderResponseLibrary.class);
+
+
 
     private ProviderResponseLibrary () {
     }
@@ -43,6 +46,8 @@ public class ProviderResponseLibrary {
             method.setOperationOutcome(OperationOutcomeFactory.createOperationOutcome(ex.getMessage()));
         }
 
+        createException(null, method.getOperationOutcome());
+        // This next line should not be called
         return method;
     }
 
@@ -50,8 +55,10 @@ public class ProviderResponseLibrary {
         if (resource instanceof OperationOutcome)
         {
             OperationOutcome operationOutcome = (OperationOutcome) resource;
-            String json = ctx.newJsonParser().encodeResourceToString(operationOutcome);
-            log.info("Sever Returned: {}", json);
+            if (ctx != null) {
+                String json = ctx.newJsonParser().encodeResourceToString(operationOutcome);
+                log.info("Sever Returned: {}", json);
+            }
 
             OperationOutcomeFactory.convertToException(operationOutcome);
         } else {
