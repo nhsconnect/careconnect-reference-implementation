@@ -95,7 +95,7 @@ services:
 
   ccrimessaging:
     container_name: ccrimessaging
-    image: thorlogic/ccri-messaging
+    image: thorlogic/ccri-messaging:latest
     environment:
       - server.base.epr=http://ccrifhir:8186/ccri-fhir/STU3
       - server.base.edms=http://ccridocument2:8181/ccri-document/STU3
