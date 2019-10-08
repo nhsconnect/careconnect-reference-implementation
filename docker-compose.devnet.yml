@@ -210,8 +210,8 @@ services:
     environment:
        - server.servlet.context-path=/ccri-document
        - server.context-path=/ccri-document
-       - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
-       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+       - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
+       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
        - fhir.resource.serverName=Care Connect RI FHIR Server
        - fhir.resource.serverVersion=3.5.1-SNAPSHOT
        - spring.data.mongodb.uri=mongodb://ccrimongo7:27017/careconnect-nosql
@@ -268,8 +268,8 @@ services:
     container_name: ccridocumentviewer
     image: ${REGISTRY_PREFIX}ccri-documentviewer${IMAGE_TAG}
     environment:
-      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
-      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
+      - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-document/STU3
       - conf.logon=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/document-viewer
       - keycloak.rooturl=https://${OAUTH2_SERVER_BASE_HOST}/auth
       - keycloak.authserverurl=https://${OAUTH2_SERVER_BASE_HOST}/auth
