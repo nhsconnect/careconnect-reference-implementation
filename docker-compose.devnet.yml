@@ -97,7 +97,7 @@ services:
     container_name: ccrimessaging
     image: ${REGISTRY_PREFIX}ccri-messaging${IMAGE_TAG}
     environment:
-      - fhir.restserver.edmsBase=http4://ccridocument:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - fhir.restserver.edmsBase=http4://ccridocument2:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
       - fhir.restserver.tkwBase=http4://tkwvalidation:4949?throwExceptionOnFailure=true&bridgeEndpoint=true
       - ccri.epr.server.base=http://ccrifhir:8186/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
@@ -109,7 +109,7 @@ services:
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccrifhir
-      - ccridocument
+      - ccridocument2
     ports:
       - 8112:8182
     volumes:
@@ -143,7 +143,7 @@ services:
       - jolokia.password=h5fadm!n
       - jolokia.jmxendpoint.ccportal=http4://cc-portal:8187/cc-portal?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccrimessaging=http4://ccrimessaging:8182/ccri-messaging?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - jolokia.jmxendpoint.ccridocument=http4://ccridocument:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
+      - jolokia.jmxendpoint.ccridocument=http4://ccridocument2:8181/ccri-document?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.tkw=http4://tkwvalidation:4849?throwExceptionOnFailure=false&bridgeEndpoint=true
       - jolokia.jmxendpoint.ccsmart=http4://ccsmartproxy:80/cc-smart?throwExceptionOnFailure=false&bridgeEndpoint=true
       - conf.logon=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/document-viewer
