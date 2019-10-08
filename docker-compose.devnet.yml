@@ -21,10 +21,8 @@ services:
     environment:
       - datasource.username=${MYSQL_DB_USER}
       - datasource.password=${MYSQL_DB_PASSWORD}
-      - datasource.host=//ccrisql
+      - datasource.url=jdbc:postgresql://ccrisql:5432/careconnect
       - datasource.driver=org.postgresql.Driver
-      - datasource.path=5432/careconnect
-      - datasource.vendor=postgresql
       - datasource.showSql=false
       - datasource.showDdl=false
       - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect

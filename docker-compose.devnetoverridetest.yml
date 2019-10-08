@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+
+  ccrisql:
+    ports:
+      - 43306:3306
+    volumes:
+      - /docker-data/ccri-mysql:/var/lib/mysql
+
+  ccrifhir:
+    volumes:
+      - /docker-data/ccri-gateway-logs:/usr/local/tomcat/logs
+

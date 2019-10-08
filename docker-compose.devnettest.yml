@@ -1,0 +1,75 @@
+version: '2'
+services:
+
+  ccrisql:
+    container_name: ccrisql
+    image: postgres:11.3
+    environment:
+      - POSTGRES_DB=careconnect
+      - POSTGRES_USER=fhirjpa
+      - POSTGRES_PASSWORD=fhirjpa
+    networks:
+      - ccri_net
+
+  ccrifhir:
+    container_name: ccrifhir
+    image: thorlogic/ccri-fhirserver:latest
+    depends_on:
+      - ccrisql
+    links:
+      - ccrisql
+    environment:
+      - datasource.username=fhirjpa
+      - datasource.password=fhirjpa
+      - datasource.url=jdbc:postgresql://ccrisql:5432/careconnect
+      - datasource.driver=org.postgresql.Driver
+      - datasource.path=5432/careconnect
+      - datasource.vendor=postgresql
+      - datasource.showSql=false
+      - datasource.showDdl=false
+      - datasource.dialect=org.hibernate.dialect.PostgreSQL9Dialect
+      - datasource.ui.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - server.servlet.context-path=/ccri-fhir
+      - ccri.software.version=4.0.0
+      - ccri.software.name=Care Connect RI FHIR Server
+      - ccri.server=Care Connect API (unsecured)
+      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
+      - ccri.tkw_server=http://tkwvalidation:4849/$$validate
+      - ccri.EPR_resources=AllergyIntolerance,Appointment,Bundle,CarePlan,CareTeam,CodeSystem,ClinicalImpression,ConceptMap,Condition,Consent,DocumentReference,Encounter,Endpoint,EpisodeOfCare,Flag,GraphDefinition,HealthcareService,Immunization,List,Location,Medication,MedicationAdministration,MedicationDispense,MedicationRequest,MedicationStatement,MessageDefinition,NamingSystem,Observation,Organization,Patient,Practitioner,PractitionerRole,Procedure,Questionnaire,QuestionnaireResponse,ReferralRequest,RelatedPerson,Schedule,Slot,StructureDefinition,ValueSet
+      - ccri.validate_use_tkw=false
+      - ccri.validate_flag=true
+    ports:
+      - 8105:8186
+    extra_hosts:
+      # Define an alias to loop back for REST Connections
+      - "${FHIR_SERVER_BASE_HOST}:127.0.0.1"
+    volumes:
+      - gateway-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
+
+
+  tkwvalidation:
+    container_name: tkwvalidation
+    image: damianmurphy/fhir_production_validator:20190301
+    ports:
+      - 8116:4849
+    volumes:
+      - /docker-data:/home/service/data
+    networks:
+      - ccri_net
+
+
+
+
+networks:
+  ccri_net:
+    driver: bridge
+    ipam:
+      driver: default
+
