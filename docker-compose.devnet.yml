@@ -100,7 +100,7 @@ services:
       - server.base.epr=http://ccrifhir:8186/ccri-fhir/STU3
       - server.base.edms=http://ccridocument2:8181/ccri-document/STU3
       - camel.route.edms=fhir://create/resource?inBody=resourceAsString&serverUrl=http://ccridocument2:8181/ccri-document/STU3&fhirVersion=DSTU3
-        camel.route.tkw=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
+      - camel.route.tkw=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
       - ccri.epr.server.base=http://ccrifhir:8186/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
