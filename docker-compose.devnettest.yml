@@ -70,6 +70,32 @@ services:
     networks:
       - ccri_net
 
+  ccrimessaging:
+    container_name: ccrimessaging
+    image: thorlogic/ccri-messaging
+    environment:
+      - server.base.epr=http://ccrifhir:8186/ccri-fhir/STU3
+      - server.base.edms=http://ccri-document2:8181/ccri-document/STU3
+      - camel.route.edms=fhir://create/resource?inBody=resourceAsString&serverUrl=http://ccri-document2:8181/ccri-document/STU3&fhirVersion=DSTU3
+        camel.route.tkw=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
+      - ccri.epr.server.base=http://ccrifhir:8186/ccri-fhir/STU3
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+      - ccri.software.version=4.0.0
+      - ccri.software.name=CCRI-Messaging
+      - ccri.server=Care Connect API (unsecured)
+      - server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
+      - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
+    depends_on:
+      - ccrifhir
+      - ccridocument2
+    ports:
+      - 8112:8182
+    volumes:
+      - gateway-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
+
   ccridocument2:
     container_name: ccridocument2
     image: thorlogic/document-repository:latest

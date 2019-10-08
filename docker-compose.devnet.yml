@@ -73,7 +73,7 @@ services:
       - datasource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - ccri.software.version=3.7
+      - ccri.software.version=4.0.0
       - ccri.software.name=Care Connect RI FHIR Server
       - ccri.server=Care Connect API (OAuth2 + SMARTonFHIR)
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-smartonfhir/STU3
@@ -95,17 +95,19 @@ services:
 
   ccrimessaging:
     container_name: ccrimessaging
-    image: ${REGISTRY_PREFIX}ccri-messaging${IMAGE_TAG}
+    image: thorlogic/ccri-messaging
     environment:
-      - fhir.restserver.edmsBase=http4://ccridocument2:8181/ccri-document/STU3?throwExceptionOnFailure=false&bridgeEndpoint=true
-      - fhir.restserver.tkwBase=http4://tkwvalidation:4949?throwExceptionOnFailure=true&bridgeEndpoint=true
+      - server.base.epr=http://ccrifhir:8186/ccri-fhir/STU3
+      - server.base.edms=http://ccri-document2:8181/ccri-document/STU3
+      - camel.route.edms=fhir://create/resource?inBody=resourceAsString&serverUrl=http://ccri-document2:8181/ccri-document/STU3&fhirVersion=DSTU3
+        camel.route.tkw=http4://192.168.128.36?throwExceptionOnFailure=true&bridgeEndpoint=true
       - ccri.epr.server.base=http://ccrifhir:8186/ccri-fhir/STU3
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
-      - ccri.software.version=3.7
+      - ccri.software.version=4.0.0
       - ccri.software.name=CCRI-Messaging
       - ccri.server=Care Connect API (unsecured)
-      - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
+      - server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-messaging/STU3
       - ccri.guide=https://nhsconnect.github.io/CareConnectAPI/
     depends_on:
       - ccrifhir
