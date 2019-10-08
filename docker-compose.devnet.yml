@@ -13,7 +13,7 @@ services:
 
   ccrifhir:
     container_name: ccrifhir
-    image: ${REGISTRY_PREFIX}ccri-fhirserver${IMAGE_TAG}
+    image: thorlogic/ccri-fhirserver:latest
     depends_on:
       - ccrisql
     links:
@@ -33,7 +33,7 @@ services:
       - jolokia.username=HSFAdmin
       - jolokia.password=h5fadm!n
       - server.servlet.context-path=/ccri-fhir
-      - ccri.software.version=3.7.1
+      - ccri.software.version=4.0.0
       - ccri.software.name=Care Connect RI FHIR Server
       - ccri.server=Care Connect API (unsecured)
       - ccri.server.base=https://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
