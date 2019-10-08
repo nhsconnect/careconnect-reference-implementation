@@ -64,6 +64,36 @@ services:
     networks:
       - ccri_net
 
+  ccrimongo7:
+    container_name: ccrimongo7
+    image: mongo:3.6.4
+    networks:
+      - ccri_net
+
+  ccridocument2:
+    container_name: ccridocument2
+    image: thorlogic/document-repository:latest
+    depends_on:
+      - ccrimongo7
+    links:
+      - ccrimongo7
+    environment:
+      - server.servlet.context-path=/ccri-document
+      - server.context-path=/ccri-document
+      - ccri.server.base=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+      - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri/camel/ccri-document/STU3
+      - fhir.resource.serverName=Care Connect RI FHIR Server
+      - fhir.resource.serverVersion=3.5.1-SNAPSHOT
+      - spring.data.mongodb.uri=mongodb://ccrimongo7:27017/careconnect-nosql
+      - spring.data.mongodb.database=careconnect-nosql
+      - jolokia.username=HSFAdmin
+      - jolokia.password=h5fadm!n
+    ports:
+      - 8113:8181
+    volumes:
+      - mongo-log-volume:/usr/local/tomcat/logs
+    networks:
+      - ccri_net
 
 
 
