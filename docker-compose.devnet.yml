@@ -218,6 +218,7 @@ services:
        - spring.data.mongodb.database=careconnect-nosql
        - jolokia.username=HSFAdmin
        - jolokia.password=h5fadm!n
+       - validate.flag=false
     ports:
        - 8113:8181
     volumes:
