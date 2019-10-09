@@ -142,17 +142,6 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate_validator_version}</version>
         </dependency>
-    <!--    <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-orm</artifactId>
-            <version>${hibernate_search_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-elasticsearch</artifactId>
-            <version>${hibernate_search_version}</version>
-        </dependency>
--->
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
