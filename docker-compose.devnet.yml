@@ -137,7 +137,7 @@ services:
 
   fhirexplorer:
     container_name: fhirexplorer
-    image: ${REGISTRY_PREFIX}ccri-fhirexplorer${IMAGE_TAG}
+    image: thorlogic/ccri-fhirexplorer:latest
     environment:
       - fhir.resource.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
       - fhir.messaging.serverBase=${FHIR_SERVER_BASE_PROTOCOL}://${FHIR_SERVER_BASE_HOST}/ccri-fhir/STU3
