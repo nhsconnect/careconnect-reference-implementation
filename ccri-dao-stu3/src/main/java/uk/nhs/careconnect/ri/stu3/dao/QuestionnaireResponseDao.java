@@ -639,7 +639,7 @@ public class QuestionnaireResponseDao implements QuestionnaireResponseRepository
                         if (answer.hasValueDateType()) {
                             answerEntity.setValueDate(answer.getValueDateType().getValue());
                         }
-                        if (answer.hasValueCoding()) {
+                        if (answer.hasValueCoding() && answer.getValueCoding().getCode() != null) {
                             ConceptEntity concept = conceptDao.findAddCode(answer.getValueCoding());
                             if (concept != null) answerEntity.setValueCoding(concept);
                         }
