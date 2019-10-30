@@ -38,7 +38,6 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
     public CCRequestValidatingInterceptor(Logger ourLog, FhirValidator fhirValidator, FhirContext ctx) {
         super();
-        //this.log = ourLog;
         this.fhirValidator = fhirValidator;
 
         this.ctx = ctx;
@@ -46,8 +45,8 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
 
     public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {
         EncodingEnum encoding = RestfulServerUtils.determineRequestEncodingNoDefault(theRequestDetails);
-        //log.info("CC_VALIDATOR" + this.fhirValidator.toString());
-        if (encoding == null) {
+
+        if (encoding == null || theRequestDetails.getOperation() != null) {
             log.trace("Incoming request does not appear to be FHIR, not going to validate");
             return true;
         } else {
@@ -80,10 +79,10 @@ public class CCRequestValidatingInterceptor extends InterceptorAdapter {
                     }
 
                     // Should not need to convert in the interceptor.
-                    //VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
-                    //IBaseResource convertedResource = convertor.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
+
+
                     try {
-                        //log.info(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
+
                         results = this.fhirValidator.validateWithResult(resource);
                     } catch (Exception val) {
                         log.error(val.getMessage());

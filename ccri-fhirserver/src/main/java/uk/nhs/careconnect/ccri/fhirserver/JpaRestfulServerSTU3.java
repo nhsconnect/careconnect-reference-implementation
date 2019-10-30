@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import uk.nhs.careconnect.ccri.fhirserver.interceptor.CCRequestValidatingInterceptor;
 import uk.nhs.careconnect.ccri.fhirserver.interceptor.ServerInterceptor;
 import uk.nhs.careconnect.ccri.fhirserver.oauth2.OAuth2Interceptor;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ServerPlainProvider;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.*;
 
 import javax.servlet.ServletException;
@@ -196,6 +197,9 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
 
         setResourceProviders(permissionlist);
 
+        List<Object> plainProviders=new ArrayList<Object>();
+        plainProviders.add(applicationContext.getBean(ServerPlainProvider.class));
+        registerProviders(plainProviders);
 
         // Replace built in conformance provider (CapabilityStatement)
         setServerConformanceProvider(new CareConnectServerConformanceProvider());
