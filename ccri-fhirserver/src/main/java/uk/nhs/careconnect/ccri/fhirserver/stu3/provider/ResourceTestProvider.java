@@ -15,7 +15,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.aspectj.bridge.Message;
 import org.hl7.fhir.convertors.VersionConvertor_30_40;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.MessageHeader;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -42,16 +45,16 @@ public class ResourceTestProvider {
     @Autowired()
     FhirContext ctx;
 
-	@Qualifier("r4ctx")
-	@Autowired()
-	FhirContext r4ctx;
-
  //   @Autowired
 //	FhirInstanceValidator instanceValidator;
 
 	@Qualifier("fhirValidatorSTU3")
     @Autowired
     FhirValidator val;
+
+	@Qualifier("fhirValidatorR4")
+	@Autowired
+	FhirValidator valR4;
     
 	HttpResponse response;
 	Reader reader;
@@ -129,23 +132,19 @@ public class ResourceTestProvider {
 
 	public OperationOutcome validateResource(IBaseResource resource) {
 
+		log.trace(this.ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
+		ValidationResult results = val.validateWithResult(resource);
+		if (resource instanceof Bundle) {
+			Bundle bundle = (Bundle) resource;
+			if (bundle.getEntryFirstRep().getResource() instanceof MessageHeader) {
+				MessageHeader messageHeader = (MessageHeader) bundle.getEntryFirstRep().getResource();
+				if (messageHeader.hasMeta() && messageHeader.getMeta().hasProfile("https://fhir.nhs.uk/STU3/StructureDefinition/ITK-MessageHeader-2")) {
 
-		if (true) {
-			// stu3
-			log.trace(this.ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
-			ValidationResult results = val.validateWithResult(resource);
-			return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome());
-		} else {
-			// r4
-			log.info(resource.getClass().getCanonicalName());
-			org.hl7.fhir.r4.model.Resource convertedResource = VersionConvertor_30_40.convertResource((org.hl7.fhir.dstu3.model.Resource) resource, true);
-			log.info(convertedResource.getClass().getCanonicalName());
-			log.info(this.r4ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(convertedResource));
-
-			ValidationResult results = val.validateWithResult(convertedResource);
-
-			return OperationOutcomeFactory.removeUnsupportedIssues((org.hl7.fhir.r4.model.OperationOutcome) results.toOperationOutcome(), this.r4ctx);
+				}
+			}
 		}
+
+		return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome());
 
 	}
 
