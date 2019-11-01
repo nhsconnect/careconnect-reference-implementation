@@ -34,4 +34,11 @@ public interface MessageDefinitionRepository extends BaseRepository<MessageDefin
                           @OptionalParam(name = MessageDefinition.SP_IDENTIFIER) TokenParam identifier
     );
 
+    List<MessageDefinitionEntity> searchEntity(FhirContext ctx,
+                                   @OptionalParam(name = MessageDefinition.SP_NAME) StringParam name,
+                                   @OptionalParam(name = MessageDefinition.SP_PUBLISHER) StringParam publisher,
+                                   @OptionalParam(name = MessageDefinition.SP_URL) UriParam url,
+                                   @OptionalParam(name = MessageDefinition.SP_IDENTIFIER) TokenParam identifier
+    );
+
 }

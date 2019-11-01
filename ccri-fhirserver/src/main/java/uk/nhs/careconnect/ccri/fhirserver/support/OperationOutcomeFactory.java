@@ -56,7 +56,7 @@ public class OperationOutcomeFactory {
         // This function converts from R4 to STU3 and then calls the STU3 version
 
         if (ctx != null) {
-            log.info(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));
+            log.debug(ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(outcome));
         }
         OperationOutcome operationOutcome = new OperationOutcome();
         // TODO - Basic Conversion from r4 to stu3
@@ -143,7 +143,7 @@ public class OperationOutcomeFactory {
                 remove = true;
             }
             if (remove) {
-                log.info("Stripped {}", issue.getDiagnostics());
+                log.debug("Stripped {}", issue.getDiagnostics());
                 issueRemove.add(issue);
             }
         }

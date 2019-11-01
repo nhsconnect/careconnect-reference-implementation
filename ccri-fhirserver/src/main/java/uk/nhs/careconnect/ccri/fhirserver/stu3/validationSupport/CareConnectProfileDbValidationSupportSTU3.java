@@ -183,29 +183,9 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     private Boolean isSupported(String theUrl) {
 
-        // For extensions not contained in HAPI jar
-        /*
-        if (theUrl.startsWith("http://hl7.org/fhir/StructureDefinition/")) {
-            log.trace(" *** TEST ");
-            return true;
-        }
-
-        if (theUrl.startsWith("http://hl7.org/fhir/ValueSet/name-use")) {
-            log.trace(" *** TEST ");
-            return true;
-        }
-
-        */
-        if (theUrl.startsWith("https://fhir.hl7.org.uk/STU3")) {
-
-            return true;
-        }
-        if (theUrl.startsWith("https://fhir.nhs.uk/STU3")) {
-
-            return true;
-        }
-
-        return false;
+        // If the terminology server is fully populated, then this should only return Profiles (StructureDefinition)
+       //return (theUrl.startsWith("https://fhir.hl7.org.uk/STU3/StructureDefinition") || theUrl.startsWith("https://fhir.nhs.uk/STU3/StructureDefinition"));
+        return (theUrl.startsWith("https://fhir.hl7.org.uk/STU3") || theUrl.startsWith("https://fhir.nhs.uk/STU3"));
     }
 
     @Override

@@ -384,7 +384,7 @@ public class MessageDefinitionDao implements MessageDefinitionRepository {
         for (MessageDefinitionEntity messageDefinitionEntity : qryResults)
         {
             if (messageDefinitionEntity.getResource() != null) {
-                results.add((MessageDefinition) ctx.newJsonParser().parseResource(messageDefinitionEntity.getResource()));
+                results.add(messageDefinitionEntityToFHIRValuesetTransformer.transform(messageDefinitionEntity));
             } else {
 
                 MessageDefinition messageDefinition = messageDefinitionEntityToFHIRValuesetTransformer.transform(messageDefinitionEntity);

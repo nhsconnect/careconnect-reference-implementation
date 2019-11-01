@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Validate;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.ValidationModeEnum;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
@@ -17,9 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.aspectj.bridge.Message;
 import org.hl7.fhir.convertors.VersionConvertor_30_40;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.MessageHeader;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.*;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -31,8 +30,15 @@ import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.support.ProviderResponseLibrary;
+import uk.nhs.careconnect.ri.database.daointerface.MessageDefinitionRepository;
+import uk.nhs.careconnect.ri.database.entity.graphDefinition.GraphDefinitionEntity;
+import uk.nhs.careconnect.ri.database.entity.graphDefinition.GraphDefinitionLink;
+import uk.nhs.careconnect.ri.database.entity.messageDefinition.MessageDefinitionEntity;
+import uk.nhs.careconnect.ri.database.entity.messageDefinition.MessageDefinitionGraph;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 
 @Component
 public class ResourceTestProvider {
@@ -45,16 +51,13 @@ public class ResourceTestProvider {
     @Autowired()
     FhirContext ctx;
 
- //   @Autowired
-//	FhirInstanceValidator instanceValidator;
-
 	@Qualifier("fhirValidatorSTU3")
     @Autowired
     FhirValidator val;
 
-	@Qualifier("fhirValidatorR4")
 	@Autowired
-	FhirValidator valR4;
+	private MessageDefinitionRepository messageDefinitionDao;
+
     
 	HttpResponse response;
 	Reader reader;
@@ -138,8 +141,18 @@ public class ResourceTestProvider {
 			Bundle bundle = (Bundle) resource;
 			if (bundle.getEntryFirstRep().getResource() instanceof MessageHeader) {
 				MessageHeader messageHeader = (MessageHeader) bundle.getEntryFirstRep().getResource();
-				if (messageHeader.hasMeta() && messageHeader.getMeta().hasProfile("https://fhir.nhs.uk/STU3/StructureDefinition/ITK-MessageHeader-2")) {
-
+				if (messageHeader.hasExtension()) {
+					List<Extension> definitionExtension = messageHeader.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-MessageHeader.definition");
+					if (!definitionExtension.isEmpty()) {
+						 UriType uri = (UriType) definitionExtension.get(0).getValue();
+						 List<MessageDefinition> messages = messageDefinitionDao.search(ctx,null,null,new UriParam().setValue(uri.getValue()), null);
+						 for(MessageDefinition message : messages) {
+							 List<Extension> graphExtensions = message.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-MessageDefinition.graph");
+							 for(Extension graphExtension : graphExtensions) {
+								 log.info("Graph id = "+ graphExtension.getValue().toString());
+							 }
+						 }
+					}
 				}
 			}
 		}

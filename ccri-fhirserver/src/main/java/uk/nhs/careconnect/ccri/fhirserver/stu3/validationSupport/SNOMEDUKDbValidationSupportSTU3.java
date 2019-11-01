@@ -221,8 +221,8 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             if (uri.startsWith(URL_HL7UK_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientHL7UK,uri);
             if (uri.startsWith(URL_NHSD_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientNHSD,uri);
             if (resource != null) {
-               // resource.setId("");
-               // client.create().resource(resource).execute();
+                resource.setId("");
+                client.create().resource(resource).execute();
             }
         }
         return resource;
