@@ -77,8 +77,9 @@ public class Config {
         org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain validationSupportChain = new org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain();
 
         validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
-        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(stu3ctx));
+        // Try SNOMED and Terminology Server first
         validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportSTU3(stu3ctx));
+        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(stu3ctx));
 
         instanceValidator.setValidationSupport(validationSupportChain);
 

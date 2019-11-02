@@ -68,22 +68,22 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     }
 
       private void logD(String message) {
-          log.debug(message);
-          System.out.println(message);
+          log.info(message);
+
       }
     private void logD(String message,Object value) {
         log.debug(String.format(message, value));
-      //  System.out.printf(message,value);
+
     }
 
     private void logW(String message,Object value) {
         log.warn(String.format(message, value));
-        System.out.printf(message,value);
+
     }
 
     private void logW(String message) {
         log.warn(message);
-        System.out.println(message);
+
     }
 
     private void logT(String message) {
@@ -97,11 +97,8 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
         logW("CareConnect expandValueSet System="+conceptSetComponent.getSystem());
-
-
-
-        // todo
-         return null;
+        // CCRI ValueSets tend to be contained, so validateCode will be called instead.
+        return null;
   }
 
   @Override

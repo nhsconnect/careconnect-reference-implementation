@@ -23,10 +23,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
@@ -42,6 +39,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     private Map<String, CodeSystem> myCodeSystems;
     private Map<String, StructureDefinition> myStructureDefinitions;
     private Map<String, ValueSet> myValueSets;
+    private List<String> notSupportedValueSet;
 
     private static final int CONNECT_TIMEOUT_MILLIS = 50000;
     private static int SC_OK = 200;
@@ -84,6 +82,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
         myCodeSystems = new HashMap<>();
         myValueSets = new HashMap<>();
+        notSupportedValueSet = new ArrayList<>();
 
         parserStu3 = ctxStu3.newXmlParser();
         this.terminologyServer = HapiProperties.getTerminologyServer();
@@ -91,7 +90,6 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             client = this.ctxStu3.newRestfulGenericClient(terminologyServer);
             clientNHSD = this.ctxStu3.newRestfulGenericClient(URL_NHSD_BASE);
             clientHL7UK = this.ctxStu3.newRestfulGenericClient(URL_HL7UK_BASE);
-
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
@@ -99,8 +97,8 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
-        if (conceptSetComponent.getValueSet() != null) {
-            logD("SNOMED expandValueSet ValueSet=" + conceptSetComponent.getValueSet().toString());
+        if (conceptSetComponent.hasValueSet()) {
+            logD("SNOMED expandValueSet ValueSet=" + conceptSetComponent.getValueSet().get(0).getValue());
         } else {
             logD("SNOMED expandValueSet System=" + conceptSetComponent.getSystem());
         }
@@ -218,11 +216,32 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     private IBaseResource fetchValueSetCall(IGenericClient client, String uri) {
         ValueSet resource = fetchValueSetCallInner(client, uri);
         if (resource == null)  {
+            if (notSupportedValueSet.contains(uri)) return null;
             if (uri.startsWith(URL_HL7UK_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientHL7UK,uri);
             if (uri.startsWith(URL_NHSD_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientNHSD,uri);
             if (resource != null) {
-                resource.setId("");
-                client.create().resource(resource).execute();
+                ValueSet valueSet = (ValueSet) resource;
+                if (valueSet.hasCompose() && valueSet.getCompose().hasInclude()) {
+                  boolean isSnomed = false;
+                  for (ValueSet.ConceptSetComponent include : valueSet.getCompose().getInclude()) {
+                     if (include.getSystem().contains(CareConnectSystem.SNOMEDCT)) isSnomed = true;
+                  }
+                  if (isSnomed) {
+                    resource.setId("");
+                      logD("Updating OntoServer " + uri);
+                      try {
+                    client.create().resource(resource).execute(); }
+                      catch (Exception ex) {
+                          logW(ex.getMessage());
+                          resource = null;
+                          notSupportedValueSet.add(uri);
+                      }
+                  } else {
+                      // Leave for ccri server
+                      logD("Not SNOMED " + uri);
+                      notSupportedValueSet.add(uri);
+                      resource = null; }
+                }
             }
         }
         return resource;
@@ -244,6 +263,9 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
     private CodeSystem fetchCodeSystemCall(IGenericClient client, String uri) {
         CodeSystem resource = fetchCodeSystemCallInner(client,uri);
+        /*
+
+        NHSD Termserver doesn't support adding CodeSystems
         if (resource == null)  {
             if (uri.startsWith(URL_HL7UK_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientHL7UK,uri);
             if (uri.startsWith(URL_NHSD_BASE + "/System"))   resource = fetchCodeSystemCallInner(clientNHSD,uri);
@@ -252,6 +274,8 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                 client.create().resource(resource).execute();
             }
         }
+
+         */
         return resource;
     }
 
@@ -297,8 +321,17 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
         logD("SNOMEDValidator isCodeSystemSupported "+theSystem);
         if (theSystem.equals(CareConnectSystem.SNOMEDCT)) return true;
-        if (theSystem.startsWith(URL_NHSD_BASE)) return true;
-        if (theSystem.startsWith(URL_HL7UK_BASE)) return true;
+        if (theSystem.contains("ValueSet")) {
+            if (myValueSets.get(theSystem) != null) return true;
+            if (notSupportedValueSet.contains(theSystem)) return false;
+            IBaseResource resource = fetchValueSet(theContext,theSystem);
+            if (resource != null) {
+                myValueSets.put(theSystem,(ValueSet) resource);
+                return true;
+            } else {
+               // notSupportedValueSet.add(theSystem);
+            }
+        }
         return false;
     }
 
