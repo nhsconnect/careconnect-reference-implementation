@@ -116,29 +116,13 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
   }
 
-  /*
-  @Override
-  public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-    logD("CareConnect fetchCodeSystem "+theSystem);
-    return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
-  }
-  */
 
-    /**
-     * Method to fetch a CodeSystem based on a provided URL. Tries to fetch it
-     * from remote server. If it succeeds, it caches it in our global cache.
-     *
-     * @param theContext FHIR Context
-     * @param theSystem The CodeSystem URL
-     * @return Returns the retrieved FHIR Resource object or null
-     */
     @Override
     public final CodeSystem fetchCodeSystem(
             final FhirContext theContext, final String theSystem) {
         logD(
                 "CareConnectValidator asked to fetch Code System: %s%n",
                 theSystem);
-
 
         if (!isSupported(theSystem)) {
             log.trace("  Returning null as it's an HL7 one");
@@ -161,22 +145,13 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
             return null;
         } else {
             log.trace(" Provided from cache");
-            return newCS = (CodeSystem) cachedResource.get(theSystem);
+            return (CodeSystem) cachedResource.get(theSystem);
 
         }
-        //return newCS;
+
     }
 
-    /*
-     * Method to retrieve any old FHIR Resource based on a URL.
-     *
-     * @param <T> The type to return.
-     * @param theContext FHIR Conetxt.
-     * @param theClass The Class type we're being asked for.
-     * @param theUrl The URL to fetch from.
-     * @return Returns an arbitrary FHIR Resource object, or null if it can't be
-     * retrieved.
-     */
+
 
     private Boolean isSupported(String theUrl) {
 

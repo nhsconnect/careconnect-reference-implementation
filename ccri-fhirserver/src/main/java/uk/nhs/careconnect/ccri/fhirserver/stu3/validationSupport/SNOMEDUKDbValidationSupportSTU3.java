@@ -382,7 +382,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                 .useHttpGet()
                 .execute();
 
-        logD(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
+        logT(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
         if (paramResult != null) {
             for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
                 if (param.getName().equals("result")) {
