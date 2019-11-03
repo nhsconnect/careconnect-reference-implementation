@@ -137,6 +137,7 @@ public class ResourceTestProvider {
 
 		log.trace(this.ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
 		ValidationResult results = val.validateWithResult(resource);
+
 		if (resource instanceof Bundle) {
 			Bundle bundle = (Bundle) resource;
 			if (bundle.getEntryFirstRep().getResource() instanceof MessageHeader) {
