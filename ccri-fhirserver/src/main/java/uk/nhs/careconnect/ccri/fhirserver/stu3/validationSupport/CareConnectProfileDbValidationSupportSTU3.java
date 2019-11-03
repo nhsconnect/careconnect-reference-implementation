@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
@@ -20,7 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,14 +30,12 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     // KGM 21st May 2018 Incorporated Tim Coates code to use UK FHIR Reference Servers.
 
-    private static final int CACHE_MINUTES = 10;
+
 
     /**
      * Milliseconds we'll wait for an http connection.
      */
     private static final int CONNECT_TIMEOUT_MILLIS = 50000;
-
-    private static int SC_OK = 200;
 
     private FhirContext ctxStu3 = null;
 
@@ -61,7 +58,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     public CareConnectProfileDbValidationSupportSTU3( FhirContext stu3Ctx) {
 
         this.ctxStu3 = stu3Ctx;
-        this.cachedResource = new HashMap<String, IBaseResource>();
+        this.cachedResource = new HashMap<>();
 
         parserStu3 = ctxStu3.newXmlParser();
         this.alternateServer = HapiProperties.getTerminologyServerSecondary();
@@ -125,11 +122,8 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
                 theSystem);
 
         if (!isSupported(theSystem)) {
-            log.trace("  Returning null as it's an HL7 one");
             return null;
         }
-
-        CodeSystem newCS;
 
         if (cachedResource.get(theSystem) == null) {
             log.trace(" Not cached");
@@ -153,10 +147,8 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
 
 
-    private Boolean isSupported(String theUrl) {
-
+    private boolean isSupported(String theUrl) {
         // If the terminology server is fully populated, then this should only return Profiles (StructureDefinition)
-       //return (theUrl.startsWith("https://fhir.hl7.org.uk/STU3/StructureDefinition") || theUrl.startsWith("https://fhir.nhs.uk/STU3/StructureDefinition"));
         return (theUrl.startsWith("https://fhir.hl7.org.uk/STU3") || theUrl.startsWith("https://fhir.nhs.uk/STU3"));
     }
 
@@ -227,26 +219,16 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
         } else {
             logD("  This URL was already loaded: %s%n", theUrl);
         }
-        StructureDefinition sd
-                = (StructureDefinition)
+        return (StructureDefinition)
                 cachedResource.get(theUrl);
-        return sd;
+
     }
 
-  private DomainResource fetchCodeSystemOrValueSet(FhirContext theContext, String theSystem, boolean codeSystem) {
-    synchronized (this) {
-      logW("******* CareConnect fetchCodeSystemOrValueSet: system="+theSystem);
-
-      Map<String, IBaseResource> codeSystems = cachedResource;
-
-      return null;
-    }
-  }
 
 
   public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
       logW("CareConnect fetchValueSet: system="+theSystem);
-    return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
+    return null;
   }
 
   public void flush() {
@@ -264,7 +246,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     logT("CareConnect testIfConceptIsInList: {} code="+ theCode);
 
     String code = theCode;
-    if (theCaseSensitive == false) {
+    if (!theCaseSensitive) {
       code = code.toUpperCase();
     }
 
@@ -278,7 +260,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
       // KGM
       logT("CareConnect testIfConceptIsInListInner NextCode = "+next.getCode());
       String nextCandidate = next.getCode();
-      if (theCaseSensitive == false) {
+      if (!theCaseSensitive) {
         nextCandidate = nextCandidate.toUpperCase();
       }
       if (nextCandidate.equals(code)) {
@@ -328,8 +310,8 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
         if (client != null) {
             if (theUrl.contains("Questionnaire") && (!theUrl.contains("QuestionnaireResponse") ) ) {
                 org.hl7.fhir.dstu3.model.Bundle results = client.search().forResource(org.hl7.fhir.dstu3.model.Questionnaire.class).where(org.hl7.fhir.dstu3.model.Questionnaire.URL.matches().value(theUrl)).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
-                log.info("Seearching for Questionnaire " + theUrl);
-                if (results.getEntry().size() > 0) {
+                log.info("Seearching for Questionnaire {}", theUrl);
+                if (!results.getEntry().isEmpty()) {
                     log.info("Found Questionnaire");
                     org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry = results.getEntry().get(0);
                     return entry.getResource();
@@ -340,8 +322,8 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
             }
             if (theUrl.contains("StructureDefinition")  )  {
                 org.hl7.fhir.dstu3.model.Bundle results = client.search().forResource(org.hl7.fhir.dstu3.model.StructureDefinition.class).where(org.hl7.fhir.dstu3.model.StructureDefinition.URL.matches().value(theUrl)).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
-                log.info("Seearching for StructureDefinition " + theUrl);
-                if (results.getEntry().size() > 0) {
+                log.info("Seearching for StructureDefinition {}", theUrl);
+                if (!results.getEntry().isEmpty()) {
                     log.info("Found StructureDefinition");
                     org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry = results.getEntry().get(0);
                     return entry.getResource();
@@ -382,10 +364,11 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
                     = new BufferedReader(
                     new InputStreamReader(
                             conn.getInputStream(),
-                            Charset.forName("UTF-8")));
+                            StandardCharsets.UTF_8));
             try {
               int httpCode = conn.getResponseCode();
-              if (httpCode == SC_OK) {
+                int SC_OK = 200;
+                if (httpCode == SC_OK) {
 
                 String line;
                 try {

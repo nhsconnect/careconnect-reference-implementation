@@ -9,7 +9,6 @@ import org.hl7.fhir.dstu3.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,19 +34,11 @@ public class Config {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Config.class);
 
 
-    @Bean(autowire = Autowire.BY_TYPE)
-		public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
-        			DatabaseBackedPagingProvider retVal = new DatabaseBackedPagingProvider();
-        			return retVal;
-        }
+    @Bean()
+    public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
+                return new DatabaseBackedPagingProvider();
+    }
 
-
-
-    @Value("${server.port}")
-    private String serverPort;
-
-    @Value("${server.servlet.context-path}")
-    private String serverPath;
 
 
     @Bean(name="fhirValidatorSTU3")
