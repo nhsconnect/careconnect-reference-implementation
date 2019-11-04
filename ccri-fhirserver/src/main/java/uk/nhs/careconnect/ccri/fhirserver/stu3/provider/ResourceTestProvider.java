@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
+import uk.nhs.careconnect.ccri.fhirserver.support.MessageInstanceValidator;
 import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.support.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.MessageDefinitionRepository;
@@ -58,6 +59,8 @@ public class ResourceTestProvider {
 	@Autowired
 	private MessageDefinitionRepository messageDefinitionDao;
 
+	@Autowired
+	private MessageInstanceValidator messageInstanceValidator;
     
 	HttpResponse response;
 	Reader reader;
@@ -139,24 +142,11 @@ public class ResourceTestProvider {
 		ValidationResult results = val.validateWithResult(resource);
 
 		if (resource instanceof Bundle) {
-			Bundle bundle = (Bundle) resource;
-			if (bundle.getEntryFirstRep().getResource() instanceof MessageHeader) {
-				MessageHeader messageHeader = (MessageHeader) bundle.getEntryFirstRep().getResource();
-				if (messageHeader.hasExtension()) {
-					List<Extension> definitionExtension = messageHeader.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-MessageHeader.definition");
-					if (!definitionExtension.isEmpty()) {
-						 UriType uri = (UriType) definitionExtension.get(0).getValue();
-						 List<MessageDefinition> messages = messageDefinitionDao.search(ctx,null,null,new UriParam().setValue(uri.getValue()), null);
-						 for(MessageDefinition message : messages) {
-							 List<Extension> graphExtensions = message.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-MessageDefinition.graph");
-							 for(Extension graphExtension : graphExtensions) {
-								 log.info("Graph id = "+ graphExtension.getValue().toString());
-							 }
-						 }
-					}
-				}
-			}
+			OperationOutcome message = messageInstanceValidator.validateMessageBundle((Bundle) resource);
 		}
+
+
+
 
 		return OperationOutcomeFactory.removeUnsupportedIssues((OperationOutcome) results.toOperationOutcome());
 

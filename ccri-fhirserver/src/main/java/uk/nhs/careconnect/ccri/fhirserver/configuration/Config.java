@@ -19,6 +19,7 @@ import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.CareConnectProfil
 import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileDbValidationSupportSTU3;
 import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.SNOMEDUKDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.SNOMEDUKDbValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.support.MessageInstanceValidator;
 import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 
 
@@ -79,6 +80,11 @@ public class Config {
         validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportSTU3(stu3ctx));
         validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(stu3ctx));
         return  validationSupportChain;
+    }
+
+    @Bean()
+    public MessageInstanceValidator messageInstanceValidator(org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain validationSupportChain) {
+        return new MessageInstanceValidator(validationSupportChain);
     }
 
     @Bean(name="fhirValidatorR4")
