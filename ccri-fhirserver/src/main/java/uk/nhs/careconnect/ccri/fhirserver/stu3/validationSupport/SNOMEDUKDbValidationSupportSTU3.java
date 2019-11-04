@@ -2,12 +2,9 @@ package uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.UriParam;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-
-import org.aspectj.apache.bcel.classfile.Code;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -15,23 +12,13 @@ import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.*;
 
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
     private static final String URL_HL7UK_BASE = "https://fhir.hl7.org.uk/STU3";
     private static final String URL_NHSD_BASE = "https://fhir.nhs.uk/STU3";
-
 
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupportSTU3.class);
@@ -40,6 +27,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     private Map<String, StructureDefinition> myStructureDefinitions;
     private Map<String, ValueSet> myValueSets;
     private List<String> notSupportedValueSet;
+    private List<String> notSupportedCodeSystem;
 
     private static final int CONNECT_TIMEOUT_MILLIS = 50000;
     private static int SC_OK = 200;
@@ -55,8 +43,12 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
     private String terminologyServer;
 
-    private void logD(String message) {
+    private void logI(String message) {
         log.info(message);
+    }
+
+    private void logD(String message) {
+        log.debug(message);
     }
 
     private void logW(String message) {
@@ -67,13 +59,6 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         log.trace(message);
     }
 
-    private void logD(String message, Object value) {
-        log.debug(String.format(message, value));
-    }
-
-    private void logW(String message, Object value) {
-        log.warn(String.format(message, value));
-    }
 
 
     public SNOMEDUKDbValidationSupportSTU3(FhirContext stu3Ctx) {
@@ -83,8 +68,9 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         myCodeSystems = new HashMap<>();
         myValueSets = new HashMap<>();
         notSupportedValueSet = new ArrayList<>();
+        notSupportedCodeSystem = new ArrayList<>();
 
-        parserStu3 = ctxStu3.newXmlParser();
+                parserStu3 = ctxStu3.newXmlParser();
         this.terminologyServer = HapiProperties.getTerminologyServer();
         try {
             client = this.ctxStu3.newRestfulGenericClient(terminologyServer);
@@ -98,21 +84,20 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
         if (conceptSetComponent.hasValueSet()) {
-            logD("SNOMED expandValueSet ValueSet=" + conceptSetComponent.getValueSet().get(0).getValue());
+            logI("SNOMED expandValueSet ValueSet=" + conceptSetComponent.getValueSet().get(0).getValue());
         } else {
-            logD("SNOMED expandValueSet System=" + conceptSetComponent.getSystem());
+            logI("SNOMED expandValueSet System=" + conceptSetComponent.getSystem());
         }
 
         ValueSet.ValueSetExpansionComponent expand = null;
 
         for (ValueSet.ConceptSetFilterComponent filter : conceptSetComponent.getFilter()) {
             if (filter.hasOp()) {
-                log.info("has Filter");
+
                 org.hl7.fhir.dstu3.model.ValueSet vsExpansion = null;
                 switch (filter.getOp()) {
                     case IN:
-                        log.info("IN Filter detected");
-
+                        logI("IN Filter detected - "+filter.getValue());
                         vsExpansion = client
                                 .operation()
                                 .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
@@ -121,7 +106,6 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                                 .returnResourceType(org.hl7.fhir.dstu3.model.ValueSet.class)
                                 .useHttpGet()
                                 .execute();
-
                         break;
                     case EQUAL:
                         log.info("EQUAL Filter detected - " + filter.getValue());
@@ -167,8 +151,30 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     }
 
     @Override
+    public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
+        logD("SNOMEDValidator fetchValueSet " + theSystem);
+        return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
+    }
+
+
+    @Override
+    public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
+        logD("SNOMEDValidator isCodeSystemSupported " + theSystem);
+        if (theSystem.equals(CareConnectSystem.SNOMEDCT)) return true;
+        if (myCodeSystems.get(theSystem) != null) return true;
+        if (notSupportedCodeSystem.contains(theSystem)) return false;
+        IBaseResource resource = fetchCodeSystem(theContext, theSystem);
+        if (resource != null) {
+            //myCodeSystems.put(theSystem, (CodeSystem) resource);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public CodeSystem fetchCodeSystem(FhirContext theContext, String theSystem) {
-        logD("SNOMEDValidator fetchCodeSystem "+theSystem);
+        logD("SNOMEDValidator fetchCodeSystem " + theSystem);
         return (CodeSystem) fetchCodeSystemOrValueSet(theContext, theSystem, true);
     }
 
@@ -184,17 +190,19 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             if (codeSystem) {
 
                 if (myCodeSystems.get(theSystem) != null) return myCodeSystems.get(theSystem);
-
-                CodeSystem cs = (CodeSystem) fetchCodeSystemCall(client,theSystem);
-
+                CodeSystem cs = (CodeSystem) fetchCodeSystemCall(client, theSystem);
                 if (cs != null) {
-                    myCodeSystems.put(theSystem, cs);
+                  //  myCodeSystems.put(theSystem, cs);
                     return cs;
                 }
 
             } else {
-                logD("Request for ValueSet {}",theSystem);
                 if (myValueSets.get(theSystem) != null) return myValueSets.get(theSystem);
+                ValueSet vs = (ValueSet) fetchValueSetCall(theContext, client, theSystem);
+                if (vs != null) {
+                  //  myValueSets.put(theSystem, vs);
+                    return vs;
+                }
             }
 
         }
@@ -205,45 +213,51 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     @Override
     public <T extends IBaseResource> T
     fetchResource(FhirContext theContext, Class<T> theClass, String theUri) {
-        logD("SNOMEDValidator fetchResource "+theUri);
+        logD("SNOMEDValidator fetchResource " + theUri);
         if (theUri.contains("CodeSystem") || theUri.equals(CareConnectSystem.SNOMEDCT)) {
-            return (T) fetchCodeSystemCall(client,theUri);
-        } else {
-            return (T) fetchValueSetCall(client, theUri);
+            return (T) fetchCodeSystemCall(client, theUri);
+        } else if (theUri.contains("ValueSet") ) {
+            return (T) fetchValueSetCall(theContext, client, theUri);
         }
+        return null;
     }
 
-    private IBaseResource fetchValueSetCall(IGenericClient client, String uri) {
+    private ValueSet fetchValueSetCall(FhirContext theContext, IGenericClient client, String uri) {
+
+        if (notSupportedValueSet.contains(uri)) return null;
+        if (myValueSets.get(uri) != null) return myValueSets.get(uri);
+
         ValueSet resource = fetchValueSetCallInner(client, uri);
-        if (resource == null)  {
-            if (notSupportedValueSet.contains(uri)) return null;
-            if (uri.startsWith(URL_HL7UK_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientHL7UK,uri);
-            if (uri.startsWith(URL_NHSD_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientNHSD,uri);
+        if (resource == null) {
+
+            if (uri.startsWith(URL_HL7UK_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientHL7UK, uri);
+            if (uri.startsWith(URL_NHSD_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientNHSD, uri);
             if (resource != null) {
                 ValueSet valueSet = (ValueSet) resource;
                 if (valueSet.hasCompose() && valueSet.getCompose().hasInclude()) {
-                  boolean isSnomed = false;
-                  for (ValueSet.ConceptSetComponent include : valueSet.getCompose().getInclude()) {
-                     if (include.getSystem().contains(CareConnectSystem.SNOMEDCT)) isSnomed = true;
-                  }
-                  if (isSnomed) {
-                    resource.setId("");
-                      logD("Updating OntoServer " + uri);
-                      try {
-                    client.create().resource(resource).execute(); }
-                      catch (Exception ex) {
-                          logW(ex.getMessage());
-                          resource = null;
-                          notSupportedValueSet.add(uri);
-                      }
-                  } else {
-                      // Leave for ccri server
-                      logD("Not SNOMED " + uri);
-                      notSupportedValueSet.add(uri);
-                      resource = null; }
+                    boolean hasAllCodeSystems = true;
+                    for (ValueSet.ConceptSetComponent include : valueSet.getCompose().getInclude()) {
+                        if (include.hasSystem() && !isCodeSystemSupported(theContext, include.getSystem())) hasAllCodeSystems = true;
+                    }
+
+                    if (hasAllCodeSystems) {
+                        logI("Updating OntoServer " + uri);
+                        try {
+                            MethodOutcome method = client.create().resource(resource).execute();
+                            if (method.getCreated()) {
+                                logI("Ontology server. Create ValueSet " + uri);
+                            }
+                        } catch (Exception ex) {
+                            log.error(ex.getMessage());
+                            resource = null;
+                            notSupportedValueSet.add(uri);
+                        }
+                    }
+
                 }
             }
         }
+        if (resource != null) myValueSets.put(uri,resource);
         return resource;
     }
 
@@ -252,54 +266,59 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                 .returnBundle(Bundle.class)
                 .execute();
         if (bundle.hasEntry() && bundle.getEntryFirstRep().getResource() instanceof ValueSet) {
-            logD("fetchValueSet OK " + uri + " server = "+client.getServerBase());
+            logD("fetchValueSet OK " + uri + " server = " + client.getServerBase());
             return (ValueSet) bundle.getEntryFirstRep().getResource();
         } else {
-            logD("fetchValueSet MISSING " + uri + " server = "+client.getServerBase());
+            logD("fetchValueSet MISSING " + uri + " server = " + client.getServerBase());
         }
 
         return null;
     }
 
     private CodeSystem fetchCodeSystemCall(IGenericClient client, String uri) {
-        CodeSystem resource = fetchCodeSystemCallInner(client,uri);
-        /*
 
-        NHSD Termserver doesn't support adding CodeSystems
-        if (resource == null)  {
-            if (uri.startsWith(URL_HL7UK_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientHL7UK,uri);
-            if (uri.startsWith(URL_NHSD_BASE + "/System"))   resource = fetchCodeSystemCallInner(clientNHSD,uri);
+        if (notSupportedCodeSystem.contains(uri)) return null;
+        if (myCodeSystems.get(uri) != null) return myCodeSystems.get(uri);
+
+        CodeSystem resource = fetchCodeSystemCallInner(client, uri);
+
+        // NHSD Termserver doesn't support adding CodeSystems??
+        if (resource == null) {
+            if (uri.startsWith(URL_HL7UK_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientHL7UK, uri);
+            if (uri.startsWith(URL_NHSD_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientNHSD, uri);
             if (resource != null) {
                 resource.setId("");
-                client.create().resource(resource).execute();
+                try {
+                    MethodOutcome method = client.create().resource(resource).execute();
+                    if (method.getCreated()) {
+                        logI("Ontology server. Create CodeSystem " + uri);
+                    }
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
             }
         }
+        if (resource != null) myCodeSystems.put(uri,resource);
 
-         */
         return resource;
     }
 
     private CodeSystem fetchCodeSystemCallInner(IGenericClient client, String uri) {
         Bundle results = null;
-        if (uri.equals(CareConnectSystem.SNOMEDCT)) {
+        try {
             results = client.search().forResource(CodeSystem.class).where(ValueSet.URL.matches().value(uri))
                     .returnBundle(Bundle.class)
                     .execute();
-        } else {
-
-            results = client.search().forResource(CodeSystem.class)
-                    .where(CodeSystem.VERSION.exactly().code(HapiProperties.getSnomedVersionUrl()))
-                    .and(CodeSystem.URL.matches().value(CareConnectSystem.SNOMEDCT))
-                    .returnBundle(Bundle.class)
-                    .execute();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
         }
-        if (results==null) return null;
+        if (results == null) return null;
 
         if (results.hasEntry() && results.getEntryFirstRep().getResource() instanceof CodeSystem) {
             logD("fetchCodeSystem OK " + uri);
             return (CodeSystem) results.getEntryFirstRep().getResource();
         } else {
-            logD("fetchCodeSystem MISSING " + uri);
+            logI("fetchCodeSystem MISSING " + uri);
         }
 
         return null;
@@ -310,30 +329,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         return null;
     }
 
-    @Override
-    public ValueSet fetchValueSet(FhirContext theContext, String theSystem) {
-        logD("SNOMEDValidator fetchValueSet "+theSystem);
-        return (ValueSet) fetchCodeSystemOrValueSet(theContext, theSystem, false);
-    }
 
-
-    @Override
-    public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
-        logD("SNOMEDValidator isCodeSystemSupported "+theSystem);
-        if (theSystem.equals(CareConnectSystem.SNOMEDCT)) return true;
-        if (theSystem.contains("ValueSet")) {
-            if (myValueSets.get(theSystem) != null) return true;
-            if (notSupportedValueSet.contains(theSystem)) return false;
-            IBaseResource resource = fetchValueSet(theContext,theSystem);
-            if (resource != null) {
-                myValueSets.put(theSystem,(ValueSet) resource);
-                return true;
-            } else {
-               // notSupportedValueSet.add(theSystem);
-            }
-        }
-        return false;
-    }
 
 
     private Map<String, StructureDefinition> provideStructureDefinitionMap(FhirContext theContext) {
@@ -350,8 +346,9 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     @Override
     public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String
             theCode, String theDisplay) {
-
+        logI("SNOMED UK ValidateCode [System "+theCodeSystem+"] [Code="+theCode+"]");
         org.hl7.fhir.dstu3.model.Parameters params = new org.hl7.fhir.dstu3.model.Parameters();
+        // To validate SNOMED we need to use the UK ValueSet else use CodeSystem
         if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
             params.addParameter(
                     new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
@@ -363,41 +360,69 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                             .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
 
         } else {
+
             params.addParameter(
                     new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                            new org.hl7.fhir.dstu3.model.StringType("url"))
+                            new org.hl7.fhir.dstu3.model.StringType("system"))
                             .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
         }
+
         params.addParameter(
                 new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
                         new org.hl7.fhir.dstu3.model.StringType("code"))
                         .setValue(new org.hl7.fhir.dstu3.model.StringType(theCode)));
 
-        org.hl7.fhir.dstu3.model.Parameters paramResult = client
-                .operation()
-                .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
-                .named("validate-code")
-                .withParameters(params)
-                .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
-                .useHttpGet()
-                .execute();
+        org.hl7.fhir.dstu3.model.Parameters paramResult= null;
+        if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
+            try {
+                 paramResult = client
+                        .operation()
+                        .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                        .named("validate-code")
+                        .withParameters(params)
+                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
+                        .useHttpGet()
+                        .execute();
+                if (paramResult != null) {
+                    for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
+                        if (param.getName().equals("result")) {
+                            if (param.getValue() instanceof org.hl7.fhir.dstu3.model.BooleanType) {
+                                org.hl7.fhir.dstu3.model.BooleanType bool = (org.hl7.fhir.dstu3.model.BooleanType) param.getValue();
+                                if (bool.booleanValue()) {
+                                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
+                                    concept.setCode(theCode);
+                                    return new CodeValidationResult(concept);
+                                }
+                            }
 
-        logT(ctxStu3.newJsonParser().setPrettyPrint(true).encodeResourceToString(paramResult));
-        if (paramResult != null) {
-            for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
-                if (param.getName().equals("result")) {
-                    if (param.getValue() instanceof org.hl7.fhir.dstu3.model.BooleanType) {
-                        org.hl7.fhir.dstu3.model.BooleanType bool = (org.hl7.fhir.dstu3.model.BooleanType) param.getValue();
-                        if (bool.booleanValue()) {
-                            CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
-                            concept.setCode(theCode);
-                            return new CodeValidationResult(concept);
                         }
                     }
-
                 }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+        } else {
+            try {
+                paramResult = client
+                        .operation()
+                        .onType(org.hl7.fhir.dstu3.model.CodeSystem.class)
+                        .named("lookup")
+                        .withParameters(params)
+                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
+                        .useHttpGet()
+                        .execute();
+                if (paramResult != null) {
+                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
+                    concept.setCode(theCode);
+                    return new CodeValidationResult(concept);
+                }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
             }
         }
+
+
+
 
         return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
     }
@@ -409,7 +434,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
     @Override
     public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
-        logD("SNOMEDValidator lookupCode "+s+ " " + s1);
+        logD("SNOMEDValidator lookupCode " + s + " " + s1);
         return null;
     }
 }

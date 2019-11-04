@@ -64,8 +64,11 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
         this.alternateServer = HapiProperties.getTerminologyServerSecondary();
     }
 
+    private void logI(String message) {
+        log.info(message);
+    }
       private void logD(String message) {
-          log.info(message);
+          log.debug(message);
 
       }
     private void logD(String message,Object value) {
@@ -93,7 +96,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext fhirContext, ValueSet.ConceptSetComponent conceptSetComponent) {
-        logW("CareConnect expandValueSet System="+conceptSetComponent.getSystem());
+        logI("CareConnect expandValueSet System="+conceptSetComponent.getSystem());
         // CCRI ValueSets tend to be contained, so validateCode will be called instead.
         return null;
   }
@@ -282,7 +285,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
   @Override
   public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
-    logD("CareConnect validateCode system = "+ theCodeSystem);
+      logI("CareConnect ValidateCode [System "+theCodeSystem+"] [Code="+theCode+"]");
 
     if (cs != null) {
       boolean caseSensitive = true;
