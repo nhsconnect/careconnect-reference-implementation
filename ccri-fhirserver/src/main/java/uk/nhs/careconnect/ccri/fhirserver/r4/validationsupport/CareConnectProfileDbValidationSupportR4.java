@@ -346,7 +346,7 @@ public class CareConnectProfileDbValidationSupportR4 implements IValidationSuppo
   }
 
   @Override
-  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
+  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay, String valueSetUri) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
     logD("CareConnect validateCode system = "+ theCodeSystem);
 

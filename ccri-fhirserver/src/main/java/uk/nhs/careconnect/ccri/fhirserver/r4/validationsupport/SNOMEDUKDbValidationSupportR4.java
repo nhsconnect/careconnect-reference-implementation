@@ -322,7 +322,7 @@ public class SNOMEDUKDbValidationSupportR4 implements IValidationSupport {
   }
 
   @Override
-  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
+  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay, String valueSetUri) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
     logD("SNOMEDValidator validateCode system = "+ theCodeSystem);
 

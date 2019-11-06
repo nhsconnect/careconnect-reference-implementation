@@ -209,6 +209,113 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         return null;
     }
 
+    @Override
+    public CodeValidationResult validateCode(FhirContext fhirContext, String theCodeSystem, String
+            theCode, String theDisplay, String valueSetUri) {
+        org.hl7.fhir.dstu3.model.Parameters params = new org.hl7.fhir.dstu3.model.Parameters();
+
+        boolean validateCode = true;
+        if (valueSetUri != null) {
+            logD("SNOMED UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "] [ValueSet="+valueSetUri+"]");
+            params.addParameter(
+                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                            new org.hl7.fhir.dstu3.model.StringType("url"))
+                            .setValue(new org.hl7.fhir.dstu3.model.StringType(valueSetUri)));
+        } else {
+            logD("SNOMED UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "]");
+            if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
+                params.addParameter(
+                        new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                                new org.hl7.fhir.dstu3.model.StringType("url"))
+                                .setValue(new org.hl7.fhir.dstu3.model.StringType(HapiProperties.getSnomedVersionUrl() + "?fhir_vs")));
+            } else {
+                validateCode = false;
+            }
+        }
+
+        // To validate SNOMED we need to use the UK ValueSet else use CodeSystem
+
+        params.addParameter(
+                new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                        new org.hl7.fhir.dstu3.model.StringType("system"))
+                        .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
+
+        if (theDisplay != null) {
+            params.addParameter(
+                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                            new org.hl7.fhir.dstu3.model.StringType("display"))
+                            .setValue(new org.hl7.fhir.dstu3.model.StringType(theDisplay)));
+        }
+
+        params.addParameter(
+                new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                        new org.hl7.fhir.dstu3.model.StringType("code"))
+                        .setValue(new org.hl7.fhir.dstu3.model.StringType(theCode)));
+
+        org.hl7.fhir.dstu3.model.Parameters paramResult= null;
+        if (validateCode) {
+            try {
+                paramResult = client
+                        .operation()
+                        .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
+                        .named("validate-code")
+                        .withParameters(params)
+                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
+                        .useHttpGet()
+                        .execute();
+                if (paramResult != null) {
+                    String message = null;
+                    for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
+                        if (param.getName().equals("result")) {
+                            if (param.getValue() instanceof org.hl7.fhir.dstu3.model.BooleanType) {
+                                org.hl7.fhir.dstu3.model.BooleanType bool = (org.hl7.fhir.dstu3.model.BooleanType) param.getValue();
+                                if (bool.booleanValue()) {
+                                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
+                                    concept.setCode(theCode);
+                                    return new CodeValidationResult(concept);
+                                }
+                            }
+                        }
+                        if (param.getName().equals("message")) {
+                            if (param.getValue() instanceof org.hl7.fhir.dstu3.model.StringType) {
+                                org.hl7.fhir.dstu3.model.StringType paramValue = (org.hl7.fhir.dstu3.model.StringType) param.getValue();
+                                message = paramValue.getValue();
+                            }
+                        }
+                    }
+                    if (message != null) {
+                        return new CodeValidationResult(IssueSeverity.WARNING, message);
+                    }
+                }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+        } else {
+            try {
+                paramResult = client
+                        .operation()
+                        .onType(org.hl7.fhir.dstu3.model.CodeSystem.class)
+                        .named("lookup")
+                        .withParameters(params)
+                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
+                        .useHttpGet()
+                        .execute();
+                if (paramResult != null) {
+                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
+                    concept.setCode(theCode);
+                    return new CodeValidationResult(concept);
+                }
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+        }
+
+
+
+
+        return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IBaseResource> T
@@ -243,7 +350,10 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
                     if (hasAllCodeSystems) {
                         logI("Updating OntoServer " + uri);
                         try {
-                            MethodOutcome method = client.create().resource(resource).execute();
+                            MethodOutcome method = client.create()
+                                    .resource(valueSet)
+                                    .conditional().where(ValueSet.URL.matches().value(valueSet.getUrl()))
+                                    .execute();
                             if (method.getCreated()) {
                                 logI("Ontology server. Create ValueSet " + uri);
                             }
@@ -289,9 +399,13 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             if (resource != null) {
                 resource.setId("");
                 try {
-                    MethodOutcome method = client.create().resource(resource).execute();
+                    MethodOutcome method = client.create()
+                            .resource(resource)
+                            .conditional().where(CodeSystem.URL.matches().value(resource.getUrl()))
+                            .execute();
                     if (method.getCreated()) {
                         logI("Ontology server. Create CodeSystem " + uri);
+
                     }
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
@@ -343,89 +457,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     }
 
 
-    @Override
-    public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String
-            theCode, String theDisplay) {
-        logI("SNOMED UK ValidateCode [System "+theCodeSystem+"] [Code="+theCode+"]");
-        org.hl7.fhir.dstu3.model.Parameters params = new org.hl7.fhir.dstu3.model.Parameters();
-        // To validate SNOMED we need to use the UK ValueSet else use CodeSystem
-        if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
-            params.addParameter(
-                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                            new org.hl7.fhir.dstu3.model.StringType("url"))
-                            .setValue(new org.hl7.fhir.dstu3.model.StringType(HapiProperties.getSnomedVersionUrl() + "?fhir_vs")));
-            params.addParameter(
-                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                            new org.hl7.fhir.dstu3.model.StringType("system"))
-                            .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
 
-        } else {
-
-            params.addParameter(
-                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                            new org.hl7.fhir.dstu3.model.StringType("system"))
-                            .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
-        }
-
-        params.addParameter(
-                new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                        new org.hl7.fhir.dstu3.model.StringType("code"))
-                        .setValue(new org.hl7.fhir.dstu3.model.StringType(theCode)));
-
-        org.hl7.fhir.dstu3.model.Parameters paramResult= null;
-        if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
-            try {
-                 paramResult = client
-                        .operation()
-                        .onType(org.hl7.fhir.dstu3.model.ValueSet.class)
-                        .named("validate-code")
-                        .withParameters(params)
-                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
-                        .useHttpGet()
-                        .execute();
-                if (paramResult != null) {
-                    for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent param : paramResult.getParameter()) {
-                        if (param.getName().equals("result")) {
-                            if (param.getValue() instanceof org.hl7.fhir.dstu3.model.BooleanType) {
-                                org.hl7.fhir.dstu3.model.BooleanType bool = (org.hl7.fhir.dstu3.model.BooleanType) param.getValue();
-                                if (bool.booleanValue()) {
-                                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
-                                    concept.setCode(theCode);
-                                    return new CodeValidationResult(concept);
-                                }
-                            }
-
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                log.error(ex.getMessage());
-            }
-        } else {
-            try {
-                paramResult = client
-                        .operation()
-                        .onType(org.hl7.fhir.dstu3.model.CodeSystem.class)
-                        .named("lookup")
-                        .withParameters(params)
-                        .returnResourceType(org.hl7.fhir.dstu3.model.Parameters.class)
-                        .useHttpGet()
-                        .execute();
-                if (paramResult != null) {
-                    CodeSystem.ConceptDefinitionComponent concept = new CodeSystem.ConceptDefinitionComponent();
-                    concept.setCode(theCode);
-                    return new CodeValidationResult(concept);
-                }
-            } catch (Exception ex) {
-                log.error(ex.getMessage());
-            }
-        }
-
-
-
-
-        return new CodeValidationResult(IssueSeverity.WARNING, "SNOMEDValidator Unknown code: " + theCodeSystem + " / " + theCode);
-    }
 
     @Override
     public StructureDefinition generateSnapshot(StructureDefinition structureDefinition, String s, String s1) {

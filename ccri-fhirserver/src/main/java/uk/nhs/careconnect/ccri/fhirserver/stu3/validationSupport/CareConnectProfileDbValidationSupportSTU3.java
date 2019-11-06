@@ -283,7 +283,7 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
   }
 
   @Override
-  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
+  public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay, String valueSetUri) {
     CodeSystem cs = fetchCodeSystem(theContext, theCodeSystem);
       logI("CareConnect ValidateCode [System "+theCodeSystem+"] [Code="+theCode+"]");
 
