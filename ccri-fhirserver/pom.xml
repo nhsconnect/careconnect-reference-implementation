@@ -372,6 +372,12 @@
             <version>2.9.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-schematron</artifactId>
+            <version>${ph_schematron_version}</version>
+        </dependency>
+
 
     </dependencies>
 
