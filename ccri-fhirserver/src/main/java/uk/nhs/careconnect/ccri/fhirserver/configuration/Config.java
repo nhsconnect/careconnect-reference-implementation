@@ -52,7 +52,7 @@ public class Config {
         val.setValidateAgainstStandardSchema(true);
 
         // todo reactivate once this is fixed https://github.com/nhsconnect/careconnect-reference-implementation/issues/36
-        val.setValidateAgainstStandardSchematron(false);
+        val.setValidateAgainstStandardSchematron(true);
 
         org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator instanceValidator = new org.hl7.fhir.dstu3.hapi.validation.FhirInstanceValidator(defaultProfileValidationSupport);
         val.registerValidatorModule(instanceValidator);
