@@ -2,7 +2,9 @@ package uk.nhs.careconnect.ri.stu3.dao.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.GraphDefinition;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -99,6 +101,11 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
             }
             if (linkTarget.getProfile() != null) {
                 component.setProfile(linkTarget.getProfile());
+            }
+            if (linkTarget.getParams() != null) {
+                Extension params = new Extension("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params");
+                params.setValue(new StringType(linkTarget.getParams()));
+                component.addExtension(params);
             }
             for (GraphDefinitionLinkTargetCompartment compartment : linkTarget.getCompartments()) {
                 GraphDefinition.GraphDefinitionLinkTargetCompartmentComponent compartmentComponent = component.addCompartment();

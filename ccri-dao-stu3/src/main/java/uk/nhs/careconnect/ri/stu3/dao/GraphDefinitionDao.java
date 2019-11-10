@@ -237,6 +237,11 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
            if (targetComponent.hasParams)
              */
 
+           for (Extension extension : targetComponent.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params")) {
+               StringType param = (StringType) extension.getValue();
+               target.setParams(param.getValue());
+           }
+
            if (targetComponent.hasProfile()) {
                target.setProfile(targetComponent.getProfile());
            }
