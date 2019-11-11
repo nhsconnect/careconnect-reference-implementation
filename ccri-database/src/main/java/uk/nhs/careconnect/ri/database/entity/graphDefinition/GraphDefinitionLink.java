@@ -27,6 +27,7 @@ public class GraphDefinitionLink extends BaseResource {
     @JoinColumn (name = "GRAPH_ID",foreignKey= @ForeignKey(name="FK_GRAPH_LINK_GRAPH_ID"))
 	private GraphDefinitionEntity graph;
 
+    // Recursive
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name = "GRAPH_TARGET_ID",foreignKey= @ForeignKey(name="FK_GRAPH_LINK_GRAPH_TARGET_ID"))
 	private GraphDefinitionLinkTarget graphDefinitionLinkTarget;
@@ -42,6 +43,9 @@ public class GraphDefinitionLink extends BaseResource {
 
 	@Column(name= "MAX")
 	private String maximum;
+
+	@Column(name= "SOURCE_ID")
+	private String sourceId;
 
 	@Column(name="DESCRIPTION",length = MAX_DESC_LENGTH,nullable = true)
 	private String description;
@@ -145,5 +149,13 @@ public class GraphDefinitionLink extends BaseResource {
 
 	public void setTargets(Set<GraphDefinitionLinkTarget> targets) {
 		this.targets = targets;
+	}
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
 	}
 }

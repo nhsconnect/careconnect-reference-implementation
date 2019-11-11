@@ -41,6 +41,9 @@ public class GraphDefinitionLinkTarget extends BaseResource {
 	@Column(name="DESCRIPTION",length = MAX_DESC_LENGTH,nullable = true)
 	private String description;
 
+	@Column(name= "TARGET_ID")
+	private String targetId;
+
 	@OneToMany(mappedBy="graphDefinitionLinkTarget", targetEntity=GraphDefinitionLink.class)
 	@OrderBy(value = "graphLink ASC")
 	private Set<GraphDefinitionLink> links = new HashSet<>();
@@ -120,5 +123,13 @@ public class GraphDefinitionLinkTarget extends BaseResource {
 
 	public void setCompartments(Set<GraphDefinitionLinkTargetCompartment> compartments) {
 		this.compartments = compartments;
+	}
+
+	public String getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
 	}
 }

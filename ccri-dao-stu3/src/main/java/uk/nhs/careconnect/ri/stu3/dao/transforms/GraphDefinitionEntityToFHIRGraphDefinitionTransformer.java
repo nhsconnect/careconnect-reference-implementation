@@ -94,6 +94,11 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
         if (graphLink.getDescription() != null) {
             link.setDescription(graphLink.getDescription());
         }
+        if (graphLink.getSourceId() != null) {
+            Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.sourceLinkId");
+            params.setValue(new StringType(graphLink.getSourceId()));
+            link.addExtension(params);
+        }
         for (GraphDefinitionLinkTarget linkTarget : graphLink.getTargets()) {
             GraphDefinition.GraphDefinitionLinkTargetComponent component = link.addTarget();
             if (linkTarget.getType() != null) {
@@ -105,6 +110,11 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
             if (linkTarget.getParams() != null) {
                 Extension params = new Extension("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params");
                 params.setValue(new StringType(linkTarget.getParams()));
+                component.addExtension(params);
+            }
+            if (linkTarget.getTargetId() != null) {
+                Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId");
+                params.setValue(new StringType(linkTarget.getTargetId()));
                 component.addExtension(params);
             }
             for (GraphDefinitionLinkTargetCompartment compartment : linkTarget.getCompartments()) {
