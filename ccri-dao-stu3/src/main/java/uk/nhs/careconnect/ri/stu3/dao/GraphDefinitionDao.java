@@ -225,7 +225,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         }
 
         link.setSourceId(null);
-        for (Extension extension : component.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.sourceLinkId")) {
+        for (Extension extension : component.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.sourceNodeId")) {
             StringType sourceId = (StringType) extension.getValue();
             link.setSourceId(sourceId.getValue());
         }
@@ -250,7 +250,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
                target.setParams(param.getValue());
            }
             target.setTargetId(null);
-           for (Extension extension : targetComponent.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId")) {
+           for (Extension extension : targetComponent.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetNodeId")) {
                StringType param = (StringType) extension.getValue();
                target.setTargetId(param.getValue());
            }

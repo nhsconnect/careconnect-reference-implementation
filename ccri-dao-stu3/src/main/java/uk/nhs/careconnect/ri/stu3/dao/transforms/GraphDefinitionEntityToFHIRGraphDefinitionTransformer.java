@@ -95,7 +95,7 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
             link.setDescription(graphLink.getDescription());
         }
         if (graphLink.getSourceId() != null) {
-            Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.sourceLinkId");
+            Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.sourceNodeId");
             params.setValue(new StringType(graphLink.getSourceId()));
             link.addExtension(params);
         }
@@ -113,7 +113,7 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
                 component.addExtension(params);
             }
             if (linkTarget.getTargetId() != null) {
-                Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId");
+                Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetNodeId");
                 params.setValue(new StringType(linkTarget.getTargetId()));
                 component.addExtension(params);
             }
