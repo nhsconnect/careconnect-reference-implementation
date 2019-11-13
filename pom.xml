@@ -6,7 +6,7 @@
 
     <groupId>uk.nhs.careconnect.ri</groupId>
     <artifactId>clinical-data-repository-sql</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
     <packaging>pom</packaging>
 
 
@@ -19,8 +19,8 @@
     </parent>
 
     <properties>
-        <care-connect-version>4.1.0-SNAPSHOT</care-connect-version>
-        <hapi-fhir-version>4.1.0-SNAPSHOT</hapi-fhir-version>
+        <care-connect-version>4.1.0</care-connect-version>
+        <hapi-fhir-version>4.1.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <slf4j>1.7.25</slf4j>
         <spring-boot-version>2.2.0.RELEASE</spring-boot-version>

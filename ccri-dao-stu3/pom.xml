@@ -22,7 +22,7 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>clinical-data-repository-sql</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.0</version>
     </parent>
 
 
