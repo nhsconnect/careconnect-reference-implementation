@@ -126,7 +126,7 @@ public class ReferralRequestProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam ReferralRequest resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

@@ -140,7 +140,7 @@ public class CarePlanProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam CarePlan resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 }

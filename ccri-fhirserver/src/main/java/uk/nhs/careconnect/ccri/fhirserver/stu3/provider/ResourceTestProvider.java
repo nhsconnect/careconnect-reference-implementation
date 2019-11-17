@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ccri.fhirserver.stu3.provider;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Validate;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -76,7 +77,7 @@ public class ResourceTestProvider {
 
     public MethodOutcome testResource(@ResourceParam IBaseResource resourceToValidate,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
 
         MethodOutcome retVal = new MethodOutcome();
     	if(!HapiProperties.getValidationFlag())
@@ -91,9 +92,15 @@ public class ResourceTestProvider {
 			ProviderResponseLibrary.handleException(retVal,e);
 			return retVal;
 		}
+		OperationOutcome outcome = validateResource(resourceToValidate, theMode, theProfile);
+		outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcome);
 
 
+		retVal.setOperationOutcome(outcome);
+		return retVal;
 
+	}
+/*
 		if (tkw_flag) {
 
 			final HttpClient client1 = getHttpClient();
@@ -126,15 +133,10 @@ public class ResourceTestProvider {
 				ProviderResponseLibrary.handleException(retVal, e);
 			}
 		} else {
-			OperationOutcome outcome = validateResource(resourceToValidate, theMode, theProfile);
-			outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcome);
+			*/
 
 
-			retVal.setOperationOutcome(outcome);
-		}
-        return retVal;
 
-}
 
 
 	public OperationOutcome validateResource(IBaseResource resource,ValidationModeEnum theMode,

@@ -44,7 +44,7 @@ public class BundleProvider implements IResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam Bundle resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 }

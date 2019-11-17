@@ -146,7 +146,7 @@ public class ObservationDefinitionProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam ObservationDefinition resource,
                                       @Validate.Mode ValidationModeEnum theMode,
-                                      @Validate.Profile String theProfile) {
+                                      @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

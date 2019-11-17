@@ -131,7 +131,7 @@ public class EpisodeOfCareProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam EpisodeOfCare resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 }

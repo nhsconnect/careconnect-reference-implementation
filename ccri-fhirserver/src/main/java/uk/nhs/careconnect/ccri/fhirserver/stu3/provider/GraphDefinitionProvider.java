@@ -150,7 +150,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam GraphDefinition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @Validate.Profile String theProfile) {
+                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 
