@@ -72,18 +72,24 @@ public class JpaRestfulServerR4 extends RestfulServer {
         autowireCapableBeanFactory.autowireBean(this);
 
         List<IResourceProvider> permissionlist = new ArrayList<>();
+        String[] permissions = {
+                "ObservationDefinitionProvider",
+            "GraphDefinitionR4Provider" };
         Class<?> classType = null;
-        try {
-            classType = Class.forName("uk.nhs.careconnect.ccri.fhirserver.r4.provider.ObservationDefinitionProvider");
-            log.info("class methods " + classType.getMethods()[4].getName() );
-        } catch (ClassNotFoundException  e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        for(String resource : permissions) {
+            try {
+                classType = Class.forName("uk.nhs.careconnect.ccri.fhirserver.r4.provider."+resource);
+                log.info("class methods " + classType.getMethods()[4].getName());
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
+            permissionlist.add((IResourceProvider) applicationContext.getBean(classType));
         }
 
-        permissionlist.add((IResourceProvider) applicationContext.getBean(classType));
+
         setResourceProviders(permissionlist);
 
         // Replace built in conformance provider (CapabilityStatement)

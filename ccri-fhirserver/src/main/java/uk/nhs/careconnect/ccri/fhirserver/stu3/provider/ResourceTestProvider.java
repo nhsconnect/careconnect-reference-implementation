@@ -9,6 +9,7 @@ import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.ValidationOptions;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -125,7 +126,7 @@ public class ResourceTestProvider {
 				ProviderResponseLibrary.handleException(retVal, e);
 			}
 		} else {
-			OperationOutcome outcome = validateResource(resourceToValidate);
+			OperationOutcome outcome = validateResource(resourceToValidate, theMode, theProfile);
 			outcome = OperationOutcomeFactory.removeUnsupportedIssues(outcome);
 
 
@@ -136,12 +137,19 @@ public class ResourceTestProvider {
 }
 
 
-	public OperationOutcome validateResource(IBaseResource resource) {
+	public OperationOutcome validateResource(IBaseResource resource,ValidationModeEnum theMode,
+                                              String theProfile) {
 
 		log.trace(this.ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource));
-		ValidationResult results = val.validateWithResult(resource);
+
+		ValidationOptions options = new ValidationOptions();
+        if (theProfile != null) options.addProfile(theProfile);
+
+		ValidationResult results = val.validateWithResult(resource,options);
 
 		if (resource instanceof Bundle) {
+
+
 			OperationOutcome message = messageInstanceValidator.validateMessageBundle((Bundle) resource);
 		}
 

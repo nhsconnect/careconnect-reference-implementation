@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.graphDefinition;
 
 import uk.nhs.careconnect.ri.database.entity.BaseContactPoint;
+import uk.nhs.careconnect.ri.database.entity.BaseR4ContactPoint;
 
 import javax.persistence.*;
 
@@ -12,7 +13,7 @@ import javax.persistence.*;
 				@Index(name = "IDX_GRAPH_TELECOM", columnList="CONTACT_VALUE,SYSTEM_ID"),
 				@Index(name = "IDX_GRAPH_TELECOM_GRAPH_ID", columnList="GRAPH_ID")
 		})
-public class GraphDefinitionTelecom extends BaseContactPoint {
+public class GraphDefinitionTelecom extends BaseR4ContactPoint {
 
 	public GraphDefinitionTelecom() {
 

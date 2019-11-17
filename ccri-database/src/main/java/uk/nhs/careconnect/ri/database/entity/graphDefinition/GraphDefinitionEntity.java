@@ -1,8 +1,7 @@
 package uk.nhs.careconnect.ri.database.entity.graphDefinition;
 
 
-import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.ResourceType;
+import org.hl7.fhir.r4.model.Enumerations;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 import javax.persistence.*;
 import java.util.Date;

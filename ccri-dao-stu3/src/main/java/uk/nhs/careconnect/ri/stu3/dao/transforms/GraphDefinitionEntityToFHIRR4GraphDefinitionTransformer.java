@@ -2,7 +2,9 @@ package uk.nhs.careconnect.ri.stu3.dao.transforms;
 
 
 import org.apache.commons.collections4.Transformer;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.GraphDefinition;
+import org.hl7.fhir.r4.model.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,9 +12,9 @@ import uk.nhs.careconnect.ri.database.entity.graphDefinition.*;
 
 
 @Component
-public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Transformer<GraphDefinitionEntity, GraphDefinition> {
+public class GraphDefinitionEntityToFHIRR4GraphDefinitionTransformer implements Transformer<GraphDefinitionEntity, GraphDefinition> {
 
-    private static final Logger log = LoggerFactory.getLogger(GraphDefinitionEntityToFHIRGraphDefinitionTransformer.class);
+    private static final Logger log = LoggerFactory.getLogger(GraphDefinitionEntityToFHIRR4GraphDefinitionTransformer.class);
 
     @Override
     public GraphDefinition transform(final GraphDefinitionEntity graphEntity) {
@@ -30,24 +32,8 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
         graph.setName(graphEntity.getName());
 
       
-        switch(graphEntity.getStatus()) {
-            case NULL:
-                graph.setStatus(Enumerations.PublicationStatus.NULL);
-                break;
-            case ACTIVE:
-                graph.setStatus(Enumerations.PublicationStatus.ACTIVE);
-                break;
-            case DRAFT:
-                graph.setStatus(Enumerations.PublicationStatus.DRAFT);
-                break;
-            case RETIRED:
-                graph.setStatus(Enumerations.PublicationStatus.RETIRED);
-                break;
-            case UNKNOWN:
-                graph.setStatus(Enumerations.PublicationStatus.UNKNOWN);
-                break;
-        }
 
+        graph.setStatus(graphEntity.getStatus());
 
         if (graphEntity.getExperimental() != null) {
             graph.setExperimental(graphEntity.getExperimental());
@@ -63,9 +49,9 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
         for (GraphDefinitionTelecom telecom : graphEntity.getContacts()) {
             graph.addContact()
                     .addTelecom()
-                    .setUse(convertSTU3(telecom.getTelecomUse()))
+                    .setUse(telecom.getTelecomUse())
                     .setValue(telecom.getValue())
-                    .setSystem(convertSTU3(telecom.getSystem()));
+                    .setSystem(telecom.getSystem());
         }
 
         graph.setDescription(graphEntity.getDescription());
@@ -123,9 +109,11 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
                 component.setProfile(linkTarget.getProfile());
             }
             if (linkTarget.getParams() != null) {
+                component.setParams(linkTarget.getParams());
+                /* Backport for STU3
                 Extension params = new Extension("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params");
                 params.setValue(new StringType(linkTarget.getParams()));
-                component.addExtension(params);
+                component.addExtension(params); */
             }
             if (linkTarget.getTargetId() != null) {
                 Extension params = new Extension("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId");
@@ -135,10 +123,10 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
             for (GraphDefinitionLinkTargetCompartment compartment : linkTarget.getCompartments()) {
                 GraphDefinition.GraphDefinitionLinkTargetCompartmentComponent compartmentComponent = component.addCompartment();
                 if (compartment.getCode() != null) {
-                    compartmentComponent.setCode(convertSTU3(compartment.getCode()));
+                    compartmentComponent.setCode(compartment.getCode());
                 }
                 if (compartment.getRule() != null) {
-                    compartmentComponent.setRule(convertSTU3(compartment.getRule()));
+                    compartmentComponent.setRule(compartment.getRule());
                 }
                 if (compartment.getExpression() != null) {
                     compartmentComponent.setExpression(compartment.getExpression());
@@ -153,91 +141,5 @@ public class GraphDefinitionEntityToFHIRGraphDefinitionTransformer implements Tr
             }
         }
     }
-
-       private ContactPoint.ContactPointUse convertSTU3(org.hl7.fhir.r4.model.ContactPoint.ContactPointUse use) {
-        if (use == null) return null;
-           switch (use) {
-               case HOME:
-                   return ContactPoint.ContactPointUse.HOME;
-               case MOBILE:
-                   return ContactPoint.ContactPointUse.MOBILE;
-
-               case OLD:
-                   return ContactPoint.ContactPointUse.OLD;
-               case TEMP:
-                   return ContactPoint.ContactPointUse.TEMP;
-               case WORK:
-                   return ContactPoint.ContactPointUse.WORK;
-               case NULL:
-               default:
-                   return ContactPoint.ContactPointUse.NULL;
-           }
-       }
-
-
-    private ContactPoint.ContactPointSystem convertSTU3(org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem system) {
-       if (system == null) return null;
-        switch(system) {
-            case EMAIL:
-                return ContactPoint.ContactPointSystem.EMAIL;
-            case FAX:
-                return ContactPoint.ContactPointSystem.FAX;
-            case OTHER:
-                return ContactPoint.ContactPointSystem.OTHER;
-            case PAGER:
-                return ContactPoint.ContactPointSystem.PAGER;
-            case PHONE:
-                return ContactPoint.ContactPointSystem.PHONE;
-            case SMS:
-                return ContactPoint.ContactPointSystem.SMS;
-            case URL:
-                return ContactPoint.ContactPointSystem.URL;
-            case NULL:
-            default:
-                return ContactPoint.ContactPointSystem.NULL;
-        }
-
-    }
-    private  GraphDefinition.CompartmentCode convertSTU3(org.hl7.fhir.r4.model.GraphDefinition.CompartmentCode code) {
-        if (code == null) return null;
-        switch(code) {
-            case DEVICE:
-                return GraphDefinition.CompartmentCode.DEVICE;
-            case ENCOUNTER:
-                return GraphDefinition.CompartmentCode.ENCOUNTER;
-            case PATIENT:
-                return GraphDefinition.CompartmentCode.PATIENT;
-            case PRACTITIONER:
-                return GraphDefinition.CompartmentCode.PRACTITIONER;
-            case RELATEDPERSON:
-                return GraphDefinition.CompartmentCode.RELATEDPERSON;
-            case NULL:
-            default:
-                return GraphDefinition.CompartmentCode.NULL;
-
-        }
-
-    }
-
-
-    private  GraphDefinition.GraphCompartmentRule convertSTU3(org.hl7.fhir.r4.model.GraphDefinition.GraphCompartmentRule rule) {
-        if (rule == null) return null;
-        switch(rule) {
-            case CUSTOM:
-                return GraphDefinition.GraphCompartmentRule.CUSTOM;
-            case DIFFERENT:
-                return GraphDefinition.GraphCompartmentRule.DIFFERENT;
-            case IDENTICAL:
-                return GraphDefinition.GraphCompartmentRule.IDENTICAL;
-            case MATCHING:
-                return GraphDefinition.GraphCompartmentRule.MATCHING;
-            case NULL:
-            default:
-                return GraphDefinition.GraphCompartmentRule.NULL;
-
-        }
-
-    }
-
 
 }

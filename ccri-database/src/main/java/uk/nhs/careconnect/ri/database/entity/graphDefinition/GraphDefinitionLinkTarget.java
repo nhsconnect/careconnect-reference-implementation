@@ -1,6 +1,5 @@
 package uk.nhs.careconnect.ri.database.entity.graphDefinition;
 
-import org.hl7.fhir.dstu3.model.ResourceType;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
 
 import javax.persistence.*;

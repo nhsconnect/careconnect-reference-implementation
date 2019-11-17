@@ -114,20 +114,7 @@ public class JpaRestfulServerSTU3 extends RestfulServer {
 
         log.info("REST Servlet initialised with config: {}", toString());
 
-		/* 
-         * We want to support FHIR DSTU2 format. This means that the server
-		 * will use the DSTU2 bundle format and other DSTU2 encoding changes.
-		 *
-		 * If you want to use DSTU1 instead, change the following line, and change the 2 occurrences of dstu2 in web.xml to dstu1
-		 */
 
-
-
-        /*
-         * The BaseJavaConfigDstu2.java class is a spring configuration
-         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
-         * contains bean definitions for a resource provider for each resource type
-         */
 
         // Initilising the permissions
 

@@ -1,12 +1,8 @@
 package uk.nhs.careconnect.ri.database.entity.graphDefinition;
 
-import org.hl7.fhir.dstu3.model.GraphDefinition;
-import org.hl7.fhir.dstu3.model.ResourceType;
+import org.hl7.fhir.r4.model.GraphDefinition;
 import uk.nhs.careconnect.ri.database.entity.BaseResource;
-
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name="GraphDefinitionCompartment", uniqueConstraints= @UniqueConstraint(name="PK_GGRAPH_COMPARTMENT", columnNames={"GRAPH_COMPARTMENT_ID"})

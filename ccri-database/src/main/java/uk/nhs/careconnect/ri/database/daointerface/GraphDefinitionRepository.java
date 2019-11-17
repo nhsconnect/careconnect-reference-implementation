@@ -17,17 +17,25 @@ import java.util.List;
 public interface GraphDefinitionRepository extends BaseRepository<GraphDefinitionEntity,GraphDefinition> {
 
 
-    void save(FhirContext ctx, GraphDefinitionEntity valueset);
+    void save(FhirContext ctxR3,GraphDefinitionEntity graphDefinitionEntity);
 
-    GraphDefinition create(FhirContext ctx, GraphDefinition graphDefinition)  throws OperationOutcomeException;
+    GraphDefinition create(FhirContext ctxR3,FhirContext ctxR4, GraphDefinition graphDefinition)  throws OperationOutcomeException;
 
-    GraphDefinition read(FhirContext ctx, IdType theId) ;
+    org.hl7.fhir.r4.model.GraphDefinition create(FhirContext ctxR3,FhirContext ctxR4, org.hl7.fhir.r4.model.GraphDefinition graphDefinition)  throws OperationOutcomeException;
 
-    List<GraphDefinition> search(FhirContext ctx,
+    GraphDefinition read(FhirContext ctxR3, IdType theId) ;
+
+    org.hl7.fhir.r4.model.GraphDefinition read(FhirContext ctxR4, org.hl7.fhir.r4.model.IdType theId) ;
+
+    List<GraphDefinition> search(FhirContext ctxR3,
                           @OptionalParam(name = GraphDefinition.SP_NAME) StringParam name,
                           @OptionalParam(name = GraphDefinition.SP_PUBLISHER) StringParam publisher,
                           @OptionalParam(name = GraphDefinition.SP_URL) UriParam url
-
     );
 
+    List<org.hl7.fhir.r4.model.GraphDefinition> searchR4(FhirContext ctxR4,
+                                 @OptionalParam(name = org.hl7.fhir.r4.model.GraphDefinition.SP_NAME) StringParam name,
+                                 @OptionalParam(name = org.hl7.fhir.r4.model.GraphDefinition.SP_PUBLISHER) StringParam publisher,
+                                 @OptionalParam(name = org.hl7.fhir.r4.model.GraphDefinition.SP_URL) UriParam url
+    );
 }

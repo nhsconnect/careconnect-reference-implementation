@@ -5,6 +5,8 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import org.hl7.fhir.convertors.VersionConvertor_30_40;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import uk.nhs.careconnect.ri.database.daointerface.CodeSystemRepository;
 import uk.nhs.careconnect.ri.database.daointerface.ConceptRepository;
 import uk.nhs.careconnect.ri.database.daointerface.GraphDefinitionRepository;
 import uk.nhs.careconnect.ri.database.entity.graphDefinition.*;
+import uk.nhs.careconnect.ri.stu3.dao.transforms.GraphDefinitionEntityToFHIRR4GraphDefinitionTransformer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,8 +36,13 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
     @PersistenceContext
     EntityManager em;
 
+
+
     @Autowired
-    private GraphDefinitionEntityToFHIRGraphDefinitionTransformer graphEntityToFHIRValuesetTransformer;
+    private GraphDefinitionEntityToFHIRGraphDefinitionTransformer graphDefinitionEntityToFHIRGraphDefinitionTransformer;
+
+    @Autowired
+    private GraphDefinitionEntityToFHIRR4GraphDefinitionTransformer graphDefinitionEntityToFHIRR4GraphDefinitionTransformer;
 
     private static final Logger log = LoggerFactory.getLogger(GraphDefinitionDao.class);
 
@@ -45,13 +53,17 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
     @Lazy
     ConceptRepository conceptDao;
 
+    //org.hl7.fhir.r4.model.GraphDefinition graph;
+
+    @Override
     public void save(FhirContext ctx, GraphDefinitionEntity graph)
     {
         em.persist(graph);
     }
 
 
-    GraphDefinition graph;
+
+
 
     @Override
     public Long count() {
@@ -61,6 +73,23 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         //cq.where(/*your stuff*/);
         return em.createQuery(cq).getSingleResult();
     }
+
+
+
+    @Override
+    public GraphDefinition create(FhirContext ctxR3,FhirContext ctxR4, GraphDefinition graphDefinition) throws OperationOutcomeException {
+        VersionConvertor_30_40 convertor = new VersionConvertor_30_40();
+        org.hl7.fhir.r4.model.Resource graphDefinitionR4 = convertor.convertResource( graphDefinition, true);
+        if (graphDefinitionR4 instanceof org.hl7.fhir.r4.model.GraphDefinition) {
+            org.hl7.fhir.r4.model.GraphDefinition graph = create(ctxR3, ctxR4,(org.hl7.fhir.r4.model.GraphDefinition) graphDefinitionR4);
+            IdType id = new IdType().setValue(graph.getIdElement().getValue());
+            return read(ctxR3, id);
+        }
+        throw new UnprocessableEntityException("Unable to process STU3 GraphDefinition");
+    }
+
+
+
     @Override
     public GraphDefinitionEntity readEntity(FhirContext ctx, IdType theId) {
         return null;
@@ -68,8 +97,8 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
     @Transactional
     @Override
-    public GraphDefinition create(FhirContext ctx,  GraphDefinition graph) throws OperationOutcomeException {
-        this.graph = graph;
+    public org.hl7.fhir.r4.model.GraphDefinition create(FhirContext ctxR3,FhirContext ctxR4,  org.hl7.fhir.r4.model.GraphDefinition graph) throws OperationOutcomeException {
+
 
         GraphDefinitionEntity graphEntity = null;
 
@@ -77,7 +106,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             graphEntity = findGraphDefinitionEntity(graph.getIdElement());
         }
 
-        List<GraphDefinitionEntity> entries = searchEntity(ctx, null, null, new UriParam().setValue(graph.getUrl()));
+        List<GraphDefinitionEntity> entries = searchEntity( null, null, new UriParam().setValue(graph.getUrl()));
         for (GraphDefinitionEntity msg : entries) {
             if (graph.getId() == null) {
                 throw new ResourceVersionConflictException("GraphDefinition Url "+ msg.getUrl()+ " is already present on the system "+ msg.getId());
@@ -148,8 +177,8 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             em.remove(telcom);
         }
 
-        for (ContactDetail contact : graph.getContact()) {
-            for (ContactPoint contactPoint : contact.getTelecom()) {
+        for (org.hl7.fhir.r4.model.ContactDetail contact : graph.getContact()) {
+            for (org.hl7.fhir.r4.model.ContactPoint contactPoint : contact.getTelecom()) {
                 GraphDefinitionTelecom telecom = new GraphDefinitionTelecom();
                 telecom.setGraphDefinition(graphEntity);
                 if (contactPoint.hasSystem()) {
@@ -169,7 +198,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
             removeLinks(link);
         }
 
-        for (GraphDefinition.GraphDefinitionLinkComponent component :graph.getLink()) {
+        for (org.hl7.fhir.r4.model.GraphDefinition.GraphDefinitionLinkComponent component :graph.getLink()) {
             GraphDefinitionLink link = new GraphDefinitionLink();
             link.setGraph(graphEntity);
             buildLinks(link, component);
@@ -181,10 +210,10 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         log.debug("Called PERSIST id="+graphEntity.getId().toString());
         graph.setId(graphEntity.getId().toString());
 
-        GraphDefinition newGraphDefinition = null;
+        org.hl7.fhir.r4.model.GraphDefinition newGraphDefinition = null;
         if (graphEntity != null) {
-            newGraphDefinition = graphEntityToFHIRValuesetTransformer.transform(graphEntity);
-            String resource = ctx.newJsonParser().encodeResourceToString(newGraphDefinition);
+            newGraphDefinition = graphDefinitionEntityToFHIRR4GraphDefinitionTransformer.transform(graphEntity);
+            String resource = ctxR4.newJsonParser().encodeResourceToString(newGraphDefinition);
             if (resource.length() < 10000) {
               // TODO  graphEntity.setResource(resource);
               // TODO   em.persist(graphEntity);
@@ -207,7 +236,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
         em.remove(link);
     }
 
-    private void buildLinks(GraphDefinitionLink link, GraphDefinition.GraphDefinitionLinkComponent component) {
+    private void buildLinks(GraphDefinitionLink link, org.hl7.fhir.r4.model.GraphDefinition.GraphDefinitionLinkComponent component) {
         if (component.hasPath()) {
             link.setPath(component.getPath());
         }
@@ -237,24 +266,26 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
 
 
-       for (GraphDefinition.GraphDefinitionLinkTargetComponent targetComponent : component.getTarget()) {
+       for (org.hl7.fhir.r4.model.GraphDefinition.GraphDefinitionLinkTargetComponent targetComponent : component.getTarget()) {
            GraphDefinitionLinkTarget target = new GraphDefinitionLinkTarget();
            target.setGraphDefinitionLink(link);
 
            if (targetComponent.hasType()) {
                target.setType(targetComponent.getType());
            }
-           /* R4
-           if (targetComponent.hasParams)
-             */
 
-           for (Extension extension : targetComponent.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params")) {
-               StringType param = (StringType) extension.getValue();
+           if (targetComponent.hasParams()) {
+               target.setParams(targetComponent.getParams());
+           }
+           /* This is the same action as above but a STU3 resource will be using an extension */
+           for (org.hl7.fhir.r4.model.Extension extension : targetComponent.getExtensionsByUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-GraphDefinition.link.target.params")) {
+               org.hl7.fhir.r4.model.StringType param = (org.hl7.fhir.r4.model.StringType) extension.getValue();
                target.setParams(param.getValue());
            }
-            target.setTargetId(null);
-           for (Extension extension : targetComponent.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId")) {
-               StringType param = (StringType) extension.getValue();
+
+           target.setTargetId(null);
+           for (org.hl7.fhir.r4.model.Extension extension : targetComponent.getExtensionsByUrl("https://fhir.mayfield-is.co.uk/extension-GraphDefinition.targetLinkId")) {
+               org.hl7.fhir.r4.model.StringType param = (org.hl7.fhir.r4.model.StringType) extension.getValue();
                target.setTargetId(param.getValue());
            }
 
@@ -263,7 +294,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
            }
            em.persist(target);
 
-           for (GraphDefinition.GraphDefinitionLinkTargetCompartmentComponent compartmentComponent : targetComponent.getCompartment()) {
+           for (org.hl7.fhir.r4.model.GraphDefinition.GraphDefinitionLinkTargetCompartmentComponent compartmentComponent : targetComponent.getCompartment()) {
                GraphDefinitionLinkTargetCompartment compartment = new GraphDefinitionLinkTargetCompartment();
                compartment.setGraphDefinitionLinkTarget(target);
 
@@ -283,7 +314,7 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
            }
            // recursion
-           for (GraphDefinition.GraphDefinitionLinkComponent linkComponent : targetComponent.getLink()) {
+           for (org.hl7.fhir.r4.model.GraphDefinition.GraphDefinitionLinkComponent linkComponent : targetComponent.getLink()) {
                GraphDefinitionLink sublink = new GraphDefinitionLink();
                sublink.setGraphDefinitionLinkTarget(target);
                buildLinks(sublink, linkComponent);
@@ -296,44 +327,49 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
     private GraphDefinitionEntity findGraphDefinitionEntity(IdType theId) {
 
-    	System.out.println(" the graph id is " + theId.getIdPart());
+        GraphDefinitionEntity graphEntity = null;
+        // Only look up if the id is numeric else need to do a search
+        if (daoutils.isNumeric(theId.getIdPart())) {
+            graphEntity = em.find(GraphDefinitionEntity.class,  Long.parseLong(theId.getIdPart()));
+        }
+        return graphEntity;
+    }
+
+    private GraphDefinitionEntity findGraphDefinitionEntity(org.hl7.fhir.r4.model.IdType theId) {
+
+
         GraphDefinitionEntity graphEntity = null;
         // Only look up if the id is numeric else need to do a search
         if (daoutils.isNumeric(theId.getIdPart())) {
             graphEntity = em.find(GraphDefinitionEntity.class,  Long.parseLong(theId.getIdPart()));
         }
 
-        // if null try a search on strId
-        /*
-        if (graphEntity == null)
-        {
-            CriteriaBuilder builder = em.getCriteriaBuilder();
-
-            CriteriaQuery<GraphDefinitionEntity> criteria = builder.createQuery(GraphDefinitionEntity.class);
-            Root<GraphDefinitionEntity> root = criteria.from(GraphDefinitionEntity.class);
-            List<Predicate> predList = new LinkedList<Predicate>();
-            Predicate p = builder.equal(root.get("strId"),theId.getValue());
-            predList.add(p);
-            Predicate[] predArray = new Predicate[predList.size()];
-            predList.toArray(predArray);
-            if (predList.size()>0)
-            {
-                criteria.select(root).where(predArray);
-
-                List<GraphDefinitionEntity> qryResults = em.createQuery(criteria).setMaxResults(30).getResultList();
-
-                for (GraphDefinitionEntity cme : qryResults)
-                {
-                    graphEntity = cme;
-                    break;
-                }
-            }
-        }*/
         return graphEntity;
     }
 
+    @Override
+    public org.hl7.fhir.r4.model.GraphDefinition read(FhirContext ctxR4, org.hl7.fhir.r4.model.IdType theId) {
+        log.trace("Retrieving GraphDefinition = " + theId.getValue());
 
-    public GraphDefinition read(FhirContext ctx, IdType theId) {
+        GraphDefinitionEntity graphEntity = findGraphDefinitionEntity(theId);
+
+        if (graphEntity == null) return null;
+
+        org.hl7.fhir.r4.model.GraphDefinition graph = graphDefinitionEntityToFHIRR4GraphDefinitionTransformer.transform(graphEntity);
+
+        if (graphEntity.getResource() == null) {
+            String resource = ctxR4.newJsonParser().encodeResourceToString(graph);
+            if (resource.length() < 10000) {
+                graphEntity.setResource(resource);
+                em.persist(graphEntity);
+            }
+        }
+        return graph;
+    }
+
+
+    @Override
+    public GraphDefinition read(FhirContext ctxR3, IdType theId) {
 
         log.trace("Retrieving GraphDefinition = " + theId.getValue());
 
@@ -341,10 +377,10 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
         if (graphEntity == null) return null;
 
-        GraphDefinition graph = graphEntityToFHIRValuesetTransformer.transform(graphEntity);
+        GraphDefinition graph = graphDefinitionEntityToFHIRGraphDefinitionTransformer.transform(graphEntity);
 
         if (graphEntity.getResource() == null) {
-            String resource = ctx.newJsonParser().encodeResourceToString(graph);
+            String resource = ctxR3.newJsonParser().encodeResourceToString(graph);
             if (resource.length() < 10000) {
                 graphEntity.setResource(resource);
                 em.persist(graphEntity);
@@ -354,33 +390,53 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
     }
 
-    public List<GraphDefinition> search (FhirContext ctx,
+    @Override
+    public List<org.hl7.fhir.r4.model.GraphDefinition> searchR4(FhirContext ctxR4, StringParam name, StringParam publisher, UriParam url) {
+        List<org.hl7.fhir.r4.model.GraphDefinition> results = new ArrayList<>();
+        List<GraphDefinitionEntity> qryResults = searchEntity(name, publisher, url);
+
+        for (GraphDefinitionEntity graphEntity : qryResults) {
+
+
+                org.hl7.fhir.r4.model.GraphDefinition graph = graphDefinitionEntityToFHIRR4GraphDefinitionTransformer.transform(graphEntity);
+                String resource = ctxR4.newJsonParser().encodeResourceToString(graph);
+                if (resource.length() < 10000) {
+                    graphEntity.setResource(resource);
+                    em.persist(graphEntity);
+                }
+                results.add(graph);
+
+        }
+        return results;
+    }
+
+
+    @Override
+    public List<GraphDefinition> search (FhirContext ctxR3,
                                   @OptionalParam(name = GraphDefinition.SP_NAME) StringParam name,
                                   @OptionalParam(name = GraphDefinition.SP_PUBLISHER) StringParam publisher,
                                   @OptionalParam(name = GraphDefinition.SP_URL) UriParam url
 
     ) {
         List<GraphDefinition> results = new ArrayList<>();
-        List<GraphDefinitionEntity> qryResults = searchEntity(ctx, name, publisher, url);
+        List<GraphDefinitionEntity> qryResults = searchEntity( name, publisher, url);
 
         for (GraphDefinitionEntity graphEntity : qryResults) {
-            if (graphEntity.getResource() != null) {
-                results.add((GraphDefinition) ctx.newJsonParser().parseResource(graphEntity.getResource()));
-            } else {
 
-                GraphDefinition graph = graphEntityToFHIRValuesetTransformer.transform(graphEntity);
-                String resource = ctx.newJsonParser().encodeResourceToString(graph);
+
+                GraphDefinition graph = graphDefinitionEntityToFHIRGraphDefinitionTransformer.transform(graphEntity);
+                String resource = ctxR3.newJsonParser().encodeResourceToString(graph);
                 if (resource.length() < 10000) {
                     graphEntity.setResource(resource);
                     em.persist(graphEntity);
                 }
                 results.add(graph);
-            }
+
         }
         return results;
     }
 
-    public List<GraphDefinitionEntity> searchEntity (FhirContext ctx,
+    public List<GraphDefinitionEntity> searchEntity (
                                                      @OptionalParam(name = GraphDefinition.SP_NAME) StringParam name,
                                                      @OptionalParam(name = GraphDefinition.SP_PUBLISHER) StringParam publisher,
                                                      @OptionalParam(name = GraphDefinition.SP_URL) UriParam url
@@ -448,6 +504,10 @@ public class GraphDefinitionDao implements GraphDefinitionRepository {
 
 
     }
+
+
+
+
 
 
 }

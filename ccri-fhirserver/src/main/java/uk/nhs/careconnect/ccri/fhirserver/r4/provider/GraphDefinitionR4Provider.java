@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver.stu3.provider;
+package uk.nhs.careconnect.ccri.fhirserver.r4.provider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
@@ -17,16 +17,19 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.GraphDefinition;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.GraphDefinition;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ICCResourceProvider;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ResourcePermissionProvider;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.ResourceTestProvider;
 import uk.nhs.careconnect.ccri.fhirserver.support.OperationOutcomeFactory;
 import uk.nhs.careconnect.ccri.fhirserver.support.ProviderResponseLibrary;
 import uk.nhs.careconnect.ri.database.daointerface.GraphDefinitionRepository;
@@ -38,15 +41,15 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
-public class GraphDefinitionProvider implements ICCResourceProvider {
+public class GraphDefinitionR4Provider implements ICCResourceProvider {
 
-
-	@Autowired
-	FhirContext ctx;
+    @Autowired
+    FhirContext ctxR3;
 
     @Qualifier("r4ctx")
     @Autowired
     FhirContext ctxR4;
+
 
     @Autowired
     private GraphDefinitionRepository graphDao;
@@ -67,7 +70,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
     @Autowired
     private ResourceTestProvider resourceTestProvider;
 
-    private static final Logger log = LoggerFactory.getLogger(GraphDefinitionProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(GraphDefinitionR4Provider.class);
 
 
     @Update()
@@ -82,7 +85,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
 
 
         try {
-            GraphDefinition newGraphDefinition = graphDao.create(ctx,ctxR4, graph);
+            GraphDefinition newGraphDefinition = graphDao.create(ctxR3,ctxR4, graph);
             method.setId(newGraphDefinition.getIdElement());
             method.setResource(newGraphDefinition);
         } catch (BaseServerResponseException srv) {
@@ -102,7 +105,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
                @OptionalParam(name =GraphDefinition.SP_PUBLISHER) StringParam publisher,
                                  @OptionalParam(name = GraphDefinition.SP_URL) UriParam url
     ) {
-        return graphDao.search(ctx, name, publisher, url);
+        return graphDao.searchR4(ctxR4, name, publisher, url);
     }
 
 
@@ -120,7 +123,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
 
 
         try {
-            GraphDefinition newGraphDefinition = graphDao.create(ctx,ctxR4, graph);
+            GraphDefinition newGraphDefinition = graphDao.create(ctxR3,ctxR4, graph);
             method.setId(newGraphDefinition.getIdElement());
             method.setResource(newGraphDefinition);
         } catch (BaseServerResponseException srv) {
@@ -136,7 +139,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
     public GraphDefinition get
             (@IdParam IdType internalId) {
     	resourcePermissionProvider.checkPermission("read");
-        GraphDefinition graph = graphDao.read(ctx, internalId);
+        GraphDefinition graph = graphDao.read(ctxR4, internalId);
 
         if ( graph == null) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
@@ -214,7 +217,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
             response = client1.execute(request);
             reader = new InputStreamReader(response.getEntity().getContent());
 
-            IBaseResource resource = ctx.newJsonParser().parseResource(reader);
+            IBaseResource resource = ctxR4.newJsonParser().parseResource(reader);
             //System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
 
             System.out.println("resource = " + resource);
@@ -222,7 +225,7 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
             {
                 bundle = (Bundle) resource;
                 System.out.println("Entry Count = " + bundle.getEntry().size());
-                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+                System.out.println(ctxR4.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
                 //retVal.setOperationOutcome(operationOutcome);
 
                 for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
@@ -250,18 +253,18 @@ public class GraphDefinitionProvider implements ICCResourceProvider {
                                 reader = new InputStreamReader(response1.getEntity().getContent());
 
 
-                                resource = ctx.newJsonParser().parseResource(reader);
-                                System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
+                                resource = ctxR4.newJsonParser().parseResource(reader);
+                                System.out.println(ctxR4.newJsonParser().setPrettyPrint(true).encodeResourceToString(resource));
                                 if(resource instanceof GraphDefinition )
                                 {
                                     GraphDefinition newVS = (GraphDefinition) resource;
                                     newVS.setName(newVS.getName()+ "..");
-                                    List<GraphDefinition> results = graphDao.search(ctx,null,null,new UriParam().setValue(newVS.getUrl()));
+                                    List<GraphDefinition> results = graphDao.searchR4(ctxR4,null,null,new UriParam().setValue(newVS.getUrl()));
                                     if (results.size()>0) {
                                         newVS.setId(results.get(0).getIdElement().getIdPart());
                                     }
-                                    GraphDefinition newGraphDefinition = graphDao.create(ctx,ctxR4, newVS);
-                                    System.out.println(ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(newGraphDefinition));
+                                    GraphDefinition newGraphDefinition = graphDao.create(ctxR3,ctxR4, newVS);
+                                    System.out.println(ctxR4.newJsonParser().setPrettyPrint(true).encodeResourceToString(newGraphDefinition));
                                     System.out.println("newGraphDefinition.getIdElement()" + newGraphDefinition.getIdElement());
                                     // GraphDefinitionComposeComponent vscc = newVS.code .getCompose();
                                     System.out.println("code concept" + newVS.getId());
