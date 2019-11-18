@@ -87,6 +87,7 @@ public class Config {
         return new MessageInstanceValidator(validationSupportChain);
     }
 
+    /*
     @Bean(name="fhirValidatorR4")
     public FhirValidator fhirValidatorR4 (@Qualifier("r4ctx") FhirContext r4ctx, FhirContext stu3ctx) {
 
@@ -114,6 +115,6 @@ public class Config {
 
         return val;
     }
-
+*/
 
 }

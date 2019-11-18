@@ -149,14 +149,15 @@ public class GraphDefinitionR4Provider implements ICCResourceProvider {
 
         return graph;
     }
-    
-    @Validate
+
+    /*
+    @Validate No R4 Validation profiles
     public MethodOutcome testResource(@ResourceParam GraphDefinition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
                                   @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
-
+*/
 
 
     @Operation(name = "$refresh", idempotent = true, bundleType= BundleTypeEnum.COLLECTION)
