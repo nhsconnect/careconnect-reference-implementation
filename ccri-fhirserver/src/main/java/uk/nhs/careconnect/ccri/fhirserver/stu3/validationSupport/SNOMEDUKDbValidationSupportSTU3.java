@@ -11,8 +11,11 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
+import ca.uhn.fhir.rest.api.Constants;
 
 import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
 public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
@@ -48,7 +51,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     }
 
     private void logD(String message) {
-        log.debug(message);
+        log.info(message);
     }
 
     private void logW(String message) {
@@ -160,6 +163,9 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     @Override
     public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
         logD("SNOMEDValidator isCodeSystemSupported " + theSystem);
+        if (isBlank(theSystem) || Constants.codeSystemNotNeeded(theSystem)) {
+            return false;
+        }
         if (theSystem.equals(CareConnectSystem.SNOMEDCT)) return true;
         if (myCodeSystems.get(theSystem) != null) return true;
         if (notSupportedCodeSystem.contains(theSystem)) return false;

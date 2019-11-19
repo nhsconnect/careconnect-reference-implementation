@@ -2,6 +2,7 @@ package uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
 public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSupport {
@@ -240,6 +243,9 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
 
   @Override
   public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
+      if (isBlank(theSystem) || Constants.codeSystemNotNeeded(theSystem)) {
+          return false;
+      }
     CodeSystem cs = fetchCodeSystem(theContext, theSystem);
     return cs != null && cs.getContent() != CodeSystem.CodeSystemContentMode.NOTPRESENT;
   }
