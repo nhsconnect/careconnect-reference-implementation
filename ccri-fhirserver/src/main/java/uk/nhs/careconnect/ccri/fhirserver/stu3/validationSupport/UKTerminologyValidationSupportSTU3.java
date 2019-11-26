@@ -5,6 +5,10 @@ import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.UriParam;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.hapi.ctx.DefaultProfileValidationSupport;
 import org.hl7.fhir.dstu3.hapi.ctx.IValidationSupport;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -13,18 +17,21 @@ import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 import ca.uhn.fhir.rest.api.Constants;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
-public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
+public class UKTerminologyValidationSupportSTU3 implements IValidationSupport {
 
     private static final String URL_HL7UK_BASE = "https://fhir.hl7.org.uk/STU3";
     private static final String URL_NHSD_BASE = "https://fhir.nhs.uk/STU3";
 
+    private static final String URL_HL7_BASE = "http://hl7.org/fhir";
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SNOMEDUKDbValidationSupportSTU3.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UKTerminologyValidationSupportSTU3.class);
 
     private Map<String, CodeSystem> myCodeSystems;
     private Map<String, StructureDefinition> myStructureDefinitions;
@@ -32,11 +39,14 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     private List<String> notSupportedValueSet;
     private List<String> notSupportedCodeSystem;
 
+    private Map<String, CodeSystem> coreCodeSystems;
+    private Map<String, ValueSet> coreValueSets;
+
     private static final int CONNECT_TIMEOUT_MILLIS = 50000;
     private static int SC_OK = 200;
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
-    private FhirContext ctxStu3 = null;
+    private FhirContext ctxStu3;
 
     IGenericClient client;
     IGenericClient clientNHSD;
@@ -51,20 +61,11 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     }
 
     private void logD(String message) {
-        log.info(message);
-    }
-
-    private void logW(String message) {
-        log.warn(message);
-    }
-
-    private void logT(String message) {
-        log.trace(message);
+        log.debug(message);
     }
 
 
-
-    public SNOMEDUKDbValidationSupportSTU3(FhirContext stu3Ctx) {
+    public UKTerminologyValidationSupportSTU3(FhirContext stu3Ctx) {
 
         this.ctxStu3 = stu3Ctx;
 
@@ -79,8 +80,53 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             client = this.ctxStu3.newRestfulGenericClient(terminologyServer);
             clientNHSD = this.ctxStu3.newRestfulGenericClient(URL_NHSD_BASE);
             clientHL7UK = this.ctxStu3.newRestfulGenericClient(URL_HL7UK_BASE);
+
+            this.coreCodeSystems = new HashMap<>();
+            this.coreValueSets = new HashMap<>();
+            // TODO refactor
+            fetchCore(ctxStu3,"dummy",false);
+
+            for (CodeSystem cs : this.coreCodeSystems.values()) {
+                CodeSystem resource = fetchCodeSystemCallInner(client, cs.getUrl());
+                if (resource == null) {
+                    cs.setId("");
+                    try {
+                        MethodOutcome method = client.create()
+                                .resource(cs)
+                                .conditional().where(CodeSystem.URL.matches().value(cs.getUrl()))
+                                .execute();
+                        if (method.getCreated()) {
+                            logI("Ontology server. Create CodeSystem " + cs.getUrl());
+
+                        }
+                    } catch (Exception ex) {
+                        log.error(ex.getMessage());
+                    }
+                }
+            }
+            for (ValueSet vs : coreValueSets.values()) {
+                ValueSet resource = fetchValueSetCallInner(client, vs.getUrl());
+                if (resource == null) {
+                    logI("Updating OntoServer " + vs.getUrl());
+                    try {
+                        MethodOutcome method = client.create()
+                                .resource(vs)
+                                .conditional().where(ValueSet.URL.matches().value(vs.getUrl()))
+                                .execute();
+                        if (method.getCreated()) {
+                            logI("Ontology server. Create ValueSet " + vs.getUrl());
+                        }
+                    } catch (Exception ex) {
+                        log.error(ex.getMessage());
+                        notSupportedValueSet.add(vs.getUrl());
+                    }
+                }
+            }
+
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+
+                log.error(ex.getMessage());
+
         }
     }
 
@@ -196,7 +242,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
             if (codeSystem) {
 
                 if (myCodeSystems.get(theSystem) != null) return myCodeSystems.get(theSystem);
-                CodeSystem cs = (CodeSystem) fetchCodeSystemCall(client, theSystem);
+                CodeSystem cs = (CodeSystem) fetchCodeSystemCall(theContext, client, theSystem);
                 if (cs != null) {
                   //  myCodeSystems.put(theSystem, cs);
                     return cs;
@@ -222,13 +268,13 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
         boolean validateCode = true;
         if (valueSetUri != null) {
-            logD("SNOMED UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "] [ValueSet="+valueSetUri+"]");
+            logD("ONTO UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "] [ValueSet="+valueSetUri+"]");
             params.addParameter(
                     new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
                             new org.hl7.fhir.dstu3.model.StringType("url"))
                             .setValue(new org.hl7.fhir.dstu3.model.StringType(valueSetUri)));
         } else {
-            logD("SNOMED UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "]");
+            logD("ONTO UK ValidateCode [System " + theCodeSystem + "] [Code=" + theCode + "]");
             if (theCodeSystem.equals(CareConnectSystem.SNOMEDCT)) {
                 params.addParameter(
                         new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
@@ -240,11 +286,28 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         }
 
         // To validate SNOMED we need to use the UK ValueSet else use CodeSystem
-
-        params.addParameter(
-                new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
-                        new org.hl7.fhir.dstu3.model.StringType("system"))
-                        .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
+        // Unless the CodeSystem isn't supplied
+        if (!Constants.codeSystemNotNeeded(theCodeSystem)) {
+            params.addParameter(
+                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                            new org.hl7.fhir.dstu3.model.StringType("system"))
+                            .setValue(new org.hl7.fhir.dstu3.model.StringType(theCodeSystem)));
+        } else {
+            if (valueSetUri != null && !valueSetUri.isEmpty()) {
+                ValueSet vs = fetchValueSetCallInner(client, valueSetUri);
+                if (vs != null && vs.hasCompose()) {
+                    if (vs.getCompose().hasInclude() && vs.getCompose().getInclude().size() == 1) {
+                        if (vs.getCompose().getIncludeFirstRep().hasSystem()) {
+                            params.addParameter(
+                                    new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent(
+                                            new org.hl7.fhir.dstu3.model.StringType("system"))
+                                            .setValue(new org.hl7.fhir.dstu3.model.StringType(vs.getCompose().getIncludeFirstRep().getSystem())));
+                        }
+                    }
+                }
+            }
+           // validateCode = false;
+        }
 
         if (theDisplay != null) {
             params.addParameter(
@@ -327,10 +390,13 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     public <T extends IBaseResource> T
     fetchResource(FhirContext theContext, Class<T> theClass, String theUri) {
         logD("SNOMEDValidator fetchResource " + theUri);
-        if (theUri.contains("CodeSystem") || theUri.equals(CareConnectSystem.SNOMEDCT)) {
-            return (T) fetchCodeSystemCall(client, theUri);
-        } else if (theUri.contains("ValueSet") ) {
+        if (theUri.contains("ValueSet") ) {
             return (T) fetchValueSetCall(theContext, client, theUri);
+        } else if (theUri.contains("CodeSystem") || theUri.equals(CareConnectSystem.SNOMEDCT)) {
+            return (T) fetchCodeSystemCall(theContext, client, theUri);
+        } else if (!theUri.contains("StructureDefinition")) {
+            log.debug("NOT PROCESSED "+theUri);
+           // return (T) fetchCodeSystemCall(theContext, client, theUri);
         }
         return null;
     }
@@ -345,6 +411,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
 
             if (uri.startsWith(URL_HL7UK_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientHL7UK, uri);
             if (uri.startsWith(URL_NHSD_BASE + "/ValueSet")) resource = fetchValueSetCallInner(clientNHSD, uri);
+           // Now done in startup if (uri.startsWith(URL_HL7_BASE + "/ValueSet")) resource = (ValueSet) fetchCore(theContext,  uri, false);
             if (resource != null) {
                 ValueSet valueSet = (ValueSet) resource;
                 if (valueSet.hasCompose() && valueSet.getCompose().hasInclude()) {
@@ -377,6 +444,23 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         return resource;
     }
 
+    private DomainResource fetchCore(FhirContext theContext, String theSystem, boolean codeSystem) {
+        synchronized(this) {
+            Map<String, CodeSystem> codeSystems = this.coreCodeSystems;
+            Map<String, ValueSet> valueSets = this.coreValueSets;
+
+            codeSystems = new HashMap();
+            valueSets = new HashMap();
+            this.loadCodeSystems(theContext, (Map)codeSystems, (Map)valueSets, "/org/hl7/fhir/dstu3/model/valueset/valuesets.xml");
+            this.loadCodeSystems(theContext, (Map)codeSystems, (Map)valueSets, "/org/hl7/fhir/dstu3/model/valueset/v2-tables.xml");
+            this.loadCodeSystems(theContext, (Map)codeSystems, (Map)valueSets, "/org/hl7/fhir/dstu3/model/valueset/v3-codesystems.xml");
+            this.coreCodeSystems = (Map)codeSystems;
+            this.coreValueSets = (Map)valueSets;
+
+            return codeSystem ? (DomainResource)((Map)codeSystems).get(theSystem) : (DomainResource)((Map)valueSets).get(theSystem);
+        }
+    }
+
     private ValueSet fetchValueSetCallInner(IGenericClient client, String uri) {
         Bundle bundle = client.search().forResource(ValueSet.class).where(ValueSet.URL.matches().value(uri))
                 .returnBundle(Bundle.class)
@@ -391,7 +475,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         return null;
     }
 
-    private CodeSystem fetchCodeSystemCall(IGenericClient client, String uri) {
+    private CodeSystem fetchCodeSystemCall(FhirContext theContext, IGenericClient client, String uri) {
 
         if (notSupportedCodeSystem.contains(uri)) return null;
         if (myCodeSystems.get(uri) != null) return myCodeSystems.get(uri);
@@ -402,6 +486,7 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
         if (resource == null) {
             if (uri.startsWith(URL_HL7UK_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientHL7UK, uri);
             if (uri.startsWith(URL_NHSD_BASE + "/CodeSystem")) resource = fetchCodeSystemCallInner(clientNHSD, uri);
+           // Now done in load if (uri.startsWith(URL_HL7_BASE)) resource = (CodeSystem) fetchCore(theContext,  uri, false);
             if (resource != null) {
                 resource.setId("");
                 try {
@@ -474,5 +559,44 @@ public class SNOMEDUKDbValidationSupportSTU3 implements IValidationSupport {
     public LookupCodeResult lookupCode(FhirContext fhirContext, String s, String s1) {
         logD("SNOMEDValidator lookupCode " + s + " " + s1);
         return null;
+    }
+
+    private void loadCodeSystems(FhirContext theContext, Map<String, CodeSystem> theCodeSystems, Map<String, ValueSet> theValueSets, String theClasspath) {
+        log.info("Loading CodeSystem/ValueSet from classpath: {}", theClasspath);
+        InputStream inputStream = DefaultProfileValidationSupport.class.getResourceAsStream(theClasspath);
+        InputStreamReader reader = null;
+        if (inputStream != null) {
+            try {
+                reader = new InputStreamReader(inputStream, Charsets.UTF_8);
+                Bundle bundle = (Bundle)theContext.newXmlParser().parseResource(Bundle.class, reader);
+                Iterator var8 = bundle.getEntry().iterator();
+
+                while(var8.hasNext()) {
+                    Bundle.BundleEntryComponent next = (Bundle.BundleEntryComponent)var8.next();
+                    String system;
+                    if (next.getResource() instanceof CodeSystem) {
+                        CodeSystem nextValueSet = (CodeSystem)next.getResource();
+                        nextValueSet.getText().setDivAsString("");
+                        system = nextValueSet.getUrl();
+                        if (StringUtils.isNotBlank(system)) {
+                            theCodeSystems.put(system, nextValueSet);
+                        }
+                    } else if (next.getResource() instanceof ValueSet) {
+                        ValueSet nextValueSet = (ValueSet)next.getResource();
+                        nextValueSet.getText().setDivAsString("");
+                        system = nextValueSet.getUrl();
+                        if (StringUtils.isNotBlank(system)) {
+                            theValueSets.put(system, nextValueSet);
+                        }
+                    }
+                }
+            } finally {
+                IOUtils.closeQuietly(reader);
+                IOUtils.closeQuietly(inputStream);
+            }
+        } else {
+            log.warn("Unable to load resource: {}", theClasspath);
+        }
+
     }
 }

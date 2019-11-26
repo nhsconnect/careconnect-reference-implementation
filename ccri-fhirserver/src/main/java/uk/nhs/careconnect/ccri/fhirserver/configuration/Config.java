@@ -6,21 +6,12 @@ import ca.uhn.fhir.validation.FhirValidator;
 
 
 import org.hl7.fhir.dstu3.hapi.ctx.DefaultProfileValidationSupport;
-import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
-import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.DatabaseBackedPagingProvider;
-import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.CareConnectProfileDbValidationSupportR4;
-import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileDbValidationSupportSTU3;
-import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.SNOMEDUKDbValidationSupportR4;
-import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.SNOMEDUKDbValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.UKTerminologyValidationSupportSTU3;
 import uk.nhs.careconnect.ccri.fhirserver.support.MessageInstanceValidator;
-import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 
 
 /**
@@ -74,11 +65,11 @@ public class Config {
     ) {
 
         org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain validationSupportChain = new org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain();
-        validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportSTU3(stu3ctx));
+        validationSupportChain.addValidationSupport(new UKTerminologyValidationSupportSTU3(stu3ctx));
         validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
         // Try SNOMED and Terminology Server first
 
-        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportSTU3(stu3ctx));
+        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupportSTU3(stu3ctx));
         return  validationSupportChain;
     }
 

@@ -29,7 +29,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
-public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSupport {
+public class CareConnectProfileValidationSupportSTU3 implements IValidationSupport {
 
     // KGM 21st May 2018 Incorporated Tim Coates code to use UK FHIR Reference Servers.
 
@@ -52,13 +52,13 @@ public class CareConnectProfileDbValidationSupportSTU3 implements IValidationSup
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileDbValidationSupportSTU3.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupportSTU3.class);
 
     private Map<String, IBaseResource> cachedResource ;
 
     private String alternateServer;
 
-    public CareConnectProfileDbValidationSupportSTU3( FhirContext stu3Ctx) {
+    public CareConnectProfileValidationSupportSTU3(FhirContext stu3Ctx) {
 
         this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<>();
