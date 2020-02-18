@@ -5,7 +5,7 @@
 
     <groupId>uk.nhs.careconnect.ccri</groupId>
     <artifactId>ccri-fhirserver</artifactId>
-    <version>4.1.0</version>
+    <version>4.2.0</version>
     <packaging>jar</packaging>
 
     <name>ccri-fhirserver</name>
@@ -15,14 +15,14 @@
     <parent>
         <groupId>uk.nhs.careconnect.ri</groupId>
         <artifactId>clinical-data-repository-sql</artifactId>
-        <version>4.1.0</version>
+        <version>4.2.0</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <care-connect-version>4.1.0</care-connect-version>
+        <care-connect-version>4.2.0</care-connect-version>
 
         <junit-version>4.12</junit-version>
         <cucumber-version>1.2.5</cucumber-version>

@@ -124,7 +124,7 @@ public class GoalProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam Goal resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

@@ -87,6 +87,7 @@ public class HapiProperties {
 
     static final String TERMINOLOGY_SERVER = "terminology.server.primary";
     static final String TERMINOLOGY_SERVER_SECONDARY = "terminology.server.secondary";
+    static final String TERMINOLOGY_VALIDATION_FLAG = "terminology.validation.flag";
 
     static final String SERVER_ROLE = "ccri.role";
     static final String SERVER_CRUD_READ = "ccri.CRUD_read";
@@ -94,6 +95,9 @@ public class HapiProperties {
     static final String SERVER_CRUD_CREATE = "ccri.CRUD_create";
     static final String SERVER_CRUD_DELETE = "ccri.CRUD_delete";
 
+    public static final String VALIDATION_IG_PACKAGE = "validation.ig.package";
+    public static final String VALIDATION_IG_VERSION = "validation.ig.version";
+    public static final String VALIDATION_IG_URL = "validation.ig.url";
 
 
     static final String SNOMED_VERSION_URL = "terminology.snomed.version";
@@ -491,6 +495,9 @@ public class HapiProperties {
     public static String getTerminologyServer() {
         return HapiProperties.getProperty(TERMINOLOGY_SERVER);
     }
+    public static boolean getValidateTerminologyEnabled() {
+        return HapiProperties.getBooleanProperty(TERMINOLOGY_VALIDATION_FLAG, false);
+    }
 
     public static String getTerminologyServerSecondary() {
         return HapiProperties.getProperty(TERMINOLOGY_SERVER_SECONDARY);
@@ -519,5 +526,15 @@ public class HapiProperties {
 
     public static boolean getServerCrudDelete() {
         return HapiProperties.getBooleanProperty(SERVER_CRUD_DELETE, false);
+    }
+
+    public static String getValidationIgPackage() {
+        return HapiProperties.getProperty(VALIDATION_IG_PACKAGE,"");
+    }
+    public static String getValidationIgVersion() {
+        return HapiProperties.getProperty(VALIDATION_IG_VERSION,"");
+    }
+    public static String getValidationIgUrl() {
+        return HapiProperties.getProperty(VALIDATION_IG_URL,"");
     }
 }

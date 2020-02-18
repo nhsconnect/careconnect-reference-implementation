@@ -6,7 +6,7 @@
 
     <groupId>uk.nhs.careconnect.ri</groupId>
     <artifactId>clinical-data-repository-sql</artifactId>
-    <version>4.1.0</version>
+    <version>4.2.0</version>
     <packaging>pom</packaging>
 
 
@@ -19,8 +19,8 @@
     </parent>
 
     <properties>
-        <care-connect-version>4.1.0</care-connect-version>
-        <hapi-fhir-version>4.1.0</hapi-fhir-version>
+        <care-connect-version>4.2.0</care-connect-version>
+        <hapi-fhir-version>4.2.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <slf4j>1.7.25</slf4j>
         <spring-boot-version>2.2.0.RELEASE</spring-boot-version>
@@ -35,7 +35,7 @@
         <hawtio.version>2.5.0</hawtio.version>
         <phloc_commons_version>4.4.11</phloc_commons_version>
         <ph_schematron_version>5.0.4</ph_schematron_version>
-        <hibernate_version>5.3.7.Final</hibernate_version>
+        <hibernate_version>5.4.2.Final</hibernate_version>
         <hibernate_validator_version>6.0.14.Final</hibernate_validator_version>
         <!-- Disable Dependency Location Checking for Site Report -->
         <dependency.locations.enabled>false</dependency.locations.enabled>

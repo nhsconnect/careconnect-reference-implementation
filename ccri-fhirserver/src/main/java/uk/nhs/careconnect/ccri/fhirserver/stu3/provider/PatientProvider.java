@@ -85,7 +85,7 @@ public class PatientProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam Patient resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                 @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
     @Update

@@ -145,7 +145,7 @@ public class MessageDefinitionProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam MessageDefinition resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                  @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

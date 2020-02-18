@@ -11,7 +11,6 @@ import org.hl7.fhir.dstu3.model.StructureDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity;
 import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
-import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.CareConnectProfileFix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
-public class CareConnectProfileValidationSupportSTU3 implements IValidationSupport {
+public class NHSDigitalProfileValidationSupportSTU3 implements IValidationSupport {
 
     // KGM 21st May 2018 Incorporated Tim Coates code to use UK FHIR Reference Servers.
 
@@ -52,13 +51,13 @@ public class CareConnectProfileValidationSupportSTU3 implements IValidationSuppo
     private static final int READ_TIMEOUT_MILLIS = 50000;
 
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CareConnectProfileValidationSupportSTU3.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NHSDigitalProfileValidationSupportSTU3.class);
 
     private Map<String, IBaseResource> cachedResource ;
 
     private String alternateServer;
 
-    public CareConnectProfileValidationSupportSTU3(FhirContext stu3Ctx) {
+    public NHSDigitalProfileValidationSupportSTU3(FhirContext stu3Ctx) {
 
         this.ctxStu3 = stu3Ctx;
         this.cachedResource = new HashMap<>();
@@ -155,7 +154,7 @@ public class CareConnectProfileValidationSupportSTU3 implements IValidationSuppo
 
     private boolean isSupported(String theUrl) {
         // If the terminology server is fully populated, then this should only return Profiles (StructureDefinition)
-        return (theUrl.startsWith("https://fhir.hl7.org.uk/STU3") || theUrl.startsWith("https://fhir.nhs.uk/STU3"));
+        return ( theUrl.startsWith("https://fhir.nhs.uk/STU3"));
     }
 
     @Override

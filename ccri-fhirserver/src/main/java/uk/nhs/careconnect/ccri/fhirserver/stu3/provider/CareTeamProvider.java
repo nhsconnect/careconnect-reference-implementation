@@ -126,7 +126,7 @@ public class CareTeamProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam CareTeam resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                  @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 }

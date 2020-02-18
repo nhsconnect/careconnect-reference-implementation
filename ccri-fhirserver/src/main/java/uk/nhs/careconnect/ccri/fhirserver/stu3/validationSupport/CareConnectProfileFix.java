@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport;
+package uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport;
 
 import org.hl7.fhir.dstu3.model.ElementDefinition;
 import org.hl7.fhir.dstu3.model.StructureDefinition;

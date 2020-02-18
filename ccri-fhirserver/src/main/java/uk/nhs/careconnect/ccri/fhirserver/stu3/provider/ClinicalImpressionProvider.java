@@ -124,7 +124,7 @@ public class ClinicalImpressionProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam ClinicalImpression resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

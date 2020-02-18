@@ -125,7 +125,7 @@ public class RiskAssessmentProvider implements ICCResourceProvider {
     @Validate
     public MethodOutcome testResource(@ResourceParam RiskAssessment resource,
                                   @Validate.Mode ValidationModeEnum theMode,
-                                  @OptionalParam(name = "profile") @Validate.Profile String theProfile) {
+                                   @Validate.Profile String theProfile) {
         return resourceTestProvider.testResource(resource,theMode,theProfile);
     }
 

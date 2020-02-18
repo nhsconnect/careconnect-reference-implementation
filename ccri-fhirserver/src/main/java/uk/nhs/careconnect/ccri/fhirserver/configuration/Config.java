@@ -2,16 +2,27 @@ package uk.nhs.careconnect.ccri.fhirserver.configuration;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.validation.FhirValidator;
 
 
 import org.hl7.fhir.dstu3.hapi.ctx.DefaultProfileValidationSupport;
+import org.hl7.fhir.r4.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.r4.hapi.validation.ValidationSupportChain;
+import org.hl7.fhir.utilities.cache.NpmPackage;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.nhs.careconnect.ccri.fhirserver.HapiProperties;
+import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.IGValidationSupportR4;
+import uk.nhs.careconnect.ccri.fhirserver.r4.validationsupport.SNOMEDUKDbValidationSupportR4;
 import uk.nhs.careconnect.ccri.fhirserver.stu3.provider.DatabaseBackedPagingProvider;
-import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.CareConnectProfileValidationSupportSTU3;
-import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.UKTerminologyValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.IGValidationSupport;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.NHSDigitalProfileValidationSupportSTU3;
+import uk.nhs.careconnect.ccri.fhirserver.stu3.validationSupport.TerminologyServerValidationSupport;
 import uk.nhs.careconnect.ccri.fhirserver.support.MessageInstanceValidator;
+import uk.nhs.careconnect.ccri.fhirserver.support.PackageManager;
+import uk.org.hl7.fhir.validation.r4.DefaultProfileValidationSupportStu3AsR4;
 
 
 /**
@@ -58,18 +69,57 @@ public class Config {
         return new DefaultProfileValidationSupport();
     }
 
+    @Bean("validationPackageSTU3")
+    public NpmPackage validationPackageSTU3() {
+        NpmPackage validationIgPackage = null;
+        if (!HapiProperties.getValidationIgPackage().isEmpty()) {
+            try {
+                validationIgPackage = PackageManager.getPackage(HapiProperties.getValidationIgPackage(), HapiProperties.getValidationIgVersion(), HapiProperties.getValidationIgUrl());
+                if (validationIgPackage== null)  throw new InternalErrorException("Unable to load API Validation package");
+            }
+            catch (Exception ex) {
+                log.error(ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+        }
+        return validationIgPackage;
+    }
+
+    @Bean("validationUKCoreIg")
+    public NpmPackage validationUKCoreIg() {
+        NpmPackage validationIgPackage = null;
+
+            try {
+                validationIgPackage = PackageManager.getPackage("uk.testcore.r4", "4.0.0","https://project-wildfyre.github.io/uk-testcore-r4/package.tgz");
+                if (validationIgPackage== null)  throw new InternalErrorException("Unable to load API Validation package");
+            }
+            catch (Exception ex) {
+                log.error(ex.getMessage());
+                throw new InternalErrorException(ex.getMessage());
+            }
+
+        return validationIgPackage;
+    }
+
     @Bean("validationSupportChainStu3")
     public org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain ValidationSupportChain
             (FhirContext stu3ctx,
-           DefaultProfileValidationSupport defaultProfileValidationSupport
-    ) {
+           DefaultProfileValidationSupport defaultProfileValidationSupport,
+             @Qualifier("validationPackageSTU3")  NpmPackage validationIgPackage
+    ) throws Exception {
 
         org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain validationSupportChain = new org.hl7.fhir.dstu3.hapi.validation.ValidationSupportChain();
-        validationSupportChain.addValidationSupport(new UKTerminologyValidationSupportSTU3(stu3ctx));
-        validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
-        // Try SNOMED and Terminology Server first
+        if (HapiProperties.getValidateTerminologyEnabled() && !HapiProperties.getTerminologyServer().isEmpty()) {
+            validationSupportChain.addValidationSupport(new TerminologyServerValidationSupport(stu3ctx, HapiProperties.getTerminologyServer()));
+        }
 
-        validationSupportChain.addValidationSupport(new CareConnectProfileValidationSupportSTU3(stu3ctx));
+        validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
+
+        if (validationIgPackage != null) {
+            validationSupportChain.addValidationSupport(new IGValidationSupport(stu3ctx, validationIgPackage));
+        }
+        validationSupportChain.addValidationSupport(new NHSDigitalProfileValidationSupportSTU3(stu3ctx));
+
         return  validationSupportChain;
     }
 
@@ -78,9 +128,10 @@ public class Config {
         return new MessageInstanceValidator(validationSupportChain);
     }
 
-    /*
+
     @Bean(name="fhirValidatorR4")
-    public FhirValidator fhirValidatorR4 (@Qualifier("r4ctx") FhirContext r4ctx, FhirContext stu3ctx) {
+    public FhirValidator fhirValidatorR4 (@Qualifier("r4ctx") FhirContext r4ctx, FhirContext stu3ctx,
+                                          @Qualifier("validationUKCoreIg") NpmPackage validationUKCoreIg) throws Exception {
 
         FhirValidator val = r4ctx.newValidator();
 
@@ -89,23 +140,23 @@ public class Config {
         // todo reactivate once this is fixed https://github.com/nhsconnect/careconnect-reference-implementation/issues/36
         val.setValidateAgainstStandardSchematron(false);
 
-        DefaultProfileValidationSupportStu3AsR4 defaultProfileValidationSupport = new DefaultProfileValidationSupportStu3AsR4();
+        org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport defaultProfileValidationSupport = new org.hl7.fhir.r4.hapi.ctx.DefaultProfileValidationSupport();
 
-        FhirInstanceValidator instanceValidator = new FhirInstanceValidator(defaultProfileValidationSupport);
+        FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
         val.registerValidatorModule(instanceValidator);
 
 
         ValidationSupportChain validationSupportChain = new ValidationSupportChain();
 
-        validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
         validationSupportChain.addValidationSupport(new SNOMEDUKDbValidationSupportR4(r4ctx, stu3ctx));
 
-        validationSupportChain.addValidationSupport(new CareConnectProfileDbValidationSupportR4(r4ctx, stu3ctx, HapiProperties.getTerminologyServerSecondary()));
+        validationSupportChain.addValidationSupport(new IGValidationSupportR4(r4ctx, validationUKCoreIg));
+        validationSupportChain.addValidationSupport(defaultProfileValidationSupport);
 
         instanceValidator.setValidationSupport(validationSupportChain);
 
         return val;
     }
-*/
+
 
 }
