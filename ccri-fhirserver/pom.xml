@@ -24,7 +24,7 @@
         <java.version>11</java.version>
         <care-connect-version>4.0.0-SNAPSHOT</care-connect-version>
 
-        <junit-version>4.12</junit-version>
+        <junit-version>4.13.1</junit-version>
         <cucumber-version>1.2.5</cucumber-version>
     </properties>
 
